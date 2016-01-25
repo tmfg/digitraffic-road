@@ -1,0 +1,15 @@
+package fi.livi.digitraffic.tie;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+@EnableJpaRepositories
+public class MetadataApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MetadataApplication.class, args);
+    }
+}
