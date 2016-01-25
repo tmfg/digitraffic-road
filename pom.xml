@@ -18,10 +18,8 @@
 		<relativePath/>
 	</parent>
 
-	<repositories>
-		<!-- OJDBC7.jar please install driver to local repo -->
-		<!-- PLACEHOLDER -->
-	</repositories>
+    <!-- OJDBC7.jar please install driver to local repo -->
+    <!-- PLACEHOLDER -->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
