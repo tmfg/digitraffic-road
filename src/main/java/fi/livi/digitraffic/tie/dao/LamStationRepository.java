@@ -2,25 +2,54 @@ package fi.livi.digitraffic.tie.dao;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import fi.livi.digitraffic.tie.model.LamStationMetadata;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.model.LamStationData;
-
 @Repository
-public class LamStationRepository {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+public interface LamStationRepository extends JpaRepository<LamStationMetadata, Long> {
 
-    public List<LamStationData> listaLamStations() {
-        return jdbcTemplate.query(
-                "select ls.natural_id as lam_number, rs.name as rws_name, ls.name, 0 as x, 0 as y, 0 as z, rd.name as " +
-                        "province " +
-                "from lam_station ls, road_district rd, road_station rs " +
-                "where ls.road_district_id = rd.id " +
-                "and ls.road_station_id = rs.id " +
-                "and ls.obsolete = 0", new BeanPropertyRowMapper<LamStationData>(LamStationData.class));
-    }
+    @Query(value =
+            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
+            "     , RS.NAME AS RWS_NAME\n" +
+            "     , LS.NAME AS NAME_FI\n" +
+            "     , LS.NAME AS NAME_SV\n" +
+            "     , LS.NAME AS NAME_EN\n" +
+            "     , 0 AS X\n" +
+            "     , 0 AS Y\n" +
+            "     , 0 AS Z\n" +
+            "     , RD.NAME AS  PROVINCE\n" +
+            "FROM LAM_STATION LS\n" +
+            "INNER JOIN ROAD_DISTRICT RD \n" +
+            "  ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
+            "INNER JOIN ROAD_STATION RS\n" +
+            "  ON LS.ROAD_STATION_ID = RS.ID\n" +
+            "WHERE LS.OBSOLETE = 0\n" +
+            "  AND RS.OBSOLETE = 0\n" +
+            "ORDER BY LS.NATURAL_ID",
+            nativeQuery = true)
+    @Override
+    List<LamStationMetadata> findAll();
+
+    @Query(value =
+            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
+                    "     , RS.NAME AS RWS_NAME\n" +
+                    "     , LS.NAME AS NAME_FI\n" +
+                    "     , LS.NAME AS NAME_SV\n" +
+                    "     , LS.NAME AS NAME_EN\n" +
+                    "     , 0 AS X\n" +
+                    "     , 0 AS Y\n" +
+                    "     , 0 AS Z\n" +
+                    "     , RD.NAME AS  PROVINCE\n" +
+                    "FROM LAM_STATION LS\n" +
+                    "INNER JOIN ROAD_DISTRICT RD \n" +
+                    "  ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
+                    "INNER JOIN ROAD_STATION RS\n" +
+                    "  ON LS.ROAD_STATION_ID = RS.ID\n" +
+                    "WHERE LS.OBSOLETE = 0\n" +
+                    "  AND RS.OBSOLETE = 0\n" +
+                    "ORDER BY LS.NATURAL_ID",
+            nativeQuery = true)
+    List<LamStationMetadata> findAllNonObsolete();
 }

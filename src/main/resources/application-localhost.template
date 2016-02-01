@@ -1,0 +1,6 @@
+spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
+spring.datasource.username=<username>
+spring.datasource.password=<password>
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+spring.datasource.validationQuery=SELECT 1 FROM DUAL
+logging.file=digitraffic-metadata.log
