@@ -6,7 +6,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 /**
- * Simpilication of {@link org.springframework.context.MessageSource}.
+ * Simplification of {@link org.springframework.context.MessageSource}.
  * @see org.springframework.context.MessageSource
  */
 public interface MessageService {
@@ -21,7 +21,7 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code) throws NoSuchMessageException;
+    String getMessage(String code);
 
     /**
      * Try to resolve the message. Treat as an error if the message can't be found.
@@ -34,7 +34,7 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code, Object[] args) throws NoSuchMessageException;
+    String getMessage(String code, Object[] args);
 
     /**
      * Try to resolve the message. Return default message if no message was found.
@@ -77,7 +77,7 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(MessageSourceResolvable resolvable) throws NoSuchMessageException;
+    String getMessage(MessageSourceResolvable resolvable);
 
     Locale getLocale();
 }

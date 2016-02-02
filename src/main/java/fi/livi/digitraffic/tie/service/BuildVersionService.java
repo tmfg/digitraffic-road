@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service;
 
 /**
- * Application build inrformation.
+ * Application build information.
  */
 public interface BuildVersionService {
 

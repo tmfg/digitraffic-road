@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service;
 
+import fi.livi.digitraffic.tie.converter.LamStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.LamStationRepository;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LamServiceImpl implements LamService {
 
-    @Autowired
-    private LamStationRepository lamStationRepository;
+    private final LamStationRepository lamStationRepository;
 
+    @Autowired
+    LamServiceImpl(LamStationRepository lamStationRepository) {
+        this.lamStationRepository = lamStationRepository;
+    }
 
     @Override
     public FeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection() {

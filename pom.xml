@@ -24,7 +24,18 @@
         <java.version>1.8</java.version>
     </properties>
 
-    <!-- OJDBC7.jar please install driver to local repo -->
+    <!-- Download OJDBC7.jar and install driver to local repo
+         $ mvn install:install-file -DgroupId=oracle -DartifactId=ojdbc7 \
+         -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
+         OR add repository (example below) that contains OJDBC-driver -->
+    <!--
+    <repositories>
+        <repository>
+            <id>my-internal-repo</id>
+            <url>http://mvn.internalrepository.fi/repo</url>
+        </repository>
+    </repositories>
+    -->
     <!-- PLACEHOLDER -->
 
     <dependencies>

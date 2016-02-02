@@ -1,43 +1,24 @@
-package fi.livi.digitraffic.tie;
+package fi.livi.digitraffic.tie.conf;
 
 import static com.google.common.base.Predicates.or;
 import static springfox.documentation.builders.PathSelectors.regex;
-
-import java.util.Locale;
 
 import com.google.common.base.Predicate;
 import fi.livi.digitraffic.tie.controller.AbstractMetadataController;
 import fi.livi.digitraffic.tie.service.MetadataApiInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@ComponentScan
-public class MetadataApplicationConfiguration {
+@EnableSwagger2
+public class SwaggerConfiguration {
 
     @Autowired
     MetadataApiInfoService metadataApiInfoService;
-
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.US);
-        return slr;
-    }
-
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang");
-        return lci;
-    }
 
     @Bean
     public Docket metadataApi() {
@@ -45,13 +26,18 @@ public class MetadataApplicationConfiguration {
                 .groupName("metadata-api")
                 .apiInfo(metadataApiInfoService.getApiInfo())
                 .select()
-                .paths(metadataApiPaths())
+                .paths(getMetadataApiPaths())
                 .build();
     }
 
-    private Predicate<String> metadataApiPaths() {
+    /**
+     * Declares api paths to document by Swagger
+     * @return api paths
+     */
+    private Predicate<String> getMetadataApiPaths() {
         return or(
                 regex(AbstractMetadataController.API_V1_PATH +"/*.*")
+                //, regex(AbstractMetadataController.API_V2_PATH +"/*.*")
         );
     }
 }

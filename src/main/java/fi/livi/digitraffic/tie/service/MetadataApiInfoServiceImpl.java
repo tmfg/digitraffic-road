@@ -8,11 +8,16 @@ import springfox.documentation.service.ApiInfo;
 @Service
 public class MetadataApiInfoServiceImpl implements MetadataApiInfoService {
 
-    @Autowired
-    MessageService messageService;
+    private final MessageService messageService;
+
+    private final BuildVersionService buildVersionService;
 
     @Autowired
-    BuildVersionService buildVersionService;
+    public MetadataApiInfoServiceImpl(MessageService messageService,
+                                      BuildVersionService buildVersionService) {
+        this.messageService = messageService;
+        this.buildVersionService = buildVersionService;
+    }
 
     @Override
     public ApiInfo getApiInfo() {
