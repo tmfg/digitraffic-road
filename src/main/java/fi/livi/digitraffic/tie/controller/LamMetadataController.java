@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.controller;
 
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_PATH;
+
 import fi.livi.digitraffic.tie.service.LamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(value="Lam metadata", description="Api to read lam metadata")
 @RestController
-public class LamMetadataController extends AbstractMetadataController {
+public class LamMetadataController {
 
     @Autowired
     private LamService lamService;
