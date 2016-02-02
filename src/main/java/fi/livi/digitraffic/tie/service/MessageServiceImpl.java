@@ -7,17 +7,17 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
-    Environment env;
+    private final MessageSource messageSource;
 
     @Autowired
-    MessageSource messageSource;
+    public MessageServiceImpl(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public String getMessage(String code) {

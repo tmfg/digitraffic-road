@@ -12,28 +12,6 @@ public interface LamStationRepository extends JpaRepository<LamStationMetadata, 
 
     @Query(value =
             "SELECT LS.NATURAL_ID AS LAM_ID\n" +
-            "     , RS.NAME AS RWS_NAME\n" +
-            "     , LS.NAME AS NAME_FI\n" +
-            "     , LS.NAME AS NAME_SV\n" +
-            "     , LS.NAME AS NAME_EN\n" +
-            "     , 0 AS X\n" +
-            "     , 0 AS Y\n" +
-            "     , 0 AS Z\n" +
-            "     , RD.NAME AS  PROVINCE\n" +
-            "FROM LAM_STATION LS\n" +
-            "INNER JOIN ROAD_DISTRICT RD \n" +
-            "  ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
-            "INNER JOIN ROAD_STATION RS\n" +
-            "  ON LS.ROAD_STATION_ID = RS.ID\n" +
-            "WHERE LS.OBSOLETE = 0\n" +
-            "  AND RS.OBSOLETE = 0\n" +
-            "ORDER BY LS.NATURAL_ID",
-            nativeQuery = true)
-    @Override
-    List<LamStationMetadata> findAll();
-
-    @Query(value =
-            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
                     "     , RS.NAME AS RWS_NAME\n" +
                     "     , LS.NAME AS NAME_FI\n" +
                     "     , LS.NAME AS NAME_SV\n" +
