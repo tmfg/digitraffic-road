@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
 import static com.google.common.base.Predicates.or;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import com.google.common.base.Predicate;
@@ -35,8 +36,8 @@ public class SwaggerConfiguration {
      */
     private Predicate<String> getMetadataApiPaths() {
         return or(
-                regex(MetadataApplicationConfiguration.API_V1_PATH +"/*.*")
-                //, regex(AbstractMetadataController.API_V2_PATH +"/*.*")
+                regex(API_V1_BASE_PATH +"/*.*")
+                //, regex(API_V2_PATH +"/*.*")
         );
     }
 }

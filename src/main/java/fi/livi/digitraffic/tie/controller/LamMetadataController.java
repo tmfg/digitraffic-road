@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller;
 
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_PATH;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 
 import fi.livi.digitraffic.tie.service.LamService;
 import io.swagger.annotations.Api;
@@ -20,7 +21,7 @@ public class LamMetadataController {
     private LamService lamService;
 
     @ApiOperation(value = "List all lam stations.")
-    @RequestMapping(method = RequestMethod.GET, path = API_V1_PATH + "/lam-stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_V1_BASE_PATH + API_METADATA_PART_PATH + "/lam-stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public FeatureCollection listNonObsoleteLamStations() {
         return lamService.findAllNonObsoleteLamStationsAsFeatureCollection();
     }
