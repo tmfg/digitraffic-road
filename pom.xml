@@ -26,17 +26,16 @@
 
     <!-- Download OJDBC7.jar and install driver to local repo
          $ mvn install:install-file -DgroupId=oracle -DartifactId=ojdbc7 \
-         -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
-         OR add repository (example below) that contains OJDBC-driver -->
-    <!--
+           -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
+         OR add repository that contains OJDBC-driver -->
     <repositories>
         <repository>
-            <id>my-internal-repo</id>
-            <url>http://mvn.internalrepository.fi/repo</url>
+            <id>jcenter-snapshots</id>
+            <name>jcenter</name>
+            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
         </repository>
+        <!-- PLACEHOLDER -->
     </repositories>
-    -->
-    <!-- PLACEHOLDER -->
 
     <dependencies>
         <dependency>
@@ -87,14 +86,17 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.3.1</version>
+            <!-- use 2.3.2 version when relased -->
+            <version>2.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.3.1</version>
+            <!-- use 2.3.2 version when relased -->
+            <version>2.3.2-SNAPSHOT</version>
         </dependency>
 
+        <!-- Static Reader of META-INF/MANIFEST.MF Files -->
         <dependency>
             <groupId>com.jcabi</groupId>
             <artifactId>jcabi-manifests</artifactId>

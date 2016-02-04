@@ -18,7 +18,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.dao"})
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
-    public static final String API_V1_PATH = "/api/v1/metadata";
+    public static final String API_V1_BASE_PATH = "/api/v1";
+    public static final String API_METADATA_PART_PATH = "/metadata";
 
     @Autowired
     LocaleChangeInterceptor localeChangeInterceptor;
