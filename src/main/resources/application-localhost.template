@@ -1,6 +1,9 @@
 # Copy this file as application-localhost.properties and configure
 # datasource etc. according to your environment.
 
+# http-server port
+server.port = 9010
+
 spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
