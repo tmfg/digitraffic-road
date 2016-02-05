@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.service;
 
-import fi.livi.digitraffic.tie.converter.LamStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.dao.LamStationRepository;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+import fi.livi.digitraffic.tie.converter.LamStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.dao.LamStationRepository;
+
+@Transactional(readOnly = true)
 @Service
 public class LamServiceImpl implements LamService {
 
