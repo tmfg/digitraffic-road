@@ -30,8 +30,6 @@ public class LamStationMetadata {
 
     private String province;
 
-    public LamStationMetadata() {}
-
     public long getLamId() {
         return lamId;
     }

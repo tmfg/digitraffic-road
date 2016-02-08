@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.model.LamStationMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geojson.Crs;
@@ -13,18 +12,19 @@ import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.geojson.jackson.CrsType;
 
-public final class LamStationMetadata2FeatureConverter {
+import fi.livi.digitraffic.tie.model.LamStationMetadata;
 
-    private static final Log log = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
+public final class LamStationMetadata2FeatureConverter {
+    private static final Log LOG = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
 
     private LamStationMetadata2FeatureConverter() {}
 
     public static FeatureCollection convert(final List<LamStationMetadata> stations) {
         final FeatureCollection collection = new FeatureCollection();
 
-        Crs crs = new Crs();
+        final Crs crs = new Crs();
         crs.setType(CrsType.link);
-        Map<String, Object> crsProperties = new HashMap<>();
+        final Map<String, Object> crsProperties = new HashMap<>();
         // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html
         // http://www.opengis.net/def/crs/EPSG/0/[code]
         // ETRS89 / TM35-FIN (EPSG:3067)
@@ -45,8 +45,8 @@ public final class LamStationMetadata2FeatureConverter {
 
     private static Feature convert(final LamStationMetadata lam) {
         final Feature f = new Feature();
-        if (log.isDebugEnabled()) {
-            log.debug("Convert: " + lam.toString());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Convert: " + lam.toString());
         }
         f.setProperty("lamNumber", lam.getLamId());
         f.setProperty("rwsName", lam.getRwsName());
