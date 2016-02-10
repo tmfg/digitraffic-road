@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.documentation;
 import fi.livi.digitraffic.tie.service.BuildVersionService;
 import fi.livi.digitraffic.tie.service.MessageService;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 
 public class MetadataApiInfo extends ApiInfo {
 
@@ -18,7 +19,7 @@ public class MetadataApiInfo extends ApiInfo {
               null, //description,
               null, //version,
               null, //termsOfServiceUrl,
-              null, //contact,
+              (Contact) null, //contact,
               null, //license,
               null); //licenseUrl)
         this.messageService = messageService;
@@ -41,8 +42,11 @@ public class MetadataApiInfo extends ApiInfo {
     }
 
     @Override
-    public String getContact() {
-        return messageService.getMessage("apiInfo.contact");
+    public Contact getContact() {
+        return new Contact(
+                messageService.getMessage("apiInfo.contact.name"),
+                messageService.getMessage("apiInfo.contact.url"),
+                messageService.getMessage("apiInfo.contact.mail"));
     }
 
     @Override
