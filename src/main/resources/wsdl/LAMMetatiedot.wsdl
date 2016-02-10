@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions rwsName="LAMMetatiedotService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+<xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06">
+  <xs:element rwsName="HaeAnturiVakio" type="tns:HaeAnturiVakio"/>
+  <xs:element rwsName="HaeAnturiVakioArvot" type="tns:HaeAnturiVakioArvot"/>
+  <xs:element rwsName="HaeAnturiVakioArvotResponse" type="tns:HaeAnturiVakioArvotResponse"/>
+  <xs:element rwsName="HaeAnturiVakioResponse" type="tns:HaeAnturiVakioResponse"/>
+  <xs:element rwsName="HaeArvovastaavuus" type="tns:HaeArvovastaavuus"/>
+  <xs:element rwsName="HaeArvovastaavuusResponse" type="tns:HaeArvovastaavuusResponse"/>
+  <xs:element rwsName="HaeAsemanAnturiVakio" type="tns:HaeAsemanAnturiVakio"/>
+  <xs:element rwsName="HaeAsemanAnturiVakioArvot" type="tns:HaeAsemanAnturiVakioArvot"/>
+  <xs:element rwsName="HaeAsemanAnturiVakioArvotResponse" type="tns:HaeAsemanAnturiVakioArvotResponse"/>
+  <xs:element rwsName="HaeAsemanAnturiVakioResponse" type="tns:HaeAsemanAnturiVakioResponse"/>
+  <xs:element rwsName="HaeKaikkiAnturiVakioArvot" type="tns:HaeKaikkiAnturiVakioArvot"/>
+  <xs:element rwsName="HaeKaikkiAnturiVakioArvotResponse" type="tns:HaeKaikkiAnturiVakioArvotResponse"/>
+  <xs:element rwsName="HaeKaikkiArvovastaavuudet" type="tns:HaeKaikkiArvovastaavuudet"/>
+  <xs:element rwsName="HaeKaikkiArvovastaavuudetResponse" type="tns:HaeKaikkiArvovastaavuudetResponse"/>
+  <xs:element rwsName="HaeKaikkiLAMAnturit" type="tns:HaeKaikkiLAMAnturit"/>
+  <xs:element rwsName="HaeKaikkiLAMAnturitResponse" type="tns:HaeKaikkiLAMAnturitResponse"/>
+  <xs:element rwsName="HaeKaikkiLAMAsemat" type="tns:HaeKaikkiLAMAsemat"/>
+  <xs:element rwsName="HaeKaikkiLAMAsematResponse" type="tns:HaeKaikkiLAMAsematResponse"/>
+  <xs:element rwsName="HaeKaikkiLAMLaskennallisetAnturit" type="tns:HaeKaikkiLAMLaskennallisetAnturit"/>
+  <xs:element rwsName="HaeKaikkiLAMLaskennallisetAnturitResponse" type="tns:HaeKaikkiLAMLaskennallisetAnturitResponse"/>
+  <xs:element rwsName="HaeLAMAnturi" type="tns:HaeLAMAnturi"/>
+  <xs:element rwsName="HaeLAMAnturiResponse" type="tns:HaeLAMAnturiResponse"/>
+  <xs:element rwsName="HaeLAMAsema" type="tns:HaeLAMAsema"/>
+  <xs:element rwsName="HaeLAMAsemaResponse" type="tns:HaeLAMAsemaResponse"/>
+  <xs:element rwsName="HaeLAMAsemanAnturit" type="tns:HaeLAMAsemanAnturit"/>
+  <xs:element rwsName="HaeLAMAsemanAnturitResponse" type="tns:HaeLAMAsemanAnturitResponse"/>
+  <xs:element rwsName="HaeLAMAsemanLaskennallisetAnturit" type="tns:HaeLAMAsemanLaskennallisetAnturit"/>
+  <xs:element rwsName="HaeLAMAsemanLaskennallisetAnturitResponse" type="tns:HaeLAMAsemanLaskennallisetAnturitResponse"/>
+  <xs:element rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilat"/>
+  <xs:element rwsName="HaeLAMAsemanLaskennallistenAntureidenTilatResponse" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse"/>
+  <xs:element rwsName="HaeLAMLaskennallinenAnturi" type="tns:HaeLAMLaskennallinenAnturi"/>
+  <xs:element rwsName="HaeLAMLaskennallinenAnturiResponse" type="tns:HaeLAMLaskennallinenAnturiResponse"/>
+  <xs:element rwsName="HaeLaskennallisenAnturinArvovastaavuudet" type="tns:HaeLaskennallisenAnturinArvovastaavuudet"/>
+  <xs:element rwsName="HaeLaskennallisenAnturinArvovastaavuudetResponse" type="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse"/>
+  <xs:complexType rwsName="HaeLAMAsema">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemaResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="asema" type="tns:lamAsema"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamAsema">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMAsema">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLAMAsema">
+    <xs:complexContent>
+      <xs:extension base="tns:havaintoAsema">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="akku" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="akkuKayttoonottoVuosi" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="ip" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="laskinlaite" type="tns:laiteTyyppi"/>
+          <xs:element minOccurs="0" rwsName="laskinlaiteSarjanumero" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="laskinlaiteToimituspvm" type="xs:dateTime"/>
+          <xs:element minOccurs="0" rwsName="latauslaite" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="latauslaiteKayttoonottoVuosi" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="liitantayksikko" type="tns:laiteTyyppi"/>
+          <xs:element minOccurs="0" rwsName="lisatietoja" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="portti" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="suunta1Kunta" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="suunta1KuntaKoodi" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="suunta2Kunta" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="suunta2KuntaKoodi" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="tyyppi" type="tns:lamAsemaTyyppi"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="havaintoAsema">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteSijainnilla">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="aikakatkaisu" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="aikavyohyke" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="aliverkonPeite" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="alkamisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" rwsName="asemanSijainti" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="asemanTila" type="tns:tilaTyyppi"/>
+          <xs:element minOccurs="0" rwsName="huoltoPuutteet" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="huoltolevikkeenEtaisyysAsemasta" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="keruuVali" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="keruunTila" type="tns:keruunTILA"/>
+          <xs:element minOccurs="0" rwsName="korjaushuolto" type="xs:dateTime"/>
+          <xs:element minOccurs="0" rwsName="kunta" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="kuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="laitekaappiId" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="lisatieto" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="liviId" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="maa" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="maakunta" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="maakuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="nimiEn" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="nimiFi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="nimiSe" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="ohjelmistoversio" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="paattymisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" rwsName="riittavanKokoinenHuoltolevike" type="xs:boolean"/>
+          <xs:element minOccurs="0" rwsName="vanhaId" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="verkkolaiteId" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="vuosihuolto" type="xs:dateTime"/>
+          <xs:element minOccurs="0" rwsName="yhdyskaytava" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="yhteysTapa" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="laiteSijainnilla">
+    <xs:complexContent>
+      <xs:extension base="tns:laite">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" rwsName="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" rwsName="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" rwsName="tieosoite" type="tns:tieosoite"/>
+          <xs:element minOccurs="0" rwsName="tieosoiteId" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="laite">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="kuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="nimi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="takuunPaattymisPvm" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="pojo">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType rwsName="tieosoite">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="ajorata" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="etaisyysTieosanAlusta" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="puoli" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="tienHoitoluokka" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="tienumero" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="tieosa" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLaskennallisenAnturinArvovastaavuudet">
+    <xs:sequence>
+      <xs:element minOccurs="0" rwsName="arg0" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLaskennallisenAnturinArvovastaavuudetResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="arvovastaavuudet" type="tns:lamArvoVastaavuus"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamArvoVastaavuus">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractArvoVastaavuus">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractArvoVastaavuus">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="b" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="g" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+          <xs:element minOccurs="0" rwsName="kuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="laskennallinenAnturiId" type="xs:long"/>
+          <xs:element minOccurs="0" rwsName="max" type="xs:decimal"/>
+          <xs:element minOccurs="0" rwsName="min" type="xs:decimal"/>
+          <xs:element minOccurs="0" rwsName="r" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanLaskennallisetAnturit">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanLaskennallisetAnturitResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="lamlaskennallisetanturit" type="tns:lamLaskennallinenAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamLaskennallinenAnturi">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMLaskennallinenAnturi">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLAMLaskennallinenAnturi">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLaskennallinenAnturi">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="ajoneuvoluokka" type="tns:ajoneuvoluokkaTyyppi"/>
+          <xs:element minOccurs="0" rwsName="kaista" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="suunta" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLaskennallinenAnturi">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="b" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="g" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="kuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="laskentaKaava" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="lyhytNimi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="nimi" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="r" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="tarkkuus" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="vanhaId" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="yksikko" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAsemanAnturiVakioArvot">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="asemaId" type="xs:long"/>
+      <xs:element form="qualified" minOccurs="0" rwsName="paiva" type="xs:int"/>
+      <xs:element form="qualified" minOccurs="0" rwsName="kuukausi" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAsemanAnturiVakioArvotResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="lamanturivakiot" type="tns:lamAnturiVakioArvo"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamAnturiVakioArvo">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMAnturiVakioArvo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLAMAnturiVakioArvo">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="anturiVakioId" type="xs:long"/>
+          <xs:element minOccurs="0" rwsName="arvo" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="voimassaAlku" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="voimassaLoppu" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAnturiVakio">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="anturiVakioId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAnturiVakioResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="lamanturivakio" type="tns:lamAnturiVakio"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamAnturiVakio">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMAnturiVakio">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLAMAnturiVakio">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="asemaId" type="xs:long"/>
+          <xs:element minOccurs="0" rwsName="nimi" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiArvovastaavuudet">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiArvovastaavuudetResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="arvovastaavuus" type="tns:lamArvoVastaavuus"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMAnturit">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMAnturitResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="anturit" type="tns:lamAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamAnturi">
+    <xs:complexContent>
+      <xs:extension base="tns:laite">
+        <xs:sequence>
+          <xs:element minOccurs="0" rwsName="id" type="xs:long"/>
+          <xs:element minOccurs="0" rwsName="kaapelikaivonKunto" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="korkeus" type="xs:int"/>
+          <xs:element minOccurs="0" rwsName="lamAsemaId" type="xs:long"/>
+          <xs:element rwsName="laskettavienKaistojenLkmSuunta1" type="xs:int"/>
+          <xs:element rwsName="laskettavienKaistojenLkmSuunta2" type="xs:int"/>
+          <xs:element rwsName="pisteellaKaapelikaivo" type="xs:boolean"/>
+          <xs:element rwsName="silmukkakaapelitSuojaputkessa" type="xs:boolean"/>
+          <xs:element minOccurs="0" rwsName="suojaputkenMateriaali" type="xs:string"/>
+          <xs:element minOccurs="0" rwsName="valmistusAika" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMAsemat">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMAsematResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="asemat" type="tns:lamAsema"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAnturi">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAnturiResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="anturi" type="tns:lamAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAsemanAnturiVakio">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="asemaId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAsemanAnturiVakioResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="lamanturivakiot" type="tns:lamAnturiVakio"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiAnturiVakioArvot">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="paiva" type="xs:int"/>
+      <xs:element form="qualified" minOccurs="0" rwsName="kuukausi" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiAnturiVakioArvotResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="lamanturivakiot" type="tns:lamAnturiVakioArvo"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMLaskennallinenAnturi">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMLaskennallinenAnturiResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="lamlaskennallinenanturi" type="tns:lamLaskennallinenAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="asemaId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="tilat" type="tns:lamAsemaLaskennallinenAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="lamAsemaLaskennallinenAnturi">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMAsemaLaskennallinenAnturi">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" rwsName="abstractLAMAsemaLaskennallinenAnturi">
+    <xs:sequence>
+      <xs:element minOccurs="0" rwsName="asemaId" type="xs:long"/>
+      <xs:element minOccurs="0" rwsName="laskennallinenAnturiId" type="xs:long"/>
+      <xs:element minOccurs="0" rwsName="tila" type="tns:tilaTyyppi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMLaskennallisetAnturit">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeKaikkiLAMLaskennallisetAnturitResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="laskennallinenAnturi" type="tns:lamLaskennallinenAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAnturiVakioArvot">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="anturiVakioId" type="xs:long"/>
+      <xs:element form="qualified" minOccurs="0" rwsName="paiva" type="xs:int"/>
+      <xs:element form="qualified" minOccurs="0" rwsName="kuukausi" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeAnturiVakioArvotResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="lamanturivakio" type="tns:lamAnturiVakioArvo"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanAnturit">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeLAMAsemanAnturitResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" rwsName="anturit" type="tns:lamAnturi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeArvovastaavuus">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType rwsName="HaeArvovastaavuusResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" rwsName="arvovastaavuus" type="tns:lamArvoVastaavuus"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType rwsName="laiteTyyppi">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="DSL_3"/>
+      <xs:enumeration value="DSL_4L"/>
+      <xs:enumeration value="DSL_4G"/>
+      <xs:enumeration value="DSL_5"/>
+      <xs:enumeration value="MUU"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType rwsName="lamAsemaTyyppi">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="DSL"/>
+      <xs:enumeration value="E18"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType rwsName="tilaTyyppi">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK"/>
+      <xs:enumeration value="OK_VIKAEPAILY_PERUUTETTU"/>
+      <xs:enumeration value="VIKAEPAILY"/>
+      <xs:enumeration value="VIKA_VAHVISTETTU"/>
+      <xs:enumeration value="VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA"/>
+      <xs:enumeration value="KORJAUSPYYNTO_LAHETETTY"/>
+      <xs:enumeration value="KORJAUSHUOLTO_TEHTY"/>
+      <xs:enumeration value="KORJAUS_KESKEYTETTY"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType rwsName="keruunTILA">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="KERUUSSA"/>
+      <xs:enumeration value="POISTETTU_TILAPAISESTI"/>
+      <xs:enumeration value="POISTETTU_PYSYVASTI"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType rwsName="virhekoodi">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LAMASEMAA_EI_LOYDY"/>
+      <xs:enumeration value="LAMANTURIA_EI_LOYDY"/>
+      <xs:enumeration value="LAMLASKENNALLISTAANTURIA_EI_LOYDY"/>
+      <xs:enumeration value="ASEMAKOKOONPANOA_EI_LOYDY"/>
+      <xs:enumeration value="KAYTOSSA_OLEVAA_OBJEKTIA_EI_VOI_POISTAA"/>
+      <xs:enumeration value="MUU_VIRHE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType rwsName="ajoneuvoluokkaTyyppi">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="HA"/>
+      <xs:enumeration value="PA"/>
+      <xs:enumeration value="LA"/>
+      <xs:enumeration value="KAIP"/>
+      <xs:enumeration value="KAPP"/>
+      <xs:enumeration value="KATP"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element rwsName="kameraPerustiedotVirhe" type="tns:kameraPerustiedotVirhe"/>
+  <xs:complexType rwsName="kameraPerustiedotVirhe">
+    <xs:sequence>
+      <xs:element rwsName="virhekoodi" nillable="true" type="tns:virhekoodi"/>
+      <xs:element minOccurs="0" rwsName="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message rwsName="HaeAsemanAnturiVakioArvot">
+    <wsdl:part rwsName="parameters" element="tns:HaeAsemanAnturiVakioArvot">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAnturiResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAnturiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemaResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemaResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLaskennallisenAnturinArvovastaavuudetResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAnturiVakio">
+    <wsdl:part rwsName="parameters" element="tns:HaeAnturiVakio">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiAnturiVakioArvotResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiAnturiVakioArvotResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAnturiVakioArvot">
+    <wsdl:part rwsName="parameters" element="tns:HaeAnturiVakioArvot">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMLaskennallinenAnturiResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMLaskennallinenAnturiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLaskennallisenAnturinArvovastaavuudet">
+    <wsdl:part rwsName="parameters" element="tns:HaeLaskennallisenAnturinArvovastaavuudet">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiArvovastaavuudet">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiArvovastaavuudet">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanAnturit">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanAnturit">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAsemanAnturiVakioResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeAsemanAnturiVakioResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAnturiVakioArvotResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeAnturiVakioArvotResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanLaskennallisetAnturitResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanLaskennallisetAnturitResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAsemanAnturiVakio">
+    <wsdl:part rwsName="parameters" element="tns:HaeAsemanAnturiVakio">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiArvovastaavuudetResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiArvovastaavuudetResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMAnturitResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMAnturitResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="LAMMetatiedotException">
+    <wsdl:part rwsName="LAMMetatiedotException" element="tns:kameraPerustiedotVirhe">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiAnturiVakioArvot">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiAnturiVakioArvot">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAnturi">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAnturi">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMAnturit">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMAnturit">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMAsematResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMAsematResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanLaskennallisetAnturit">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanLaskennallisetAnturit">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsema">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsema">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeArvovastaavuusResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeArvovastaavuusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMLaskennallinenAnturi">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMLaskennallinenAnturi">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAsemanAnturiVakioArvotResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeAsemanAnturiVakioArvotResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanLaskennallistenAntureidenTilat">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeArvovastaavuus">
+    <wsdl:part rwsName="parameters" element="tns:HaeArvovastaavuus">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeAnturiVakioResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeAnturiVakioResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeLAMAsemanAnturitResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeLAMAsemanAnturitResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMAsemat">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMAsemat">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMLaskennallisetAnturitResponse">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMLaskennallisetAnturitResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message rwsName="HaeKaikkiLAMLaskennallisetAnturit">
+    <wsdl:part rwsName="parameters" element="tns:HaeKaikkiLAMLaskennallisetAnturit">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType rwsName="LAMMetatiedot">
+    <wsdl:operation rwsName="HaeLAMAsema">
+      <wsdl:input rwsName="HaeLAMAsema" message="tns:HaeLAMAsema">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemaResponse" message="tns:HaeLAMAsemaResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLaskennallisenAnturinArvovastaavuudet">
+      <wsdl:input rwsName="HaeLaskennallisenAnturinArvovastaavuudet" message="tns:HaeLaskennallisenAnturinArvovastaavuudet">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLaskennallisenAnturinArvovastaavuudetResponse" message="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanLaskennallisetAnturit">
+      <wsdl:input rwsName="HaeLAMAsemanLaskennallisetAnturit" message="tns:HaeLAMAsemanLaskennallisetAnturit">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanLaskennallisetAnturitResponse" message="tns:HaeLAMAsemanLaskennallisetAnturitResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAsemanAnturiVakioArvot">
+      <wsdl:input rwsName="HaeAsemanAnturiVakioArvot" message="tns:HaeAsemanAnturiVakioArvot">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeAsemanAnturiVakioArvotResponse" message="tns:HaeAsemanAnturiVakioArvotResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAnturiVakio">
+      <wsdl:input rwsName="HaeAnturiVakio" message="tns:HaeAnturiVakio">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeAnturiVakioResponse" message="tns:HaeAnturiVakioResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiArvovastaavuudet">
+<wsdl:documentation>Palauttaa kaikki arvovastaavuudet. Arvovastaavuudella maaritetaan laskennallisen anturin arvovalin vastaavuus tekstuaaliseen kasitteeseen. Arvovastaavuus maarittelee myos arvovalin esitysvarin.</wsdl:documentation>
+      <wsdl:input rwsName="HaeKaikkiArvovastaavuudet" message="tns:HaeKaikkiArvovastaavuudet">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiArvovastaavuudetResponse" message="tns:HaeKaikkiArvovastaavuudetResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMAnturit">
+      <wsdl:input rwsName="HaeKaikkiLAMAnturit" message="tns:HaeKaikkiLAMAnturit">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMAnturitResponse" message="tns:HaeKaikkiLAMAnturitResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMAsemat">
+      <wsdl:input rwsName="HaeKaikkiLAMAsemat" message="tns:HaeKaikkiLAMAsemat">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMAsematResponse" message="tns:HaeKaikkiLAMAsematResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAnturi">
+      <wsdl:input rwsName="HaeLAMAnturi" message="tns:HaeLAMAnturi">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAnturiResponse" message="tns:HaeLAMAnturiResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAsemanAnturiVakio">
+      <wsdl:input rwsName="HaeAsemanAnturiVakio" message="tns:HaeAsemanAnturiVakio">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeAsemanAnturiVakioResponse" message="tns:HaeAsemanAnturiVakioResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiAnturiVakioArvot">
+      <wsdl:input rwsName="HaeKaikkiAnturiVakioArvot" message="tns:HaeKaikkiAnturiVakioArvot">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiAnturiVakioArvotResponse" message="tns:HaeKaikkiAnturiVakioArvotResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMLaskennallinenAnturi">
+      <wsdl:input rwsName="HaeLAMLaskennallinenAnturi" message="tns:HaeLAMLaskennallinenAnturi">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMLaskennallinenAnturiResponse" message="tns:HaeLAMLaskennallinenAnturiResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat">
+      <wsdl:input rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat" message="tns:HaeLAMAsemanLaskennallistenAntureidenTilat">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanLaskennallistenAntureidenTilatResponse" message="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMLaskennallisetAnturit">
+      <wsdl:input rwsName="HaeKaikkiLAMLaskennallisetAnturit" message="tns:HaeKaikkiLAMLaskennallisetAnturit">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMLaskennallisetAnturitResponse" message="tns:HaeKaikkiLAMLaskennallisetAnturitResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAnturiVakioArvot">
+      <wsdl:input rwsName="HaeAnturiVakioArvot" message="tns:HaeAnturiVakioArvot">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeAnturiVakioArvotResponse" message="tns:HaeAnturiVakioArvotResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanAnturit">
+      <wsdl:input rwsName="HaeLAMAsemanAnturit" message="tns:HaeLAMAsemanAnturit">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanAnturitResponse" message="tns:HaeLAMAsemanAnturitResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeArvovastaavuus">
+      <wsdl:input rwsName="HaeArvovastaavuus" message="tns:HaeArvovastaavuus">
+    </wsdl:input>
+      <wsdl:output rwsName="HaeArvovastaavuusResponse" message="tns:HaeArvovastaavuusResponse">
+    </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException" message="tns:LAMMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding rwsName="LAMMetatiedotServiceSoapBinding" type="tns:LAMMetatiedot">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation rwsName="HaeLAMAsema">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMAsema">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLaskennallisenAnturinArvovastaavuudet">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLaskennallisenAnturinArvovastaavuudet">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLaskennallisenAnturinArvovastaavuudetResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAnturiVakio">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeAnturiVakio">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeAnturiVakioResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAsemanAnturiVakioArvot">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeAsemanAnturiVakioArvot">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeAsemanAnturiVakioArvotResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanLaskennallisetAnturit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMAsemanLaskennallisetAnturit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanLaskennallisetAnturitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiArvovastaavuudet">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeKaikkiArvovastaavuudet">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiArvovastaavuudetResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMAnturit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeKaikkiLAMAnturit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMAnturitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMAsemat">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeKaikkiLAMAsemat">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMAsematResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAnturi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMAnturi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAnturiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAsemanAnturiVakio">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeAsemanAnturiVakio">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeAsemanAnturiVakioResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiAnturiVakioArvot">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeKaikkiAnturiVakioArvot">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiAnturiVakioArvotResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMAsemanLaskennallistenAntureidenTilat">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMLaskennallinenAnturi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMLaskennallinenAnturi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMLaskennallinenAnturiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeKaikkiLAMLaskennallisetAnturit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeKaikkiLAMLaskennallisetAnturit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeKaikkiLAMLaskennallisetAnturitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeAnturiVakioArvot">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeAnturiVakioArvot">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeAnturiVakioArvotResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeLAMAsemanAnturit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeLAMAsemanAnturit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeLAMAsemanAnturitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation rwsName="HaeArvovastaavuus">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input rwsName="HaeArvovastaavuus">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output rwsName="HaeArvovastaavuusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault rwsName="LAMMetatiedotException">
+        <soap:fault rwsName="LAMMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service rwsName="LAMMetatiedotService">
+    <wsdl:port rwsName="LAMMetatiedotPort" binding="tns:LAMMetatiedotServiceSoapBinding">
+      <soap:address location="LAM_METADATA_WS_URL"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
