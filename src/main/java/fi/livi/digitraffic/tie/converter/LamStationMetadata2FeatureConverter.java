@@ -51,9 +51,8 @@ public final class LamStationMetadata2FeatureConverter {
         f.setProperty("lamNumber", lam.getLamId());
         f.setProperty("rwsName", lam.getRwsName());
         f.setProperty("names", getNames(lam));
-        f.setProperty("province", lam.getProvince());
 
-        f.setGeometry(new Point(lam.getX(), lam.getY(), lam.getZ()));
+        f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude(), lam.getElevation()));
 
         return f;
     }
@@ -62,7 +61,7 @@ public final class LamStationMetadata2FeatureConverter {
         final Map<String, String> map = new HashMap<>();
 
         map.put("fi", lam.getNameFi());
-        map.put("sv", lam.getNameSv());
+        map.put("sv", lam.getNameSe());
         map.put("en", lam.getNameEn());
 
         return map;

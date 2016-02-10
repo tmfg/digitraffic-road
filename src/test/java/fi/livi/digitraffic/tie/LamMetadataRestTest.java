@@ -8,20 +8,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
+import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetadataApplication.class)
 @WebAppConfiguration
 public class LamMetadataRestTest {
@@ -50,8 +54,7 @@ public class LamMetadataRestTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-
-    //@Test
+    @Test
     public void testLamMetadataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + "/lam-stations"))
                 .andExpect(status().isOk())

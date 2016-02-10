@@ -20,13 +20,13 @@ public class LamStationMetadata {
     private String rwsName;
 
     private String nameFi;
-    private String nameSv;
+    private String nameSe;
     private String nameEn;
 
     /**
      * Coordinates in format x?
      */
-    private long x, y, z;
+    private long latitude, longitude, elevation;
 
     private String province;
 
@@ -38,14 +38,6 @@ public class LamStationMetadata {
         this.lamId = lamId;
     }
 
-    public String getRwsName() {
-        return rwsName;
-    }
-
-    public void setRwsName(final String rwsName) {
-        this.rwsName = rwsName;
-    }
-
     public String getNameFi() {
         return nameFi;
     }
@@ -54,12 +46,12 @@ public class LamStationMetadata {
         this.nameFi = nameFi;
     }
 
-    public String getNameSv() {
-        return nameSv;
+    public String getNameSe() {
+        return nameSe;
     }
 
-    public void setNameSv(String nameSv) {
-        this.nameSv = nameSv;
+    public void setNameSe(final String nameSe) {
+        this.nameSe = nameSe;
     }
 
     public void setNameEn(String nameEn) {
@@ -70,28 +62,41 @@ public class LamStationMetadata {
         return nameEn;
     }
 
-    public long getX() {
-        return x;
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
-    public void setX(final long x) {
-        this.x = x;
+    public String getRwsName() {
+        return rwsName;
     }
 
-    public long getY() {
-        return y;
+    public void setRwsName(final String rwsName) {
+        this.rwsName = rwsName;
     }
 
-    public void setY(final long y) {
-        this.y = y;
+    public long getLatitude() {
+        return latitude;
     }
 
-    public long getZ() {
-        return z;
+    public void setLatitude(final long latitude) {
+        this.latitude = latitude;
     }
 
-    public void setZ(final long z) {
-        this.z = z;
+    public long getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(final long longitude) {
+        this.longitude = longitude;
+    }
+
+    public long getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(final long elevation) {
+        this.elevation = elevation;
     }
 
     public String getProvince() {
@@ -100,10 +105,5 @@ public class LamStationMetadata {
 
     public void setProvince(final String province) {
         this.province = province;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

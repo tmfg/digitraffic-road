@@ -65,6 +65,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.3</version>
@@ -116,7 +121,6 @@
             <version>2.1.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -214,6 +218,28 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.12.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaLanguage>WSDL</schemaLanguage>
+                    <generatePackage>fi.livi.digitraffic.tie.wsdl.lam</generatePackage>
+                    <schemas>
+                        <schema>
+                            <url>src/main/resources/wsdl/LAMMetatiedot.wsdl</url>
+                        </schema>
+                    </schemas>
+                </configuration>
             </plugin>
         </plugins>
     </build>
