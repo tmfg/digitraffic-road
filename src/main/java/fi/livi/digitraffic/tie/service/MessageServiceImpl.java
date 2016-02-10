@@ -5,13 +5,11 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageServiceImpl implements MessageService {
-
     private final MessageSource messageSource;
 
     @Autowired
@@ -40,7 +38,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public String getMessage(MessageSourceResolvable resolvable) throws NoSuchMessageException {
+    public String getMessage(MessageSourceResolvable resolvable) {
         return messageSource.getMessage(resolvable, LocaleContextHolder.getLocale());
     }
 
@@ -52,5 +50,4 @@ public class MessageServiceImpl implements MessageService {
     protected String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
         return messageSource.getMessage(code, args, defaultMessage, locale);
     }
-
 }

@@ -39,7 +39,7 @@ public class SwaggerConfiguration {
      * Declares api paths to document by Swagger
      * @return api paths
      */
-    private Predicate<String> getMetadataApiPaths() {
+    private static Predicate<String> getMetadataApiPaths() {
         return or(
                 regex(API_V1_BASE_PATH +"/*.*")
                 //, regex(API_V2_PATH +"/*.*")
