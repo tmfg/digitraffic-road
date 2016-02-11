@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.dao.LamStationMetadataRepository;
 import fi.livi.digitraffic.tie.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.dao.RoadDistrictRepository;
 import fi.livi.digitraffic.tie.dao.RoadStationRepository;
@@ -25,7 +24,6 @@ import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 
 @Service
 public class LamStationUpdater {
-    private final LamStationMetadataRepository lamStationMetadataRepository;
     private final LamStationRepository lamStationRepository;
     private final RoadStationRepository roadStationRepository;
     private final RoadDistrictRepository roadDistrictRepository;
@@ -35,8 +33,7 @@ public class LamStationUpdater {
     private static final Logger LOG = Logger.getLogger(LamStationUpdater.class);
 
     @Autowired
-    public LamStationUpdater(final LamStationMetadataRepository lamStationRepository, final LamStationRepository lamStationRepository1, final RoadStationRepository roadStationRepository, final RoadDistrictRepository roadDistrictRepository, final LamStationClient lamStationClient) {
-        this.lamStationMetadataRepository = lamStationRepository;
+    public LamStationUpdater(final LamStationRepository lamStationRepository1, final RoadStationRepository roadStationRepository, final RoadDistrictRepository roadDistrictRepository, final LamStationClient lamStationClient) {
         this.lamStationRepository = lamStationRepository1;
         this.roadStationRepository = roadStationRepository;
         this.roadDistrictRepository = roadDistrictRepository;
