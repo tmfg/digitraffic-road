@@ -32,6 +32,8 @@ public class RoadStation {
 
     private BigDecimal latitude, longitude, elevation;
 
+    private int roadNumber, roadPart, distance;
+
     public long getId() {
         return id;
     }
@@ -131,5 +133,29 @@ public class RoadStation {
     public void obsolete() {
         obsoleteDate = LocalDate.now();
         obsolete = true;
+    }
+
+    public int getRoadNumber() {
+        return roadNumber;
+    }
+
+    public void setRoadNumber(final int roadNumber) {
+        this.roadNumber = roadNumber;
+    }
+
+    public int getRoadPart() {
+        return roadPart;
+    }
+
+    public void setRoadPart(final int roadPart) {
+        this.roadPart = roadPart;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(final int distance) {
+        this.distance = distance;
     }
 }

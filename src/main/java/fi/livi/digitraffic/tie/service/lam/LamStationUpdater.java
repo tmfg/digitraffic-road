@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.lam;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.dao.RoadDistrictRepository;
 import fi.livi.digitraffic.tie.dao.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.model.LamStation;
 import fi.livi.digitraffic.tie.model.RoadDistrict;
 import fi.livi.digitraffic.tie.model.RoadStation;
@@ -27,16 +29,20 @@ public class LamStationUpdater {
     private final LamStationRepository lamStationRepository;
     private final RoadStationRepository roadStationRepository;
     private final RoadDistrictRepository roadDistrictRepository;
+    private final StaticDataStatusDAO staticDataStatusDAO;
 
     private final LamStationClient lamStationClient;
+
+    private static EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     private static final Logger LOG = Logger.getLogger(LamStationUpdater.class);
 
     @Autowired
-    public LamStationUpdater(final LamStationRepository lamStationRepository1, final RoadStationRepository roadStationRepository, final RoadDistrictRepository roadDistrictRepository, final LamStationClient lamStationClient) {
+    public LamStationUpdater(final LamStationRepository lamStationRepository1, final RoadStationRepository roadStationRepository, final RoadDistrictRepository roadDistrictRepository, final StaticDataStatusDAO staticDataStatusDAO, final LamStationClient lamStationClient) {
         this.lamStationRepository = lamStationRepository1;
         this.roadStationRepository = roadStationRepository;
         this.roadDistrictRepository = roadDistrictRepository;
+        this.staticDataStatusDAO = staticDataStatusDAO;
         this.lamStationClient = lamStationClient;
     }
 
@@ -45,10 +51,15 @@ public class LamStationUpdater {
         final List<LamAsema> stations = lamStationClient.getLamStations();
         final Map<Long, LamStation> currentStations = getCurrentStations();
 
-        doUpdate(stations, currentStations);
+        final boolean updateStaticDataStatus = updateLamStations(stations, currentStations);
+        updateStaticDataStatus(updateStaticDataStatus);
     }
 
-    private void doUpdate(final List<LamAsema> stations, final Map<Long, LamStation> currentStations) {
+    private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
+        staticDataStatusDAO.updateStaticDataStatus(updateStaticDataStatus);
+    }
+
+    private boolean updateLamStations(final List<LamAsema> stations, final Map<Long, LamStation> currentStations) {
         final List<LamStation> obsolete = new ArrayList<>(); // naturalIds of obsolete lam-stations
         final List<Pair<LamAsema, LamStation>> update = new ArrayList<>(); // lam-stations to update
         final List<LamAsema> insert = new ArrayList<>(); // new lam-stations
@@ -58,7 +69,7 @@ public class LamStationUpdater {
             final LamStation saved = currentStations.remove(lamNaturalId);
 
             if(saved != null) {
-                if(la.getKeruunTila() == KeruunTILA.POISTETTU_PYSYVASTI) {
+                if(POISTETUT.contains(la.getKeruunTila())) {
                     obsolete.add(saved);
                 } else {
                     update.add(Pair.of(la, saved));
@@ -73,23 +84,30 @@ public class LamStationUpdater {
 
         obsoleteLamStations(obsolete);
         updateLamStations(update);
-        insertLamStations(insert);
+        final boolean inserted = insertLamStations(insert);
+
+        return !obsolete.isEmpty() || inserted;
     }
 
     private static Long convertLamNaturalId(final Integer roadStationId) {
         return roadStationId == null ? null : roadStationId - 23000L;
     }
 
-    private void insertLamStations(final List<LamAsema> insert) {
+    private boolean insertLamStations(final List<LamAsema> insert) {
+        boolean inserted = false;
+
         for(final LamAsema la : insert) {
             LOG.debug("inserting new station " + la.getNimi());
 
             if(validate(la)) {
                 insertLamStation(la);
+                inserted = true;
             } else {
                 LOG.debug("validate failed for " + la.getNimi());
             }
         }
+
+        return inserted;
     }
 
     private void insertLamStation(final LamAsema la) {
@@ -107,7 +125,7 @@ public class LamStationUpdater {
         }
     }
 
-    private boolean validate(final LamAsema la) {
+    private static boolean validate(final LamAsema la) {
         return la.getVanhaId() != null && isNotEmpty(la.getNimi()) && isNotEmpty(la.getNimiEn()) && isNotEmpty(la.getNimiFi()) &&
                 isNotEmpty(la.getNimiSe()) && la.getTieosoite() != null && la.getTieosoite().getTienumero() != null;
     }
@@ -126,6 +144,9 @@ public class LamStationUpdater {
         rs.setLatitude(la.getLatitudi());
         rs.setLongitude(la.getLongitudi());
         rs.setElevation(la.getKorkeus());
+        rs.setRoadNumber(la.getTieosoite().getTienumero());
+        rs.setRoadPart(la.getTieosoite().getTieosa());
+        rs.setDistance(la.getTieosoite().getEtaisyysTieosanAlusta());
 
         return rs;
     }
@@ -147,7 +168,7 @@ public class LamStationUpdater {
         return ls;
     }
 
-    private void updateLamStations(final List<Pair<LamAsema, LamStation>> update) {
+    private static void updateLamStations(final List<Pair<LamAsema, LamStation>> update) {
         for(final Pair<LamAsema, LamStation> pair : update) {
             final LamAsema la = pair.getLeft();
             final LamStation ls = pair.getRight();
@@ -160,6 +181,8 @@ public class LamStationUpdater {
     }
 
     private static void updateAttributes(final LamAsema la, final RoadStation rs) {
+        rs.setObsolete(false);
+        rs.setObsoleteDate(null);
         rs.setName(la.getNimi());
         rs.setNameFi(la.getNimiFi());
         rs.setNameSe(la.getNimiSe());
@@ -167,9 +190,12 @@ public class LamStationUpdater {
         rs.setLatitude(la.getLatitudi());
         rs.setLongitude(la.getLongitudi());
         rs.setElevation(la.getKorkeus());
+        rs.setRoadNumber(la.getTieosoite().getTienumero());
+        rs.setRoadPart(la.getTieosoite().getTieosa());
+        rs.setDistance(la.getTieosoite().getEtaisyysTieosanAlusta());
     }
 
-    private void obsoleteLamStations(final List<LamStation> obsolete) {
+    private static void obsoleteLamStations(final List<LamStation> obsolete) {
         for(final LamStation station : obsolete) {
             LOG.debug("obsolete station " + station.getName());
 
