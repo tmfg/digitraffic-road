@@ -1,10 +1,13 @@
 package fi.livi.digitraffic.tie.service;
 
 import com.jcabi.manifests.Manifests;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BuildVersionServiceImpl implements BuildVersionService{
+
+    private static final Logger LOG = Logger.getLogger(BuildVersionServiceImpl.class);
 
     @Override
     public String getAppVersion() {

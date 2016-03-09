@@ -2,11 +2,10 @@ package fi.livi.digitraffic.tie.dao;
 
 import java.util.List;
 
+import fi.livi.digitraffic.tie.dto.LamStationMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import fi.livi.digitraffic.tie.model.LamStationMetadata;
 
 @Repository
 public interface LamStationMetadataRepository extends JpaRepository<LamStationMetadata, Long> {
@@ -18,7 +17,7 @@ public interface LamStationMetadataRepository extends JpaRepository<LamStationMe
                     "     , RS.NAME_EN AS NAME_EN\n" +
                     "     , RS.LATITUDE AS LATITUDE\n" +
                     "     , RS.LONGITUDE AS LONGITUDE\n" +
-                    "     , RS.ELEVATION AS ELEVATION\n" +
+                    "     , RS.ALTITUDE AS ALTITUDE\n" +
                     "     , RD.NAME AS  PROVINCE\n" +
                     "FROM LAM_STATION LS\n" +
                     "INNER JOIN ROAD_STATION RS\n" +

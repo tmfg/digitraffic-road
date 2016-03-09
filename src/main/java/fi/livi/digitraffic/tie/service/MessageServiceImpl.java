@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service;
 
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MessageServiceImpl implements MessageService {
+
+    private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
+
     private final MessageSource messageSource;
 
     @Autowired

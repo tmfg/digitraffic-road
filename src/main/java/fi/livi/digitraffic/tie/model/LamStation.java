@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.model;
 
 import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,14 +44,27 @@ public class LamStation {
     @Column(name="winter_free_flow_speed_2")
     private double winterFreeFlowSpeed2;
 
+    @Column(name="DIRECTION_1_MUNICIPALITY")
+    private String direction1Municipality;
+
+    @Column(name="DIRECTION_1_MUNICIPALITY_CODE")
+    private Integer direction1MunicipalityCode;
+
+    @Column(name="DIRECTION_2_MUNICIPALITY")
+    private String direction2Municipality;
+
+    @Column(name="DIRECTION_2_MUNICIPALITY_CODE")
+    private Integer direction2MunicipalityCode;
+
     @ManyToOne
-    @JoinColumn(name="road_district_id", nullable = false, updatable = false)
+    @JoinColumn(name="road_district_id", nullable = false)
     private RoadDistrict roadDistrict;
 
     @ManyToOne
-    @JoinColumn(name="road_station_id", nullable = false, updatable = false)
+    @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
+
 
     public long getId() {
         return id;
@@ -145,5 +159,37 @@ public class LamStation {
 
     public void setRoadDistrict(final RoadDistrict roadDistrict) {
         this.roadDistrict = roadDistrict;
+    }
+
+    public String getDirection1Municipality() {
+        return direction1Municipality;
+    }
+
+    public void setDirection1Municipality(String direction1Municipality) {
+        this.direction1Municipality = direction1Municipality;
+    }
+
+    public Integer getDirection1MunicipalityCode() {
+        return direction1MunicipalityCode;
+    }
+
+    public void setDirection1MunicipalityCode(Integer direction1MunicipalityCode) {
+        this.direction1MunicipalityCode = direction1MunicipalityCode;
+    }
+
+    public String getDirection2Municipality() {
+        return direction2Municipality;
+    }
+
+    public void setDirection2Municipality(String direction2Municipality) {
+        this.direction2Municipality = direction2Municipality;
+    }
+
+    public Integer getDirection2MunicipalityCode() {
+        return direction2MunicipalityCode;
+    }
+
+    public void setDirection2MunicipalityCode(Integer direction2MunicipalityCode) {
+        this.direction2MunicipalityCode = direction2MunicipalityCode;
     }
 }

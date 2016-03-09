@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model;
+package fi.livi.digitraffic.tie.dto;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,7 +26,7 @@ public class LamStationMetadata {
     /**
      * Coordinates in format x?
      */
-    private long latitude, longitude, elevation;
+    private Long latitude, longitude, altitude;
 
     private String province;
 
@@ -75,28 +75,28 @@ public class LamStationMetadata {
         this.rwsName = rwsName;
     }
 
-    public long getLatitude() {
+    public Long getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(final long latitude) {
+    public void setLatitude(final Long latitude) {
         this.latitude = latitude;
     }
 
-    public long getLongitude() {
+    public Long getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(final long longitude) {
+    public void setLongitude(final Long longitude) {
         this.longitude = longitude;
     }
 
-    public long getElevation() {
-        return elevation;
+    public Long getAltitude() {
+        return altitude;
     }
 
-    public void setElevation(final long elevation) {
-        this.elevation = elevation;
+    public void setAltitude(final long altitude) {
+        this.altitude = altitude;
     }
 
     public String getProvince() {
