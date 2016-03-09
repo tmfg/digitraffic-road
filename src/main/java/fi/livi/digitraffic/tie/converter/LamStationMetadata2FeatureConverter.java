@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.dto.LamStationMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geojson.Crs;
@@ -11,8 +12,6 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.geojson.jackson.CrsType;
-
-import fi.livi.digitraffic.tie.model.LamStationMetadata;
 
 public final class LamStationMetadata2FeatureConverter {
     private static final Log LOG = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
@@ -27,10 +26,12 @@ public final class LamStationMetadata2FeatureConverter {
         final Map<String, Object> crsProperties = new HashMap<>();
         // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html
         // http://www.opengis.net/def/crs/EPSG/0/[code]
-        // ETRS89 / TM35-FIN (EPSG:3067)
+        // ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)
         // http://www.opengis.net/def/crs/EPSG/0/3067
+        // http://spatialreference.org/ref/epsg/3067/
         // WGS84 (EPSG:4326)
         // http://www.opengis.net/def/crs/EPSG/0/4326
+        // http://spatialreference.org/ref/epsg/wgs-84/
         crsProperties.put("href", "http://www.opengis.net/def/crs/EPSG/0/3067");
         crsProperties.put("type",  "proj4");
         crs.setProperties(crsProperties);
@@ -52,7 +53,17 @@ public final class LamStationMetadata2FeatureConverter {
         f.setProperty("rwsName", lam.getRwsName());
         f.setProperty("names", getNames(lam));
 
-        f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude(), lam.getElevation()));
+        if (lam.getAltitude() == null || lam.getLatitude() == null || lam.getAltitude() == null) {
+            System.out.printf("null");
+        }
+        if (lam.getLatitude() != null && lam.getLongitude() != null) {
+            if (lam.getAltitude() != null) {
+                f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude(), lam.getAltitude()));
+            } else {
+                f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude()));
+            }
+        }
+
 
         return f;
     }

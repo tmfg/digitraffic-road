@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="LaiteinfraMetatiedotService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LaiteinfraMetatiedot/2015/09/29" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LaiteinfraMetatiedot/2015/09/29" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+<xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LaiteinfraMetatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LaiteinfraMetatiedot/2015/09/29">
+  <xs:element name="HaeKaikkiLaitekaapit" type="tns:HaeKaikkiLaitekaapit"/>
+  <xs:element name="HaeKaikkiLaitekaapitResponse" type="tns:HaeKaikkiLaitekaapitResponse"/>
+  <xs:element name="HaeKaikkiPylvaat" type="tns:HaeKaikkiPylvaat"/>
+  <xs:element name="HaeKaikkiPylvaatResponse" type="tns:HaeKaikkiPylvaatResponse"/>
+  <xs:element name="HaeKaikkiTietoliikennalaitteet" type="tns:HaeKaikkiTietoliikennalaitteet"/>
+  <xs:element name="HaeKaikkiTietoliikennalaitteetResponse" type="tns:HaeKaikkiTietoliikennalaitteetResponse"/>
+  <xs:element name="HaeLaitekaapinTietoliikennelaitteet" type="tns:HaeLaitekaapinTietoliikennelaitteet"/>
+  <xs:element name="HaeLaitekaapinTietoliikennelaitteetResponse" type="tns:HaeLaitekaapinTietoliikennelaitteetResponse"/>
+  <xs:element name="HaeLaitekaappi" type="tns:HaeLaitekaappi"/>
+  <xs:element name="HaeLaitekaappiResponse" type="tns:HaeLaitekaappiResponse"/>
+  <xs:element name="HaePylvaanTietoliikennelaitteet" type="tns:HaePylvaanTietoliikennelaitteet"/>
+  <xs:element name="HaePylvaanTietoliikennelaitteetResponse" type="tns:HaePylvaanTietoliikennelaitteetResponse"/>
+  <xs:element name="HaePylvas" type="tns:HaePylvas"/>
+  <xs:element name="HaePylvasResponse" type="tns:HaePylvasResponse"/>
+  <xs:element name="HaeTietoliikennalaite" type="tns:HaeTietoliikennalaite"/>
+  <xs:element name="HaeTietoliikennalaiteResponse" type="tns:HaeTietoliikennalaiteResponse"/>
+  <xs:complexType name="HaeLaitekaapinTietoliikennelaitteet">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeLaitekaapinTietoliikennelaitteetResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laitekaapinTietoliikennelaitteet" type="tns:tietoliikennelaite"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tietoliikennelaite">
+    <xs:complexContent>
+      <xs:extension base="tns:laite">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="laiteMAC" type="xs:string"/>
+          <xs:element minOccurs="0" name="laiteMalli" type="xs:string"/>
+          <xs:element minOccurs="0" name="laiteTyyppi" type="xs:string"/>
+          <xs:element minOccurs="0" name="laitekaappiId" type="xs:long"/>
+          <xs:element minOccurs="0" name="pylvasId" type="xs:long"/>
+          <xs:element minOccurs="0" name="yhteysKatuosoite" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysKorkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="yhteysLatitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="yhteysLongitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="yhteysMuunninMalli" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysReititinMalli" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysSopimusnumero" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysToimittaja" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysTyyppi" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" name="laite">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="kuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" name="nimi" type="xs:string"/>
+          <xs:element minOccurs="0" name="takuunPaattymisPvm" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" name="pojo">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="HaeLaitekaappi">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeLaitekaappiResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="laitekaappi" type="tns:laitekaappi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="laitekaappi">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteSijainnilla">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ajoOhje" type="xs:string"/>
+          <xs:element minOccurs="0" name="alkamisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="avaimenSarjoitus" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="etaresetointi" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="etaresetointiKuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" name="etaresetointiNumero" type="xs:string"/>
+          <xs:element minOccurs="0" name="etaresetointiTyyppi" type="xs:string"/>
+          <xs:element minOccurs="0" name="huoltolevikkeenEtaisyys" type="xs:int"/>
+          <xs:element minOccurs="0" name="ipLuokka" type="xs:string"/>
+          <xs:element minOccurs="0" name="kunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="kuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="kuvausKunto" type="xs:string"/>
+          <xs:element minOccurs="0" name="kuvausSahkonsyotto" type="xs:string"/>
+          <xs:element minOccurs="0" name="lammitin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="lammittimenTeho" type="xs:int"/>
+          <xs:element minOccurs="0" name="lampoeristys" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="lisatieto" type="xs:string"/>
+          <xs:element minOccurs="0" name="liviId" type="xs:string"/>
+          <xs:element minOccurs="0" name="lukitus" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="lukkotyyppi" type="xs:string"/>
+          <xs:element minOccurs="0" name="maadoituselektrodi" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="maakunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="maakuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="materiaali" type="xs:string"/>
+          <xs:element minOccurs="0" name="merkinnat" type="xs:string"/>
+          <xs:element minOccurs="0" name="paattymisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="pistorasioita" type="xs:int"/>
+          <xs:element minOccurs="0" name="pylvasId" type="xs:long"/>
+          <xs:element minOccurs="0" name="riittavaHuoltolevike" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="sahkonsyotto" type="tns:sahkonsyotto"/>
+          <xs:element minOccurs="0" name="sasHyvaAsennustapa" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="sasPuutteet" type="xs:string"/>
+          <xs:element minOccurs="0" name="sasStandardinMukainen" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="suojattuAurauslumelta" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="synkronoituTierekisteriin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="termostaatinLukema" type="xs:int"/>
+          <xs:element minOccurs="0" name="termostaatti" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="tukevaKiinnitys" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="tuuletin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="tyyppi" type="xs:string"/>
+          <xs:element minOccurs="0" name="ukkosenjohdin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="ukkosenjohdinEriMaa" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="valmistusvuosi" type="xs:int"/>
+          <xs:element minOccurs="0" name="vikavirtasuojaKoko" type="xs:int"/>
+          <xs:element minOccurs="0" name="vikavirtasuojaus" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="yjs" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="yjsSinkkioksidi" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="yjsTaso" type="xs:int"/>
+          <xs:element minOccurs="0" name="yjsTietoliikenne" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="yjsVirrankesto" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" name="laiteSijainnilla">
+    <xs:complexContent>
+      <xs:extension base="tns:laite">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoite"/>
+          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="sahkonsyotto">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="katuosoite" type="xs:string"/>
+          <xs:element minOccurs="0" name="kayttopaikanNumero" type="xs:string"/>
+          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="sopimusnumero" type="xs:string"/>
+          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoite"/>
+          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
+          <xs:element minOccurs="0" name="toimittaja" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="tieosoite">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ajorata" type="xs:int"/>
+          <xs:element minOccurs="0" name="etaisyysTieosanAlusta" type="xs:int"/>
+          <xs:element minOccurs="0" name="puoli" type="xs:int"/>
+          <xs:element minOccurs="0" name="tienHoitoluokka" type="xs:string"/>
+          <xs:element minOccurs="0" name="tienumero" type="xs:int"/>
+          <xs:element minOccurs="0" name="tieosa" type="xs:int"/>
+          <xs:element minOccurs="0" name="urakkaAlue" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="HaePylvaanTietoliikennelaitteet">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaePylvaanTietoliikennelaitteetResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="pylvaanTietoliikennelaitteet" type="tns:tietoliikennelaite"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiTietoliikennalaitteet">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiTietoliikennalaitteetResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="tietoliikennalaitteet" type="tns:tietoliikennelaite"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeTietoliikennalaite">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeTietoliikennalaiteResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="tietoliikennalaite" type="tns:tietoliikennelaite"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiLaitekaapit">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiLaitekaapitResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laitekaapit" type="tns:laitekaappi"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiPylvaat">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="HaeKaikkiPylvaatResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="pylvaat" type="tns:pylvas"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="pylvas">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteSijainnilla">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="alkamisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="heikennetty" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="htaso" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="htasoKiinRiittava" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="huoltolevikkeenEtaisyys" type="xs:int"/>
+          <xs:element minOccurs="0" name="kiipeamisEsteet" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="kiivettava" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="kunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="kuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="lisatieto" type="xs:string"/>
+          <xs:element minOccurs="0" name="liviId" type="xs:string"/>
+          <xs:element minOccurs="0" name="maadoitettu" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="maakunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="maakuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="paattymisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="perustustenKuntoHyva" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="puutteet" type="xs:string"/>
+          <xs:element minOccurs="0" name="pylvaanKuntoHyva" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="riittavaHuoltolevike" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="synkronoituTierekisteriin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="turvakisko" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="tyyppi" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="HaePylvas">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HaePylvasResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="pylvas" type="tns:pylvas"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LaiteinfraMetatiedotException" type="tns:LaiteinfraMetatiedotException"/>
+  <xs:complexType name="LaiteinfraMetatiedotException">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="HaeLaitekaappi">
+    <wsdl:part name="parameters" element="tns:HaeLaitekaappi">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaePylvaanTietoliikennelaitteet">
+    <wsdl:part name="parameters" element="tns:HaePylvaanTietoliikennelaitteet">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaePylvasResponse">
+    <wsdl:part name="parameters" element="tns:HaePylvasResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiPylvaatResponse">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiPylvaatResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaePylvaanTietoliikennelaitteetResponse">
+    <wsdl:part name="parameters" element="tns:HaePylvaanTietoliikennelaitteetResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeLaitekaappiResponse">
+    <wsdl:part name="parameters" element="tns:HaeLaitekaappiResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeLaitekaapinTietoliikennelaitteetResponse">
+    <wsdl:part name="parameters" element="tns:HaeLaitekaapinTietoliikennelaitteetResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeLaitekaapinTietoliikennelaitteet">
+    <wsdl:part name="parameters" element="tns:HaeLaitekaapinTietoliikennelaitteet">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiTietoliikennalaitteet">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiTietoliikennalaitteet">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiTietoliikennalaitteetResponse">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiTietoliikennalaitteetResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeTietoliikennalaite">
+    <wsdl:part name="parameters" element="tns:HaeTietoliikennalaite">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="LaiteinfraMetatiedotException">
+    <wsdl:part name="LaiteinfraMetatiedotException" element="tns:LaiteinfraMetatiedotException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeTietoliikennalaiteResponse">
+    <wsdl:part name="parameters" element="tns:HaeTietoliikennalaiteResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiLaitekaapitResponse">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiLaitekaapitResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiLaitekaapit">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiLaitekaapit">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeKaikkiPylvaat">
+    <wsdl:part name="parameters" element="tns:HaeKaikkiPylvaat">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaePylvas">
+    <wsdl:part name="parameters" element="tns:HaePylvas">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="LaiteinfraMetatiedot">
+    <wsdl:operation name="HaeLaitekaapinTietoliikennelaitteet">
+      <wsdl:input name="HaeLaitekaapinTietoliikennelaitteet" message="tns:HaeLaitekaapinTietoliikennelaitteet">
+    </wsdl:input>
+      <wsdl:output name="HaeLaitekaapinTietoliikennelaitteetResponse" message="tns:HaeLaitekaapinTietoliikennelaitteetResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HaeLaitekaappi">
+      <wsdl:input name="HaeLaitekaappi" message="tns:HaeLaitekaappi">
+    </wsdl:input>
+      <wsdl:output name="HaeLaitekaappiResponse" message="tns:HaeLaitekaappiResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaePylvaanTietoliikennelaitteet">
+      <wsdl:input name="HaePylvaanTietoliikennelaitteet" message="tns:HaePylvaanTietoliikennelaitteet">
+    </wsdl:input>
+      <wsdl:output name="HaePylvaanTietoliikennelaitteetResponse" message="tns:HaePylvaanTietoliikennelaitteetResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiTietoliikennalaitteet">
+      <wsdl:input name="HaeKaikkiTietoliikennalaitteet" message="tns:HaeKaikkiTietoliikennalaitteet">
+    </wsdl:input>
+      <wsdl:output name="HaeKaikkiTietoliikennalaitteetResponse" message="tns:HaeKaikkiTietoliikennalaitteetResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeTietoliikennalaite">
+      <wsdl:input name="HaeTietoliikennalaite" message="tns:HaeTietoliikennalaite">
+    </wsdl:input>
+      <wsdl:output name="HaeTietoliikennalaiteResponse" message="tns:HaeTietoliikennalaiteResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiLaitekaapit">
+      <wsdl:input name="HaeKaikkiLaitekaapit" message="tns:HaeKaikkiLaitekaapit">
+    </wsdl:input>
+      <wsdl:output name="HaeKaikkiLaitekaapitResponse" message="tns:HaeKaikkiLaitekaapitResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiPylvaat">
+      <wsdl:input name="HaeKaikkiPylvaat" message="tns:HaeKaikkiPylvaat">
+    </wsdl:input>
+      <wsdl:output name="HaeKaikkiPylvaatResponse" message="tns:HaeKaikkiPylvaatResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaePylvas">
+      <wsdl:input name="HaePylvas" message="tns:HaePylvas">
+    </wsdl:input>
+      <wsdl:output name="HaePylvasResponse" message="tns:HaePylvasResponse">
+    </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException" message="tns:LaiteinfraMetatiedotException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LaiteinfraMetatiedotServiceSoapBinding" type="tns:LaiteinfraMetatiedot">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="HaeLaitekaapinTietoliikennelaitteet">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeLaitekaapinTietoliikennelaitteet">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeLaitekaapinTietoliikennelaitteetResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HaeLaitekaappi">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeLaitekaappi">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeLaitekaappiResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaePylvaanTietoliikennelaitteet">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaePylvaanTietoliikennelaitteet">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaePylvaanTietoliikennelaitteetResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiTietoliikennalaitteet">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeKaikkiTietoliikennalaitteet">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeKaikkiTietoliikennalaitteetResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeTietoliikennalaite">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeTietoliikennalaite">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeTietoliikennalaiteResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiLaitekaapit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeKaikkiLaitekaapit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeKaikkiLaitekaapitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaeKaikkiPylvaat">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeKaikkiPylvaat">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeKaikkiPylvaatResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="HaePylvas">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaePylvas">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaePylvasResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="LaiteinfraMetatiedotException">
+        <soap:fault name="LaiteinfraMetatiedotException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LaiteinfraMetatiedotService">
+    <wsdl:port name="LaiteinfraMetatiedotPort" binding="tns:LaiteinfraMetatiedotServiceSoapBinding">
+      <soap:address location="LAITE_METADATA_WS_URL"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

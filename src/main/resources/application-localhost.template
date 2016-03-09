@@ -10,7 +10,9 @@ spring.datasource.password=<password>
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 spring.datasource.validationQuery=SELECT 1 FROM DUAL
 
-metadata.server.address=<address>
+metadata.server.address.lam=<address>
+metadata.server.address.camera=<address>
+metadata.server.address.weather=<address>
 
-logging.file=digitraffic-metadata.log
-logging.level.fi.livi.digitraffic.tie=INFO
+logging.file=digitraffic-metadata
+logging.level.root=INFO

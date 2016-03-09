@@ -4,12 +4,11 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-
 import fi.livi.digitraffic.tie.wsdl.lam.HaeKaikkiLAMAsemat;
 import fi.livi.digitraffic.tie.wsdl.lam.HaeKaikkiLAMAsematResponse;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 import fi.livi.digitraffic.tie.wsdl.lam.ObjectFactory;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 public class LamStationClient extends WebServiceGatewaySupport {
     private String address;

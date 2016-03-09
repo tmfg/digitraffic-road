@@ -2,12 +2,15 @@ package fi.livi.digitraffic.tie.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import fi.livi.digitraffic.tie.converter.RoadStationTypeConverter;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -22,7 +25,8 @@ public class RoadStation {
 
     private String name;
 
-    private int type;
+    @Convert(converter = RoadStationTypeConverter.class)
+    private RoadStationType type;
 
     private boolean obsolete;
 
@@ -30,9 +34,27 @@ public class RoadStation {
 
     private String nameFi, nameSe, nameEn;
 
-    private BigDecimal latitude, longitude, elevation;
+    private BigDecimal latitude, longitude, altitude;
 
-    private int roadNumber, roadPart, distance;
+    private Integer roadNumber;
+
+    private Integer roadPart;
+
+    private Integer distance;
+
+    private Integer collectionInterval;
+
+    private CollectionStatus collectionStatus;
+
+    private String municipality;
+
+    private String municipalityCode;
+
+    private String province;
+
+    private String provinceCode;
+
+    private String description;
 
     public long getId() {
         return id;
@@ -58,11 +80,11 @@ public class RoadStation {
         this.name = name;
     }
 
-    public int getType() {
+    public RoadStationType getType() {
         return type;
     }
 
-    public void setType(final int type) {
+    public void setType(final RoadStationType type) {
         this.type = type;
     }
 
@@ -122,12 +144,12 @@ public class RoadStation {
         this.longitude = longitude;
     }
 
-    public BigDecimal getElevation() {
-        return elevation;
+    public BigDecimal getAltitude() {
+        return altitude;
     }
 
-    public void setElevation(final BigDecimal elevation) {
-        this.elevation = elevation;
+    public void setAltitude(final BigDecimal altitude) {
+        this.altitude = altitude;
     }
 
     public void obsolete() {
@@ -135,27 +157,83 @@ public class RoadStation {
         obsolete = true;
     }
 
-    public int getRoadNumber() {
+    public Integer getRoadNumber() {
         return roadNumber;
     }
 
-    public void setRoadNumber(final int roadNumber) {
+    public void setRoadNumber(final Integer roadNumber) {
         this.roadNumber = roadNumber;
     }
 
-    public int getRoadPart() {
+    public Integer getRoadPart() {
         return roadPart;
     }
 
-    public void setRoadPart(final int roadPart) {
+    public void setRoadPart(final Integer roadPart) {
         this.roadPart = roadPart;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public void setDistance(final int distance) {
+    public void setDistance(final Integer distance) {
         this.distance = distance;
+    }
+
+    public Integer getCollectionInterval() {
+        return collectionInterval;
+    }
+
+    public void setCollectionInterval(Integer collectionInterval) {
+        this.collectionInterval = collectionInterval;
+    }
+
+    public CollectionStatus getCollectionStatus() {
+        return collectionStatus;
+    }
+
+    public void setCollectionStatus(CollectionStatus collectionStatus) {
+        this.collectionStatus = collectionStatus;
+    }
+
+    public String getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
+    }
+
+    public String getMunicipalityCode() {
+        return municipalityCode;
+    }
+
+    public void setMunicipalityCode(String municipalityCode) {
+        this.municipalityCode = municipalityCode;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

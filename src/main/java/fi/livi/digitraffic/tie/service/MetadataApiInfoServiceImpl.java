@@ -1,12 +1,15 @@
 package fi.livi.digitraffic.tie.service;
 
 import fi.livi.digitraffic.tie.documentation.MetadataApiInfo;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import springfox.documentation.service.ApiInfo;
 
 @Service
 public class MetadataApiInfoServiceImpl implements MetadataApiInfoService {
+
+    private static final Logger LOG = Logger.getLogger(MetadataApiInfoServiceImpl.class);
 
     private final MessageService messageService;
 

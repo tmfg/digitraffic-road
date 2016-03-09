@@ -1,0 +1,6 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:HaeKaikkiKamerat/>
+   </soapenv:Body>
+</soapenv:Envelope>

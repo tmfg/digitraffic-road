@@ -30,7 +30,7 @@ Download Oracle JDBC driver and add it to your local Maven repository.
 
 
 ### Build project
- 
+
 	$ mvn clean install
 
 ### Running the application
@@ -45,3 +45,8 @@ Or build the JAR file with:
  
  	$ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
 
+### Misc
+
+To compile Java-classes from wsdl:s run command
+
+    $ mvn jaxb2:generate

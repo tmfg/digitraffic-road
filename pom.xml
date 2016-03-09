@@ -221,6 +221,64 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>3.1.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${project.build.directory}/generated-sources/xjc</sourceRoot>
+                            <wsdlOptions>
+
+                                <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/LAMMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/LAMMetatiedot.wsdl</wsdl>-->
+                                    <extraargs>
+                                        <!-- Generate package per targetNamespace in wsdl -->
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06=fi.livi.digitraffic.tie.wsdl.lam</extraarg>
+                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29=fi.livi.digitraffic.tie.wsdl.lam</extraarg>-->
+                                    </extraargs>
+                                </wsdlOption>
+
+                                <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/KameraMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/KameraMetatiedot.wsdl</wsdl>-->
+                                    <extraargs>
+                                        <!-- Generate package per targetNamespace in wsdl -->
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06=fi.livi.digitraffic.tie.wsdl.kamera</extraarg>
+                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29=fi.livi.digitraffic.tie.wsdl.kamera</extraarg>-->
+                                    </extraargs>
+                                </wsdlOption>
+
+                                <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
+                                <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/TiesaaMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/TiesaaMetatiedot.wsdl</wsdl>-->
+                                    <extraargs>
+                                        <!-- Generate package per targetNamespace in wsdl -->
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06=fi.livi.digitraffic.tie.wsdl.tiesaa</extraarg>
+                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29=fi.livi.digitraffic.tie.wsdl.tiesaa</extraarg>-->
+                                    </extraargs>
+                                </wsdlOption>
+
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+<!--            <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.12.3</version>
@@ -236,11 +294,12 @@
                     <generatePackage>fi.livi.digitraffic.tie.wsdl.lam</generatePackage>
                     <schemas>
                         <schema>
-                            <url>src/main/resources/wsdl/LAMMetatiedot.wsdl</url>
+                            <url>src/main/resources/wsdl/20140306/LAMMetatiedot.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
-            </plugin>
+            </plugin>-->
+
         </plugins>
     </build>
 </project>
