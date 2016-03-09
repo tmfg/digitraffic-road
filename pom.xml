@@ -29,11 +29,6 @@
            -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
          OR add repository that contains OJDBC-driver -->
     <repositories>
-        <repository>
-            <id>jcenter-snapshots</id>
-            <name>jcenter</name>
-            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
-        </repository>
         <!-- PLACEHOLDER -->
     </repositories>
 
@@ -91,14 +86,12 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <!-- use 2.3.2 version when relased -->
-            <version>2.3.2-SNAPSHOT</version>
+            <version>2.4.0</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <!-- use 2.3.2 version when relased -->
-            <version>2.3.2-SNAPSHOT</version>
+            <version>2.4.0</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
