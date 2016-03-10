@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.conf;
 
 import fi.livi.digitraffic.tie.service.camera.CameraClient;
 import fi.livi.digitraffic.tie.service.lam.LamStationClient;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 @Configuration
 public class MetadataMarshallerConfiguration {
+
+    private static final Logger LOG = Logger.getLogger(MetadataMarshallerConfiguration.class);
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -26,12 +30,17 @@ public class MetadataMarshallerConfiguration {
                                              @Value("${metadata.server.address.lam}")
                                              final String metadataServerAddress) {
 
-        final LamStationClient client = new LamStationClient();
-        client.setAddress(metadataServerAddress);
-        client.setMarshaller(marshaller);
-        client.setUnmarshaller(marshaller);
+        if ( StringUtils.isNotBlank(metadataServerAddress) &&
+             !"${metadata.server.address.lam}".equals(metadataServerAddress) ) {
+            final LamStationClient client = new LamStationClient();
+            client.setAddress(metadataServerAddress);
+            client.setMarshaller(marshaller);
+            client.setUnmarshaller(marshaller);
 
-        return client;
+            return client;
+        }
+        LOG.warn("Not creating bean: " + LamStationClient.class + " because property metadata.server.address.lam was not set.");
+        return null;
     }
 
     @Bean
@@ -39,11 +48,16 @@ public class MetadataMarshallerConfiguration {
                                      @Value("${metadata.server.address.camera}")
                                      final String cameraMetadataServerAddress) {
 
-        final CameraClient client = new CameraClient();
-        client.setAddress(cameraMetadataServerAddress);
-        client.setMarshaller(marshaller);
-        client.setUnmarshaller(marshaller);
+        if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&
+             !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
+            final CameraClient client = new CameraClient();
+            client.setAddress(cameraMetadataServerAddress);
+            client.setMarshaller(marshaller);
+            client.setUnmarshaller(marshaller);
 
-        return client;
+            return client;
+        }
+        LOG.warn("Not creating bean: " + CameraClient.class + " because property metadata.server.address.camera was not set.");
+        return null;
     }
 }

@@ -27,6 +27,12 @@ public class CameraUpdater {
     @Transactional
     public void updateLamStations() {
         LOG.info("updateCameras start");
+
+        if (cameraClient == null) {
+            LOG.warn("Not updating camera metadatas because no cameraClient defined");
+            return;
+        }
+
         final List<Kamera> cameras = cameraClient.getCameras();
 
         if (LOG.isDebugEnabled()) {

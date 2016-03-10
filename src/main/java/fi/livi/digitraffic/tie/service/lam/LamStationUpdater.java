@@ -56,6 +56,12 @@ public class LamStationUpdater {
     @Transactional
     public void updateLamStations() {
         LOG.info("updateLamStations start");
+
+        if (lamStationClient == null) {
+            LOG.warn("Not updating lam stations because no lamStationClient defined");
+            return;
+        }
+
         final List<LamAsema> stations = lamStationClient.getLamStations();
 
         if (LOG.isDebugEnabled()) {
