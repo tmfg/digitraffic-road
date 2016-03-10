@@ -7,6 +7,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.model.LamStation;
 import fi.livi.digitraffic.tie.model.RoadDistrict;
 import fi.livi.digitraffic.tie.model.RoadStation;
@@ -16,17 +24,9 @@ import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LamStationUpdater {
-
     private static final Logger LOG = Logger.getLogger(LamStationUpdater.class);
 
     private final RoadStationService roadStationService;
@@ -36,8 +36,7 @@ public class LamStationUpdater {
 
     private final LamStationClient lamStationClient;
 
-    private static EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
-
+    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     @Autowired
     public LamStationUpdater(final RoadStationService roadStationService,
