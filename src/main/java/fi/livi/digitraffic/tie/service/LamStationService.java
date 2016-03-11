@@ -3,8 +3,9 @@ package fi.livi.digitraffic.tie.service;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.model.LamStation;
 import org.geojson.FeatureCollection;
+
+import fi.livi.digitraffic.tie.model.LamStation;
 
 public interface LamStationService {
 
@@ -13,7 +14,7 @@ public interface LamStationService {
      */
     FeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection();
 
-    LamStation save(LamStation lamStation);
+    LamStation save(final LamStation lamStation);
 
     List<LamStation> findAll();
 
