@@ -21,6 +21,8 @@ public class RoadStationSensor {
 
     private String name;
 
+    private String unit;
+
     @JsonIgnore
     private boolean obsolete;
 
@@ -65,5 +67,13 @@ public class RoadStationSensor {
 
     public void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(final String unit) {
+        this.unit = unit;
     }
 }
