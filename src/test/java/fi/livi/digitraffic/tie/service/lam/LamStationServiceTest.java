@@ -36,8 +36,8 @@ public class LamStationServiceTest {
     }
 
     @Test
-    public void testGetAllLamStationsMappedByByNaturalId() {
-        final Map<Long, LamStation> stations = lamStationService.getAllLamStationsMappedByByNaturalId();
+    public void testFindAllLamStationsMappedByByNaturalId() {
+        final Map<Long, LamStation> stations = lamStationService.findAllLamStationsMappedByByNaturalId();
         Assert.assertEquals(454, stations.size());
     }
 
