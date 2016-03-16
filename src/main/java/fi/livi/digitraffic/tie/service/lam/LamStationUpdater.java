@@ -7,14 +7,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import fi.livi.digitraffic.tie.model.LamStation;
 import fi.livi.digitraffic.tie.model.RoadDistrict;
 import fi.livi.digitraffic.tie.model.RoadStation;
@@ -24,6 +16,13 @@ import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LamStationUpdater {
@@ -71,7 +70,7 @@ public class LamStationUpdater {
             }
         }
 
-        final Map<Long, LamStation> currentStations = lamStationService.getAllLamStationsMappedByByNaturalId();
+        final Map<Long, LamStation> currentStations = lamStationService.findAllLamStationsMappedByByNaturalId();
 
         final boolean updateStaticDataStatus = updateLamStations(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);
@@ -161,16 +160,12 @@ public class LamStationUpdater {
     private static LamStation createLamStation(final LamAsema la, final RoadStation newRoadStation, final RoadDistrict roadDistrict) {
         final LamStation ls = new LamStation();
 
-        ls.setNaturalId(convertToLamNaturalId(la.getVanhaId()));
-        ls.setName(la.getNimiFi());
-        ls.setObsolete(false);
-        ls.setObsoleteDate(null);
+        updateLamStationAttributes(la, newRoadStation, roadDistrict, ls);
+
         ls.setSummerFreeFlowSpeed1(0);
         ls.setSummerFreeFlowSpeed2(0);
         ls.setWinterFreeFlowSpeed1(0);
         ls.setWinterFreeFlowSpeed2(0);
-        ls.setRoadDistrict(roadDistrict);
-        ls.setRoadStation(newRoadStation);
 
         return ls;
     }
@@ -181,30 +176,42 @@ public class LamStationUpdater {
             final LamAsema la = pair.getLeft();
             final LamStation ls = pair.getRight();
 
-            LOG.debug("updating station " + la.getNimi());
-
-            ls.setObsolete(false);
-            ls.setObsoleteDate(null);
-            ls.setName(la.getNimi());
-            ls.setDirection1Municipality(la.getSuunta1Kunta());
-            ls.setDirection1MunicipalityCode(la.getSuunta1KuntaKoodi());
-            ls.setDirection2Municipality(la.getSuunta2Kunta());
-            ls.setDirection2MunicipalityCode(la.getSuunta2KuntaKoodi());
+            LOG.debug("Updating LAM station " + la.getNimi());
 
             Integer roadNaturalId = la.getTieosoite().getTienumero();
             Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
             RoadDistrict rd = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
             if (rd == null) {
                 LOG.warn("LamStation update: Could not find RoadDistrict for LAM station (" + convertToLamNaturalId(la.getVanhaId()) + ") " + la.getNimi() + " current Road District: " + ls.getRoadDistrict().getNaturalId() + " with roadSectionNaturalId " + roadSectionNaturalId + " vs old: " + ls.getRoadStation().getRoadPart() + ", roadNaturalId: " + roadNaturalId + " vs old: " + ls.getRoadStation().getRoadNumber());
+                rd = ls.getRoadDistrict();
             } else {
                 if (ls.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
                     LOG.info("Update LAM station (" + convertToLamNaturalId(la.getVanhaId()) + ") " + la.getNimi() + " road district " + ls.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
-                    ls.setRoadDistrict(rd);
                 }
             }
 
             updateRoadStationAttributes(la, ls.getRoadStation());
+            updateLamStationAttributes(la, rd, ls);
         }
+    }
+
+    private static void updateLamStationAttributes(final LamAsema la, RoadDistrict roadDistrict, final LamStation ls) {
+        updateLamStationAttributes(la, ls.getRoadStation(), roadDistrict, ls);
+    }
+    private static void updateLamStationAttributes(final LamAsema la, RoadStation newRoadStation, RoadDistrict roadDistrict, final LamStation ls) {
+
+        ls.setNaturalId(convertToLamNaturalId(la.getVanhaId()));
+        ls.setLotjuId(la.getId());
+        ls.setObsolete(false);
+        ls.setObsoleteDate(null);
+        ls.setName(la.getNimi());
+        ls.setDirection1Municipality(la.getSuunta1Kunta());
+        ls.setDirection1MunicipalityCode(la.getSuunta1KuntaKoodi());
+        ls.setDirection2Municipality(la.getSuunta2Kunta());
+        ls.setDirection2MunicipalityCode(la.getSuunta2KuntaKoodi());
+
+        ls.setRoadDistrict(roadDistrict);
+        ls.setRoadStation(newRoadStation);
     }
 
     private static void updateRoadStationAttributes(final LamAsema la, final RoadStation rs) {

@@ -19,7 +19,7 @@ public class RoadStation {
     @Id
     @SequenceGenerator(name = "RS_SEQ", sequenceName = "SEQ_ROAD_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")
-    private long id;
+    private Long id;
 
     private long naturalId;
 
@@ -56,11 +56,11 @@ public class RoadStation {
 
     private String description;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

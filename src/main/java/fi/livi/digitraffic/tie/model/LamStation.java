@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "lamstation", attributeNodes = @NamedAttributeNode("roadStation"))
+@NamedEntityGraph(name = "lamStation", attributeNodes = {@NamedAttributeNode("roadStation"), @NamedAttributeNode("roadDistrict")})
 public class LamStation {
     @Id
     @SequenceGenerator(name = "LS_SEQ", sequenceName = "SEQ_LAM_STATION")
@@ -27,6 +28,8 @@ public class LamStation {
     private long id;
 
     private long naturalId;
+
+    private Long lotjuId;
 
     private String name;
 
@@ -58,13 +61,13 @@ public class LamStation {
 
     @ManyToOne
     @JoinColumn(name="road_district_id", nullable = false)
+    @Fetch(FetchMode.JOIN)
     private RoadDistrict roadDistrict;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
-
 
     public long getId() {
         return id;
@@ -80,6 +83,14 @@ public class LamStation {
 
     public void setNaturalId(final long naturalId) {
         this.naturalId = naturalId;
+    }
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
     }
 
     public String getName() {
@@ -141,7 +152,6 @@ public class LamStation {
     public void obsolete() {
         obsoleteDate = LocalDate.now();
         obsolete = true;
-
         roadStation.obsolete();
     }
 
