@@ -23,6 +23,6 @@ public class RoadStationSensorServiceTest {
     @Test
     public void testFindAllNonObsoleteRoadStationSensors() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors();
-        Assert.assertEquals(22, sensors.size());
+        Assert.assertEquals(58, sensors.size());
     }
 }
