@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service;
 
+import java.util.List;
+
 import fi.livi.digitraffic.tie.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStation;
@@ -51,9 +53,17 @@ public class RoadStationServiceImpl implements RoadStationService {
         return rs;
     }
 
-    @Transactional
     @Override
     public RoadStation save(RoadStation roadStation) {
-        return roadStationRepository.save(roadStation);
+        RoadStation value = roadStationRepository.save(roadStation);
+        roadStationRepository.flush();
+        return value;
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoadStation> findByType(RoadStationType type) {
+        return roadStationRepository.findByType(type);
     }
 }

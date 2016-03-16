@@ -3,9 +3,8 @@ package fi.livi.digitraffic.tie.service;
 import java.util.List;
 import java.util.Map;
 
-import org.geojson.FeatureCollection;
-
 import fi.livi.digitraffic.tie.model.LamStation;
+import org.geojson.FeatureCollection;
 
 public interface LamStationService {
 
@@ -18,5 +17,5 @@ public interface LamStationService {
 
     List<LamStation> findAll();
 
-    Map<Long, LamStation> getAllLamStationsMappedByByNaturalId();
+    Map<Long, LamStation> findAllLamStationsMappedByByNaturalId();
 }
