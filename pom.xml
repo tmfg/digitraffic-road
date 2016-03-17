@@ -135,7 +135,7 @@
                     </formats>
                     <instrumentation>
                         <excludes>
-                            <exclude>**/fi/livi/digitraffic/tie/wsdl/*.class</exclude>
+                            <exclude>fi/livi/digitraffic/tie/wsdl/**/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
