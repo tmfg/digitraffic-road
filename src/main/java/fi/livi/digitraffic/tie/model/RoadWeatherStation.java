@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +11,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
+import fi.livi.digitraffic.tie.converter.RoadWeatherStationTypeConverter;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,16 +20,17 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "roadWeatherStation", attributeNodes = @NamedAttributeNode("roadStation"))
-public class RoadWeatherStation {
+public class RoadWeatherStation implements Stringifiable {
 
     @Id
     @SequenceGenerator(name = "RWS_SEQ", sequenceName = "SEQ_ROAD_WEATHER_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RWS_SEQ")
     private long id;
 
-    private long naturalId;
-
     private Long lotjuId;
+
+    @Convert(converter = RoadWeatherStationTypeConverter.class)
+    private RoadWeatherStationType roadWeatherStationType;
 
     @OneToOne
     @JoinColumn(name="road_station_id", nullable = false)
@@ -39,14 +43,6 @@ public class RoadWeatherStation {
 
     public void setId(final long id) {
         this.id = id;
-    }
-
-    public long getNaturalId() {
-        return naturalId;
-    }
-
-    public void setNaturalId(final long naturalId) {
-        this.naturalId = naturalId;
     }
 
     public Long getLotjuId() {
@@ -63,5 +59,35 @@ public class RoadWeatherStation {
 
     public void setRoadStation(RoadStation roadStation) {
         this.roadStation = roadStation;
+    }
+
+    public boolean obsolete() {
+        return roadStation.obsolete();
+    }
+
+    public RoadWeatherStationType getRoadWeatherStationType() {
+        return roadWeatherStationType;
+    }
+
+    public void setRoadWeatherStationType(RoadWeatherStationType roadWeatherStationType) {
+        this.roadWeatherStationType = roadWeatherStationType;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("lotjuId", this.getLotjuId())
+                .appendField("roadStationId", getRoadStationId())
+                .appendField("roadStationNaturalId", getRoadStationNaturalId())
+                .toString();
+    }
+
+    public Long getRoadStationId() {
+        return roadStation != null ? roadStation.getId() : null;
+    }
+
+    public Long getRoadStationNaturalId() {
+        return roadStation != null ? roadStation.getNaturalId() : null;
     }
 }

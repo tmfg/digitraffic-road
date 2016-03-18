@@ -11,11 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 import fi.livi.digitraffic.tie.converter.RoadStationTypeConverter;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @DynamicUpdate
-public class RoadStation {
+public class RoadStation implements Stringifiable {
     @Id
     @SequenceGenerator(name = "RS_SEQ", sequenceName = "SEQ_ROAD_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")
@@ -152,9 +153,15 @@ public class RoadStation {
         this.altitude = altitude;
     }
 
-    public void obsolete() {
-        obsoleteDate = LocalDate.now();
-        obsolete = true;
+    /**
+     * @return true if state changed
+     */
+    public boolean obsolete() {
+        if (obsoleteDate == null || !obsolete) {
+            obsoleteDate = LocalDate.now();
+            obsolete = true;
+        }
+        return false;
     }
 
     public Integer getRoadNumber() {
@@ -236,4 +243,14 @@ public class RoadStation {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("naturalId", getNaturalId())
+                .appendField("name", getName())
+                .toString();
+    }
+
 }

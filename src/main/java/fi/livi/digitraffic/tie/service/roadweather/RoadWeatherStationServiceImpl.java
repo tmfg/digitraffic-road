@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.roadweather;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +28,14 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         List<RoadWeatherStation> all = roadWeatherStationRepository.findAll();
         for (RoadWeatherStation roadWeatherStation : all) {
             map.put(roadWeatherStation.getLotjuId(), roadWeatherStation);
-
         }
         return map;
     }
 
+    @Override
+    public RoadWeatherStation save(RoadWeatherStation roadWeatherStation) {
+        RoadWeatherStation rws = roadWeatherStationRepository.save(roadWeatherStation);
+        roadWeatherStationRepository.flush();
+        return rws;
+    }
 }

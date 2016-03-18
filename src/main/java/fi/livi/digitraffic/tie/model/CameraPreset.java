@@ -13,6 +13,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.SequenceGenerator;
 
 import fi.livi.digitraffic.tie.converter.CameraTypeConverter;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -20,7 +22,9 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "camera", attributeNodes = @NamedAttributeNode("roadStation"))
-public class CameraPreset {
+public class CameraPreset implements Stringifiable {
+
+    private static final Logger log = Logger.getLogger(CameraPreset.class);
 
     @Id
     @SequenceGenerator(name = "SEQ_CAMERA_PRESET", sequenceName = "SEQ_CAMERA_PRESET")
@@ -239,10 +243,15 @@ public class CameraPreset {
         this.nearestRoadWeatherStation = nearestRoadWeatherStation;
     }
 
-    public void obsolete() {
-        if (roadStation != null) {
-            roadStation.obsolete();
+    /**
+     * @return true if state changed
+     */
+    public boolean obsolete() {
+        if (roadStation == null) {
+            log.error("Cannot obsolete " + toString() + " with null roadstation");
+            return false;
         }
+        return roadStation.obsolete();
     }
 
     public boolean isPublicInternal() {
@@ -252,4 +261,23 @@ public class CameraPreset {
     public void setPublicInternal(boolean publicInternal) {
         this.publicInternal = publicInternal;
     }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("lotjuId", this.getLotjuId())
+                .appendField("roadStationId", getRoadStationId())
+                .appendField("roadStationNaturalId", getRoadStationNaturalId())
+                .toString();
+    }
+
+    public Long getRoadStationId() {
+        return roadStation != null ? roadStation.getId() : null;
+    }
+
+    public Long getRoadStationNaturalId() {
+        return roadStation != null ? roadStation.getNaturalId() : null;
+    }
+
 }
