@@ -30,10 +30,6 @@ public class CameraClient extends WebServiceGatewaySupport {
         this.address = address;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public List<Kamera> getKameras() {
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();

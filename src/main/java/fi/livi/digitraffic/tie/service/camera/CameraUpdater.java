@@ -63,9 +63,6 @@ public class CameraUpdater {
         if (cameraClient == null) {
             log.warn("Not updating cameraPresets metadatas because no cameraClient defined");
             return;
-        } else if ( cameraClient.getAddress() != null ) {
-            log.warn("Not updating cameraPresets metadatas because no cameraClient address is not defined");
-            return;
         }
 
         List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
