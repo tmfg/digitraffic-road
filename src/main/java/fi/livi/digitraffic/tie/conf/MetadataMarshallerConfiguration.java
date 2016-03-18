@@ -30,9 +30,10 @@ public class MetadataMarshallerConfiguration {
     public LamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
                                              @Value("${metadata.server.address.lam}")
                                              final String lamMetadataServerAddress) {
-
+        LOG.info("metadata.server.address.lam: " + lamMetadataServerAddress);
         if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
              !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
+            LOG.info("Creating LamStationClient");
             final LamStationClient client = new LamStationClient();
             client.setAddress(lamMetadataServerAddress);
             client.setMarshaller(marshaller);
@@ -49,8 +50,10 @@ public class MetadataMarshallerConfiguration {
                                      @Value("${metadata.server.address.camera}")
                                      final String cameraMetadataServerAddress) {
 
+        LOG.info("metadata.server.address.camera: " + cameraMetadataServerAddress);
         if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&
              !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
+            LOG.info("Creating CameraClient");
             final CameraClient client = new CameraClient();
             client.setAddress(cameraMetadataServerAddress);
             client.setMarshaller(marshaller);
@@ -67,8 +70,10 @@ public class MetadataMarshallerConfiguration {
                                                              @Value("${metadata.server.address.weather}")
                                                              final String roadWeatherServerAddress) {
 
+        LOG.info("metadata.server.address.weather: " + roadWeatherServerAddress);
         if ( StringUtils.isNotBlank(roadWeatherServerAddress) &&
                 !"${metadata.server.address.weather}".equals(roadWeatherServerAddress) ) {
+            LOG.info("Creating RoadWeatherStationClient");
             final RoadWeatherStationClient client = new RoadWeatherStationClient();
             client.setAddress(roadWeatherServerAddress);
             client.setMarshaller(marshaller);
