@@ -60,6 +60,14 @@ public class CameraUpdater {
     public void updateLamStations() {
         log.info("UpdateCameras start");
 
+        if (cameraClient == null) {
+            log.warn("Not updating cameraPresets metadatas because no cameraClient defined");
+            return;
+        } else if ( cameraClient.getAddress() != null ) {
+            log.warn("Not updating cameraPresets metadatas because no cameraClient address is not defined");
+            return;
+        }
+
         List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
 
         for (CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
@@ -71,15 +79,6 @@ public class CameraUpdater {
             rs.obsolete();
             roadStationService.save(rs);
             log.info("Fixed " + cameraPreset.toString() + " missing RoadStation");
-        }
-
-
-        if (cameraClient == null) {
-            log.warn("Not updating cameraPresets metadatas because no cameraClient defined");
-            return;
-        } else if ( cameraClient.getAddress() != null ) {
-            log.warn("Not updating cameraPresets metadatas because no cameraClient address is not defined");
-            return;
         }
 
         final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =

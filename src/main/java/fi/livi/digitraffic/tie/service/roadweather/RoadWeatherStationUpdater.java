@@ -55,7 +55,6 @@ public class RoadWeatherStationUpdater {
     public void updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-
         if (roadWeatherStationClient == null) {
             log.warn("Not updating WeatherStations metadatas because no roadWeatherStationClient defined");
             return;
