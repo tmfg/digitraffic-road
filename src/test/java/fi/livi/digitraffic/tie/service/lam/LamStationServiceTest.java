@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import fi.livi.digitraffic.tie.MetadataApplication;
+import fi.livi.digitraffic.tie.geojson.FeatureCollection;
 import fi.livi.digitraffic.tie.model.LamStation;
-import org.geojson.FeatureCollection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

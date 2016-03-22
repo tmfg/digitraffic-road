@@ -33,7 +33,7 @@ public class RoadStation implements Stringifiable {
 
     private LocalDate obsoleteDate;
 
-    private String nameFi, nameSe, nameEn;
+    private String nameFi, nameSv, nameEn;
 
     private BigDecimal latitude, longitude, altitude;
 
@@ -113,12 +113,12 @@ public class RoadStation implements Stringifiable {
         this.nameFi = nameFi;
     }
 
-    public String getNameSe() {
-        return nameSe;
+    public String getNameSv() {
+        return nameSv;
     }
 
-    public void setNameSe(final String nameSe) {
-        this.nameSe = nameSe;
+    public void setNameSv(final String nameSv) {
+        this.nameSv = nameSv;
     }
 
     public String getNameEn() {

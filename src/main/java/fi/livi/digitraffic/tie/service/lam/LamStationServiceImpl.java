@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import fi.livi.digitraffic.tie.converter.LamStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.dao.LamStationMetadataRepository;
 import fi.livi.digitraffic.tie.dao.LamStationRepository;
+import fi.livi.digitraffic.tie.geojson.FeatureCollection;
 import fi.livi.digitraffic.tie.model.LamStation;
 import org.apache.log4j.Logger;
-import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,19 +19,17 @@ public class LamStationServiceImpl implements LamStationService {
     private static final Logger LOG = Logger.getLogger(LamStationServiceImpl.class);
 
     private final LamStationRepository lamStationRepository;
-    private final LamStationMetadataRepository lamStationMetadataRepository;
+
 
     @Autowired
-    LamStationServiceImpl(final LamStationRepository lamStationRepository,
-                          final LamStationMetadataRepository lamStationMetadataRepository) {
+    LamStationServiceImpl(final LamStationRepository lamStationRepository) {
         this.lamStationRepository = lamStationRepository;
-        this.lamStationMetadataRepository = lamStationMetadataRepository;
     }
 
     @Transactional(readOnly = true)
     @Override
     public FeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection() {
-        return LamStationMetadata2FeatureConverter.convert(lamStationMetadataRepository.findAllNonObsolete());
+        return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalse());
     }
 
     @Transactional
