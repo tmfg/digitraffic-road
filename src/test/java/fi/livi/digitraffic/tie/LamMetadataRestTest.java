@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
+import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +23,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetadataApplication.class)
@@ -60,7 +59,9 @@ public class LamMetadataRestTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.crs.type", is("link")))
-                .andExpect(jsonPath("$.features[0].type", is("Feature")));
+                .andExpect(jsonPath("$.features[0].type", is("Feature")))
+                .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
+                .andExpect(jsonPath("$.features[0].geometry.crs.type", is("link")));
+
     }
 }
