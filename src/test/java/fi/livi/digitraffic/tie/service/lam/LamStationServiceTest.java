@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.service.lam;
 import java.util.List;
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.MetadataApplication;
+import fi.livi.digitraffic.tie.model.LamStation;
 import org.geojson.FeatureCollection;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,10 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import fi.livi.digitraffic.tie.MetadataApplication;
-import fi.livi.digitraffic.tie.model.LamStation;
-import fi.livi.digitraffic.tie.service.LamStationService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetadataApplication.class)

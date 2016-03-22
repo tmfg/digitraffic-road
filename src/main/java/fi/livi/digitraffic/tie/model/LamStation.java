@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.model;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +15,9 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
+import fi.livi.digitraffic.tie.converter.LamStationTypeConverter;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -21,7 +25,10 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "lamStation", attributeNodes = {@NamedAttributeNode("roadStation"), @NamedAttributeNode("roadDistrict")})
-public class LamStation {
+public class LamStation implements Stringifiable {
+
+    private static final Logger log = Logger.getLogger(LamStation.class);
+
     @Id
     @SequenceGenerator(name = "LS_SEQ", sequenceName = "SEQ_LAM_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LS_SEQ")
@@ -58,6 +65,9 @@ public class LamStation {
 
     @Column(name="DIRECTION_2_MUNICIPALITY_CODE")
     private Integer direction2MunicipalityCode;
+
+    @Convert(converter = LamStationTypeConverter.class)
+    private LamStationType lamStationType;
 
     @ManyToOne
     @JoinColumn(name="road_district_id", nullable = false)
@@ -149,10 +159,21 @@ public class LamStation {
         this.roadStation = roadStation;
     }
 
-    public void obsolete() {
-        obsoleteDate = LocalDate.now();
-        obsolete = true;
-        roadStation.obsolete();
+    /**
+     * @return true if state changed
+     */
+    public boolean obsolete() {
+        if (roadStation == null) {
+            log.error("Cannot obsolete LamStation (" + getId() + ", lotjuId " + getLotjuId() + ") with null roadstation");
+            if (obsoleteDate == null || !obsolete) {
+                obsoleteDate = LocalDate.now();
+                obsolete = true;
+            }
+        }
+        boolean obsoleted = roadStation.obsolete();
+        obsoleteDate = roadStation.getObsoleteDate();
+        obsolete = roadStation.isObsolete();
+        return obsoleted;
     }
 
     public double getWinterFreeFlowSpeed2() {
@@ -202,4 +223,32 @@ public class LamStation {
     public void setDirection2MunicipalityCode(Integer direction2MunicipalityCode) {
         this.direction2MunicipalityCode = direction2MunicipalityCode;
     }
+
+    public LamStationType getLamStationType() {
+        return lamStationType;
+    }
+
+    public void setLamStationType(LamStationType lamStationType) {
+        this.lamStationType = lamStationType;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("lotjuId", this.getLotjuId())
+                .appendField("naturalId", getNaturalId())
+                .appendField("roadStationId", getRoadStationId())
+                .appendField("roadStationNaturalId", getRoadStationNaturalId())
+                .toString();
+    }
+
+    public Long getRoadStationId() {
+        return roadStation != null ? roadStation.getId() : null;
+    }
+
+    public Long getRoadStationNaturalId() {
+        return roadStation != null ? roadStation.getNaturalId() : null;
+    }
+
 }

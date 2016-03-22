@@ -10,6 +10,8 @@ public class StaticDataStatusServiceImpl implements StaticDataStatusService {
 
     private StaticDataStatusDAO staticDataStatusDAO;
 
+
+
     @Autowired
     public StaticDataStatusServiceImpl(StaticDataStatusDAO staticDataStatusDAO) {
         this.staticDataStatusDAO = staticDataStatusDAO;
@@ -17,7 +19,7 @@ public class StaticDataStatusServiceImpl implements StaticDataStatusService {
 
     @Transactional
     @Override
-    public void updateStaticDataStatus(boolean updateStaticDataStatus) {
-        staticDataStatusDAO.updateStaticDataStatus(updateStaticDataStatus);
+    public void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus) {
+        staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 }

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.camera;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,5 +36,10 @@ public class CameraPresetServiceImpl implements CameraPresetService {
         CameraPreset value = cameraPresetRepository.save(cp);
         cameraPresetRepository.flush();
         return value;
+    }
+
+    @Override
+    public List<CameraPreset> finAllCameraPresetsWithOutRoadStation() {
+        return cameraPresetRepository.finAllCameraPresetsWithOutRoadStation();
     }
 }

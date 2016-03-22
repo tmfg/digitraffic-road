@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf;
 
 import fi.livi.digitraffic.tie.service.camera.CameraClient;
 import fi.livi.digitraffic.tie.service.lam.LamStationClient;
+import fi.livi.digitraffic.tie.service.roadweather.RoadWeatherStationClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +29,13 @@ public class MetadataMarshallerConfiguration {
     @Bean
     public LamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
                                              @Value("${metadata.server.address.lam}")
-                                             final String metadataServerAddress) {
-
-        if ( StringUtils.isNotBlank(metadataServerAddress) &&
-             !"${metadata.server.address.lam}".equals(metadataServerAddress) ) {
+                                             final String lamMetadataServerAddress) {
+        LOG.info("metadata.server.address.lam: " + lamMetadataServerAddress);
+        if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
+             !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
+            LOG.info("Creating LamStationClient");
             final LamStationClient client = new LamStationClient();
-            client.setAddress(metadataServerAddress);
+            client.setAddress(lamMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
@@ -48,8 +50,10 @@ public class MetadataMarshallerConfiguration {
                                      @Value("${metadata.server.address.camera}")
                                      final String cameraMetadataServerAddress) {
 
+        LOG.info("metadata.server.address.camera: " + cameraMetadataServerAddress);
         if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&
              !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
+            LOG.info("Creating CameraClient");
             final CameraClient client = new CameraClient();
             client.setAddress(cameraMetadataServerAddress);
             client.setMarshaller(marshaller);
@@ -58,6 +62,26 @@ public class MetadataMarshallerConfiguration {
             return client;
         }
         LOG.warn("Not creating bean: " + CameraClient.class + " because property metadata.server.address.camera was not set.");
+        return null;
+    }
+
+    @Bean
+    public RoadWeatherStationClient roadWeatherStationClient(final Jaxb2Marshaller marshaller,
+                                                             @Value("${metadata.server.address.weather}")
+                                                             final String roadWeatherServerAddress) {
+
+        LOG.info("metadata.server.address.weather: " + roadWeatherServerAddress);
+        if ( StringUtils.isNotBlank(roadWeatherServerAddress) &&
+                !"${metadata.server.address.weather}".equals(roadWeatherServerAddress) ) {
+            LOG.info("Creating RoadWeatherStationClient");
+            final RoadWeatherStationClient client = new RoadWeatherStationClient();
+            client.setAddress(roadWeatherServerAddress);
+            client.setMarshaller(marshaller);
+            client.setUnmarshaller(marshaller);
+
+            return client;
+        }
+        LOG.warn("Not creating bean: " + RoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
         return null;
     }
 }

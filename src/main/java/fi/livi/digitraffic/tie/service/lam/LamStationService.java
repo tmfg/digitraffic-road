@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.lam;
 
 import java.util.List;
 import java.util.Map;

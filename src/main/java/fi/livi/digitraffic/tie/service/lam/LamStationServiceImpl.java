@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.lam;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,9 @@ public class LamStationServiceImpl implements LamStationService {
     @Transactional
     @Override
     public LamStation save(LamStation lamStation) {
-        return lamStationRepository.save(lamStation);
+        LamStation lam = lamStationRepository.save(lamStation);
+        lamStationRepository.flush();
+        return lam;
     }
 
     @Transactional(readOnly = true)
