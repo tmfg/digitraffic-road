@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson Point for Lam station")
+@ApiModel(description = "GeoJson Point Geometry Object")
 @JsonTypeInfo(property = "type",  use = Id.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Point {
@@ -19,7 +19,7 @@ public class Point {
     @ApiModelProperty(value = "Points coordinates", required = true, position = 2)
     private LngLatAlt coordinates;
 
-    @ApiModelProperty(value = "Coordinate reference system object", required = true, position = 3)
+    @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS.", required = true, position = 3)
     private Crs crs;
 
     public Point() {
@@ -48,10 +48,6 @@ public class Point {
     public void setCoordinates(LngLatAlt coordinates) {
         this.coordinates = coordinates;
     }
-
-//    public <T> T accept(GeoJsonObjectVisitor<T> geoJsonObjectVisitor) {
-//        return geoJsonObjectVisitor.visit(this);
-//    }
 
     @Override
     public boolean equals(Object o) {

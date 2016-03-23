@@ -1,15 +1,39 @@
 package fi.livi.digitraffic.tie.geojson;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fi.livi.digitraffic.tie.geojson.jackson.CrsType;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "GeoJson Coordinate Reference System Object")
+@JsonTypeInfo(property = "type",  use = JsonTypeInfo.Id.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Crs implements Serializable {
 
+    @ApiModel(description = "GeoJson Named CRS properties")
+    @JsonTypeInfo(property = "type",  use = JsonTypeInfo.Id.NONE)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public class CrsProperties implements Serializable {
+
+        @ApiModelProperty(value = "Named CRS name", required = true)
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    @ApiModelProperty(value = "CRS type (always CrsType.name}", required = true)
     private CrsType type = CrsType.name;
-    private Map<String, Object> properties = new HashMap<String, Object>();
+
+    @ApiModelProperty(value = "CRS properties. Has only name", required = true)
+    private CrsProperties properties = new CrsProperties();
 
     public CrsType getType() {
         return type;
@@ -19,11 +43,11 @@ public class Crs implements Serializable {
         this.type = type;
     }
 
-    public Map<String, Object> getProperties() {
+    public CrsProperties getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
+    public void setProperties(CrsProperties properties) {
         this.properties = properties;
     }
 

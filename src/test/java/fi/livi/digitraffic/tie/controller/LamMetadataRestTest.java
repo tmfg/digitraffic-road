@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie;
+package fi.livi.digitraffic.tie.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
+import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
-
 public class LamMetadataRestTest extends MetadataTest {
+
     private final MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
@@ -33,6 +35,7 @@ public class LamMetadataRestTest extends MetadataTest {
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
+
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
 
@@ -50,10 +53,15 @@ public class LamMetadataRestTest extends MetadataTest {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + "/lam-stations"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features[0].type", is("Feature")));
-                //.andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                //.andExpect(jsonPath("$.features[0].geometry.crs.type", is("link")));
+                .andExpect(jsonPath("$.type", is("LamStationFeatureCollection")))
+                .andExpect(jsonPath("$.features[0].type", is("LamStationFeature")))
+                .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
+                .andExpect(jsonPath("$.features[0].geometry.crs.type", is("link")))
+                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)));
+                // coordinates[0]=6675908.0
+                // coordinates[1]=382080.0
+                // coordinates[2]=0
+
 
     }
 }

@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.CameraPresetRepository;
+import fi.livi.digitraffic.tie.geojson.camera.CameraPresetFeatureCollection;
 import fi.livi.digitraffic.tie.model.CameraPreset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,11 @@ public class CameraPresetServiceImpl implements CameraPresetService {
     @Override
     public List<CameraPreset> finAllCameraPresetsWithOutRoadStation() {
         return cameraPresetRepository.finAllCameraPresetsWithOutRoadStation();
+    }
+
+    @Override
+    public CameraPresetFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection() {
+        return CameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findAll());
+
     }
 }

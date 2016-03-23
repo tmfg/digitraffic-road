@@ -2,21 +2,16 @@ package fi.livi.digitraffic.tie.service.roadstationsensor;
 
 import java.util.List;
 
+import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.model.RoadStationSensor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
-import fi.livi.digitraffic.tie.MetadataApplication;
-import fi.livi.digitraffic.tie.model.RoadStationSensor;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = MetadataApplication.class)
-@WebAppConfiguration
-public class RoadStationSensorServiceTest {
+public class RoadStationSensorServiceTest extends MetadataTest {
     @Autowired
     private RoadStationSensorService roadStationSensorService;
 

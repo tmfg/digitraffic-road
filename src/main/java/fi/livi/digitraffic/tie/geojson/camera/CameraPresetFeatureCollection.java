@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson;
+package fi.livi.digitraffic.tie.geojson.camera;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
@@ -12,45 +12,39 @@ import io.swagger.annotations.ApiModel;
 
 @JsonTypeInfo(property = "type", use = Id.NAME)
 @ApiModel(description = "GeoJSON feature collection")
-public class FeatureCollection implements Iterable<Feature> {
+public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeature> {
 
-    private List<Feature> features = new ArrayList<Feature>();
+    private List<CameraPresetFeature> features = new ArrayList<CameraPresetFeature>();
 
-    public List<Feature> getFeatures() {
+    public List<CameraPresetFeature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<Feature> features) {
+    public void setFeatures(List<CameraPresetFeature> features) {
         this.features = features;
     }
 
-    public FeatureCollection add(Feature feature) {
+    public CameraPresetFeatureCollection add(CameraPresetFeature feature) {
         features.add(feature);
         return this;
     }
 
-    public void addAll(Collection<Feature> features) {
+    public void addAll(Collection<CameraPresetFeature> features) {
         this.features.addAll(features);
     }
 
     @Override
-    public Iterator<Feature> iterator() {
+    public Iterator<CameraPresetFeature> iterator() {
         return features.iterator();
     }
-
-/*
-    public <T> T accept(GeoJsonObjectVisitor<T> geoJsonObjectVisitor) {
-        return geoJsonObjectVisitor.visit(this);
-*/
-//    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof FeatureCollection))
+        if (!(o instanceof CameraPresetFeatureCollection))
             return false;
-        FeatureCollection features1 = (FeatureCollection) o;
+        CameraPresetFeatureCollection features1 = (CameraPresetFeatureCollection) o;
         return features.equals(features1.features);
     }
 
@@ -61,6 +55,6 @@ public class FeatureCollection implements Iterable<Feature> {
 
     @Override
     public String toString() {
-        return "FeatureCollection{" + "features=" + features + '}';
+        return "CameraPresetFeatureCollection{" + "features=" + features + '}';
     }
 }

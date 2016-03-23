@@ -1,20 +1,16 @@
 package fi.livi.digitraffic.tie.helper;
 
-import fi.livi.digitraffic.tie.MetadataApplication;
+import fi.livi.digitraffic.tie.MetadataTest;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = MetadataApplication.class)
-@WebAppConfiguration
-public class ToStringHelpperTest {
+public class ToStringHelpperTest extends MetadataTest {
 
     @Test
     public void testKameraToString() {
