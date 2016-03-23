@@ -1,0 +1,19 @@
+# Copy this file as application-localhost.properties and configure
+# datasource etc. according to your environment.
+
+# http-server port
+server.port = 9020
+
+spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
+spring.datasource.username=<username>
+spring.datasource.password=<password>
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+spring.datasource.validationQuery=SELECT 1 FROM DUAL
+
+# Leave empty -> updaters not starting
+metadata.server.address.lam=
+metadata.server.address.camera=<address>
+metadata.server.address.weather=<address>
+
+logging.file=digitraffic-metadata
+logging.level.root=INFO

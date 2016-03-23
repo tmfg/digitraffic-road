@@ -6,7 +6,7 @@ import java.util.Map;
 
 import fi.livi.digitraffic.tie.converter.LamStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.LamStationRepository;
-import fi.livi.digitraffic.tie.geojson.FeatureCollection;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.LamStation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public FeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection() {
+    public LamStationFeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection() {
         return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalse());
     }
 

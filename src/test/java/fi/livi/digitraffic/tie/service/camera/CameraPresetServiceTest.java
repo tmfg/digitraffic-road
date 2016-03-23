@@ -1,14 +1,12 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.camera;
 
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.model.CameraPreset;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.model.CameraPreset;
-import fi.livi.digitraffic.tie.service.camera.CameraPresetService;
 
 public class CameraPresetServiceTest extends MetadataTest {
     @Autowired

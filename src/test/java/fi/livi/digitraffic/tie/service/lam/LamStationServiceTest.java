@@ -3,13 +3,12 @@ package fi.livi.digitraffic.tie.service.lam;
 import java.util.List;
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
+import fi.livi.digitraffic.tie.model.LamStation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.geojson.FeatureCollection;
-import fi.livi.digitraffic.tie.model.LamStation;
 
 public class LamStationServiceTest extends MetadataTest {
     @Autowired
@@ -23,7 +22,7 @@ public class LamStationServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllNonObsoleteLamStationsAsFeatureCollection() {
-        final FeatureCollection stations = lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
+        final LamStationFeatureCollection stations = lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
         Assert.assertEquals(454, stations.getFeatures().size());
     }
 

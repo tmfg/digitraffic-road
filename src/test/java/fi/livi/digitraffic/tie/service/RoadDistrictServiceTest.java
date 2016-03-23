@@ -1,11 +1,10 @@
 package fi.livi.digitraffic.tie.service;
 
+import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.model.RoadDistrict;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.model.RoadDistrict;
 
 public class RoadDistrictServiceTest extends MetadataTest {
     @Autowired

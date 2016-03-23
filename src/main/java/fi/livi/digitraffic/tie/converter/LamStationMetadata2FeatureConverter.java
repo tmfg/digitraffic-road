@@ -1,47 +1,24 @@
 package fi.livi.digitraffic.tie.converter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import fi.livi.digitraffic.tie.geojson.Crs;
-import fi.livi.digitraffic.tie.geojson.Feature;
-import fi.livi.digitraffic.tie.geojson.FeatureCollection;
 import fi.livi.digitraffic.tie.geojson.Point;
-import fi.livi.digitraffic.tie.geojson.Properties;
-import fi.livi.digitraffic.tie.geojson.jackson.CrsType;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeature;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationProperties;
 import fi.livi.digitraffic.tie.model.LamStation;
 import fi.livi.digitraffic.tie.model.RoadStation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public final class LamStationMetadata2FeatureConverter {
+public final class LamStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
 
     private static final Log log = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
 
-    private static final Crs crs;
-
     private LamStationMetadata2FeatureConverter() {}
 
-    static {
-        crs = new Crs();
-        crs.setType(CrsType.link);
-        final Map<String, Object> crsProperties = new HashMap<>();
-        // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html
-        // http://www.opengis.net/def/crs/EPSG/0/[code]
-        // ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)
-        // http://www.opengis.net/def/crs/EPSG/0/3067
-        // http://spatialreference.org/ref/epsg/3067/
-        // WGS84 (EPSG:4326)
-        // http://www.opengis.net/def/crs/EPSG/0/4326
-        // http://spatialreference.org/ref/epsg/wgs-84/
-        crsProperties.put("href", "http://www.opengis.net/def/crs/EPSG/0/3067");
-        crsProperties.put("type",  "proj4");
-        crs.setProperties(crsProperties);
-    }
-
-    public static FeatureCollection convert(final List<LamStation> stations) {
-        final FeatureCollection collection = new FeatureCollection();
+    public static LamStationFeatureCollection convert(final List<LamStation> stations) {
+        final LamStationFeatureCollection collection = new LamStationFeatureCollection();
 
         for(final LamStation lam : stations) {
             collection.add(convert(lam));
@@ -49,14 +26,14 @@ public final class LamStationMetadata2FeatureConverter {
         return collection;
     }
 
-    private static Feature convert(final LamStation lam) {
-        final Feature f = new Feature();
+    private static LamStationFeature convert(final LamStation lam) {
+        final LamStationFeature f = new LamStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + lam.toString());
         }
         f.setId(Long.toString(lam.getId()));
 
-        Properties properties = f.getProperties();
+        LamStationProperties properties = f.getProperties();
 
         // Lam station properties
         properties.setId(lam.getId());
@@ -70,22 +47,8 @@ public final class LamStationMetadata2FeatureConverter {
 
         // RoadStation properties
         RoadStation rs = lam.getRoadStation();
-        properties.setNaturalId(rs.getNaturalId());
-        properties.setCollectionInterval(rs.getCollectionInterval());
-        properties.setCollectionStatus(rs.getCollectionStatus());
-        properties.setDescription(rs.getDescription());
-        properties.setDistance(rs.getDistance());
-        properties.setMunicipality(rs.getMunicipality());
-        properties.setMunicipalityCode(rs.getMunicipalityCode());
+        setRoadStationProperties(properties, rs);
 
-        properties.setProvince(rs.getProvince());
-        properties.setProvinceCode(rs.getProvinceCode());
-        properties.setRoadNumber(rs.getRoadNumber());
-        properties.setRoadPart(rs.getRoadPart());
-
-        properties.addName("fi", rs.getNameFi());
-        properties.addName("sv", rs.getNameSv());
-        properties.addName("en", rs.getNameEn());
 
 
         if (rs.getLatitude() != null && rs.getLongitude() != null) {

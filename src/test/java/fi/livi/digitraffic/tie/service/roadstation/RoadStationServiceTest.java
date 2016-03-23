@@ -1,15 +1,13 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.roadstation;
 
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
 import fi.livi.digitraffic.tie.model.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.roadstation.RoadStationService;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class RoadStationServiceTest extends MetadataTest {
     @Autowired

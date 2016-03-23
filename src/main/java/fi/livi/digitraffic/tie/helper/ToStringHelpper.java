@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.helper;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
+import fi.livi.digitraffic.tie.model.LamStation;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
@@ -75,6 +76,17 @@ public class ToStringHelpper {
             sb.append("}");
             toStringCalled = true;
         }
+        return sb.toString();
+    }
+
+    public static String toString(LamStation lamStation) {
+        StringBuffer sb = createStartSb(lamStation);
+        JSON_STYLE.append(sb, "id", lamStation.getId());
+        JSON_STYLE.append(sb, "lotjuId", lamStation.getLotjuId());
+        JSON_STYLE.append(sb, "naturalId", lamStation.getNaturalId());
+        JSON_STYLE.append(sb, "name", lamStation.getName(), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
         return sb.toString();
     }
 }

@@ -4,7 +4,7 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-import fi.livi.digitraffic.tie.geojson.FeatureCollection;
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.service.lam.LamStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,9 +24,9 @@ public class LamMetadataController {
         this.lamStationService = lamStationService;
     }
 
-    @ApiOperation("List all lam stations.")
+    @ApiOperation(value = "List all lam stations", notes = "List all lam stations")
     @RequestMapping(method = RequestMethod.GET, path = "/lam-stations", produces = APPLICATION_JSON_UTF8_VALUE)
-    public FeatureCollection listNonObsoleteLamStations() {
+    public LamStationFeatureCollection listNonObsoleteLamStations() {
         return lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
     }
 }
