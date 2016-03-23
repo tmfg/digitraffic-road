@@ -73,7 +73,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.7.2</version>
+            <version>2.7.3</version>
         </dependency>
 
         <!-- Swagger2 JSON API specification generation-->
@@ -130,6 +130,7 @@
                     <instrumentation>
                         <excludes>
                             <exclude>fi/livi/digitraffic/tie/wsdl/**/*.class</exclude>
+                            <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
