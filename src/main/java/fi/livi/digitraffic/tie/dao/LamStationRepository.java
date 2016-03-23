@@ -12,4 +12,6 @@ public interface LamStationRepository extends JpaRepository<LamStation, Long> {
     @EntityGraph("lamStation")
     @Override
     List<LamStation> findAll();
+
+    List<LamStation> findByRoadStationObsoleteFalse();
 }

@@ -46,7 +46,7 @@ public class ToStringHelpper {
     }
 
     public static String toStringFull(Object object) {
-        return ToStringBuilder.reflectionToString(object, JSON_STYLE);
+        return object.getClass().getSimpleName() + ": " + ToStringBuilder.reflectionToString(object, JSON_STYLE);
     }
 
     private static StringBuffer createStartSb(Object object) {

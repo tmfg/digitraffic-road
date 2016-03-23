@@ -209,7 +209,7 @@ public class RoadWeatherStationUpdater {
         to.setObsoleteDate(null);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
-        to.setNameSe(from.getNimiSe());
+        to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
         to.setDescription(from.getKuvaus());
         to.setLatitude(from.getLatitudi());

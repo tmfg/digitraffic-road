@@ -4,24 +4,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.dto.LamStationMetadata;
+import fi.livi.digitraffic.tie.geojson.Crs;
+import fi.livi.digitraffic.tie.geojson.Feature;
+import fi.livi.digitraffic.tie.geojson.FeatureCollection;
+import fi.livi.digitraffic.tie.geojson.Point;
+import fi.livi.digitraffic.tie.geojson.Properties;
+import fi.livi.digitraffic.tie.geojson.jackson.CrsType;
+import fi.livi.digitraffic.tie.model.LamStation;
+import fi.livi.digitraffic.tie.model.RoadStation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geojson.Crs;
-import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.Point;
-import org.geojson.jackson.CrsType;
 
 public final class LamStationMetadata2FeatureConverter {
-    private static final Log LOG = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
+
+    private static final Log log = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
+
+    private static final Crs crs;
 
     private LamStationMetadata2FeatureConverter() {}
 
-    public static FeatureCollection convert(final List<LamStationMetadata> stations) {
-        final FeatureCollection collection = new FeatureCollection();
-
-        final Crs crs = new Crs();
+    static {
+        crs = new Crs();
         crs.setType(CrsType.link);
         final Map<String, Object> crsProperties = new HashMap<>();
         // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html
@@ -35,46 +38,68 @@ public final class LamStationMetadata2FeatureConverter {
         crsProperties.put("href", "http://www.opengis.net/def/crs/EPSG/0/3067");
         crsProperties.put("type",  "proj4");
         crs.setProperties(crsProperties);
-        collection.setCrs(crs);
+    }
 
-        for(final LamStationMetadata lam : stations) {
+    public static FeatureCollection convert(final List<LamStation> stations) {
+        final FeatureCollection collection = new FeatureCollection();
+
+        for(final LamStation lam : stations) {
             collection.add(convert(lam));
         }
-
         return collection;
     }
 
-    private static Feature convert(final LamStationMetadata lam) {
+    private static Feature convert(final LamStation lam) {
         final Feature f = new Feature();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Convert: " + lam.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("Convert: " + lam.toString());
         }
-        f.setProperty("lamNumber", lam.getLamId());
-        f.setProperty("rwsName", lam.getRwsName());
-        f.setProperty("names", getNames(lam));
+        f.setId(Long.toString(lam.getId()));
 
-        if (lam.getAltitude() == null || lam.getLatitude() == null || lam.getAltitude() == null) {
-            System.out.printf("null");
-        }
-        if (lam.getLatitude() != null && lam.getLongitude() != null) {
-            if (lam.getAltitude() != null) {
-                f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude(), lam.getAltitude()));
+        Properties properties = f.getProperties();
+
+        // Lam station properties
+        properties.setId(lam.getId());
+        properties.setLamNaturalId(lam.getNaturalId());
+        properties.setDirection1Municipality(lam.getDirection1Municipality());
+        properties.setDirection1MunicipalityCode(lam.getDirection1MunicipalityCode());
+        properties.setDirection2Municipality(lam.getDirection2Municipality());
+        properties.setDirection2MunicipalityCode(lam.getDirection2MunicipalityCode());
+        properties.setLamStationType(lam.getLamStationType());
+        properties.setName(lam.getName());
+
+        // RoadStation properties
+        RoadStation rs = lam.getRoadStation();
+        properties.setNaturalId(rs.getNaturalId());
+        properties.setCollectionInterval(rs.getCollectionInterval());
+        properties.setCollectionStatus(rs.getCollectionStatus());
+        properties.setDescription(rs.getDescription());
+        properties.setDistance(rs.getDistance());
+        properties.setMunicipality(rs.getMunicipality());
+        properties.setMunicipalityCode(rs.getMunicipalityCode());
+
+        properties.setProvince(rs.getProvince());
+        properties.setProvinceCode(rs.getProvinceCode());
+        properties.setRoadNumber(rs.getRoadNumber());
+        properties.setRoadPart(rs.getRoadPart());
+
+        properties.addName("fi", rs.getNameFi());
+        properties.addName("sv", rs.getNameSv());
+        properties.addName("en", rs.getNameEn());
+
+
+        if (rs.getLatitude() != null && rs.getLongitude() != null) {
+            if (rs.getAltitude() != null) {
+                f.setGeometry(new Point(rs.getLatitude().longValue(),
+                                        rs.getLongitude().longValue(),
+                                        rs.getAltitude().longValue()));
             } else {
-                f.setGeometry(new Point(lam.getLatitude(), lam.getLongitude()));
+                f.setGeometry(new Point(rs.getLatitude().longValue(),
+                                        rs.getLongitude().longValue()));
             }
+            f.getGeometry().setCrs(crs);
         }
-
 
         return f;
-    }
-
-    private static Map<String, String> getNames(final LamStationMetadata lam) {
-        final Map<String, String> map = new HashMap<>();
-
-        map.put("fi", lam.getNameFi());
-        map.put("sv", lam.getNameSe());
-        map.put("en", lam.getNameEn());
-
-        return map;
     }
 }

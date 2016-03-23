@@ -76,12 +76,6 @@
             <version>2.7.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>de.grundid.opendatalab</groupId>
-            <artifactId>geojson-jackson</artifactId>
-            <version>1.5.1</version>
-        </dependency>
-
         <!-- Swagger2 JSON API specification generation-->
         <dependency>
             <groupId>io.springfox</groupId>

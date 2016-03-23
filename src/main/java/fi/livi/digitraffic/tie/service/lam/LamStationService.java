@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.service.lam;
 import java.util.List;
 import java.util.Map;
 
+import fi.livi.digitraffic.tie.geojson.FeatureCollection;
 import fi.livi.digitraffic.tie.model.LamStation;
-import org.geojson.FeatureCollection;
 
 public interface LamStationService {
 
