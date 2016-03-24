@@ -20,16 +20,16 @@ public class LamStationFeatureCollection implements Iterable<LamStationFeature> 
         return features;
     }
 
-    public void setFeatures(List<LamStationFeature> features) {
+    public void setFeatures(final List<LamStationFeature> features) {
         this.features = features;
     }
 
-    public LamStationFeatureCollection add(LamStationFeature feature) {
+    public LamStationFeatureCollection add(final LamStationFeature feature) {
         features.add(feature);
         return this;
     }
 
-    public void addAll(Collection<LamStationFeature> features) {
+    public void addAll(final Collection<LamStationFeature> features) {
         this.features.addAll(features);
     }
 

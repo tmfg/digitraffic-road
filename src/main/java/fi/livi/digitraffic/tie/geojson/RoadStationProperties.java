@@ -48,7 +48,7 @@ public abstract class RoadStationProperties {
         return naturalId;
     }
 
-    public void setNaturalId(long naturalId) {
+    public void setNaturalId(final long naturalId) {
         this.naturalId = naturalId;
     }
 
@@ -56,7 +56,7 @@ public abstract class RoadStationProperties {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -64,7 +64,7 @@ public abstract class RoadStationProperties {
         return roadNumber;
     }
 
-    public void setRoadNumber(Integer roadNumber) {
+    public void setRoadNumber(final Integer roadNumber) {
         this.roadNumber = roadNumber;
     }
 
@@ -72,7 +72,7 @@ public abstract class RoadStationProperties {
         return roadPart;
     }
 
-    public void setRoadPart(Integer roadPart) {
+    public void setRoadPart(final Integer roadPart) {
         this.roadPart = roadPart;
     }
 
@@ -80,7 +80,7 @@ public abstract class RoadStationProperties {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
+    public void setDistance(final Integer distance) {
         this.distance = distance;
     }
 
@@ -88,7 +88,7 @@ public abstract class RoadStationProperties {
         return collectionInterval;
     }
 
-    public void setCollectionInterval(Integer collectionInterval) {
+    public void setCollectionInterval(final Integer collectionInterval) {
         this.collectionInterval = collectionInterval;
     }
 
@@ -96,7 +96,7 @@ public abstract class RoadStationProperties {
         return collectionStatus;
     }
 
-    public void setCollectionStatus(CollectionStatus collectionStatus) {
+    public void setCollectionStatus(final CollectionStatus collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
 
@@ -104,7 +104,7 @@ public abstract class RoadStationProperties {
         return municipality;
     }
 
-    public void setMunicipality(String municipality) {
+    public void setMunicipality(final String municipality) {
         this.municipality = municipality;
     }
 
@@ -112,7 +112,7 @@ public abstract class RoadStationProperties {
         return municipalityCode;
     }
 
-    public void setMunicipalityCode(String municipalityCode) {
+    public void setMunicipalityCode(final String municipalityCode) {
         this.municipalityCode = municipalityCode;
     }
 
@@ -120,7 +120,7 @@ public abstract class RoadStationProperties {
         return province;
     }
 
-    public void setProvince(String province) {
+    public void setProvince(final String province) {
         this.province = province;
     }
 
@@ -128,7 +128,7 @@ public abstract class RoadStationProperties {
         return provinceCode;
     }
 
-    public void setProvinceCode(String provinceCode) {
+    public void setProvinceCode(final String provinceCode) {
         this.provinceCode = provinceCode;
     }
 
@@ -136,7 +136,7 @@ public abstract class RoadStationProperties {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -144,11 +144,11 @@ public abstract class RoadStationProperties {
         return names;
     }
 
-    public void setNames(Map<String, String> names) {
+    public void setNames(final Map<String, String> names) {
         this.names = names;
     }
 
-    public void addName(String lang, String name) {
+    public void addName(final String lang, final String name) {
         if (name != null) {
             this.names.put(lang, name);
         }

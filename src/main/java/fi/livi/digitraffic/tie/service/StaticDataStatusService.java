@@ -14,9 +14,9 @@ public interface StaticDataStatusService {
 
 
 
-        private String updateField;
+        private final String updateField;
 
-        StaticStatusType(String updateField) {
+        StaticStatusType(final String updateField) {
             this.updateField = updateField;
         }
 

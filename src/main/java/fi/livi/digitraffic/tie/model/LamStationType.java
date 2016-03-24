@@ -8,7 +8,7 @@ public enum LamStationType {
     E_18("E18");
     private final String value;
 
-    LamStationType(String v) {
+    LamStationType(final String v) {
         value = v;
     }
 
@@ -16,9 +16,9 @@ public enum LamStationType {
         return value;
     }
 
-    public static LamStationType convertFromKameraTyyppi(LamAsemaTyyppi lamAsemaTyyppi) {
+    public static LamStationType convertFromKameraTyyppi(final LamAsemaTyyppi lamAsemaTyyppi) {
         if (lamAsemaTyyppi != null) {
-            return LamStationType.valueOf(lamAsemaTyyppi.name());
+            return valueOf(lamAsemaTyyppi.name());
         }
         return null;
     }

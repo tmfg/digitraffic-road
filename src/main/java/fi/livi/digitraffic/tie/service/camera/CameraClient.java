@@ -3,8 +3,11 @@ package fi.livi.digitraffic.tie.service.camera;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.JAXBElement;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
@@ -14,9 +17,6 @@ import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKamerat;
 import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKameratResponse;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.kamera.ObjectFactory;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 public class CameraClient extends WebServiceGatewaySupport {
 
@@ -31,7 +31,6 @@ public class CameraClient extends WebServiceGatewaySupport {
     }
 
     public List<Kamera> getKameras() {
-        final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
 
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
@@ -43,17 +42,17 @@ public class CameraClient extends WebServiceGatewaySupport {
 
     public Map<String, Pair<Kamera, Esiasento>> getPresetIdToKameraAndEsiasentoMap() {
 
-        Map<String, Pair<Kamera, Esiasento>> presetIdToKameraMap = new HashMap<>();
+        final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraMap = new HashMap<>();
 
         log.info("Fetch cameras");
 
-        List<Kamera> kamerat = getKameras();
+        final List<Kamera> kamerat = getKameras();
 
         log.info("Fetched " + kamerat.size() + " cameras");
 
         log.info("Fetch presets for cameras");
         int counter = 0;
-        for (Kamera kamera : kamerat) {
+        for (final Kamera kamera : kamerat) {
 
             if (kamera.getVanhaId() == null) {
                 log.error("Cannot update " + ToStringHelpper.toString(kamera) + " with vanhaId null");
@@ -64,12 +63,12 @@ public class CameraClient extends WebServiceGatewaySupport {
 
                 final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse = (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
                         getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
-                List<Esiasento> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
+                final List<Esiasento> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
                 counter += esiasennot.size();
 
-                String kameraId = CameraUpdater.convertVanhaIdToKameraId(kamera.getVanhaId());
-                for (Esiasento esiasento : esiasennot) {
-                    String presetId = CameraUpdater.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
+                final String kameraId = CameraUpdater.convertVanhaIdToKameraId(kamera.getVanhaId());
+                for (final Esiasento esiasento : esiasennot) {
+                    final String presetId = CameraUpdater.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
 
                     presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
                 }

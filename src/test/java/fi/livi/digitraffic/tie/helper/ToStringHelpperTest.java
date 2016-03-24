@@ -14,7 +14,7 @@ public class ToStringHelpperTest extends MetadataTest {
 
     @Test
     public void testKameraToString() {
-        Kamera kamera = new Kamera();
+        final Kamera kamera = new Kamera();
         kamera.setId(741L);
         kamera.setVanhaId(1501);
         kamera.setNimi("OLD_vt6_Lapinjärvi");
@@ -24,7 +24,7 @@ public class ToStringHelpperTest extends MetadataTest {
 
     @Test
     public void testLamasemaToString() {
-        LamAsema lam = new LamAsema();
+        final LamAsema lam = new LamAsema();
         lam.setId(607L);
         lam.setVanhaId(23210);
         lam.setNimi("L_vt12_Vammala");
@@ -33,7 +33,7 @@ public class ToStringHelpperTest extends MetadataTest {
 
     @Test
     public void testTiesaaasemaToString() {
-        TiesaaAsema tsa = new TiesaaAsema();
+        final TiesaaAsema tsa = new TiesaaAsema();
         tsa.setId(607L);
         tsa.setVanhaId(23210);
         tsa.setNimi("L_vt12_Vammala");
@@ -42,7 +42,7 @@ public class ToStringHelpperTest extends MetadataTest {
 
     @Test
     public void testToStringFull() {
-        TiesaaAsema tsa = new TiesaaAsema();
+        final TiesaaAsema tsa = new TiesaaAsema();
         tsa.setId(607L);
         tsa.setVanhaId(23210);
         tsa.setNimi("L_vt12_Vammala");

@@ -25,7 +25,7 @@ public class Crs implements Serializable {
             return name;
         }
 
-        public void setName(String name) {
+        public void setName(final String name) {
             this.name = name;
         }
     }
@@ -39,7 +39,7 @@ public class Crs implements Serializable {
         return type;
     }
 
-    public void setType(CrsType type) {
+    public void setType(final CrsType type) {
         this.type = type;
     }
 
@@ -47,19 +47,19 @@ public class Crs implements Serializable {
         return properties;
     }
 
-    public void setProperties(CrsProperties properties) {
+    public void setProperties(final CrsProperties properties) {
         this.properties = properties;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (!(o instanceof Crs)) {
             return false;
         }
-        Crs crs = (Crs) o;
+        final Crs crs = (Crs) o;
         if (properties != null ? !properties.equals(crs.properties) : crs.properties != null) {
             return false;
         }

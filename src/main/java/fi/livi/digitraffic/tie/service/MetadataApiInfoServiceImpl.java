@@ -16,8 +16,8 @@ public class MetadataApiInfoServiceImpl implements MetadataApiInfoService {
     private final BuildVersionService buildVersionService;
 
     @Autowired
-    public MetadataApiInfoServiceImpl(MessageService messageService,
-                                      BuildVersionService buildVersionService) {
+    public MetadataApiInfoServiceImpl(final MessageService messageService,
+                                      final BuildVersionService buildVersionService) {
         this.messageService = messageService;
         this.buildVersionService = buildVersionService;
     }

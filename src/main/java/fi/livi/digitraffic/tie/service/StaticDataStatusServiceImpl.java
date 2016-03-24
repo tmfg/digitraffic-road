@@ -8,18 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StaticDataStatusServiceImpl implements StaticDataStatusService {
 
-    private StaticDataStatusDAO staticDataStatusDAO;
+    private final StaticDataStatusDAO staticDataStatusDAO;
 
 
 
     @Autowired
-    public StaticDataStatusServiceImpl(StaticDataStatusDAO staticDataStatusDAO) {
+    public StaticDataStatusServiceImpl(final StaticDataStatusDAO staticDataStatusDAO) {
         this.staticDataStatusDAO = staticDataStatusDAO;
     }
 
     @Transactional
     @Override
-    public void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus) {
+    public void updateStaticDataStatus(final StaticStatusType type, final boolean updateStaticDataStatus) {
         staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 }

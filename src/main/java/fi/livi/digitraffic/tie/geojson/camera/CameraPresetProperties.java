@@ -31,11 +31,11 @@ public class CameraPresetProperties extends RoadStationProperties {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
-    public void setCameraId(String cameraId) {
+    public void setCameraId(final String cameraId) {
         this.cameraId = cameraId;
     }
 
@@ -43,7 +43,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return cameraId;
     }
 
-    public void setPresetId(String presetId) {
+    public void setPresetId(final String presetId) {
         this.presetId = presetId;
     }
 
@@ -51,7 +51,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetId;
     }
 
-    public void setCameraType(CameraType cameraType) {
+    public void setCameraType(final CameraType cameraType) {
         this.cameraType = cameraType;
     }
 
@@ -59,7 +59,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return cameraType;
     }
 
-    public void setPresetName1(String presetName1) {
+    public void setPresetName1(final String presetName1) {
         this.presetName1 = presetName1;
     }
 
@@ -67,7 +67,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetName1;
     }
 
-    public void setPresetName2(String presetName2) {
+    public void setPresetName2(final String presetName2) {
         this.presetName2 = presetName2;
     }
 
@@ -75,7 +75,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetName2;
     }
 
-    public void setPresetOrder(Integer presetOrder) {
+    public void setPresetOrder(final Integer presetOrder) {
         this.presetOrder = presetOrder;
     }
 
@@ -83,7 +83,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetOrder;
     }
 
-    public void setPublic(boolean aPublic) {
+    public void setPublic(final boolean aPublic) {
         this.aPublic = aPublic;
     }
 
@@ -91,11 +91,11 @@ public class CameraPresetProperties extends RoadStationProperties {
         return aPublic;
     }
 
-    public void setaPublic(boolean aPublic) {
+    public void setaPublic(final boolean aPublic) {
         this.aPublic = aPublic;
     }
 
-    public void setInCollection(boolean inCollection) {
+    public void setInCollection(final boolean inCollection) {
         this.inCollection = inCollection;
     }
 
@@ -103,7 +103,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return inCollection;
     }
 
-    public void setCompression(Integer compression) {
+    public void setCompression(final Integer compression) {
         this.compression = compression;
     }
 
@@ -111,7 +111,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return compression;
     }
 
-    public void setNameOnDevice(String nameOnDevice) {
+    public void setNameOnDevice(final String nameOnDevice) {
         this.nameOnDevice = nameOnDevice;
     }
 
@@ -119,7 +119,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return nameOnDevice;
     }
 
-    public void setDefaultDirection(Boolean defaultDirection) {
+    public void setDefaultDirection(final Boolean defaultDirection) {
         this.defaultDirection = defaultDirection;
     }
 
@@ -127,7 +127,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return defaultDirection;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -135,7 +135,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return resolution;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(final String direction) {
         this.direction = direction;
     }
 
@@ -143,7 +143,7 @@ public class CameraPresetProperties extends RoadStationProperties {
         return direction;
     }
 
-    public void setDelay(Integer delay) {
+    public void setDelay(final Integer delay) {
         this.delay = delay;
     }
 

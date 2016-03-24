@@ -33,7 +33,7 @@ public class LamStationUpdater {
     private final RoadStationService roadStationService;
     private final LamStationService lamStationService;
     private final RoadDistrictService roadDistrictService;
-    private StaticDataStatusService staticDataStatusService;
+    private final StaticDataStatusService staticDataStatusService;
 
     private final LamStationClient lamStationClient;
 
@@ -67,7 +67,7 @@ public class LamStationUpdater {
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched LAMs:");
-            for (LamAsema station : stations) {
+            for (final LamAsema station : stations) {
                 log.debug(ToStringBuilder.reflectionToString(station));
             }
         }
@@ -153,8 +153,8 @@ public class LamStationUpdater {
 
     private boolean insertLamStation(final LamAsema la) {
 
-        Integer roadNaturalId = la.getTieosoite().getTienumero();
-        Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
+        final Integer roadNaturalId = la.getTieosoite().getTienumero();
+        final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
         if (roadNaturalId == null ) {
             log.error(ToStringHelpper.toString(la) + " insert failed: LamAsema.getTieosoite().getTienumero() is null");
@@ -164,7 +164,7 @@ public class LamStationUpdater {
             log.error(ToStringHelpper.toString(la) + " insert failed: LamAsema.getTieosoite().getTieosa() is null");
             return false;
         }
-        RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
+        final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
         if (roadDistrict != null) {
             final LamStation newLamStation = new LamStation();
             newLamStation.setSummerFreeFlowSpeed1(0);
@@ -177,7 +177,7 @@ public class LamStationUpdater {
 
             roadStationService.save(newRoadStation);
             lamStationService.save(newLamStation);
-            log.info("Created new " + newLamStation.toString());
+            log.info("Created new " + newLamStation);
             return true;
         } else {
             log.error(ToStringHelpper.toString(la) + " insert failed: Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
@@ -186,7 +186,7 @@ public class LamStationUpdater {
     }
 
     private static boolean validate(final LamAsema la) {
-        boolean valid = la.getVanhaId() != null;
+        final boolean valid = la.getVanhaId() != null;
         if (!valid) {
             log.error(ToStringHelpper.toString(la) +" is invalid: has null vanhaId");
         }
@@ -203,8 +203,8 @@ public class LamStationUpdater {
 
             log.debug("Updating " + ToStringHelpper.toString(la));
 
-            Integer roadNaturalId = la.getTieosoite().getTienumero();
-            Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
+            final Integer roadNaturalId = la.getTieosoite().getTienumero();
+            final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
             if ( roadNaturalId == null ) {
                 log.warn(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTienumero() is null");
@@ -231,8 +231,8 @@ public class LamStationUpdater {
         return counter;
     }
 
-    private static boolean updateLamStationAttributes(final LamAsema from, RoadDistrict roadDistrict, final LamStation to) {
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+    private static boolean updateLamStationAttributes(final LamAsema from, final RoadDistrict roadDistrict, final LamStation to) {
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(convertToLamNaturalId(from.getVanhaId()));
         to.setLotjuId(from.getId());
         to.setObsolete(false);
@@ -251,7 +251,7 @@ public class LamStationUpdater {
     }
 
     private static boolean updateRoadStationAttributes(final LamAsema from, final RoadStation to) {
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(from.getVanhaId());
         to.setType(RoadStationType.LAM_STATION);
         to.setObsolete(false);

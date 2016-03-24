@@ -17,7 +17,7 @@ public enum RoadWeatherStationType {
 
     private final String value;
 
-    RoadWeatherStationType(String value) {
+    RoadWeatherStationType(final String value) {
         this.value = value;
     }
 
@@ -25,9 +25,9 @@ public enum RoadWeatherStationType {
         return value;
     }
 
-    public static RoadWeatherStationType fromTiesaaAsemaTyyppi(TiesaaAsemaTyyppi tsaTyyppi) {
+    public static RoadWeatherStationType fromTiesaaAsemaTyyppi(final TiesaaAsemaTyyppi tsaTyyppi) {
         if (tsaTyyppi != null) {
-            return RoadWeatherStationType.valueOf(tsaTyyppi.name());
+            return valueOf(tsaTyyppi.name());
         }
         return null;
     }

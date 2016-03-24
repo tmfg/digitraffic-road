@@ -99,7 +99,7 @@ public class LamStation implements Stringifiable {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -170,7 +170,7 @@ public class LamStation implements Stringifiable {
                 obsolete = true;
             }
         }
-        boolean obsoleted = roadStation.obsolete();
+        final boolean obsoleted = roadStation.obsolete();
         obsoleteDate = roadStation.getObsoleteDate();
         obsolete = roadStation.isObsolete();
         return obsoleted;
@@ -196,7 +196,7 @@ public class LamStation implements Stringifiable {
         return direction1Municipality;
     }
 
-    public void setDirection1Municipality(String direction1Municipality) {
+    public void setDirection1Municipality(final String direction1Municipality) {
         this.direction1Municipality = direction1Municipality;
     }
 
@@ -204,7 +204,7 @@ public class LamStation implements Stringifiable {
         return direction1MunicipalityCode;
     }
 
-    public void setDirection1MunicipalityCode(Integer direction1MunicipalityCode) {
+    public void setDirection1MunicipalityCode(final Integer direction1MunicipalityCode) {
         this.direction1MunicipalityCode = direction1MunicipalityCode;
     }
 
@@ -212,7 +212,7 @@ public class LamStation implements Stringifiable {
         return direction2Municipality;
     }
 
-    public void setDirection2Municipality(String direction2Municipality) {
+    public void setDirection2Municipality(final String direction2Municipality) {
         this.direction2Municipality = direction2Municipality;
     }
 
@@ -220,7 +220,7 @@ public class LamStation implements Stringifiable {
         return direction2MunicipalityCode;
     }
 
-    public void setDirection2MunicipalityCode(Integer direction2MunicipalityCode) {
+    public void setDirection2MunicipalityCode(final Integer direction2MunicipalityCode) {
         this.direction2MunicipalityCode = direction2MunicipalityCode;
     }
 
@@ -228,7 +228,7 @@ public class LamStation implements Stringifiable {
         return lamStationType;
     }
 
-    public void setLamStationType(LamStationType lamStationType) {
+    public void setLamStationType(final LamStationType lamStationType) {
         this.lamStationType = lamStationType;
     }
 

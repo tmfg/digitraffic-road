@@ -2,28 +2,23 @@ package fi.livi.digitraffic.tie.geojson.jackson;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import fi.livi.digitraffic.tie.geojson.LngLatAlt;
 
 public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
-
 	@Override
-	public LngLatAlt deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-			JsonProcessingException {
+	public LngLatAlt deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
 		if (jp.isExpectedStartArrayToken()) {
 			return deserializeArray(jp, ctxt);
 		}
 		throw ctxt.mappingException(LngLatAlt.class);
 	}
 
-	protected LngLatAlt deserializeArray(JsonParser jp, DeserializationContext ctxt) throws IOException,
-			JsonProcessingException {
-		LngLatAlt node = new LngLatAlt();
+	protected LngLatAlt deserializeArray(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
+		final LngLatAlt node = new LngLatAlt();
 		node.setLongitude(extractDouble(jp, ctxt, false));
 		node.setLatitude(extractDouble(jp, ctxt, false));
 		node.setAltitude(extractDouble(jp, ctxt, true));
@@ -32,9 +27,9 @@ public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 		return node;
 	}
 
-	private double extractDouble(JsonParser jp, DeserializationContext ctxt, boolean optional)
-			throws JsonParseException, IOException {
-		JsonToken token = jp.nextToken();
+	private double extractDouble(final JsonParser jp, final DeserializationContext ctxt, final boolean optional)
+			throws IOException {
+		final JsonToken token = jp.nextToken();
 		if (token == null) {
 			if (optional)
 				return Double.NaN;

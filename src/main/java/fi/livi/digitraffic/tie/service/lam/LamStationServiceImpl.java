@@ -34,8 +34,8 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional
     @Override
-    public LamStation save(LamStation lamStation) {
-        LamStation lam = lamStationRepository.save(lamStation);
+    public LamStation save(final LamStation lamStation) {
+        final LamStation lam = lamStationRepository.save(lamStation);
         lamStationRepository.flush();
         return lam;
     }

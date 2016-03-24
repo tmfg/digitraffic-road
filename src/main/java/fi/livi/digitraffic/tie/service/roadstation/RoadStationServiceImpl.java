@@ -23,8 +23,8 @@ public class RoadStationServiceImpl implements RoadStationService {
     }
 
     @Override
-    public RoadStation save(RoadStation roadStation) {
-        RoadStation value = roadStationRepository.save(roadStation);
+    public RoadStation save(final RoadStation roadStation) {
+        final RoadStation value = roadStationRepository.save(roadStation);
         roadStationRepository.flush();
         return value;
 
@@ -32,13 +32,13 @@ public class RoadStationServiceImpl implements RoadStationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RoadStation> findByType(RoadStationType type) {
+    public List<RoadStation> findByType(final RoadStationType type) {
         return roadStationRepository.findByType(type);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<RoadStation> findOrphansByType(RoadStationType type) {
+    public List<RoadStation> findOrphansByType(final RoadStationType type) {
         return roadStationRepository.findOrphansByType(type.getTypeNumber());
     }
 }

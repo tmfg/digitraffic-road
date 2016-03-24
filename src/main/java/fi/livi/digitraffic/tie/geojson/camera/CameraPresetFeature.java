@@ -32,7 +32,7 @@ public class CameraPresetFeature {
         return geometry;
     }
 
-    public void setGeometry(Point geometry) {
+    public void setGeometry(final Point geometry) {
         this.geometry = geometry;
     }
 
@@ -40,7 +40,7 @@ public class CameraPresetFeature {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class CameraPresetFeature {
         return properties;
     }
 
-    public void setProperties(CameraPresetProperties properties) {
+    public void setProperties(final CameraPresetProperties properties) {
         this.properties = properties;
     }
 }

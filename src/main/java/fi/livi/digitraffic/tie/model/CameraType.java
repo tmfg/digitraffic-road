@@ -11,9 +11,9 @@ public enum CameraType {
     ZAVIO,
     ENEO;
 
-    public static CameraType convertFromKameraTyyppi(KameraTyyppi kameraTyyppi) {
+    public static CameraType convertFromKameraTyyppi(final KameraTyyppi kameraTyyppi) {
         if (kameraTyyppi != null) {
-            return CameraType.valueOf(kameraTyyppi.name());
+            return valueOf(kameraTyyppi.name());
         }
         return null;
     }

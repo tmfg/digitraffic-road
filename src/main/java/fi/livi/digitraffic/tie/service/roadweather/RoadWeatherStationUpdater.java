@@ -7,6 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStation;
@@ -17,26 +26,17 @@ import fi.livi.digitraffic.tie.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RoadWeatherStationUpdater {
-
     private static final Logger log = Logger.getLogger(RoadWeatherStationUpdater.class);
 
-    private RoadStationService roadStationService;
-    private RoadWeatherStationService roadWeatherStationService;
-    private StaticDataStatusService staticDataStatusService;
-    private RoadWeatherStationClient roadWeatherStationClient;
+    private final RoadStationService roadStationService;
+    private final RoadWeatherStationService roadWeatherStationService;
+    private final StaticDataStatusService staticDataStatusService;
+    private final RoadWeatherStationClient roadWeatherStationClient;
 
-    private static EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
+    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     @Autowired
     public RoadWeatherStationUpdater(final RoadStationService roadStationService,
@@ -60,16 +60,16 @@ public class RoadWeatherStationUpdater {
             return;
         }
 
-        List<TiesaaAsema> tiesaaAsemas = roadWeatherStationClient.getTiesaaAsemmas();
+        final List<TiesaaAsema> tiesaaAsemas = roadWeatherStationClient.getTiesaaAsemmas();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched TiesaaAsemmas:");
-            for (TiesaaAsema tsa : tiesaaAsemas) {
+            for (final TiesaaAsema tsa : tiesaaAsemas) {
                 log.debug(ToStringBuilder.reflectionToString(tsa));
             }
         }
 
-        Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationsMap =
+        final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationsMap =
                 roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
 
         final boolean updateStaticDataStatus = updateWeatherStations(tiesaaAsemas, currentLotjuIdToRoadWeatherStationsMap);
@@ -82,8 +82,8 @@ public class RoadWeatherStationUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER, updateStaticDataStatus);
     }
 
-    private boolean updateWeatherStations(List<TiesaaAsema> tiesaaAsemas,
-                                          Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap) {
+    private boolean updateWeatherStations(final List<TiesaaAsema> tiesaaAsemas,
+                                          final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap) {
 
         final List<RoadWeatherStation> obsolete = new ArrayList<>(); // obsolete RoadWeatherStations
         final List<Pair<TiesaaAsema, RoadWeatherStation>> update = new ArrayList<>(); // RoadWeatherStations to update
@@ -131,13 +131,13 @@ public class RoadWeatherStationUpdater {
         return obsoleted > 0 || inserted > 0;
     }
 
-    private int updateRoadWeatherStations(List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
+    private int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
 
         int counter = 0;
         for (final Pair<TiesaaAsema, RoadWeatherStation> pair : update) {
 
-            TiesaaAsema tsa = pair.getLeft();
-            RoadWeatherStation rws = pair.getRight();
+            final TiesaaAsema tsa = pair.getLeft();
+            final RoadWeatherStation rws = pair.getRight();
             log.debug("Updating RoadWeatherStation " + rws.getId() + " naturalID " + rws.getRoadStation().getNaturalId());
 
             if ( updateRoadWeatherStationAttributes(tsa, rws) ) {
@@ -147,17 +147,17 @@ public class RoadWeatherStationUpdater {
         return counter;
     }
 
-    private int insertRoadWeatherStations(List<TiesaaAsema> insert) {
+    private int insertRoadWeatherStations(final List<TiesaaAsema> insert) {
 
-        List<RoadStation> currentOrphanRoadStations = insert.size() > 0 ?
+        final List<RoadStation> currentOrphanRoadStations = !insert.isEmpty() ?
                     roadStationService.findOrphansByType(RoadStationType.WEATHER_STATION) : Collections.emptyList();
 
-        Map<Long, RoadStation> orphanNaturalIdToRoadStationMap = new HashMap<>();
-        for (RoadStation orphanRoadStation : currentOrphanRoadStations) {
+        final Map<Long, RoadStation> orphanNaturalIdToRoadStationMap = new HashMap<>();
+        for (final RoadStation orphanRoadStation : currentOrphanRoadStations) {
             orphanNaturalIdToRoadStationMap.put(orphanRoadStation.getNaturalId(), orphanRoadStation);
         }
 
-        for (TiesaaAsema tsa : insert) {
+        for (final TiesaaAsema tsa : insert) {
 
             RoadWeatherStation rws = new RoadWeatherStation();
 
@@ -175,15 +175,15 @@ public class RoadWeatherStationUpdater {
             rws = roadWeatherStationService.save(rws);
 
             if (orphan) {
-                log.info("Created new " + rws.toString() + ", using existing orphan RoadStation");
+                log.info("Created new " + rws + ", using existing orphan RoadStation");
             } else {
-                log.info("Created new " + rws.toString());
+                log.info("Created new " + rws);
             }
         }
         return insert.size();
     }
 
-    private boolean validate(TiesaaAsema tsa) {
+    private boolean validate(final TiesaaAsema tsa) {
         if (tsa.getVanhaId() == null) {
             log.error(ToStringHelpper.toString(tsa) + " is invalid: has null vanhaId");
             return false;
@@ -191,8 +191,8 @@ public class RoadWeatherStationUpdater {
         return true;
     }
 
-    private boolean updateRoadWeatherStationAttributes(TiesaaAsema from, RoadWeatherStation to) {
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+    private boolean updateRoadWeatherStationAttributes(final TiesaaAsema from, final RoadWeatherStation to) {
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
 
@@ -202,7 +202,7 @@ public class RoadWeatherStationUpdater {
     }
 
     private static boolean updateRoadStationAttributes(final TiesaaAsema from, final RoadStation to) {
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(from.getVanhaId());
         to.setType(RoadStationType.WEATHER_STATION);
         to.setObsolete(false);
@@ -231,7 +231,7 @@ public class RoadWeatherStationUpdater {
         int counter = 0;
         for (final RoadWeatherStation rws : obsolete) {
             if (rws.obsolete()) {
-                log.debug("Obsolete " + rws.toString());
+                log.debug("Obsolete " + rws);
                 counter++;
             }
         }

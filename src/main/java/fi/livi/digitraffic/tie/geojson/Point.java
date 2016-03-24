@@ -25,15 +25,15 @@ public class Point {
     public Point() {
     }
 
-    public Point(LngLatAlt coordinates) {
+    public Point(final LngLatAlt coordinates) {
         this.coordinates = coordinates;
     }
 
-    public Point(double longitude, double latitude) {
+    public Point(final double longitude, final double latitude) {
         coordinates = new LngLatAlt(longitude, latitude);
     }
 
-    public Point(double longitude, double latitude, double altitude) {
+    public Point(final double longitude, final double latitude, final double altitude) {
         coordinates = new LngLatAlt(longitude, latitude, altitude);
     }
 
@@ -45,12 +45,12 @@ public class Point {
         return coordinates;
     }
 
-    public void setCoordinates(LngLatAlt coordinates) {
+    public void setCoordinates(final LngLatAlt coordinates) {
         this.coordinates = coordinates;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -60,7 +60,7 @@ public class Point {
         if (!super.equals(o)) {
             return false;
         }
-        Point point = (Point) o;
+        final Point point = (Point) o;
         return !(coordinates != null ? !coordinates.equals(point.coordinates) : point.coordinates != null);
     }
 
@@ -76,7 +76,7 @@ public class Point {
         return "Point{" + "coordinates=" + coordinates + "} " + super.toString();
     }
 
-    public void setCrs(Crs crs) {
+    public void setCrs(final Crs crs) {
         this.crs = crs;
     }
 

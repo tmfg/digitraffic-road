@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,9 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import fi.livi.digitraffic.tie.converter.RoadStationTypeConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @DynamicUpdate
@@ -192,7 +192,7 @@ public class RoadStation implements Stringifiable {
         return collectionInterval;
     }
 
-    public void setCollectionInterval(Integer collectionInterval) {
+    public void setCollectionInterval(final Integer collectionInterval) {
         this.collectionInterval = collectionInterval;
     }
 
@@ -200,7 +200,7 @@ public class RoadStation implements Stringifiable {
         return collectionStatus;
     }
 
-    public void setCollectionStatus(CollectionStatus collectionStatus) {
+    public void setCollectionStatus(final CollectionStatus collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
 
@@ -208,7 +208,7 @@ public class RoadStation implements Stringifiable {
         return municipality;
     }
 
-    public void setMunicipality(String municipality) {
+    public void setMunicipality(final String municipality) {
         this.municipality = municipality;
     }
 
@@ -216,7 +216,7 @@ public class RoadStation implements Stringifiable {
         return municipalityCode;
     }
 
-    public void setMunicipalityCode(String municipalityCode) {
+    public void setMunicipalityCode(final String municipalityCode) {
         this.municipalityCode = municipalityCode;
     }
 
@@ -224,7 +224,7 @@ public class RoadStation implements Stringifiable {
         return province;
     }
 
-    public void setProvince(String province) {
+    public void setProvince(final String province) {
         this.province = province;
     }
 
@@ -232,7 +232,7 @@ public class RoadStation implements Stringifiable {
         return provinceCode;
     }
 
-    public void setProvinceCode(String provinceCode) {
+    public void setProvinceCode(final String provinceCode) {
         this.provinceCode = provinceCode;
     }
 
@@ -240,7 +240,7 @@ public class RoadStation implements Stringifiable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 

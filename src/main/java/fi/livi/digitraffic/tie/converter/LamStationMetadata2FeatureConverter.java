@@ -29,11 +29,11 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
     private static LamStationFeature convert(final LamStation lam) {
         final LamStationFeature f = new LamStationFeature();
         if (log.isDebugEnabled()) {
-            log.debug("Convert: " + lam.toString());
+            log.debug("Convert: " + lam);
         }
         f.setId(Long.toString(lam.getId()));
 
-        LamStationProperties properties = f.getProperties();
+        final LamStationProperties properties = f.getProperties();
 
         // Lam station properties
         properties.setId(lam.getId());
@@ -46,7 +46,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         properties.setName(lam.getName());
 
         // RoadStation properties
-        RoadStation rs = lam.getRoadStation();
+        final RoadStation rs = lam.getRoadStation();
         setRoadStationProperties(properties, rs);
 
 

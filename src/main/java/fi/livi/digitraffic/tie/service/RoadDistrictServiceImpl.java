@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RoadDistrictServiceImpl implements RoadDistrictService {
 
-    private RoadDistrictRepository roadDistrictRepository;
+    private final RoadDistrictRepository roadDistrictRepository;
 
     @Autowired
     public RoadDistrictServiceImpl(final RoadDistrictRepository roadDistrictRepository) {
@@ -18,13 +18,13 @@ public class RoadDistrictServiceImpl implements RoadDistrictService {
 
     @Transactional
     @Override
-    public RoadDistrict findByNaturalId(int roadDistrictNumber) {
+    public RoadDistrict findByNaturalId(final int roadDistrictNumber) {
         return roadDistrictRepository.findByNaturalId(roadDistrictNumber);
     }
 
     @Transactional
     @Override
-    public RoadDistrict findByRoadSectionAndRoadNaturalId(int roadSectionNaturalId, int roadNaturalId) {
+    public RoadDistrict findByRoadSectionAndRoadNaturalId(final int roadSectionNaturalId, final int roadNaturalId) {
         return roadDistrictRepository.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
     }
 

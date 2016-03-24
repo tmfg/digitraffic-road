@@ -27,7 +27,7 @@ public class AbstractMetadataToFeatureConverter {
         crs.getProperties().setName("urn:ogc:def:crs:EPSG::3067");
     }
 
-    protected static void setRoadStationProperties(RoadStationProperties properties, RoadStation roadStation) {
+    protected static void setRoadStationProperties(final RoadStationProperties properties, final RoadStation roadStation) {
         properties.setNaturalId(roadStation.getNaturalId());
         properties.setCollectionInterval(roadStation.getCollectionInterval());
         properties.setCollectionStatus(roadStation.getCollectionStatus());

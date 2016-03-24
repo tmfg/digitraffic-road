@@ -15,26 +15,26 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
 
     private static final Logger LOG = Logger.getLogger(RoadWeatherStationServiceImpl.class);
 
-    private RoadWeatherStationRepository roadWeatherStationRepository;
+    private final RoadWeatherStationRepository roadWeatherStationRepository;
 
     @Autowired
-    public RoadWeatherStationServiceImpl(RoadWeatherStationRepository roadWeatherStationRepository) {
+    public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository) {
 
         this.roadWeatherStationRepository = roadWeatherStationRepository;
     }
 
     public Map<Long, RoadWeatherStation> findAllRoadWeatherStationsMappedByLotjuId() {
-        Map<Long, RoadWeatherStation> map = new HashMap<>();
-        List<RoadWeatherStation> all = roadWeatherStationRepository.findAll();
-        for (RoadWeatherStation roadWeatherStation : all) {
+        final Map<Long, RoadWeatherStation> map = new HashMap<>();
+        final List<RoadWeatherStation> all = roadWeatherStationRepository.findAll();
+        for (final RoadWeatherStation roadWeatherStation : all) {
             map.put(roadWeatherStation.getLotjuId(), roadWeatherStation);
         }
         return map;
     }
 
     @Override
-    public RoadWeatherStation save(RoadWeatherStation roadWeatherStation) {
-        RoadWeatherStation rws = roadWeatherStationRepository.save(roadWeatherStation);
+    public RoadWeatherStation save(final RoadWeatherStation roadWeatherStation) {
+        final RoadWeatherStation rws = roadWeatherStationRepository.save(roadWeatherStation);
         roadWeatherStationRepository.flush();
         return rws;
     }

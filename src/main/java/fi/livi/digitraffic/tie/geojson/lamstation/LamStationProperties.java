@@ -32,7 +32,7 @@ public class LamStationProperties extends RoadStationProperties {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -40,7 +40,7 @@ public class LamStationProperties extends RoadStationProperties {
         return lamNaturalId;
     }
 
-    public void setLamNaturalId(long lamNaturalId) {
+    public void setLamNaturalId(final long lamNaturalId) {
         this.lamNaturalId = lamNaturalId;
     }
 
@@ -48,7 +48,7 @@ public class LamStationProperties extends RoadStationProperties {
         return direction1Municipality;
     }
 
-    public void setDirection1Municipality(String direction1Municipality) {
+    public void setDirection1Municipality(final String direction1Municipality) {
         this.direction1Municipality = direction1Municipality;
     }
 
@@ -56,7 +56,7 @@ public class LamStationProperties extends RoadStationProperties {
         return direction1MunicipalityCode;
     }
 
-    public void setDirection1MunicipalityCode(Integer direction1MunicipalityCode) {
+    public void setDirection1MunicipalityCode(final Integer direction1MunicipalityCode) {
         this.direction1MunicipalityCode = direction1MunicipalityCode;
     }
 
@@ -64,7 +64,7 @@ public class LamStationProperties extends RoadStationProperties {
         return direction2Municipality;
     }
 
-    public void setDirection2Municipality(String direction2Municipality) {
+    public void setDirection2Municipality(final String direction2Municipality) {
         this.direction2Municipality = direction2Municipality;
     }
 
@@ -72,7 +72,7 @@ public class LamStationProperties extends RoadStationProperties {
         return direction2MunicipalityCode;
     }
 
-    public void setDirection2MunicipalityCode(Integer direction2MunicipalityCode) {
+    public void setDirection2MunicipalityCode(final Integer direction2MunicipalityCode) {
         this.direction2MunicipalityCode = direction2MunicipalityCode;
     }
 
@@ -80,7 +80,7 @@ public class LamStationProperties extends RoadStationProperties {
         return lamStationType;
     }
 
-    public void setLamStationType(LamStationType lamStationType) {
+    public void setLamStationType(final LamStationType lamStationType) {
         this.lamStationType = lamStationType;
     }
 

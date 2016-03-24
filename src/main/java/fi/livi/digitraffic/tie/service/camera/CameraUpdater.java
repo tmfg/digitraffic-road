@@ -6,6 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.model.CameraPreset;
 import fi.livi.digitraffic.tie.model.CameraType;
@@ -19,28 +29,18 @@ import fi.livi.digitraffic.tie.service.roadweather.RoadWeatherStationService;
 import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.kamera.KeruunTILA;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CameraUpdater {
-
     private static final Logger log = Logger.getLogger(CameraUpdater.class);
 
-    private CameraPresetService cameraPresetService;
-    private RoadStationService roadStationService;
-    private RoadWeatherStationService roadWeatherStationService;
-    private StaticDataStatusService staticDataStatusService;
+    private final CameraPresetService cameraPresetService;
+    private final RoadStationService roadStationService;
+    private final RoadWeatherStationService roadWeatherStationService;
+    private final StaticDataStatusService staticDataStatusService;
     private final CameraClient cameraClient;
 
-    private static EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
+    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     @Autowired
     public CameraUpdater(final CameraPresetService cameraPresetService,
@@ -65,17 +65,17 @@ public class CameraUpdater {
             return;
         }
 
-        List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
+        final List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
 
-        for (CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
-            RoadStation rs = new RoadStation();
+        for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
+            final RoadStation rs = new RoadStation();
             rs.setType(RoadStationType.CAMERA);
             rs.setName("DUMMY");
             rs.setNaturalId(cameraPreset.getId() * -1);
             cameraPreset.setRoadStation(rs);
             rs.obsolete();
             roadStationService.save(rs);
-            log.info("Fixed " + cameraPreset.toString() + " missing RoadStation");
+            log.info("Fixed " + cameraPreset + " missing RoadStation");
         }
 
         final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =
@@ -83,7 +83,7 @@ public class CameraUpdater {
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched Cameras:");
-            for (Pair<Kamera, Esiasento> cameraPreset : presetIdToKameraAndEsiasento.values()) {
+            for (final Pair<Kamera, Esiasento> cameraPreset : presetIdToKameraAndEsiasento.values()) {
                 log.info(ToStringBuilder.reflectionToString(cameraPreset.getLeft().getVanhaId()) + " : " + ToStringBuilder.reflectionToString(cameraPreset.getRight()));
             }
         }
@@ -100,21 +100,21 @@ public class CameraUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.CAMERA_PRESET, updateStaticDataStatus);
     }
 
-    private boolean updateCameras(Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento,
-                                  Map<String, CameraPreset> currentPresetIdToCameraPresets) {
+    private boolean updateCameras(final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento,
+                                  final Map<String, CameraPreset> currentPresetIdToCameraPresets) {
 
         final List<CameraPreset> obsolete = new ArrayList<>(); // obsolete presets
         final List<Pair<Pair<Kamera, Esiasento>, CameraPreset>> update = new ArrayList<>(); // camera presets to update
         final List<Pair<Kamera, Esiasento>> insert = new ArrayList<>(); // new lam-stations
 
         int invalid = 0;
-        for (final String presetId : presetIdToKameraAndEsiasento.keySet()) {
-            Pair<Kamera, Esiasento> kameraEsiasentoPair = presetIdToKameraAndEsiasento.get(presetId);
-            Kamera kamera = kameraEsiasentoPair.getLeft();
+        for (final Map.Entry<String, Pair<Kamera, Esiasento>> stringPairEntry : presetIdToKameraAndEsiasento.entrySet()) {
+            final Pair<Kamera, Esiasento> kameraEsiasentoPair = stringPairEntry.getValue();
+            final Kamera kamera = kameraEsiasentoPair.getLeft();
 
-            if ( validate(kameraEsiasentoPair.getLeft()) ) {
+            if (validate(kameraEsiasentoPair.getLeft()) ) {
 
-                final CameraPreset currentSaved = currentPresetIdToCameraPresets.remove(presetId);
+                final CameraPreset currentSaved = currentPresetIdToCameraPresets.remove(stringPairEntry.getKey());
 
                 if (currentSaved != null) {
                     if (POISTETUT.contains(kamera.getKeruunTila())) {
@@ -134,22 +134,23 @@ public class CameraUpdater {
             log.warn("Found " + invalid + " Kameras from LOTJU");
         }
 
-        Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap = roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
+        final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap = roadWeatherStationService
+                .findAllRoadWeatherStationsMappedByLotjuId();
 
-        List<RoadStation> cameraRoadStations = roadStationService.findByType(RoadStationType.CAMERA);
-        Map<Long, RoadStation> naturalIdToRoadStationMap = new HashMap<>();
-        for (RoadStation roadStation : cameraRoadStations) {
+        final List<RoadStation> cameraRoadStations = roadStationService.findByType(RoadStationType.CAMERA);
+        final Map<Long, RoadStation> naturalIdToRoadStationMap = new HashMap<>();
+        for (final RoadStation roadStation : cameraRoadStations) {
             naturalIdToRoadStationMap.put(roadStation.getNaturalId(), roadStation);
         }
 
         // camera presets in database, but not in server
         obsolete.addAll(currentPresetIdToCameraPresets.values());
 
-        int obsoleted = obsoleteCameraPresets(obsolete);
+        final int obsoleted = obsoleteCameraPresets(obsolete);
         log.info("Osoleted " + obsoleted + " CameraPresets");
 
-        int uptaded = updateCameraPresets(update, lotjuIdToRoadWeatherStationMap, naturalIdToRoadStationMap);
-        log.info("Uptaded " + uptaded + " CameraPresets");
+        final int updated = updateCameraPresets(update, lotjuIdToRoadWeatherStationMap, naturalIdToRoadStationMap);
+        log.info("Updated " + updated + " CameraPresets");
 
         final int inserted = insertCameraPresets(insert, lotjuIdToRoadWeatherStationMap, naturalIdToRoadStationMap);
         log.info("Inserted " + inserted + " CameraPresets");
@@ -160,28 +161,27 @@ public class CameraUpdater {
         return obsoleted > 0 || inserted > 0;
     }
 
-    private boolean validate(Kamera kamera) {
-        boolean valid = kamera.getVanhaId() != null;
+    private static boolean validate(final Kamera kamera) {
+        final boolean valid = kamera.getVanhaId() != null;
         if (!valid) {
             log.error(ToStringHelpper.toString(kamera) + " is invalid: has null vanhaId");
         }
         return false;
     }
 
-    private int updateCameraPresets(List<Pair<Pair<Kamera, Esiasento>, CameraPreset>> update,
-                                    Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
-                                    Map<Long, RoadStation> naturalIdToRoadStationMap) {
+    private int updateCameraPresets(final List<Pair<Pair<Kamera, Esiasento>, CameraPreset>> update,
+                                    final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
+                                    final Map<Long, RoadStation> naturalIdToRoadStationMap) {
 
 
         int counter = 0;
         for (final Pair<Pair<Kamera, Esiasento>, CameraPreset> pair : update) {
+            final Pair<Kamera, Esiasento> kameraEsiasentoPair = pair.getLeft();
+            final Kamera kamera = kameraEsiasentoPair.getLeft();
+            final Esiasento esiasento = kameraEsiasentoPair.getRight();
+            final CameraPreset cameraPreset = pair.getRight();
 
-            Pair<Kamera, Esiasento> kameraEsiasentoPair = pair.getLeft();
-            Kamera kamera = kameraEsiasentoPair.getLeft();
-            Esiasento esiasento = kameraEsiasentoPair.getRight();
-            CameraPreset cameraPreset = pair.getRight();
-
-            Integer naturalId = kamera.getVanhaId();
+            final Integer naturalId = kamera.getVanhaId();
             if (naturalId != null) {
                 RoadStation rs = naturalIdToRoadStationMap.get(naturalId.longValue());
                 if (rs == null) {
@@ -195,7 +195,7 @@ public class CameraUpdater {
 
             log.debug("Updating camera preset " + cameraPreset.getPresetId());
 
-            if ( updateCameraPresetAtributes(kamera, esiasento, lotjuIdToRoadWeatherStationMap, cameraPreset) ) {
+            if (updateCameraPresetAtributes(kamera, esiasento, lotjuIdToRoadWeatherStationMap, cameraPreset) ) {
                 counter++;
             }
             if (cameraPreset.getRoadStation().getId() == null) {
@@ -206,17 +206,17 @@ public class CameraUpdater {
         return counter;
     }
 
-    private int insertCameraPresets(List<Pair<Kamera, Esiasento>> insert,
-                                    Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
-                                    Map<Long, RoadStation> naturalIdToRoadStationMap) {
+    private int insertCameraPresets(final List<Pair<Kamera, Esiasento>> insert,
+                                    final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
+                                    final Map<Long, RoadStation> naturalIdToRoadStationMap) {
 
-        for (Pair<Kamera, Esiasento> kameraEsiasentoPair : insert) {
-            Kamera kamera = kameraEsiasentoPair.getLeft();
-            Esiasento esiasento = kameraEsiasentoPair.getRight();
+        for (final Pair<Kamera, Esiasento> kameraEsiasentoPair : insert) {
+            final Kamera kamera = kameraEsiasentoPair.getLeft();
+            final Esiasento esiasento = kameraEsiasentoPair.getRight();
 
 
             // Default setPublicInternal(true); external is read from esiasento
-            CameraPreset cp = new CameraPreset();
+            final CameraPreset cp = new CameraPreset();
             cp.setPublicInternal(true);
 
             RoadStation rs = naturalIdToRoadStationMap.get(kamera.getVanhaId().longValue());
@@ -237,15 +237,13 @@ public class CameraUpdater {
         return insert.size();
     }
 
-    private boolean updateCameraPresetAtributes(Kamera kameraFrom,
-                                                Esiasento esiasentoFrom,
-                                                Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
-                                                CameraPreset to) {
+    private static boolean updateCameraPresetAtributes(final Kamera kameraFrom, final Esiasento esiasentoFrom, final Map<Long,
+            RoadWeatherStation> lotjuIdToRoadWeatherStationMap, final CameraPreset to) {
 
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
 
-        String cameraId = convertVanhaIdToKameraId(kameraFrom.getVanhaId());
-        String presetId = convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
+        final String cameraId = convertVanhaIdToKameraId(kameraFrom.getVanhaId());
+        final String presetId = convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {
             log.warn("Update camera preset (id:" + to.getId() + ", presetId: " + to.getPresetId() + ") cameraId from " + to.getCameraId() + " to " + cameraId);
@@ -282,10 +280,10 @@ public class CameraUpdater {
 
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
 
-        Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
+        final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
         if (tsaLotjuId != null) {
             if (to.getNearestRoadWeatherStation() == null || !tsaLotjuId.equals(to.getLotjuId())) {
-                RoadWeatherStation nearestRWS = lotjuIdToRoadWeatherStationMap.get(tsaLotjuId);
+                final RoadWeatherStation nearestRWS = lotjuIdToRoadWeatherStationMap.get(tsaLotjuId);
                 if (nearestRWS == null) {
                     log.error("Could not set set nearest road weather station for cameraPreset " + to.getPresetId() + ". Weather station with lotjuId " + tsaLotjuId + " not found.");
                 }
@@ -301,7 +299,7 @@ public class CameraUpdater {
     }
 
     private static boolean updateRoadStationAttributes(final RoadStation to, final Kamera from) {
-        int hash = HashCodeBuilder.reflectionHashCode(to);
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(from.getVanhaId());
         to.setType(RoadStationType.LAM_STATION);
         to.setObsolete(false);
@@ -338,15 +336,15 @@ public class CameraUpdater {
         return counter;
     }
 
-    public static String convertVanhaIdToKameraId(Integer vanhaId) {
-        String vanha = vanhaId.toString();
-        String cameraId = StringUtils.leftPad(vanha, 6, "C00000");
+    public static String convertVanhaIdToKameraId(final Integer vanhaId) {
+        final String vanha = vanhaId.toString();
+        final String cameraId = StringUtils.leftPad(vanha, 6, "C00000");
         log.debug("vanhaId " + vanhaId + " -> " + cameraId);
         return cameraId;
     }
 
-    public static String convertCameraIdToPresetId(String cameraId, String suunta) {
-        String presetId = cameraId + StringUtils.leftPad(suunta, 2, "00");
+    public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
+        final String presetId = cameraId + StringUtils.leftPad(suunta, 2, "00");
         log.debug("cameraId " + cameraId + " suunta " + suunta + " -> " + presetId);
         return presetId;
     }

@@ -32,11 +32,11 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
     private static CameraPresetFeature convert(final CameraPreset cp) {
         final CameraPresetFeature f = new CameraPresetFeature();
         if (log.isDebugEnabled()) {
-            log.debug("Convert: " + cp.toString());
+            log.debug("Convert: " + cp);
         }
         f.setId(Long.toString(cp.getId()));
 
-        CameraPresetProperties properties = f.getProperties();
+        final CameraPresetProperties properties = f.getProperties();
 
         // Lam station properties
         properties.setId(cp.getId());
@@ -56,7 +56,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         properties.setDelay(cp.getDelay());
 
         // RoadStation properties
-        RoadStation rs = cp.getRoadStation();
+        final RoadStation rs = cp.getRoadStation();
         setRoadStationProperties(properties, rs);
         properties.setNaturalId(rs.getNaturalId());
         properties.setCollectionInterval(rs.getCollectionInterval());

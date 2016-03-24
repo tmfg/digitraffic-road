@@ -95,7 +95,7 @@ public class CameraPreset implements Stringifiable {
         return cameraId;
     }
 
-    public void setCameraId(String cameraId) {
+    public void setCameraId(final String cameraId) {
         this.cameraId = cameraId;
     }
 
@@ -103,7 +103,7 @@ public class CameraPreset implements Stringifiable {
         return presetId;
     }
 
-    public void setPresetId(String presetId) {
+    public void setPresetId(final String presetId) {
         this.presetId = presetId;
     }
 
@@ -111,7 +111,7 @@ public class CameraPreset implements Stringifiable {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -119,7 +119,7 @@ public class CameraPreset implements Stringifiable {
         return lotjuCameraId;
     }
 
-    public void setLotjuCameraId(Long lotjuCameraId) {
+    public void setLotjuCameraId(final Long lotjuCameraId) {
         this.lotjuCameraId = lotjuCameraId;
     }
 
@@ -127,7 +127,7 @@ public class CameraPreset implements Stringifiable {
         return cameraType;
     }
 
-    public void setCameraType(CameraType cameraType) {
+    public void setCameraType(final CameraType cameraType) {
         this.cameraType = cameraType;
     }
 
@@ -135,7 +135,7 @@ public class CameraPreset implements Stringifiable {
         return presetName1;
     }
 
-    public void setPresetName1(String presetName1) {
+    public void setPresetName1(final String presetName1) {
         this.presetName1 = presetName1;
     }
 
@@ -143,7 +143,7 @@ public class CameraPreset implements Stringifiable {
         return presetName2;
     }
 
-    public void setPresetName2(String presetName2) {
+    public void setPresetName2(final String presetName2) {
         this.presetName2 = presetName2;
     }
 
@@ -151,7 +151,7 @@ public class CameraPreset implements Stringifiable {
         return presetOrder;
     }
 
-    public void setPresetOrder(Integer presetOrder) {
+    public void setPresetOrder(final Integer presetOrder) {
         this.presetOrder = presetOrder;
     }
 
@@ -159,7 +159,7 @@ public class CameraPreset implements Stringifiable {
         return publicExternal;
     }
 
-    public void setPublicExternal(Boolean publicExternal) {
+    public void setPublicExternal(final Boolean publicExternal) {
         this.publicExternal = publicExternal;
     }
 
@@ -167,7 +167,7 @@ public class CameraPreset implements Stringifiable {
         return inCollection;
     }
 
-    public void setInCollection(boolean inCollection) {
+    public void setInCollection(final boolean inCollection) {
         this.inCollection = inCollection;
     }
 
@@ -175,7 +175,7 @@ public class CameraPreset implements Stringifiable {
         return compression;
     }
 
-    public void setCompression(Integer compression) {
+    public void setCompression(final Integer compression) {
         this.compression = compression;
     }
 
@@ -183,7 +183,7 @@ public class CameraPreset implements Stringifiable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -191,7 +191,7 @@ public class CameraPreset implements Stringifiable {
         return nameOnDevice;
     }
 
-    public void setNameOnDevice(String nameOnDevice) {
+    public void setNameOnDevice(final String nameOnDevice) {
         this.nameOnDevice = nameOnDevice;
     }
 
@@ -199,7 +199,7 @@ public class CameraPreset implements Stringifiable {
         return defaultDirection;
     }
 
-    public void setDefaultDirection(Boolean defaultDirection) {
+    public void setDefaultDirection(final Boolean defaultDirection) {
         this.defaultDirection = defaultDirection;
     }
 
@@ -207,7 +207,7 @@ public class CameraPreset implements Stringifiable {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -215,7 +215,7 @@ public class CameraPreset implements Stringifiable {
         return direction;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(final String direction) {
         this.direction = direction;
     }
 
@@ -223,7 +223,7 @@ public class CameraPreset implements Stringifiable {
         return delay;
     }
 
-    public void setDelay(Integer delay) {
+    public void setDelay(final Integer delay) {
         this.delay = delay;
     }
 
@@ -239,7 +239,7 @@ public class CameraPreset implements Stringifiable {
         return nearestRoadWeatherStation;
     }
 
-    public void setNearestRoadWeatherStation(RoadWeatherStation nearestRoadWeatherStation) {
+    public void setNearestRoadWeatherStation(final RoadWeatherStation nearestRoadWeatherStation) {
         this.nearestRoadWeatherStation = nearestRoadWeatherStation;
     }
 
@@ -258,7 +258,7 @@ public class CameraPreset implements Stringifiable {
         return publicInternal;
     }
 
-    public void setPublicInternal(boolean publicInternal) {
+    public void setPublicInternal(final boolean publicInternal) {
         this.publicInternal = publicInternal;
     }
 

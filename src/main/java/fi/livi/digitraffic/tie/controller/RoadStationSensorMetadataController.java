@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class RoadStationSensorMetadataController {
-    private RoadStationSensorService roadStationSensorService;
+    private final RoadStationSensorService roadStationSensorService;
 
     @Autowired
     public RoadStationSensorMetadataController(final RoadStationSensorService roadStationSensorService) {

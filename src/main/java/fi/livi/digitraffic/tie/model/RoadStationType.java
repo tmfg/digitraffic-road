@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 public enum RoadStationType {
-
     LAM_STATION(1),
     WEATHER_STATION(2),
     CAMERA(3);
@@ -16,20 +15,20 @@ public enum RoadStationType {
 
     private final int typeNumber;
 
-    private RoadStationType(int typeNumber) {
+    RoadStationType(final int typeNumber) {
         this.typeNumber = typeNumber;
     }
 
     private static final Map<Integer, RoadStationType> lookup = new HashMap<Integer, RoadStationType>();
 
     static{
-        for (RoadStationType rst : EnumSet.allOf(RoadStationType.class)) {
+        for (final RoadStationType rst : EnumSet.allOf(RoadStationType.class)) {
             lookup.put(rst.getTypeNumber(), rst);
         }
     }
 
-    public static RoadStationType fromTypeNumber(int typeNumber) {
-        RoadStationType value = lookup.get(typeNumber);
+    public static RoadStationType fromTypeNumber(final int typeNumber) {
+        final RoadStationType value = lookup.get(typeNumber);
         if (value == null) {
             LOG.error("RoadStationType not found for typeNumber " + typeNumber);
         }

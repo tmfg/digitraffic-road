@@ -49,7 +49,7 @@ public class RoadWeatherStation implements Stringifiable {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -57,7 +57,7 @@ public class RoadWeatherStation implements Stringifiable {
         return roadStation;
     }
 
-    public void setRoadStation(RoadStation roadStation) {
+    public void setRoadStation(final RoadStation roadStation) {
         this.roadStation = roadStation;
     }
 
@@ -69,7 +69,7 @@ public class RoadWeatherStation implements Stringifiable {
         return roadWeatherStationType;
     }
 
-    public void setRoadWeatherStationType(RoadWeatherStationType roadWeatherStationType) {
+    public void setRoadWeatherStationType(final RoadWeatherStationType roadWeatherStationType) {
         this.roadWeatherStationType = roadWeatherStationType;
     }
 

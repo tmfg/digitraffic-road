@@ -9,12 +9,12 @@ import fi.livi.digitraffic.tie.model.RoadWeatherStationType;
 public class RoadWeatherStationTypeConverter implements AttributeConverter<RoadWeatherStationType, String> {
 
     @Override
-    public String convertToDatabaseColumn(RoadWeatherStationType type) {
+    public String convertToDatabaseColumn(final RoadWeatherStationType type) {
         return type != null ? type.name() : null;
     }
 
     @Override
-    public RoadWeatherStationType convertToEntityAttribute(String type) {
+    public RoadWeatherStationType convertToEntityAttribute(final String type) {
         return type != null ? RoadWeatherStationType.valueOf(type) : null;
     }
 }

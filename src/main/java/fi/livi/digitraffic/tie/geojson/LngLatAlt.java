@@ -28,12 +28,12 @@ public class LngLatAlt implements Serializable {
     public LngLatAlt() {
     }
 
-    public LngLatAlt(double longitude, double latitude) {
+    public LngLatAlt(final double longitude, final double latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
-    public LngLatAlt(double longitude, double latitude, double altitude) {
+    public LngLatAlt(final double longitude, final double latitude, final double altitude) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.altitude = altitude;
@@ -47,7 +47,7 @@ public class LngLatAlt implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(final double longitude) {
         this.longitude = longitude;
     }
 
@@ -55,7 +55,7 @@ public class LngLatAlt implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(final double latitude) {
         this.latitude = latitude;
     }
 
@@ -63,19 +63,19 @@ public class LngLatAlt implements Serializable {
         return altitude;
     }
 
-    public void setAltitude(double altitude) {
+    public void setAltitude(final double altitude) {
         this.altitude = altitude;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (!(o instanceof LngLatAlt)) {
             return false;
         }
-        LngLatAlt lngLatAlt = (LngLatAlt) o;
+        final LngLatAlt lngLatAlt = (LngLatAlt) o;
         return Double.compare(lngLatAlt.latitude, latitude) == 0 && Double.compare(lngLatAlt.longitude, longitude) == 0
                 && Double.compare(lngLatAlt.altitude, altitude) == 0;
     }

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CameraPresetServiceImpl implements CameraPresetService {
 
-    private CameraPresetRepository cameraPresetRepository;
+    private final CameraPresetRepository cameraPresetRepository;
 
     @Autowired
     CameraPresetServiceImpl(final CameraPresetRepository cameraPresetRepository) {
@@ -34,8 +34,8 @@ public class CameraPresetServiceImpl implements CameraPresetService {
     }
 
     @Override
-    public CameraPreset save(CameraPreset cp) {
-        CameraPreset value = cameraPresetRepository.save(cp);
+    public CameraPreset save(final CameraPreset cp) {
+        final CameraPreset value = cameraPresetRepository.save(cp);
         cameraPresetRepository.flush();
         return value;
     }

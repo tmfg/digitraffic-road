@@ -29,7 +29,7 @@ public class SwaggerUiTest extends MetadataTest {
     @Autowired
     private BuildVersionService versionService;
 
-    private MediaType restContentType = MediaType.APPLICATION_JSON;
+    private final MediaType restContentType = MediaType.APPLICATION_JSON;
 
 
     @Before

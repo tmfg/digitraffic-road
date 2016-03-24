@@ -2,10 +2,11 @@ package fi.livi.digitraffic.tie.dao;
 
 import javax.persistence.EntityManager;
 
-import fi.livi.digitraffic.tie.service.StaticDataStatusServiceImpl;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import fi.livi.digitraffic.tie.service.StaticDataStatusServiceImpl;
 
 @Repository
 public class StaticDataStatusDAO {
@@ -16,7 +17,7 @@ public class StaticDataStatusDAO {
         this.entityManager = entityManager;
     }
 
-    public void updateStaticDataStatus(StaticDataStatusServiceImpl.StaticStatusType type, final boolean updateStaticDataStatus) {
+    public void updateStaticDataStatus(final StaticDataStatusServiceImpl.StaticStatusType type, final boolean updateStaticDataStatus) {
         final Session session = entityManager.unwrap(Session.class);
 
         if(updateStaticDataStatus || session.isDirty()) {

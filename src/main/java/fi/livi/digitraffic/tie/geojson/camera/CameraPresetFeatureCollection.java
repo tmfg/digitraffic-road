@@ -20,16 +20,16 @@ public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeatu
         return features;
     }
 
-    public void setFeatures(List<CameraPresetFeature> features) {
+    public void setFeatures(final List<CameraPresetFeature> features) {
         this.features = features;
     }
 
-    public CameraPresetFeatureCollection add(CameraPresetFeature feature) {
+    public CameraPresetFeatureCollection add(final CameraPresetFeature feature) {
         features.add(feature);
         return this;
     }
 
-    public void addAll(Collection<CameraPresetFeature> features) {
+    public void addAll(final Collection<CameraPresetFeature> features) {
         this.features.addAll(features);
     }
 
@@ -39,12 +39,12 @@ public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeatu
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
         if (!(o instanceof CameraPresetFeatureCollection))
             return false;
-        CameraPresetFeatureCollection features1 = (CameraPresetFeatureCollection) o;
+        final CameraPresetFeatureCollection features1 = (CameraPresetFeatureCollection) o;
         return features.equals(features1.features);
     }
 

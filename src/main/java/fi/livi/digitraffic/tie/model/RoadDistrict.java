@@ -39,7 +39,7 @@ public class RoadDistrict {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -47,7 +47,7 @@ public class RoadDistrict {
         return obsolete;
     }
 
-    public void setObsolete(boolean obsolete) {
+    public void setObsolete(final boolean obsolete) {
         this.obsolete = obsolete;
     }
 
@@ -55,7 +55,7 @@ public class RoadDistrict {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(LocalDate obsoleteDate) {
+    public void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
 
@@ -63,7 +63,7 @@ public class RoadDistrict {
         return speedLimitSeason;
     }
 
-    public void setSpeedLimitSeason(Integer speedLimitSeason) {
+    public void setSpeedLimitSeason(final Integer speedLimitSeason) {
         this.speedLimitSeason = speedLimitSeason;
     }
 }

@@ -13,7 +13,7 @@ public enum CollectionStatus {
 
     private final String fiValue;
 
-    CollectionStatus(String fiValue) {
+    CollectionStatus(final String fiValue) {
         this.fiValue = fiValue;
     }
 
@@ -21,29 +21,29 @@ public enum CollectionStatus {
         return fiValue;
     }
 
-    public static CollectionStatus convertKeruunTila(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(fi.livi.digitraffic.tie.wsdl.kamera.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.kamera.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    private static CollectionStatus getStatus(String fiValue) {
-        for (CollectionStatus collectionStatus : CollectionStatus.values()) {
+    private static CollectionStatus getStatus(final String fiValue) {
+        for (final CollectionStatus collectionStatus : CollectionStatus.values()) {
             if (collectionStatus.getFiValue().equals(fiValue)) {
                 return collectionStatus;
             }

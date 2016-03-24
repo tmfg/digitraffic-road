@@ -32,7 +32,7 @@ public class LamStationFeature {
         return geometry;
     }
 
-    public void setGeometry(Point geometry) {
+    public void setGeometry(final Point geometry) {
         this.geometry = geometry;
     }
 
@@ -40,7 +40,7 @@ public class LamStationFeature {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class LamStationFeature {
         return properties;
     }
 
-    public void setProperties(LamStationProperties properties) {
+    public void setProperties(final LamStationProperties properties) {
         this.properties = properties;
     }
 

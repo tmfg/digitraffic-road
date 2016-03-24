@@ -34,7 +34,7 @@ public class LamMetadataRestTest extends MetadataTest {
     private MockMvc mockMvc;
 
     @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
+    void setConverters(final HttpMessageConverter<?>[] converters) {
 
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
