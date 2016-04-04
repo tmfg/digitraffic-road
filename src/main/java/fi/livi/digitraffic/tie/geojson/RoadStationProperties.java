@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import fi.livi.digitraffic.tie.geojson.camera.CameraPresetProperties;
 import fi.livi.digitraffic.tie.geojson.lamstation.LamStationProperties;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

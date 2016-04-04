@@ -8,9 +8,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 //@Configuration
-//@EnableScheduling
 public class SchedulingConfiguration implements SchedulingConfigurer {
-
     @Override
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskExecutor());

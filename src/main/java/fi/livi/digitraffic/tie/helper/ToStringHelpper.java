@@ -4,7 +4,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import fi.livi.digitraffic.tie.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;

@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.geojson.camera;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fi.livi.digitraffic.tie.geojson.RoadStationProperties;
-import fi.livi.digitraffic.tie.model.CameraType;
+import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Camera preset properties")

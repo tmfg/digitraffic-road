@@ -1,14 +1,15 @@
 package fi.livi.digitraffic.tie.conf;
 
-import fi.livi.digitraffic.tie.service.camera.CameraClient;
-import fi.livi.digitraffic.tie.service.lam.LamStationClient;
-import fi.livi.digitraffic.tie.service.roadweather.RoadWeatherStationClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraClient;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationClient;
+import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationClient;
 
 @Configuration
 public class MetadataMarshallerConfiguration {

@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.geojson.lamstation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fi.livi.digitraffic.tie.geojson.RoadStationProperties;
-import fi.livi.digitraffic.tie.model.LamStationType;
+import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Lam station properties")

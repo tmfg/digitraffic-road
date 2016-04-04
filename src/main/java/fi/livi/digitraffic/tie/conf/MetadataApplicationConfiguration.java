@@ -13,11 +13,12 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.dao"})
+@EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_METADATA_PART_PATH = "/metadata";
+    public static final String API_DATA_PART_PATH = "/data";
 
     @Autowired
     LocaleChangeInterceptor localeChangeInterceptor;

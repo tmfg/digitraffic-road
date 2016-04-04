@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.google.common.base.Predicate;
-import fi.livi.digitraffic.tie.service.MetadataApiInfoService;
+import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
