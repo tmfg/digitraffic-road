@@ -4,25 +4,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.LamStation;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
+import fi.livi.digitraffic.tie.metadata.model.LamStation;
+
 @Service
 public class LamStationServiceImpl implements LamStationService {
-
-    private static final Logger LOG = Logger.getLogger(LamStationServiceImpl.class);
-
     private final LamStationRepository lamStationRepository;
 
-
     @Autowired
-    LamStationServiceImpl(final LamStationRepository lamStationRepository) {
+    public LamStationServiceImpl(final LamStationRepository lamStationRepository) {
         this.lamStationRepository = lamStationRepository;
     }
 
@@ -49,7 +45,6 @@ public class LamStationServiceImpl implements LamStationService {
     @Transactional(readOnly = true)
     @Override
     public Map<Long, LamStation> findAllLamStationsMappedByByNaturalId() {
-
         final List<LamStation> allStations = lamStationRepository.findAll();
         final Map<Long, LamStation> stationMap = new HashMap<>();
 

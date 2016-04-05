@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -20,7 +20,7 @@ public class LamMeasurement {
 
     private long averageSpeed2;
 
-    private Date measured;
+    private LocalDateTime measured;
 
     public long getLamId() {
         return lamId;
@@ -62,11 +62,11 @@ public class LamMeasurement {
         this.averageSpeed2 = averageSpeed2;
     }
 
-    public Date getMeasured() {
+    public LocalDateTime getMeasured() {
         return measured;
     }
 
-    public void setMeasured(final Date measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 }
