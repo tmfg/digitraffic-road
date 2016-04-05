@@ -1,31 +1,23 @@
 package fi.livi.digitraffic.tie.data.model;
 
 import java.util.Date;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
 @Entity
-@Table(name = "lam_station_data")
 @Immutable
 public class LamMeasurement {
     @Id
-    @Column(name = "lam_station_id")
     private long lamId;
 
-    @Column(name = "traffic_volume_1")
     private long trafficVolume1;
 
-    @Column(name = "traffic_volume_2")
     private long trafficVolume2;
 
-    @Column(name = "average_speed_1")
     private long averageSpeed1;
 
-    @Column(name = "average_speed_2")
     private long averageSpeed2;
 
     private Date measured;

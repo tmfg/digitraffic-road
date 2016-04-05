@@ -14,6 +14,10 @@ public class DataObject {
         this.timestamp = timestamp;
     }
 
+    public DataObject() {
+        this.timestamp = ZonedDateTime.now();
+    }
+
     public String getLocalTime() {
         return timestamp.toString();
     }
