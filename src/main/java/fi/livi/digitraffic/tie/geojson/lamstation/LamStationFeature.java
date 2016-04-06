@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.geojson.lamstation;
 
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import fi.livi.digitraffic.tie.geojson.Point;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,10 +9,12 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON LamStationFeature Object
  */
-@ApiModel(description = "GeoJSON Feature Object")
-@JsonTypeInfo(property = "type",  use = Id.NAME)
+@ApiModel(description = "GeoJSON Feature Object", value = "Feature")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LamStationFeature {
+
+    @ApiModelProperty(value = "\"Feature\"", required = true, position = 1)
+    private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Unique identifier for lam station", required = true, position = 1)
@@ -25,8 +25,12 @@ public class LamStationFeature {
     private Point geometry;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Lam station properties.", required = true, position = 3)
+    @ApiModelProperty(value = "Lam station properties", required = true, position = 3)
     private LamStationProperties properties = new LamStationProperties();
+
+    public String getType() {
+        return type;
+    }
 
     public Point getGeometry() {
         return geometry;

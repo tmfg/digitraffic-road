@@ -48,6 +48,9 @@ crashlytics-build.properties
 
 # Created by .ignore support plugin (hsz.mobi)
 /src/test/resources/application-test.properties
+/src/main/resources/application-localhost.properties
+/src/test/resources/application-localhost.properties
+
 /digitraffic-metadata
 **/*.log
 

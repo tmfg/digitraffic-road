@@ -11,5 +11,9 @@ public interface RoadStationService {
 
     List<RoadStation> findByType(RoadStationType type);
 
-    List<RoadStation> findOrphansByType(RoadStationType type);
+    RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId);
+
+    List<RoadStation> findOrphanWeatherStationRoadStations();
+
+    List<RoadStation> findOrphanCameraStationRoadStations();
 }

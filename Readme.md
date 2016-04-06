@@ -2,7 +2,7 @@
 
 ## Development
 
-###Preconditions
+### Preconditions
 1. Java 1.8 JDK
 2. Maven
 3. Git client
@@ -45,8 +45,12 @@ Or build the JAR file with:
  
     $ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
 
-### Misc
+### Misc commands
 
 To compile Java-classes from wsdl:s run command
 
     $ mvn jaxb2:generate
+
+Check for Maven dependency updates
+
+    $ mvn versions:display-dependency-updates

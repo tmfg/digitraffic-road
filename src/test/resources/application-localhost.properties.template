@@ -2,7 +2,7 @@
 # datasource etc. according to your environment.
 
 # http-server port
-server.port = 9020
+server.port = 9090
 
 spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
 spring.datasource.username=<username>
@@ -10,10 +10,18 @@ spring.datasource.password=<password>
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 spring.datasource.validationQuery=SELECT 1 FROM DUAL
 
-# Leave empty -> updaters not starting
+# Leave these blank not to run metadata updaters
 metadata.server.address.lam=
-metadata.server.address.camera=<address>
-metadata.server.address.weather=<address>
+metadata.server.address.camera=
+metadata.server.address.weather=
 
 logging.file=digitraffic-metadata
 logging.level.root=INFO
+logging.level.fi.livi.digitraffic.tie=INFO
+
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+#logging.level.fi.livi.digitraffic.tie.service.camera=DEBUG
+

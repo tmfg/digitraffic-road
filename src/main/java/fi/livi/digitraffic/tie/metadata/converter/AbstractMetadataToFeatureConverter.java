@@ -11,7 +11,7 @@ public class AbstractMetadataToFeatureConverter {
 
     static {
         crs = new Crs();
-        crs.setType(CrsType.link);
+        crs.setType(CrsType.name);
         // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html#H2
         // http://www.opengis.net/def/crs/EPSG/0/[code]
         // ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)

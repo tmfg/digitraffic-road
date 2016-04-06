@@ -28,7 +28,7 @@ public class RoadWeatherStation {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RWS_SEQ")
     private long id;
 
-    private Long lotjuId;
+    private long lotjuId;
 
     @Convert(converter = RoadWeatherStationTypeConverter.class)
     private RoadWeatherStationType roadWeatherStationType;
@@ -46,11 +46,11 @@ public class RoadWeatherStation {
         this.id = id;
     }
 
-    public Long getLotjuId() {
+    public long getLotjuId() {
         return lotjuId;
     }
 
-    public void setLotjuId(final Long lotjuId) {
+    public void setLotjuId(final long lotjuId) {
         this.lotjuId = lotjuId;
     }
 

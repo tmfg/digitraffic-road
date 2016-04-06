@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import fi.livi.digitraffic.tie.geojson.jackson.CrsType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +30,7 @@ public class Crs implements Serializable {
             this.name = name;
         }
     }
-    @ApiModelProperty(value = "CRS type (always CrsType.name}", required = true)
+    @ApiModelProperty(value = "CRS type (always \"name\")", required = true)
     private CrsType type = CrsType.name;
 
     @ApiModelProperty(value = "CRS properties. Has only name", required = true)

@@ -4,44 +4,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import fi.livi.digitraffic.tie.geojson.camera.CameraPresetProperties;
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationProperties;
+
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "Properties", description = "Roadstation properties")
-@JsonSubTypes({ @JsonSubTypes.Type(LamStationProperties.class),
-                @JsonSubTypes.Type(CameraPresetProperties.class) })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class RoadStationProperties {
 
+    @ApiModelProperty(value = "Road station's natural id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Name of Road Station")
+    @ApiModelProperty(value = "Common name of road station")
     private String name;
 
+    @ApiModelProperty(value = "Road number")
     private Integer roadNumber;
 
+    @ApiModelProperty(value = "Road part")
     private Integer roadPart;
 
+    @ApiModelProperty(value = "Distance from start of the road part in meters")
     private Integer distance;
 
+    @ApiModelProperty(value = "Data collection interval in seconds")
     private Integer collectionInterval;
 
+    @ApiModelProperty(value = "Data collection status")
     private CollectionStatus collectionStatus;
 
+    @ApiModelProperty(value = "Municipality")
     private String municipality;
 
+    @ApiModelProperty(value = "Municipality code")
     private String municipalityCode;
 
+    @ApiModelProperty(value = "Province")
     private String province;
 
+    @ApiModelProperty(value = "Province code")
     private String provinceCode;
 
+    @ApiModelProperty(value = "Description")
     private String description;
 
+    @ApiModelProperty(value = "Map of namess in fi, sv, en")
     private Map<String, String> names = new HashMap<>();
 
     public long getNaturalId() {

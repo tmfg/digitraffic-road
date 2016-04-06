@@ -5,9 +5,9 @@ import org.apache.log4j.Logger;
 
 public enum CollectionStatus {
 
-    KERUUSSA(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.KERUUSSA.value()),
-    POISTETTU_TILAPAISESTI(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
-    POISTETTU_PYSYVASTI(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_PYSYVASTI.value());
+    GATHERING(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.KERUUSSA.value()),
+    REMOVED_TEMPORARILY(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
+    REMOVED_PERMANENTLY(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_PYSYVASTI.value());
 
     private static final Logger LOG = Logger.getLogger(CollectionStatus.class);
 

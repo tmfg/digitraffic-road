@@ -1,25 +1,21 @@
 package fi.livi.digitraffic.tie.geojson;
 
-
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson Point Geometry Object")
-@JsonTypeInfo(property = "type",  use = Id.NONE)
+@ApiModel(description = "GeoJson Point Geometry Object", value = "geometry")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Point {
 
-    @ApiModelProperty(value = "Points coordinates", required = true, position = 1)
+    @ApiModelProperty(value = "\"Point\"", required = true, position = 1)
     private final String type = "Point";
 
-    @ApiModelProperty(value = "Points coordinates", required = true, position = 2)
+    @ApiModelProperty(value = "Point's coordinates", required = true, position = 2)
     private LngLatAlt coordinates;
 
-    @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS.", required = true, position = 3)
+    @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS", required = true, position = 3)
     private Crs crs;
 
     public Point() {

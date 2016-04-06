@@ -1,20 +1,24 @@
 package fi.livi.digitraffic.tie.geojson.camera;
 
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-@JsonTypeInfo(property = "type", use = Id.NAME)
-@ApiModel(description = "GeoJSON feature collection")
+@ApiModel(description = "GeoJSON feature collection", value = "FeatureCollection")
 public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeature> {
 
+    @ApiModelProperty(value = "\"FeatureCollection\"", required = true, position = 1)
+    private final String type = "FeatureCollection";
+
     private List<CameraPresetFeature> features = new ArrayList<CameraPresetFeature>();
+
+    public String getType() {
+        return type;
+    }
 
     public List<CameraPresetFeature> getFeatures() {
         return features;

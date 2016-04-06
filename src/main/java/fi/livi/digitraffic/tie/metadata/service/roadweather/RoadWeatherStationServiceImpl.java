@@ -1,14 +1,18 @@
 package fi.livi.digitraffic.tie.metadata.service.roadweather;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherSensorRepository;
+import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
+import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 
 @Service
 public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
@@ -16,11 +20,14 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
     private static final Logger LOG = Logger.getLogger(RoadWeatherStationServiceImpl.class);
 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
+    private RoadWeatherSensorRepository roadWeatherSensorRepository;
 
     @Autowired
-    public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository) {
+    public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository,
+                                         final RoadWeatherSensorRepository roadWeatherSensorRepository) {
 
         this.roadWeatherStationRepository = roadWeatherStationRepository;
+        this.roadWeatherSensorRepository = roadWeatherSensorRepository;
     }
 
     public Map<Long, RoadWeatherStation> findAllRoadWeatherStationsMappedByLotjuId() {
@@ -36,6 +43,31 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
     public RoadWeatherStation save(final RoadWeatherStation roadWeatherStation) {
         final RoadWeatherStation rws = roadWeatherStationRepository.save(roadWeatherStation);
         roadWeatherStationRepository.flush();
+        return rws;
+    }
+
+    @Override public List<RoadWeatherSensor> findAllRoadStationSensors() {
+        return roadWeatherSensorRepository.findAll();
+    }
+
+    @Override public Map<Long, List<RoadWeatherSensor>> findAllRoadStationSensorsMappedByRoadStationLotjuId() {
+        List<RoadWeatherSensor> all = findAllRoadStationSensors();
+        final Map<Long, List<RoadWeatherSensor>> map = new HashMap<>();
+        for (RoadWeatherSensor rws : all) {
+            List<RoadWeatherSensor> list = map.get(rws.getRoadWeatherStationLotjuId());
+            if (list == null) {
+                list = new ArrayList<>();
+                map.put(rws.getRoadWeatherStationLotjuId(), list);
+            }
+            list.add(rws);
+        }
+        return map;
+    }
+
+    @Override
+    public RoadWeatherSensor save(RoadWeatherSensor roadWeatherSensor) {
+        final RoadWeatherSensor rws = roadWeatherSensorRepository.save(roadWeatherSensor);
+        roadWeatherSensorRepository.flush();
         return rws;
     }
 }

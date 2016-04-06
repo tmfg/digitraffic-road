@@ -57,7 +57,7 @@ public class CameraUpdater {
     // 5 min
     @Scheduled(fixedRate = 5*60*1000)
     @Transactional
-    public void updateLamStations() {
+    public void updateUpdateCameras() {
         log.info("UpdateCameras start");
 
         if (cameraClient == null) {
@@ -67,15 +67,39 @@ public class CameraUpdater {
 
         final List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
 
+
+        List<RoadStation> orphanRoadStations = roadStationService.findOrphanCameraStationRoadStations();
+        final Map<Long, RoadStation> fetchedNaturalIdToRoadStationMap = new HashMap<>();
+        for (RoadStation orphanRoadStation : orphanRoadStations) {
+            fetchedNaturalIdToRoadStationMap.put(orphanRoadStation.getNaturalId(), orphanRoadStation);
+        }
+
         for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
-            final RoadStation rs = new RoadStation();
-            rs.setType(RoadStationType.CAMERA);
-            rs.setName("DUMMY");
-            rs.setNaturalId(cameraPreset.getId() * -1);
-            cameraPreset.setRoadStation(rs);
-            rs.obsolete();
-            roadStationService.save(rs);
-            log.info("Fixed " + cameraPreset + " missing RoadStation");
+
+            long naturalId = convertCameraIdToVanhaId(cameraPreset.getCameraId());
+            RoadStation existingRs = null;
+
+            if ( fetchedNaturalIdToRoadStationMap.containsKey(Long.valueOf(naturalId)) ) {
+                existingRs = fetchedNaturalIdToRoadStationMap.get(Long.valueOf(naturalId));
+            } else {
+                existingRs = roadStationService.findByTypeAndNaturalId(RoadStationType.CAMERA, naturalId);
+                fetchedNaturalIdToRoadStationMap.put(naturalId, existingRs);
+            }
+
+            if (existingRs != null) {
+                cameraPreset.setRoadStation(existingRs);
+                log.info("Fixed " + cameraPreset + " missing RoadStation with exiting " + existingRs);
+            } else {
+                final RoadStation rs = new RoadStation();
+                rs.setType(RoadStationType.CAMERA);
+                rs.setName("DUMMY");
+                rs.setNaturalId(naturalId);
+                cameraPreset.setRoadStation(rs);
+                rs.obsolete();
+                roadStationService.save(rs);
+                fetchedNaturalIdToRoadStationMap.put(naturalId, rs);
+                log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
+            }
         }
 
         final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =
@@ -131,11 +155,11 @@ public class CameraUpdater {
         }
 
         if (invalid > 0) {
-            log.warn("Found " + invalid + " Kameras from LOTJU");
+            log.error("Found " + invalid + " invalid Kameras from LOTJU");
         }
 
-        final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap = roadWeatherStationService
-                .findAllRoadWeatherStationsMappedByLotjuId();
+        final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap =
+                roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
 
         final List<RoadStation> cameraRoadStations = roadStationService.findByType(RoadStationType.CAMERA);
         final Map<Long, RoadStation> naturalIdToRoadStationMap = new HashMap<>();
@@ -147,7 +171,7 @@ public class CameraUpdater {
         obsolete.addAll(currentPresetIdToCameraPresets.values());
 
         final int obsoleted = obsoleteCameraPresets(obsolete);
-        log.info("Osoleted " + obsoleted + " CameraPresets");
+        log.info("Obsoleted " + obsoleted + " CameraPresets");
 
         final int updated = updateCameraPresets(update, lotjuIdToRoadWeatherStationMap, naturalIdToRoadStationMap);
         log.info("Updated " + updated + " CameraPresets");
@@ -166,7 +190,7 @@ public class CameraUpdater {
         if (!valid) {
             log.error(ToStringHelpper.toString(kamera) + " is invalid: has null vanhaId");
         }
-        return false;
+        return valid;
     }
 
     private int updateCameraPresets(final List<Pair<Pair<Kamera, Esiasento>, CameraPreset>> update,
@@ -193,14 +217,14 @@ public class CameraUpdater {
                 cameraPreset.setRoadStation(null);
             }
 
-            log.debug("Updating camera preset " + cameraPreset.getPresetId());
+            log.debug("Updating camera preset " + cameraPreset);
 
             if (updateCameraPresetAtributes(kamera, esiasento, lotjuIdToRoadWeatherStationMap, cameraPreset) ) {
                 counter++;
             }
             if (cameraPreset.getRoadStation().getId() == null) {
                 roadStationService.save(cameraPreset.getRoadStation());
-                log.info("Created new RoadStation " + cameraPreset.getRoadStation().getId());
+                log.info("Created new RoadStation " + cameraPreset.getRoadStation());
             }
         }
         return counter;
@@ -301,7 +325,7 @@ public class CameraUpdater {
     private static boolean updateRoadStationAttributes(final RoadStation to, final Kamera from) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(from.getVanhaId());
-        to.setType(RoadStationType.LAM_STATION);
+        to.setType(RoadStationType.CAMERA);
         to.setObsolete(false);
         to.setObsoleteDate(null);
         to.setName(from.getNimi());
@@ -334,6 +358,13 @@ public class CameraUpdater {
             }
         }
         return counter;
+    }
+
+    public static long convertCameraIdToVanhaId(final String cameraId) {
+        // Starts either C0 or C
+        String vanhaId = StringUtils.removeStart(cameraId, "C0");
+        vanhaId = StringUtils.removeStart(vanhaId, "C");
+        return Long.parseLong(vanhaId);
     }
 
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {

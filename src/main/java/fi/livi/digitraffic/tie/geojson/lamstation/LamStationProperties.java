@@ -1,19 +1,20 @@
 package fi.livi.digitraffic.tie.geojson.lamstation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import fi.livi.digitraffic.tie.geojson.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Lam station properties")
-@JsonTypeInfo(property = "type",  use = JsonTypeInfo.Id.NAME)
+@ApiModel(description = "Lam station properties", value = "Properties")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LamStationProperties extends RoadStationProperties {
 
     private long id;
 
     // lam aseman naturalId
+    @ApiModelProperty(value = "Lam station's natural id")
     private long lamNaturalId;
 
 //    private Long lotjuId;
@@ -21,10 +22,20 @@ public class LamStationProperties extends RoadStationProperties {
 //    private double summerFreeFlowSpeed2;
 //    private double winterFreeFlowSpeed1;
 //    private double winterFreeFlowSpeed2;
+
+    @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
     private String direction1Municipality;
+
+    @ApiModelProperty(value = "Direction 1 municipality code")
     private Integer direction1MunicipalityCode;
+
+    @ApiModelProperty(value = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true, position = 1)
     private String direction2Municipality;
+
+    @ApiModelProperty(value = "Direction 2 municipality code")
     private Integer direction2MunicipalityCode;
+
+    @ApiModelProperty(value = "Type of  lam station")
     private LamStationType lamStationType;
 
 

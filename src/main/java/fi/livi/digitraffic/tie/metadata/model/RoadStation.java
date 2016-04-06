@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,8 +12,8 @@ import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 
 @Entity
 @DynamicUpdate
@@ -250,6 +251,7 @@ public class RoadStation {
                 .appendField("id", getId())
                 .appendField("naturalId", getNaturalId())
                 .appendField("name", getName())
+                .appendField("type", getType())
                 .toString();
     }
 

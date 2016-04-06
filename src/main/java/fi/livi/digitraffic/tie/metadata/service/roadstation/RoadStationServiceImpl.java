@@ -2,13 +2,14 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.util.List;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Service
 public class RoadStationServiceImpl implements RoadStationService {
@@ -36,9 +37,20 @@ public class RoadStationServiceImpl implements RoadStationService {
         return roadStationRepository.findByType(type);
     }
 
+    @Override
+    public RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId) {
+        return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
+    }
+
+
     @Transactional(readOnly = true)
     @Override
-    public List<RoadStation> findOrphansByType(final RoadStationType type) {
-        return roadStationRepository.findOrphansByType(type.getTypeNumber());
+    public List<RoadStation> findOrphanWeatherStationRoadStations() {
+        return roadStationRepository.findOrphanWeatherStationRoadStations();
+    }
+
+    @Override
+    public List<RoadStation> findOrphanCameraStationRoadStations() {
+        return roadStationRepository.findOrphanCameraStationRoadStations();
     }
 }

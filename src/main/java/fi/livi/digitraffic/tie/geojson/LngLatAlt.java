@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import fi.livi.digitraffic.tie.geojson.jackson.LngLatAltDeserializer;
 import fi.livi.digitraffic.tie.geojson.jackson.LngLatAltSerializer;
 import io.swagger.annotations.ApiModel;
@@ -22,7 +23,7 @@ public class LngLatAlt implements Serializable {
     @ApiModelProperty(value = "Latitude (Y-coordinate) in ETRS89 (EUREF-FIN)", required = true)
     private double latitude;
 
-    @ApiModelProperty(value = "Altitude (Z-coordinate) in metres???", required = false)
+    @ApiModelProperty(value = "Altitude (Z-coordinate) in metres", required = false)
     private double altitude = Double.NaN;
 
     public LngLatAlt() {

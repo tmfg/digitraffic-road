@@ -5,6 +5,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
@@ -17,14 +26,6 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LamStationUpdater {
@@ -119,7 +120,7 @@ public class LamStationUpdater {
         obsolete.addAll(currentStations.values());
 
         final int obsoleted = obsoleteLamStations(obsolete);
-        log.info("Osoleted " + obsoleted + " LamStations");
+        log.info("Obsoleted " + obsoleted + " LamStations");
 
         final int uptaded = updateLamStations(update);
         log.info("Uptaded " + uptaded + " LamStations");
@@ -207,20 +208,23 @@ public class LamStationUpdater {
             final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
             if ( roadNaturalId == null ) {
-                log.warn(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTienumero() is null");
+                log.error(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTienumero() is null");
             }
             if ( roadSectionNaturalId == null ) {
-                log.warn(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTieosa() is null");
+                log.error(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTieosa() is null");
             }
 
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
-                log.warn( ToStringHelpper.toString(la) + " update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() " + roadSectionNaturalId + " vs old: " + ls.getRoadStation().getRoadPart() + ", LamAsema..getTieosoite().getTienumero(): " + roadNaturalId + " vs old: " + ls.getRoadStation().getRoadNumber());
+                log.error(ToStringHelpper.toString(la) + " update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() " +
+                          roadSectionNaturalId + " vs old: " + ls.getRoadStation().getRoadPart() + ", LamAsema.getTieosoite().getTienumero(): " +
+                          roadNaturalId + " vs old: " + ls.getRoadStation().getRoadNumber());
                 rd = ls.getRoadDistrict();
             } else {
                 if (ls.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
-                    log.info("Update LAM station (" + convertToLamNaturalId(la.getVanhaId()) + ") " + la.getNimi() + " road district " + ls.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
+                    log.info("Update LAM station (naturalID: " + convertToLamNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
+                             " road district naturalId " + ls.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
                 }
             }
 
