@@ -11,16 +11,17 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
-import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationTypeConverter;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationTypeConverter;
+
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "roadWeatherStation", attributeNodes = @NamedAttributeNode("roadStation"))
-public class RoadWeatherStation implements Stringifiable {
+public class RoadWeatherStation {
 
     @Id
     @SequenceGenerator(name = "RWS_SEQ", sequenceName = "SEQ_ROAD_WEATHER_STATION")

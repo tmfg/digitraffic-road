@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 @Entity
 @DynamicUpdate
-public class RoadStation implements Stringifiable {
+public class RoadStation {
     @Id
     @SequenceGenerator(name = "RS_SEQ", sequenceName = "SEQ_ROAD_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")

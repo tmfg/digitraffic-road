@@ -12,18 +12,18 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.SequenceGenerator;
 
-import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
+
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "camera", attributeNodes = @NamedAttributeNode("roadStation"))
-public class CameraPreset implements Stringifiable {
-
+public class CameraPreset {
     private static final Logger log = Logger.getLogger(CameraPreset.class);
 
     @Id

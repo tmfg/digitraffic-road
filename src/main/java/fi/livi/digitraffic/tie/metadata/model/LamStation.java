@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 @Table(name = "lam_station")
 @DynamicUpdate
 @NamedEntityGraph(name = "lamStation", attributeNodes = {@NamedAttributeNode("roadStation"), @NamedAttributeNode("roadDistrict")})
-public class LamStation implements Stringifiable {
+public class LamStation {
     private static final Logger log = Logger.getLogger(LamStation.class);
 
     @Id
