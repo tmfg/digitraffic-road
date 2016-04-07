@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.geojson;
+package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Crs;
-import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.jackson.CrsType;
+import fi.livi.digitraffic.tie.metadata.geojson.CrsType;
+import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {

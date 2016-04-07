@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson.lamstation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
