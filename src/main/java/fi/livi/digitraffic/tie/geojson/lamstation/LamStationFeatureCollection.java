@@ -8,7 +8,7 @@ import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection", value = "FeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of Lam Stations", value = "FeatureCollection")
 public class LamStationFeatureCollection implements Iterable<LamStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\"", required = true, position = 1)

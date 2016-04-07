@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
@@ -69,5 +71,10 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         final RoadWeatherSensor rws = roadWeatherSensorRepository.save(roadWeatherSensor);
         roadWeatherSensorRepository.flush();
         return rws;
+    }
+
+    @Override
+    public RoadWeatherStationFeatureCollection findAllNonObsoleteRoadWeatherStationAsFeatureCollection() {
+        return RoadWeatherStationMetadata2FeatureConverter.convert(roadWeatherStationRepository.findByRoadStationObsoleteFalse());
     }
 }

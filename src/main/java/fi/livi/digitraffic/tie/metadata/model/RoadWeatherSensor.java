@@ -61,7 +61,6 @@ public class RoadWeatherSensor {
         this.lotjuId = lotjuId;
     }
 
-
     public long getSensorTypeId() {
         return sensorTypeId;
     }

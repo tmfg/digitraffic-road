@@ -41,6 +41,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.setRoadNumber(roadStation.getRoadNumber());
         properties.setRoadPart(roadStation.getRoadPart());
 
+        properties.setName(roadStation.getName());
         properties.addName("fi", roadStation.getNameFi());
         properties.addName("sv", roadStation.getNameSv());
         properties.addName("en", roadStation.getNameEn());
