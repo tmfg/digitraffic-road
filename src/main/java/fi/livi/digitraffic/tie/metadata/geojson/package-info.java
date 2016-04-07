@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson;
+package fi.livi.digitraffic.tie.metadata.geojson;
 
 /**
  * This package is cloned from GitHub https://github.com/opendatalab-de/geojson-jackson

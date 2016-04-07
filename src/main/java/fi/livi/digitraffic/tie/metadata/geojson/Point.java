@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson;
+package fi.livi.digitraffic.tie.metadata.geojson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

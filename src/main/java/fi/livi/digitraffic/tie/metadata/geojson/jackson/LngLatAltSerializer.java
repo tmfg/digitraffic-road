@@ -1,11 +1,12 @@
-package fi.livi.digitraffic.tie.geojson.jackson;
+package fi.livi.digitraffic.tie.metadata.geojson.jackson;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import fi.livi.digitraffic.tie.geojson.LngLatAlt;
+
+import fi.livi.digitraffic.tie.metadata.geojson.LngLatAlt;
 
 public class LngLatAltSerializer extends JsonSerializer<LngLatAlt> {
 	private static final long[] POW10 = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson.jackson;
+package fi.livi.digitraffic.tie.metadata.geojson.jackson;
 
 import java.io.IOException;
 
@@ -6,7 +6,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import fi.livi.digitraffic.tie.geojson.LngLatAlt;
+
+import fi.livi.digitraffic.tie.metadata.geojson.LngLatAlt;
 
 public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 	@Override

@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.geojson.camera;
+package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.geojson.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 

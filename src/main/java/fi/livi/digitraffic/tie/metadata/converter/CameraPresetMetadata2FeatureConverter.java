@@ -2,15 +2,16 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.util.List;
 
-import fi.livi.digitraffic.tie.geojson.Point;
-import fi.livi.digitraffic.tie.geojson.camera.CameraPresetFeature;
-import fi.livi.digitraffic.tie.geojson.camera.CameraPresetFeatureCollection;
-import fi.livi.digitraffic.tie.geojson.camera.CameraPresetProperties;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
+
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetProperties;
+import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 @Component
 public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {

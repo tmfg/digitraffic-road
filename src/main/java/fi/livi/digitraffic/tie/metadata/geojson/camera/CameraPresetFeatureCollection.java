@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson.camera;
+package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
 import java.util.ArrayList;
 import java.util.Collection;

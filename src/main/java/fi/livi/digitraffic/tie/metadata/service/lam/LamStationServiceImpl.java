@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
+import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 
 @Service

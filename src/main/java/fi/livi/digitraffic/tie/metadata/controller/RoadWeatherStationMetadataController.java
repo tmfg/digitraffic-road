@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -2,14 +2,15 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.util.List;
 
-import fi.livi.digitraffic.tie.geojson.Point;
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeature;
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationFeatureCollection;
-import fi.livi.digitraffic.tie.geojson.lamstation.LamStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.LamStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationProperties;
+import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public final class LamStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
 

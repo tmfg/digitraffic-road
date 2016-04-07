@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson.roadweather;
+package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 
 import java.util.ArrayList;
 import java.util.Collection;

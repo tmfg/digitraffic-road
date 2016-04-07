@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson.lamstation;
+package fi.livi.digitraffic.tie.metadata.geojson.lamstation;
 
 import java.util.ArrayList;
 import java.util.Collection;

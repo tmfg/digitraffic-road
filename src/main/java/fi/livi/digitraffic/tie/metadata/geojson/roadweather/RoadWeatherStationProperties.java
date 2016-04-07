@@ -1,11 +1,11 @@
-package fi.livi.digitraffic.tie.geojson.roadweather;
+package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.geojson.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

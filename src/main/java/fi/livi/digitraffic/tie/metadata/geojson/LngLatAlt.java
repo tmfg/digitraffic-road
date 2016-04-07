@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.geojson;
+package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.io.Serializable;
 
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fi.livi.digitraffic.tie.geojson.jackson.LngLatAltDeserializer;
-import fi.livi.digitraffic.tie.geojson.jackson.LngLatAltSerializer;
+import fi.livi.digitraffic.tie.metadata.geojson.jackson.LngLatAltDeserializer;
+import fi.livi.digitraffic.tie.metadata.geojson.jackson.LngLatAltSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

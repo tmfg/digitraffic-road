@@ -5,11 +5,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import fi.livi.digitraffic.tie.geojson.Point;
-import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationFeature;
-import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationProperties;
-import fi.livi.digitraffic.tie.geojson.roadweather.RoadWeatherStationSensor;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
