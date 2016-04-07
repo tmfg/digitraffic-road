@@ -5,15 +5,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON feature collection of Campera Presets", value = "FeatureCollection")
+@ApiModel(description = "GeoJSON feature collection of Campera Presets", value = "CameraPresetFeatureCollection")
+@JsonPropertyOrder({ "type", "features" })
 public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\"", required = true, position = 1)
     private final String type = "FeatureCollection";
 
+    @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<CameraPresetFeature> features = new ArrayList<CameraPresetFeature>();
 
     public String getType() {

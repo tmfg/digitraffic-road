@@ -163,11 +163,11 @@ public class CameraPreset {
         this.publicExternal = publicExternal;
     }
 
-    public boolean isInCollection() {
+    public Boolean isInCollection() {
         return inCollection;
     }
 
-    public void setInCollection(final boolean inCollection) {
+    public void setInCollection(final Boolean inCollection) {
         this.inCollection = inCollection;
     }
 

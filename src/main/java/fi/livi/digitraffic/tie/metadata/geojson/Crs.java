@@ -30,7 +30,7 @@ public class Crs implements Serializable {
             this.name = name;
         }
     }
-    @ApiModelProperty(value = "CRS type (always \"name\")", required = true)
+    @ApiModelProperty(value = "CRS type (always \"name\")", required = true, example = "name")
     private CrsType type = CrsType.name;
 
     @ApiModelProperty(value = "CRS properties. Has only name", required = true)

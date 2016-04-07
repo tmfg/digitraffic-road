@@ -3,11 +3,12 @@ package fi.livi.digitraffic.tie.metadata.geojson.lamstation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Lam station properties", value = "Properties")
+@ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LamStationProperties extends RoadStationProperties {
 

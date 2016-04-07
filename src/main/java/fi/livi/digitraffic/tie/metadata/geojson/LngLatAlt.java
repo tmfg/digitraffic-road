@@ -17,13 +17,13 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonSerialize(using = LngLatAltSerializer.class)
 public class LngLatAlt implements Serializable {
 
-    @ApiModelProperty(value = "Longitude (X-coordinate) in ETRS89 (EUREF-FIN)", required = true)
+    @ApiModelProperty(value = "Longitude (X-coordinate) in ETRS89 (EUREF-FIN)", required = true, position = 1)
     private double longitude;
 
-    @ApiModelProperty(value = "Latitude (Y-coordinate) in ETRS89 (EUREF-FIN)", required = true)
+    @ApiModelProperty(value = "Latitude (Y-coordinate) in ETRS89 (EUREF-FIN)", required = true, position = 2)
     private double latitude;
 
-    @ApiModelProperty(value = "Altitude (Z-coordinate) in metres", required = false)
+    @ApiModelProperty(value = "Altitude (Z-coordinate) in metres", required = false, position = 3)
     private double altitude = Double.NaN;
 
     public LngLatAlt() {

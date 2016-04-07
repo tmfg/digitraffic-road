@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection of Lam Stations", value = "FeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of Lam Stations", value = "LamStationFeatureCollection")
+@JsonPropertyOrder({ "type", "features" })
 public class LamStationFeatureCollection implements Iterable<LamStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\"", required = true, position = 1)

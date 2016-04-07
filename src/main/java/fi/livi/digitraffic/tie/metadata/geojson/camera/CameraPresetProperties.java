@@ -3,10 +3,11 @@ package fi.livi.digitraffic.tie.metadata.geojson.camera;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.metadata.geojson.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 
-@ApiModel(description = "Camera preset properties", value = "Properties")
+@ApiModel(description = "Camera preset properties", value = "CameraPresetProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraPresetProperties extends RoadStationProperties {
 

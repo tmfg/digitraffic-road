@@ -48,7 +48,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         properties.setPresetName2(cp.getPresetName2());
         properties.setPresetOrder(cp.getPresetOrder());
         properties.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
-        properties.setInCollection(cp.isInCollection());
+        properties.setInCollection(cp.isInCollection() != null ? cp.isInCollection() : false);
         properties.setCompression(cp.getCompression());
         properties.setNameOnDevice(cp.getNameOnDevice());
         properties.setDefaultDirection(cp.getDefaultDirection());

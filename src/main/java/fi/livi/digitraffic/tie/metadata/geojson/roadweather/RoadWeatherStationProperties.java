@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Road Weather Station properties", value = "Properties")
+@ApiModel(description = "Road Weather Station properties", value = "RoadWeatherStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadWeatherStationProperties extends RoadStationProperties {
 
