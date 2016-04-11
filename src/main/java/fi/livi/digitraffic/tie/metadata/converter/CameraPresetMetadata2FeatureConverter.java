@@ -55,6 +55,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         properties.setResolution(cp.getResolution());
         properties.setDirection(cp.getDirection());
         properties.setDelay(cp.getDelay());
+        properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
 
         // RoadStation properties
         final RoadStation rs = cp.getRoadStation();

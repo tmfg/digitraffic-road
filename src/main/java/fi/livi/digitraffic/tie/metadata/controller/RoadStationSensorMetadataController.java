@@ -15,6 +15,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Roadstation sensor metadata", description="Api to read roadstation sensor metadata")
 @RestController
@@ -27,8 +29,10 @@ public class RoadStationSensorMetadataController {
         this.roadStationSensorService = roadStationSensorService;
     }
 
-    @ApiOperation("List all roadstation sensors.")
+    @ApiOperation("List all roadstation sensors")
     @RequestMapping(method = RequestMethod.GET, path = "/road-station-sensors", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Sensors"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public List<RoadStationSensor> listNonObsoleteRoadStationSensors() {
         return roadStationSensorService.findAllNonObsoleteRoadStationSensors();
     }

@@ -13,6 +13,8 @@ import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationStatuses;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Roadstation status metadata", description="Api to read roadstation status metadata")
 @RestController
@@ -29,6 +31,8 @@ public class RoadStationStatusController {
 
     @ApiOperation("List all roadstation statuses.")
     @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Statuses"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationStatuses listNonObsoleteRoadStationSensors() {
         return roadStationStatusService.findAllRoadStationStatuses();
     }

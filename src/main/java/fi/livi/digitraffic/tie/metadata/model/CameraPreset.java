@@ -280,4 +280,8 @@ public class CameraPreset {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
+    public Long getNearestRoadWeatherStationNaturalId() {
+        return nearestRoadWeatherStation != null ? nearestRoadWeatherStation.getRoadStationNaturalId() : null;
+    }
+
 }

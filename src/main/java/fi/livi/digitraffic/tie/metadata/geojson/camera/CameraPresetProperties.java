@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.geojson.camera;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera preset properties", value = "CameraPresetProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder(alphabetic = true)
 public class CameraPresetProperties extends RoadStationProperties {
 
     @JsonIgnore // Using natural id as id
@@ -46,6 +48,10 @@ public class CameraPresetProperties extends RoadStationProperties {
     private String direction;
     @ApiModelProperty(value = "??? [?]")
     private Integer delay;
+
+    @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")
+    @JsonProperty(value = "nearestRoadWeatherStationId")
+    private Long nearestRoadWeatherStationNaturalId;
 
     public long getId() {
         return id;
@@ -165,5 +171,13 @@ public class CameraPresetProperties extends RoadStationProperties {
 
     public Integer getDelay() {
         return delay;
+    }
+
+    public void setNearestRoadWeatherStationNaturalId(Long nearestRoadWeatherStationNaturalId) {
+        this.nearestRoadWeatherStationNaturalId = nearestRoadWeatherStationNaturalId;
+    }
+
+    public Long getNearestRoadWeatherStationNaturalId() {
+        return nearestRoadWeatherStationNaturalId;
     }
 }

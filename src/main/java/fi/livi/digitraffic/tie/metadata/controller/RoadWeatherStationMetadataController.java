@@ -13,6 +13,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFe
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Lam metadata", description="Api to read lam metadata")
 @RestController
@@ -26,8 +28,10 @@ public class RoadWeatherStationMetadataController {
         this.roadWeatherStationService = roadWeatherStationService;
     }
 
-    @ApiOperation(value = "List all road weather stations", notes = "List all road weather stations")
+    @ApiOperation("List all road weather stations")
     @RequestMapping(method = RequestMethod.GET, path = "/road-weather-stations", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Weather Feature Collections"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public RoadWeatherStationFeatureCollection listNonObsoleteRoadWeatherStations() {
         return roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
     }
