@@ -9,28 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedObject;
-import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationStatuses;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value="Free flow speeds", description="Api to read free flow speeds")
+@Api(value="Roadstation status metadata", description="Api to read roadstation status metadata")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
-public class FreeFlowSpeedController {
-    public static final String PATH = "/free-flow-speeds";
+public class RoadStationStatusController {
+    public static final String PATH = "/road-station-statuses";
 
-    private final FreeFlowSpeedService freeFlowSpeedService;
+    private final RoadStationStatusService roadStationStatusService;
 
     @Autowired
-    public FreeFlowSpeedController(final FreeFlowSpeedService freeFlowSpeedService) {
-        this.freeFlowSpeedService = freeFlowSpeedService;
+    public RoadStationStatusController(RoadStationStatusService roadStationStatusService) {
+        this.roadStationStatusService = roadStationStatusService;
     }
 
-    @ApiOperation("List all free flow speeds")
+    @ApiOperation("List all roadstation statuses.")
     @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    public FreeFlowSpeedObject listFreeFlowSpeeds() {
-        return freeFlowSpeedService.listAllFreeFlowSpeeds();
+    public RoadStationStatuses listNonObsoleteRoadStationSensors() {
+        return roadStationStatusService.findAllRoadStationStatuses();
     }
-
 }

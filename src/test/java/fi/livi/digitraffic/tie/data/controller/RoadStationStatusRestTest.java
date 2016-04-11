@@ -12,15 +12,16 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class LamDataRestTest extends RestTest {
+public class RoadStationStatusRestTest  extends RestTest {
     @Test
-    public void testLamDataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + LamDataController.PATH))
+    public void testRoadStatusRestApi() throws Exception {
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + RoadStationStatusController.PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.utc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dynamicLamData", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dynamicLamData[0].lamId", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.timestamp", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.roadStationStatusData", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.roadStationStatusData[0].stationId", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.roadStationStatusData[0].updated", Matchers.notNullValue()))
+        ;
     }
 }

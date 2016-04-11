@@ -18,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class LamDataController {
+    public static final String PATH = "/lam-data";
+
     private final LamDataService lamDataService;
 
     @Autowired
@@ -26,7 +28,7 @@ public class LamDataController {
     }
 
     @ApiOperation(value = "List all lam measurements", notes = "List all lam measurements")
-    @RequestMapping(method = RequestMethod.GET, path = "/lamData", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     public LamDataObject listAllLamData() {
         return lamDataService.listAllLamDataFromNonObsoleteStations();
     }
