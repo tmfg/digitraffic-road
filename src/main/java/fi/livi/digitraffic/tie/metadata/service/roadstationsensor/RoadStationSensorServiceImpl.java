@@ -21,6 +21,6 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Override
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllNonObsoleteRoadStationSensors() {
-        return roadStationSensorRepository.findByObsoleteDateIsNull();
+        return roadStationSensorRepository.findNonObsoleteRoadStationSensors();
     }
 }
