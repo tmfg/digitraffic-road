@@ -18,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class FreeFlowSpeedController {
+    public static final String PATH = "/free-flow-speeds";
+
     private final FreeFlowSpeedService freeFlowSpeedService;
 
     @Autowired
@@ -26,7 +28,7 @@ public class FreeFlowSpeedController {
     }
 
     @ApiOperation("List all free flow speeds")
-    @RequestMapping(method = RequestMethod.GET, path = "/freeFlowSpeeds", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     public FreeFlowSpeedObject listFreeFlowSpeeds() {
         return freeFlowSpeedService.listAllFreeFlowSpeeds();
     }
