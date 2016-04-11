@@ -2,8 +2,11 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
 
+import javax.persistence.QueryHint;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.model.LamFreeFlowSpeed;
@@ -19,5 +22,6 @@ public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpe
                     "and ls.road_district_id = rd.id",
             nativeQuery = true)
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LamFreeFlowSpeed> listAllLamFreeFlowSpeeds();
 }
