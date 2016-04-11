@@ -13,7 +13,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,14 +55,7 @@ public class RoadWeatherStationUpdater {
         this.roadWeatherStationClient = roadWeatherStationClient;
     }
 
-    // 5 min
-    @Scheduled(fixedRate = 5*60*1000)
     @Transactional
-    public void updateWeatherStationsAndSensors() {
-        updateWeatherStations();
-        updateRoadWeatherSensors();
-    }
-
     public void updateWeatherStations() {
         log.info("Update RoadWeatherStations start");
 
@@ -89,6 +81,7 @@ public class RoadWeatherStationUpdater {
         log.info("Update RoadWeatherStations end");
     }
 
+    @Transactional
     public void updateRoadWeatherSensors() {
         log.info("Update RoadWeatherSensors start");
 

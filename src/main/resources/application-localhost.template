@@ -14,5 +14,13 @@ metadata.server.address.lam=<address>
 metadata.server.address.camera=<address>
 metadata.server.address.weather=<address>
 
+# Is metadata updates on. Should be true only for daemon process.
+quartz.enabled=true
+
+# Metadata update frequencies in ms, 300000 ms = 5 min
+cameraUpdateJob.frequency=300000
+lamStationUpdateJob.frequency=300000
+roadWeatherStationUpdateJob.frequency=300000
+
 logging.file=digitraffic-metadata
 logging.level.root=INFO

@@ -12,7 +12,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,11 +53,10 @@ public class CameraUpdater {
         this.staticDataStatusService = staticDataStatusService;
         this.cameraClient = cameraClient;
     }
-    // 5 min
-    @Scheduled(fixedRate = 5*60*1000)
+
     @Transactional
-    public void updateUpdateCameras() {
-        log.info("UpdateCameras start");
+    public void updateCameras() {
+        log.info("Update Cameras start");
 
         if (cameraClient == null) {
             log.warn("Not updating cameraPresets metadatas because no cameraClient defined");
@@ -256,7 +254,7 @@ public class CameraUpdater {
 
             roadStationService.save(cp.getRoadStation());
             cameraPresetService.save(cp);
-            log.info("Created new CameraPreset " + cp.getId() + (roadStationNew ? " and RoadStation " + rs.getId() : "") );
+            log.info("Created new CameraPreset " + cp + (roadStationNew ? " and RoadStation " + rs : "") );
         }
         return insert.size();
     }
