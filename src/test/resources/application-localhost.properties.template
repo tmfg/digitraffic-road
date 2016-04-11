@@ -15,6 +15,14 @@ metadata.server.address.lam=
 metadata.server.address.camera=
 metadata.server.address.weather=
 
+# Don't run updates for tests
+quartz.enabled=false
+
+# Metadata update frequencies in ms, 300000 ms = 5 min
+cameraUpdateJob.frequency=300000
+lamStationUpdateJob.frequency=300000
+roadWeatherStationUpdateJob.frequency=300000
+
 logging.file=digitraffic-metadata
 logging.level.root=INFO
 logging.level.fi.livi.digitraffic.tie=INFO

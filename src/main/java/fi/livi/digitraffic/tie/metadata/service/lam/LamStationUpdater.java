@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,11 +52,9 @@ public class LamStationUpdater {
         this.lamStationClient = lamStationClient;
     }
 
-    // 5 min
-    @Scheduled(fixedRate = 5 * 60 * 1000)
     @Transactional
     public void updateLamStations() {
-        log.info("updateLamStations start");
+        log.info("Update Lam Stations start");
 
         if (lamStationClient == null) {
             log.warn("Not updating lam stations because no lamStationClient defined");
@@ -158,11 +155,11 @@ public class LamStationUpdater {
         final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
         if (roadNaturalId == null ) {
-            log.error(ToStringHelpper.toString(la) + " insert failed: LamAsema.getTieosoite().getTienumero() is null");
+            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTienumero() is null");
             return false;
         }
         if (roadSectionNaturalId == null ) {
-            log.error(ToStringHelpper.toString(la) + " insert failed: LamAsema.getTieosoite().getTieosa() is null");
+            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTieosa() is null");
             return false;
         }
         final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
@@ -181,7 +178,7 @@ public class LamStationUpdater {
             log.info("Created new " + newLamStation);
             return true;
         } else {
-            log.error(ToStringHelpper.toString(la) + " insert failed: Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
+            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
             return false;
         }
     }
