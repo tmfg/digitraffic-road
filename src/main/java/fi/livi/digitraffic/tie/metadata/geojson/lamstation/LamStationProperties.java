@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.lamstation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
@@ -12,10 +13,12 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LamStationProperties extends RoadStationProperties {
 
+    @ApiModelProperty(value = "Lam station's unique id")
+    @JsonIgnore // Using road station's natural id
     private long id;
 
     // lam aseman naturalId
-    @ApiModelProperty(value = "Lam station's natural id")
+    @ApiModelProperty(value = "Lam station's natural id", required = true)
     private long lamNaturalId;
 
 //    private Long lotjuId;

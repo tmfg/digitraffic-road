@@ -3,7 +3,9 @@ package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import io.swagger.annotations.ApiModel;
@@ -13,7 +15,12 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class RoadStationProperties {
 
-    @ApiModelProperty(value = "Road station's natural id")
+    @JsonIgnore
+    @ApiModelProperty(value = "Road station's lotju id")
+    private Long lotjuId;
+
+    @ApiModelProperty(value = "Road station's natural id", required = true)
+    @JsonProperty("id")
     private long naturalId;
 
     @ApiModelProperty(value = "Common name of road station")

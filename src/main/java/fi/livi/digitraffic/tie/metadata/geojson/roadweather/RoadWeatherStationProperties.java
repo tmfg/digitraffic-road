@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
@@ -14,6 +15,8 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadWeatherStationProperties extends RoadStationProperties {
 
+    @JsonIgnore // Using road station's natural id
+    @ApiModelProperty(name = "id", value = "Road weather station's unique id", required = true)
     private long id;
 
     @ApiModelProperty(value = "Type of Road Weather Station")
