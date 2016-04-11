@@ -1,30 +1,50 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera preset properties", value = "CameraPresetProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraPresetProperties extends RoadStationProperties {
 
+    @JsonIgnore // Using natural id as id
     private long id;
+
+    @ApiModelProperty(value = "Id of camera")
     private String cameraId;
+    @ApiModelProperty(value = "Id of camera preset")
     private String presetId;
+    @ApiModelProperty(value = "Type of camera")
     private CameraType cameraType;
+    @ApiModelProperty(value = "Preset name 1???")
     private String presetName1;
+    @ApiModelProperty(value = "Preset name 2???")
     private String presetName2;
+    @ApiModelProperty(value = "Preset order???")
     private Integer presetOrder;
-    private boolean aPublic;
+    @ApiModelProperty(name = "public", value = "Is image available")
+    @JsonProperty(value = "public")
+    private boolean isPublic;
+    @ApiModelProperty(value = "Is data in collection")
     private boolean inCollection;
+    @ApiModelProperty(value = "???")
     private Integer compression;
+    @ApiModelProperty(value = "???")
     private String nameOnDevice;
+    @ApiModelProperty(value = "Is camera targeted to default direction")
     private Boolean defaultDirection;
+    @ApiModelProperty(value = "Resolution of camera in px")
     private String resolution;
+    @ApiModelProperty(value = "Direction of camera")
     private String direction;
+    @ApiModelProperty(value = "??? [?]")
     private Integer delay;
 
     public long getId() {
@@ -83,16 +103,12 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetOrder;
     }
 
-    public void setPublic(final boolean aPublic) {
-        this.aPublic = aPublic;
+    public void setPublic(final boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
-    public boolean isaPublic() {
-        return aPublic;
-    }
-
-    public void setaPublic(final boolean aPublic) {
-        this.aPublic = aPublic;
+    public boolean isPublic() {
+        return isPublic;
     }
 
     public void setInCollection(final boolean inCollection) {

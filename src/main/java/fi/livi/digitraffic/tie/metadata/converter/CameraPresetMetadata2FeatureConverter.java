@@ -35,7 +35,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + cp);
         }
-        f.setId(Long.toString(cp.getId()));
+        f.setId(Long.toString(cp.getRoadStationNaturalId()));
 
         final CameraPresetProperties properties = f.getProperties();
 
