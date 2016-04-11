@@ -2,8 +2,11 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
 
+import javax.persistence.QueryHint;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStationStatus;
@@ -18,5 +21,6 @@ public interface RoadStationStatusRepository extends JpaRepository<RoadStationSt
             + "and sv1.road_station_sensor_id (+) = 1\n"
             + "and sv2.road_station_sensor_id (+) = 2\n"
             + "and nvl(sv1.value, sv2.value) is not null", nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationStatus> findAllRoadStationStatuses();
 }

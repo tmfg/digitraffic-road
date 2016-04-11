@@ -2,8 +2,11 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
 
+import javax.persistence.QueryHint;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.model.LamMeasurement;
@@ -17,5 +20,6 @@ public interface LamMeasurementRepository extends JpaRepository<LamMeasurement, 
                     "where lsd.lam_station_id = ls.id\n" +
                     "and ls.obsolete = 0",
             nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LamMeasurement> listAllLamDataFromNonObsoleteStations();
 }
