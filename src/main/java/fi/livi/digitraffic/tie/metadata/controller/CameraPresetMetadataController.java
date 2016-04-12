@@ -13,8 +13,10 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollec
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
-@Api(value="Camera preset metadata", description="Api to read camera preset metadata")
+@Api(value="Camera preset metadata", description="Api to read camera preset metadata in GeoJSON format")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class CameraPresetMetadataController {
@@ -28,6 +30,8 @@ public class CameraPresetMetadataController {
 
     @ApiOperation("List all camera presets.")
     @RequestMapping(method = RequestMethod.GET, path = "/camera-presets", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public CameraPresetFeatureCollection listNonObsoleteLamStations() {
         return cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
     }

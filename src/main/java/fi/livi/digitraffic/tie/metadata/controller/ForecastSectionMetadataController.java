@@ -15,6 +15,8 @@ import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Forecast section metadata", description="Api to read forecast section metadata")
 @RestController
@@ -27,9 +29,11 @@ public class ForecastSectionMetadataController {
         this.forecastSectionService = forecastSectionService;
     }
 
-    @ApiOperation("List all roadstation sensors.")
+    @ApiOperation("List all Forecast Sections")
     @RequestMapping(method = RequestMethod.GET, path = "/forecast-sections", produces = APPLICATION_JSON_UTF8_VALUE)
-    public List<ForecastSection> listaForecastSections() {
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public List<ForecastSection> listForecastSections() {
         return forecastSectionService.findAllForecastSections();
     }
 

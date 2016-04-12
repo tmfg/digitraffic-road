@@ -13,6 +13,8 @@ import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedObject;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Free flow speeds", description="Api to read free flow speeds")
 @RestController
@@ -29,6 +31,8 @@ public class FreeFlowSpeedController {
 
     @ApiOperation("List all free flow speeds")
     @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Free Flow Speeds"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public FreeFlowSpeedObject listFreeFlowSpeeds() {
         return freeFlowSpeedService.listAllFreeFlowSpeeds();
     }

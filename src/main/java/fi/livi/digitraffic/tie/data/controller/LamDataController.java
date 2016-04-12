@@ -13,6 +13,8 @@ import fi.livi.digitraffic.tie.data.model.LamDataObject;
 import fi.livi.digitraffic.tie.data.service.LamDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(value="Lam data", description="Api to read latest lam measurements")
 @RestController
@@ -27,8 +29,10 @@ public class LamDataController {
         this.lamDataService = lamDataService;
     }
 
-    @ApiOperation(value = "List all lam measurements", notes = "List all lam measurements")
+    @ApiOperation("List all lam measurements")
     @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Lam Data"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
     public LamDataObject listAllLamData() {
         return lamDataService.listAllLamDataFromNonObsoleteStations();
     }
