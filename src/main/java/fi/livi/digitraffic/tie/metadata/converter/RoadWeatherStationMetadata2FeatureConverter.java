@@ -34,7 +34,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + rws);
         }
-        f.setId(Long.toString(rws.getRoadStationNaturalId()));
+        f.setId(rws.getRoadStationNaturalId());
 
         final RoadWeatherStationProperties properties = f.getProperties();
 
