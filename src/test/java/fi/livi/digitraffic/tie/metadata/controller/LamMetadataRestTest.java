@@ -6,63 +6,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class LamMetadataRestTest extends MetadataTest {
-
-    private final MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-    @Autowired
-    private WebApplicationContext wac;
-
-    private MockMvc mockMvc;
-
-    @Autowired
-    void setConverters(final HttpMessageConverter<?>[] converters) {
-
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
-                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
-
-        Assert.assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
-
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
+public class LamMetadataRestTest extends MetadataRestTest {
 
     @Test
     public void testLamMetadataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + "/lam-stations"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
+                .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
+                .andExpect(jsonPath("$.features[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
                 .andExpect(jsonPath("$.features[0].geometry.crs.type", is("name")))
-                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)));
-                // coordinates[0]=6675908.0
-                // coordinates[1]=382080.0
-                // coordinates[2]=0
-
-
+                .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))
+                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$.features[0].properties", Matchers.anything()))
+                .andExpect(jsonPath("$.features[0].properties.id", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.lamNaturalId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.name", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.names.fi", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.names.sv", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)));
     }
 }

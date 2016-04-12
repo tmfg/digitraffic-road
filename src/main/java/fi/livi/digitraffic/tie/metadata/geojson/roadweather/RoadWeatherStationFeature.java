@@ -20,7 +20,7 @@ public class RoadWeatherStationFeature {
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Unique identifier for Road Weather Station", required = true, position = 2)
-    private String id;
+    private long id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true, position = 3)
@@ -42,11 +42,11 @@ public class RoadWeatherStationFeature {
         this.geometry = geometry;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(final String id) {
+    public void setId(final long id) {
         this.id = id;
     }
 

@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(value="Lam metadata", description="Api to read lam metadata")
+@Api(value="Road weather station metadata", description="Api to read road weather station metadata")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class RoadWeatherStationMetadataController {

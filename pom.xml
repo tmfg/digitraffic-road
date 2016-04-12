@@ -144,6 +144,7 @@
                         <excludes>
                             <exclude>fi/livi/digitraffic/tie/wsdl/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
+                            <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

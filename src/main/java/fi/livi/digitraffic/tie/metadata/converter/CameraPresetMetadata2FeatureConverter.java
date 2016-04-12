@@ -25,71 +25,78 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         final CameraPresetFeatureCollection collection = new CameraPresetFeatureCollection();
 
         for(final CameraPreset cp : stations) {
-            collection.add(convert(cp));
+            CameraPresetFeature feature = convert(cp);
+            if (feature != null) {
+                collection.add(feature);
+            }
         }
         return collection;
     }
 
     private static CameraPresetFeature convert(final CameraPreset cp) {
-        final CameraPresetFeature f = new CameraPresetFeature();
-        if (log.isDebugEnabled()) {
-            log.debug("Convert: " + cp);
-        }
-        f.setId(Long.toString(cp.getRoadStationNaturalId()));
-
-        final CameraPresetProperties properties = f.getProperties();
-
-        // Lam station properties
-        properties.setId(cp.getId());
-        properties.setCameraId(cp.getCameraId());
-        properties.setPresetId(cp.getPresetId());
-        properties.setCameraType(cp.getCameraType());
-        properties.setPresetName1(cp.getPresetName1());
-        properties.setPresetName2(cp.getPresetName2());
-        properties.setPresetOrder(cp.getPresetOrder());
-        properties.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
-        properties.setInCollection(cp.isInCollection() != null ? cp.isInCollection() : false);
-        properties.setCompression(cp.getCompression());
-        properties.setNameOnDevice(cp.getNameOnDevice());
-        properties.setDefaultDirection(cp.getDefaultDirection());
-        properties.setResolution(cp.getResolution());
-        properties.setDirection(cp.getDirection());
-        properties.setDelay(cp.getDelay());
-        properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
-
-        // RoadStation properties
-        final RoadStation rs = cp.getRoadStation();
-        setRoadStationProperties(properties, rs);
-        properties.setNaturalId(rs.getNaturalId());
-        properties.setCollectionInterval(rs.getCollectionInterval());
-        properties.setCollectionStatus(rs.getCollectionStatus());
-        properties.setDescription(rs.getDescription());
-        properties.setDistance(rs.getDistance());
-        properties.setMunicipality(rs.getMunicipality());
-        properties.setMunicipalityCode(rs.getMunicipalityCode());
-
-        properties.setProvince(rs.getProvince());
-        properties.setProvinceCode(rs.getProvinceCode());
-        properties.setRoadNumber(rs.getRoadNumber());
-        properties.setRoadPart(rs.getRoadPart());
-
-        properties.addName("fi", rs.getNameFi());
-        properties.addName("sv", rs.getNameSv());
-        properties.addName("en", rs.getNameEn());
-
-
-        if (rs.getLatitude() != null && rs.getLongitude() != null) {
-            if (rs.getAltitude() != null) {
-                f.setGeometry(new Point(rs.getLatitude().longValue(),
-                                        rs.getLongitude().longValue(),
-                                        rs.getAltitude().longValue()));
-            } else {
-                f.setGeometry(new Point(rs.getLatitude().longValue(),
-                                        rs.getLongitude().longValue()));
+        try {
+            final CameraPresetFeature f = new CameraPresetFeature();
+            if (log.isDebugEnabled()) {
+                log.debug("Convert: " + cp);
             }
-            f.getGeometry().setCrs(crs);
-        }
+            f.setId(cp.getRoadStationNaturalId());
 
-        return f;
+            final CameraPresetProperties properties = f.getProperties();
+
+            // Lam station properties
+            properties.setId(cp.getId());
+            properties.setCameraId(cp.getCameraId());
+            properties.setPresetId(cp.getPresetId());
+            properties.setCameraType(cp.getCameraType());
+            properties.setPresetName1(cp.getPresetName1());
+            properties.setPresetName2(cp.getPresetName2());
+            properties.setPresetOrder(cp.getPresetOrder());
+            properties.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
+            properties.setInCollection(cp.isInCollection() != null ? cp.isInCollection() : false);
+            properties.setCompression(cp.getCompression());
+            properties.setNameOnDevice(cp.getNameOnDevice());
+            properties.setDefaultDirection(cp.getDefaultDirection());
+            properties.setResolution(cp.getResolution());
+            properties.setDirection(cp.getDirection());
+            properties.setDelay(cp.getDelay());
+            properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
+
+            // RoadStation properties
+            final RoadStation rs = cp.getRoadStation();
+            setRoadStationProperties(properties, rs);
+            properties.setNaturalId(rs.getNaturalId());
+            properties.setCollectionInterval(rs.getCollectionInterval());
+            properties.setCollectionStatus(rs.getCollectionStatus());
+            properties.setDescription(rs.getDescription());
+            properties.setDistance(rs.getDistance());
+            properties.setMunicipality(rs.getMunicipality());
+            properties.setMunicipalityCode(rs.getMunicipalityCode());
+
+            properties.setProvince(rs.getProvince());
+            properties.setProvinceCode(rs.getProvinceCode());
+            properties.setRoadNumber(rs.getRoadNumber());
+            properties.setRoadPart(rs.getRoadPart());
+
+            properties.addName("fi", rs.getNameFi());
+            properties.addName("sv", rs.getNameSv());
+            properties.addName("en", rs.getNameEn());
+
+            if (rs.getLatitude() != null && rs.getLongitude() != null) {
+                if (rs.getAltitude() != null) {
+                    f.setGeometry(new Point(rs.getLatitude().longValue(),
+                            rs.getLongitude().longValue(),
+                            rs.getAltitude().longValue()));
+                } else {
+                    f.setGeometry(new Point(rs.getLatitude().longValue(),
+                            rs.getLongitude().longValue()));
+                }
+                f.getGeometry().setCrs(crs);
+            }
+
+            return f;
+        } catch (RuntimeException e) {
+            log.error("Cold not convert " + cp + " to " + CameraPresetFeature.class.getSimpleName());
+            return null;
+        }
     }
 }
