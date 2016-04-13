@@ -289,10 +289,17 @@ public class RoadWeatherStationUpdater {
 
     private static boolean updateRoadStationAttributes(final TiesaaAsema from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
+
+        // Can insert obsolete stations
+        if (POISTETUT.contains(from.getKeruunTila())) {
+            to.obsolete();
+        } else {
+            to.setObsolete(false);
+            to.setObsoleteDate(null);
+        }
+
         to.setNaturalId(from.getVanhaId());
         to.setType(RoadStationType.WEATHER_STATION);
-        to.setObsolete(false);
-        to.setObsoleteDate(null);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());

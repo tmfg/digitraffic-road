@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
-import java.util.List;
 import java.util.Map;
 
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
@@ -14,8 +13,6 @@ public interface LamStationService {
     LamStationFeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection();
 
     LamStation save(final LamStation lamStation);
-
-    List<LamStation> findAll();
 
     Map<Long, LamStation> findAllLamStationsMappedByByNaturalId();
 }
