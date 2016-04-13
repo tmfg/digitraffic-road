@@ -293,8 +293,9 @@ public class CameraUpdater {
         to.setCompression(esiasentoFrom.getKompressio());
         to.setDescription(esiasentoFrom.getKuvaus());
         to.setLotjuId(esiasentoFrom.getId());
+        to.setPresetName1(esiasentoFrom.getNimiEsitys());
+        to.setPresetName2(esiasentoFrom.getNimiLaitteella());
         to.setNameOnDevice(esiasentoFrom.getNimiLaitteella());
-        to.setPresetName2(esiasentoFrom.getNimiEsitys());
         to.setDefaultDirection(esiasentoFrom.isOletussuunta());
         to.setResolution(esiasentoFrom.getResoluutio());
         to.setDirection(esiasentoFrom.getSuunta());

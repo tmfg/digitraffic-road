@@ -121,6 +121,24 @@
             <version>2.2.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>3.1.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>3.1.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+            <version>3.1.6</version>
+        </dependency>
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -233,7 +251,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>3.1.5</version>
+                <version>3.1.6</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>

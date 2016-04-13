@@ -1,0 +1,102 @@
+<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+    <ns2:kamerat>
+        <kuvaus>ADSL</kuvaus>
+        <nimi>vt27_Runni</nimi>
+        <korkeus>116</korkeus>
+        <latitudi>7053606</latitudi>
+        <longitudi>495841</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>303</etaisyysTieosanAlusta>
+            <tienumero>27</tienumero>
+            <tieosa>26</tieosa>
+        </tieosoite>
+        <tieosoiteId>81</tieosoiteId>
+        <aliverkonPeite>255.255.255.248</aliverkonPeite>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <keruuVali>720</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Iisalmi</kunta>
+        <kuntaKoodi>140</kuntaKoodi>
+        <maakunta>Pohjois-Savo</maakunta>
+        <maakuntaKoodi>11</maakuntaKoodi>
+        <nimiEn>Road 27 Iisalmi, Runni</nimiEn>
+        <nimiFi>Tie 27 Iisalmi, Runni</nimiFi>
+        <nimiSe>Väg 27 Idensalmi, Runni</nimiSe>
+        <riittavanKokoinenHuoltolevike>false</riittavanKokoinenHuoltolevike>
+        <vanhaId>8520</vanhaId>
+        <vuosihuolto>2015-09-22T00:00:00+03:00</vuosihuolto>
+        <yhdyskaytava>193.209.254.185</yhdyskaytava>
+        <yhteysTapa>adsl</yhteysTapa>
+        <kokoonpanoId>443</kokoonpanoId>
+        <lahinTiesaaAsemaId>424</lahinTiesaaAsemaId>
+        <tyyppi>VAPIX</tyyppi>
+        <videopalvelinId>443</videopalvelinId>
+        <id>443</id>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <nimi>vt7_Loviisa_Länsi</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6702975</latitudi>
+        <longitudi>455588</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>0</etaisyysTieosanAlusta>
+            <tienumero>7</tienumero>
+            <tieosa>19</tieosa>
+        </tieosoite>
+        <tieosoiteId>592</tieosoiteId>
+        <aliverkonPeite>255.255.255.240</aliverkonPeite>
+        <alkamisPaiva>2013-10-15T00:00:00+03:00</alkamisPaiva>
+        <keruuVali>720</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Kotka</kunta>
+        <kuntaKoodi>285</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 7 Loviisa_Länsi</nimiEn>
+        <nimiFi>Tie 7 Loviisa_Länsi</nimiFi>
+        <nimiSe>Väg 7 Loviisa_Länsi</nimiSe>
+        <riittavanKokoinenHuoltolevike>false</riittavanKokoinenHuoltolevike>
+        <vanhaId>1628</vanhaId>
+        <yhdyskaytava>172.30.133.65</yhdyskaytava>
+        <yhteysTapa>lan</yhteysTapa>
+        <kokoonpanoId>121</kokoonpanoId>
+        <lahinTiesaaAsemaId>22</lahinTiesaaAsemaId>
+        <tyyppi>VAPIX</tyyppi>
+        <videopalvelinId>121</videopalvelinId>
+        <id>121</id>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <kuvaus>ADSL</kuvaus>
+        <nimi>vt7_Porvoo_Harabacka</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6695675</latitudi>
+        <longitudi>423749</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>3804</etaisyysTieosanAlusta>
+            <tienumero>7</tienumero>
+            <tieosa>8</tieosa>
+        </tieosoite>
+        <tieosoiteId>411</tieosoiteId>
+        <aliverkonPeite>255.255.255.248</aliverkonPeite>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <asemanSijainti>Vanha Porvoo LKA016001</asemanSijainti>
+        <keruuVali>720</keruuVali>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <kunta>Porvoo</kunta>
+        <kuntaKoodi>638</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 7 Porvoo</nimiEn>
+        <nimiFi>Tie 7 Porvoo</nimiFi>
+        <nimiSe>Väg 7 Borgå</nimiSe>
+        <riittavanKokoinenHuoltolevike>false</riittavanKokoinenHuoltolevike>
+        <vanhaId>1502</vanhaId>
+        <yhdyskaytava>172.30.156.225</yhdyskaytava>
+        <yhteysTapa>lan</yhteysTapa>
+        <kokoonpanoId>2</kokoonpanoId>
+        <lahinTiesaaAsemaId>19</lahinTiesaaAsemaId>
+        <tyyppi>VMX_MPH</tyyppi>
+        <videopalvelinId>2</videopalvelinId>
+        <id>2</id>
+    </ns2:kamerat>
+</ns2:HaeKaikkiKameratResponse>

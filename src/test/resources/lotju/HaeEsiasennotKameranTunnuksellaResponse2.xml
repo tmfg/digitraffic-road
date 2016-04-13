@@ -1,0 +1,54 @@
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+    <ns2:esiasennot>
+        <jarjestys>1</jarjestys>
+        <julkinen>true</julkinen>
+        <kameraId>2</kameraId>
+        <keruussa>true</keruussa>
+        <kompressio>30</kompressio>
+        <nimiEsitys>Tie 55 Porvooseen</nimiEsitys>
+        <nimiLaitteella>Porvoo</nimiLaitteella>
+        <resoluutio>704x576</resoluutio>
+        <suunta>4</suunta>
+        <viive>10</viive>
+        <id>117</id>
+    </ns2:esiasennot>
+    <ns2:esiasennot>
+        <jarjestys>2</jarjestys>
+        <julkinen>true</julkinen>
+        <kameraId>2</kameraId>
+        <keruussa>true</keruussa>
+        <kompressio>30</kompressio>
+        <nimiEsitys>Tie 7 Kotkaan</nimiEsitys>
+        <nimiLaitteella>Kotka</nimiLaitteella>
+        <resoluutio>704x576</resoluutio>
+        <suunta>1</suunta>
+        <viive>10</viive>
+        <id>115</id>
+    </ns2:esiasennot>
+    <ns2:esiasennot>
+        <jarjestys>3</jarjestys>
+        <julkinen>true</julkinen>
+        <kameraId>2</kameraId>
+        <keruussa>true</keruussa>
+        <kompressio>30</kompressio>
+        <nimiEsitys>Tienpinta</nimiEsitys>
+        <nimiLaitteella>tienpinta</nimiLaitteella>
+        <resoluutio>704x576</resoluutio>
+        <suunta>9</suunta>
+        <viive>10</viive>
+        <id>857</id>
+    </ns2:esiasennot>
+    <ns2:esiasennot>
+        <jarjestys>4</jarjestys>
+        <julkinen>true</julkinen>
+        <kameraId>2</kameraId>
+        <keruussa>true</keruussa>
+        <kompressio>30</kompressio>
+        <nimiEsitys>Tie 7 Helsinkiin</nimiEsitys>
+        <nimiLaitteella>Helsinki</nimiLaitteella>
+        <resoluutio>704x576</resoluutio>
+        <suunta>2</suunta>
+        <viive>10</viive>
+        <id>116</id>
+    </ns2:esiasennot>
+</ns2:HaeEsiasennotKameranTunnuksellaResponse>

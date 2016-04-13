@@ -161,6 +161,7 @@ public class RoadStation {
         if (obsoleteDate == null || !obsolete) {
             obsoleteDate = LocalDate.now();
             obsolete = true;
+            return true;
         }
         return false;
     }
