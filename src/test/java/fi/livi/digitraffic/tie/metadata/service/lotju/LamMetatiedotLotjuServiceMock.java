@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -28,7 +29,7 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     private static final Logger log = Logger.getLogger(LamMetatiedotLotjuServiceMock.class);
 
     private List<LamAsema> lamAsemasInitial;
-    private List<LamAsema> lamAsemasChanged;
+    private List<LamAsema> afterChangelamAsemas;
 
     @Autowired
     public LamMetatiedotLotjuServiceMock(@Value("${metadata.server.address.lam}")
@@ -36,13 +37,44 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
                                          final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressCamera, LAMMetatiedot.class, LAMMetatiedotService.SERVICE);
 
-        setLamAsemasInitial(readLamAsemas("lotju/HaeKaikkiLAMAsematResponseInitial.xml"));
-        setLamAsemasChanged(readLamAsemas("lotju/HaeKaikkiLAMAsematResponseChanged.xml"));
+        setLamAsemasInitial(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseInitial.xml"));
+        setAfterChangelamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseChanged.xml"));
     }
 
     private List<LamAsema> readLamAsemas(String filePath) {
             HaeKaikkiLAMAsematResponse responseValue = (HaeKaikkiLAMAsematResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
-            return responseValue.getAsemat();
+        for ( LamAsema k : responseValue.getAsemat() ) {
+            Assert.assertNull(k.getAkku());
+            Assert.assertNull(k.getAkkuKayttoonottoVuosi());
+            Assert.assertNull(k.getIp());
+            Assert.assertNull(k.getLaskinlaite());
+            Assert.assertNull(k.getLaskinlaiteSarjanumero());
+            Assert.assertNull(k.getLaskinlaiteToimituspvm());
+            Assert.assertNull(k.getLatauslaite());
+            Assert.assertNull(k.getLatauslaiteKayttoonottoVuosi());
+            Assert.assertNull(k.getLiitantayksikko());
+            Assert.assertNull(k.isRiittavanKokoinenHuoltolevike());
+
+            Assert.assertNull(k.getAikakatkaisu());
+            Assert.assertNull(k.getAliverkonPeite());
+            Assert.assertNull(k.getAlkamisPaiva());
+            Assert.assertNull(k.getAsemanTila());
+            Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
+            Assert.assertNull(k.getHuoltoPuutteet());
+            Assert.assertNull(k.getKorjaushuolto());
+            Assert.assertNull(k.getLaitekaappiId());
+            Assert.assertNull(k.getLiviId());
+            Assert.assertNull(k.getOhjelmistoversio());
+            Assert.assertNull(k.getPaattymisPaiva());
+            Assert.assertNull(k.getTakuunPaattymisPvm());
+            Assert.assertNull(k.getVuosihuolto());
+            Assert.assertNull(k.getVerkkolaiteId());
+            Assert.assertNull(k.getYhdyskaytava());
+            Assert.assertNull(k.getYhteysTapa());
+
+        }
+
+        return responseValue.getAsemat();
     }
 
     public List<LamAsema> getLamAsemasInitial() {
@@ -53,12 +85,12 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
         this.lamAsemasInitial = lamAsemasInitial;
     }
 
-    public List<LamAsema> getLamAsemasChanged() {
-        return lamAsemasChanged;
+    public List<LamAsema> getAfterChangelamAsemas() {
+        return afterChangelamAsemas;
     }
 
-    public void setLamAsemasChanged(List<LamAsema> lamAsemasChanged) {
-        this.lamAsemasChanged = lamAsemasChanged;
+    public void setAfterChangelamAsemas(List<LamAsema> afterChangelamAsemas) {
+        this.afterChangelamAsemas = afterChangelamAsemas;
     }
 
     /* LAMMetatiedot Service methods */
@@ -136,7 +168,7 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     @Override
     public List<LamAsema> haeKaikkiLAMAsemat() throws LAMMetatiedotException {
         if (isStateAfterChange()) {
-            return getLamAsemasChanged();
+            return getAfterChangelamAsemas();
         }
         return getLamAsemasInitial();
     }

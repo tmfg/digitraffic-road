@@ -339,6 +339,7 @@ public class CameraUpdater {
         to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
         to.setDescription(from.getKuvaus());
+        to.setAdditionalInformation(from.getLisatieto());
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
         to.setAltitude(from.getKorkeus());

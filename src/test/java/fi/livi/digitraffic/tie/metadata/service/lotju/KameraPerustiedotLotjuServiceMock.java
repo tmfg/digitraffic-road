@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -28,30 +29,30 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     private static final Logger log = Logger.getLogger(KameraPerustiedotLotjuServiceMock.class);
 
-    private List<Kamera> initialKamerat;
-    private List<Kamera> afterChangeKamerat;
+    private List<Kamera> initialKameras;
+    private List<Kamera> afterChangeKameras;
     private Map<Long, List<Esiasento>> initialEsiasentos = new HashMap<>();
 
     @Autowired
     public KameraPerustiedotLotjuServiceMock(@Value("${metadata.server.address.camera}")
-                                                 final String metadataServerAddressCamera,
+                                             final String metadataServerAddressCamera,
                                              final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressCamera, KameraPerustiedot.class, KameraPerustiedotEndpointService.SERVICE);
 
-        setInitialKamerat(readKameras("lotju/HaeKaikkiKameratResponseInitial.xml"));
-        setAfterChangeKamerat(readKameras("lotju/HaeKaikkiKameratResponseChanged.xml"));
-        appendEsiasentos(readEsiasentos("lotju/HaeEsiasennotKameranTunnuksellaResponse2.xml"), initialEsiasentos);
-        appendEsiasentos(readEsiasentos("lotju/HaeEsiasennotKameranTunnuksellaResponse121.xml"), initialEsiasentos);
-        appendEsiasentos(readEsiasentos("lotju/HaeEsiasennotKameranTunnuksellaResponse443.xml"), initialEsiasentos);
+        setInitialKameras(readKameras("lotju/kamera/HaeKaikkiKameratResponseInitial.xml"));
+        setAfterChangeKameras(readKameras("lotju/kamera/HaeKaikkiKameratResponseChanged.xml"));
+        appendEsiasentos(readEsiasentos("lotju/kamera/HaeEsiasennotKameranTunnuksellaResponse2.xml"), getInitialEsiasentos());
+        appendEsiasentos(readEsiasentos("lotju/kamera/HaeEsiasennotKameranTunnuksellaResponse121.xml"), getInitialEsiasentos());
+        appendEsiasentos(readEsiasentos("lotju/kamera/HaeEsiasennotKameranTunnuksellaResponse443.xml"), getInitialEsiasentos());
 
     }
 
     private void appendEsiasentos(List<Esiasento> esiasentos, Map<Long, List<Esiasento>> initialEsiasentos) {
         for (Esiasento ea : esiasentos) {
             long kId = ea.getKameraId();
-            List<Esiasento> eas = initialEsiasentos.get(Long.valueOf(kId));
+            List<Esiasento> eas = getInitialEsiasentos().get(Long.valueOf(kId));
             if (eas == null) {
-                eas = new ArrayList<Esiasento>();
+                eas = new ArrayList<>();
                 initialEsiasentos.put(kId, eas);
             }
             eas.add(ea);
@@ -60,6 +61,28 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     private List<Kamera> readKameras(String filePath) {
         HaeKaikkiKameratResponse responseValue = (HaeKaikkiKameratResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        for ( Kamera k : responseValue.getKamerat() ) {
+            Assert.assertEquals(0, k.getKokoonpanoId());
+            Assert.assertEquals(0, k.getVideopalvelinId());
+
+            Assert.assertNull(k.getAikakatkaisu());
+            Assert.assertNull(k.getAliverkonPeite());
+            Assert.assertNull(k.getAlkamisPaiva());
+            Assert.assertNull(k.getAsemanTila());
+            Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
+            Assert.assertNull(k.getHuoltoPuutteet());
+            Assert.assertNull(k.getKorjaushuolto());
+            Assert.assertNull(k.getLaitekaappiId());
+            Assert.assertNull(k.getLiviId());
+            Assert.assertNull(k.getOhjelmistoversio());
+            Assert.assertNull(k.getPaattymisPaiva());
+            Assert.assertNull(k.getTakuunPaattymisPvm());
+            Assert.assertNull(k.getVuosihuolto());
+            Assert.assertNull(k.getVerkkolaiteId());
+            Assert.assertNull(k.getYhdyskaytava());
+            Assert.assertNull(k.getYhteysTapa());
+            Assert.assertNull(k.isRiittavanKokoinenHuoltolevike());
+        }
         return responseValue.getKamerat();
     }
 
@@ -68,20 +91,20 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         return responseValue.getEsiasennot();
     }
 
-    public List<Kamera> getInitialKamerat() {
-        return initialKamerat;
+    public List<Kamera> getInitialKameras() {
+        return initialKameras;
     }
 
-    public void setInitialKamerat(List<Kamera> initialKamerat) {
-        this.initialKamerat = initialKamerat;
+    public void setInitialKameras(List<Kamera> initialKameras) {
+        this.initialKameras = initialKameras;
     }
 
-    public void setAfterChangeKamerat(List<Kamera> afterChangeKamerat) {
-        this.afterChangeKamerat = afterChangeKamerat;
+    public void setAfterChangeKameras(List<Kamera> afterChangeKameras) {
+        this.afterChangeKameras = afterChangeKameras;
     }
 
-    public List<Kamera> getAfterChangeKamerat() {
-        return afterChangeKamerat;
+    public List<Kamera> getAfterChangeKameras() {
+        return afterChangeKameras;
     }
 
     public void setInitialEsiasentos(Map<Long, List<Esiasento>> initialEsiasentos) {
@@ -129,9 +152,9 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     @Override
     public List<Kamera> haeKaikkiKamerat() throws KameraPerustiedotException {
         if (isStateAfterChange()) {
-            return getAfterChangeKamerat();
+            return getAfterChangeKameras();
         }
-        return getInitialKamerat();
+        return getInitialKameras();
     }
 
     @Override

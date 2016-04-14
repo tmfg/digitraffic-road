@@ -58,6 +58,8 @@ public class RoadStation {
 
     private String description;
 
+    private String additionalInformation;
+
     public Long getId() {
         return id;
     }
@@ -244,6 +246,14 @@ public class RoadStation {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
     }
 
     @Override
