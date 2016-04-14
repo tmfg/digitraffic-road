@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,72 +65,72 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
 
     @Override
     public LamAnturiVakioArvo haeAnturiVakioArvot(Long anturiVakioId, Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeAnturiVakioArvot");
     }
 
     @Override
     public LamAsema haeLAMAsema(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeLAMAsema");
     }
 
     @Override
     public List<LamAnturiVakioArvo> haeKaikkiAnturiVakioArvot(Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public LamArvoVastaavuus haeArvovastaavuus(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamAnturiVakioArvo> haeAsemanAnturiVakioArvot(Long asemaId, Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public LamAnturi haeLAMAnturi(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamLaskennallinenAnturi> haeKaikkiLAMLaskennallisetAnturit() throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamArvoVastaavuus> haeLaskennallisenAnturinArvovastaavuudet(Long arg0) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamArvoVastaavuus> haeKaikkiArvovastaavuudet() throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public LamAnturiVakio haeAnturiVakio(Long anturiVakioId) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamAnturi> haeKaikkiLAMAnturit() throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamLaskennallinenAnturi> haeLAMAsemanLaskennallisetAnturit(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamAsemaLaskennallinenAnturi> haeLAMAsemanLaskennallistenAntureidenTilat(Long asemaId) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamAnturi> haeLAMAsemanAnturit(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
@@ -142,12 +143,12 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
 
     @Override
     public LamLaskennallinenAnturi haeLAMLaskennallinenAnturi(Long id) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
     public List<LamAnturiVakio> haeAsemanAnturiVakio(Long asemaId) throws LAMMetatiedotException {
-        return null;
+        throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
 }
