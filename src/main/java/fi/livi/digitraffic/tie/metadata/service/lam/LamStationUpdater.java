@@ -236,8 +236,7 @@ public class LamStationUpdater {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(convertToLamNaturalId(from.getVanhaId()));
         to.setLotjuId(from.getId());
-        to.setObsolete(false);
-        to.setObsoleteDate(null);
+
         to.setName(from.getNimi());
         to.setDirection1Municipality(from.getSuunta1Kunta());
         to.setDirection1MunicipalityCode(from.getSuunta1KuntaKoodi());
@@ -247,16 +246,27 @@ public class LamStationUpdater {
         to.setRoadDistrict(roadDistrict);
 
         // Update RoadStation
-        return updateRoadStationAttributes(from, to.getRoadStation()) ||
+        boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
+        to.setObsolete(to.getRoadStation().isObsolete());
+        to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
+
+        return  updated ||
                 hash != HashCodeBuilder.reflectionHashCode(to);
     }
 
     private static boolean updateRoadStationAttributes(final LamAsema from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
+
+        // Can insert obsolete stations
+        if (POISTETUT.contains(from.getKeruunTila())) {
+            to.obsolete();
+        } else {
+            to.setObsolete(false);
+            to.setObsoleteDate(null);
+        }
+
         to.setNaturalId(from.getVanhaId());
         to.setType(RoadStationType.LAM_STATION);
-        to.setObsolete(false);
-        to.setObsoleteDate(null);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());

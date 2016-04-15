@@ -38,12 +38,6 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<LamStation> findAll() {
-        return lamStationRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Map<Long, LamStation> findAllLamStationsMappedByByNaturalId() {
         final List<LamStation> allStations = lamStationRepository.findAll();
         final Map<Long, LamStation> stationMap = new HashMap<>();

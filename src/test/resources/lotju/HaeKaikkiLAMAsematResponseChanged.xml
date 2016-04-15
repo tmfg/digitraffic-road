@@ -1,0 +1,102 @@
+<ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06">
+    <ns2:asemat>
+        <kuvaus>Liikennemittausasema - Porvoo</kuvaus>
+        <nimi>L_vt7_Rita</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6698688</latitudi>
+        <longitudi>427927</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>1050</etaisyysTieosanAlusta>
+            <tienumero>7</tienumero>
+            <tieosa>10</tieosa>
+        </tieosoite>
+        <tieosoiteId>443</tieosoiteId>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <keruuVali>0</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Porvoo</kunta>
+        <kuntaKoodi>638</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 7 Porvoo, Rita</nimiEn>
+        <nimiFi>Tie 7 Porvoo, Rita</nimiFi>
+        <nimiSe>Väg 7 Borgå, Rita</nimiSe>
+        <vanhaId>23001</vanhaId>
+        <suunta1KuntaKoodi>1004</suunta1KuntaKoodi>
+        <suunta2Kunta>Helsinki</suunta2Kunta>
+        <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
+        <tyyppi>DSL</tyyppi>
+        <id>1</id>
+    </ns2:asemat>
+    <ns2:asemat>
+        <kuvaus>Liikennemittausasema</kuvaus>
+        <nimi>OLD_L_vt7_Rita2</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6699599</latitudi>
+        <longitudi>431619</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>3000</etaisyysTieosanAlusta>
+            <tienumero>7</tienumero>
+            <tieosa>11</tieosa>
+        </tieosoite>
+        <tieosoiteId>54</tieosoiteId>
+        <keruuVali>300</keruuVali>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <vanhaId>23002</vanhaId>
+        <suunta1KuntaKoodi>1004</suunta1KuntaKoodi>
+        <suunta2Kunta>Helsinki</suunta2Kunta>
+        <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
+        <tyyppi>DSL</tyyppi>
+        <id>2</id>
+    </ns2:asemat>
+    <ns2:asemat>
+        <kuvaus>Liikennemittausasema</kuvaus>
+        <nimi>L_vt5_Iisalmi</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>7048448</latitudi>
+        <longitudi>512364</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>4750</etaisyysTieosanAlusta>
+            <tienumero>5</tienumero>
+            <tieosa>217</tieosa>
+        </tieosoite>
+        <tieosoiteId>24</tieosoiteId>
+        <keruuVali>300</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <maakunta>Pohjois-Savo</maakunta>
+        <maakuntaKoodi>11</maakuntaKoodi>
+        <nimiEn>Road 5 Iisalmi</nimiEn>
+        <nimiFi>Tie 5 Iisalmi</nimiFi>
+        <nimiSe>Väg 5 Idensalmi</nimiSe>
+        <vanhaId>23826</vanhaId>
+        <suunta1Kunta>Kajaani</suunta1Kunta>
+        <suunta1KuntaKoodi>205</suunta1KuntaKoodi>
+        <suunta2Kunta>Kuopio</suunta2Kunta>
+        <suunta2KuntaKoodi>297</suunta2KuntaKoodi>
+        <tyyppi>DSL</tyyppi>
+        <id>310</id>
+    </ns2:asemat>
+    <ns2:asemat>
+        <nimi>L_vt3_Klaukkalantie</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6692906</latitudi>
+        <longitudi>379098</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>0</etaisyysTieosanAlusta>
+            <tienumero>3</tienumero>
+            <tieosa>104</tieosa>
+        </tieosoite>
+        <tieosoiteId>581</tieosoiteId>
+        <keruuVali>300</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Vantaa</kunta>
+        <kuntaKoodi>92</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiFi>L_vt3_Klaukkalantie</nimiFi>
+        <vanhaId>24609</vanhaId>
+        <lisatietoja>Tulossa vt3 Keimola. Joho SAAri ysp / Raine Sallinen valtti</lisatietoja>
+        <tyyppi>DSL</tyyppi>
+        <id>581</id>
+    </ns2:asemat>
+</ns2:HaeKaikkiLAMAsematResponse>
