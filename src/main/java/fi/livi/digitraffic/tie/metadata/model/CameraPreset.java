@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -69,6 +71,7 @@ public class CameraPreset {
     private String resolution;
     private String direction;
     private Integer delay;
+    private LocalDate obsoleteDate;
 
     /**
      * RoadStation is same for one camera all presets
@@ -247,11 +250,11 @@ public class CameraPreset {
      * @return true if state changed
      */
     public boolean obsolete() {
-        if (roadStation == null) {
-            log.error("Cannot obsolete " + toString() + " with null roadstation");
-            return false;
+        if (obsoleteDate == null) {
+            obsoleteDate = LocalDate.now();
+            return true;
         }
-        return roadStation.obsolete();
+        return false;
     }
 
     public boolean isPublicInternal() {
@@ -265,6 +268,7 @@ public class CameraPreset {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
+                .appendField("presetId", getPresetId())
                 .appendField("id", getId())
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("roadStationId", getRoadStationId())
@@ -284,4 +288,11 @@ public class CameraPreset {
         return nearestRoadWeatherStation != null ? nearestRoadWeatherStation.getRoadStationNaturalId() : null;
     }
 
+    public LocalDate getObsoleteDate() {
+        return obsoleteDate;
+    }
+
+    public void setObsoleteDate(LocalDate obsoleteDate) {
+        this.obsoleteDate = obsoleteDate;
+    }
 }

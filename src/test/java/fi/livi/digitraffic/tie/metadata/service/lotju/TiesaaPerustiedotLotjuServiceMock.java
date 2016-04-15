@@ -35,30 +35,40 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     private List<TiesaaAsema> initialTiesaaAsemas;
     private List<TiesaaAsema> afterChangeTiesaaAsemas;
     private Map<Long, List<TiesaaAnturi>> initialTiesaaAnturisMap = new HashMap<>();
+    private Map<Long, List<TiesaaAnturi>> afterChangeTiesaaAnturisMap = new HashMap<>();
 
     @Autowired
     public TiesaaPerustiedotLotjuServiceMock(@Value("${metadata.server.address.weather}")
                                              final String metadataServerAddressWeather,
                                              final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedot.class, TiesaaPerustiedotService.SERVICE);
-
-        setInitialTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseInitial.xml"));
-        setAfterChangeTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseChanged.xml"));
-        appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse33.xml"), initialTiesaaAnturisMap);
-        appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse34.xml"), initialTiesaaAnturisMap);
-        appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse35.xml"), initialTiesaaAnturisMap);
-        appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
     }
 
-    private void appendTiesaaAnturis(List<TiesaaAnturi> tiesaaAnturis, Map<Long, List<TiesaaAnturi>> tiesaaAnturisMap) {
+    @Override
+    public void initDataAndService() {
+        if (!isInited()) {
+            initService();
+            setInitialTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseInitial.xml"));
+            setAfterChangeTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseChanged.xml"));
+            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse33.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse34.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse35.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
+            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
+        }
+    }
+
+    private void appendTiesaaAnturis(List<TiesaaAnturi> tiesaaAnturis, Map<Long, List<TiesaaAnturi>>...tiesaaAnturisMaps) {
         for (TiesaaAnturi tsa : tiesaaAnturis) {
             long tsaId = tsa.getTiesaaAsemaId();
-            List<TiesaaAnturi> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
-            if (eas == null) {
-                eas = new ArrayList<>();
-                tiesaaAnturisMap.put(tsaId, eas);
+            for (Map<Long, List<TiesaaAnturi>> tiesaaAnturisMap : tiesaaAnturisMaps) {
+                List<TiesaaAnturi> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
+                if (eas == null) {
+                    eas = new ArrayList<>();
+                    tiesaaAnturisMap.put(tsaId, eas);
+                }
+                eas.add(tsa);
             }
-            eas.add(tsa);
         }
     }
 
@@ -158,11 +168,16 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     @Override
     public List<TiesaaAnturi> haeTiesaaAsemanAnturit(Long id) throws TiesaaException {
+        log.info("haeTiesaaAsemanAnturit " + id);
+        if (isStateAfterChange()) {
+            return afterChangeTiesaaAnturisMap.get(Long.valueOf(id));
+        }
         return initialTiesaaAnturisMap.get(Long.valueOf(id));
     }
 
     @Override
     public List<TiesaaAsema> haeKaikkiTiesaaAsemat() throws TiesaaException {
+        log.info("haeKaikkiTiesaaAsemat isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
             return getAfterChangeTiesaaAsemas();
         }

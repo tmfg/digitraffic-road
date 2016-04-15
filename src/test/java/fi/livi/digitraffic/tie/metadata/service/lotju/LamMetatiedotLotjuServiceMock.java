@@ -37,8 +37,15 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
                                          final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressCamera, LAMMetatiedot.class, LAMMetatiedotService.SERVICE);
 
-        setLamAsemasInitial(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseInitial.xml"));
-        setAfterChangelamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseChanged.xml"));
+    }
+
+    @Override
+    public void initDataAndService() {
+        if (!isInited()) {
+            initService();
+            setLamAsemasInitial(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseInitial.xml"));
+            setAfterChangelamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseChanged.xml"));
+        }
     }
 
     private List<LamAsema> readLamAsemas(String filePath) {
@@ -167,6 +174,7 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
 
     @Override
     public List<LamAsema> haeKaikkiLAMAsemat() throws LAMMetatiedotException {
+        log.info("haeKaikkiLAMAsemat isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
             return getAfterChangelamAsemas();
         }

@@ -1,6 +1,6 @@
 <ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06">
     <ns2:asemat>
-        <kuvaus>Liikennemittausasema</kuvaus>
+        <kuvaus>Liikennemittausasema - Porvoo</kuvaus>
         <nimi>L_vt7_Rita</nimi>
         <korkeus>0</korkeus>
         <latitudi>6698688</latitudi>

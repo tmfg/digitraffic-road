@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -27,6 +29,18 @@ public class Crs implements Serializable {
 
         public void setName(final String name) {
             this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CrsProperties)) {
+                return false;
+            }
+            final CrsProperties crsProperties = (CrsProperties) o;
+            return new EqualsBuilder().append(name, crsProperties.getName()).isEquals();
         }
     }
     @ApiModelProperty(value = "CRS type (always \"name\")", required = true, example = "name")

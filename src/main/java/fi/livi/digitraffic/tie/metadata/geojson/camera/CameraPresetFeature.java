@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -56,5 +58,22 @@ public class CameraPresetFeature {
 
     public void setProperties(final CameraPresetProperties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CameraPresetFeature)) {
+            return false;
+        }
+        final CameraPresetFeature f = (CameraPresetFeature) o;
+        return new EqualsBuilder()
+                .append(type, f.type)
+                .append(id, f.id)
+                .append(geometry, f.geometry)
+                .append(properties, f.properties)
+                .isEquals();
     }
 }

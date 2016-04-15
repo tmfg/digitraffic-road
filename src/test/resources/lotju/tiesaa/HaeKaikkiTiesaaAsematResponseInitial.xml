@@ -38,7 +38,7 @@
         </tieosoite>
         <tieosoiteId>260</tieosoiteId>
         <keruuVali>600</keruuVali>
-        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <keruunTila>KERUUSSA</keruunTila>
         <kunta>Helsinki</kunta>
         <kuntaKoodi>91</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
@@ -64,7 +64,7 @@
         </tieosoite>
         <tieosoiteId>261</tieosoiteId>
         <keruuVali>300</keruuVali>
-        <keruunTila>KERUUSSA</keruunTila>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>

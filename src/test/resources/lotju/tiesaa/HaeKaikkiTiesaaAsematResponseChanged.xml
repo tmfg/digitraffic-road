@@ -27,12 +27,12 @@
     </ns2:tiesaaAsema>
     <ns2:tiesaaAsema>
         <kuvaus>GPRS</kuvaus>
-        <nimi>vt3_Pirkkola_R</nimi>
-        <korkeus>0</korkeus>
-        <latitudi>6678800</latitudi>
-        <longitudi>383971</longitudi>
+        <nimi>vt3_Pirkkola_RR</nimi>
+        <korkeus>1</korkeus>
+        <latitudi>6678801</latitudi>
+        <longitudi>383970</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>4915</etaisyysTieosanAlusta>
+            <etaisyysTieosanAlusta>5915</etaisyysTieosanAlusta>
             <tienumero>3</tienumero>
             <tieosa>101</tieosa>
         </tieosoite>
@@ -43,11 +43,11 @@
         <kuntaKoodi>91</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
-        <nimiEn>Road 3 Helsinki, Pirkkola</nimiEn>
-        <nimiFi>Tie 3 Helsinki, Pirkkola</nimiFi>
-        <nimiSe>Väg 3 Helsingfors, Britas</nimiSe>
+        <nimiEn>Road 3 Helsinki, Kirkkola</nimiEn>
+        <nimiFi>Tie 3 Helsinki, Kirkkola</nimiFi>
+        <nimiSe>Väg 3 Helsingfors, Kyrka</nimiSe>
         <vanhaId>1034</vanhaId>
-        <lisakuvaus>Helsinki, Pirkkola</lisakuvaus>
+        <lisakuvaus>Helsinki, Kirkkola</lisakuvaus>
         <tyyppi>ROSA</tyyppi>
         <id>34</id>
     </ns2:tiesaaAsema>

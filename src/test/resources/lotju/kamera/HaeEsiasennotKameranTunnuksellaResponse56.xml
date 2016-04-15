@@ -1,0 +1,15 @@
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+    <ns2:esiasennot>
+        <jarjestys>0</jarjestys>
+        <julkinen>false</julkinen>
+        <kameraId>56</kameraId>
+        <keruussa>true</keruussa>
+        <kompressio>0</kompressio>
+        <nimiEsitys>PUUTTUU</nimiEsitys>
+        <nimiLaitteella>-</nimiLaitteella>
+        <resoluutio>0x0</resoluutio>
+        <suunta>0</suunta>
+        <viive>0</viive>
+        <id>1165</id>
+    </ns2:esiasennot>
+</ns2:HaeEsiasennotKameranTunnuksellaResponse>

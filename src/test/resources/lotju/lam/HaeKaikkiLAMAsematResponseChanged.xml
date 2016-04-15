@@ -49,28 +49,28 @@
         <id>2</id>
     </ns2:asemat>
     <ns2:asemat>
-        <kuvaus>Liikennemittausasema</kuvaus>
-        <nimi>L_vt5_Iisalmi</nimi>
-        <korkeus>0</korkeus>
-        <latitudi>7048448</latitudi>
-        <longitudi>512364</longitudi>
+        <kuvaus>Liikennemittausasema 1</kuvaus>
+        <nimi>L_vt5_Idensalmi</nimi>
+        <korkeus>1</korkeus>
+        <latitudi>7048449</latitudi>
+        <longitudi>512365</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>4750</etaisyysTieosanAlusta>
+            <etaisyysTieosanAlusta>3750</etaisyysTieosanAlusta>
             <tienumero>5</tienumero>
             <tieosa>217</tieosa>
         </tieosoite>
         <tieosoiteId>24</tieosoiteId>
-        <keruuVali>300</keruuVali>
+        <keruuVali>200</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
-        <maakunta>Pohjois-Savo</maakunta>
+        <maakunta>Pohjois-Savvoo</maakunta>
         <maakuntaKoodi>11</maakuntaKoodi>
-        <nimiEn>Road 5 Iisalmi</nimiEn>
-        <nimiFi>Tie 5 Iisalmi</nimiFi>
+        <nimiEn>Road 5 Idensalmi</nimiEn>
+        <nimiFi>Tie 5 Idensalmi</nimiFi>
         <nimiSe>Väg 5 Idensalmi</nimiSe>
         <vanhaId>23826</vanhaId>
-        <suunta1Kunta>Kajaani</suunta1Kunta>
+        <suunta1Kunta>Kajaaniin</suunta1Kunta>
         <suunta1KuntaKoodi>205</suunta1KuntaKoodi>
-        <suunta2Kunta>Kuopio</suunta2Kunta>
+        <suunta2Kunta>Kuopioon</suunta2Kunta>
         <suunta2KuntaKoodi>297</suunta2KuntaKoodi>
         <tyyppi>DSL</tyyppi>
         <id>310</id>

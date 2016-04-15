@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
@@ -11,8 +13,12 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "id", "name", "description", "sensorTypeId", "altitude" })
 public class RoadWeatherStationSensor {
 
-    @ApiModelProperty(value = "Road Weather Station Sensor unique id", position = 1)
+    @JsonIgnore
     private long id;
+
+    @ApiModelProperty(value = "Road Weather Station Sensor unique id", position = 1)
+    @JsonProperty("id")
+    private Long lotjuId;
 
     @ApiModelProperty(value = "Sensor altitude from ground [m]", position = 5)
     private Integer altitude;
@@ -33,6 +39,15 @@ public class RoadWeatherStationSensor {
     public long getId() {
         return id;
     }
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
+    }
+
 
     public void setAltitude(Integer altitude) {
         this.altitude = altitude;

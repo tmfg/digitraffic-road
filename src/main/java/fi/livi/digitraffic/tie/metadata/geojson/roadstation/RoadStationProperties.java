@@ -70,6 +70,14 @@ public abstract class RoadStationProperties {
         this.naturalId = naturalId;
     }
 
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
+    }
+
     public String getName() {
         return name;
     }

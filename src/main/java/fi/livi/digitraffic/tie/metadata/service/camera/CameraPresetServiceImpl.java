@@ -48,7 +48,7 @@ public class CameraPresetServiceImpl implements CameraPresetService {
 
     @Override
     public CameraPresetFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection() {
-        return CameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByRoadStationObsoleteFalse());
+        return CameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByRoadStationObsoleteFalseAndObsoleteDateIsNull());
 
     }
 }

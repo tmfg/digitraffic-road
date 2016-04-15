@@ -40,6 +40,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
 
         // road weather station properties
         properties.setId(rws.getRoadStationNaturalId());
+        properties.setLotjuId(rws.getLotjuId());
         properties.setRoadWeatherStationType(rws.getRoadWeatherStationType());
 
         for (RoadWeatherSensor rwSensor : rws.getRoadWeatherSensors()) {
@@ -70,6 +71,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
     private static RoadWeatherStationSensor convert(RoadWeatherSensor roadWeatherSensor) {
         RoadWeatherStationSensor meta = new RoadWeatherStationSensor();
         meta.setId(roadWeatherSensor.getId());
+        meta.setLotjuId(roadWeatherSensor.getLotjuId());
         meta.setAltitude(roadWeatherSensor.getAltitude());
         meta.setDescription(roadWeatherSensor.getDescription());
         meta.setName(roadWeatherSensor.getName());
