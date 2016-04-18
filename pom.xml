@@ -160,6 +160,7 @@
                     </formats>
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
+                        <ignoreMethodAnnotation>fi.livi.digitraffic.tie.annotation.CoverageIgnore</ignoreMethodAnnotation>
                         <excludes>
                             <exclude>fi/livi/digitraffic/tie/wsdl/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
