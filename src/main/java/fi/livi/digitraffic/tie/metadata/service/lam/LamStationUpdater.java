@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -272,6 +273,7 @@ public class LamStationUpdater {
         to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
         to.setDescription(from.getKuvaus());
+        to.setAdditionalInformation(StringUtils.trimToNull(StringUtils.join(from.getLisatieto(), " ", from.getLisatietoja())));
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
         to.setAltitude(from.getKorkeus());

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -179,5 +181,34 @@ public class CameraPresetProperties extends RoadStationProperties {
 
     public Long getNearestRoadWeatherStationNaturalId() {
         return nearestRoadWeatherStationNaturalId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CameraPresetProperties)) {
+            return false;
+        }
+        final CameraPresetProperties p = (CameraPresetProperties) o;
+        return new EqualsBuilder()
+                .append(id, p.getId())
+                .append(cameraId, p.cameraId)
+                .append(presetId, p.presetId)
+                .append(cameraType, p.cameraType)
+                .append(presetName1, p.presetName1)
+                .append(presetName2, p.presetName2)
+                .append(presetOrder, p.presetOrder)
+                .append(isPublic, p.isPublic)
+                .append(inCollection, p.inCollection)
+                .append(compression, p.compression)
+                .append(nameOnDevice, p.nameOnDevice)
+                .append(defaultDirection, p.defaultDirection)
+                .append(resolution, p.resolution)
+                .append(direction, p.direction)
+                .append(delay, p.delay)
+                .append(nearestRoadWeatherStationNaturalId, p.nearestRoadWeatherStationNaturalId)
+                .isEquals();
     }
 }

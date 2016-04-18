@@ -63,9 +63,6 @@ public class Point {
         if (!(o instanceof Point)) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         final Point point = (Point) o;
         EqualsBuilder eq = new EqualsBuilder();
         eq.append(getCoordinates(), point.getCoordinates())

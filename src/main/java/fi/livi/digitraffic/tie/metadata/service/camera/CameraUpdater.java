@@ -126,6 +126,7 @@ public class CameraUpdater {
                                   final Map<String, CameraPreset> currentPresetIdToCameraPresets) {
 
         final List<CameraPreset> obsolete = new ArrayList<>(); // obsolete presets
+        final List<RoadStation> obsoleteRoadStations = new ArrayList<>(); // obsolete presets
         final List<Pair<Pair<Kamera, Esiasento>, CameraPreset>> update = new ArrayList<>(); // camera presets to update
         final List<Pair<Kamera, Esiasento>> insert = new ArrayList<>(); // new lam-stations
 
@@ -140,7 +141,7 @@ public class CameraUpdater {
 
                 if (currentSaved != null) {
                     if (POISTETUT.contains(kamera.getKeruunTila())) {
-                        obsolete.add(currentSaved);
+                        obsoleteRoadStations.add(currentSaved.getRoadStation());
                     } else {
                         update.add(Pair.of(kameraEsiasentoPair, currentSaved));
                     }
@@ -171,6 +172,9 @@ public class CameraUpdater {
         final int obsoleted = obsoleteCameraPresets(obsolete);
         log.info("Obsoleted " + obsoleted + " CameraPresets");
 
+        final int obsoletedRs = obsoleteRoadStations(obsoleteRoadStations);
+        log.info("Obsoleted " + obsoletedRs + " RoadStations");
+
         final int updated = updateCameraPresets(update, lotjuIdToRoadWeatherStationMap, naturalIdToRoadStationMap);
         log.info("Updated " + updated + " CameraPresets");
 
@@ -180,7 +184,7 @@ public class CameraUpdater {
             log.warn("Insert failed for " + (insert.size()-inserted) + " CameraPresets");
         }
 
-        return obsoleted > 0 || inserted > 0;
+        return obsoleted > 0 || obsoletedRs > 0 || inserted > 0;
     }
 
     private static boolean validate(final Kamera kamera) {
@@ -286,6 +290,7 @@ public class CameraUpdater {
 
         to.setLotjuCameraId(kameraFrom.getId());
         to.setLotjuId(esiasentoFrom.getId());
+        to.setObsoleteDate(null);
 
         to.setPresetOrder(esiasentoFrom.getJarjestys());
         to.setPublicExternal(esiasentoFrom.isJulkinen());
@@ -339,6 +344,7 @@ public class CameraUpdater {
         to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
         to.setDescription(from.getKuvaus());
+        to.setAdditionalInformation(from.getLisatieto());
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
         to.setAltitude(from.getKorkeus());
@@ -360,7 +366,17 @@ public class CameraUpdater {
             if (cameraPreset.obsolete()) {
                 log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
                 counter++;
+            }
+        }
+        return counter;
+    }
 
+    private int obsoleteRoadStations(List<RoadStation> obsoleteRoadStations) {
+        int counter = 0;
+        for (final RoadStation rs : obsoleteRoadStations) {
+            if (rs.obsolete()) {
+                log.debug("Obsolete " + rs);
+                counter++;
             }
         }
         return counter;

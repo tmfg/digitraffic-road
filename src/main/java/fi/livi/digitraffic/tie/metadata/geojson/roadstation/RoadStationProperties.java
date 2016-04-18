@@ -56,6 +56,9 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Description")
     private String description;
 
+    @ApiModelProperty(value = "Additional information")
+    private String additionalInformation;
+
     @ApiModelProperty(value = "Map of namess in fi, sv, en")
     private Map<String, String> names = new HashMap<>();
 
@@ -65,6 +68,14 @@ public abstract class RoadStationProperties {
 
     public void setNaturalId(final long naturalId) {
         this.naturalId = naturalId;
+    }
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
     }
 
     public String getName() {
@@ -155,6 +166,14 @@ public abstract class RoadStationProperties {
         this.description = description;
     }
 
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
     public Map<String, String> getNames() {
         return names;
     }
@@ -168,6 +187,4 @@ public abstract class RoadStationProperties {
             this.names.put(lang, name);
         }
     }
-
-
 }

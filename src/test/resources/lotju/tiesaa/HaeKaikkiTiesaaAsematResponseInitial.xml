@@ -1,0 +1,108 @@
+<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06">
+    <ns2:tiesaaAsema>
+        <kuvaus>GPRS</kuvaus>
+        <nimi>OLD_vt1_Leppäkorpi_R</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6699096</latitudi>
+        <longitudi>324302</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>4066</etaisyysTieosanAlusta>
+            <tienumero>1</tienumero>
+            <tieosa>16</tieosa>
+        </tieosoite>
+        <tieosoiteId>259</tieosoiteId>
+        <keruuVali>300</keruuVali>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <kunta>Lohja</kunta>
+        <kuntaKoodi>444</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 1; Nummi-Pusula, Leppäkorp</nimiEn>
+        <nimiFi>Tie 1; Nummi-Pusula, Leppäkorpi</nimiFi>
+        <nimiSe>Väg 1; Nummi-Pusula, Alkärr</nimiSe>
+        <vanhaId>1033</vanhaId>
+        <julkinen>true</julkinen>
+        <tyyppi>OLD</tyyppi>
+        <id>33</id>
+    </ns2:tiesaaAsema>
+    <ns2:tiesaaAsema>
+        <kuvaus>GPRS</kuvaus>
+        <nimi>vt3_Pirkkola_R</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6678800</latitudi>
+        <longitudi>383971</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>4915</etaisyysTieosanAlusta>
+            <tienumero>3</tienumero>
+            <tieosa>101</tieosa>
+        </tieosoite>
+        <tieosoiteId>260</tieosoiteId>
+        <keruuVali>600</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Helsinki</kunta>
+        <kuntaKoodi>91</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 3 Helsinki, Pirkkola</nimiEn>
+        <nimiFi>Tie 3 Helsinki, Pirkkola</nimiFi>
+        <nimiSe>Väg 3 Helsingfors, Britas</nimiSe>
+        <vanhaId>1034</vanhaId>
+        <lisakuvaus>Helsinki, Pirkkola</lisakuvaus>
+        <tyyppi>ROSA</tyyppi>
+        <id>34</id>
+    </ns2:tiesaaAsema>
+    <ns2:tiesaaAsema>
+        <kuvaus>LAN käyttöön 12/2008</kuvaus>
+        <nimi>kt50_Askisto_R</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6683658</latitudi>
+        <longitudi>376661</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>4000</etaisyysTieosanAlusta>
+            <tienumero>50</tienumero>
+            <tieosa>4</tieosa>
+        </tieosoite>
+        <tieosoiteId>261</tieosoiteId>
+        <keruuVali>300</keruuVali>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <kunta>Vantaa</kunta>
+        <kuntaKoodi>92</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 50 Vantaa, Askisto</nimiEn>
+        <nimiFi>Tie 50 Vantaa, Askisto</nimiFi>
+        <nimiSe>Väg 50 Vanda, Askis</nimiSe>
+        <vanhaId>1035</vanhaId>
+        <julkinen>true</julkinen>
+        <lisakuvaus>Vantaa, Askisto</lisakuvaus>
+        <tyyppi>ROSA</tyyppi>
+        <id>35</id>
+    </ns2:tiesaaAsema>
+    <ns2:tiesaaAsema>
+        <kuvaus>GRPS v.1997, ohjaa älykästä valaistusta</kuvaus>
+        <nimi>kt45_Ilola_R</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6688807</latitudi>
+        <longitudi>389404</longitudi>
+        <tieosoite>
+            <etaisyysTieosanAlusta>3200</etaisyysTieosanAlusta>
+            <tienumero>45</tienumero>
+            <tieosa>3</tieosa>
+        </tieosoite>
+        <tieosoiteId>262</tieosoiteId>
+        <keruuVali>600</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Vantaa</kunta>
+        <kuntaKoodi>92</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 45 Vantaa, Ilola</nimiEn>
+        <nimiFi>Tie 45 Vantaa, Ilola</nimiFi>
+        <nimiSe>Väg 45 Vanda, Gladas</nimiSe>
+        <vanhaId>1036</vanhaId>
+        <julkinen>true</julkinen>
+        <lisakuvaus>Vantaa, Ilola</lisakuvaus>
+        <tyyppi>ROSA</tyyppi>
+        <id>36</id>
+    </ns2:tiesaaAsema>
+</ns2:HaeKaikkiTiesaaAsematResponse>

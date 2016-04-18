@@ -17,16 +17,35 @@ import org.springframework.core.io.ResourceLoader;
 public abstract class LotjuServiceMock {
 
     private static final Logger log = Logger.getLogger(LamMetatiedotLotjuServiceMock.class);
+    private final String metadataServerAddress;
+    private Class<?> metatiedotClass;
+    private QName serviceName;
 
     private boolean stateAfterChange = false;
 
     protected final ResourceLoader resourceLoader;
+    private boolean inited;
 
     public LotjuServiceMock(final ResourceLoader resourceLoader,
                             final String metadataServerAddress,
                             final Class<?> metatiedotClass,
                             final QName serviceName) {
         this.resourceLoader = resourceLoader;
+        this.metadataServerAddress = metadataServerAddress;
+        this.metatiedotClass = metatiedotClass;
+        this.serviceName = serviceName;
+    }
+
+    /**
+     * Initiaize data and call initService-method here.
+     * Call this before tests.
+     */
+    public abstract void initDataAndService();
+
+    /**
+     * Must be called before api-operations
+     */
+    protected void initService() {
         log.info("Init LotjuServiceMock with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
         JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(metatiedotClass);
@@ -34,6 +53,11 @@ public abstract class LotjuServiceMock {
         svrFactory.setServiceBean(this);
         svrFactory.setServiceName(serviceName);
         svrFactory.create();
+        inited = true;
+    }
+
+    public boolean isInited() {
+        return inited;
     }
 
     public boolean isStateAfterChange() {

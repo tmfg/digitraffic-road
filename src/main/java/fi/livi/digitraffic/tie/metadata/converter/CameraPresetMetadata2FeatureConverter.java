@@ -39,12 +39,13 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
             }
-            f.setId(cp.getRoadStationNaturalId());
+            f.setId(cp.getLotjuId());
 
             final CameraPresetProperties properties = f.getProperties();
 
             // Lam station properties
             properties.setId(cp.getId());
+            properties.setLotjuId(cp.getLotjuId());
             properties.setCameraId(cp.getCameraId());
             properties.setPresetId(cp.getPresetId());
             properties.setCameraType(cp.getCameraType());
@@ -64,22 +65,6 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();
             setRoadStationProperties(properties, rs);
-            properties.setNaturalId(rs.getNaturalId());
-            properties.setCollectionInterval(rs.getCollectionInterval());
-            properties.setCollectionStatus(rs.getCollectionStatus());
-            properties.setDescription(rs.getDescription());
-            properties.setDistance(rs.getDistance());
-            properties.setMunicipality(rs.getMunicipality());
-            properties.setMunicipalityCode(rs.getMunicipalityCode());
-
-            properties.setProvince(rs.getProvince());
-            properties.setProvinceCode(rs.getProvinceCode());
-            properties.setRoadNumber(rs.getRoadNumber());
-            properties.setRoadPart(rs.getRoadPart());
-
-            properties.addName("fi", rs.getNameFi());
-            properties.addName("sv", rs.getNameSv());
-            properties.addName("en", rs.getNameEn());
 
             if (rs.getLatitude() != null && rs.getLongitude() != null) {
                 if (rs.getAltitude() != null) {
