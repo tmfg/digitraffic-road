@@ -159,6 +159,7 @@
                         <format>xml</format>
                     </formats>
                     <instrumentation>
+                        <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
                             <exclude>fi/livi/digitraffic/tie/wsdl/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
