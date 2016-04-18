@@ -26,7 +26,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAnturi;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
@@ -37,7 +36,6 @@ public class RoadWeatherStationUpdater {
 
     private final RoadStationService roadStationService;
     private final RoadWeatherStationService roadWeatherStationService;
-    private RoadStationSensorService roadStationSensorService;
     private final StaticDataStatusService staticDataStatusService;
     private final RoadWeatherStationClient roadWeatherStationClient;
 
@@ -46,12 +44,10 @@ public class RoadWeatherStationUpdater {
     @Autowired
     public RoadWeatherStationUpdater(final RoadStationService roadStationService,
                                      final RoadWeatherStationService roadWeatherStationService,
-                                     final RoadStationSensorService roadStationSensorService,
                                      final StaticDataStatusService staticDataStatusService,
                                      final RoadWeatherStationClient roadWeatherStationClient) {
         this.roadStationService = roadStationService;
         this.roadWeatherStationService = roadWeatherStationService;
-        this.roadStationSensorService = roadStationSensorService;
         this.staticDataStatusService = staticDataStatusService;
         this.roadWeatherStationClient = roadWeatherStationClient;
     }
@@ -102,8 +98,8 @@ public class RoadWeatherStationUpdater {
                 roadWeatherStationService.findAllRoadStationSensorsMappedByRoadStationLotjuId();
 
         if (log.isDebugEnabled()) {
-            for (Long lotjuId : currentRoadWeatherStationLotjuIdToTiesaaAnturiMap.keySet()) {
-                for (final TiesaaAnturi tsAnturi : currentRoadWeatherStationLotjuIdToTiesaaAnturiMap.get(lotjuId)) {
+            for (List<TiesaaAnturi> tsAnturis : currentRoadWeatherStationLotjuIdToTiesaaAnturiMap.values()) {
+                for (final TiesaaAnturi tsAnturi : tsAnturis) {
                     log.debug(ToStringBuilder.reflectionToString(tsAnturi));
                 }
             }
@@ -140,12 +136,10 @@ public class RoadWeatherStationUpdater {
             if (validate(tsa)) {
                 final RoadWeatherStation currentSaved = currentLotjuIdToRoadWeatherStationMap.remove(tsa.getId());
 
-                if (currentSaved != null) {
-                    if (POISTETUT.contains(tsa.getKeruunTila())) {
-                        obsolete.add(currentSaved);
-                    } else {
-                        update.add(Pair.of(tsa, currentSaved));
-                    }
+                if ( currentSaved != null && POISTETUT.contains(tsa.getKeruunTila()) ) {
+                    obsolete.add(currentSaved);
+                } else if ( currentSaved != null) {
+                    update.add(Pair.of(tsa, currentSaved));
                 } else {
                     insert.add(tsa);
                 }
@@ -192,8 +186,7 @@ public class RoadWeatherStationUpdater {
         return counter;
     }
 
-    private int updateRoadWeatherSensors(List<Pair<TiesaaAnturi, RoadWeatherSensor>> update) {
-
+    private static int updateRoadWeatherSensors(List<Pair<TiesaaAnturi, RoadWeatherSensor>> update) {
         int counter = 0;
         for (final Pair<TiesaaAnturi, RoadWeatherSensor> pair : update) {
 
@@ -266,7 +259,7 @@ public class RoadWeatherStationUpdater {
         return counter;
     }
 
-    private boolean validate(final TiesaaAsema tsa) {
+    private static boolean validate(final TiesaaAsema tsa) {
         if (tsa.getVanhaId() == null) {
             log.error(ToStringHelpper.toString(tsa) + " is invalid: has null vanhaId");
             return false;
@@ -274,11 +267,12 @@ public class RoadWeatherStationUpdater {
         return true;
     }
 
-    private boolean validate(final TiesaaAnturi tsa) {
-        return true;
+    private static boolean validate(final TiesaaAnturi tsa) {
+        return tsa.getId() != null;
     }
 
-    private boolean updateRoadWeatherStationAttributes(final TiesaaAsema from, final RoadWeatherStation to) {
+    private static boolean updateRoadWeatherStationAttributes(final TiesaaAsema from,
+                                                              final RoadWeatherStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
@@ -322,7 +316,7 @@ public class RoadWeatherStationUpdater {
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    private boolean updateRoadWeatherSensorAttributes(final TiesaaAnturi from, final RoadWeatherSensor to) {
+    private static boolean updateRoadWeatherSensorAttributes(final TiesaaAnturi from, final RoadWeatherSensor to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
         to.setAltitude(from.getKorkeus());
@@ -375,15 +369,12 @@ public class RoadWeatherStationUpdater {
 
                     if (rwsensors != null) {
                         boolean updated = false;
-                        for (RoadWeatherSensor rwsensor : rwsensors) {
-                            if (rwsensor.getLotjuId() == tsa.getId().longValue()) {
-                                update.add(Pair.of(tsa, rwsensor));
-                                rwsensors.remove(rwsensor);
-                                updated = true;
-                                break;
-                            }
-                        }
-                        if (!updated) {
+                        RoadWeatherSensor foundRwsSensor =
+                                rwsensors.stream().filter(s -> s.getLotjuId() == tsa.getId().longValue()).findFirst().orElse(null);
+                        if (foundRwsSensor != null) {
+                            update.add(Pair.of(tsa, foundRwsSensor));
+                            rwsensors.remove(foundRwsSensor);
+                        } else {
                             insert.add(tsa);
                         }
                     } else {
