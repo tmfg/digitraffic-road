@@ -22,6 +22,8 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class RoadStationSensorMetadataController {
+    public static final String PATH = "/road-station-sensors";
+
     private final RoadStationSensorService roadStationSensorService;
 
     @Autowired
@@ -30,7 +32,7 @@ public class RoadStationSensorMetadataController {
     }
 
     @ApiOperation("List all roadstation sensors")
-    @RequestMapping(method = RequestMethod.GET, path = "/road-station-sensors", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Sensors"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public List<RoadStationSensor> listNonObsoleteRoadStationSensors() {

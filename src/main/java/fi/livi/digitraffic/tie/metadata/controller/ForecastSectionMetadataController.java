@@ -22,6 +22,8 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class ForecastSectionMetadataController {
+    public static final String PATH = "/forecast-sections";
+
     private final ForecastSectionService forecastSectionService;
 
     @Autowired
@@ -30,7 +32,7 @@ public class ForecastSectionMetadataController {
     }
 
     @ApiOperation("List all Forecast Sections")
-    @RequestMapping(method = RequestMethod.GET, path = "/forecast-sections", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public List<ForecastSection> listForecastSections() {
