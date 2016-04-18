@@ -3,6 +3,9 @@ package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -186,5 +189,57 @@ public abstract class RoadStationProperties {
         if (name != null) {
             this.names.put(lang, name);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        RoadStationProperties rhs = (RoadStationProperties) obj;
+        return new EqualsBuilder()
+                .append(this.lotjuId, rhs.lotjuId)
+                .append(this.naturalId, rhs.naturalId)
+                .append(this.name, rhs.name)
+                .append(this.roadNumber, rhs.roadNumber)
+                .append(this.roadPart, rhs.roadPart)
+                .append(this.distance, rhs.distance)
+                .append(this.collectionInterval, rhs.collectionInterval)
+                .append(this.collectionStatus, rhs.collectionStatus)
+                .append(this.municipality, rhs.municipality)
+                .append(this.municipalityCode, rhs.municipalityCode)
+                .append(this.province, rhs.province)
+                .append(this.provinceCode, rhs.provinceCode)
+                .append(this.description, rhs.description)
+                .append(this.additionalInformation, rhs.additionalInformation)
+                .append(this.names, rhs.names)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(lotjuId)
+                .append(naturalId)
+                .append(name)
+                .append(roadNumber)
+                .append(roadPart)
+                .append(distance)
+                .append(collectionInterval)
+                .append(collectionStatus)
+                .append(municipality)
+                .append(municipalityCode)
+                .append(province)
+                .append(provinceCode)
+                .append(description)
+                .append(additionalInformation)
+                .append(names)
+                .toHashCode();
     }
 }

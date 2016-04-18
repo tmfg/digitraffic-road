@@ -27,7 +27,7 @@ public class DayDataServiceImpl implements DayDataService {
         return new HistoryData(convertToDynamicData(linkData));
     }
 
-    private List<LinkDynamicData> convertToDynamicData(final List<LinkData> linkData) {
+    private static List<LinkDynamicData> convertToDynamicData(final List<LinkData> linkData) {
         final List<LinkDynamicData> list = new ArrayList<>();
 
         // LinkData is sorted by linkId, so this works
