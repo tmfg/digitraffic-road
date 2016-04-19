@@ -368,7 +368,6 @@ public class RoadWeatherStationUpdater {
                 if (validate(tsa)) {
 
                     if (rwsensors != null) {
-                        boolean updated = false;
                         RoadWeatherSensor foundRwsSensor =
                                 rwsensors.stream().filter(s -> s.getLotjuId() == tsa.getId().longValue()).findFirst().orElse(null);
                         if (foundRwsSensor != null) {

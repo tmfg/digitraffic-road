@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson.lamstation;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -22,13 +25,13 @@ public class LamStationProperties extends RoadStationProperties {
     // lam aseman naturalId
     @ApiModelProperty(value = "Lam station's natural id", required = true)
     private long lamNaturalId;
-
-//    private Long lotjuId;
-//    private double summerFreeFlowSpeed1;
-//    private double summerFreeFlowSpeed2;
-//    private double winterFreeFlowSpeed1;
-//    private double winterFreeFlowSpeed2;
-
+    /*
+     *   private Long lotjuId;
+     *   private double summerFreeFlowSpeed1;
+     *   private double summerFreeFlowSpeed2;
+     *   private double winterFreeFlowSpeed1;
+     *   private double winterFreeFlowSpeed2;
+     */
     @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
     private String direction1Municipality;
 
@@ -101,4 +104,41 @@ public class LamStationProperties extends RoadStationProperties {
         this.lamStationType = lamStationType;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        LamStationProperties rhs = (LamStationProperties) obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(this.id, rhs.id)
+                .append(this.lamNaturalId, rhs.lamNaturalId)
+                .append(this.direction1Municipality, rhs.direction1Municipality)
+                .append(this.direction1MunicipalityCode, rhs.direction1MunicipalityCode)
+                .append(this.direction2Municipality, rhs.direction2Municipality)
+                .append(this.direction2MunicipalityCode, rhs.direction2MunicipalityCode)
+                .append(this.lamStationType, rhs.lamStationType)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(lamNaturalId)
+                .append(direction1Municipality)
+                .append(direction1MunicipalityCode)
+                .append(direction2Municipality)
+                .append(direction2MunicipalityCode)
+                .append(lamStationType)
+                .toHashCode();
+    }
 }
