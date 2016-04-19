@@ -20,7 +20,6 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
 
     private CameraPresetMetadata2FeatureConverter() {}
 
-
     public static CameraPresetFeatureCollection convert(final List<CameraPreset> stations) {
         final CameraPresetFeatureCollection collection = new CameraPresetFeatureCollection();
 

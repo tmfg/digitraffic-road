@@ -14,7 +14,6 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.SequenceGenerator;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -26,8 +25,6 @@ import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
 @DynamicUpdate
 @NamedEntityGraph(name = "camera", attributeNodes = @NamedAttributeNode("roadStation"))
 public class CameraPreset {
-    private static final Logger log = Logger.getLogger(CameraPreset.class);
-
     @Id
     @SequenceGenerator(name = "SEQ_CAMERA_PRESET", sequenceName = "SEQ_CAMERA_PRESET")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -184,31 +185,58 @@ public class CameraPresetProperties extends RoadStationProperties {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CameraPresetProperties)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        final CameraPresetProperties p = (CameraPresetProperties) o;
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        CameraPresetProperties rhs = (CameraPresetProperties) obj;
         return new EqualsBuilder()
-                .append(id, p.getId())
-                .append(cameraId, p.cameraId)
-                .append(presetId, p.presetId)
-                .append(cameraType, p.cameraType)
-                .append(presetName1, p.presetName1)
-                .append(presetName2, p.presetName2)
-                .append(presetOrder, p.presetOrder)
-                .append(isPublic, p.isPublic)
-                .append(inCollection, p.inCollection)
-                .append(compression, p.compression)
-                .append(nameOnDevice, p.nameOnDevice)
-                .append(defaultDirection, p.defaultDirection)
-                .append(resolution, p.resolution)
-                .append(direction, p.direction)
-                .append(delay, p.delay)
-                .append(nearestRoadWeatherStationNaturalId, p.nearestRoadWeatherStationNaturalId)
+                .appendSuper(super.equals(obj))
+                .append(this.id, rhs.id)
+                .append(this.cameraId, rhs.cameraId)
+                .append(this.presetId, rhs.presetId)
+                .append(this.cameraType, rhs.cameraType)
+                .append(this.presetName1, rhs.presetName1)
+                .append(this.presetName2, rhs.presetName2)
+                .append(this.presetOrder, rhs.presetOrder)
+                .append(this.isPublic, rhs.isPublic)
+                .append(this.inCollection, rhs.inCollection)
+                .append(this.compression, rhs.compression)
+                .append(this.nameOnDevice, rhs.nameOnDevice)
+                .append(this.defaultDirection, rhs.defaultDirection)
+                .append(this.resolution, rhs.resolution)
+                .append(this.direction, rhs.direction)
+                .append(this.delay, rhs.delay)
+                .append(this.nearestRoadWeatherStationNaturalId, rhs.nearestRoadWeatherStationNaturalId)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(cameraId)
+                .append(presetId)
+                .append(cameraType)
+                .append(presetName1)
+                .append(presetName2)
+                .append(presetOrder)
+                .append(isPublic)
+                .append(inCollection)
+                .append(compression)
+                .append(nameOnDevice)
+                .append(defaultDirection)
+                .append(resolution)
+                .append(direction)
+                .append(delay)
+                .append(nearestRoadWeatherStationNaturalId)
+                .toHashCode();
     }
 }

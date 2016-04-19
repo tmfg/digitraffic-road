@@ -15,6 +15,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationCl
 public class MetadataMarshallerConfiguration {
 
     private static final Logger LOG = Logger.getLogger(MetadataMarshallerConfiguration.class);
+    public static final String NOT_CREATING_BEAN = "Not creating bean: ";
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -42,7 +43,7 @@ public class MetadataMarshallerConfiguration {
 
             return client;
         }
-        LOG.warn("Not creating bean: " + LamStationClient.class + " because property metadata.server.address.lam was not set.");
+        LOG.warn(NOT_CREATING_BEAN + LamStationClient.class + " because property metadata.server.address.lam was not set.");
         return null;
     }
 
@@ -62,7 +63,7 @@ public class MetadataMarshallerConfiguration {
 
             return client;
         }
-        LOG.warn("Not creating bean: " + CameraClient.class + " because property metadata.server.address.camera was not set.");
+        LOG.warn(NOT_CREATING_BEAN + CameraClient.class + " because property metadata.server.address.camera was not set.");
         return null;
     }
 
@@ -82,7 +83,7 @@ public class MetadataMarshallerConfiguration {
 
             return client;
         }
-        LOG.warn("Not creating bean: " + RoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
+        LOG.warn(NOT_CREATING_BEAN + RoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
         return null;
     }
 }
