@@ -30,6 +30,7 @@ import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 @Service
 public class LamStationUpdater {
     private static final Logger log = Logger.getLogger(LamStationUpdater.class);
+    public static final String INSERT_FAILED = "Insert failed: ";
 
     private final RoadStationService roadStationService;
     private final LamStationService lamStationService;
@@ -96,12 +97,10 @@ public class LamStationUpdater {
 
                 final LamStation currentSaved = currentStations.remove(lamNaturalId);
 
-                if (currentSaved != null) {
-                    if (POISTETUT.contains(la.getKeruunTila())) {
-                        obsolete.add(currentSaved);
-                    } else {
-                        update.add(Pair.of(la, currentSaved));
-                    }
+                if (currentSaved != null && POISTETUT.contains(la.getKeruunTila())) {
+                    obsolete.add(currentSaved);
+                } else if (currentSaved != null) {
+                    update.add(Pair.of(la, currentSaved));
                 } else {
                     insert.add(la);
                 }
@@ -126,7 +125,7 @@ public class LamStationUpdater {
         final int inserted = insertLamStations(insert);
         log.info("Inserted " + inserted + " LamStations");
         if (insert.size() > inserted) {
-            log.warn("Insert failed for " + (insert.size()-inserted) + " LamStations");
+            log.warn(INSERT_FAILED + " for " + (insert.size()-inserted) + " LamStations");
         }
 
         return obsoleted > 0 || inserted > 0;
@@ -156,11 +155,11 @@ public class LamStationUpdater {
         final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
         if (roadNaturalId == null ) {
-            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTienumero() is null");
+            log.error(INSERT_FAILED + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTienumero() is null");
             return false;
         }
         if (roadSectionNaturalId == null ) {
-            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTieosa() is null");
+            log.error(INSERT_FAILED + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTieosa() is null");
             return false;
         }
         final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
@@ -179,7 +178,8 @@ public class LamStationUpdater {
             log.info("Created new " + newLamStation);
             return true;
         } else {
-            log.error("Insert failed: " + ToStringHelpper.toString(la) + ": Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
+            log.error(
+                    INSERT_FAILED + ToStringHelpper.toString(la) + ": Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
             return false;
         }
     }

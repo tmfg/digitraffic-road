@@ -15,11 +15,11 @@ public enum RoadStationType {
 
     private final int typeNumber;
 
+    private static final Map<Integer, RoadStationType> lookup = new HashMap<>();
+
     RoadStationType(final int typeNumber) {
         this.typeNumber = typeNumber;
     }
-
-    private static final Map<Integer, RoadStationType> lookup = new HashMap<Integer, RoadStationType>();
 
     static{
         for (final RoadStationType rst : EnumSet.allOf(RoadStationType.class)) {

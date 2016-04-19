@@ -75,7 +75,7 @@ public class CameraUpdater {
         for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
 
             long naturalId = convertCameraIdToVanhaId(cameraPreset.getCameraId());
-            RoadStation existingRs = null;
+            RoadStation existingRs;
 
             if ( fetchedNaturalIdToRoadStationMap.containsKey(Long.valueOf(naturalId)) ) {
                 existingRs = fetchedNaturalIdToRoadStationMap.get(Long.valueOf(naturalId));
@@ -139,12 +139,10 @@ public class CameraUpdater {
 
                 final CameraPreset currentSaved = currentPresetIdToCameraPresets.remove(stringPairEntry.getKey());
 
-                if (currentSaved != null) {
-                    if (POISTETUT.contains(kamera.getKeruunTila())) {
-                        obsoleteRoadStations.add(currentSaved.getRoadStation());
-                    } else {
-                        update.add(Pair.of(kameraEsiasentoPair, currentSaved));
-                    }
+                if (currentSaved != null && POISTETUT.contains(kamera.getKeruunTila()) ) {
+                    obsoleteRoadStations.add(currentSaved.getRoadStation());
+                } else if (currentSaved != null) {
+                    update.add(Pair.of(kameraEsiasentoPair, currentSaved));
                 } else {
                     insert.add(kameraEsiasentoPair);
                 }
@@ -371,7 +369,7 @@ public class CameraUpdater {
         return counter;
     }
 
-    private int obsoleteRoadStations(List<RoadStation> obsoleteRoadStations) {
+    private static int obsoleteRoadStations(List<RoadStation> obsoleteRoadStations) {
         int counter = 0;
         for (final RoadStation rs : obsoleteRoadStations) {
             if (rs.obsolete()) {

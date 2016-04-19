@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +12,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Service
 public class RoadStationServiceImpl implements RoadStationService {
-
-    private static final Logger LOG = Logger.getLogger(RoadStationServiceImpl.class);
 
     private final RoadStationRepository roadStationRepository;
 

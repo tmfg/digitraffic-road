@@ -9,21 +9,26 @@ public class AbstractMetadataToFeatureConverter {
 
     protected static final Crs crs;
 
+    protected AbstractMetadataToFeatureConverter() {
+    }
+
     static {
         crs = new Crs();
         crs.setType(CrsType.name);
-        // http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html#H2
-        // http://www.opengis.net/def/crs/EPSG/0/[code]
-        // ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)
-        // http://www.opengis.net/def/crs/EPSG/0/3067
-        // http://spatialreference.org/ref/epsg/3067/
-        // named: urn:ogc:def:crs:EPSG::3067
-        // Link: href="http://www.opengis.net/def/crs/EPSG/0/3067");
-        //       type="proj4"
-        // WGS84 (EPSG:4326)
-        // http://www.opengis.net/def/crs/EPSG/0/4326
-        // http://spatialreference.org/ref/epsg/wgs-84/
-        // Named CRS: urn:ogc:def:crs:EPSG::4326
+        /*
+         * http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html#H2
+         * http://www.opengis.net/def/crs/EPSG/0/[code]
+         * ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)
+         * http://www.opengis.net/def/crs/EPSG/0/3067
+         * http://spatialreference.org/ref/epsg/3067/
+         * named: urn:ogc:def:crs:EPSG::3067
+         * Link: href="http://www.opengis.net/def/crs/EPSG/0/3067");
+         *       type="proj4"
+         * WGS84 (EPSG:4326)
+         * http://www.opengis.net/def/crs/EPSG/0/4326
+         * http://spatialreference.org/ref/epsg/wgs-84/
+         * Named CRS: urn:ogc:def:crs:EPSG::4326
+         */
         crs.getProperties().setName("urn:ogc:def:crs:EPSG::3067");
     }
 

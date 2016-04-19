@@ -14,14 +14,24 @@ import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
  */
 public class ToStringHelpper {
 
+    private static final String LOTJU_ID = "lotjuId";
+    public static final String VANHA_ID = "vanhaId";
+    public static final String NIMI = "nimi";
+    public static final String NAME = "name";
+    public static final String NATURAL_ID = "naturalId";
+    public static final String ID = "id";
     private final StringBuffer sb;
     private boolean toStringCalled;
 
+    public ToStringHelpper(final Object object) {
+        sb = createStartSb(object);
+    }
+
     public static String toString(final LamAsema la) {
         final StringBuffer sb = createStartSb(la);
-        JSON_STYLE.append(sb, "lotjuId", la.getId());
-        JSON_STYLE.append(sb, "vanhaId", la.getVanhaId());
-        JSON_STYLE.append(sb, "nimi", la.getNimi(), true);
+        JSON_STYLE.append(sb, LOTJU_ID, la.getId());
+        JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId());
+        JSON_STYLE.append(sb, NIMI, la.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
@@ -29,9 +39,9 @@ public class ToStringHelpper {
 
     public static String toString(final Kamera kamera) {
         final StringBuffer sb = createStartSb(kamera);
-        JSON_STYLE.append(sb, "lotjuId", kamera.getId());
-        JSON_STYLE.append(sb, "vanhaId", kamera.getVanhaId());
-        JSON_STYLE.append(sb, "nimi", kamera.getNimi(), true);
+        JSON_STYLE.append(sb, LOTJU_ID, kamera.getId());
+        JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId());
+        JSON_STYLE.append(sb, NIMI, kamera.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
@@ -39,9 +49,9 @@ public class ToStringHelpper {
 
     public static String toString(final TiesaaAsema tsa) {
         final StringBuffer sb = createStartSb(tsa);
-        JSON_STYLE.append(sb, "lotjuId", tsa.getId());
-        JSON_STYLE.append(sb, "vanhaId", tsa.getVanhaId());
-        JSON_STYLE.append(sb, "nimi", tsa.getNimi(), true);
+        JSON_STYLE.append(sb, LOTJU_ID, tsa.getId());
+        JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId());
+        JSON_STYLE.append(sb, NIMI, tsa.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
@@ -61,10 +71,6 @@ public class ToStringHelpper {
         }
     }
 
-    public ToStringHelpper(final Object object) {
-        sb = createStartSb(object);
-    }
-
     public ToStringHelpper appendField(final String fieldName, final Object value) {
         JSON_STYLE.append(sb, fieldName, value, true);
         return this;
@@ -82,10 +88,10 @@ public class ToStringHelpper {
 
     public static String toString(final LamStation lamStation) {
         final StringBuffer sb = createStartSb(lamStation);
-        JSON_STYLE.append(sb, "id", lamStation.getId());
-        JSON_STYLE.append(sb, "lotjuId", lamStation.getLotjuId());
-        JSON_STYLE.append(sb, "naturalId", lamStation.getNaturalId());
-        JSON_STYLE.append(sb, "name", lamStation.getName(), true);
+        JSON_STYLE.append(sb, ID, lamStation.getId());
+        JSON_STYLE.append(sb, LOTJU_ID, lamStation.getLotjuId());
+        JSON_STYLE.append(sb, NATURAL_ID, lamStation.getNaturalId());
+        JSON_STYLE.append(sb, NAME, lamStation.getName(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
