@@ -63,8 +63,30 @@ public class CameraUpdater {
             return;
         }
 
-        final List<CameraPreset> currentCameraPresetsWithOutRoadStation = cameraPresetService.finAllCameraPresetsWithOutRoadStation();
+        fixCameraPresetsWithMissingRoadStations();
 
+        final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =
+                cameraClient.getPresetIdToKameraAndEsiasentoMap();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Fetched Cameras:");
+            for (final Pair<Kamera, Esiasento> cameraPreset : presetIdToKameraAndEsiasento.values()) {
+                log.info(ToStringBuilder.reflectionToString(cameraPreset.getLeft().getVanhaId()) + " : " + ToStringBuilder.reflectionToString(cameraPreset.getRight()));
+            }
+        }
+
+        final Map<String, CameraPreset> currentPresetIdToCameraPresets = cameraPresetService.finAllCamerasMappedByPresetId();
+
+        final boolean updateStaticDataStatus = updateCameras(presetIdToKameraAndEsiasento, currentPresetIdToCameraPresets);
+        updateStaticDataStatus(updateStaticDataStatus);
+
+        log.info("UpdateCameras end");
+    }
+
+    private void fixCameraPresetsWithMissingRoadStations() {
+
+        final List<CameraPreset> currentCameraPresetsWithOutRoadStation =
+                cameraPresetService.finAllCameraPresetsWithOutRoadStation();
 
         List<RoadStation> orphanRoadStations = roadStationService.findOrphanCameraStationRoadStations();
         final Map<Long, RoadStation> fetchedNaturalIdToRoadStationMap = new HashMap<>();
@@ -99,23 +121,6 @@ public class CameraUpdater {
                 log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
             }
         }
-
-        final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =
-                cameraClient.getPresetIdToKameraAndEsiasentoMap();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Fetched Cameras:");
-            for (final Pair<Kamera, Esiasento> cameraPreset : presetIdToKameraAndEsiasento.values()) {
-                log.info(ToStringBuilder.reflectionToString(cameraPreset.getLeft().getVanhaId()) + " : " + ToStringBuilder.reflectionToString(cameraPreset.getRight()));
-            }
-        }
-
-        final Map<String, CameraPreset> currentPresetIdToCameraPresets = cameraPresetService.finAllCamerasMappedByPresetId();
-
-        final boolean updateStaticDataStatus = updateCameras(presetIdToKameraAndEsiasento, currentPresetIdToCameraPresets);
-        updateStaticDataStatus(updateStaticDataStatus);
-
-        log.info("UpdateCameras end");
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
