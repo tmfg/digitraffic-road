@@ -2,6 +2,12 @@ package fi.livi.digitraffic.tie.helper;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
@@ -95,5 +101,35 @@ public class ToStringHelpper {
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
+    }
+
+    public enum TimestampFormat {
+        ISO_8601_UTC,
+        ISO_8601_WITH_ZONE_OFFSET
+    }
+
+    public static String toString(ZonedDateTime zonedDateTime, TimestampFormat timestampFormat) {
+        if (zonedDateTime == null) {
+            return null;
+        }
+        if (TimestampFormat.ISO_8601_UTC == timestampFormat) {
+            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC).toString();
+        } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
+            return zonedDateTime.toOffsetDateTime().toString();
+        }
+        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() + " not implemented");
+    }
+
+    public static String toString(LocalDateTime localDateTime, TimestampFormat timestampFormat) {
+        if (localDateTime == null) {
+            return null;
+        }
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        if (TimestampFormat.ISO_8601_UTC == timestampFormat) {
+            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC).toString();
+        } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
+            return zonedDateTime.toOffsetDateTime().toString();
+        }
+        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() + " not implemented");
     }
 }

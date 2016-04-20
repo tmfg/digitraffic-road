@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road Weather Station properties", value = "RoadWeatherStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "roadWeatherStationType", "sensors" })
+@JsonPropertyOrder({ "id", "roadWeatherStationType", "naturalId", "name" })
 public class RoadWeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id
