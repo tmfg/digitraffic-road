@@ -1,26 +1,48 @@
 package fi.livi.digitraffic.tie.data.model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
+@JsonPropertyOrder({ "localTime", "utc"})
 public class LamMeasurement {
+
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @Id
     private long lamId;
 
+    @ApiModelProperty(value = "Traffic volume in 5 minutes to direction 1", required = true)
     private long trafficVolume1;
 
+    @ApiModelProperty(value = "Traffic volume in 5 minutes to direction 2", required = true)
     private long trafficVolume2;
 
+    @ApiModelProperty(value = "Average speed to direction 1", required = true)
     private long averageSpeed1;
 
+    @ApiModelProperty(value = "Average speed to direction 2", required = true)
     private long averageSpeed2;
 
+    @JsonIgnore
     private LocalDateTime measured;
+
+    @JsonIgnore
+    @Transient
+    private ZonedDateTime measuredZonedDateTime;
 
     public long getLamId() {
         return lamId;
@@ -68,5 +90,31 @@ public class LamMeasurement {
 
     public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
+        if (measured != null) {
+            measuredZonedDateTime = measured.atZone(ZoneId.systemDefault());
+        }
+    }
+
+    @ApiModelProperty(value = "Timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)", required = true)
+    public String getLocalTime() {
+        if(getMeasuredZonedDateTime() != null) {
+            return measuredZonedDateTime.toOffsetDateTime().toString();
+        }
+        return null;
+    }
+
+    @ApiModelProperty(value = "Timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)", required = true)
+    public String getUtc() {
+        if(getMeasuredZonedDateTime() != null) {
+            return ZonedDateTime.ofInstant(measuredZonedDateTime.toInstant(), ZoneOffset.UTC).toString();
+        }
+        return null;
+    }
+
+    public ZonedDateTime getMeasuredZonedDateTime() {
+        if (measuredZonedDateTime == null && measured != null) {
+            measuredZonedDateTime = measured.atZone(ZoneId.systemDefault());
+        }
+        return measuredZonedDateTime;
     }
 }

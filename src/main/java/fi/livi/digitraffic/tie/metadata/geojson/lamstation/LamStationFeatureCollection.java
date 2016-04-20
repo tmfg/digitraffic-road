@@ -14,9 +14,10 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "features" })
 public class LamStationFeatureCollection implements Iterable<LamStationFeature> {
 
-    @ApiModelProperty(value = "\"FeatureCollection\"", required = true, position = 1)
+    @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
 
+    @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<LamStationFeature> features = new ArrayList<LamStationFeature>();
 
     public String getType() {

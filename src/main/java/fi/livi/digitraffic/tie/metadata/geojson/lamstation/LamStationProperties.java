@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder(alphabetic = true)
+@JsonPropertyOrder({ "lamNaturalId" })
 public class LamStationProperties extends RoadStationProperties {
 
     @ApiModelProperty(value = "Lam station's unique id")
@@ -24,7 +24,7 @@ public class LamStationProperties extends RoadStationProperties {
     private long id;
 
     // lam aseman naturalId
-    @ApiModelProperty(value = "Lam station's natural id", required = true)
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @JsonProperty(value = "lamId")
     private long lamNaturalId;
 

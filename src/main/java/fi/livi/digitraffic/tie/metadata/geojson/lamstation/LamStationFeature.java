@@ -15,19 +15,23 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class LamStationFeature {
 
-    @ApiModelProperty(value = "\"Feature\"", required = true, position = 1)
+    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
+    @JsonPropertyOrder(value = "1")
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Same as lamId in LamStationProperties (Lam station's natural id)", required = true, position = 2)
+    @ApiModelProperty(value = "Same as lamId in LamStationProperties", required = true, position = 2)
+    @JsonPropertyOrder(value = "2")
     private long id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true, position = 3)
+    @JsonPropertyOrder(value = "3")
     private Point geometry;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Lam station properties", required = true, position = 4)
+    @JsonPropertyOrder(value = "4")
     private LamStationProperties properties = new LamStationProperties();
 
     public String getType() {

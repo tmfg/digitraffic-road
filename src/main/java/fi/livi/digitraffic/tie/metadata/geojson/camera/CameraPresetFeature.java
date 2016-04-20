@@ -18,12 +18,12 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class CameraPresetFeature {
 
-    @ApiModelProperty(value = "\"Feature\"", required = true, position = 1)
+    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Unique identifier for camera preset", required = true, position = 2)
-    private long id;
+    @ApiModelProperty(value = "Same as presetId in CameraPresetProperties (Camera preset id)", required = true, position = 2)
+    private String id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true, position = 3)
@@ -45,11 +45,11 @@ public class CameraPresetFeature {
         this.geometry = geometry;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final String id) {
         this.id = id;
     }
 

@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class RoadWeatherStationFeature {
 
-    @ApiModelProperty(value = "\"Feature\"", required = true, position = 1)
+    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)

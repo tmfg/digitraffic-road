@@ -5,12 +5,15 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
 public class LinkFreeFlowSpeed {
     @Id
     private long linkNo;
 
+    @ApiModelProperty(value = "Free flow speed [km/h]")
     private double freeFlowSpeed;
 
     public long getLinkNo() {

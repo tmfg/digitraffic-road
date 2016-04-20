@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.swagger.annotations.ApiModel;
@@ -11,12 +12,13 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "GeoJson Coordinate Reference System Object")
 @JsonTypeInfo(property = "type",  use = JsonTypeInfo.Id.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "type", "properties" })
 public class Crs implements Serializable {
 
-    @ApiModelProperty(value = "CRS type (always \"name\")", required = true, example = "name")
+    @ApiModelProperty(value = "CRS type (always \"name\")", required = true, example = "name", position = 1)
     private CrsType type = CrsType.name;
 
-    @ApiModelProperty(value = "CRS properties. Has only name", required = true)
+    @ApiModelProperty(value = "CRS properties", required = true, position = 2)
     private CrsProperties properties = new CrsProperties();
 
     public CrsType getType() {
