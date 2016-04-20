@@ -170,7 +170,7 @@ public class RoadWeatherStationUpdater {
         return obsoleted > 0 || inserted > 0;
     }
 
-    private int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
+    private static int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
 
         int counter = 0;
         for (final Pair<TiesaaAsema, RoadWeatherStation> pair : update) {
