@@ -25,13 +25,7 @@ public class LamStationProperties extends RoadStationProperties {
     // lam aseman naturalId
     @ApiModelProperty(value = "Lam station's natural id", required = true)
     private long lamNaturalId;
-    /*
-     *   private Long lotjuId;
-     *   private double summerFreeFlowSpeed1;
-     *   private double summerFreeFlowSpeed2;
-     *   private double winterFreeFlowSpeed1;
-     *   private double winterFreeFlowSpeed2;
-     */
+
     @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
     private String direction1Municipality;
 
