@@ -23,7 +23,7 @@ public abstract class RoadStationProperties {
     private Long lotjuId;
 
     @ApiModelProperty(value = "Road station's natural id", required = true)
-    @JsonProperty("id")
+    @JsonProperty("roadStationId")
     private long naturalId;
 
     @ApiModelProperty(value = "Common name of road station")

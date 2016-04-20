@@ -19,7 +19,7 @@ public class LamStationFeature {
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Unique identifier for lam station", required = true, position = 2)
+    @ApiModelProperty(value = "Same as lamId in LamStationProperties (Lam station's natural id)", required = true, position = 2)
     private long id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)

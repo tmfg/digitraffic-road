@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
@@ -24,6 +25,7 @@ public class LamStationProperties extends RoadStationProperties {
 
     // lam aseman naturalId
     @ApiModelProperty(value = "Lam station's natural id", required = true)
+    @JsonProperty(value = "lamId")
     private long lamNaturalId;
 
     @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
