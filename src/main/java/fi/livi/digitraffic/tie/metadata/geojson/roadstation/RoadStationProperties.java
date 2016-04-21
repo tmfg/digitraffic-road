@@ -35,10 +35,10 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Road part")
     private Integer roadPart;
 
-    @ApiModelProperty(value = "Distance from start of the road part in meters")
+    @ApiModelProperty(value = "Distance from start of the road part [m]")
     private Integer distance;
 
-    @ApiModelProperty(value = "Data collection interval in seconds")
+    @ApiModelProperty(value = "Data collection interval [s]")
     private Integer collectionInterval;
 
     @ApiModelProperty(value = "Data collection status")
@@ -62,7 +62,7 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Additional information")
     private String additionalInformation;
 
-    @ApiModelProperty(value = "Map of namess in fi, sv, en")
+    @ApiModelProperty(value = "Map of namess [fi, sv, en]")
     private Map<String, String> names = new HashMap<>();
 
     public long getNaturalId() {

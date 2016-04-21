@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(value="Roadstation status metadata", description="Api to read roadstation status metadata")
+@Api(value="Roadstation status metadata", description="Api to read statuses of roadstations")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class RoadStationStatusController {

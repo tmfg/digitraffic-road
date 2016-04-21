@@ -23,7 +23,7 @@ public class Point {
     @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
     private final String type = "Point";
 
-    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Altitude is optional)", required = true, position = 2, example = "[6669701, 364191, 0]")
+    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Altitude is optional [m])", required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
 
     @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS", required = true, position = 3)
