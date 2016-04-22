@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(value="Free flow speeds", description="Api to read free flow speeds")
+@Api(value="Free flow speeds", description="Current free flow speeds")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class FreeFlowSpeedController {
