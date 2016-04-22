@@ -31,13 +31,13 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Type of camera")
     private CameraType cameraType;
 
-    @ApiModelProperty(value = "Preset name 1???")
+    @ApiModelProperty(value = "Preset name 1")
     private String presetName1;
 
-    @ApiModelProperty(value = "Preset name 2???")
+    @ApiModelProperty(value = "Preset name 2")
     private String presetName2;
 
-    @ApiModelProperty(value = "Preset order???")
+    @ApiModelProperty(value = "Preset order")
     private Integer presetOrder;
 
     @ApiModelProperty(name = "public", value = "Is image available")
@@ -47,22 +47,22 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Is data in collection")
     private boolean inCollection;
 
-    @ApiModelProperty(value = "???")
+    @ApiModelProperty(value = "Jpeg image Quality Factor (Q)")
     private Integer compression;
 
-    @ApiModelProperty(value = "???")
+    @ApiModelProperty(value = "Name on device")
     private String nameOnDevice;
 
     @ApiModelProperty(value = "Is camera targeted to default direction")
     private Boolean defaultDirection;
 
-    @ApiModelProperty(value = "Resolution of camera in px")
+    @ApiModelProperty(value = "Resolution of camera [px x px]")
     private String resolution;
 
     @ApiModelProperty(value = "Direction of camera")
     private String direction;
 
-    @ApiModelProperty(value = "??? [?]")
+    @ApiModelProperty(value = "Delay [s]")
     private Integer delay;
 
     @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")

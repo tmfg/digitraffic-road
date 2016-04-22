@@ -18,7 +18,9 @@ public class RoadWeatherStationMetadataRestTest extends MetadataRestTest {
 
     @Test
     public void testRoadWeatherStationMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + "/road-weather-stations"))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+                            Metadata.ROAD_WEATHER_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))

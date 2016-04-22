@@ -13,14 +13,17 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationStatus;
 
 @Repository
 public interface RoadStationStatusRepository extends JpaRepository<RoadStationStatus, Long> {
-    @Query(value = "select rs.natural_id as station_id, sv1.value as road_station_status, nvl(sv1.measured, sv2.measured) as updated, sv2.value as station_data_collection_status\n"
-            + "from road_station rs, sensor_value sv1, sensor_value sv2\n"
-            + "where rs.obsolete = 0\n"
-            + "and sv1.road_station_id (+) = rs.id\n"
-            + "and sv2.road_station_id (+) = rs.id\n"
-            + "and sv1.road_station_sensor_id (+) = 1\n"
-            + "and sv2.road_station_sensor_id (+) = 2\n"
-            + "and nvl(sv1.value, sv2.value) is not null", nativeQuery = true)
+    @Query(value =
+            "SELECT RS.NATURAL_ID AS ROAD_STATION_ID\n" +
+            "     , SV1.VALUE AS CONDITION_CODE\n" +
+            "     , SV1.MEASURED AS CONDITION_UPDATED\n" +
+            "     , SV2.VALUE AS COLLECTION_STATUS_CODE\n" +
+            "     , SV2.MEASURED AS COLLECTION_STATUS_UPDATED\n" +
+            "FROM ROAD_STATION RS\n" +
+            "LEFT OUTER JOIN SENSOR_VALUE SV1 ON SV1.ROAD_STATION_ID = RS.ID AND SV1.ROAD_STATION_SENSOR_ID = 1\n" +
+            "LEFT OUTER JOIN SENSOR_VALUE SV2 ON SV2.ROAD_STATION_ID = RS.ID AND SV2.ROAD_STATION_SENSOR_ID = 2\n" +
+            "WHERE RS.OBSOLETE = 0\n" +
+            "  AND NVL(SV1.VALUE, SV2.VALUE) IS NOT NULL", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationStatus> findAllRoadStationStatuses();
 }

@@ -14,7 +14,9 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 public class ForecastSectionMetadataRestTest extends MetadataRestTest {
     @Test
     public void testForecastSectionMetadataApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + ForecastSectionMetadataController.PATH))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+                            Metadata.FORECAST_SECTIONS_PATH))
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //

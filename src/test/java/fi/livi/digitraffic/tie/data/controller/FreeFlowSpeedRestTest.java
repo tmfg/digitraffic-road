@@ -15,7 +15,9 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 public class FreeFlowSpeedRestTest extends RestTest {
     @Test
     public void testFreeFlowSpeedRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + FreeFlowSpeedController.PATH))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_DATA_PART_PATH +
+                            Data.FREE_FLOWS_PEED_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //

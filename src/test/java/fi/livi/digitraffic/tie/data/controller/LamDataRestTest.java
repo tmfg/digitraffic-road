@@ -13,9 +13,12 @@ import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 public class LamDataRestTest extends RestTest {
+
     @Test
     public void testLamDataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + LamDataController.PATH))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_DATA_PART_PATH +
+                            Data.LAM_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //
