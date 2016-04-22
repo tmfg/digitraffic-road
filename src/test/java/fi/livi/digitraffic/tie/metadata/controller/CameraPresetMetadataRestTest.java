@@ -18,7 +18,9 @@ public class CameraPresetMetadataRestTest extends MetadataRestTest {
 
     @Test
     public void testCameraPresetMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_METADATA_PART_PATH + "/camera-presets"))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+                            Metadata.CAMERA_PRESETS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))

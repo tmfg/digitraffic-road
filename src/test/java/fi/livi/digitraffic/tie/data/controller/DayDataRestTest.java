@@ -39,7 +39,9 @@ public class DayDataRestTest extends RestTest {
 
     @Test
     public void testDayDataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + DayDataController.PATH))
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                            MetadataApplicationConfiguration.API_DATA_PART_PATH +
+                            Data.DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //

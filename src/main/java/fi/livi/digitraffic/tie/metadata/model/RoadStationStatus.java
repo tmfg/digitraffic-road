@@ -99,4 +99,20 @@ public class RoadStationStatus {
     public String getCollectionStatusUpdatedUtc() {
         return ToStringHelpper.toString(collectionStatusUpdated, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("roadStationId", roadStationId)
+                .appendField("conditionCode", conditionCode)
+                .appendField("condition", getCondition())
+                .appendField("conditionUpdatedLocalTime", getConditionUpdatedLocalTime())
+                .appendField("conditionUpdatedUtc", getConditionUpdatedUtc())
+                .appendField("collectionStatusCode", collectionStatusCode)
+                .appendField("collectionStatus", getCollectionStatus())
+                .appendField("collectionStatusUpdatedLocalTime", getCollectionStatusUpdatedLocalTime())
+                .appendField("collectionStatusUpdatedUtc", getCollectionStatusUpdatedUtc())
+                .toString();
+    }
+
 }
