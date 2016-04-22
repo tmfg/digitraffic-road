@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
@@ -15,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder(alphabetic = true)
+@JsonPropertyOrder({ "lamNaturalId", "naturalId", "name" })
 public class LamStationProperties extends RoadStationProperties {
 
     @ApiModelProperty(value = "Lam station's unique id")
@@ -23,15 +24,10 @@ public class LamStationProperties extends RoadStationProperties {
     private long id;
 
     // lam aseman naturalId
-    @ApiModelProperty(value = "Lam station's natural id", required = true)
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
+    @JsonProperty(value = "lamId")
     private long lamNaturalId;
-    /*
-     *   private Long lotjuId;
-     *   private double summerFreeFlowSpeed1;
-     *   private double summerFreeFlowSpeed2;
-     *   private double winterFreeFlowSpeed1;
-     *   private double winterFreeFlowSpeed2;
-     */
+
     @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
     private String direction1Municipality;
 

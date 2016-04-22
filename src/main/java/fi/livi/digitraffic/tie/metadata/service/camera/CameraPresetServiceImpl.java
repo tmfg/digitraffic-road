@@ -24,6 +24,7 @@ public class CameraPresetServiceImpl implements CameraPresetService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public Map<String, CameraPreset> finAllCamerasMappedByPresetId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
         final Map<String, CameraPreset> cameraMap = new HashMap<>();

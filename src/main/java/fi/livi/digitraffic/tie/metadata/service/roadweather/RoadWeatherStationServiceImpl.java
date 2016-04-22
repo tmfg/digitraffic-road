@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 @Service
 public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
 
-    private static final Logger LOG = Logger.getLogger(RoadWeatherStationServiceImpl.class);
-
     private final RoadWeatherStationRepository roadWeatherStationRepository;
     private RoadWeatherSensorRepository roadWeatherSensorRepository;
 
@@ -32,6 +29,7 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         this.roadWeatherSensorRepository = roadWeatherSensorRepository;
     }
 
+    @Override
     public Map<Long, RoadWeatherStation> findAllRoadWeatherStationsMappedByLotjuId() {
         final Map<Long, RoadWeatherStation> map = new HashMap<>();
         final List<RoadWeatherStation> all = roadWeatherStationRepository.findAll();
@@ -48,11 +46,13 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         return rws;
     }
 
-    @Override public List<RoadWeatherSensor> findAllRoadStationSensors() {
+    @Override
+    public List<RoadWeatherSensor> findAllRoadStationSensors() {
         return roadWeatherSensorRepository.findAll();
     }
 
-    @Override public Map<Long, List<RoadWeatherSensor>> findAllRoadStationSensorsMappedByRoadStationLotjuId() {
+    @Override
+    public Map<Long, List<RoadWeatherSensor>> findAllRoadStationSensorsMappedByRoadStationLotjuId() {
         List<RoadWeatherSensor> all = findAllRoadStationSensors();
         final Map<Long, List<RoadWeatherSensor>> map = new HashMap<>();
         for (RoadWeatherSensor rws : all) {

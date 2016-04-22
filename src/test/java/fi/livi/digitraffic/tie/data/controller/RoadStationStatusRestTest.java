@@ -18,10 +18,12 @@ public class RoadStationStatusRestTest  extends RestTest {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_DATA_PART_PATH + RoadStationStatusController.PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.timestamp", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.utc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.roadStationStatusData", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.roadStationStatusData[0].stationId", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.roadStationStatusData[0].updated", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatusData[0].utc", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatusData[0].localTime", Matchers.notNullValue()))
         ;
     }
 }

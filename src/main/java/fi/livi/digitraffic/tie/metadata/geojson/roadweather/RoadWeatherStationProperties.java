@@ -3,6 +3,9 @@ package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -14,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road Weather Station properties", value = "RoadWeatherStationProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder(alphabetic = true)
+@JsonPropertyOrder({ "id", "roadWeatherStationType", "naturalId", "name" })
 public class RoadWeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id
@@ -53,5 +56,35 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     public void addSensor(RoadWeatherStationSensor roadWeatherStationSensor) {
         sensors.add(roadWeatherStationSensor);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        RoadWeatherStationProperties rhs = (RoadWeatherStationProperties) obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(this.id, rhs.id)
+                .append(this.roadWeatherStationType, rhs.roadWeatherStationType)
+                .append(this.sensors, rhs.sensors)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(roadWeatherStationType)
+                .append(sensors)
+                .toHashCode();
     }
 }

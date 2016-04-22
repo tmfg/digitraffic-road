@@ -144,9 +144,9 @@
     <!-- If you have access to scm then you can place actual url's.
          Otherwise with <revisionOnScmFailure /> you can give some fake URLs as follows. -->
     <scm>
-        <connection>scm:svn:http://none</connection>
-        <developerConnection>scm:svn:https://none</developerConnection>
-        <url>scm:svn:https://none</url>
+        <connection>scm:git:http://none</connection>
+        <developerConnection>scm:git:https://none</developerConnection>
+        <url>scm:git:https://none</url>
     </scm>
 
     <build>

@@ -1,25 +1,40 @@
 package fi.livi.digitraffic.tie.data.model;
 
 import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
+@JsonPropertyOrder({ "localTime", "utc"})
 public class LamMeasurement {
+
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @Id
     private long lamId;
 
+    @ApiModelProperty(value = "Traffic volume in 5 minutes to direction 1", required = true)
     private long trafficVolume1;
 
+    @ApiModelProperty(value = "Traffic volume in 5 minutes to direction 2", required = true)
     private long trafficVolume2;
 
+    @ApiModelProperty(value = "Average speed to direction 1", required = true)
     private long averageSpeed1;
 
+    @ApiModelProperty(value = "Average speed to direction 2", required = true)
     private long averageSpeed2;
 
+    @JsonIgnore
     private LocalDateTime measured;
 
     public long getLamId() {
@@ -68,5 +83,15 @@ public class LamMeasurement {
 
     public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
+    }
+
+    @ApiModelProperty(value = "Timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)", required = true)
+    public String getLocalTime() {
+        return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    }
+
+    @ApiModelProperty(value = "Timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)", required = true)
+    public String getUtc() {
+        return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 }

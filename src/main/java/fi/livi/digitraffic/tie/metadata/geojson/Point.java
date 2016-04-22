@@ -6,19 +6,21 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "type", "coordinates", "crs" })
 public class Point {
 
     private static final int LONGITUDE_IDX = 0;
     private static final int LATITUDE_IDX = 1;
     private static final int ALTITUDE_IDX = 2;
 
-    @ApiModelProperty(value = "\"Point\"", required = true, position = 1)
+    @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
     private final String type = "Point";
 
     @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Altitude is optional)", required = true, position = 2, example = "[6669701, 364191, 0]")
