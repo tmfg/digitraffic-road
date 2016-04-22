@@ -4,10 +4,11 @@ import java.util.List;
 
 import fi.livi.digitraffic.tie.data.model.DataObject;
 
-public class HistoryData extends DataObject {
+public class HistoryDataObject extends DataObject {
+
     private final List<LinkDynamicData> linkDynamicData;
 
-    public HistoryData(List<LinkDynamicData> linkDynamicData) {
+    public HistoryDataObject(List<LinkDynamicData> linkDynamicData) {
         this.linkDynamicData = linkDynamicData;
     }
 

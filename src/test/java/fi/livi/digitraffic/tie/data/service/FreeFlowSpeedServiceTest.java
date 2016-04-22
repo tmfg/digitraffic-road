@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedObject;
+import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedDataObject;
 
 public class FreeFlowSpeedServiceTest extends MetadataTest {
     @Autowired
@@ -13,7 +13,7 @@ public class FreeFlowSpeedServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations() {
-        final FreeFlowSpeedObject object = freeFlowSpeedService.listAllFreeFlowSpeeds();
+        final FreeFlowSpeedDataObject object = freeFlowSpeedService.listAllFreeFlowSpeeds();
 
         Assert.notNull(object);
         Assert.notNull(object.getLocalTime());

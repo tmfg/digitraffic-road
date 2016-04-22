@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import fi.livi.digitraffic.tie.data.model.daydata.HistoryData;
+import fi.livi.digitraffic.tie.data.model.daydata.HistoryDataObject;
 
 public interface DayDataService {
-    HistoryData listPreviousDayHistoryData();
+    HistoryDataObject listPreviousDayHistoryData();
 }
