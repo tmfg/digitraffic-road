@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusServiceImpl;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService.StaticStatusType;
 
 @Repository
 public class StaticDataStatusDAO {
@@ -17,7 +17,7 @@ public class StaticDataStatusDAO {
         this.entityManager = entityManager;
     }
 
-    public void updateStaticDataStatus(final StaticDataStatusServiceImpl.StaticStatusType type, final boolean updateStaticDataStatus) {
+    public void updateStaticDataStatus(final StaticStatusType type, final boolean updateStaticDataStatus) {
         final Session session = entityManager.unwrap(Session.class);
 
         if(updateStaticDataStatus || session.isDirty()) {

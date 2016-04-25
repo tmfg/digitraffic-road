@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-
-import org.springframework.transaction.annotation.Transactional;
-
 public interface StaticDataStatusService {
 
     enum StaticStatusType {
@@ -23,6 +20,5 @@ public interface StaticDataStatusService {
         }
     }
 
-    @Transactional
     void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus);
 }

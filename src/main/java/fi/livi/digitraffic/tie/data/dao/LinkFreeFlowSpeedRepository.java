@@ -10,10 +10,9 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.model.LinkFreeFlowSpeed;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.TrafficFluencyDataObject;
 
 @Repository
-public interface LinkFreeFlowSpeedRepository extends JpaRepository<TrafficFluencyDataObject, Long> {
+public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowSpeed, Long> {
     @Query(value =
             "select l.natural_id as link_no, case when speed_limit_season = 1 then summer_free_flow_speed else winter_free_flow_speed end" +
                     " as free_flow_speed\n" +
