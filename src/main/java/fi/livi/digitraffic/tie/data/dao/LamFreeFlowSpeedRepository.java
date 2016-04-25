@@ -23,11 +23,10 @@ public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpe
           + "            then summer_free_flow_speed_2\n"
           + "            else winter_free_flow_speed_2\n"
           + "        end free_flow_speed2\n"
-          + "from lam_station ls"
+          + "from lam_station ls\n"
           + "inner join road_district rd on ls.road_district_id = rd.id\n"
           + "where ls.obsolete = 0",
             nativeQuery = true)
-
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LamFreeFlowSpeed> listAllLamFreeFlowSpeeds();
 }

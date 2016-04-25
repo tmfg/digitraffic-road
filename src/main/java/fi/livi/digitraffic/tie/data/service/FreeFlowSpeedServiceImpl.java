@@ -21,7 +21,7 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
 
     @Override
     public FreeFlowSpeedDataObject listAllFreeFlowSpeeds() {
-        return new FreeFlowSpeedDataObject(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(), lamFreeFlowSpeedRepository
-                .listAllLamFreeFlowSpeeds());
+        return new FreeFlowSpeedDataObject(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
+                                           lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds());
     }
 }
