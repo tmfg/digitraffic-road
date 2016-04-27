@@ -47,7 +47,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class Data {
 
-    public static final String TRAFFIC_FLUENCY_PATH = "traffic-fluency";
+    public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
     public static final String LAM_DATA_PATH = "/lam-data";
     public static final String ROAD_STATION_STATUSES_PATH = "/road-station-statuses";
     public static final String DAY_DATA_PATH = "/day-data";
