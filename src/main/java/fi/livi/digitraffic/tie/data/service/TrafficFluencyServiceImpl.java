@@ -28,7 +28,7 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
     TrafficFluencyServiceImpl(final TrafficFluencyRepository trafficFluencyRepository,
                               final FluencyClassRepository fluencyClassRepository,
                               final StaticDataStatusService staticDataStatusService,
-                              @Value("${fluency.classes.below.treshold}")
+                              @Value("${fluencyClasses.below.treshold}")
                               final Integer thresholdClasses) {
         this.trafficFluencyRepository = trafficFluencyRepository;
         this.fluencyClassRepository = fluencyClassRepository;
@@ -39,7 +39,7 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
     @Override
     public TrafficFluencyDataObject listCurrentTrafficFluencyData() {
         TrafficFluencyDataObject result = new TrafficFluencyDataObject(trafficFluencyRepository.findLatestMediansForNonObsoleteLinks());
-        for (LatestMedianData lmd : result.getLatestMedianDatas()) {
+        for (LatestMedianData lmd : result.getLatestMedianData()) {
             lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
         }
         return result;
