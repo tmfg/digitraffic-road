@@ -14,25 +14,21 @@ import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.LatestMedianData;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.TrafficFluencyDataObject;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class TrafficFluencyServiceImpl implements TrafficFluencyService {
 
     private final TrafficFluencyRepository trafficFluencyRepository;
     private final FluencyClassRepository fluencyClassRepository;
-    private StaticDataStatusService staticDataStatusService;
     private final int thresholdClasses;
 
     @Autowired
     TrafficFluencyServiceImpl(final TrafficFluencyRepository trafficFluencyRepository,
                               final FluencyClassRepository fluencyClassRepository,
-                              final StaticDataStatusService staticDataStatusService,
                               @Value("${fluencyClasses.below.treshold}")
                               final Integer thresholdClasses) {
         this.trafficFluencyRepository = trafficFluencyRepository;
         this.fluencyClassRepository = fluencyClassRepository;
-        this.staticDataStatusService = staticDataStatusService;
         this.thresholdClasses = thresholdClasses;
     }
 
@@ -86,10 +82,11 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
      * alert)
      *
      * @return
+     *
+     * private BigDecimal getAlertThreshold() {
+     *   List<FluencyClass> fluencyClasses = findAllFluencyClassesOrderByLowerLimitAsc();
+     *   FluencyClass fc = fluencyClasses.get(thresholdClasses - 1);
+     *   return fc.getUpperLimit();
+     * }
      */
-    private BigDecimal getAlertThreshold() {
-        List<FluencyClass> fluencyClasses = findAllFluencyClassesOrderByLowerLimitAsc();
-        FluencyClass fc = fluencyClasses.get(thresholdClasses - 1);
-        return fc.getUpperLimit();
-    }
 }

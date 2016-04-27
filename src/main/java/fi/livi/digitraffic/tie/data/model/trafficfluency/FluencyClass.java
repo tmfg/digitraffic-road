@@ -41,9 +41,6 @@ public class FluencyClass {
     @NotNull
     private String nameEn;
 
-    public FluencyClass() {
-    }
-
     public int getCode() {
         return code;
     }
