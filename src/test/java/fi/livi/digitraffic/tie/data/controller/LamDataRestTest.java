@@ -21,9 +21,9 @@ public class LamDataRestTest extends RestTest {
                             Data.LAM_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.utc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dynamicLamData", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dynamicLamData[0].lamId", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.lamData", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.lamData[0].lamId", Matchers.notNullValue()));
     }
 }

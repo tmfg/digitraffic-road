@@ -16,9 +16,9 @@ public class LamDataServiceTest extends MetadataTest {
         final LamDataObject object = lamDataService.listAllLamDataFromNonObsoleteStations();
 
         Assert.notNull(object);
-        Assert.notNull(object.getLocalTime());
-        Assert.notNull(object.getUtc());
-        Assert.notNull(object.getDynamicLamData());
-        Assert.notEmpty(object.getDynamicLamData());
+        Assert.notNull(object.getDataLocalTime());
+        Assert.notNull(object.getDataUtc());
+        Assert.notNull(object.getLamData());
+        Assert.notEmpty(object.getLamData());
     }
 }

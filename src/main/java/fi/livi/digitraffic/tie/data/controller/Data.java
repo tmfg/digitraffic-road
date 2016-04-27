@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedDataObject;
 import fi.livi.digitraffic.tie.data.model.LamDataObject;
+import fi.livi.digitraffic.tie.data.model.RoadWeatherDataObject;
 import fi.livi.digitraffic.tie.data.model.daydata.HistoryDataObject;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.TrafficFluencyDataObject;
 import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.LamDataService;
 import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
+import fi.livi.digitraffic.tie.data.service.RoadWeatherService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationStatuses;
 import io.swagger.annotations.Api;
@@ -45,16 +47,18 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class Data {
 
-    public static final String TRAFFIC_FLUENCY_PATH = "traffic-fluency";
+    public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
     public static final String LAM_DATA_PATH = "/lam-data";
     public static final String ROAD_STATION_STATUSES_PATH = "/road-station-statuses";
     public static final String DAY_DATA_PATH = "/day-data";
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
+    public static final String ROAD_WEATHER_PATH = "/road-weather";
 
     private TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
     private LamDataService lamDataService;
     private FreeFlowSpeedService freeFlowSpeedService;
+    private RoadWeatherService roadWeatherService;
     private RoadStationStatusService roadStationStatusService;
 
     @Autowired
@@ -62,15 +66,15 @@ public class Data {
                 final DayDataService dayDataService,
                 final LamDataService lamDataService,
                 final FreeFlowSpeedService freeFlowSpeedService,
+                final RoadWeatherService roadWeatherService,
                 final RoadStationStatusService roadStationStatusService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
         this.lamDataService = lamDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
+        this.roadWeatherService = roadWeatherService;
         this.roadStationStatusService = roadStationStatusService;
     }
-
-
 
     @ApiOperation(value = "Current fluency data")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
@@ -102,6 +106,14 @@ public class Data {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public FreeFlowSpeedDataObject listFreeFlowSpeeds() {
         return freeFlowSpeedService.listAllFreeFlowSpeeds();
+    }
+
+    @ApiOperation(value = "Current road weather station data")
+    @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public RoadWeatherDataObject listRoadWeatherStationData() {
+        return roadWeatherService.findAllWeatherData();
     }
 
     @ApiOperation(value = "Status of road stations")

@@ -2,6 +2,12 @@ package fi.livi.digitraffic.tie.data.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModel;
+
+@ApiModel(description = "Current free flow speed values for links and LAM stations")
+@JsonPropertyOrder({ "dataLocalTime", "dataUtc", "linkData", "lamData"})
 public class FreeFlowSpeedDataObject extends DataObject {
     private final List<LinkFreeFlowSpeed> linkData;
     private final List<LamFreeFlowSpeed> lamData;

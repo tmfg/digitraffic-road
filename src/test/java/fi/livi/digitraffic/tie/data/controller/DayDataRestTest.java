@@ -44,8 +44,8 @@ public class DayDataRestTest extends RestTest {
                             Data.DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.localTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.utc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkDynamicData", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkDynamicData[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkDynamicData[0].linkNumber", Matchers.notNullValue()))
