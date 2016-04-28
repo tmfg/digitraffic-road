@@ -85,13 +85,13 @@ public class LamMeasurement {
         this.measured = measured;
     }
 
-    @ApiModelProperty(value = "Timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)", required = true)
-    public String getLocalTime() {
+    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    public String getMeasurementLocalTime() {
         return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
-    @ApiModelProperty(value = "Timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)", required = true)
-    public String getUtc() {
+    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
+    public String getMeasurementUtc() {
         return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 }

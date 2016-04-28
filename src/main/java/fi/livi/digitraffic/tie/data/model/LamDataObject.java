@@ -2,14 +2,21 @@ package fi.livi.digitraffic.tie.data.model;
 
 import java.util.List;
 
-public class LamDataObject extends DataObject {
-    private final List<LamMeasurement> dynamicLamData;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    public LamDataObject(final List<LamMeasurement> dynamicLamData) {
-        this.dynamicLamData = dynamicLamData;
+import io.swagger.annotations.ApiModel;
+
+@ApiModel(description = "Latest measurement data from LAM stations.")
+@JsonPropertyOrder({ "dataLocalTime", "dataUtc", "lamData"})
+public class LamDataObject extends DataObject {
+
+    private final List<LamMeasurement> lamData;
+
+    public LamDataObject(final List<LamMeasurement> lamData) {
+        this.lamData = lamData;
     }
 
-    public List<LamMeasurement> getDynamicLamData() {
-        return dynamicLamData;
+    public List<LamMeasurement> getLamData() {
+        return lamData;
     }
 }

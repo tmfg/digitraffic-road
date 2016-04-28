@@ -58,12 +58,12 @@ public class RoadStationStatus {
         return RoadStationCondition.fromConditionCode(conditionCode);
     }
 
-    @ApiModelProperty(value = "Condition updated timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)", required = true, position = 5)
+    @ApiModelProperty(value = "Condition updated " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true, position = 5)
     public String getConditionUpdatedLocalTime() {
         return ToStringHelpper.toString(conditionUpdated, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
-    @ApiModelProperty(value = "Condition updated timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)", required = true, position = 6)
+    @ApiModelProperty(value = "Condition updated " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true, position = 6)
     public String getConditionUpdatedUtc() {
         return ToStringHelpper.toString(conditionUpdated, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
@@ -90,12 +90,12 @@ public class RoadStationStatus {
     }
 
 
-    @ApiModelProperty(value = "Collection status updated timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)", required = true, position = 9)
+    @ApiModelProperty(value = "Collection status updated " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true, position = 9)
     public String getCollectionStatusUpdatedLocalTime() {
         return ToStringHelpper.toString(collectionStatusUpdated, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
-    @ApiModelProperty(value = "Collection status updated timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)", required = true, position = 10)
+    @ApiModelProperty(value = "Collection status updated " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true, position = 10)
     public String getCollectionStatusUpdatedUtc() {
         return ToStringHelpper.toString(collectionStatusUpdated, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }

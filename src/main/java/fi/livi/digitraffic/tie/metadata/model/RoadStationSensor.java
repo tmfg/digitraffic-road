@@ -25,8 +25,8 @@ public class RoadStationSensor {
     private long id;
 
     @NotNull
-    @JsonProperty("id")
-    @ApiModelProperty(value = "NaturalId of sensor type", required = true, position = 1)
+    @JsonProperty("sensorId")
+    @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 1)
     private long naturalId;
 
     @NotNull

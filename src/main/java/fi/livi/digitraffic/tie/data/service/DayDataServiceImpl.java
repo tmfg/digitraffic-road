@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
-import fi.livi.digitraffic.tie.data.model.daydata.HistoryData;
+import fi.livi.digitraffic.tie.data.model.daydata.HistoryDataObject;
 import fi.livi.digitraffic.tie.data.model.daydata.LinkData;
 import fi.livi.digitraffic.tie.data.model.daydata.LinkDynamicData;
 
@@ -21,10 +21,10 @@ public class DayDataServiceImpl implements DayDataService {
     }
 
     @Override
-    public HistoryData listPreviousDayHistoryData() {
+    public HistoryDataObject listPreviousDayHistoryData() {
         final List<LinkData> linkData = dayDataRepository.listAllMedianTravelTimes();
 
-        return new HistoryData(convertToDynamicData(linkData));
+        return new HistoryDataObject(convertToDynamicData(linkData));
     }
 
     private static List<LinkDynamicData> convertToDynamicData(final List<LinkData> linkData) {

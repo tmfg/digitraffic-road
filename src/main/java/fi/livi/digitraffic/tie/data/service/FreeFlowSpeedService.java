@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedObject;
+import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedDataObject;
 
 public interface FreeFlowSpeedService {
-    FreeFlowSpeedObject listAllFreeFlowSpeeds();
+    FreeFlowSpeedDataObject listAllFreeFlowSpeeds();
 }
