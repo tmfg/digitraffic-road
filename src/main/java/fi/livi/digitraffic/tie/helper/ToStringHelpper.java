@@ -21,16 +21,16 @@ import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 public class ToStringHelpper {
 
     private static final String LOTJU_ID = "lotjuId";
-    public static final String VANHA_ID = "vanhaId";
-    public static final String NIMI = "nimi";
-    public static final String NAME = "name";
-    public static final String NATURAL_ID = "naturalId";
-    public static final String ID = "id";
+    private static final String VANHA_ID = "vanhaId";
+    private static final String NIMI = "nimi";
+    private static final String NAME = "name";
+    private static final String NATURAL_ID = "naturalId";
+    private static final String ID = "id";
     private final StringBuffer sb;
     private boolean toStringCalled;
 
-    public final static String ISO_8601_UTC_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)";
-    public final static String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)";
+    public static final String ISO_8601_UTC_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)";
+    public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)";
 
     public ToStringHelpper(final Object object) {
         sb = createStartSb(object);
@@ -75,7 +75,7 @@ public class ToStringHelpper {
     }
 
     private static void removeLastFieldSeparatorFromEnd(final StringBuffer sb) {
-        if (sb.length() > 0 && sb.lastIndexOf(",") == sb.length()-1) {
+        if (sb.length() > 0 && sb.lastIndexOf(",") == (sb.length() - 1)) {
             sb.setLength(sb.length()-1); // remove last char","
         }
     }
