@@ -48,7 +48,7 @@ public class RoadStationSensorValueDto {
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor name", position = 1)
+    @ApiModelProperty(value = "Sensor name", position = 1, required = true)
     private String sensorName;
 
     public long getRoadStationNaturalId() {

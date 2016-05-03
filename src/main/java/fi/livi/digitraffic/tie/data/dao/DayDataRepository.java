@@ -18,14 +18,13 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             "     , m.MEDIAN_TRAVEL_TIME\n" +
             "     , m.AVERAGE_SPEED, fc.CODE as FC\n" +
             "     , l.NATURAL_ID as LINK_ID\n" +
-            "FROM JOURNEYTIME_MEDIAN m" +
-            "INNER JOIN LINK l ON m.LINK_ID = l.ID" +
-            "INNER JOIN FLUENCY_CLASS FC\n" +
+            "FROM JOURNEYTIME_MEDIAN m\n" +
+            "INNER JOIN LINK l ON m.LINK_ID = l.ID\n" +
+            "INNER JOIN FLUENCY_CLASS FC ON m.RATIO_TO_FREE_FLOW_SPEED >= fc.LOWER_LIMIT\n" +
+            "                           AND m.RATIO_TO_FREE_FLOW_SPEED < nvl(FC.UPPER_LIMIT, 10)\n" +
             "WHERE m.END_TIMESTAMP >= (trunc(SYSDATE) -1)\n" +
             "  AND m.END_TIMESTAMP < (trunc(SYSDATE))\n" +
             "  AND l.OBSOLETE = 0\n" +
-            "  AND m.RATIO_TO_FREE_FLOW_SPEED >= fc.LOWER_LIMIT" +
-            "  AND m.RATIO_TO_FREE_FLOW_SPEED < nvl(FC.UPPER_LIMIT, 10)\n" +
             "ORDER BY l.NATURAL_ID, m.END_TIMESTAMP",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

@@ -5,11 +5,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Current free flow speed values for links and LAM stations")
 @JsonPropertyOrder({ "dataLocalTime", "dataUtc", "linkData", "lamData"})
 public class FreeFlowSpeedDataObject extends DataObject {
+
+    @ApiModelProperty(value = "Free flow speeds for links", required = true)
     private final List<LinkFreeFlowSpeed> linkData;
+
+    @ApiModelProperty(value = "Free flow speeds for LAM stations", required = true)
     private final List<LamFreeFlowSpeed> lamData;
 
     public FreeFlowSpeedDataObject(final List<LinkFreeFlowSpeed> linkData, final List<LamFreeFlowSpeed> lamData) {

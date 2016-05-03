@@ -10,10 +10,12 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 public class LinkFreeFlowSpeed {
+
     @Id
+    @ApiModelProperty(value = "Link id", required = true)
     private long linkNo;
 
-    @ApiModelProperty(value = "Free flow speed [km/h]")
+    @ApiModelProperty(value = "Free flow speed [km/h]", required = true)
     private double freeFlowSpeed;
 
     public long getLinkNo() {

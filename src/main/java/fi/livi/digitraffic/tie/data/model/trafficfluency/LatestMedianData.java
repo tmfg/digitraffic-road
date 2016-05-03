@@ -35,7 +35,7 @@ public class LatestMedianData {
     @JsonIgnore
     private LocalDateTime measurementTimestamp;
 
-    @ApiModelProperty(value = "Median of journey times for this link, based on 5 minutes [s]")
+    @ApiModelProperty(value = "Median of journey times for this link, based on 5 minutes [s]", required = true)
     private Long medianJourneyTime;
 
     @JsonIgnore

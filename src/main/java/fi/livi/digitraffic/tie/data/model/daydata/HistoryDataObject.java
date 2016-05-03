@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.model.DataObject;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Average median data calculated for the previous day")
 @JsonPropertyOrder({ "dataLocalTime", "dataUtc", "linkDynamicData"})
 public class HistoryDataObject extends DataObject {
 
+    @ApiModelProperty(value = "Links data", required = true)
     private final List<LinkDynamicData> linkDynamicData;
 
     public HistoryDataObject(List<LinkDynamicData> linkDynamicData) {

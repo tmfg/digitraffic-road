@@ -21,8 +21,8 @@ import io.swagger.annotations.ApiModelProperty;
                     "collectionStatusCode", "collectionStatus", "collectionStatusUpdatedLocalTime", "collectionStatusUpdatedUtc"})
 public class RoadStationStatus {
 
-    @ApiModelProperty(required = true, value = "Road station id", position = 1)
     @Id
+    @ApiModelProperty(required = true, value = "Road station id", position = 1)
     private int roadStationId;
 
     @ApiModelProperty(value = "Road station condition code", position = 2)

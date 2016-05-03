@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
 @JsonPropertyOrder({"fc", "m", "sp", "tt"})
@@ -17,15 +19,19 @@ public class LinkData {
     @JsonIgnore
     private int rownum;
 
+    @ApiModelProperty(value = "Index of the minute. 0 = 00:00, 60 = 01:00, 1439 = 23:59", required = true)
     @JsonProperty("m")
     private int minute;
 
+    @ApiModelProperty(value = "Median travel time, in seconds", required = true)
     @JsonProperty("tt")
     private int medianTravelTime;
 
+    @ApiModelProperty(value = "Average speed, km/h", required = true)
     @JsonProperty("sp")
     private double averageSpeed;
 
+    @ApiModelProperty(value = "Fluency class", required = true)
     private int fc;
 
     @JsonIgnore

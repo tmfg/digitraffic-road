@@ -11,8 +11,8 @@ import io.swagger.annotations.ApiModelProperty;
 @Immutable
 public class LamFreeFlowSpeed {
 
-    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @Id
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     private long lamId;
 
     @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]", required = true)
