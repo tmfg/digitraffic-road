@@ -353,7 +353,7 @@ public class CameraUpdater {
         to.setAltitude(from.getKorkeus());
         to.setRoadNumber(from.getTieosoite().getTienumero());
         to.setRoadPart(from.getTieosoite().getTieosa());
-        to.setDistance(from.getTieosoite().getEtaisyysTieosanAlusta());
+        to.setDistanceFromRoadPartStart(from.getTieosoite().getEtaisyysTieosanAlusta());
         to.setCollectionInterval(from.getKeruuVali());
         to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
         to.setMunicipality(from.getKunta());

@@ -42,7 +42,7 @@ public class RoadStation {
 
     private Integer roadPart;
 
-    private Integer distance;
+    private Integer distanceFromRoadPartStart;
 
     private Integer collectionInterval;
 
@@ -184,12 +184,12 @@ public class RoadStation {
         this.roadPart = roadPart;
     }
 
-    public Integer getDistance() {
-        return distance;
+    public Integer getDistanceFromRoadPartStart() {
+        return distanceFromRoadPartStart;
     }
 
-    public void setDistance(final Integer distance) {
-        this.distance = distance;
+    public void setDistanceFromRoadPartStart(final Integer distanceFromRoadPartStart) {
+        this.distanceFromRoadPartStart = distanceFromRoadPartStart;
     }
 
     public Integer getCollectionInterval() {

@@ -38,7 +38,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setDescription(roadStation.getDescription());
         properties.setAdditionalInformation(roadStation.getAdditionalInformation());
-        properties.setDistance(roadStation.getDistance());
+        properties.setDistanceFromRoadPartStart(roadStation.getDistanceFromRoadPartStart());
         properties.setMunicipality(roadStation.getMunicipality());
         properties.setMunicipalityCode(roadStation.getMunicipalityCode());
 
