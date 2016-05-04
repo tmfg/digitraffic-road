@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.model.FreeFlowSpeedDataObject;
-import fi.livi.digitraffic.tie.data.model.LamDataObject;
-import fi.livi.digitraffic.tie.data.model.RoadWeatherDataObject;
-import fi.livi.digitraffic.tie.data.model.daydata.HistoryDataObject;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.TrafficFluencyDataObject;
+import fi.livi.digitraffic.tie.data.dto.daydata.HistoryDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.lam.LamDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.roadweather.RoadWeatherDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.LamDataService;
@@ -80,7 +80,7 @@ public class Data {
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficFluencyDataObject listTrafficFluency() {
+    public TrafficFluencyDataObjectDto listTrafficFluency() {
         return trafficFluencyService.listCurrentTrafficFluencyData();
     }
 
@@ -88,7 +88,7 @@ public class Data {
     @RequestMapping(method = RequestMethod.GET, path = DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public HistoryDataObject listPreviousDayHistoryData() {
+    public HistoryDataObjectDto listPreviousDayHistoryData() {
         return dayDataService.listPreviousDayHistoryData();
     }
 
@@ -96,7 +96,7 @@ public class Data {
     @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS (LAM) data"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public LamDataObject listAllLamData() {
+    public LamDataObjectDto listAllLamData() {
         return lamDataService.listAllLamDataFromNonObsoleteStations();
     }
 
@@ -104,7 +104,7 @@ public class Data {
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public FreeFlowSpeedDataObject listFreeFlowSpeeds() {
+    public FreeFlowSpeedDataObjectDto listFreeFlowSpeeds() {
         return freeFlowSpeedService.listAllFreeFlowSpeeds();
     }
 
@@ -112,7 +112,7 @@ public class Data {
     @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadWeatherDataObject listRoadWeatherStationData() {
+    public RoadWeatherDataObjectDto listRoadWeatherStationData() {
         return roadWeatherService.findAllWeatherData();
     }
 

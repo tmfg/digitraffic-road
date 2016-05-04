@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.model.dto.RoadStationSensorValueDto;
+import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -23,19 +23,19 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private RoadStationSensorRepository roadStationSensorRepository;
 
-    private final String roadWeatherStationSensorValueTimeLimit;
+    private final int roadWeatherStationSensorValueTimeLimitInMins;
     private final ArrayList<Long> includedSensorNaturalIds;
 
     @Autowired
     public RoadStationSensorServiceImpl(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                         final RoadStationSensorRepository roadStationSensorRepository,
                                         @Value("${roadWeatherStation.sensorValue.timeLimit}")
-                                        final int roadWeatherStationSensorValueTimeLimit,
+                                        final int roadWeatherStationSensorValueTimeLimitInMins,
                                         @Value("${roadWeatherStation.includedSensorNaturalIds}")
                                         final String includedSensorNaturalIdsStr) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
-        this.roadWeatherStationSensorValueTimeLimit = roadWeatherStationSensorValueTimeLimit + "";
+        this.roadWeatherStationSensorValueTimeLimitInMins = roadWeatherStationSensorValueTimeLimitInMins;
         String[] ids = StringUtils.splitPreserveAllTokens(includedSensorNaturalIdsStr, ',');
         includedSensorNaturalIds = new ArrayList<>();
         for (String id : ids) {
@@ -55,7 +55,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         List<RoadStationSensorValueDto> sensors =
                 roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
                         RoadStationType.WEATHER_STATION.getTypeNumber(),
-                        roadWeatherStationSensorValueTimeLimit,
+                        roadWeatherStationSensorValueTimeLimitInMins,
                         includedSensorNaturalIds);
         for (RoadStationSensorValueDto sensor : sensors) {
             List<RoadStationSensorValueDto> values = rsNaturalIdToRsSensorValues.get(Long.valueOf(sensor.getRoadStationNaturalId()));

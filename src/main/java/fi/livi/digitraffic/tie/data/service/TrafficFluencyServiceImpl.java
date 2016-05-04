@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.tie.data.dao.FluencyClassRepository;
 import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.LatestMedianData;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.TrafficFluencyDataObject;
+import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
+import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyDataObjectDto;
 
 @Service
 public class TrafficFluencyServiceImpl implements TrafficFluencyService {
@@ -33,9 +33,9 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
     }
 
     @Override
-    public TrafficFluencyDataObject listCurrentTrafficFluencyData() {
-        TrafficFluencyDataObject result = new TrafficFluencyDataObject(trafficFluencyRepository.findLatestMediansForNonObsoleteLinks());
-        for (LatestMedianData lmd : result.getLatestMedianData()) {
+    public TrafficFluencyDataObjectDto listCurrentTrafficFluencyData() {
+        TrafficFluencyDataObjectDto result = new TrafficFluencyDataObjectDto(trafficFluencyRepository.findLatestMediansForNonObsoleteLinks());
+        for (LatestMedianDataDto lmd : result.getLatestMedianData()) {
             lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
         }
         return result;

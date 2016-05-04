@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.LamMeasurementRepository;
-import fi.livi.digitraffic.tie.data.model.LamDataObject;
+import fi.livi.digitraffic.tie.data.dto.lam.LamDataObjectDto;
 
 @Service
 public class LamDataServiceImpl implements LamDataService {
@@ -18,7 +18,7 @@ public class LamDataServiceImpl implements LamDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public LamDataObject listAllLamDataFromNonObsoleteStations() {
-        return new LamDataObject(lamMeasurementRepository.listAllLamDataFromNonObsoleteStations());
+    public LamDataObjectDto listAllLamDataFromNonObsoleteStations() {
+        return new LamDataObjectDto(lamMeasurementRepository.listAllLamDataFromNonObsoleteStations());
     }
 }

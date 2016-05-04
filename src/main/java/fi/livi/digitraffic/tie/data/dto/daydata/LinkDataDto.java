@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.daydata;
+package fi.livi.digitraffic.tie.data.dto.daydata;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @JsonPropertyOrder({"fc", "m", "sp", "tt"})
-public class LinkData {
+public class LinkDataDto {
     @Id
     @JsonIgnore
     private int rownum;

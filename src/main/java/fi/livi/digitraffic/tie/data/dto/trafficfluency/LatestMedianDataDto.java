@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.trafficfluency;
+package fi.livi.digitraffic.tie.data.dto.trafficfluency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "The message contains the latest 5 minute median, corresponding average speed, fluency class, and timestamp of the latest update for each link.")
 @Immutable
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LatestMedianData {
+public class LatestMedianDataDto {
 
     @Id
     @JsonIgnore

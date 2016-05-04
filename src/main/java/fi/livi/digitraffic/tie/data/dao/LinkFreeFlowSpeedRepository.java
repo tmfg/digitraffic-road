@@ -9,17 +9,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.LinkFreeFlowSpeed;
+import fi.livi.digitraffic.tie.data.dto.freeflowspeed.LinkFreeFlowSpeedDto;
 
 @Repository
-public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowSpeed, Long> {
+public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowSpeedDto, Long> {
     @Query(value =
-            "select l.natural_id as link_no, case when speed_limit_season = 1 then summer_free_flow_speed else winter_free_flow_speed end" +
-                    " as free_flow_speed\n" +
-                    "from link l, road_district rd\n" +
-                    "where l.obsolete = 0\n" +
-                    "and l.ROAD_DISTRICT_ID = rd.id",
+            "SELECT L.NATURAL_ID AS LINK_NO" +
+            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
+            "           THEN L.SUMMER_FREE_FLOW_SPEED\n" +
+            "           ELSE L.WINTER_FREE_FLOW_SPEED\n" +
+            "       END AS FREE_FLOW_SPEED\n" +
+            "FROM LINK L\n" +
+            "INNER JOIN ROAD_DISTRICT RD ON L.ROAD_DISTRICT_ID = RD.ID\n" +
+            "WHERE L.OBSOLETE = 0",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LinkFreeFlowSpeed> listAllLinkFreeFlowSpeeds();
+    List<LinkFreeFlowSpeedDto> listAllLinkFreeFlowSpeeds();
 }

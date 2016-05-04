@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.trafficfluency.LatestMedianData;
+import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 
 @Repository
-public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData, Long> {
+public interface TrafficFluencyRepository extends JpaRepository<LatestMedianDataDto, Long> {
 
     @Query(value =
             "SELECT M.ID\n"
@@ -23,5 +23,5 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
           + "INNER JOIN LINK L ON M.LINK_ID = L.ID\n"
           + "WHERE L.OBSOLETE = 0 \n"
           + "ORDER BY L.NATURAL_ID", nativeQuery = true)
-    List<LatestMedianData> findLatestMediansForNonObsoleteLinks();
+    List<LatestMedianDataDto> findLatestMediansForNonObsoleteLinks();
 }

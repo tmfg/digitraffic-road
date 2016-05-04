@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
-import fi.livi.digitraffic.tie.data.model.daydata.HistoryDataObject;
-import fi.livi.digitraffic.tie.data.model.daydata.LinkData;
-import fi.livi.digitraffic.tie.data.model.daydata.LinkDynamicData;
+import fi.livi.digitraffic.tie.data.dto.daydata.HistoryDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.daydata.LinkDataDto;
+import fi.livi.digitraffic.tie.data.dto.daydata.LinkDynamicData;
 
 @Service
 public class DayDataServiceImpl implements DayDataService {
@@ -21,18 +21,18 @@ public class DayDataServiceImpl implements DayDataService {
     }
 
     @Override
-    public HistoryDataObject listPreviousDayHistoryData() {
-        final List<LinkData> linkData = dayDataRepository.listAllMedianTravelTimes();
+    public HistoryDataObjectDto listPreviousDayHistoryData() {
+        final List<LinkDataDto> linkData = dayDataRepository.listAllMedianTravelTimes();
 
-        return new HistoryDataObject(convertToDynamicData(linkData));
+        return new HistoryDataObjectDto(convertToDynamicData(linkData));
     }
 
-    private static List<LinkDynamicData> convertToDynamicData(final List<LinkData> linkData) {
+    private static List<LinkDynamicData> convertToDynamicData(final List<LinkDataDto> linkData) {
         final List<LinkDynamicData> list = new ArrayList<>();
 
         // LinkData is sorted by linkId, so this works
         LinkDynamicData previous = null;
-        for(final LinkData ld : linkData) {
+        for(final LinkDataDto ld : linkData) {
             if(previous == null || previous.getLinkNumber() != ld.getLinkId()) {
                 previous = new LinkDynamicData(ld.getLinkId(), new ArrayList<>());
                 list.add(previous);

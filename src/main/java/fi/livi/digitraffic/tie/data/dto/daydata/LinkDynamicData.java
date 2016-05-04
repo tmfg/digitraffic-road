@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.daydata;
+package fi.livi.digitraffic.tie.data.dto.daydata;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ public class LinkDynamicData {
     private final int linkNumber;
 
     @ApiModelProperty(value = "Meadured link data", required = true)
-    private final List<LinkData> linkData;
+    private final List<LinkDataDto> linkData;
 
-    public LinkDynamicData(int linkNumber, List<LinkData> linkData) {
+    public LinkDynamicData(int linkNumber, List<LinkDataDto> linkData) {
         this.linkNumber = linkNumber;
         this.linkData = linkData;
     }
@@ -21,7 +21,7 @@ public class LinkDynamicData {
         return linkNumber;
     }
 
-    public List<LinkData> getLinkData() {
+    public List<LinkDataDto> getLinkData() {
         return linkData;
     }
 }

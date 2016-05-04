@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import fi.livi.digitraffic.tie.data.model.dto.RoadStationSensorValueDto;
+import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadStationSensorValueDto, Long> {
 
@@ -39,7 +39,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
             @Param("sensorTypeId")
             final int sensorTypeId,
             @Param("timeLimitInMinutes")
-            final String timeLimitInMinutes,
+            final int timeLimitInMinutes,
             @Param("includedSensorNaturalIds")
                     List<Long> includedSensorNaturalIds);
 }

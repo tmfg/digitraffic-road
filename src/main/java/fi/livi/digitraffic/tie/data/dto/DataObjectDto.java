@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model;
+package fi.livi.digitraffic.tie.data.dto;
 
 import java.time.ZonedDateTime;
 
@@ -9,16 +9,16 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({"dataLocalTime", "dataUtc"})
-public class DataObject {
+public class DataObjectDto {
 
     @JsonIgnore
     private final ZonedDateTime timestamp;
 
-    public DataObject(final ZonedDateTime timestamp) {
+    public DataObjectDto(final ZonedDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
-    public DataObject() {
+    public DataObjectDto() {
         this.timestamp = ZonedDateTime.now();
     }
 
