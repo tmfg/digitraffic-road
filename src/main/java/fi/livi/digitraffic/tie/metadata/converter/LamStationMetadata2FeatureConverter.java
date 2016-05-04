@@ -55,12 +55,12 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
 
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             if (rs.getAltitude() != null) {
-                f.setGeometry(new Point(rs.getLatitude().longValue(),
-                                        rs.getLongitude().longValue(),
+                f.setGeometry(new Point(rs.getLongitude().longValue(),
+                                        rs.getLatitude().longValue(),
                                         rs.getAltitude().longValue()));
             } else {
-                f.setGeometry(new Point(rs.getLatitude().longValue(),
-                                        rs.getLongitude().longValue()));
+                f.setGeometry(new Point(rs.getLongitude().longValue(),
+                                        rs.getLatitude().longValue()));
             }
             f.getGeometry().setCrs(crs);
         }

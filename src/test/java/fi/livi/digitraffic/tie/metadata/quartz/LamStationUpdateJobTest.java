@@ -98,10 +98,10 @@ public class LamStationUpdateJobTest extends MetadataTest {
         assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
         assertEquals("L_vt5_Idensalmi", after.getProperties().getName());
 
-        assertEquals((Double) 7048448.0, before.getGeometry().getCoordinates().get(0));
-        assertEquals((Double) 7048449.0, after.getGeometry().getCoordinates().get(0));
-        assertEquals((Double) 512364.0, before.getGeometry().getCoordinates().get(1));
-        assertEquals((Double) 512365.0, after.getGeometry().getCoordinates().get(1));
+        assertEquals((Double) 512364.0, before.getGeometry().getCoordinates().get(0));
+        assertEquals((Double) 512365.0, after.getGeometry().getCoordinates().get(0));
+        assertEquals((Double) 7048448.0, before.getGeometry().getCoordinates().get(1));
+        assertEquals((Double) 7048449.0, after.getGeometry().getCoordinates().get(1));
         assertEquals((Double) 0.0, before.getGeometry().getCoordinates().get(2));
         assertEquals((Double) 1.0, after.getGeometry().getCoordinates().get(2));
 

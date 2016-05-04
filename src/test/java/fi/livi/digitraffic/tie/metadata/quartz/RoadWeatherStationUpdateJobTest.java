@@ -95,11 +95,11 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         assertEquals(before.getProperties().getDistanceFromRoadPartStart(), (Integer) 4915);
         assertEquals(after.getProperties().getDistanceFromRoadPartStart(), (Integer) 5915);
 
-        assertEquals(before.getGeometry().getCoordinates().get(0), (Double) 6678800.0);
-        assertEquals(after.getGeometry().getCoordinates().get(0), (Double) 6678801.0);
+        assertEquals(before.getGeometry().getCoordinates().get(0), (Double) 383971.0);
+        assertEquals(after.getGeometry().getCoordinates().get(0), (Double) 383970.0);
 
-        assertEquals(before.getGeometry().getCoordinates().get(1), (Double) 383971.0);
-        assertEquals(after.getGeometry().getCoordinates().get(1), (Double) 383970.0);
+        assertEquals(before.getGeometry().getCoordinates().get(1), (Double) 6678800.0);
+        assertEquals(after.getGeometry().getCoordinates().get(1), (Double) 6678801.0);
 
         assertEquals(before.getGeometry().getCoordinates().get(2), (Double) 0.0);
         assertEquals(after.getGeometry().getCoordinates().get(2), (Double) 1.0);
