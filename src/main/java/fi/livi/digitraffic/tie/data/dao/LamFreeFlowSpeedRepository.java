@@ -9,24 +9,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.LamFreeFlowSpeed;
+import fi.livi.digitraffic.tie.data.dto.lam.LamFreeFlowSpeedDto;
 
 @Repository
-public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpeed, Long> {
+public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpeedDto, Long> {
+
     @Query(value =
-            "select ls.natural_id as lam_id\n"
-          + "     , case when speed_limit_season = 1\n"
-          + "            then summer_free_flow_speed_1\n"
-          + "            else winter_free_flow_speed_1\n"
-          + "       end free_flow_speed1\n"
-          + "     , case when speed_limit_season = 1\n"
-          + "            then summer_free_flow_speed_2\n"
-          + "            else winter_free_flow_speed_2\n"
-          + "        end free_flow_speed2\n"
-          + "from lam_station ls\n"
-          + "inner join road_district rd on ls.road_district_id = rd.id\n"
-          + "where ls.obsolete = 0",
+            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
+            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
+            "            THEN LS.SUMMER_FREE_FLOW_SPEED_1\n" +
+            "            ELSE LS.WINTER_FREE_FLOW_SPEED_1\n" +
+            "       END AS FREE_FLOW_SPEED1\n" +
+            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
+            "            THEN LS.SUMMER_FREE_FLOW_SPEED_2\n" +
+            "            ELSE LS.WINTER_FREE_FLOW_SPEED_2\n" +
+            "        END AS FREE_FLOW_SPEED2\n" +
+            "FROM LAM_STATION LS\n" +
+            "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
+            "WHERE LS.OBSOLETE = 0",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LamFreeFlowSpeed> listAllLamFreeFlowSpeeds();
+    List<LamFreeFlowSpeedDto> listAllLamFreeFlowSpeeds();
 }

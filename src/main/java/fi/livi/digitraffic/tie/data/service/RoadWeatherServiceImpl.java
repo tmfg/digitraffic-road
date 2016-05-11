@@ -7,9 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.data.model.RoadWeatherDataObject;
-import fi.livi.digitraffic.tie.data.model.dto.RoadStationSensorValueDto;
-import fi.livi.digitraffic.tie.data.model.dto.RoadWeatherStationDto;
+import fi.livi.digitraffic.tie.data.dto.roadweather.RoadWeatherDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
+import fi.livi.digitraffic.tie.data.dto.RoadWeatherStationDto;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
@@ -17,18 +17,15 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 public class RoadWeatherServiceImpl implements RoadWeatherService {
 
     private RoadStationSensorService roadStationSensorService;
-    private RoadStationService roadStationService;
 
     @Autowired
-    public RoadWeatherServiceImpl(final RoadStationSensorService roadStationSensorService,
-                                  final RoadStationService roadStationService) {
+    public RoadWeatherServiceImpl(final RoadStationSensorService roadStationSensorService) {
 
         this.roadStationSensorService = roadStationSensorService;
-        this.roadStationService = roadStationService;
     }
 
     @Override
-    public RoadWeatherDataObject findAllWeatherData() {
+    public RoadWeatherDataObjectDto findAllWeatherData() {
 
         Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoleteRoadWeatherStationSensorValues();
         List<RoadWeatherStationDto> stations = new ArrayList<>();
@@ -39,6 +36,6 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
             dto.setSensorValues(entry.getValue());
         }
 
-        return new RoadWeatherDataObject(stations);
+        return new RoadWeatherDataObjectDto(stations);
     }
 }

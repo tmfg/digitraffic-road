@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model;
+package fi.livi.digitraffic.tie.data.dto.lam;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @JsonPropertyOrder({ "localTime", "utc"})
-public class LamMeasurement {
+public class LamMeasurementDto {
 
     @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @Id

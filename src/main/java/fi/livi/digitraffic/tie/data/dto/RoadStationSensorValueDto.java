@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.dto;
+package fi.livi.digitraffic.tie.data.dto;
 
 import java.time.LocalDateTime;
 
@@ -48,7 +48,7 @@ public class RoadStationSensorValueDto {
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor name", position = 1)
+    @ApiModelProperty(value = "Sensor name", position = 1, required = true)
     private String sensorName;
 
     public long getRoadStationNaturalId() {

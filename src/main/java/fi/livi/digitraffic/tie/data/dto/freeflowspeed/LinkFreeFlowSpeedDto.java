@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model;
+package fi.livi.digitraffic.tie.data.dto.freeflowspeed;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,11 +9,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
-public class LinkFreeFlowSpeed {
+public class LinkFreeFlowSpeedDto {
+
     @Id
+    @ApiModelProperty(value = "Link id", required = true)
     private long linkNo;
 
-    @ApiModelProperty(value = "Free flow speed [km/h]")
+    @ApiModelProperty(value = "Free flow speed [km/h]", required = true)
     private double freeFlowSpeed;
 
     public long getLinkNo() {

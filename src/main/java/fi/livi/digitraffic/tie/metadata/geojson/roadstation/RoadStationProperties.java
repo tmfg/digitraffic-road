@@ -36,7 +36,7 @@ public abstract class RoadStationProperties {
     private Integer roadPart;
 
     @ApiModelProperty(value = "Distance from start of the road part [m]")
-    private Integer distance;
+    private Integer distanceFromRoadPartStart;
 
     @ApiModelProperty(value = "Data collection interval [s]")
     private Integer collectionInterval;
@@ -105,12 +105,12 @@ public abstract class RoadStationProperties {
         this.roadPart = roadPart;
     }
 
-    public Integer getDistance() {
-        return distance;
+    public Integer getDistanceFromRoadPartStart() {
+        return distanceFromRoadPartStart;
     }
 
-    public void setDistance(final Integer distance) {
-        this.distance = distance;
+    public void setDistanceFromRoadPartStart(final Integer distanceFromRoadPartStart) {
+        this.distanceFromRoadPartStart = distanceFromRoadPartStart;
     }
 
     public Integer getCollectionInterval() {
@@ -209,7 +209,7 @@ public abstract class RoadStationProperties {
                 .append(this.name, rhs.name)
                 .append(this.roadNumber, rhs.roadNumber)
                 .append(this.roadPart, rhs.roadPart)
-                .append(this.distance, rhs.distance)
+                .append(this.distanceFromRoadPartStart, rhs.distanceFromRoadPartStart)
                 .append(this.collectionInterval, rhs.collectionInterval)
                 .append(this.collectionStatus, rhs.collectionStatus)
                 .append(this.municipality, rhs.municipality)
@@ -230,7 +230,7 @@ public abstract class RoadStationProperties {
                 .append(name)
                 .append(roadNumber)
                 .append(roadPart)
-                .append(distance)
+                .append(distanceFromRoadPartStart)
                 .append(collectionInterval)
                 .append(collectionStatus)
                 .append(municipality)
