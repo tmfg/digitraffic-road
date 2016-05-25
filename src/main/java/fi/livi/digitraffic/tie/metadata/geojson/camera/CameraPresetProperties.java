@@ -59,7 +59,9 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Resolution of camera [px x px]")
     private String resolution;
 
-    @ApiModelProperty(value = "Direction of camera")
+    @ApiModelProperty(value = "Direction of camera " +
+                              "(1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. " +
+                              "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true, position = 1)
     private String direction;
 
     @ApiModelProperty(value = "Delay [s]")
