@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -18,8 +19,10 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "RoadStationSensorValue", description = "Road wather station sensor value")
-@JsonPropertyOrder(value = { "sensorName", "sensorId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonPropertyOrder(value = { "sensorNameFi", "sensorNameEn", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadStationSensorValueDto {
+
 
     @Id
     @JsonIgnore
@@ -42,19 +45,25 @@ public class RoadStationSensorValueDto {
     private long roadStationId;
 
     @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 2)
-    @JsonProperty("sensorId")
+    @JsonProperty(value = "id")
     private long sensorNaturalId;
 
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor name", position = 1, required = true)
-    private String sensorName;
+    @ApiModelProperty(value = "Sensor name [en]", position = 1)
+    private String sensorNameEn;
 
-    @ApiModelProperty(value = "Additional information of sensor value [fi]", position = 1, required = true)
+    @ApiModelProperty(value = "Sensor name [fi]", position = 1, required = true)
+    private String sensorNameFi;
+
+    @ApiModelProperty(value = "Sensor short name [fi]", position = 1, required = true)
+    private String sensorShortNameFi;
+
+    @ApiModelProperty(value = "Additional information of sensor value [fi]")
     private String sensorValueDescriptionFi;
 
-    @ApiModelProperty(value = "Additional information of sensor value [en]", position = 1, required = true)
+    @ApiModelProperty(value = "Additional information of sensor value [en]")
     private String sensorValueDescriptionEn;
 
     public long getRoadStationNaturalId() {
@@ -123,12 +132,12 @@ public class RoadStationSensorValueDto {
         return ToStringHelpper.toString(sensorValueMeasured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 
-    public String getSensorName() {
-        return sensorName;
+    public String getSensorNameEn() {
+        return sensorNameEn;
     }
 
-    public void setSensorName(String sensorName) {
-        this.sensorName = sensorName;
+    public void setSensorNameEn(String sensorNameEn) {
+        this.sensorNameEn = sensorNameEn;
     }
 
     public String getSensorUnit() {
@@ -137,5 +146,37 @@ public class RoadStationSensorValueDto {
 
     public void setSensorUnit(String sensorUnit) {
         this.sensorUnit = sensorUnit;
+    }
+
+    public String getSensorValueDescriptionFi() {
+        return sensorValueDescriptionFi;
+    }
+
+    public void setSensorValueDescriptionFi(String sensorValueDescriptionFi) {
+        this.sensorValueDescriptionFi = sensorValueDescriptionFi;
+    }
+
+    public String getSensorValueDescriptionEn() {
+        return sensorValueDescriptionEn;
+    }
+
+    public void setSensorValueDescriptionEn(String sensorValueDescriptionEn) {
+        this.sensorValueDescriptionEn = sensorValueDescriptionEn;
+    }
+
+    public String getSensorNameFi() {
+        return sensorNameFi;
+    }
+
+    public void setSensorNameFi(String sensorNameFi) {
+        this.sensorNameFi = sensorNameFi;
+    }
+
+    public String getSensorShortNameFi() {
+        return sensorShortNameFi;
+    }
+
+    public void setSensorShortNameFi(String sensorShortNameFi) {
+        this.sensorShortNameFi = sensorShortNameFi;
     }
 }
