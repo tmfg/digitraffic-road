@@ -20,9 +20,13 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
             "     , sv.measured sensor_value_measured\n" +
             "     , s.name sensor_name\n" +
             "     , s.unit sensor_unit\n" +
+            "     , svd.description_fi as sensor_value_description_fi\n" +
+            "     , svd.description_en as sensor_value_description_en\n" +
             "from road_station rs\n" +
             "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
+            "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id" +
+            "                                            and svd.sensor_value = sv.value\n" +
             "where rs.type = :sensorTypeId\n" +
             "  and rs.obsolete = 0\n" +
             "  and s.obsolete = 0\n" +
@@ -41,5 +45,5 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes,
             @Param("includedSensorNaturalIds")
-                    List<Long> includedSensorNaturalIds);
+            List<Long> includedSensorNaturalIds);
 }

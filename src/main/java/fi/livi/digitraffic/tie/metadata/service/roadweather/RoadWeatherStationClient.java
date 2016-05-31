@@ -10,13 +10,18 @@ import javax.xml.bind.JAXBElement;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsemat;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanAnturit;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanAnturitResponse;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.ObjectFactory;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAnturi;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
 
 public class RoadWeatherStationClient extends WebServiceGatewaySupport {
 
@@ -65,4 +70,48 @@ public class RoadWeatherStationClient extends WebServiceGatewaySupport {
         log.info("Fetched " + counter + " TiesaaAnturis");
         return currentRwsLotjuIdToTiesaaAnturiMap;
     }
+
+    public Map<Long, List<TiesaaLaskennallinenAnturi>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
+
+        log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " tiesaaAsemas");
+
+        final Map<Long, List<TiesaaLaskennallinenAnturi>> currentRwsLotjuIdToTiesaaAnturiMap =
+                new HashMap<>();
+
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
+
+        int counter = 0;
+        for (Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
+            request.setId(tiesaaAsemaLotjuId);
+
+            final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
+                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+            final List<TiesaaLaskennallinenAnturi> anturis = response.getValue().getLaskennallinenAnturi();
+            currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
+            counter += anturis.size();
+        }
+
+        log.info("Fetched " + counter + " TiesaaAnturis");
+        return currentRwsLotjuIdToTiesaaAnturiMap;
+    }
+
+    public List<TiesaaLaskennallinenAnturi> getAllTiesaaLaskennallinenAnturis() {
+
+        log.info("Fetching all LaskennallisetAnturit");
+
+        final Map<Long, List<TiesaaLaskennallinenAnturi>> currentRwsLotjuIdToTiesaaAnturiMap =
+                new HashMap<>();
+
+        final ObjectFactory objectFactory = new ObjectFactory();
+        final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
+
+        final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
+                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+        final List<TiesaaLaskennallinenAnturi> anturis = response.getValue().getLaskennallinenAnturi();
+
+        log.info("Fetched " + anturis.size() + " LaskennallisetAnturits");
+        return anturis;
+    }
+
 }

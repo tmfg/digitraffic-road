@@ -6,12 +6,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadStationSensorDto;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 
 public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -43,8 +42,10 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         properties.setLotjuId(rws.getLotjuId());
         properties.setRoadWeatherStationType(rws.getRoadWeatherStationType());
 
-        for (RoadWeatherSensor rwSensor : rws.getRoadWeatherSensors()) {
-            properties.addSensor(convert(rwSensor));
+        if (rws.getRoadStation() != null) {
+            for (fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
+                properties.addSensor(convert(rSSensor));
+            }
         }
 
         // RoadStation properties
@@ -68,14 +69,23 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         return f;
     }
 
-    private static RoadWeatherStationSensor convert(RoadWeatherSensor roadWeatherSensor) {
-        RoadWeatherStationSensor meta = new RoadWeatherStationSensor();
-        meta.setId(roadWeatherSensor.getId());
-        meta.setLotjuId(roadWeatherSensor.getLotjuId());
-        meta.setAltitude(roadWeatherSensor.getAltitude());
-        meta.setDescription(roadWeatherSensor.getDescription());
-        meta.setName(roadWeatherSensor.getName());
-        meta.setSensorTypeId(roadWeatherSensor.getSensorTypeId());
+    private static RoadStationSensorDto convert(fi.livi.digitraffic.tie.metadata.model.RoadStationSensor sensor) {
+        RoadStationSensorDto meta = new RoadStationSensorDto();
+
+        meta.setId(sensor.getId());
+        meta.setLotjuId(sensor.getLotjuId());
+        meta.setNaturalId(sensor.getNaturalId());
+        meta.setNameEn(sensor.getName());
+        meta.setNameFi(sensor.getNameFi());
+        meta.setShortNameFi(sensor.getShortNameFi());
+        meta.setDescription(sensor.getDescription());
+        meta.setCalculationFormula(sensor.getCalculationFormula());
+        meta.setAccuracy(sensor.getAccuracy());
+        meta.setUnit(sensor.getUnit());
+        meta.setR(sensor.getR());
+        meta.setG(sensor.getG());
+        meta.setB(sensor.getB());
+
         return meta;
     }
 }

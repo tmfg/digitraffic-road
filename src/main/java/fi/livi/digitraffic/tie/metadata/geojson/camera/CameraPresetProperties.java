@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -19,6 +23,47 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name" })
 public class CameraPresetProperties extends RoadStationProperties {
 
+    /** Presentation names that are set for unknown directions in Lotju */
+    private static final Set<String> UNKNOWN_PRESENTATION_NAMES =
+            new HashSet(Arrays.asList(new String[] {"-", "–", "PUUTTUU"}));
+
+    public enum Direction {
+        UNKNOWN(0),
+        INCREASING_DIRECTION(1),
+        DECREASING_DIRECTION(2),
+        CROSSING_ROAD_INCREASING_DIRECTION(3),
+        CROSSING_ROAD_DECREASING_DIRECTION(4),
+        SPECIAL_DIRECTION(null);
+
+        private final Integer code;
+
+        Direction(Integer code) {
+            this.code = code;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public static Direction getDirection(String code) {
+            if (code == null) {
+                return UNKNOWN;
+            }
+            try {
+                int parsed = Integer.parseInt(code);
+                for (Direction direction : Direction.values()) {
+                    if (direction.getCode() != null && direction.getCode().equals(parsed)) {
+                        return direction;
+                    }
+                }
+                return SPECIAL_DIRECTION;
+            } catch (NumberFormatException e) {
+                return UNKNOWN;
+            }
+        }
+
+    }
+
     @JsonIgnore // Using natural id as id
     private long id;
 
@@ -28,14 +73,17 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Camera preset id", position = 1)
     private String presetId;
 
+    @ApiModelProperty(value = "Preset description")
+    private String presetDescription;
+
     @ApiModelProperty(value = "Type of camera")
     private CameraType cameraType;
 
-    @ApiModelProperty(value = "Preset name 1")
-    private String presetName1;
+    @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
+    private String presentationName;
 
-    @ApiModelProperty(value = "Preset name 2")
-    private String presetName2;
+    @ApiModelProperty(value = "Name on device (Preset name 2)")
+    private String nameOnDevice;
 
     @ApiModelProperty(value = "Preset order")
     private Integer presetOrder;
@@ -50,8 +98,7 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Jpeg image Quality Factor (Q)")
     private Integer compression;
 
-    @ApiModelProperty(value = "Name on device")
-    private String nameOnDevice;
+//    @ApiModelProperty(value = "Name on device")
 
     @ApiModelProperty(value = "Is camera targeted to default direction")
     private Boolean defaultDirection;
@@ -60,9 +107,13 @@ public class CameraPresetProperties extends RoadStationProperties {
     private String resolution;
 
     @ApiModelProperty(value = "Direction of camera " +
-                              "(1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. " +
-                              "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true, position = 1)
-    private String direction;
+                              "(0 = Unknown direction. " +
+                              "1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. " +
+                              "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. " +
+                              "3 = Increasing direction of the crossing road. " +
+                              "4 = Decreasing direction of the crossing road" +
+                              "5-99 = Special directions)", required = true, position = 1)
+    private String directionCode;
 
     @ApiModelProperty(value = "Delay [s]")
     private Integer delay;
@@ -95,6 +146,14 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetId;
     }
 
+    public void setPresetDescription(String presetDescription) {
+        this.presetDescription = presetDescription;
+    }
+
+    public String getPresetDescription() {
+        return presetDescription;
+    }
+
     public void setCameraType(final CameraType cameraType) {
         this.cameraType = cameraType;
     }
@@ -103,20 +162,20 @@ public class CameraPresetProperties extends RoadStationProperties {
         return cameraType;
     }
 
-    public void setPresetName1(final String presetName1) {
-        this.presetName1 = presetName1;
+    public void setPresentationName(final String presentationName) {
+        this.presentationName = presentationName;
     }
 
-    public String getPresetName1() {
-        return presetName1;
+    public String getPresentationName() {
+        return presentationName;
     }
 
-    public void setPresetName2(final String presetName2) {
-        this.presetName2 = presetName2;
+    public void setNameOnDevice(final String nameOnDevice) {
+        this.nameOnDevice = nameOnDevice;
     }
 
-    public String getPresetName2() {
-        return presetName2;
+    public String getNameOnDevice() {
+        return nameOnDevice;
     }
 
     public void setPresetOrder(final Integer presetOrder) {
@@ -151,14 +210,6 @@ public class CameraPresetProperties extends RoadStationProperties {
         return compression;
     }
 
-    public void setNameOnDevice(final String nameOnDevice) {
-        this.nameOnDevice = nameOnDevice;
-    }
-
-    public String getNameOnDevice() {
-        return nameOnDevice;
-    }
-
     public void setDefaultDirection(final Boolean defaultDirection) {
         this.defaultDirection = defaultDirection;
     }
@@ -175,12 +226,17 @@ public class CameraPresetProperties extends RoadStationProperties {
         return resolution;
     }
 
-    public void setDirection(final String direction) {
-        this.direction = direction;
+    public void setDirectionCode(final String directionCode) {
+        this.directionCode = directionCode;
     }
 
-    public String getDirection() {
-        return direction;
+    public String getDirectionCode() {
+        return directionCode;
+    }
+
+    @ApiModelProperty(value = "Direction of camera")
+    public Direction getDirection() {
+        return Direction.getDirection(directionCode);
     }
 
     public void setDelay(final Integer delay) {
@@ -216,17 +272,17 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(this.id, rhs.id)
                 .append(this.cameraId, rhs.cameraId)
                 .append(this.presetId, rhs.presetId)
+                .append(this.presetDescription, rhs.presetDescription)
                 .append(this.cameraType, rhs.cameraType)
-                .append(this.presetName1, rhs.presetName1)
-                .append(this.presetName2, rhs.presetName2)
+                .append(this.presentationName, rhs.presentationName)
+                .append(this.nameOnDevice, rhs.nameOnDevice)
                 .append(this.presetOrder, rhs.presetOrder)
                 .append(this.isPublic, rhs.isPublic)
                 .append(this.inCollection, rhs.inCollection)
                 .append(this.compression, rhs.compression)
-                .append(this.nameOnDevice, rhs.nameOnDevice)
                 .append(this.defaultDirection, rhs.defaultDirection)
                 .append(this.resolution, rhs.resolution)
-                .append(this.direction, rhs.direction)
+                .append(this.directionCode, rhs.directionCode)
                 .append(this.delay, rhs.delay)
                 .append(this.nearestRoadWeatherStationNaturalId, rhs.nearestRoadWeatherStationNaturalId)
                 .isEquals();
@@ -239,9 +295,10 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(id)
                 .append(cameraId)
                 .append(presetId)
+                .append(presetDescription)
                 .append(cameraType)
-                .append(presetName1)
-                .append(presetName2)
+                .append(presentationName)
+                .append(nameOnDevice)
                 .append(presetOrder)
                 .append(isPublic)
                 .append(inCollection)
@@ -249,9 +306,16 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(nameOnDevice)
                 .append(defaultDirection)
                 .append(resolution)
-                .append(direction)
+                .append(directionCode)
                 .append(delay)
                 .append(nearestRoadWeatherStationNaturalId)
                 .toHashCode();
+    }
+
+    public static boolean isUnknownPresentationName(String name) {
+        if (name == null) {
+            return false;
+        }
+        return UNKNOWN_PRESENTATION_NAMES.contains(name.trim().toUpperCase());
     }
 }

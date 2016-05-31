@@ -51,6 +51,12 @@ public class RoadStationSensorValueDto {
     @ApiModelProperty(value = "Sensor name", position = 1, required = true)
     private String sensorName;
 
+    @ApiModelProperty(value = "Additional information of sensor value [fi]", position = 1, required = true)
+    private String sensorValueDescriptionFi;
+
+    @ApiModelProperty(value = "Additional information of sensor value [en]", position = 1, required = true)
+    private String sensorValueDescriptionEn;
+
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
     }

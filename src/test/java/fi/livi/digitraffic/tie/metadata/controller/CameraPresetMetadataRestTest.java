@@ -26,7 +26,7 @@ public class CameraPresetMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].id", Matchers.startsWith("C0")))
+                .andExpect(jsonPath("$.features[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
                 .andExpect(jsonPath("$.features[0].geometry.crs.type", is("name")))
                 .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))

@@ -15,8 +15,9 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.wsdl.tiesaa.AnturiSanoma;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.ArvoVastaavuus;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanAnturitResponse;
+import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.ObjectFactory;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAnturi;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
@@ -34,8 +35,10 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     private List<TiesaaAsema> initialTiesaaAsemas;
     private List<TiesaaAsema> afterChangeTiesaaAsemas;
-    private Map<Long, List<TiesaaAnturi>> initialTiesaaAnturisMap = new HashMap<>();
-    private Map<Long, List<TiesaaAnturi>> afterChangeTiesaaAnturisMap = new HashMap<>();
+    private Map<Long, List<TiesaaLaskennallinenAnturi>> initialTiesaaAnturisMap = new HashMap<>();
+    private Map<Long, List<TiesaaLaskennallinenAnturi>> afterChangeTiesaaAnturisMap = new HashMap<>();
+    private List<TiesaaLaskennallinenAnturi> initialLaskennallisetAnturis;
+    private List<TiesaaLaskennallinenAnturi> afterChangeLaskennallisetAnturis;
 
     @Autowired
     public TiesaaPerustiedotLotjuServiceMock(@Value("${metadata.server.address.weather}")
@@ -48,21 +51,30 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     public void initDataAndService() {
         if (!isInited()) {
             initService();
+
             setInitialTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseInitial.xml"));
             setAfterChangeTiesaaAsemas(readTiesaaAsemas("lotju/tiesaa/HaeKaikkiTiesaaAsematResponseChanged.xml"));
-            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse33.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse34.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse35.xml"), initialTiesaaAnturisMap, afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
-            appendTiesaaAnturis(readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
+
+            setInitialLaskennallisetAnturis(readKaikkiLaskennallisetAnturit("lotju/tiesaa/HaeKaikkiLaskennallisetAnturitResponse.xml"));
+            setAfterChangeLaskennallisetAnturis(readKaikkiLaskennallisetAnturit("lotju/tiesaa/HaeKaikkiLaskennallisetAnturitResponseChanged.xml"));
+
+            appendTiesaaAnturis(33, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse33.xml"), initialTiesaaAnturisMap,
+                    afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(34, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse34.xml"), initialTiesaaAnturisMap,
+                    afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(35, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse35.xml"), initialTiesaaAnturisMap,
+                    afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
+            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
         }
     }
 
-    private void appendTiesaaAnturis(List<TiesaaAnturi> tiesaaAnturis, Map<Long, List<TiesaaAnturi>>...tiesaaAnturisMaps) {
-        for (TiesaaAnturi tsa : tiesaaAnturis) {
-            long tsaId = tsa.getTiesaaAsemaId();
-            for (Map<Long, List<TiesaaAnturi>> tiesaaAnturisMap : tiesaaAnturisMaps) {
-                List<TiesaaAnturi> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
+
+    private void appendTiesaaAnturis(long tsaId, List<TiesaaLaskennallinenAnturi> tiesaaLaskennallinenAnturis, Map<Long, List<TiesaaLaskennallinenAnturi>>... tiesaaAnturisMaps) {
+        for (TiesaaLaskennallinenAnturi tsa : tiesaaLaskennallinenAnturis) {
+
+            for (Map<Long, List<TiesaaLaskennallinenAnturi>> tiesaaAnturisMap : tiesaaAnturisMaps) {
+                List<TiesaaLaskennallinenAnturi> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
                 if (eas == null) {
                     eas = new ArrayList<>();
                     tiesaaAnturisMap.put(tsaId, eas);
@@ -114,9 +126,15 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         return responseValue.getTiesaaAsema();
     }
 
-    private List<TiesaaAnturi> readTiesaaAnturis(String filePath) {
-        HaeTiesaaAsemanAnturitResponse responseValue = (HaeTiesaaAsemanAnturitResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
-        return responseValue.getTiesaaAnturi();
+    private List<TiesaaLaskennallinenAnturi> readKaikkiLaskennallisetAnturit(final String filePath) {
+        HaeKaikkiLaskennallisetAnturitResponse
+                responseValue = (HaeKaikkiLaskennallisetAnturitResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        return responseValue.getLaskennallinenAnturi();
+    }
+
+    private List<TiesaaLaskennallinenAnturi> readTiesaaAnturis(String filePath) {
+        HaeTiesaaAsemanLaskennallisetAnturitResponse responseValue = (HaeTiesaaAsemanLaskennallisetAnturitResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        return responseValue.getLaskennallinenAnturi();
     }
 
 
@@ -138,17 +156,37 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         return afterChangeTiesaaAsemas;
     }
 
-    public void setInitialTiesaaAnturisMap(Map<Long, List<TiesaaAnturi>> initialTiesaaAnturisMap) {
+    public List<TiesaaLaskennallinenAnturi> getInitialLaskennallisetAnturis() {
+        return initialLaskennallisetAnturis;
+    }
+
+    public void setInitialLaskennallisetAnturis(List<TiesaaLaskennallinenAnturi> initialLaskennallisetAnturis) {
+        this.initialLaskennallisetAnturis = initialLaskennallisetAnturis;
+    }
+
+    public void setAfterChangeLaskennallisetAnturis(List<TiesaaLaskennallinenAnturi> afterChangeLaskennallisetAnturis) {
+        this.afterChangeLaskennallisetAnturis = afterChangeLaskennallisetAnturis;
+    }
+
+    public List<TiesaaLaskennallinenAnturi> getAfterChangeLaskennallisetAnturis() {
+        return afterChangeLaskennallisetAnturis;
+    }
+
+    public void setInitialTiesaaAnturisMap(Map<Long, List<TiesaaLaskennallinenAnturi>> initialTiesaaAnturisMap) {
         this.initialTiesaaAnturisMap = initialTiesaaAnturisMap;
     }
 
-    public Map<Long, List<TiesaaAnturi>> getInitialTiesaaAnturisMap() {
+    public Map<Long, List<TiesaaLaskennallinenAnturi>> getInitialTiesaaAnturisMap() {
         return initialTiesaaAnturisMap;
     }
 
     @Override
     public List<TiesaaLaskennallinenAnturi> haeTiesaaAsemanLaskennallisetAnturit(Long id) throws TiesaaException {
-        throw new NotImplementedException("haeTiesaaAsemanLaskennallisetAnturit");
+        log.info("haeTiesaaAsemanLaskennallisetAnturit " + id);
+        if (isStateAfterChange()) {
+            return afterChangeTiesaaAnturisMap.get(Long.valueOf(id));
+        }
+        return initialTiesaaAnturisMap.get(Long.valueOf(id));
     }
 
     @Override
@@ -168,11 +206,7 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     @Override
     public List<TiesaaAnturi> haeTiesaaAsemanAnturit(Long id) throws TiesaaException {
-        log.info("haeTiesaaAsemanAnturit " + id);
-        if (isStateAfterChange()) {
-            return afterChangeTiesaaAnturisMap.get(Long.valueOf(id));
-        }
-        return initialTiesaaAnturisMap.get(Long.valueOf(id));
+        throw new NotImplementedException("haeTiesaaAsemanAnturit");
     }
 
     @Override
@@ -211,7 +245,11 @@ public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
     @Override
     public List<TiesaaLaskennallinenAnturi> haeKaikkiLaskennallisetAnturit() throws TiesaaException {
-        throw new NotImplementedException("haeKaikkiLaskennallisetAnturit");
+        log.info("haeKaikkiLaskennallisetAnturit isStateAfterChange: " + isStateAfterChange());
+        if (isStateAfterChange()) {
+            return getAfterChangeLaskennallisetAnturis();
+        }
+        return getInitialLaskennallisetAnturis();
     }
 
     @Override

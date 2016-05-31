@@ -2,12 +2,17 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -59,6 +64,12 @@ public class RoadStation {
     private String description;
 
     private String additionalInformation;
+
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "ROAD_STATION_SENSORS",
+               joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
+               inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
+    List<RoadStationSensor> roadStationSensors;
 
     public Long getId() {
         return id;
@@ -254,6 +265,14 @@ public class RoadStation {
 
     public String getAdditionalInformation() {
         return additionalInformation;
+    }
+
+    public List<RoadStationSensor> getRoadStationSensors() {
+        return roadStationSensors;
+    }
+
+    public void setRoadStationSensors(List<RoadStationSensor> roadStationSensors) {
+        this.roadStationSensors = roadStationSensors;
     }
 
     @Override

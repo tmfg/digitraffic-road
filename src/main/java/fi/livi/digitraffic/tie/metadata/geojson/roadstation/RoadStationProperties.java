@@ -56,7 +56,7 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Province code")
     private String provinceCode;
 
-    @ApiModelProperty(value = "Description")
+    @ApiModelProperty(value = "Road station description")
     private String description;
 
     @ApiModelProperty(value = "Additional information")

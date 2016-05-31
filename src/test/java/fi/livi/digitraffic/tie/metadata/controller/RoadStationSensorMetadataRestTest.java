@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -22,9 +22,9 @@ public class RoadStationSensorMetadataRestTest extends MetadataRestTest {
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
-                .andExpect(jsonPath("$[0].sensorId", is(1))) //
-                .andExpect(jsonPath("$[0].name", is("airtemperature1"))) //
-                .andExpect(jsonPath("$[0].unit", is("C"))) //
+                .andExpect(jsonPath("$[0].id", isA(Integer.class))) //
+                .andExpect(jsonPath("$[0].name", isA(String.class))) //
+                .andExpect(jsonPath("$[0].unit", isA(String.class))) //
         ;
     }
 }

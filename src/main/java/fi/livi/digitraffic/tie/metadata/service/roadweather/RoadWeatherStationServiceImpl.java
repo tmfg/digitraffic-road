@@ -1,34 +1,40 @@
 package fi.livi.digitraffic.tie.metadata.service.roadweather;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherSensorRepository;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
+import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 
 @Service
-public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
+public class RoadWeatherStationServiceImpl implements RoadWeatherStationService {
 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
-    private RoadWeatherSensorRepository roadWeatherSensorRepository;
+    private RoadStationSensorRepository roadStationSensorRepository;
+    private SensorValueRepository sensorValueRepository;
 
     @Autowired
     public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository,
-                                         final RoadWeatherSensorRepository roadWeatherSensorRepository) {
+                                         final RoadStationSensorRepository roadStationSensorRepository,
+                                         final SensorValueRepository sensorValueRepository) {
 
         this.roadWeatherStationRepository = roadWeatherStationRepository;
-        this.roadWeatherSensorRepository = roadWeatherSensorRepository;
+        this.roadStationSensorRepository = roadStationSensorRepository;
+        this.sensorValueRepository = sensorValueRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Map<Long, RoadWeatherStation> findAllRoadWeatherStationsMappedByLotjuId() {
         final Map<Long, RoadWeatherStation> map = new HashMap<>();
@@ -39,6 +45,7 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         return map;
     }
 
+    @Transactional
     @Override
     public RoadWeatherStation save(final RoadWeatherStation roadWeatherStation) {
         final RoadWeatherStation rws = roadWeatherStationRepository.save(roadWeatherStation);
@@ -46,33 +53,41 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService{
         return rws;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<RoadWeatherSensor> findAllRoadStationSensors() {
-        return roadWeatherSensorRepository.findAll();
+    public List<RoadStationSensor> findAllRoadStationSensors() {
+        return roadStationSensorRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Map<Long, List<RoadWeatherSensor>> findAllRoadStationSensorsMappedByRoadStationLotjuId() {
-        List<RoadWeatherSensor> all = findAllRoadStationSensors();
-        final Map<Long, List<RoadWeatherSensor>> map = new HashMap<>();
-        for (RoadWeatherSensor rws : all) {
-            List<RoadWeatherSensor> list = map.get(rws.getRoadWeatherStationLotjuId());
-            if (list == null) {
-                list = new ArrayList<>();
-                map.put(rws.getRoadWeatherStationLotjuId(), list);
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByNaturalId() {
+        List<RoadStationSensor> all = findAllRoadStationSensors();
+
+        HashMap<Long, RoadStationSensor> naturalIdToRSS = new HashMap<>();
+        for (RoadStationSensor roadStationSensor : all) {
+            if ( !RoadStationSensor.RS_STATUS_SENSORS_NATURAL_IDS_SET.contains(roadStationSensor.getNaturalId()) ) {
+                naturalIdToRSS.put(roadStationSensor.getNaturalId(), roadStationSensor);
             }
-            list.add(rws);
         }
-        return map;
+        return naturalIdToRSS;
     }
 
+    @Transactional
     @Override
-    public RoadWeatherSensor save(RoadWeatherSensor roadWeatherSensor) {
-        final RoadWeatherSensor rws = roadWeatherSensorRepository.save(roadWeatherSensor);
-        roadWeatherSensorRepository.flush();
-        return rws;
+    public RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor) {
+        final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
+        roadStationSensorRepository.flush();
+        return sensor;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<SensorValue> findAllSensorValues() {
+        return sensorValueRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public RoadWeatherStationFeatureCollection findAllNonObsoleteRoadWeatherStationAsFeatureCollection() {
         return RoadWeatherStationMetadata2FeatureConverter.convert(roadWeatherStationRepository.findByRoadStationObsoleteFalse());

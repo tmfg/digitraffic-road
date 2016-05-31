@@ -28,7 +28,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
     private RoadWeatherStationType roadWeatherStationType;
 
     @ApiModelProperty(value = "Road Weather Station Sensors")
-    private List<RoadWeatherStationSensor> sensors = new ArrayList<>();
+    private List<RoadStationSensorDto> sensors = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -46,16 +46,16 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
         return roadWeatherStationType;
     }
 
-    public List<RoadWeatherStationSensor> getSensors() {
+    public List<RoadStationSensorDto> getSensors() {
         return sensors;
     }
 
-    public void setSensors(List<RoadWeatherStationSensor> sensors) {
+    public void setSensors(List<RoadStationSensorDto> sensors) {
         this.sensors = sensors;
     }
 
-    public void addSensor(RoadWeatherStationSensor roadWeatherStationSensor) {
-        sensors.add(roadWeatherStationSensor);
+    public void addSensor(RoadStationSensorDto roadStationSensorDto) {
+        sensors.add(roadStationSensorDto);
     }
 
     @Override

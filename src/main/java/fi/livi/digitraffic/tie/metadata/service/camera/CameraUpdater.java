@@ -145,7 +145,9 @@ public class CameraUpdater {
                 final CameraPreset currentSaved = currentPresetIdToCameraPresets.remove(stringPairEntry.getKey());
 
                 if (currentSaved != null && POISTETUT.contains(kamera.getKeruunTila()) ) {
+                    // If station is not used, obsolete also preset
                     obsoleteRoadStations.add(currentSaved.getRoadStation());
+                    obsolete.add(currentSaved);
                 } else if (currentSaved != null) {
                     update.add(Pair.of(kameraEsiasentoPair, currentSaved));
                 } else {
@@ -266,8 +268,11 @@ public class CameraUpdater {
         return insert.size();
     }
 
-    private static boolean updateCameraPresetAtributes(final Kamera kameraFrom, final Esiasento esiasentoFrom, final Map<Long,
-            RoadWeatherStation> lotjuIdToRoadWeatherStationMap, final CameraPreset to) {
+    private static boolean updateCameraPresetAtributes(
+            final Kamera kameraFrom,
+            final Esiasento esiasentoFrom,
+            final Map<Long, RoadWeatherStation> lotjuIdToRoadWeatherStationMap,
+            final CameraPreset to) {
 
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
@@ -303,7 +308,6 @@ public class CameraUpdater {
         to.setLotjuId(esiasentoFrom.getId());
         to.setPresetName1(esiasentoFrom.getNimiEsitys());
         to.setPresetName2(esiasentoFrom.getNimiLaitteella());
-        to.setNameOnDevice(esiasentoFrom.getNimiLaitteella());
         to.setDefaultDirection(esiasentoFrom.isOletussuunta());
         to.setResolution(esiasentoFrom.getResoluutio());
         to.setDirection(esiasentoFrom.getSuunta());

@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
 @DynamicUpdate
 @NamedEntityGraph(name = "camera", attributeNodes = @NamedAttributeNode("roadStation"))
 public class CameraPreset {
+
     @Id
     @SequenceGenerator(name = "SEQ_CAMERA_PRESET", sequenceName = "SEQ_CAMERA_PRESET")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")
@@ -48,9 +49,15 @@ public class CameraPreset {
     @Convert(converter = CameraTypeConverter.class)
     private CameraType cameraType;
 
+    /**
+     * presetName1 == presentationName == nimiEsitys
+     */
     @Column(name="PRESET_NAME_1")
     private String presetName1;
 
+    /**
+     * presetName2 == nameOnDevice == nimiLaitteella
+     */
     @Column(name="PRESET_NAME_2")
     private String presetName2;
 
@@ -63,7 +70,6 @@ public class CameraPreset {
     private Boolean inCollection;
     private Integer compression;
     private String description;
-    private String nameOnDevice;
     private Boolean defaultDirection;
     private String resolution;
     private String direction;
@@ -185,14 +191,6 @@ public class CameraPreset {
 
     public void setDescription(final String description) {
         this.description = description;
-    }
-
-    public String getNameOnDevice() {
-        return nameOnDevice;
-    }
-
-    public void setNameOnDevice(final String nameOnDevice) {
-        this.nameOnDevice = nameOnDevice;
     }
 
     public Boolean getDefaultDirection() {

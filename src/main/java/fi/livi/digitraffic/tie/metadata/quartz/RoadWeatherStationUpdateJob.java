@@ -19,7 +19,17 @@ public class RoadWeatherStationUpdateJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         log.info("Quartz RoadWeatherStationUpdateJob start");
+
+        long startStations = System.currentTimeMillis();
         roadWeatherStationUpdater.updateWeatherStations();
-        roadWeatherStationUpdater.updateRoadWeatherSensors();
+
+        long startSensors = System.currentTimeMillis();
+        roadWeatherStationUpdater.updateRoadStationSensors();
+
+        long end = System.currentTimeMillis();
+        long timeStations = (startSensors - startStations)/1000;
+        long timeSensors = (end - startSensors)/1000;
+
+        log.info("Quartz RoadWeatherStationUpdateJob end (updateWeatherStations: " + timeStations + " s, updateRoadStationSensors: " + timeSensors + " s)");
     }
 }

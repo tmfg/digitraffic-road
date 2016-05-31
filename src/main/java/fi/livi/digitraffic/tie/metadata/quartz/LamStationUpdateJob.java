@@ -19,6 +19,12 @@ public class LamStationUpdateJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         log.info("Quartz LamStationUpdateJob start");
+        long start = System.currentTimeMillis();
+
         lamStationUpdater.updateLamStations();
+
+        long time = (System.currentTimeMillis() - start)/1000;
+
+        log.info("Quartz LamStationUpdateJob end end (took " + time + " s)");
     }
 }

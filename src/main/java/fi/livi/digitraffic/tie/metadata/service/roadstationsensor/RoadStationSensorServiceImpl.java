@@ -49,6 +49,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         return roadStationSensorRepository.findNonObsoleteRoadStationSensors();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoleteRoadWeatherStationSensorValues() {
         Map<Long, List<RoadStationSensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();

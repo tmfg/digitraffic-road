@@ -1,47 +1,58 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 @Entity
-@Immutable
-@ApiModel(description = "Road Station Sensor type metadata object")
-@JsonPropertyOrder({ "id", "name", "unit" })
+@DynamicUpdate
 public class RoadStationSensor {
-    @JsonIgnore
+
+    // These id:s are for station status
+    public static final Set<Long> RS_STATUS_SENSORS_NATURAL_IDS_SET =
+            new HashSet<Long>(Arrays.asList(60000L, 60002L));
+
     @Id
+    @SequenceGenerator(name = "RSS_SENSOR_SEQ", sequenceName = "SEQ_ROAD_STATION_SENSOR")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RSS_SENSOR_SEQ")
     private long id;
 
+    private Long lotjuId;
+
     @NotNull
-    @JsonProperty("sensorId")
-    @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 1)
     private long naturalId;
 
-    @NotNull
-    @ApiModelProperty(value = "Name of sensor type", required = true, position = 2)
     private String name;
 
-    @NotNull
-    @ApiModelProperty(value = "Sensor value unit", required = true, position = 3)
     private String unit;
 
-    @JsonIgnore
     private boolean obsolete;
 
-    @JsonIgnore
     private LocalDate obsoleteDate;
+
+    private String description;
+
+    private String nameFi;
+
+    private String shortNameFi;
+
+    private Integer accuracy;
+
+    private String calculationFormula;
+
+    private Integer r, g, b;
 
     public long getId() {
         return id;
@@ -49,6 +60,14 @@ public class RoadStationSensor {
 
     public void setId(final long id) {
         this.id = id;
+    }
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
     }
 
     public long getNaturalId() {
@@ -83,6 +102,15 @@ public class RoadStationSensor {
         this.obsoleteDate = obsoleteDate;
     }
 
+    public boolean obsolete() {
+        if (obsoleteDate == null || obsolete == false) {
+            obsoleteDate = LocalDate.now();
+            obsolete = true;
+            return true;
+        }
+        return false;
+    }
+
     public String getUnit() {
         return unit;
     }
@@ -90,4 +118,83 @@ public class RoadStationSensor {
     public void setUnit(final String unit) {
         this.unit = unit;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getNameFi() {
+        return nameFi;
+    }
+
+    public void setNameFi(String nameFi) {
+        this.nameFi = nameFi;
+    }
+
+    public String getShortNameFi() {
+        return shortNameFi;
+    }
+
+    public void setShortNameFi(String shortNameFi) {
+        this.shortNameFi = shortNameFi;
+    }
+
+    public Integer getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(Integer accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public String getCalculationFormula() {
+        return calculationFormula;
+    }
+
+    public void setCalculationFormula(String calculationFormula) {
+        this.calculationFormula = calculationFormula;
+    }
+
+    public Integer getR() {
+        return r;
+    }
+
+    public void setR(Integer r) {
+        this.r = r;
+    }
+
+    public Integer getG() {
+        return g;
+    }
+
+    public void setG(Integer g) {
+        this.g = g;
+    }
+
+    public Integer getB() {
+        return b;
+    }
+
+    public void setB(Integer b) {
+        this.b = b;
+    }
+
+    public boolean isStatusSensor() {
+        return RS_STATUS_SENSORS_NATURAL_IDS_SET.contains(naturalId);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("lotjuId", this.getLotjuId())
+                .appendField("naturalId", getNaturalId())
+                .appendField("nameFi", getNameFi())
+                .toString();
+    }
+
 }

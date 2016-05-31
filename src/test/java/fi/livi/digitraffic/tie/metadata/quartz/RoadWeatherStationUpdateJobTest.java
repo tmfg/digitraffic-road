@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
@@ -10,9 +12,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadStationSensorDto;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.TiesaaPerustiedotLotjuServiceMock;
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
@@ -38,7 +40,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
         roadWeatherStationUpdater.updateWeatherStations();
-        roadWeatherStationUpdater.updateRoadWeatherSensors();
+        roadWeatherStationUpdater.updateRoadStationSensors();
         RoadWeatherStationFeatureCollection allInitial =
                 roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
         assertEquals(2, allInitial.getFeatures().size());
@@ -46,7 +48,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
         tiesaaPerustiedotLotjuServiceMock.setStateAfterChange(true);
         roadWeatherStationUpdater.updateWeatherStations();
-        roadWeatherStationUpdater.updateRoadWeatherSensors();
+        roadWeatherStationUpdater.updateRoadStationSensors();
         RoadWeatherStationFeatureCollection allAfterChange =
                 roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
         assertEquals(3, allAfterChange.getFeatures().size());
@@ -107,11 +109,29 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         RoadWeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
         RoadWeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
 
-        RoadWeatherStationSensor sensorInitial = findSensorWithLotjuId(initial36, 143);
-        RoadWeatherStationSensor sensorAfter = findSensorWithLotjuId(after36, 143);
+        RoadStationSensorDto sensorInitial = findSensorWithLotjuId(initial36, 1);
+        RoadStationSensorDto sensorAfter = findSensorWithLotjuId(after36, 1);
 
-        assertEquals(sensorInitial.getName() + "I", sensorAfter.getName());
-        assertEquals(sensorInitial.getDescription(), sensorAfter.getDescription());
+        assertEquals("Ilman nopeus", sensorInitial.getDescription());
+        assertEquals("Ilman lampotila", sensorAfter.getDescription());
+
+        assertEquals("°CC", sensorInitial.getUnit());
+        assertEquals("°C", sensorAfter.getUnit());
+
+        assertEquals(10, sensorInitial.getAccuracy().intValue());
+        assertEquals(1, sensorAfter.getAccuracy().intValue());
+
+        RoadStationSensorDto sensor2Initial = findSensorWithLotjuId(initial36, 2);
+        RoadStationSensorDto sensor2After = findSensorWithLotjuId(after36, 2);
+
+        assertNull(sensor2Initial);
+        assertNotNull(sensor2After);
+
+        RoadStationSensorDto sensor3Initial = findSensorWithLotjuId(initial36, 3);
+        RoadStationSensorDto sensor3After = findSensorWithLotjuId(after36, 3);
+
+        assertNotNull(sensor3Initial);
+        assertNull(sensor3After);
 
         assertEquals(CollectionStatus.GATHERING,
                      findWithLotjuId(allAfterChange, 35).getProperties().getCollectionStatus());
@@ -125,8 +145,8 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         return initial.orElse(null);
     }
 
-    private RoadWeatherStationSensor findSensorWithLotjuId(RoadWeatherStationFeature feature, long lotjuId) {
-        Optional<RoadWeatherStationSensor> initial =
+    private RoadStationSensorDto findSensorWithLotjuId(RoadWeatherStationFeature feature, long lotjuId) {
+        Optional<RoadStationSensorDto> initial =
                 feature.getProperties().getSensors().stream()
                         .filter(x -> x.getLotjuId() == lotjuId)
                         .findFirst();
