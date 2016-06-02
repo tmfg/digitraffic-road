@@ -109,8 +109,6 @@ public class CameraUpdateJobTest extends MetadataTest {
         assertEquals((Integer) 20, after.getProperties().getCompression());
         assertEquals("704x576", before.getProperties().getResolution());
         assertEquals("1200x900", after.getProperties().getResolution());
-        assertEquals((Integer) 10, before.getProperties().getDelay());
-        assertEquals((Integer) 20, after.getProperties().getDelay());
 
         // C0852001 not changed
         assertEqualPresets(findWithPresetId(allInitial, "C0852001"),

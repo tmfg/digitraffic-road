@@ -7,20 +7,39 @@ import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
 public class ForecastSection {
+
+    @ApiModelProperty(value = "Forecast section id")
     @Id
     @JsonProperty("id")
     private String naturalId;
 
-    private int roadSectionNumber;
+    @ApiModelProperty(value = "Forecast section description")
     private String description;
+
+    @ApiModelProperty(value = "Road section number")
+    private int roadSectionNumber;
+
+    @ApiModelProperty(value = "Forecast section road number")
     private int roadNumber;
-    private int startSectionNumber;
+
+    @ApiModelProperty(value = "Forecast section start distance")
     private int startDistance;
+
+    @ApiModelProperty(value = "Forecast section road number")
+    private int startSectionNumber;
+
+    @ApiModelProperty(value = "Forecast section end number")
     private int endSectionNumber;
+
+    @ApiModelProperty(value = "Forecast section end distance")
     private int endDistance;
+
+    @ApiModelProperty(value = "Forecast section leght")
     private int length;
 
     public String getNaturalId() {

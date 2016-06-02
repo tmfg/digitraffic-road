@@ -30,6 +30,6 @@ public class RoadWeatherStationUpdateJob implements Job {
         long timeStations = (startSensors - startStations)/1000;
         long timeSensors = (end - startSensors)/1000;
 
-        log.info("Quartz RoadWeatherStationUpdateJob end (updateWeatherStations: " + timeStations + " s, updateRoadStationSensors: " + timeSensors + " s)");
+        log.info("Quartz RoadWeatherStationUpdateJob end (updateWeatherStations took: " + timeStations + " s, updateRoadStationSensors took: " + timeSensors + " s)");
     }
 }

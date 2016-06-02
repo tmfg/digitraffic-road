@@ -10,49 +10,63 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
 public class RoadStationSensor {
 
-    // These id:s are for station status
+    /** These id:s are for station status sensors */
     public static final Set<Long> RS_STATUS_SENSORS_NATURAL_IDS_SET =
             new HashSet<Long>(Arrays.asList(60000L, 60002L));
 
+    @JsonIgnore
     @Id
     @SequenceGenerator(name = "RSS_SENSOR_SEQ", sequenceName = "SEQ_ROAD_STATION_SENSOR")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RSS_SENSOR_SEQ")
     private long id;
 
+    @JsonIgnore
     private Long lotjuId;
 
-    @NotNull
+    @ApiModelProperty(value = "Sensor id")
+    @JsonProperty("id")
     private long naturalId;
 
+    @ApiModelProperty(value = "Sensor name [en]", position = 2)
+    @JsonProperty(value = "nameEn")
     private String name;
 
+    @ApiModelProperty(value = "Unit of sensor value")
     private String unit;
 
+    @JsonIgnore
     private boolean obsolete;
 
+    @JsonIgnore
     private LocalDate obsoleteDate;
 
+    @ApiModelProperty(value = "Sensor descriptionFi [fi]")
     private String description;
 
+    @ApiModelProperty(value = "Sensor name [fi]")
     private String nameFi;
 
+    @ApiModelProperty(value = "Short name for sensor [fi]")
     private String shortNameFi;
 
+    @ApiModelProperty(value = "Sensor accuracy")
     private Integer accuracy;
 
+    @ApiModelProperty(value = "Calculation fomula of sensor value")
     private String calculationFormula;
-
-    private Integer r, g, b;
 
     public long getId() {
         return id;
@@ -159,30 +173,7 @@ public class RoadStationSensor {
         this.calculationFormula = calculationFormula;
     }
 
-    public Integer getR() {
-        return r;
-    }
-
-    public void setR(Integer r) {
-        this.r = r;
-    }
-
-    public Integer getG() {
-        return g;
-    }
-
-    public void setG(Integer g) {
-        this.g = g;
-    }
-
-    public Integer getB() {
-        return b;
-    }
-
-    public void setB(Integer b) {
-        this.b = b;
-    }
-
+    @JsonIgnore
     public boolean isStatusSensor() {
         return RS_STATUS_SENSORS_NATURAL_IDS_SET.contains(naturalId);
     }
@@ -194,7 +185,7 @@ public class RoadStationSensor {
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("naturalId", getNaturalId())
                 .appendField("nameFi", getNameFi())
+                .appendField("unit", getUnit())
                 .toString();
     }
-
 }

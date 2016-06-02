@@ -157,11 +157,12 @@ public class RoadWeatherStationUpdater {
 
         final int inserted = insertRoadStationSensors(insert);
         log.info("Inserted " + inserted + " RoadStationSensors");
+
         if (insert.size() > inserted) {
             log.warn("Insert failed for " + (insert.size()-inserted) + " RoadStationSensors");
         }
-        return obsoleted > 0 || inserted > 0;
 
+        return obsoleted > 0 || inserted > 0;
     }
 
 
@@ -297,7 +298,12 @@ public class RoadWeatherStationUpdater {
         if (notFound > 0) {
             log.info("RoadStation not found for " + notFound + " TiesaaLaskennallinenAnturis");
         }
-
+        if (countRemove > 0) {
+            log.info("Sensor removed from road stations " + countRemove);
+        }
+        if (countRemove > 0) {
+            log.info("Sensor added to road stations " + countAdd);
+        }
         return countAdd > 0 || countRemove > 0;
     }
 
@@ -451,9 +457,6 @@ public class RoadWeatherStationUpdater {
         to.setCalculationFormula(from.getLaskentaKaava());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(from.getYksikko());
-        to.setR(from.getR());
-        to.setG(from.getG());
-        to.setB(from.getB());
 
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

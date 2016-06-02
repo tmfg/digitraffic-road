@@ -66,7 +66,7 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
 
         HashMap<Long, RoadStationSensor> naturalIdToRSS = new HashMap<>();
         for (RoadStationSensor roadStationSensor : all) {
-            if ( !RoadStationSensor.RS_STATUS_SENSORS_NATURAL_IDS_SET.contains(roadStationSensor.getNaturalId()) ) {
+            if ( !roadStationSensor.isStatusSensor() ) {
                 naturalIdToRSS.put(roadStationSensor.getNaturalId(), roadStationSensor);
             }
         }

@@ -12,10 +12,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadStationSensorDto;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.service.lotju.TiesaaPerustiedotLotjuServiceMock;
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationUpdater;
@@ -109,8 +109,8 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         RoadWeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
         RoadWeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
 
-        RoadStationSensorDto sensorInitial = findSensorWithLotjuId(initial36, 1);
-        RoadStationSensorDto sensorAfter = findSensorWithLotjuId(after36, 1);
+        RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1);
+        RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1);
 
         assertEquals("Ilman nopeus", sensorInitial.getDescription());
         assertEquals("Ilman lampotila", sensorAfter.getDescription());
@@ -121,14 +121,14 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         assertEquals(10, sensorInitial.getAccuracy().intValue());
         assertEquals(1, sensorAfter.getAccuracy().intValue());
 
-        RoadStationSensorDto sensor2Initial = findSensorWithLotjuId(initial36, 2);
-        RoadStationSensorDto sensor2After = findSensorWithLotjuId(after36, 2);
+        RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2);
+        RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2);
 
         assertNull(sensor2Initial);
         assertNotNull(sensor2After);
 
-        RoadStationSensorDto sensor3Initial = findSensorWithLotjuId(initial36, 3);
-        RoadStationSensorDto sensor3After = findSensorWithLotjuId(after36, 3);
+        RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3);
+        RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3);
 
         assertNotNull(sensor3Initial);
         assertNull(sensor3After);
@@ -145,8 +145,8 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         return initial.orElse(null);
     }
 
-    private RoadStationSensorDto findSensorWithLotjuId(RoadWeatherStationFeature feature, long lotjuId) {
-        Optional<RoadStationSensorDto> initial =
+    private RoadStationSensor findSensorWithLotjuId(RoadWeatherStationFeature feature, long lotjuId) {
+        Optional<RoadStationSensor> initial =
                 feature.getProperties().getSensors().stream()
                         .filter(x -> x.getLotjuId() == lotjuId)
                         .findFirst();

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,7 +29,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
     private RoadWeatherStationType roadWeatherStationType;
 
     @ApiModelProperty(value = "Road Weather Station Sensors")
-    private List<RoadStationSensorDto> sensors = new ArrayList<>();
+    private List<RoadStationSensor> sensors = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -46,16 +47,16 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
         return roadWeatherStationType;
     }
 
-    public List<RoadStationSensorDto> getSensors() {
+    public List<RoadStationSensor> getSensors() {
         return sensors;
     }
 
-    public void setSensors(List<RoadStationSensorDto> sensors) {
+    public void setSensors(List<RoadStationSensor> sensors) {
         this.sensors = sensors;
     }
 
-    public void addSensor(RoadStationSensorDto roadStationSensorDto) {
-        sensors.add(roadStationSensorDto);
+    public void addSensor(RoadStationSensor roadStationSensor) {
+        sensors.add(roadStationSensor);
     }
 
     @Override

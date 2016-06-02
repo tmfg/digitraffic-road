@@ -311,7 +311,6 @@ public class CameraUpdater {
         to.setDefaultDirection(esiasentoFrom.isOletussuunta());
         to.setResolution(esiasentoFrom.getResoluutio());
         to.setDirection(esiasentoFrom.getSuunta());
-        to.setDelay(esiasentoFrom.getViive());
 
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
 

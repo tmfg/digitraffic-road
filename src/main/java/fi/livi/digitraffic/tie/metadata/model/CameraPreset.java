@@ -73,7 +73,6 @@ public class CameraPreset {
     private Boolean defaultDirection;
     private String resolution;
     private String direction;
-    private Integer delay;
     private LocalDate obsoleteDate;
 
     /**
@@ -215,14 +214,6 @@ public class CameraPreset {
 
     public void setDirection(final String direction) {
         this.direction = direction;
-    }
-
-    public Integer getDelay() {
-        return delay;
-    }
-
-    public void setDelay(final Integer delay) {
-        this.delay = delay;
     }
 
     public RoadStation getRoadStation() {

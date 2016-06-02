@@ -9,7 +9,6 @@
         <nimiLaitteella>Kiuruvedelle</nimiLaitteella>
         <resoluutio>1200x900</resoluutio>
         <suunta>2</suunta>
-        <viive>20</viive>
         <id>509</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -22,7 +21,6 @@
         <nimiLaitteella>iisalmi</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>1</suunta>
-        <viive>10</viive>
         <id>508</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -35,7 +33,6 @@
         <nimiLaitteella>Järvi</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>9</suunta>
-        <viive>10</viive>
         <id>123456789</id>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

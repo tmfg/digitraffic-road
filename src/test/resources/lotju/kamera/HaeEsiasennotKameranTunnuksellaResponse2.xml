@@ -9,7 +9,6 @@
         <nimiLaitteella>Porvoo</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>4</suunta>
-        <viive>10</viive>
         <id>117</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -22,7 +21,6 @@
         <nimiLaitteella>Kotka</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>1</suunta>
-        <viive>10</viive>
         <id>115</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -35,7 +33,6 @@
         <nimiLaitteella>tienpinta</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>9</suunta>
-        <viive>10</viive>
         <id>857</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -48,7 +45,6 @@
         <nimiLaitteella>Helsinki</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>2</suunta>
-        <viive>10</viive>
         <id>116</id>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

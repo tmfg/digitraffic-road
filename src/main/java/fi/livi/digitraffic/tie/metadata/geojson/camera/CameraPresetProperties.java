@@ -115,9 +115,6 @@ public class CameraPresetProperties extends RoadStationProperties {
                               "5-99 = Special directions)", required = true, position = 1)
     private String directionCode;
 
-    @ApiModelProperty(value = "Delay [s]")
-    private Integer delay;
-
     @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")
     @JsonProperty(value = "nearestRoadWeatherStationId")
     private Long nearestRoadWeatherStationNaturalId;
@@ -239,14 +236,6 @@ public class CameraPresetProperties extends RoadStationProperties {
         return Direction.getDirection(directionCode);
     }
 
-    public void setDelay(final Integer delay) {
-        this.delay = delay;
-    }
-
-    public Integer getDelay() {
-        return delay;
-    }
-
     public void setNearestRoadWeatherStationNaturalId(Long nearestRoadWeatherStationNaturalId) {
         this.nearestRoadWeatherStationNaturalId = nearestRoadWeatherStationNaturalId;
     }
@@ -283,7 +272,6 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(this.defaultDirection, rhs.defaultDirection)
                 .append(this.resolution, rhs.resolution)
                 .append(this.directionCode, rhs.directionCode)
-                .append(this.delay, rhs.delay)
                 .append(this.nearestRoadWeatherStationNaturalId, rhs.nearestRoadWeatherStationNaturalId)
                 .isEquals();
     }
@@ -307,7 +295,6 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(defaultDirection)
                 .append(resolution)
                 .append(directionCode)
-                .append(delay)
                 .append(nearestRoadWeatherStationNaturalId)
                 .toHashCode();
     }

@@ -14,12 +14,9 @@ import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsemat;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanAnturit;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.ObjectFactory;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAnturi;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
 
@@ -43,32 +40,6 @@ public class RoadWeatherStationClient extends WebServiceGatewaySupport {
 
         log.info("Fetched " + response.getValue().getTiesaaAsema().size() + " TiesaaAsemas");
         return response.getValue().getTiesaaAsema();
-    }
-
-
-    public Map<Long, List<TiesaaAnturi>> getTiesaaAnturis(Set<Long> tiesaaAsemaLotjuIds) {
-
-        log.info("Fetching TiesaaAnturis for " + tiesaaAsemaLotjuIds.size() + " tiesaaAsemas");
-
-        final Map<Long, List<TiesaaAnturi>> currentRwsLotjuIdToTiesaaAnturiMap =
-                new HashMap<>();
-
-        final ObjectFactory objectFactory = new ObjectFactory();
-        final HaeTiesaaAsemanAnturit request = new HaeTiesaaAsemanAnturit();
-
-        int counter = 0;
-        for (Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
-            request.setId(tiesaaAsemaLotjuId);
-
-            final JAXBElement<HaeTiesaaAsemanAnturitResponse> response = (JAXBElement<HaeTiesaaAsemanAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeTiesaaAsemanAnturit(request));
-            final List<TiesaaAnturi> anturis = response.getValue().getTiesaaAnturi();
-            currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
-            counter += anturis.size();
-        }
-
-        log.info("Fetched " + counter + " TiesaaAnturis");
-        return currentRwsLotjuIdToTiesaaAnturiMap;
     }
 
     public Map<Long, List<TiesaaLaskennallinenAnturi>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
