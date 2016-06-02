@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.roadweather;
+package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +20,9 @@ import fi.livi.digitraffic.tie.wsdl.tiesaa.ObjectFactory;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
 
-public class RoadWeatherStationClient extends WebServiceGatewaySupport {
+public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
-    private static final Logger log = Logger.getLogger(RoadWeatherStationClient.class);
+    private static final Logger log = Logger.getLogger(LotjuRoadWeatherStationClient.class);
 
     private String address;
 

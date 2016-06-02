@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraClient;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationClient;
-import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuRoadWeatherStationClient;
 
 @Configuration
 public class MetadataMarshallerConfiguration {
@@ -29,61 +29,61 @@ public class MetadataMarshallerConfiguration {
     }
 
     @Bean
-    public LamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
-                                             @Value("${metadata.server.address.lam}")
+    public LotjuLamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
+                                                  @Value("${metadata.server.address.lam}")
                                              final String lamMetadataServerAddress) {
         LOG.info("metadata.server.address.lam: " + lamMetadataServerAddress);
         if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
              !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
-            LOG.info("Creating LamStationClient");
-            final LamStationClient client = new LamStationClient();
+            LOG.info("Creating LotjuLamStationClient");
+            final LotjuLamStationClient client = new LotjuLamStationClient();
             client.setAddress(lamMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
             return client;
         }
-        LOG.warn(NOT_CREATING_BEAN + LamStationClient.class + " because property metadata.server.address.lam was not set.");
+        LOG.warn(NOT_CREATING_BEAN + LotjuLamStationClient.class + " because property metadata.server.address.lam was not set.");
         return null;
     }
 
     @Bean
-    public CameraClient cameraClient(final Jaxb2Marshaller marshaller,
-                                     @Value("${metadata.server.address.camera}")
+    public LotjuCameraClient cameraClient(final Jaxb2Marshaller marshaller,
+                                          @Value("${metadata.server.address.camera}")
                                      final String cameraMetadataServerAddress) {
 
         LOG.info("metadata.server.address.camera: " + cameraMetadataServerAddress);
         if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&
              !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
-            LOG.info("Creating CameraClient");
-            final CameraClient client = new CameraClient();
+            LOG.info("Creating LotjuCameraClient");
+            final LotjuCameraClient client = new LotjuCameraClient();
             client.setAddress(cameraMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
             return client;
         }
-        LOG.warn(NOT_CREATING_BEAN + CameraClient.class + " because property metadata.server.address.camera was not set.");
+        LOG.warn(NOT_CREATING_BEAN + LotjuCameraClient.class + " because property metadata.server.address.camera was not set.");
         return null;
     }
 
     @Bean
-    public RoadWeatherStationClient roadWeatherStationClient(final Jaxb2Marshaller marshaller,
-                                                             @Value("${metadata.server.address.weather}")
+    public LotjuRoadWeatherStationClient roadWeatherStationClient(final Jaxb2Marshaller marshaller,
+                                                                  @Value("${metadata.server.address.weather}")
                                                              final String roadWeatherServerAddress) {
 
         LOG.info("metadata.server.address.weather: " + roadWeatherServerAddress);
         if ( StringUtils.isNotBlank(roadWeatherServerAddress) &&
                 !"${metadata.server.address.weather}".equals(roadWeatherServerAddress) ) {
-            LOG.info("Creating RoadWeatherStationClient");
-            final RoadWeatherStationClient client = new RoadWeatherStationClient();
+            LOG.info("Creating LotjuRoadWeatherStationClient");
+            final LotjuRoadWeatherStationClient client = new LotjuRoadWeatherStationClient();
             client.setAddress(roadWeatherServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
             return client;
         }
-        LOG.warn(NOT_CREATING_BEAN + RoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
+        LOG.warn(NOT_CREATING_BEAN + LotjuRoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
         return null;
     }
 }

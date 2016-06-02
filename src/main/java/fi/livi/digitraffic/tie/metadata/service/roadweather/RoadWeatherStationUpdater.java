@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuRoadWeatherStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
@@ -38,7 +39,7 @@ public class RoadWeatherStationUpdater {
     private final RoadStationService roadStationService;
     private final RoadWeatherStationService roadWeatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final RoadWeatherStationClient roadWeatherStationClient;
+    private final LotjuRoadWeatherStationClient lotjuRoadWeatherStationClient;
 
     private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
@@ -46,11 +47,11 @@ public class RoadWeatherStationUpdater {
     public RoadWeatherStationUpdater(final RoadStationService roadStationService,
                                      final RoadWeatherStationService roadWeatherStationService,
                                      final StaticDataStatusService staticDataStatusService,
-                                     final RoadWeatherStationClient roadWeatherStationClient) {
+                                     final LotjuRoadWeatherStationClient lotjuRoadWeatherStationClient) {
         this.roadStationService = roadStationService;
         this.roadWeatherStationService = roadWeatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.roadWeatherStationClient = roadWeatherStationClient;
+        this.lotjuRoadWeatherStationClient = lotjuRoadWeatherStationClient;
     }
 
     /**
@@ -60,12 +61,12 @@ public class RoadWeatherStationUpdater {
     public void updateWeatherStations() {
         log.info("Update RoadWeatherStations start");
 
-        if (roadWeatherStationClient == null) {
-            log.warn("Not updating WeatherStations metadatas because no roadWeatherStationClient defined");
+        if (lotjuRoadWeatherStationClient == null) {
+            log.warn("Not updating WeatherStations metadatas because no lotjuRoadWeatherStationClient defined");
             return;
         }
 
-        final List<TiesaaAsema> tiesaaAsemas = roadWeatherStationClient.getTiesaaAsemmas();
+        final List<TiesaaAsema> tiesaaAsemas = lotjuRoadWeatherStationClient.getTiesaaAsemmas();
 
         if (log.isDebugEnabled()) {
             for (final TiesaaAsema tsa : tiesaaAsemas) {
@@ -89,14 +90,14 @@ public class RoadWeatherStationUpdater {
     public void updateRoadStationSensors() {
         log.info("Update RoadStationSensors start");
 
-        if (roadWeatherStationClient == null) {
-            log.warn("Not updating RoadStationSensors metadatas because no roadWeatherStationClient defined");
+        if (lotjuRoadWeatherStationClient == null) {
+            log.warn("Not updating RoadStationSensors metadatas because no lotjuRoadWeatherStationClient defined");
             return;
         }
 
         // Update available RoadStationSensors types to db
         List<TiesaaLaskennallinenAnturi> allTiesaaLaskennallinenAnturis =
-                roadWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
+                lotjuRoadWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
 
         updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
 
@@ -107,7 +108,7 @@ public class RoadWeatherStationUpdater {
         Set<Long> rwsLotjuIds = currentLotjuIdToRoadWeatherStationsMap.keySet();
         // Get sensors for current RoadWeatherStations
         Map<Long, List<TiesaaLaskennallinenAnturi>> currentLRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap =
-                        roadWeatherStationClient.getTiesaaLaskennallinenAnturis(rwsLotjuIds);
+                        lotjuRoadWeatherStationClient.getTiesaaLaskennallinenAnturis(rwsLotjuIds);
         // Update sensros of road stations
         final boolean updateStaticDataStatus =
                 updateSensorsOfRoadStations(currentLRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,

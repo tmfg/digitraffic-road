@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
 import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
@@ -37,7 +38,7 @@ public class CameraUpdater {
     private final RoadStationService roadStationService;
     private final RoadWeatherStationService roadWeatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final CameraClient cameraClient;
+    private final LotjuCameraClient lotjuCameraClient;
 
     private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
@@ -46,27 +47,27 @@ public class CameraUpdater {
                          final RoadStationService roadStationService,
                          final RoadWeatherStationService roadWeatherStationService,
                          final StaticDataStatusService staticDataStatusService,
-                         final CameraClient cameraClient) {
+                         final LotjuCameraClient lotjuCameraClient) {
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
         this.roadWeatherStationService = roadWeatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.cameraClient = cameraClient;
+        this.lotjuCameraClient = lotjuCameraClient;
     }
 
     @Transactional
     public void updateCameras() {
         log.info("Update Cameras start");
 
-        if (cameraClient == null) {
-            log.warn("Not updating cameraPresets metadatas because no cameraClient defined");
+        if (lotjuCameraClient == null) {
+            log.warn("Not updating cameraPresets metadatas because no lotjuCameraClient defined");
             return;
         }
 
         fixCameraPresetsWithMissingRoadStations();
 
         final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraAndEsiasento =
-                cameraClient.getPresetIdToKameraAndEsiasentoMap();
+                lotjuCameraClient.getPresetIdToKameraAndEsiasentoMap();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched Cameras:");

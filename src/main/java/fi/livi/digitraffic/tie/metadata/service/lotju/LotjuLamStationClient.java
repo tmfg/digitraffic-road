@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.lam;
+package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import fi.livi.digitraffic.tie.wsdl.lam.HaeKaikkiLAMAsematResponse;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 import fi.livi.digitraffic.tie.wsdl.lam.ObjectFactory;
 
-public class LamStationClient extends WebServiceGatewaySupport {
+public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
-    private static final Logger log = Logger.getLogger(LamStationClient.class);
+    private static final Logger log = Logger.getLogger(LotjuLamStationClient.class);
 
     private String address;
 

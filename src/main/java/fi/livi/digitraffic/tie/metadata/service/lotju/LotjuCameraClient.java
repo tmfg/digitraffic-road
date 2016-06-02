@@ -1,8 +1,9 @@
-package fi.livi.digitraffic.tie.metadata.service.camera;
+package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
 import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
 import fi.livi.digitraffic.tie.wsdl.kamera.HaeEsiasennotKameranTunnuksella;
 import fi.livi.digitraffic.tie.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
@@ -18,9 +20,9 @@ import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKameratResponse;
 import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
 import fi.livi.digitraffic.tie.wsdl.kamera.ObjectFactory;
 
-public class CameraClient extends WebServiceGatewaySupport {
+public class LotjuCameraClient extends WebServiceGatewaySupport {
 
-    private static final Logger log = Logger.getLogger(CameraClient.class);
+    private static final Logger log = Logger.getLogger(LotjuCameraClient.class);
 
     private String address;
 

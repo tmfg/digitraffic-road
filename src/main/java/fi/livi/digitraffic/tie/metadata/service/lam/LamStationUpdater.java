@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
@@ -37,7 +38,7 @@ public class LamStationUpdater {
     private final RoadDistrictService roadDistrictService;
     private final StaticDataStatusService staticDataStatusService;
 
-    private final LamStationClient lamStationClient;
+    private final LotjuLamStationClient lotjuLamStationClient;
 
     private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
@@ -46,24 +47,24 @@ public class LamStationUpdater {
                              final LamStationService lamStationService,
                              final RoadDistrictService roadDistrictService,
                              final StaticDataStatusService staticDataStatusService,
-                             final LamStationClient lamStationClient) {
+                             final LotjuLamStationClient lotjuLamStationClient) {
         this.roadStationService = roadStationService;
         this.lamStationService = lamStationService;
         this.roadDistrictService = roadDistrictService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lamStationClient = lamStationClient;
+        this.lotjuLamStationClient = lotjuLamStationClient;
     }
 
     @Transactional
     public void updateLamStations() {
         log.info("Update Lam Stations start");
 
-        if (lamStationClient == null) {
-            log.warn("Not updating lam stations because no lamStationClient defined");
+        if (lotjuLamStationClient == null) {
+            log.warn("Not updating lam stations because no lotjuLamStationClient defined");
             return;
         }
 
-        final List<LamAsema> stations = lamStationClient.getLamAsemas();
+        final List<LamAsema> stations = lotjuLamStationClient.getLamAsemas();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched LAMs:");
