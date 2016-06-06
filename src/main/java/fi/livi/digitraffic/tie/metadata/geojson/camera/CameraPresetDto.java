@@ -12,16 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Camera preset properties", value = "CameraPresetProperties", parent = RoadWeatherStationProperties.class)
+@ApiModel(description = "Camera preset", value = "CameraPreset")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name" })
-public class CameraPresetProperties extends RoadStationProperties {
+@JsonPropertyOrder({ "presetId", "cameraId", "name" })
+public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
     /** Presentation names that are set for unknown directions in Lotju */
     private static final Set<String> UNKNOWN_PRESENTATION_NAMES =
@@ -64,20 +61,21 @@ public class CameraPresetProperties extends RoadStationProperties {
 
     }
 
-    @JsonIgnore // Using natural id as id
+    @JsonIgnore // Using presetId id as id
     private long id;
+
+    @JsonIgnore
+    private Long lotjuId;
 
     @ApiModelProperty(value = "Camera id", position = 2)
     private String cameraId;
 
     @ApiModelProperty(value = "Camera preset id", position = 1)
+    @JsonProperty("id")
     private String presetId;
 
     @ApiModelProperty(value = "Preset description")
-    private String presetDescription;
-
-    @ApiModelProperty(value = "Type of camera")
-    private CameraType cameraType;
+    private String description;
 
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
     private String presentationName;
@@ -88,7 +86,7 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Preset order")
     private Integer presetOrder;
 
-    @ApiModelProperty(name = "public", value = "Is image available")
+    @ApiModelProperty(name = "public", value = "Is image publicly available")
     @JsonProperty(value = "public")
     private boolean isPublic;
 
@@ -98,15 +96,13 @@ public class CameraPresetProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Jpeg image Quality Factor (Q)")
     private Integer compression;
 
-//    @ApiModelProperty(value = "Name on device")
-
-    @ApiModelProperty(value = "Is camera targeted to default direction")
-    private Boolean defaultDirection;
-
     @ApiModelProperty(value = "Resolution of camera [px x px]")
     private String resolution;
 
-    @ApiModelProperty(value = "Direction of camera " +
+    @JsonIgnore
+    private Long cameraLotjuId;
+
+    @ApiModelProperty(value = "Preset direction " +
                               "(0 = Unknown direction. " +
                               "1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. " +
                               "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. " +
@@ -115,9 +111,8 @@ public class CameraPresetProperties extends RoadStationProperties {
                               "5-99 = Special directions)", required = true, position = 1)
     private String directionCode;
 
-    @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")
-    @JsonProperty(value = "nearestRoadWeatherStationId")
-    private Long nearestRoadWeatherStationNaturalId;
+    @ApiModelProperty(value = "Image url")
+    private String imageUrl;
 
     public long getId() {
         return id;
@@ -125,6 +120,22 @@ public class CameraPresetProperties extends RoadStationProperties {
 
     public void setId(final long id) {
         this.id = id;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
+    }
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public Long getCameraLotjuId() {
+        return cameraLotjuId;
+    }
+
+    public void setCameraLotjuId(Long cameraLotjuId) {
+        this.cameraLotjuId = cameraLotjuId;
     }
 
     public void setCameraId(final String cameraId) {
@@ -143,20 +154,12 @@ public class CameraPresetProperties extends RoadStationProperties {
         return presetId;
     }
 
-    public void setPresetDescription(String presetDescription) {
-        this.presetDescription = presetDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getPresetDescription() {
-        return presetDescription;
-    }
-
-    public void setCameraType(final CameraType cameraType) {
-        this.cameraType = cameraType;
-    }
-
-    public CameraType getCameraType() {
-        return cameraType;
+    public String getDescription() {
+        return description;
     }
 
     public void setPresentationName(final String presentationName) {
@@ -207,14 +210,6 @@ public class CameraPresetProperties extends RoadStationProperties {
         return compression;
     }
 
-    public void setDefaultDirection(final Boolean defaultDirection) {
-        this.defaultDirection = defaultDirection;
-    }
-
-    public Boolean getDefaultDirection() {
-        return defaultDirection;
-    }
-
     public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
@@ -236,43 +231,40 @@ public class CameraPresetProperties extends RoadStationProperties {
         return Direction.getDirection(directionCode);
     }
 
-    public void setNearestRoadWeatherStationNaturalId(Long nearestRoadWeatherStationNaturalId) {
-        this.nearestRoadWeatherStationNaturalId = nearestRoadWeatherStationNaturalId;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public Long getNearestRoadWeatherStationNaturalId() {
-        return nearestRoadWeatherStationNaturalId;
+    public String getImageUrl() {
+        return imageUrl;
     }
+
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj.getClass() != getClass()) {
+
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        CameraPresetProperties rhs = (CameraPresetProperties) obj;
+
+        CameraPresetDto that = (CameraPresetDto) o;
+
         return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(this.id, rhs.id)
-                .append(this.cameraId, rhs.cameraId)
-                .append(this.presetId, rhs.presetId)
-                .append(this.presetDescription, rhs.presetDescription)
-                .append(this.cameraType, rhs.cameraType)
-                .append(this.presentationName, rhs.presentationName)
-                .append(this.nameOnDevice, rhs.nameOnDevice)
-                .append(this.presetOrder, rhs.presetOrder)
-                .append(this.isPublic, rhs.isPublic)
-                .append(this.inCollection, rhs.inCollection)
-                .append(this.compression, rhs.compression)
-                .append(this.defaultDirection, rhs.defaultDirection)
-                .append(this.resolution, rhs.resolution)
-                .append(this.directionCode, rhs.directionCode)
-                .append(this.nearestRoadWeatherStationNaturalId, rhs.nearestRoadWeatherStationNaturalId)
+                .append(id, that.id)
+                .append(isPublic, that.isPublic)
+                .append(inCollection, that.inCollection)
+                .append(lotjuId, that.lotjuId)
+                .append(cameraId, that.cameraId)
+                .append(presetId, that.presetId)
+                .append(description, that.description)
+                .append(presentationName, that.presentationName)
+                .append(nameOnDevice, that.nameOnDevice)
+                .append(presetOrder, that.presetOrder)
+                .append(compression, that.compression)
+                .append(resolution, that.resolution)
+                .append(cameraLotjuId, that.cameraLotjuId)
+                .append(directionCode, that.directionCode)
                 .isEquals();
     }
 
@@ -283,8 +275,7 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(id)
                 .append(cameraId)
                 .append(presetId)
-                .append(presetDescription)
-                .append(cameraType)
+                .append(description)
                 .append(presentationName)
                 .append(nameOnDevice)
                 .append(presetOrder)
@@ -292,10 +283,8 @@ public class CameraPresetProperties extends RoadStationProperties {
                 .append(inCollection)
                 .append(compression)
                 .append(nameOnDevice)
-                .append(defaultDirection)
                 .append(resolution)
                 .append(directionCode)
-                .append(nearestRoadWeatherStationNaturalId)
                 .toHashCode();
     }
 
@@ -304,5 +293,20 @@ public class CameraPresetProperties extends RoadStationProperties {
             return false;
         }
         return UNKNOWN_PRESENTATION_NAMES.contains(name.trim().toUpperCase());
+    }
+
+    @Override
+    public int compareTo(CameraPresetDto other) {
+        if (other == null) {
+            return 1;
+        }
+        if (this.getPresetOrder() == null && other.getPresetOrder() == null) {
+            return 0;
+        } else if (this.getPresetOrder() != null && other.getPresetOrder() == null) {
+            return 1;
+        } else if (this.getPresetOrder() == null && other.getPresetOrder() != null) {
+            return -1;
+        }
+        return this.getPresetOrder().compareTo(other.getPresetOrder());
     }
 }

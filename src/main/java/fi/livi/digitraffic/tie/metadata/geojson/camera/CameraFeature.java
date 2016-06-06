@@ -13,16 +13,16 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON CameraPresetFeature Object
  */
-@ApiModel(description = "GeoJSON CameraPresetFeature Object.", value = "CameraPresetFeature")
+@ApiModel(description = "GeoJSON CameraPresetFeature Object.", value = "CameraFeature")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class CameraPresetFeature {
+public class CameraFeature {
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Same as presetId in CameraPresetProperties (Camera preset id)", required = true, position = 2)
+    @ApiModelProperty(value = "Camera id", required = true, position = 2)
     private String id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -31,7 +31,7 @@ public class CameraPresetFeature {
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Camera preset properties.", required = true, position = 4)
-    private CameraPresetProperties properties = new CameraPresetProperties();
+    private CameraProperties properties = new CameraProperties();
 
     public String getType() {
         return type;
@@ -53,37 +53,35 @@ public class CameraPresetFeature {
         this.id = id;
     }
 
-    public CameraPresetProperties getProperties() {
+    public CameraProperties getProperties() {
         return properties;
     }
 
-    public void setProperties(final CameraPresetProperties properties) {
+    public void setProperties(final CameraProperties properties) {
         this.properties = properties;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj.getClass() != getClass()) {
+
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        CameraPresetFeature rhs = (CameraPresetFeature) obj;
+
+        CameraFeature that = (CameraFeature) o;
+
         return new EqualsBuilder()
-                .append(this.type, rhs.type)
-                .append(this.id, rhs.id)
-                .append(this.geometry, rhs.geometry)
-                .append(this.properties, rhs.properties)
+                .append(type, that.type)
+                .append(id, that.id)
+                .append(geometry, that.geometry)
+                .append(properties, that.properties)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
+        return new HashCodeBuilder(17, 37)
                 .append(type)
                 .append(id)
                 .append(geometry)

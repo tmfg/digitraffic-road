@@ -10,17 +10,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Service
 public class CameraPresetServiceImpl implements CameraPresetService {
 
     private final CameraPresetRepository cameraPresetRepository;
+    private CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
 
     @Autowired
-    CameraPresetServiceImpl(final CameraPresetRepository cameraPresetRepository) {
+    CameraPresetServiceImpl(final CameraPresetRepository cameraPresetRepository,
+                            final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter) {
         this.cameraPresetRepository = cameraPresetRepository;
+        this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
     }
 
     @Transactional(readOnly = true)
@@ -35,6 +38,7 @@ public class CameraPresetServiceImpl implements CameraPresetService {
         return cameraMap;
     }
 
+    @Transactional
     @Override
     public CameraPreset save(final CameraPreset cp) {
         final CameraPreset value = cameraPresetRepository.save(cp);
@@ -42,14 +46,16 @@ public class CameraPresetServiceImpl implements CameraPresetService {
         return value;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CameraPreset> finAllCameraPresetsWithOutRoadStation() {
         return cameraPresetRepository.finAllCameraPresetsWithOutRoadStation();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CameraPresetFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection() {
-        return CameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByRoadStationObsoleteFalseAndObsoleteDateIsNull());
+    public CameraFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection() {
+        return cameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByRoadStationObsoleteFalseAndObsoleteDateIsNull());
 
     }
 }

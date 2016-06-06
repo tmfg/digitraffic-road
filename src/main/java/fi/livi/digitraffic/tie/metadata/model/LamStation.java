@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -20,8 +21,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import fi.livi.digitraffic.tie.metadata.converter.LamStationTypeConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.LamStationTypeConverter;
 
 @Entity
 @Table(name = "lam_station")

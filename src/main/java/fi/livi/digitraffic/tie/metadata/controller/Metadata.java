@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
@@ -69,7 +69,7 @@ public class Metadata {
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESETS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraPresetFeatureCollection listNonObsoleteCameraPresets() {
+    public CameraFeatureCollection listNonObsoleteCameraPresets() {
         return cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
     }
 

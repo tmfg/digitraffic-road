@@ -94,8 +94,8 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         assertEquals(after.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Kyrka");
         assertEquals(after.getProperties().getNames().get("en"), "Road 3 Helsinki, Kirkkola");
 
-        assertEquals(before.getProperties().getDistanceFromRoadPartStart(), (Integer) 4915);
-        assertEquals(after.getProperties().getDistanceFromRoadPartStart(), (Integer) 5915);
+        assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4915);
+        assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 5915);
 
         assertEquals(before.getGeometry().getCoordinates().get(0), (Double) 383971.0);
         assertEquals(after.getGeometry().getCoordinates().get(0), (Double) 383970.0);

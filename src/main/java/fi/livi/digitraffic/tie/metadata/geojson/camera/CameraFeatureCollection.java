@@ -5,60 +5,72 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON feature collection of Campera Presets", value = "CameraPresetFeatureCollection")
+@ApiModel(description = "GeoJSON feature collection of Cameras with presets", value = "CameraFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
-public class CameraPresetFeatureCollection implements Iterable<CameraPresetFeature> {
+public class CameraFeatureCollection implements Iterable<CameraFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
-    private List<CameraPresetFeature> features = new ArrayList<CameraPresetFeature>();
+    private List<CameraFeature> features = new ArrayList<CameraFeature>();
 
     public String getType() {
         return type;
     }
 
-    public List<CameraPresetFeature> getFeatures() {
+    public List<CameraFeature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(final List<CameraPresetFeature> features) {
+    public void setFeatures(final List<CameraFeature> features) {
         this.features = features;
     }
 
-    public CameraPresetFeatureCollection add(final CameraPresetFeature feature) {
+    public CameraFeatureCollection add(final CameraFeature feature) {
         features.add(feature);
         return this;
     }
 
-    public void addAll(final Collection<CameraPresetFeature> features) {
+    public void addAll(final Collection<CameraFeature> features) {
         this.features.addAll(features);
     }
 
     @Override
-    public Iterator<CameraPresetFeature> iterator() {
+    public Iterator<CameraFeature> iterator() {
         return features.iterator();
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof CameraPresetFeatureCollection))
+
+        if (o == null || getClass() != o.getClass())
             return false;
-        final CameraPresetFeatureCollection features1 = (CameraPresetFeatureCollection) o;
-        return features.equals(features1.features);
+
+        CameraFeatureCollection that = (CameraFeatureCollection) o;
+
+        return new EqualsBuilder()
+                .append(type, that.type)
+                .append(features, that.features)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return features.hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(type)
+                .append(features)
+                .toHashCode();
     }
 
     @Override

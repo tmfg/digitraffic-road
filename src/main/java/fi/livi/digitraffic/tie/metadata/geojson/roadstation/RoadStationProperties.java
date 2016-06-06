@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -28,15 +29,6 @@ public abstract class RoadStationProperties {
 
     @ApiModelProperty(value = "Common name of road station")
     private String name;
-
-    @ApiModelProperty(value = "Road number")
-    private Integer roadNumber;
-
-    @ApiModelProperty(value = "Road part")
-    private Integer roadPart;
-
-    @ApiModelProperty(value = "Distance from start of the road part [m]")
-    private Integer distanceFromRoadPartStart;
 
     @ApiModelProperty(value = "Data collection interval [s]")
     private Integer collectionInterval;
@@ -65,6 +57,8 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Map of namess [fi, sv, en]")
     private Map<String, String> names = new HashMap<>();
 
+    private RoadAddress roadAddress = new RoadAddress();
+
     public long getNaturalId() {
         return naturalId;
     }
@@ -87,30 +81,6 @@ public abstract class RoadStationProperties {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public Integer getRoadNumber() {
-        return roadNumber;
-    }
-
-    public void setRoadNumber(final Integer roadNumber) {
-        this.roadNumber = roadNumber;
-    }
-
-    public Integer getRoadPart() {
-        return roadPart;
-    }
-
-    public void setRoadPart(final Integer roadPart) {
-        this.roadPart = roadPart;
-    }
-
-    public Integer getDistanceFromRoadPartStart() {
-        return distanceFromRoadPartStart;
-    }
-
-    public void setDistanceFromRoadPartStart(final Integer distanceFromRoadPartStart) {
-        this.distanceFromRoadPartStart = distanceFromRoadPartStart;
     }
 
     public Integer getCollectionInterval() {
@@ -191,6 +161,15 @@ public abstract class RoadStationProperties {
         }
     }
 
+
+    public RoadAddress getRoadAddress() {
+        return roadAddress;
+    }
+
+    public void setRoadAddress(RoadAddress roadAddress) {
+        this.roadAddress = roadAddress;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -207,9 +186,7 @@ public abstract class RoadStationProperties {
                 .append(this.lotjuId, rhs.lotjuId)
                 .append(this.naturalId, rhs.naturalId)
                 .append(this.name, rhs.name)
-                .append(this.roadNumber, rhs.roadNumber)
-                .append(this.roadPart, rhs.roadPart)
-                .append(this.distanceFromRoadPartStart, rhs.distanceFromRoadPartStart)
+                .append(this.getRoadAddress(), rhs.getRoadAddress())
                 .append(this.collectionInterval, rhs.collectionInterval)
                 .append(this.collectionStatus, rhs.collectionStatus)
                 .append(this.municipality, rhs.municipality)
@@ -228,9 +205,7 @@ public abstract class RoadStationProperties {
                 .append(lotjuId)
                 .append(naturalId)
                 .append(name)
-                .append(roadNumber)
-                .append(roadPart)
-                .append(distanceFromRoadPartStart)
+                .append(getRoadAddress())
                 .append(collectionInterval)
                 .append(collectionStatus)
                 .append(municipality)

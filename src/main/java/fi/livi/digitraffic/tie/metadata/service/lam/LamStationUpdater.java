@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
+import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -29,11 +28,12 @@ import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
 import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 
 @Service
-public class LamStationUpdater {
+public class LamStationUpdater extends LamRoadStationAttributeUpdater {
+
     private static final Logger log = Logger.getLogger(LamStationUpdater.class);
+
     public static final String INSERT_FAILED = "Insert failed: ";
 
-    private final RoadStationService roadStationService;
     private final LamStationService lamStationService;
     private final RoadDistrictService roadDistrictService;
     private final StaticDataStatusService staticDataStatusService;
@@ -48,7 +48,7 @@ public class LamStationUpdater {
                              final RoadDistrictService roadDistrictService,
                              final StaticDataStatusService staticDataStatusService,
                              final LotjuLamStationClient lotjuLamStationClient) {
-        this.roadStationService = roadStationService;
+        super(roadStationService);
         this.lamStationService = lamStationService;
         this.roadDistrictService = roadDistrictService;
         this.staticDataStatusService = staticDataStatusService;
@@ -141,16 +141,20 @@ public class LamStationUpdater {
     }
 
     private int insertLamStations(final List<LamAsema> insert) {
+
+        Map<Long, RoadAddress> roadAddressesMappedByLotjuId =
+                roadStationService.findAllRoadAddressesMappedByLotjuId();
+
         int counter = 0;
         for (final LamAsema la : insert) {
-            if (insertLamStation(la)) {
+            if (insertLamStation(la, roadAddressesMappedByLotjuId)) {
                 counter++;
             }
         }
         return counter;
     }
 
-    private boolean insertLamStation(final LamAsema la) {
+    private boolean insertLamStation(final LamAsema la, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
 
         final Integer roadNaturalId = la.getTieosoite().getTienumero();
         final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
@@ -163,6 +167,7 @@ public class LamStationUpdater {
             log.error(INSERT_FAILED + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTieosa() is null");
             return false;
         }
+
         final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
         if (roadDistrict != null) {
             final LamStation newLamStation = new LamStation();
@@ -170,8 +175,11 @@ public class LamStationUpdater {
             newLamStation.setSummerFreeFlowSpeed2(0);
             newLamStation.setWinterFreeFlowSpeed1(0);
             newLamStation.setWinterFreeFlowSpeed2(0);
-            final RoadStation newRoadStation = new RoadStation();
+            final RoadStation newRoadStation = new RoadStation(RoadStationType.LAM_STATION);
             newLamStation.setRoadStation(newRoadStation);
+
+            newLamStation.getRoadStation().setRoadAddress(resolveOrCreateRoadAddress(la, roadAddressesMappedByLotjuId));
+
             updateLamStationAttributes(la, roadDistrict, newLamStation);
 
             roadStationService.save(newRoadStation);
@@ -195,6 +203,12 @@ public class LamStationUpdater {
 
     private int updateLamStations(final List<Pair<LamAsema, LamStation>> update) {
 
+        Map<Long, RoadAddress> roadAddressesMappedByLotjuId =
+                roadStationService.findAllRoadAddressesMappedByLotjuId();
+
+        Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
+                roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);
+
         int counter = 0;
         for (final Pair<LamAsema, LamStation> pair : update) {
 
@@ -202,6 +216,21 @@ public class LamStationUpdater {
             final LamStation ls = pair.getRight();
 
             log.debug("Updating " + ToStringHelpper.toString(la));
+
+            if (ls.getRoadStation() == null) {
+                final Integer naturalId = la.getVanhaId();
+
+                RoadStation rs = naturalId != null ? orphansNaturalIdToRoadStationMap.get(naturalId.longValue()) : null;
+                if (rs == null) {
+                    rs = new RoadStation(RoadStationType.LAM_STATION);
+                    if (naturalId != null) {
+                        orphansNaturalIdToRoadStationMap.put(naturalId.longValue(), rs);
+                    }
+                }
+                ls.setRoadStation(rs);
+            }
+
+            ls.getRoadStation().setRoadAddress(resolveOrCreateRoadAddress(la, roadAddressesMappedByLotjuId));
 
             final Integer roadNaturalId = la.getTieosoite().getTienumero();
             final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
@@ -217,8 +246,8 @@ public class LamStationUpdater {
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
                 log.error(ToStringHelpper.toString(la) + " update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() " +
-                          roadSectionNaturalId + " vs old: " + ls.getRoadStation().getRoadPart() + ", LamAsema.getTieosoite().getTienumero(): " +
-                          roadNaturalId + " vs old: " + ls.getRoadStation().getRoadNumber());
+                          roadSectionNaturalId + " vs old: " + ls.getRoadStation().getRoadAddress().getRoadSection() + ", LamAsema.getTieosoite().getTienumero(): " +
+                          roadNaturalId + " vs old: " + ls.getRoadStation().getRoadAddress().getRoadNumber());
                 rd = ls.getRoadDistrict();
             } else {
                 if (ls.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
@@ -229,6 +258,10 @@ public class LamStationUpdater {
 
             if ( updateLamStationAttributes(la, rd, ls) ) {
                 counter++;
+            }
+            if (ls.getRoadStation().getId() == null) {
+                roadStationService.save(ls.getRoadStation());
+                log.info("Created new RoadStation " + ls.getRoadStation());
             }
         }
         return counter;
@@ -254,40 +287,6 @@ public class LamStationUpdater {
 
         return  updated ||
                 hash != HashCodeBuilder.reflectionHashCode(to);
-    }
-
-    private static boolean updateRoadStationAttributes(final LamAsema from, final RoadStation to) {
-        final int hash = HashCodeBuilder.reflectionHashCode(to);
-
-        // Can insert obsolete stations
-        if (POISTETUT.contains(from.getKeruunTila())) {
-            to.obsolete();
-        } else {
-            to.setObsolete(false);
-            to.setObsoleteDate(null);
-        }
-
-        to.setNaturalId(from.getVanhaId());
-        to.setType(RoadStationType.LAM_STATION);
-        to.setName(from.getNimi());
-        to.setNameFi(from.getNimiFi());
-        to.setNameSv(from.getNimiSe());
-        to.setNameEn(from.getNimiEn());
-        to.setDescription(from.getKuvaus());
-        to.setAdditionalInformation(StringUtils.trimToNull(StringUtils.join(from.getLisatieto(), " ", from.getLisatietoja())));
-        to.setLatitude(from.getLatitudi());
-        to.setLongitude(from.getLongitudi());
-        to.setAltitude(from.getKorkeus());
-        to.setRoadNumber(from.getTieosoite().getTienumero());
-        to.setRoadPart(from.getTieosoite().getTieosa());
-        to.setDistanceFromRoadPartStart(from.getTieosoite().getEtaisyysTieosanAlusta());
-        to.setCollectionInterval(from.getKeruuVali());
-        to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-        to.setMunicipality(from.getKunta());
-        to.setMunicipalityCode(from.getKuntaKoodi());
-        to.setProvince(from.getMaakunta());
-        to.setProvinceCode(from.getMaakuntaKoodi());
-        return hash != HashCodeBuilder.reflectionHashCode(to);
     }
 
     private static int obsoleteLamStations(final List<LamStation> obsolete) {

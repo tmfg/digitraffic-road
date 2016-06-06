@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -33,10 +32,9 @@ import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
 
 @Service
-public class RoadWeatherStationUpdater {
+public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUpdater {
     private static final Logger log = Logger.getLogger(RoadWeatherStationUpdater.class);
 
-    private final RoadStationService roadStationService;
     private final RoadWeatherStationService roadWeatherStationService;
     private final StaticDataStatusService staticDataStatusService;
     private final LotjuRoadWeatherStationClient lotjuRoadWeatherStationClient;
@@ -48,7 +46,7 @@ public class RoadWeatherStationUpdater {
                                      final RoadWeatherStationService roadWeatherStationService,
                                      final StaticDataStatusService staticDataStatusService,
                                      final LotjuRoadWeatherStationClient lotjuRoadWeatherStationClient) {
-        this.roadStationService = roadStationService;
+        super(roadStationService);
         this.roadWeatherStationService = roadWeatherStationService;
         this.staticDataStatusService = staticDataStatusService;
         this.lotjuRoadWeatherStationClient = lotjuRoadWeatherStationClient;
@@ -74,10 +72,7 @@ public class RoadWeatherStationUpdater {
             }
         }
 
-        final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationsMap =
-                roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
-
-        final boolean updateStaticDataStatus = updateWeatherStations(tiesaaAsemas, currentLotjuIdToRoadWeatherStationsMap);
+        final boolean updateStaticDataStatus = updateWeatherStations(tiesaaAsemas);
         updateRoasWeatherStationStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update RoadWeatherStations end");
@@ -175,8 +170,10 @@ public class RoadWeatherStationUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 
-    private boolean updateWeatherStations(final List<TiesaaAsema> tiesaaAsemas,
-                                          final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap) {
+    private boolean updateWeatherStations(final List<TiesaaAsema> tiesaaAsemas) {
+
+        final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap =
+                roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
 
         final List<RoadWeatherStation> obsolete = new ArrayList<>(); // obsolete RoadWeatherStations
         final List<Pair<TiesaaAsema, RoadWeatherStation>> update = new ArrayList<>(); // RoadWeatherStations to update
@@ -222,7 +219,13 @@ public class RoadWeatherStationUpdater {
         return obsoleted > 0 || inserted > 0;
     }
 
-    private static int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
+    private int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
+
+        Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
+                roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);
+
+        Map<Long, RoadAddress> roadAddressesMappedByLotjuId =
+                roadStationService.findAllRoadAddressesMappedByLotjuId();
 
         int counter = 0;
         for (final Pair<TiesaaAsema, RoadWeatherStation> pair : update) {
@@ -231,10 +234,34 @@ public class RoadWeatherStationUpdater {
             final RoadWeatherStation rws = pair.getRight();
             log.debug("Updating RoadWeatherStation " + rws.getId() + " naturalId " + rws.getRoadStation().getNaturalId());
 
+            if (rws.getRoadStation() == null) {
+                final Integer naturalId = tsa.getVanhaId();
+
+                RoadStation rs = naturalId != null ? orphansNaturalIdToRoadStationMap.get(naturalId.longValue()) : null;
+                if (rs == null) {
+                    rs = new RoadStation(RoadStationType.WEATHER_STATION);
+                    if (naturalId != null) {
+                        orphansNaturalIdToRoadStationMap.put(naturalId.longValue(), rs);
+                    }
+                }
+                rws.setRoadStation(rs);
+            }
+
+            if (tsa.getTieosoiteId() == null) {
+                log.info(ToStringHelpper.toString(tsa) + " had null tieosoiteId");
+            }
+
+            rws.getRoadStation().setRoadAddress(resolveOrCreateRoadAddress(tsa, roadAddressesMappedByLotjuId));
+
             if ( updateRoadWeatherStationAttributes(tsa, rws) ) {
                 counter++;
             }
-        }
+
+            if (rws.getRoadStation().getId() == null) {
+                roadStationService.save(rws.getRoadStation());
+                log.info("Created new RoadStation " + rws.getRoadStation());
+            }
+         }
         return counter;
     }
 
@@ -318,6 +345,8 @@ public class RoadWeatherStationUpdater {
             orphanNaturalIdToRoadStationMap.put(orphanRoadStation.getNaturalId(), orphanRoadStation);
         }
 
+        Map<Long, RoadAddress> roadAddressesMappedByLotjuId = roadStationService.findAllRoadAddressesMappedByLotjuId();
+
         for (final TiesaaAsema tsa : insert) {
 
             RoadWeatherStation rws = new RoadWeatherStation();
@@ -325,20 +354,23 @@ public class RoadWeatherStationUpdater {
             boolean orphan = false;
             RoadStation rs = orphanNaturalIdToRoadStationMap.remove(Long.valueOf(tsa.getVanhaId()));
             if (rs == null) {
-                rs = new RoadStation();
+                rs = new RoadStation(RoadStationType.WEATHER_STATION);
             } else {
                 orphan = true;
             }
             rws.setRoadStation(rs);
+
+            rws.getRoadStation().setRoadAddress(resolveOrCreateRoadAddress(tsa, roadAddressesMappedByLotjuId));
+
             updateRoadWeatherStationAttributes(tsa, rws);
 
             roadStationService.save(rws.getRoadStation());
             rws = roadWeatherStationService.save(rws);
 
             if (orphan) {
-                log.info("Created new " + rws + ", using existing orphan RoadStation");
+                log.info("Created new " + rws + ", using existing orphan " + rws.getRoadStation());
             } else {
-                log.info("Created new " + rws);
+                log.info("Created new " + rws + " and " + rws.getRoadStation());
             }
         }
         return insert.size();
@@ -363,43 +395,10 @@ public class RoadWeatherStationUpdater {
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
 
         // Update RoadStation
-        return updateRoadStationAttributes(from, to.getRoadStation()) ||
+        return updateRoadStationAttributes(to.getRoadStation(), from) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    private static boolean updateRoadStationAttributes(final TiesaaAsema from, final RoadStation to) {
-        final int hash = HashCodeBuilder.reflectionHashCode(to);
-
-        // Can insert obsolete stations
-        if (POISTETUT.contains(from.getKeruunTila())) {
-            to.obsolete();
-        } else {
-            to.setObsolete(false);
-            to.setObsoleteDate(null);
-        }
-
-        to.setNaturalId(from.getVanhaId());
-        to.setType(RoadStationType.WEATHER_STATION);
-        to.setName(from.getNimi());
-        to.setNameFi(from.getNimiFi());
-        to.setNameSv(from.getNimiSe());
-        to.setNameEn(from.getNimiEn());
-        to.setDescription(from.getKuvaus());
-        to.setAdditionalInformation(StringUtils.trimToNull(StringUtils.join(from.getLisatieto(), " ", from.getLisakuvaus())));
-        to.setLatitude(from.getLatitudi());
-        to.setLongitude(from.getLongitudi());
-        to.setAltitude(from.getKorkeus());
-        to.setRoadNumber(from.getTieosoite().getTienumero());
-        to.setRoadPart(from.getTieosoite().getTieosa());
-        to.setDistanceFromRoadPartStart(from.getTieosoite().getEtaisyysTieosanAlusta());
-        to.setCollectionInterval(from.getKeruuVali());
-        to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-        to.setMunicipality(from.getKunta());
-        to.setMunicipalityCode(from.getKuntaKoodi());
-        to.setProvince(from.getMaakunta());
-        to.setProvinceCode(from.getMaakuntaKoodi());
-        return HashCodeBuilder.reflectionHashCode(to) != hash;
-    }
 
     private static int obsoleteWeatherStations(final List<RoadWeatherStation> obsolete) {
         int counter = 0;

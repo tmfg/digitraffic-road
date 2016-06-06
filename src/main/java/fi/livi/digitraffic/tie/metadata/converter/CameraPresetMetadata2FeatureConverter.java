@@ -1,15 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
@@ -18,52 +24,81 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
 
     private static final Log log = LogFactory.getLog( CameraPresetMetadata2FeatureConverter.class );
 
-    private CameraPresetMetadata2FeatureConverter() {}
+    private final String weathercamBaseurl;
 
-    public static CameraPresetFeatureCollection convert(final List<CameraPreset> stations) {
-        final CameraPresetFeatureCollection collection = new CameraPresetFeatureCollection();
+    @Autowired
+    public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.baseurl}")
+                                                 String weathercamBaseurl) {
+        this.weathercamBaseurl = weathercamBaseurl;
+    }
+
+    public CameraFeatureCollection convert(final List<CameraPreset> stations) {
+        final CameraFeatureCollection collection = new CameraFeatureCollection();
+
+        // Cameras mapped with cameraId
+        Map<String, CameraFeature> cameraMap = new HashMap<>();
 
         for(final CameraPreset cp : stations) {
-            CameraPresetFeature feature = convert(cp);
+            // CameraPreset contains camera and preset informations and
+            // camera info is duplicated on every preset db line
+            // So we take camera only once
+            CameraFeature feature = cameraMap.get(cp.getCameraId());
+            if (feature == null) {
+                feature = convert(cp);
+                cameraMap.put(cp.getCameraId(), feature);
+            }
+            // Camera can have multiple presets, so we gather them together
             if (feature != null) {
                 collection.add(feature);
+                feature.getProperties().addPreset(convertPreset(cp));
             }
         }
         return collection;
     }
 
-    private static CameraPresetFeature convert(final CameraPreset cp) {
+    private CameraPresetDto convertPreset(CameraPreset cp) {
+        CameraPresetDto dto = new CameraPresetDto();
+        dto.setCameraId(cp.getCameraId());
+        dto.setPresetId(cp.getPresetId());
+        dto.setDescription(cp.getDescription());
+        dto.setNameOnDevice(cp.getPresetName2());
+        dto.setPresetOrder(cp.getPresetOrder());
+        dto.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
+        dto.setCompression(cp.getCompression());
+        dto.setResolution(cp.getResolution());
+        dto.setDirectionCode(cp.getDirection());
+        dto.setLotjuId(cp.getLotjuId());
+        dto.setCameraLotjuId(cp.getCameraLotjuId());
+        dto.setPublic(cp.isPublicExternal());
+        dto.setId(cp.getId());
+        dto.setInCollection(cp.isInCollection());
+        dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
+        if ( CameraProperties.isUnknownPresentationName(cp.getPresetName1()) ) {
+            dto.setPresentationName(null);
+        } else {
+            dto.setPresentationName(cp.getPresetName1());
+        }
+        return dto;
+    }
+
+    private static CameraFeature convert(final CameraPreset cp) {
         try {
-            final CameraPresetFeature f = new CameraPresetFeature();
+            final CameraFeature f = new CameraFeature();
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
             }
-            f.setId(cp.getPresetId());
+            f.setId(cp.getCameraId());
 
-            final CameraPresetProperties properties = f.getProperties();
+            final CameraProperties properties = f.getProperties();
 
-            // Lam station properties
+            // Camera properties
             properties.setId(cp.getId());
-            properties.setLotjuId(cp.getLotjuId());
+
+            properties.setLotjuId(cp.getCameraLotjuId());
             properties.setCameraId(cp.getCameraId());
-            properties.setPresetId(cp.getPresetId());
             properties.setCameraType(cp.getCameraType());
-
-            if ( CameraPresetProperties.isUnknownPresentationName(cp.getPresetName1()) ) {
-                properties.setPresentationName(null);
-            } else {
-                properties.setPresentationName(cp.getPresetName1());
-            }
-
-            properties.setPresetDescription(cp.getDescription());
-            properties.setNameOnDevice(cp.getPresetName2());
-            properties.setPresetOrder(cp.getPresetOrder());
-            properties.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
-            properties.setInCollection(cp.isInCollection() != null ? cp.isInCollection() : false);
-            properties.setCompression(cp.getCompression());
+            properties.setDescription(cp.getCameraDescription());
             properties.setDefaultDirection(cp.getDefaultDirection());
-            properties.setResolution(cp.getResolution());
-            properties.setDirectionCode(cp.getDirection());
             properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
 
             // RoadStation properties
@@ -84,7 +119,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
 
             return f;
         } catch (RuntimeException e) {
-            log.error("Cold not convert " + cp + " to " + CameraPresetFeature.class.getSimpleName());
+            log.error("Cold not convert " + cp + " to " + CameraFeature.class.getSimpleName());
             return null;
         }
     }

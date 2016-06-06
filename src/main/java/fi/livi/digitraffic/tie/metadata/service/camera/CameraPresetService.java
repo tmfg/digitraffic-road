@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 public interface CameraPresetService {
@@ -14,5 +14,5 @@ public interface CameraPresetService {
 
     List<CameraPreset> finAllCameraPresetsWithOutRoadStation();
 
-    CameraPresetFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection();
+    CameraFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection();
 }

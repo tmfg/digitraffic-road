@@ -31,12 +31,24 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                     "FROM ROAD_STATION RS\n" +
                     "WHERE NOT EXISTS (\n" +
                     "  SELECT NULL\n" +
-                    "  FROM ROAD_WEATHER_STATION RWS\n" +
-                    "  WHERE RWS.ROAD_STATION_ID = RS.ID\n" +
+                    "  FROM CAMERA_PRESET CP\n" +
+                    "  WHERE CP.ROAD_STATION_ID = RS.ID\n" +
                     ")\n" +
                     "AND RS.TYPE = 3",
             nativeQuery = true)
     List<RoadStation> findOrphanCameraStationRoadStations();
+
+    @Query(value =
+                   "SELECT RS.*\n" +
+                   "FROM ROAD_STATION RS\n" +
+                   "WHERE NOT EXISTS (\n" +
+                   "  SELECT NULL\n" +
+                   "  FROM LAM_STATION LAM\n" +
+                   "  WHERE LAM.ROAD_STATION_ID = RS.ID\n" +
+                   ")\n" +
+                   "AND RS.TYPE = 1",
+           nativeQuery = true)
+    List<RoadStation> findOrphanLamStationRoadStations();
 
     RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId);
 }

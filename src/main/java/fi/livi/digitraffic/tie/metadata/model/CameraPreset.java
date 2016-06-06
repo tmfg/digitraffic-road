@@ -31,13 +31,10 @@ public class CameraPreset {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")
     private long id;
 
-    private String cameraId;
-
     private String presetId;
 
     private Long lotjuId;
 
-    private Long lotjuCameraId;
 
     /** Old field, this station id ? */
     @Column(name="ROADSTATION_ID")
@@ -46,8 +43,6 @@ public class CameraPreset {
     @Column(name="NEAREST_ROADSTATION_ID")
     private Long nearestRoadstationIid;
 
-    @Convert(converter = CameraTypeConverter.class)
-    private CameraType cameraType;
 
     /**
      * presetName1 == presentationName == nimiEsitys
@@ -74,6 +69,16 @@ public class CameraPreset {
     private String resolution;
     private String direction;
     private LocalDate obsoleteDate;
+
+    // Camera properties
+    private Long cameraLotjuId;
+
+    private String cameraId;
+
+    @Convert(converter = CameraTypeConverter.class)
+    private CameraType cameraType;
+
+    private String cameraDescription;
 
     /**
      * RoadStation is same for one camera all presets
@@ -120,12 +125,12 @@ public class CameraPreset {
         this.lotjuId = lotjuId;
     }
 
-    public Long getLotjuCameraId() {
-        return lotjuCameraId;
+    public Long getCameraLotjuId() {
+        return cameraLotjuId;
     }
 
-    public void setLotjuCameraId(final Long lotjuCameraId) {
-        this.lotjuCameraId = lotjuCameraId;
+    public void setCameraLotjuId(final Long cameraLotjuId) {
+        this.cameraLotjuId = cameraLotjuId;
     }
 
     public CameraType getCameraType() {
@@ -251,17 +256,6 @@ public class CameraPreset {
         this.publicInternal = publicInternal;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringHelpper(this)
-                .appendField("presetId", getPresetId())
-                .appendField("id", getId())
-                .appendField("lotjuId", this.getLotjuId())
-                .appendField("roadStationId", getRoadStationId())
-                .appendField("roadStationNaturalId", getRoadStationNaturalId())
-                .toString();
-    }
-
     public Long getRoadStationId() {
         return roadStation != null ? roadStation.getId() : null;
     }
@@ -281,4 +275,25 @@ public class CameraPreset {
     public void setObsoleteDate(LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
+
+    public void setCameraDescription(String cameraDescription) {
+        this.cameraDescription = cameraDescription;
+    }
+
+    public String getCameraDescription() {
+        return cameraDescription;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("presetId", getPresetId())
+                .appendField("id", getId())
+                .appendField("cameraId", getCameraId())
+                .appendField("lotjuId", this.getLotjuId())
+                .appendField("roadStationId", getRoadStationId())
+                .appendField("roadStationNaturalId", getRoadStationNaturalId())
+                .toString();
+    }
+
 }
