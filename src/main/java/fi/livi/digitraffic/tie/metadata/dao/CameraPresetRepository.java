@@ -16,7 +16,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @Override
     List<CameraPreset> findAll();
 
-    List<CameraPreset> findByRoadStationObsoleteFalseAndObsoleteDateIsNull();
+    List<CameraPreset> findByObsoleteDateIsNullAndRoadStationObsoleteFalse();
 
     @Query(value =
             "SELECT CP.*\n" +

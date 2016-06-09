@@ -1,11 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="KameraPerustiedotEndpointService"
-                  targetNamespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"
-                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"
+<wsdl:definitions name="KameraPerustiedot_v2" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
-<xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29" xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"/>
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06"/>
+
+  <xs:complexType abstract="true" name="havaintoAsemaVO">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteSijainnillaVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="aikakatkaisu" type="xs:int"/>
+          <xs:element minOccurs="0" name="aikavyohyke" type="xs:string"/>
+          <xs:element minOccurs="0" name="aliverkonPeite" type="xs:string"/>
+          <xs:element minOccurs="0" name="alkamisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="asemanSijainti" type="xs:string"/>
+          <xs:element minOccurs="0" name="asemanTila" type="ns1:tilaTyyppi"/>
+          <xs:element minOccurs="0" name="huoltoPuutteet" type="xs:string"/>
+          <xs:element minOccurs="0" name="huoltolevikkeenEtaisyysAsemasta" type="xs:int"/>
+          <xs:element minOccurs="0" name="keruuVali" type="xs:int"/>
+          <xs:element minOccurs="0" name="keruunTila" type="ns1:keruunTILA"/>
+          <xs:element minOccurs="0" name="korjaushuolto" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="kunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="kuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="laitekaappiId" type="xs:string"/>
+          <xs:element minOccurs="0" name="lisatieto" type="xs:string"/>
+          <xs:element minOccurs="0" name="liviId" type="xs:string"/>
+          <xs:element minOccurs="0" name="maa" type="xs:string"/>
+          <xs:element minOccurs="0" name="maakunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="maakuntaKoodi" type="xs:string"/>
+          <xs:element minOccurs="0" name="nimiEn" type="xs:string"/>
+          <xs:element minOccurs="0" name="nimiFi" type="xs:string"/>
+          <xs:element minOccurs="0" name="nimiSe" type="xs:string"/>
+          <xs:element minOccurs="0" name="ohjelmistoversio" type="xs:string"/>
+          <xs:element minOccurs="0" name="paattymisPaiva" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="riittavanKokoinenHuoltolevike" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="synkronoituTierekisteriin" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="vanhaId" type="xs:int"/>
+          <xs:element minOccurs="0" name="verkkolaiteId" type="xs:string"/>
+          <xs:element minOccurs="0" name="vuosihuolto" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="yhdyskaytava" type="xs:string"/>
+          <xs:element minOccurs="0" name="yhteysTapa" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="laiteSijainnillaVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:laiteVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoiteVO"/>
+          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="tieosoiteVO">
+    <xs:complexContent>
+      <xs:extension base="ns2:tieosoiteVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="urakkaAlue" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29"/>
+
+  <xs:complexType name="tieosoiteVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:abstractVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ajorata" type="xs:int"/>
+          <xs:element minOccurs="0" name="etaisyysTieosanAlusta" type="xs:int"/>
+          <xs:element minOccurs="0" name="puoli" type="xs:int"/>
+          <xs:element minOccurs="0" name="tienHoitoluokka" type="xs:string"/>
+          <xs:element minOccurs="0" name="tienumero" type="xs:int"/>
+          <xs:element minOccurs="0" name="tieosa" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29"/>
   <xs:element name="HaeEsiasennotKameranTunnuksella" type="tns:HaeEsiasennotKameranTunnuksella"/>
   <xs:element name="HaeEsiasennotKameranTunnuksellaResponse" type="tns:HaeEsiasennotKameranTunnuksellaResponse"/>
   <xs:element name="HaeEsiasento" type="tns:HaeEsiasento"/>
@@ -29,21 +119,19 @@
   </xs:complexType>
   <xs:complexType name="HaeKokoonpanoKameranTunnuksellaResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="kokoonpano" type="tns:kameraKokoonpano"/>
+      <xs:element form="qualified" minOccurs="0" name="kokoonpano" type="tns:kameraKokoonpanoVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="kameraKokoonpano">
+  <xs:complexType name="kameraKokoonpanoVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractKameraKokoonpano">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
+      <xs:extension base="tns:abstractKameraKokoonpanoVO">
+        <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractKameraKokoonpano">
+  <xs:complexType abstract="true" name="abstractKameraKokoonpanoVO">
     <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="aukkoJaPolttovali" type="xs:string"/>
           <xs:element minOccurs="0" name="irTeho" type="xs:int"/>
@@ -75,8 +163,14 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="pojo">
-    <xs:sequence/>
+  <xs:complexType abstract="true" name="abstractVO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="luonut" type="xs:string"/>
+      <xs:element minOccurs="0" name="luotu" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="muokattu" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="muokkaaja" type="xs:string"/>
+    </xs:sequence>
   </xs:complexType>
   <xs:complexType name="HaeEsiasennotKameranTunnuksella">
     <xs:sequence>
@@ -85,21 +179,12 @@
   </xs:complexType>
   <xs:complexType name="HaeEsiasennotKameranTunnuksellaResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="esiasennot" type="tns:esiasento"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="esiasennot" type="tns:esiasentoVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="esiasento">
+  <xs:complexType name="esiasentoVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractEsiasento">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractEsiasento">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="jarjestys" type="xs:int"/>
           <xs:element name="julkinen" type="xs:boolean"/>
@@ -122,21 +207,12 @@
   </xs:complexType>
   <xs:complexType name="HaeKaikkiKameratResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="kamerat" type="tns:kamera"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="kamerat" type="tns:kameraVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="kamera">
+  <xs:complexType name="kameraVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractKamera">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractKamera">
-    <xs:complexContent>
-      <xs:extension base="tns:havaintoAsema">
+      <xs:extension base="ns1:havaintoAsemaVO">
         <xs:sequence>
           <xs:element name="kokoonpanoId" type="xs:long"/>
           <xs:element minOccurs="0" name="lahinTiesaaAsemaId" type="xs:long"/>
@@ -146,80 +222,13 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="havaintoAsema">
+  <xs:complexType abstract="true" name="laiteVO">
     <xs:complexContent>
-      <xs:extension base="tns:laiteSijainnilla">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="aikakatkaisu" type="xs:int"/>
-          <xs:element minOccurs="0" name="aikavyohyke" type="xs:string"/>
-          <xs:element minOccurs="0" name="aliverkonPeite" type="xs:string"/>
-          <xs:element minOccurs="0" name="alkamisPaiva" type="xs:dateTime"/>
-          <xs:element minOccurs="0" name="asemanSijainti" type="xs:string"/>
-          <xs:element minOccurs="0" name="asemanTila" type="tns:tilaTyyppi"/>
-          <xs:element minOccurs="0" name="huoltoPuutteet" type="xs:string"/>
-          <xs:element minOccurs="0" name="huoltolevikkeenEtaisyysAsemasta" type="xs:int"/>
-          <xs:element minOccurs="0" name="keruuVali" type="xs:int"/>
-          <xs:element minOccurs="0" name="keruunTila" type="tns:keruunTILA"/>
-          <xs:element minOccurs="0" name="korjaushuolto" type="xs:dateTime"/>
-          <xs:element minOccurs="0" name="kunta" type="xs:string"/>
-          <xs:element minOccurs="0" name="kuntaKoodi" type="xs:string"/>
-          <xs:element minOccurs="0" name="laitekaappiId" type="xs:string"/>
-          <xs:element minOccurs="0" name="lisatieto" type="xs:string"/>
-          <xs:element minOccurs="0" name="liviId" type="xs:string"/>
-          <xs:element minOccurs="0" name="maa" type="xs:string"/>
-          <xs:element minOccurs="0" name="maakunta" type="xs:string"/>
-          <xs:element minOccurs="0" name="maakuntaKoodi" type="xs:string"/>
-          <xs:element minOccurs="0" name="nimiEn" type="xs:string"/>
-          <xs:element minOccurs="0" name="nimiFi" type="xs:string"/>
-          <xs:element minOccurs="0" name="nimiSe" type="xs:string"/>
-          <xs:element minOccurs="0" name="ohjelmistoversio" type="xs:string"/>
-          <xs:element minOccurs="0" name="paattymisPaiva" type="xs:dateTime"/>
-          <xs:element minOccurs="0" name="riittavanKokoinenHuoltolevike" type="xs:boolean"/>
-          <xs:element minOccurs="0" name="synkronoituTierekisteriin" type="xs:boolean"/>
-          <xs:element minOccurs="0" name="vanhaId" type="xs:int"/>
-          <xs:element minOccurs="0" name="verkkolaiteId" type="xs:string"/>
-          <xs:element minOccurs="0" name="vuosihuolto" type="xs:dateTime"/>
-          <xs:element minOccurs="0" name="yhdyskaytava" type="xs:string"/>
-          <xs:element minOccurs="0" name="yhteysTapa" type="xs:string"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="laiteSijainnilla">
-    <xs:complexContent>
-      <xs:extension base="tns:laite">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoite"/>
-          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="laite">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="kuvaus" type="xs:string"/>
           <xs:element minOccurs="0" name="nimi" type="xs:string"/>
           <xs:element minOccurs="0" name="takuunPaattymisPvm" type="xs:dateTime"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType name="tieosoite">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="ajorata" type="xs:int"/>
-          <xs:element minOccurs="0" name="etaisyysTieosanAlusta" type="xs:int"/>
-          <xs:element minOccurs="0" name="puoli" type="xs:int"/>
-          <xs:element minOccurs="0" name="tienHoitoluokka" type="xs:string"/>
-          <xs:element minOccurs="0" name="tienumero" type="xs:int"/>
-          <xs:element minOccurs="0" name="tieosa" type="xs:int"/>
-          <xs:element minOccurs="0" name="urakkaAlue" type="xs:string"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -231,7 +240,7 @@
   </xs:complexType>
   <xs:complexType name="HaeKameratVideopalvelimenTunnuksellaResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="kamerat" type="tns:kamera"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="kamerat" type="tns:kameraVO"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="HaeVideopalvelin">
@@ -241,21 +250,19 @@
   </xs:complexType>
   <xs:complexType name="HaeVideopalvelinResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="videopalvelin" type="tns:videopalvelin"/>
+      <xs:element form="qualified" minOccurs="0" name="videopalvelin" type="tns:videopalvelinVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="videopalvelin">
+  <xs:complexType name="videopalvelinVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractVideopalvelin">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
+      <xs:extension base="tns:abstractVideopalvelinVO">
+        <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractVideopalvelin">
+  <xs:complexType abstract="true" name="abstractVideopalvelinVO">
     <xs:complexContent>
-      <xs:extension base="tns:laite">
+      <xs:extension base="tns:laiteVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="adminKayttajatunnus" type="xs:string"/>
           <xs:element minOccurs="0" name="adminSalasana" type="xs:string"/>
@@ -279,7 +286,7 @@
   </xs:complexType>
   <xs:complexType name="HaeKaikkiVideopalvelimetResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="videopalvelimet" type="tns:videopalvelin"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="videopalvelimet" type="tns:videopalvelinVO"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="HaeEsiasento">
@@ -289,7 +296,7 @@
   </xs:complexType>
   <xs:complexType name="HaeEsiasentoResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="esiasento" type="tns:esiasento"/>
+      <xs:element form="qualified" minOccurs="0" name="esiasento" type="tns:esiasentoVO"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="HaeKamera">
@@ -299,7 +306,7 @@
   </xs:complexType>
   <xs:complexType name="HaeKameraResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="kamera" type="tns:kamera"/>
+      <xs:element form="qualified" minOccurs="0" name="kamera" type="tns:kameraVO"/>
     </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="virhekoodi">
@@ -316,6 +323,8 @@
       <xs:enumeration value="D_LINK"/>
       <xs:enumeration value="ZAVIO"/>
       <xs:enumeration value="ENEO"/>
+      <xs:enumeration value="BOSCH"/>
+      <xs:enumeration value="SONY"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="tilaTyyppi">
@@ -414,7 +423,7 @@
     <wsdl:part name="parameters" element="tns:HaeKaikkiKamerat">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:portType name="KameraPerustiedot">
+  <wsdl:portType name="KameraPerustiedotEndpoint">
     <wsdl:operation name="HaeKokoonpanoKameranTunnuksella">
       <wsdl:input name="HaeKokoonpanoKameranTunnuksella" message="tns:HaeKokoonpanoKameranTunnuksella">
     </wsdl:input>
@@ -480,7 +489,7 @@
     </wsdl:fault>
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="KameraPerustiedotEndpointServiceSoapBinding" type="tns:KameraPerustiedot">
+  <wsdl:binding name="KameraPerustiedot_v2SoapBinding" type="tns:KameraPerustiedotEndpoint">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="HaeKokoonpanoKameranTunnuksella">
       <soap:operation soapAction="" style="document"/>
@@ -579,8 +588,8 @@
       </wsdl:fault>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="KameraPerustiedotEndpointService">
-    <wsdl:port name="KameraPerustiedotPort" binding="tns:KameraPerustiedotEndpointServiceSoapBinding">
+  <wsdl:service name="KameraPerustiedot_v2">
+    <wsdl:port name="KameraPerustiedotPort" binding="tns:KameraPerustiedot_v2SoapBinding">
       <soap:address location="KAMERA_METADATA_WS_URL"/>
     </wsdl:port>
   </wsdl:service>

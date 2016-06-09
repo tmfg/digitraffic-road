@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="MuuttuneetAsematService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<wsdl:definitions name="MuuttuneetAsematService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
 <xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" version="1.0">
 

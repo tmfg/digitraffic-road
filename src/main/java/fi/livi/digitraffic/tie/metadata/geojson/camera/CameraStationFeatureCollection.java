@@ -13,39 +13,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON feature collection of Cameras with presets", value = "CameraFeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of Cameras with presets", value = "CameraStationFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
-public class CameraFeatureCollection implements Iterable<CameraFeature> {
+public class CameraStationFeatureCollection implements Iterable<CameraStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
-    private List<CameraFeature> features = new ArrayList<CameraFeature>();
+    private List<CameraStationFeature> features = new ArrayList<CameraStationFeature>();
 
     public String getType() {
         return type;
     }
 
-    public List<CameraFeature> getFeatures() {
+    public List<CameraStationFeature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(final List<CameraFeature> features) {
+    public void setFeatures(final List<CameraStationFeature> features) {
         this.features = features;
     }
 
-    public CameraFeatureCollection add(final CameraFeature feature) {
+    public CameraStationFeatureCollection add(final CameraStationFeature feature) {
         features.add(feature);
         return this;
     }
 
-    public void addAll(final Collection<CameraFeature> features) {
+    public void addAll(final Collection<CameraStationFeature> features) {
         this.features.addAll(features);
     }
 
     @Override
-    public Iterator<CameraFeature> iterator() {
+    public Iterator<CameraStationFeature> iterator() {
         return features.iterator();
     }
 
@@ -57,7 +57,7 @@ public class CameraFeatureCollection implements Iterable<CameraFeature> {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraFeatureCollection that = (CameraFeatureCollection) o;
+        CameraStationFeatureCollection that = (CameraStationFeatureCollection) o;
 
         return new EqualsBuilder()
                 .append(type, that.type)

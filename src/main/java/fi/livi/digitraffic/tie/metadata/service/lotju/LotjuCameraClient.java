@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksella;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKamerat;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKameratResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.ObjectFactory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
-import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeEsiasennotKameranTunnuksella;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKamerat;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKameratResponse;
-import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
-import fi.livi.digitraffic.tie.wsdl.kamera.ObjectFactory;
 
 public class LotjuCameraClient extends WebServiceGatewaySupport {
 
@@ -32,7 +32,7 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
         this.address = address;
     }
 
-    public List<Kamera> getKameras() {
+    public List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
 
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
@@ -42,19 +42,19 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
     }
 
 
-    public Map<String, Pair<Kamera, Esiasento>> getPresetIdToKameraAndEsiasentoMap() {
+    public Map<String, Pair<KameraVO, EsiasentoVO>> getPresetIdToKameraAndEsiasentoMap() {
 
-        final Map<String, Pair<Kamera, Esiasento>> presetIdToKameraMap = new HashMap<>();
+        final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraMap = new HashMap<>();
 
         log.info("Fetch cameras");
 
-        final List<Kamera> kamerat = getKameras();
+        final List<KameraVO> kamerat = getKameras();
 
         log.info("Fetched " + kamerat.size() + " cameras");
 
         log.info("Fetch presets for cameras");
         int counter = 0;
-        for (final Kamera kamera : kamerat) {
+        for (final KameraVO kamera : kamerat) {
 
             if (kamera.getVanhaId() == null) {
                 log.error("Cannot update " + ToStringHelpper.toString(kamera) + " with vanhaId null");
@@ -65,11 +65,11 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
 
                 final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse = (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
                         getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
-                final List<Esiasento> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
+                final List<EsiasentoVO> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
                 counter += esiasennot.size();
 
                 final String kameraId = CameraUpdater.convertVanhaIdToKameraId(kamera.getVanhaId());
-                for (final Esiasento esiasento : esiasennot) {
+                for (final EsiasentoVO esiasento : esiasennot) {
                     final String presetId = CameraUpdater.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
 
                     presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));

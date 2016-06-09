@@ -32,11 +32,11 @@ public class RoadWeatherStationMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
 //                .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", is("ROSA")))
                 .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
+//                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
-//                .andExpect(jsonPath("$.features[0].properties.municipalityCode", is("182")))
-//                .andExpect(jsonPath("$.features[0].properties.municipality", is("Jämsä")))
-//                .andExpect(jsonPath("$.features[0].properties.provinceCode", is("13")))
+                .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
@@ -46,11 +46,7 @@ public class RoadWeatherStationMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.names.en", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
-//                .andExpect(jsonPath("$.features[0].properties.sensors", Matchers.arrahasSize(3)))
-//                .andExpect(jsonPath("$.features[0].properties.sensors[0].name", Matchers.isOneOf("DRS511_I","DRS511_II", "WA")))
-//                .andExpect(jsonPath("$.features[0].properties.sensors[1].name", Matchers.isOneOf("DRS511_I","DRS511_II", "WA")))
-//                .andExpect(jsonPath("$.features[0].properties.sensors[2].name", Matchers.isOneOf("DRS511_I","DRS511_II", "WA")))
-//                .andExpect(jsonPath("$.features[0].properties.sensors[0].sensorTypeId", Matchers.isOneOf(13, 14, 21)))
+                .andExpect(jsonPath("$.features[0].properties.sensors[0].nameEn", isA(String.class)))
                 ;
     }
 }

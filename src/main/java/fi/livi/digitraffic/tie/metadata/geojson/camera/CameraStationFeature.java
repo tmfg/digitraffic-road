@@ -13,10 +13,10 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON CameraPresetFeature Object
  */
-@ApiModel(description = "GeoJSON CameraPresetFeature Object.", value = "CameraFeature")
+@ApiModel(description = "GeoJSON Feature Object.", value = "CameraStationFeature")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class CameraFeature {
+public class CameraStationFeature {
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     private final String type = "Feature";
@@ -69,7 +69,7 @@ public class CameraFeature {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraFeature that = (CameraFeature) o;
+        CameraStationFeature that = (CameraStationFeature) o;
 
         return new EqualsBuilder()
                 .append(type, that.type)

@@ -12,17 +12,29 @@ import java.util.ArrayList;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
+import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
 
-public class CameraPresetMetadataRestTest extends MetadataRestTest {
+public class CameraMetadataRestTest extends MetadataRestTest {
 
+    @Autowired
+    private KameraPerustiedotLotjuServiceMock kameraPerustiedotLotjuServiceMock;
+
+    @Autowired
+    private CameraUpdater cameraUpdater;
 
     @Test
     public void testCameraPresetMetadataRestApi() throws Exception {
+
+        // initialize state
+        kameraPerustiedotLotjuServiceMock.initDataAndService();
+        cameraUpdater.updateCameras();
 
         ArrayList<String> cameraTypes = new ArrayList<>();
         for (CameraType cameraType : CameraType.values()) {
@@ -36,7 +48,7 @@ public class CameraPresetMetadataRestTest extends MetadataRestTest {
 
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            Metadata.CAMERA_PRESETS_PATH))
+                            Metadata.CAMERA_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -51,10 +63,10 @@ public class CameraPresetMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
-//                .andExpect(jsonPath("$.features[0].properties.municipalityCode", is("182")))
-//                .andExpect(jsonPath("$.features[0].properties.municipality", is("Jämsä")))
-//                .andExpect(jsonPath("$.features[0].properties.provinceCode", is("13")))
-//                .andExpect(jsonPath("$.features[0].properties.province", is("Keski-Suomi")))
+                .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.province", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.fi", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.sv", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.en", isA(String.class)))
@@ -63,8 +75,6 @@ public class CameraPresetMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.distanceFromRoadSectionStart", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].cameraId", Matchers.startsWith("C")))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].presentationName", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].nameOnDevice", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].presetOrder", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].compression", Matchers.isA(Integer.class)))

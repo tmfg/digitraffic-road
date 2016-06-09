@@ -1,26 +1,24 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
-import java.util.EnumSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
-import fi.livi.digitraffic.tie.wsdl.kamera.KeruunTILA;
-import fi.livi.digitraffic.tie.wsdl.kamera.Tieosoite;
+
 
 public abstract class CameraRoadStationAttributeUpdater {
 
     private static final Logger log = Logger.getLogger(CameraRoadStationAttributeUpdater.class);
-
-    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     protected RoadStationService roadStationService;
 
@@ -29,11 +27,11 @@ public abstract class CameraRoadStationAttributeUpdater {
         this.roadStationService = roadStationService;
     }
 
-    public static boolean updateRoadStationAttributes(final RoadStation to, final Kamera from) {
+    public static boolean updateRoadStationAttributes(final RoadStation to, final KameraVO from) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if (POISTETUT.contains(from.getKeruunTila())) {
+        if ( KeruunTilaHelpper.isUnactiveKeruunTila(from.getKeruunTila()) ) {
             to.obsolete();
         } else {
             to.setObsolete(false);
@@ -62,7 +60,7 @@ public abstract class CameraRoadStationAttributeUpdater {
                 HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    public static boolean updateRoadAddressAttributes(final Tieosoite from, final RoadAddress to) {
+    public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadNumber(from.getTienumero());
@@ -75,7 +73,7 @@ public abstract class CameraRoadStationAttributeUpdater {
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    protected RoadAddress resolveOrCreateRoadAddress(Kamera la, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
+    protected RoadAddress resolveOrCreateRoadAddress(KameraVO la, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
         if (la.getTieosoiteId() == null) {
             log.info(ToStringHelpper.toString(la) + " had null tieosoiteId");
         }

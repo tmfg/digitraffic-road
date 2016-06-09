@@ -1,101 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="LAMMetatiedotService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"
-                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"
+<wsdl:definitions name="LAMMetatiedot_v1" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
-<xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06">
-  <xs:element name="HaeAnturiVakio" type="tns:HaeAnturiVakio"/>
-  <xs:element name="HaeAnturiVakioArvot" type="tns:HaeAnturiVakioArvot"/>
-  <xs:element name="HaeAnturiVakioArvotResponse" type="tns:HaeAnturiVakioArvotResponse"/>
-  <xs:element name="HaeAnturiVakioResponse" type="tns:HaeAnturiVakioResponse"/>
-  <xs:element name="HaeArvovastaavuus" type="tns:HaeArvovastaavuus"/>
-  <xs:element name="HaeArvovastaavuusResponse" type="tns:HaeArvovastaavuusResponse"/>
-  <xs:element name="HaeAsemanAnturiVakio" type="tns:HaeAsemanAnturiVakio"/>
-  <xs:element name="HaeAsemanAnturiVakioArvot" type="tns:HaeAsemanAnturiVakioArvot"/>
-  <xs:element name="HaeAsemanAnturiVakioArvotResponse" type="tns:HaeAsemanAnturiVakioArvotResponse"/>
-  <xs:element name="HaeAsemanAnturiVakioResponse" type="tns:HaeAsemanAnturiVakioResponse"/>
-  <xs:element name="HaeKaikkiAnturiVakioArvot" type="tns:HaeKaikkiAnturiVakioArvot"/>
-  <xs:element name="HaeKaikkiAnturiVakioArvotResponse" type="tns:HaeKaikkiAnturiVakioArvotResponse"/>
-  <xs:element name="HaeKaikkiArvovastaavuudet" type="tns:HaeKaikkiArvovastaavuudet"/>
-  <xs:element name="HaeKaikkiArvovastaavuudetResponse" type="tns:HaeKaikkiArvovastaavuudetResponse"/>
-  <xs:element name="HaeKaikkiLAMAnturit" type="tns:HaeKaikkiLAMAnturit"/>
-  <xs:element name="HaeKaikkiLAMAnturitResponse" type="tns:HaeKaikkiLAMAnturitResponse"/>
-  <xs:element name="HaeKaikkiLAMAsemat" type="tns:HaeKaikkiLAMAsemat"/>
-  <xs:element name="HaeKaikkiLAMAsematResponse" type="tns:HaeKaikkiLAMAsematResponse"/>
-  <xs:element name="HaeKaikkiLAMLaskennallisetAnturit" type="tns:HaeKaikkiLAMLaskennallisetAnturit"/>
-  <xs:element name="HaeKaikkiLAMLaskennallisetAnturitResponse" type="tns:HaeKaikkiLAMLaskennallisetAnturitResponse"/>
-  <xs:element name="HaeLAMAnturi" type="tns:HaeLAMAnturi"/>
-  <xs:element name="HaeLAMAnturiResponse" type="tns:HaeLAMAnturiResponse"/>
-  <xs:element name="HaeLAMAsema" type="tns:HaeLAMAsema"/>
-  <xs:element name="HaeLAMAsemaResponse" type="tns:HaeLAMAsemaResponse"/>
-  <xs:element name="HaeLAMAsemanAnturit" type="tns:HaeLAMAsemanAnturit"/>
-  <xs:element name="HaeLAMAsemanAnturitResponse" type="tns:HaeLAMAsemanAnturitResponse"/>
-  <xs:element name="HaeLAMAsemanLaskennallisetAnturit" type="tns:HaeLAMAsemanLaskennallisetAnturit"/>
-  <xs:element name="HaeLAMAsemanLaskennallisetAnturitResponse" type="tns:HaeLAMAsemanLaskennallisetAnturitResponse"/>
-  <xs:element name="HaeLAMAsemanLaskennallistenAntureidenTilat" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilat"/>
-  <xs:element name="HaeLAMAsemanLaskennallistenAntureidenTilatResponse" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse"/>
-  <xs:element name="HaeLAMLaskennallinenAnturi" type="tns:HaeLAMLaskennallinenAnturi"/>
-  <xs:element name="HaeLAMLaskennallinenAnturiResponse" type="tns:HaeLAMLaskennallinenAnturiResponse"/>
-  <xs:element name="HaeLaskennallisenAnturinArvovastaavuudet" type="tns:HaeLaskennallisenAnturinArvovastaavuudet"/>
-  <xs:element name="HaeLaskennallisenAnturinArvovastaavuudetResponse" type="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse"/>
-  <xs:complexType name="HaeLAMAsema">
-    <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="HaeLAMAsemaResponse">
-    <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="asema" type="tns:lamAsema"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="lamAsema">
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"/>
+
+  <xs:complexType abstract="true" name="havaintoAsemaVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAsema">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLAMAsema">
-    <xs:complexContent>
-      <xs:extension base="tns:havaintoAsema">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="akku" type="xs:string"/>
-          <xs:element minOccurs="0" name="akkuKayttoonottoVuosi" type="xs:int"/>
-          <xs:element minOccurs="0" name="ip" type="xs:string"/>
-          <xs:element minOccurs="0" name="laskinlaite" type="tns:laiteTyyppi"/>
-          <xs:element minOccurs="0" name="laskinlaiteSarjanumero" type="xs:string"/>
-          <xs:element minOccurs="0" name="laskinlaiteToimituspvm" type="xs:dateTime"/>
-          <xs:element minOccurs="0" name="latauslaite" type="xs:string"/>
-          <xs:element minOccurs="0" name="latauslaiteKayttoonottoVuosi" type="xs:int"/>
-          <xs:element minOccurs="0" name="liitantayksikko" type="tns:laiteTyyppi"/>
-          <xs:element minOccurs="0" name="lisatietoja" type="xs:string"/>
-          <xs:element minOccurs="0" name="portti" type="xs:int"/>
-          <xs:element minOccurs="0" name="suunta1Kunta" type="xs:string"/>
-          <xs:element minOccurs="0" name="suunta1KuntaKoodi" type="xs:int"/>
-          <xs:element minOccurs="0" name="suunta2Kunta" type="xs:string"/>
-          <xs:element minOccurs="0" name="suunta2KuntaKoodi" type="xs:int"/>
-          <xs:element minOccurs="0" name="tyyppi" type="tns:lamAsemaTyyppi"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="havaintoAsema">
-    <xs:complexContent>
-      <xs:extension base="tns:laiteSijainnilla">
+      <xs:extension base="ns1:laiteSijainnillaVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="aikakatkaisu" type="xs:int"/>
           <xs:element minOccurs="0" name="aikavyohyke" type="xs:string"/>
           <xs:element minOccurs="0" name="aliverkonPeite" type="xs:string"/>
           <xs:element minOccurs="0" name="alkamisPaiva" type="xs:dateTime"/>
           <xs:element minOccurs="0" name="asemanSijainti" type="xs:string"/>
-          <xs:element minOccurs="0" name="asemanTila" type="tns:tilaTyyppi"/>
+          <xs:element minOccurs="0" name="asemanTila" type="ns1:tilaTyyppi"/>
           <xs:element minOccurs="0" name="huoltoPuutteet" type="xs:string"/>
           <xs:element minOccurs="0" name="huoltolevikkeenEtaisyysAsemasta" type="xs:int"/>
           <xs:element minOccurs="0" name="keruuVali" type="xs:int"/>
-          <xs:element minOccurs="0" name="keruunTila" type="tns:keruunTILA"/>
+          <xs:element minOccurs="0" name="keruunTila" type="ns1:keruunTILA"/>
           <xs:element minOccurs="0" name="korjaushuolto" type="xs:dateTime"/>
           <xs:element minOccurs="0" name="kunta" type="xs:string"/>
           <xs:element minOccurs="0" name="kuntaKoodi" type="xs:string"/>
@@ -120,36 +45,10 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="laiteSijainnilla">
+
+  <xs:complexType name="tieosoiteVO">
     <xs:complexContent>
-      <xs:extension base="tns:laite">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoite"/>
-          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="laite">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="kuvaus" type="xs:string"/>
-          <xs:element minOccurs="0" name="nimi" type="xs:string"/>
-          <xs:element minOccurs="0" name="takuunPaattymisPvm" type="xs:dateTime"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="pojo">
-    <xs:sequence/>
-  </xs:complexType>
-  <xs:complexType name="tieosoite">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="ns1:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="ajorata" type="xs:int"/>
           <xs:element minOccurs="0" name="etaisyysTieosanAlusta" type="xs:int"/>
@@ -161,23 +60,181 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
+</xs:schema>
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06"/>
+
+  <xs:element name="HaeAnturiVakio" type="tns:HaeAnturiVakio"/>
+
+  <xs:element name="HaeAnturiVakioArvot" type="tns:HaeAnturiVakioArvot"/>
+
+  <xs:element name="HaeAnturiVakioArvotResponse" type="tns:HaeAnturiVakioArvotResponse"/>
+
+  <xs:element name="HaeAnturiVakioResponse" type="tns:HaeAnturiVakioResponse"/>
+
+  <xs:element name="HaeArvovastaavuus" type="tns:HaeArvovastaavuus"/>
+
+  <xs:element name="HaeArvovastaavuusResponse" type="tns:HaeArvovastaavuusResponse"/>
+
+  <xs:element name="HaeAsemanAnturiVakio" type="tns:HaeAsemanAnturiVakio"/>
+
+  <xs:element name="HaeAsemanAnturiVakioArvot" type="tns:HaeAsemanAnturiVakioArvot"/>
+
+  <xs:element name="HaeAsemanAnturiVakioArvotResponse" type="tns:HaeAsemanAnturiVakioArvotResponse"/>
+
+  <xs:element name="HaeAsemanAnturiVakioResponse" type="tns:HaeAsemanAnturiVakioResponse"/>
+
+  <xs:element name="HaeKaikkiAnturiVakioArvot" type="tns:HaeKaikkiAnturiVakioArvot"/>
+
+  <xs:element name="HaeKaikkiAnturiVakioArvotResponse" type="tns:HaeKaikkiAnturiVakioArvotResponse"/>
+
+  <xs:element name="HaeKaikkiArvovastaavuudet" type="tns:HaeKaikkiArvovastaavuudet"/>
+
+  <xs:element name="HaeKaikkiArvovastaavuudetResponse" type="tns:HaeKaikkiArvovastaavuudetResponse"/>
+
+  <xs:element name="HaeKaikkiLAMAnturit" type="tns:HaeKaikkiLAMAnturit"/>
+
+  <xs:element name="HaeKaikkiLAMAnturitResponse" type="tns:HaeKaikkiLAMAnturitResponse"/>
+
+  <xs:element name="HaeKaikkiLAMAsemat" type="tns:HaeKaikkiLAMAsemat"/>
+
+  <xs:element name="HaeKaikkiLAMAsematResponse" type="tns:HaeKaikkiLAMAsematResponse"/>
+
+  <xs:element name="HaeKaikkiLAMLaskennallisetAnturit" type="tns:HaeKaikkiLAMLaskennallisetAnturit"/>
+
+  <xs:element name="HaeKaikkiLAMLaskennallisetAnturitResponse" type="tns:HaeKaikkiLAMLaskennallisetAnturitResponse"/>
+
+  <xs:element name="HaeLAMAnturi" type="tns:HaeLAMAnturi"/>
+
+  <xs:element name="HaeLAMAnturiResponse" type="tns:HaeLAMAnturiResponse"/>
+
+  <xs:element name="HaeLAMAsema" type="tns:HaeLAMAsema"/>
+
+  <xs:element name="HaeLAMAsemaResponse" type="tns:HaeLAMAsemaResponse"/>
+
+  <xs:element name="HaeLAMAsemanAnturit" type="tns:HaeLAMAsemanAnturit"/>
+
+  <xs:element name="HaeLAMAsemanAnturitResponse" type="tns:HaeLAMAsemanAnturitResponse"/>
+
+  <xs:element name="HaeLAMAsemanLaskennallisetAnturit" type="tns:HaeLAMAsemanLaskennallisetAnturit"/>
+
+  <xs:element name="HaeLAMAsemanLaskennallisetAnturitResponse" type="tns:HaeLAMAsemanLaskennallisetAnturitResponse"/>
+
+  <xs:element name="HaeLAMAsemanLaskennallistenAntureidenTilat" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilat"/>
+
+  <xs:element name="HaeLAMAsemanLaskennallistenAntureidenTilatResponse" type="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse"/>
+
+  <xs:element name="HaeLAMLaskennallinenAnturi" type="tns:HaeLAMLaskennallinenAnturi"/>
+
+  <xs:element name="HaeLAMLaskennallinenAnturiResponse" type="tns:HaeLAMLaskennallinenAnturiResponse"/>
+
+  <xs:element name="HaeLaskennallisenAnturinArvovastaavuudet" type="tns:HaeLaskennallisenAnturinArvovastaavuudet"/>
+
+  <xs:element name="HaeLaskennallisenAnturinArvovastaavuudetResponse" type="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse"/>
+
+  <xs:complexType name="HaeLAMAsema">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HaeLAMAsemaResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="asema" type="tns:lamAsemaVO"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="lamAsemaVO">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractLAMAsemaVO">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractLAMAsemaVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:havaintoAsemaVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="akku" type="xs:string"/>
+          <xs:element minOccurs="0" name="akkuKayttoonottoVuosi" type="xs:int"/>
+          <xs:element minOccurs="0" name="ip" type="xs:string"/>
+          <xs:element minOccurs="0" name="laskinlaite" type="tns:laiteTyyppi"/>
+          <xs:element minOccurs="0" name="laskinlaiteSarjanumero" type="xs:string"/>
+          <xs:element minOccurs="0" name="laskinlaiteToimituspvm" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="latauslaite" type="xs:string"/>
+          <xs:element minOccurs="0" name="latauslaiteKayttoonottoVuosi" type="xs:int"/>
+          <xs:element minOccurs="0" name="liitantayksikko" type="tns:laiteTyyppi"/>
+          <xs:element minOccurs="0" name="lisatietoja" type="xs:string"/>
+          <xs:element minOccurs="0" name="portti" type="xs:int"/>
+          <xs:element minOccurs="0" name="suunta1Kunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="suunta1KuntaKoodi" type="xs:int"/>
+          <xs:element minOccurs="0" name="suunta2Kunta" type="xs:string"/>
+          <xs:element minOccurs="0" name="suunta2KuntaKoodi" type="xs:int"/>
+          <xs:element minOccurs="0" name="tyyppi" type="tns:lamAsemaTyyppi"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="laiteSijainnillaVO">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="tieosoite" type="ns1:tieosoiteVO"/>
+          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="laiteVO">
+    <xs:complexContent>
+      <xs:extension base="tns:abstractVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="kuvaus" type="xs:string"/>
+          <xs:element minOccurs="0" name="nimi" type="xs:string"/>
+          <xs:element minOccurs="0" name="takuunPaattymisPvm" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="abstractVO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="luonut" type="xs:string"/>
+      <xs:element minOccurs="0" name="luotu" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="muokattu" type="xs:dateTime"/>
+      <xs:element minOccurs="0" name="muokkaaja" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="HaeLaskennallisenAnturinArvovastaavuudet">
     <xs:sequence>
       <xs:element minOccurs="0" name="arg0" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLaskennallisenAnturinArvovastaavuudetResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuudet" type="tns:lamArvoVastaavuus"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuudet" type="tns:lamArvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamArvoVastaavuus">
+
+  <xs:complexType name="lamArvoVastaavuusVO">
     <xs:complexContent>
       <xs:extension base="tns:abstractArvoVastaavuus">
         <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType abstract="true" name="abstractArvoVastaavuus">
     <xs:complexContent>
       <xs:extension base="tns:pojo">
@@ -194,28 +251,34 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
+  <xs:complexType abstract="true" name="pojo">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanLaskennallisetAnturit">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanLaskennallisetAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamlaskennallisetanturit" type="tns:lamLaskennallinenAnturi"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamlaskennallisetanturit" type="tns:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamLaskennallinenAnturi">
+
+  <xs:complexType name="lamLaskennallinenAnturiVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMLaskennallinenAnturi">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
+      <xs:extension base="tns:abstractLAMLaskennallinenAnturiVO">
+        <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLAMLaskennallinenAnturi">
+
+  <xs:complexType abstract="true" name="abstractLAMLaskennallinenAnturiVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLaskennallinenAnturi">
+      <xs:extension base="tns:abstractLaskennallinenAnturiVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="ajoneuvoluokka" type="tns:ajoneuvoluokkaTyyppi"/>
           <xs:element minOccurs="0" name="kaista" type="xs:int"/>
@@ -224,9 +287,10 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLaskennallinenAnturi">
+
+  <xs:complexType abstract="true" name="abstractLaskennallinenAnturiVO">
     <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="b" type="xs:int"/>
           <xs:element minOccurs="0" name="g" type="xs:int"/>
@@ -242,6 +306,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType name="HaeAsemanAnturiVakioArvot">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="asemaId" type="xs:long"/>
@@ -249,23 +314,24 @@
       <xs:element form="qualified" minOccurs="0" name="kuukausi" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAsemanAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvo"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvoVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamAnturiVakioArvo">
+
+  <xs:complexType name="lamAnturiVakioArvoVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAnturiVakioArvo">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
+      <xs:extension base="tns:abstractLAMAnturiVakioArvoVO">
+        <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLAMAnturiVakioArvo">
+
+  <xs:complexType abstract="true" name="abstractLAMAnturiVakioArvoVO">
     <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="anturiVakioId" type="xs:long"/>
           <xs:element minOccurs="0" name="arvo" type="xs:int"/>
@@ -275,28 +341,30 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType name="HaeAnturiVakio">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="anturiVakioId" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAnturiVakioResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakio"/>
+      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakioVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamAnturiVakio">
+
+  <xs:complexType name="lamAnturiVakioVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAnturiVakio">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
-        </xs:sequence>
+      <xs:extension base="tns:abstractLAMAnturiVakioVO">
+        <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLAMAnturiVakio">
+
+  <xs:complexType abstract="true" name="abstractLAMAnturiVakioVO">
     <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="asemaId" type="xs:long"/>
           <xs:element minOccurs="0" name="nimi" type="xs:string"/>
@@ -304,121 +372,142 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiArvovastaavuudet">
     <xs:sequence/>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiArvovastaavuudetResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuus"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMAnturit">
     <xs:sequence/>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturi"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamAnturi">
+
+  <xs:complexType name="lamAnturiVO">
     <xs:complexContent>
-      <xs:extension base="tns:laite">
+      <xs:extension base="tns:laiteVO">
         <xs:sequence>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
           <xs:element minOccurs="0" name="kaapelikaivonKunto" type="xs:string"/>
           <xs:element minOccurs="0" name="korkeus" type="xs:int"/>
           <xs:element minOccurs="0" name="lamAsemaId" type="xs:long"/>
-          <xs:element name="laskettavienKaistojenLkmSuunta1" type="xs:int"/>
-          <xs:element name="laskettavienKaistojenLkmSuunta2" type="xs:int"/>
-          <xs:element name="pisteellaKaapelikaivo" type="xs:boolean"/>
-          <xs:element name="silmukkakaapelitSuojaputkessa" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta1" type="xs:int"/>
+          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta2" type="xs:int"/>
+          <xs:element minOccurs="0" name="pisteellaKaapelikaivo" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="silmukkakaapelitSuojaputkessa" type="xs:boolean"/>
           <xs:element minOccurs="0" name="suojaputkenMateriaali" type="xs:string"/>
           <xs:element minOccurs="0" name="valmistusAika" type="xs:dateTime"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMAsemat">
     <xs:sequence/>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMAsematResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="asemat" type="tns:lamAsema"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="asemat" type="tns:lamAsemaVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAnturi">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAnturiResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="anturi" type="tns:lamAnturi"/>
+      <xs:element form="qualified" minOccurs="0" name="anturi" type="tns:lamAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAsemanAnturiVakio">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="asemaId" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAsemanAnturiVakioResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakio"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiAnturiVakioArvot">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="paiva" type="xs:int"/>
       <xs:element form="qualified" minOccurs="0" name="kuukausi" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvo"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvoVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMLaskennallinenAnturi">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMLaskennallinenAnturiResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamlaskennallinenanturi" type="tns:lamLaskennallinenAnturi"/>
+      <xs:element form="qualified" minOccurs="0" name="lamlaskennallinenanturi" type="tns:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanLaskennallistenAntureidenTilat">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="asemaId" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="tilat" type="tns:lamAsemaLaskennallinenAnturi"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="tilat" type="tns:lamAsemaLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="lamAsemaLaskennallinenAnturi">
+
+  <xs:complexType name="lamAsemaLaskennallinenAnturiVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAsemaLaskennallinenAnturi">
+      <xs:extension base="tns:abstractLAMAsemaLaskennallinenAnturiVO">
         <xs:sequence/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType abstract="true" name="abstractLAMAsemaLaskennallinenAnturi">
+
+  <xs:complexType abstract="true" name="abstractLAMAsemaLaskennallinenAnturiVO">
     <xs:sequence>
       <xs:element minOccurs="0" name="asemaId" type="xs:long"/>
       <xs:element minOccurs="0" name="laskennallinenAnturiId" type="xs:long"/>
       <xs:element minOccurs="0" name="tila" type="tns:tilaTyyppi"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMLaskennallisetAnturit">
     <xs:sequence/>
   </xs:complexType>
+
   <xs:complexType name="HaeKaikkiLAMLaskennallisetAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laskennallinenAnturi" type="tns:lamLaskennallinenAnturi"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laskennallinenAnturi" type="tns:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAnturiVakioArvot">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="anturiVakioId" type="xs:long"/>
@@ -426,31 +515,37 @@
       <xs:element form="qualified" minOccurs="0" name="kuukausi" type="xs:int"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakioArvo"/>
+      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakioArvoVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanAnturit">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeLAMAsemanAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturi"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeArvovastaavuus">
     <xs:sequence>
       <xs:element form="qualified" minOccurs="0" name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:complexType name="HaeArvovastaavuusResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuus"/>
+      <xs:element form="qualified" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
+
   <xs:simpleType name="laiteTyyppi">
     <xs:restriction base="xs:string">
       <xs:enumeration value="DSL_3"/>
@@ -460,12 +555,14 @@
       <xs:enumeration value="MUU"/>
     </xs:restriction>
   </xs:simpleType>
+
   <xs:simpleType name="lamAsemaTyyppi">
     <xs:restriction base="xs:string">
       <xs:enumeration value="DSL"/>
       <xs:enumeration value="E18"/>
     </xs:restriction>
   </xs:simpleType>
+
   <xs:simpleType name="tilaTyyppi">
     <xs:restriction base="xs:string">
       <xs:enumeration value="OK"/>
@@ -478,6 +575,7 @@
       <xs:enumeration value="KORJAUS_KESKEYTETTY"/>
     </xs:restriction>
   </xs:simpleType>
+
   <xs:simpleType name="keruunTILA">
     <xs:restriction base="xs:string">
       <xs:enumeration value="KERUUSSA"/>
@@ -485,16 +583,7 @@
       <xs:enumeration value="POISTETTU_PYSYVASTI"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="virhekoodi">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="LAMASEMAA_EI_LOYDY"/>
-      <xs:enumeration value="LAMANTURIA_EI_LOYDY"/>
-      <xs:enumeration value="LAMLASKENNALLISTAANTURIA_EI_LOYDY"/>
-      <xs:enumeration value="ASEMAKOKOONPANOA_EI_LOYDY"/>
-      <xs:enumeration value="KAYTOSSA_OLEVAA_OBJEKTIA_EI_VOI_POISTAA"/>
-      <xs:enumeration value="MUU_VIRHE"/>
-    </xs:restriction>
-  </xs:simpleType>
+
   <xs:simpleType name="ajoneuvoluokkaTyyppi">
     <xs:restriction base="xs:string">
       <xs:enumeration value="HA"/>
@@ -505,13 +594,7 @@
       <xs:enumeration value="KATP"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:element name="kameraPerustiedotVirhe" type="tns:kameraPerustiedotVirhe"/>
-  <xs:complexType name="kameraPerustiedotVirhe">
-    <xs:sequence>
-      <xs:element name="virhekoodi" nillable="true" type="tns:virhekoodi"/>
-      <xs:element minOccurs="0" name="message" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
+
 </xs:schema>
   </wsdl:types>
   <wsdl:message name="HaeAsemanAnturiVakioArvot">
@@ -586,10 +669,6 @@
     <wsdl:part name="parameters" element="tns:HaeKaikkiLAMAnturitResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="LAMMetatiedotException">
-    <wsdl:part name="LAMMetatiedotException" element="tns:kameraPerustiedotVirhe">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="HaeKaikkiAnturiVakioArvot">
     <wsdl:part name="parameters" element="tns:HaeKaikkiAnturiVakioArvot">
     </wsdl:part>
@@ -654,46 +733,36 @@
     <wsdl:part name="parameters" element="tns:HaeKaikkiLAMLaskennallisetAnturit">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:portType name="LAMMetatiedot">
+  <wsdl:portType name="LAMMetatiedotEndpoint">
     <wsdl:operation name="HaeLAMAsema">
       <wsdl:input name="HaeLAMAsema" message="tns:HaeLAMAsema">
     </wsdl:input>
       <wsdl:output name="HaeLAMAsemaResponse" message="tns:HaeLAMAsemaResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLaskennallisenAnturinArvovastaavuudet">
       <wsdl:input name="HaeLaskennallisenAnturinArvovastaavuudet" message="tns:HaeLaskennallisenAnturinArvovastaavuudet">
     </wsdl:input>
       <wsdl:output name="HaeLaskennallisenAnturinArvovastaavuudetResponse" message="tns:HaeLaskennallisenAnturinArvovastaavuudetResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanLaskennallisetAnturit">
       <wsdl:input name="HaeLAMAsemanLaskennallisetAnturit" message="tns:HaeLAMAsemanLaskennallisetAnturit">
     </wsdl:input>
       <wsdl:output name="HaeLAMAsemanLaskennallisetAnturitResponse" message="tns:HaeLAMAsemanLaskennallisetAnturitResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAsemanAnturiVakioArvot">
       <wsdl:input name="HaeAsemanAnturiVakioArvot" message="tns:HaeAsemanAnturiVakioArvot">
     </wsdl:input>
       <wsdl:output name="HaeAsemanAnturiVakioArvotResponse" message="tns:HaeAsemanAnturiVakioArvotResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAnturiVakio">
       <wsdl:input name="HaeAnturiVakio" message="tns:HaeAnturiVakio">
     </wsdl:input>
       <wsdl:output name="HaeAnturiVakioResponse" message="tns:HaeAnturiVakioResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiArvovastaavuudet">
 <wsdl:documentation>Palauttaa kaikki arvovastaavuudet. Arvovastaavuudella maaritetaan laskennallisen anturin arvovalin vastaavuus tekstuaaliseen kasitteeseen. Arvovastaavuus maarittelee myos arvovalin esitysvarin.</wsdl:documentation>
@@ -701,99 +770,75 @@
     </wsdl:input>
       <wsdl:output name="HaeKaikkiArvovastaavuudetResponse" message="tns:HaeKaikkiArvovastaavuudetResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMAnturit">
       <wsdl:input name="HaeKaikkiLAMAnturit" message="tns:HaeKaikkiLAMAnturit">
     </wsdl:input>
       <wsdl:output name="HaeKaikkiLAMAnturitResponse" message="tns:HaeKaikkiLAMAnturitResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMAsemat">
       <wsdl:input name="HaeKaikkiLAMAsemat" message="tns:HaeKaikkiLAMAsemat">
     </wsdl:input>
       <wsdl:output name="HaeKaikkiLAMAsematResponse" message="tns:HaeKaikkiLAMAsematResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAnturi">
       <wsdl:input name="HaeLAMAnturi" message="tns:HaeLAMAnturi">
     </wsdl:input>
       <wsdl:output name="HaeLAMAnturiResponse" message="tns:HaeLAMAnturiResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAsemanAnturiVakio">
       <wsdl:input name="HaeAsemanAnturiVakio" message="tns:HaeAsemanAnturiVakio">
     </wsdl:input>
       <wsdl:output name="HaeAsemanAnturiVakioResponse" message="tns:HaeAsemanAnturiVakioResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiAnturiVakioArvot">
       <wsdl:input name="HaeKaikkiAnturiVakioArvot" message="tns:HaeKaikkiAnturiVakioArvot">
     </wsdl:input>
       <wsdl:output name="HaeKaikkiAnturiVakioArvotResponse" message="tns:HaeKaikkiAnturiVakioArvotResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMLaskennallinenAnturi">
       <wsdl:input name="HaeLAMLaskennallinenAnturi" message="tns:HaeLAMLaskennallinenAnturi">
     </wsdl:input>
       <wsdl:output name="HaeLAMLaskennallinenAnturiResponse" message="tns:HaeLAMLaskennallinenAnturiResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanLaskennallistenAntureidenTilat">
       <wsdl:input name="HaeLAMAsemanLaskennallistenAntureidenTilat" message="tns:HaeLAMAsemanLaskennallistenAntureidenTilat">
     </wsdl:input>
       <wsdl:output name="HaeLAMAsemanLaskennallistenAntureidenTilatResponse" message="tns:HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMLaskennallisetAnturit">
       <wsdl:input name="HaeKaikkiLAMLaskennallisetAnturit" message="tns:HaeKaikkiLAMLaskennallisetAnturit">
     </wsdl:input>
       <wsdl:output name="HaeKaikkiLAMLaskennallisetAnturitResponse" message="tns:HaeKaikkiLAMLaskennallisetAnturitResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAnturiVakioArvot">
       <wsdl:input name="HaeAnturiVakioArvot" message="tns:HaeAnturiVakioArvot">
     </wsdl:input>
       <wsdl:output name="HaeAnturiVakioArvotResponse" message="tns:HaeAnturiVakioArvotResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanAnturit">
       <wsdl:input name="HaeLAMAsemanAnturit" message="tns:HaeLAMAsemanAnturit">
     </wsdl:input>
       <wsdl:output name="HaeLAMAsemanAnturitResponse" message="tns:HaeLAMAsemanAnturitResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeArvovastaavuus">
       <wsdl:input name="HaeArvovastaavuus" message="tns:HaeArvovastaavuus">
     </wsdl:input>
       <wsdl:output name="HaeArvovastaavuusResponse" message="tns:HaeArvovastaavuusResponse">
     </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException" message="tns:LAMMetatiedotException">
-    </wsdl:fault>
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="LAMMetatiedotServiceSoapBinding" type="tns:LAMMetatiedot">
+  <wsdl:binding name="LAMMetatiedot_v1SoapBinding" type="tns:LAMMetatiedotEndpoint">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="HaeLAMAsema">
       <soap:operation soapAction="" style="document"/>
@@ -803,9 +848,6 @@
       <wsdl:output name="HaeLAMAsemaResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLaskennallisenAnturinArvovastaavuudet">
       <soap:operation soapAction="" style="document"/>
@@ -815,9 +857,6 @@
       <wsdl:output name="HaeLaskennallisenAnturinArvovastaavuudetResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAnturiVakio">
       <soap:operation soapAction="" style="document"/>
@@ -827,9 +866,6 @@
       <wsdl:output name="HaeAnturiVakioResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAsemanAnturiVakioArvot">
       <soap:operation soapAction="" style="document"/>
@@ -839,9 +875,6 @@
       <wsdl:output name="HaeAsemanAnturiVakioArvotResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanLaskennallisetAnturit">
       <soap:operation soapAction="" style="document"/>
@@ -851,9 +884,6 @@
       <wsdl:output name="HaeLAMAsemanLaskennallisetAnturitResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiArvovastaavuudet">
       <soap:operation soapAction="" style="document"/>
@@ -863,9 +893,6 @@
       <wsdl:output name="HaeKaikkiArvovastaavuudetResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMAnturit">
       <soap:operation soapAction="" style="document"/>
@@ -875,9 +902,6 @@
       <wsdl:output name="HaeKaikkiLAMAnturitResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMAsemat">
       <soap:operation soapAction="" style="document"/>
@@ -887,9 +911,6 @@
       <wsdl:output name="HaeKaikkiLAMAsematResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAnturi">
       <soap:operation soapAction="" style="document"/>
@@ -899,9 +920,6 @@
       <wsdl:output name="HaeLAMAnturiResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAsemanAnturiVakio">
       <soap:operation soapAction="" style="document"/>
@@ -911,9 +929,6 @@
       <wsdl:output name="HaeAsemanAnturiVakioResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiAnturiVakioArvot">
       <soap:operation soapAction="" style="document"/>
@@ -923,9 +938,6 @@
       <wsdl:output name="HaeKaikkiAnturiVakioArvotResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanLaskennallistenAntureidenTilat">
       <soap:operation soapAction="" style="document"/>
@@ -935,9 +947,6 @@
       <wsdl:output name="HaeLAMAsemanLaskennallistenAntureidenTilatResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMLaskennallinenAnturi">
       <soap:operation soapAction="" style="document"/>
@@ -947,9 +956,6 @@
       <wsdl:output name="HaeLAMLaskennallinenAnturiResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeKaikkiLAMLaskennallisetAnturit">
       <soap:operation soapAction="" style="document"/>
@@ -959,9 +965,6 @@
       <wsdl:output name="HaeKaikkiLAMLaskennallisetAnturitResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeAnturiVakioArvot">
       <soap:operation soapAction="" style="document"/>
@@ -971,9 +974,6 @@
       <wsdl:output name="HaeAnturiVakioArvotResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeLAMAsemanAnturit">
       <soap:operation soapAction="" style="document"/>
@@ -983,9 +983,6 @@
       <wsdl:output name="HaeLAMAsemanAnturitResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="HaeArvovastaavuus">
       <soap:operation soapAction="" style="document"/>
@@ -995,13 +992,10 @@
       <wsdl:output name="HaeArvovastaavuusResponse">
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="LAMMetatiedotException">
-        <soap:fault name="LAMMetatiedotException" use="literal"/>
-      </wsdl:fault>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="LAMMetatiedotService">
-    <wsdl:port name="LAMMetatiedotPort" binding="tns:LAMMetatiedotServiceSoapBinding">
+  <wsdl:service name="LAMMetatiedot_v1">
+    <wsdl:port name="LAMMetatiedotPort" binding="tns:LAMMetatiedot_v1SoapBinding">
       <soap:address location="LAM_METADATA_WS_URL"/>
     </wsdl:port>
   </wsdl:service>

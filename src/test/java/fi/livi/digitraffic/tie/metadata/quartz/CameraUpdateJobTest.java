@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
@@ -40,18 +40,30 @@ public class CameraUpdateJobTest extends MetadataTest {
 
         // initial state 1 (443) active camera station with 2 presets
         cameraUpdater.updateCameras();
-        CameraFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
-        // 443 camera has 2 presets and 56 has 1 preset
-        assertEquals(3, allInitial.getFeatures().size());
+        CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        // cameras with lotjuId 443 and 56 are in collection
+        assertEquals(2, allInitial.getFeatures().size());
+        int countPresets = 0;
+        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
+            countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
+        }
+        // cameras with lotjuId 443 has 2 and 56 has 1 preset
+        assertEquals(3, countPresets);
 
         // Update 121 camera to active and 56 removed
         kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
         cameraUpdater.updateCameras();
 
-        CameraFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
+        CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
 
-        // 443 has 3 presets and 121 has 2
-        assertEquals(5, allAfterChange.getFeatures().size());
+        // 443 has 3 presets, 121 has 2
+        assertEquals(2, allAfterChange.getFeatures().size());
+        int countPresetsAfter = 0;
+        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
+            countPresetsAfter = countPresets + cameraStationFeature.getProperties().getPresets().size();
+        }
+        // cameras with lotjuId 443 has 2 and 56 has 1 preset
+        assertEquals(5, countPresetsAfter);
 
 
         /*  Before:
@@ -117,11 +129,11 @@ public class CameraUpdateJobTest extends MetadataTest {
         assertTrue(preset1.equals(preset2));
     }
 
-    private CameraPresetDto findWithPresetId(CameraFeatureCollection collection, String presetId) {
+    private CameraPresetDto findWithPresetId(CameraStationFeatureCollection collection, String presetId) {
 
-        for (CameraFeature cameraFeature : collection) {
+        for (CameraStationFeature cameraStationFeature : collection) {
             Optional<CameraPresetDto> initial =
-                    cameraFeature.getProperties().getPresets().stream()
+                    cameraStationFeature.getProperties().getPresets().stream()
                             .filter(x -> x.getPresetId().equals(presetId))
                             .findFirst();
             if (initial.isPresent()) {

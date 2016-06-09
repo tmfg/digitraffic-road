@@ -10,15 +10,15 @@ import javax.xml.bind.JAXBElement;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturit;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsemat;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.ObjectFactory;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiTiesaaAsemat;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.ObjectFactory;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaLaskennallinenAnturiVO;
 
 public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
@@ -30,7 +30,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
         this.address = address;
     }
 
-    public List<TiesaaAsema> getTiesaaAsemmas() {
+    public List<TiesaaAsemaVO> getTiesaaAsemmas() {
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
 
@@ -42,11 +42,11 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
         return response.getValue().getTiesaaAsema();
     }
 
-    public Map<Long, List<TiesaaLaskennallinenAnturi>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
+    public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
 
         log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " tiesaaAsemas");
 
-        final Map<Long, List<TiesaaLaskennallinenAnturi>> currentRwsLotjuIdToTiesaaAnturiMap =
+        final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRwsLotjuIdToTiesaaAnturiMap =
                 new HashMap<>();
 
         final ObjectFactory objectFactory = new ObjectFactory();
@@ -58,7 +58,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
             final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
                     getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
-            final List<TiesaaLaskennallinenAnturi> anturis = response.getValue().getLaskennallinenAnturi();
+            final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
             currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
             counter += anturis.size();
         }
@@ -67,11 +67,11 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
         return currentRwsLotjuIdToTiesaaAnturiMap;
     }
 
-    public List<TiesaaLaskennallinenAnturi> getAllTiesaaLaskennallinenAnturis() {
+    public List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
 
         log.info("Fetching all LaskennallisetAnturit");
 
-        final Map<Long, List<TiesaaLaskennallinenAnturi>> currentRwsLotjuIdToTiesaaAnturiMap =
+        final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRwsLotjuIdToTiesaaAnturiMap =
                 new HashMap<>();
 
         final ObjectFactory objectFactory = new ObjectFactory();
@@ -79,7 +79,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
-        final List<TiesaaLaskennallinenAnturi> anturis = response.getValue().getLaskennallinenAnturi();
+        final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
 
         log.info("Fetched " + anturis.size() + " LaskennallisetAnturits");
         return anturis;

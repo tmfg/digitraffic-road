@@ -1,26 +1,24 @@
 package fi.livi.digitraffic.tie.metadata.service.roadweather;
 
-import java.util.EnumSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.Tieosoite;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
+
 
 public abstract class RoadWeatherRoadStationAttributeUpdater {
 
     private static final Logger log = Logger.getLogger(RoadWeatherRoadStationAttributeUpdater.class);
-
-    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     protected RoadStationService roadStationService;
 
@@ -28,11 +26,11 @@ public abstract class RoadWeatherRoadStationAttributeUpdater {
         this.roadStationService = roadStationService;
     }
 
-    public static boolean updateRoadStationAttributes(final RoadStation to, final TiesaaAsema from) {
+    public static boolean updateRoadStationAttributes(final RoadStation to, final TiesaaAsemaVO from) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if (POISTETUT.contains(from.getKeruunTila())) {
+        if ( KeruunTilaHelpper.isUnactiveKeruunTila(from.getKeruunTila())) {
             to.obsolete();
         } else {
             to.setObsolete(false);
@@ -61,7 +59,7 @@ public abstract class RoadWeatherRoadStationAttributeUpdater {
                 HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    public static boolean updateRoadAddressAttributes(final Tieosoite from, final RoadAddress to) {
+    public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadNumber(from.getTienumero());
@@ -74,7 +72,7 @@ public abstract class RoadWeatherRoadStationAttributeUpdater {
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    protected RoadAddress resolveOrCreateRoadAddress(TiesaaAsema tsa, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
+    protected RoadAddress resolveOrCreateRoadAddress(TiesaaAsemaVO tsa, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
         if (tsa.getTieosoiteId() == null) {
             log.info(ToStringHelpper.toString(tsa) + " had null tieosoiteId");
         }

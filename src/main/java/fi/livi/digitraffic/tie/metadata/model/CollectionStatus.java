@@ -5,9 +5,9 @@ import org.apache.log4j.Logger;
 
 public enum CollectionStatus {
 
-    GATHERING(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.KERUUSSA.value()),
-    REMOVED_TEMPORARILY(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
-    REMOVED_PERMANENTLY(fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA.POISTETTU_PYSYVASTI.value());
+    GATHERING(fi.livi.digitraffic.tie.lotju.wsdl.lam.KeruunTILA.KERUUSSA.value()),
+    REMOVED_TEMPORARILY(fi.livi.digitraffic.tie.lotju.wsdl.lam.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
+    REMOVED_PERMANENTLY(fi.livi.digitraffic.tie.lotju.wsdl.lam.KeruunTILA.POISTETTU_PYSYVASTI.value());
 
     private static final Logger LOG = Logger.getLogger(CollectionStatus.class);
 
@@ -21,21 +21,21 @@ public enum CollectionStatus {
         return fiValue;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.lotju.wsdl.lam.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.kamera.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.lotju.wsdl.kamera.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }

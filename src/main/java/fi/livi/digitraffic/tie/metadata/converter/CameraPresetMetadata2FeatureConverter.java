@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
@@ -32,27 +32,28 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraFeatureCollection convert(final List<CameraPreset> stations) {
-        final CameraFeatureCollection collection = new CameraFeatureCollection();
+    public CameraStationFeatureCollection convert(final List<CameraPreset> stations) {
+        final CameraStationFeatureCollection collection = new CameraStationFeatureCollection();
 
         // Cameras mapped with cameraId
-        Map<String, CameraFeature> cameraMap = new HashMap<>();
+        Map<String, CameraStationFeature> cameraMap = new HashMap<>();
 
         for(final CameraPreset cp : stations) {
             // CameraPreset contains camera and preset informations and
             // camera info is duplicated on every preset db line
             // So we take camera only once
-            CameraFeature feature = cameraMap.get(cp.getCameraId());
+            CameraStationFeature feature = cameraMap.get(cp.getCameraId());
             if (feature == null) {
                 feature = convert(cp);
                 cameraMap.put(cp.getCameraId(), feature);
             }
-            // Camera can have multiple presets, so we gather them together
-            if (feature != null) {
-                collection.add(feature);
-                feature.getProperties().addPreset(convertPreset(cp));
-            }
+            feature.getProperties().addPreset(convertPreset(cp));
         }
+        // Camera can have multiple presets, so we gather them together
+        for (CameraStationFeature cameraStationFeature : cameraMap.values()) {
+            collection.add(cameraStationFeature);
+        }
+
         return collection;
     }
 
@@ -81,9 +82,9 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         return dto;
     }
 
-    private static CameraFeature convert(final CameraPreset cp) {
+    private static CameraStationFeature convert(final CameraPreset cp) {
         try {
-            final CameraFeature f = new CameraFeature();
+            final CameraStationFeature f = new CameraStationFeature();
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
             }
@@ -119,7 +120,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
 
             return f;
         } catch (RuntimeException e) {
-            log.error("Cold not convert " + cp + " to " + CameraFeature.class.getSimpleName());
+            log.error("Cold not convert " + cp + " to " + CameraStationFeature.class.getSimpleName());
             return null;
         }
     }

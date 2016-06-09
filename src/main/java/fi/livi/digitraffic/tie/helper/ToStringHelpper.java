@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
-import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
 
 /**
  * Provides helpper functions to stringify objects for logging
@@ -36,7 +36,7 @@ public class ToStringHelpper {
         sb = createStartSb(object);
     }
 
-    public static String toString(final LamAsema la) {
+    public static String toString(final LamAsemaVO la) {
         final StringBuffer sb = createStartSb(la);
         JSON_STYLE.append(sb, LOTJU_ID, la.getId());
         JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId());
@@ -46,7 +46,7 @@ public class ToStringHelpper {
         return sb.toString();
     }
 
-    public static String toString(final Kamera kamera) {
+    public static String toString(final KameraVO kamera) {
         final StringBuffer sb = createStartSb(kamera);
         JSON_STYLE.append(sb, LOTJU_ID, kamera.getId());
         JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId());
@@ -56,7 +56,7 @@ public class ToStringHelpper {
         return sb.toString();
     }
 
-    public static String toString(final TiesaaAsema tsa) {
+    public static String toString(final TiesaaAsemaVO tsa) {
         final StringBuffer sb = createStartSb(tsa);
         JSON_STYLE.append(sb, LOTJU_ID, tsa.getId());
         JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId());

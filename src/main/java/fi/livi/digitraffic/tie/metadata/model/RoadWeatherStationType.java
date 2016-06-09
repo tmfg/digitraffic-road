@@ -2,8 +2,9 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import javax.xml.bind.annotation.XmlEnumValue;
 
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsemaTyyppi;
 import org.apache.log4j.Logger;
+
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaTyyppi;
 
 public enum RoadWeatherStationType {
 

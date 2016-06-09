@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
@@ -24,8 +25,6 @@ import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.wsdl.lam.KeruunTILA;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
 
 @Service
 public class LamStationUpdater extends LamRoadStationAttributeUpdater {
@@ -39,8 +38,6 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
     private final StaticDataStatusService staticDataStatusService;
 
     private final LotjuLamStationClient lotjuLamStationClient;
-
-    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     @Autowired
     public LamStationUpdater(final RoadStationService roadStationService,
@@ -64,11 +61,11 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
             return;
         }
 
-        final List<LamAsema> stations = lotjuLamStationClient.getLamAsemas();
+        final List<LamAsemaVO> stations = lotjuLamStationClient.getLamAsemas();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched LAMs:");
-            for (final LamAsema station : stations) {
+            for (final LamAsemaVO station : stations) {
                 log.debug(ToStringBuilder.reflectionToString(station));
             }
         }
@@ -84,23 +81,23 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.LAM, updateStaticDataStatus);
     }
 
-    private boolean updateLamStations(final List<LamAsema> stations, final Map<Long, LamStation> currentStations) {
+    private boolean updateLamStations(final List<LamAsemaVO> stations, final Map<Long, LamStation> currentStations) {
         final List<LamStation> obsolete = new ArrayList<>(); // naturalIds of obsolete lam-stations
-        final List<Pair<LamAsema, LamStation>> update = new ArrayList<>(); // lam-stations to update
-        final List<LamAsema> insert = new ArrayList<>(); // new lam-stations
+        final List<Pair<LamAsemaVO, LamStation>> update = new ArrayList<>(); // lam-stations to update
+        final List<LamAsemaVO> insert = new ArrayList<>(); // new lam-stations
 
         int invalid = 0;
-        for (final LamAsema la : stations) {
+        for ( final LamAsemaVO la : stations ) {
 
-            if (validate(la)) {
+            if ( validate(la) ) {
                 final Long lamNaturalId = convertToLamNaturalId(la.getVanhaId());
 
 
                 final LamStation currentSaved = currentStations.remove(lamNaturalId);
 
-                if (currentSaved != null && POISTETUT.contains(la.getKeruunTila())) {
+                if ( currentSaved != null && KeruunTilaHelpper.isUnactiveKeruunTila(la.getKeruunTila()) ) {
                     obsolete.add(currentSaved);
-                } else if (currentSaved != null) {
+                } else if ( currentSaved != null ) {
                     update.add(Pair.of(la, currentSaved));
                 } else {
                     insert.add(la);
@@ -140,13 +137,13 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
     }
 
-    private int insertLamStations(final List<LamAsema> insert) {
+    private int insertLamStations(final List<LamAsemaVO> insert) {
 
         Map<Long, RoadAddress> roadAddressesMappedByLotjuId =
                 roadStationService.findAllRoadAddressesMappedByLotjuId();
 
         int counter = 0;
-        for (final LamAsema la : insert) {
+        for (final LamAsemaVO la : insert) {
             if (insertLamStation(la, roadAddressesMappedByLotjuId)) {
                 counter++;
             }
@@ -154,7 +151,7 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         return counter;
     }
 
-    private boolean insertLamStation(final LamAsema la, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
+    private boolean insertLamStation(final LamAsemaVO la, Map<Long, RoadAddress> roadAddressesMappedByLotjuId) {
 
         final Integer roadNaturalId = la.getTieosoite().getTienumero();
         final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
@@ -193,7 +190,7 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         }
     }
 
-    private static boolean validate(final LamAsema la) {
+    private static boolean validate(final LamAsemaVO la) {
         final boolean valid = la.getVanhaId() != null;
         if (!valid) {
             log.error(ToStringHelpper.toString(la) +" is invalid: has null vanhaId");
@@ -201,7 +198,7 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         return valid;
     }
 
-    private int updateLamStations(final List<Pair<LamAsema, LamStation>> update) {
+    private int updateLamStations(final List<Pair<LamAsemaVO, LamStation>> update) {
 
         Map<Long, RoadAddress> roadAddressesMappedByLotjuId =
                 roadStationService.findAllRoadAddressesMappedByLotjuId();
@@ -210,9 +207,9 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);
 
         int counter = 0;
-        for (final Pair<LamAsema, LamStation> pair : update) {
+        for (final Pair<LamAsemaVO, LamStation> pair : update) {
 
-            final LamAsema la = pair.getLeft();
+            final LamAsemaVO la = pair.getLeft();
             final LamStation ls = pair.getRight();
 
             log.debug("Updating " + ToStringHelpper.toString(la));
@@ -267,7 +264,7 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         return counter;
     }
 
-    private static boolean updateLamStationAttributes(final LamAsema from, final RoadDistrict roadDistrict, final LamStation to) {
+    private static boolean updateLamStationAttributes(final LamAsemaVO from, final RoadDistrict roadDistrict, final LamStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setNaturalId(convertToLamNaturalId(from.getVanhaId()));
         to.setLotjuId(from.getId());

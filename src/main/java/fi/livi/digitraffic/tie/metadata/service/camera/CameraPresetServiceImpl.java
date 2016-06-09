@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Service
@@ -54,8 +54,8 @@ public class CameraPresetServiceImpl implements CameraPresetService {
 
     @Transactional(readOnly = true)
     @Override
-    public CameraFeatureCollection findAllNonObsoleteCameraPresetsAsFeatureCollection() {
-        return cameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByRoadStationObsoleteFalseAndObsoleteDateIsNull());
+    public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection() {
+        return cameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalse());
 
     }
 }

@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.roadweather;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -27,9 +29,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuRoadWeatherStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.KeruunTILA;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaAsema;
-import fi.livi.digitraffic.tie.wsdl.tiesaa.TiesaaLaskennallinenAnturi;
 
 @Service
 public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUpdater {
@@ -38,8 +37,6 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
     private final RoadWeatherStationService roadWeatherStationService;
     private final StaticDataStatusService staticDataStatusService;
     private final LotjuRoadWeatherStationClient lotjuRoadWeatherStationClient;
-
-    private static final EnumSet<KeruunTILA> POISTETUT = EnumSet.of(KeruunTILA.POISTETTU_PYSYVASTI, KeruunTILA.POISTETTU_TILAPAISESTI);
 
     @Autowired
     public RoadWeatherStationUpdater(final RoadStationService roadStationService,
@@ -64,10 +61,10 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
             return;
         }
 
-        final List<TiesaaAsema> tiesaaAsemas = lotjuRoadWeatherStationClient.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuRoadWeatherStationClient.getTiesaaAsemmas();
 
         if (log.isDebugEnabled()) {
-            for (final TiesaaAsema tsa : tiesaaAsemas) {
+            for (final TiesaaAsemaVO tsa : tiesaaAsemas) {
                 log.debug(ToStringBuilder.reflectionToString(tsa));
             }
         }
@@ -91,7 +88,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         }
 
         // Update available RoadStationSensors types to db
-        List<TiesaaLaskennallinenAnturi> allTiesaaLaskennallinenAnturis =
+        List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuRoadWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
 
         updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
@@ -102,7 +99,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                 roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
         Set<Long> rwsLotjuIds = currentLotjuIdToRoadWeatherStationsMap.keySet();
         // Get sensors for current RoadWeatherStations
-        Map<Long, List<TiesaaLaskennallinenAnturi>> currentLRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap =
+        Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentLRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap =
                         lotjuRoadWeatherStationClient.getTiesaaLaskennallinenAnturis(rwsLotjuIds);
         // Update sensros of road stations
         final boolean updateStaticDataStatus =
@@ -113,16 +110,16 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         log.info("Update RoadStationSensors end");
     }
 
-    private boolean updateAllRoadStationSensors(List<TiesaaLaskennallinenAnturi> allTiesaaLaskennallinenAnturis) {
+    private boolean updateAllRoadStationSensors(List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
         Map<Long, RoadStationSensor> currentNaturalIdToSensorMap =
                 roadWeatherStationService.findAllRoadStationSensorsMappedByNaturalId();
 
         final List<RoadStationSensor> obsolete = new ArrayList<>(); // obsolete RoadWeatherStations
-        final List<Pair<TiesaaLaskennallinenAnturi, RoadStationSensor>> update = new ArrayList<>(); // RoadWeatherStations to update
-        final List<TiesaaLaskennallinenAnturi> insert = new ArrayList<>(); // new RoadWeatherStations
+        final List<Pair<TiesaaLaskennallinenAnturiVO, RoadStationSensor>> update = new ArrayList<>(); // RoadWeatherStations to update
+        final List<TiesaaLaskennallinenAnturiVO> insert = new ArrayList<>(); // new RoadWeatherStations
 
         int invalid = 0;
-        for (TiesaaLaskennallinenAnturi anturi : allTiesaaLaskennallinenAnturis) {
+        for (TiesaaLaskennallinenAnturiVO anturi : allTiesaaLaskennallinenAnturis) {
             if (validate(anturi)) {
                 final RoadStationSensor currentSaved = currentNaturalIdToSensorMap.remove(Long.valueOf(anturi.getVanhaId()));
 
@@ -170,22 +167,22 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 
-    private boolean updateWeatherStations(final List<TiesaaAsema> tiesaaAsemas) {
+    private boolean updateWeatherStations(final List<TiesaaAsemaVO> tiesaaAsemas) {
 
         final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap =
                 roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
 
         final List<RoadWeatherStation> obsolete = new ArrayList<>(); // obsolete RoadWeatherStations
-        final List<Pair<TiesaaAsema, RoadWeatherStation>> update = new ArrayList<>(); // RoadWeatherStations to update
-        final List<TiesaaAsema> insert = new ArrayList<>(); // new RoadWeatherStations
+        final List<Pair<TiesaaAsemaVO, RoadWeatherStation>> update = new ArrayList<>(); // RoadWeatherStations to update
+        final List<TiesaaAsemaVO> insert = new ArrayList<>(); // new RoadWeatherStations
 
         int invalid = 0;
-        for (final TiesaaAsema tsa : tiesaaAsemas) {
+        for (final TiesaaAsemaVO tsa : tiesaaAsemas) {
 
             if (validate(tsa)) {
                 final RoadWeatherStation currentSaved = currentLotjuIdToRoadWeatherStationMap.remove(tsa.getId());
 
-                if ( currentSaved != null && POISTETUT.contains(tsa.getKeruunTila()) ) {
+                if ( currentSaved != null && KeruunTilaHelpper.isUnactiveKeruunTila(tsa.getKeruunTila()) ) {
                     obsolete.add(currentSaved);
                 } else if ( currentSaved != null) {
                     update.add(Pair.of(tsa, currentSaved));
@@ -219,7 +216,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return obsoleted > 0 || inserted > 0;
     }
 
-    private int updateRoadWeatherStations(final List<Pair<TiesaaAsema, RoadWeatherStation>> update) {
+    private int updateRoadWeatherStations(final List<Pair<TiesaaAsemaVO, RoadWeatherStation>> update) {
 
         Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);
@@ -228,11 +225,11 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                 roadStationService.findAllRoadAddressesMappedByLotjuId();
 
         int counter = 0;
-        for (final Pair<TiesaaAsema, RoadWeatherStation> pair : update) {
+        for (final Pair<TiesaaAsemaVO, RoadWeatherStation> pair : update) {
 
-            final TiesaaAsema tsa = pair.getLeft();
+            final TiesaaAsemaVO tsa = pair.getLeft();
             final RoadWeatherStation rws = pair.getRight();
-            log.debug("Updating RoadWeatherStation " + rws.getId() + " naturalId " + rws.getRoadStation().getNaturalId());
+            log.info("Updating RoadWeatherStation " + rws.getId() + " naturalId " + rws.getRoadStation().getNaturalId());
 
             if (rws.getRoadStation() == null) {
                 final Integer naturalId = tsa.getVanhaId();
@@ -246,6 +243,8 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                 }
                 rws.setRoadStation(rs);
             }
+
+            roadStationService.save(rws.getRoadStation());
 
             if (tsa.getTieosoiteId() == null) {
                 log.info(ToStringHelpper.toString(tsa) + " had null tieosoiteId");
@@ -266,7 +265,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
     }
 
     private boolean updateSensorsOfRoadStations(
-            Map<Long, List<TiesaaLaskennallinenAnturi>> currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,
+            Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,
             Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationsMap) {
 
         Map<Long, RoadStationSensor> allSensors = roadWeatherStationService.findAllRoadStationSensorsMappedByNaturalId();
@@ -277,7 +276,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         int countRemove = 0;
         while (iter.hasNext()) {
             Long rwsLotjuId = iter.next();
-            List<TiesaaLaskennallinenAnturi> rwsAnturis = currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.get(rwsLotjuId);
+            List<TiesaaLaskennallinenAnturiVO> rwsAnturis = currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.get(rwsLotjuId);
             iter.remove();
 
             RoadWeatherStation rws = currentLotjuIdToRoadWeatherStationsMap.get(rwsLotjuId);
@@ -295,7 +294,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                 naturalIdToSensorMap.put(sensor.getNaturalId(), sensor);
             }
 
-            for (TiesaaLaskennallinenAnturi rwsAnturi : rwsAnturis) {
+            for (TiesaaLaskennallinenAnturiVO rwsAnturi : rwsAnturis) {
                 Long sensorNaturalId = Long.valueOf(rwsAnturi.getVanhaId());
                 RoadStationSensor sensor = naturalIdToSensorMap.remove(sensorNaturalId);
                 // road station doesn't have mapping for sensor -> add it
@@ -320,22 +319,17 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         }
 
         int notFound = 0;
-        for (List<TiesaaLaskennallinenAnturi> values : currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.values()) {
+        for (List<TiesaaLaskennallinenAnturiVO> values : currentRoadWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.values()) {
             notFound =+ values.size();
         }
-        if (notFound > 0) {
-            log.info("RoadStation not found for " + notFound + " TiesaaLaskennallinenAnturis");
-        }
-        if (countRemove > 0) {
-            log.info("Sensor removed from road stations " + countRemove);
-        }
-        if (countRemove > 0) {
-            log.info("Sensor added to road stations " + countAdd);
-        }
+        log.info("RoadStation not found for " + notFound + " TiesaaLaskennallinenAnturis");
+        log.info("Sensor removed from road stations " + countRemove);
+        log.info("Sensor added to road stations " + countAdd);
+
         return countAdd > 0 || countRemove > 0;
     }
 
-    private int insertRoadWeatherStations(final List<TiesaaAsema> insert) {
+    private int insertRoadWeatherStations(final List<TiesaaAsemaVO> insert) {
 
         final List<RoadStation> currentOrphanRoadStations = !insert.isEmpty() ?
                 roadStationService.findOrphanWeatherStationRoadStations() : Collections.emptyList();
@@ -347,7 +341,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
 
         Map<Long, RoadAddress> roadAddressesMappedByLotjuId = roadStationService.findAllRoadAddressesMappedByLotjuId();
 
-        for (final TiesaaAsema tsa : insert) {
+        for (final TiesaaAsemaVO tsa : insert) {
 
             RoadWeatherStation rws = new RoadWeatherStation();
 
@@ -376,7 +370,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return insert.size();
     }
 
-    private static boolean validate(final TiesaaAsema tsa) {
+    private static boolean validate(final TiesaaAsemaVO tsa) {
         if (tsa.getVanhaId() == null) {
             log.error(ToStringHelpper.toString(tsa) + " is invalid: has null vanhaId");
             return false;
@@ -384,11 +378,11 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return true;
     }
 
-    private static boolean validate(final TiesaaLaskennallinenAnturi tsa) {
+    private static boolean validate(final TiesaaLaskennallinenAnturiVO tsa) {
         return tsa.getId() != null && tsa.getVanhaId() != null;
     }
 
-    private static boolean updateRoadWeatherStationAttributes(final TiesaaAsema from,
+    private static boolean updateRoadWeatherStationAttributes(final TiesaaAsemaVO from,
                                                               final RoadWeatherStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
@@ -411,10 +405,10 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return counter;
     }
 
-    private int insertRoadStationSensors(List<TiesaaLaskennallinenAnturi> insert) {
+    private int insertRoadStationSensors(List<TiesaaLaskennallinenAnturiVO> insert) {
 
         int counter = 0;
-        for (TiesaaLaskennallinenAnturi anturi : insert) {
+        for (TiesaaLaskennallinenAnturiVO anturi : insert) {
             RoadStationSensor sensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, sensor);
             sensor = roadWeatherStationService.saveRoadStationSensor(sensor);
@@ -424,12 +418,12 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return counter;
     }
 
-    private static int updateRoadStationSensors(final List<Pair<TiesaaLaskennallinenAnturi, RoadStationSensor>> update) {
+    private static int updateRoadStationSensors(final List<Pair<TiesaaLaskennallinenAnturiVO, RoadStationSensor>> update) {
 
         int counter = 0;
-        for (final Pair<TiesaaLaskennallinenAnturi, RoadStationSensor> pair : update) {
+        for (final Pair<TiesaaLaskennallinenAnturiVO, RoadStationSensor> pair : update) {
 
-            final TiesaaLaskennallinenAnturi anturi = pair.getLeft();
+            final TiesaaLaskennallinenAnturiVO anturi = pair.getLeft();
             final RoadStationSensor sensor = pair.getRight();
             log.debug("Updating " + sensor);
 
@@ -440,7 +434,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return counter;
     }
 
-    private static boolean updateRoadStationSensorAttributes(TiesaaLaskennallinenAnturi from, RoadStationSensor to) {
+    private static boolean updateRoadStationSensorAttributes(TiesaaLaskennallinenAnturiVO from, RoadStationSensor to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setObsolete(false);

@@ -22,9 +22,9 @@ public class MetadataMarshallerConfiguration {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
         marshaller.setContextPaths(
-                "fi.livi.digitraffic.tie.wsdl.lam",
-                "fi.livi.digitraffic.tie.wsdl.kamera",
-                "fi.livi.digitraffic.tie.wsdl.tiesaa");
+                "fi.livi.digitraffic.tie.lotju.wsdl.lam",
+                "fi.livi.digitraffic.tie.lotju.wsdl.kamera",
+                "fi.livi.digitraffic.tie.lotju.wsdl.tiesaa");
         return marshaller;
     }
 
