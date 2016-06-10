@@ -13,7 +13,8 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "SELECT S.*\n" +
             "FROM ROAD_STATION_SENSOR S\n" +
             "WHERE S.OBSOLETE = 0\n" +
-            "  AND S.NATURAL_ID < 60000",
+            "  AND S.NATURAL_ID < 60000\n" +
+            "ORDER BY S.NATURAL_ID",
            nativeQuery = true)
     List<RoadStationSensor> findNonObsoleteRoadStationSensors();
 }

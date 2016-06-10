@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
-public class RoadStationSensor {
+public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     /** These id:s are for station status sensors */
     public static final Set<Long> RS_STATUS_SENSORS_NATURAL_IDS_SET =
@@ -187,5 +187,10 @@ public class RoadStationSensor {
                 .appendField("nameFi", getNameFi())
                 .appendField("unit", getUnit())
                 .toString();
+    }
+
+    @Override
+    public int compareTo(RoadStationSensor o) {
+        return Long.compare(this.getNaturalId(), o.getNaturalId());
     }
 }

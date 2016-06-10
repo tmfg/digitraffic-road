@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -53,10 +54,12 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     public void setSensors(List<RoadStationSensor> sensors) {
         this.sensors = sensors;
+        Collections.sort(sensors);
     }
 
     public void addSensor(RoadStationSensor roadStationSensor) {
         sensors.add(roadStationSensor);
+        Collections.sort(sensors);
     }
 
     @Override

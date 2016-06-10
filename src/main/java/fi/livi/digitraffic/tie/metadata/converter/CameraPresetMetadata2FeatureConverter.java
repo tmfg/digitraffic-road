@@ -32,26 +32,23 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraStationFeatureCollection convert(final List<CameraPreset> stations) {
+    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets) {
         final CameraStationFeatureCollection collection = new CameraStationFeatureCollection();
 
         // Cameras mapped with cameraId
-        Map<String, CameraStationFeature> cameraMap = new HashMap<>();
+        Map<String, CameraStationFeature> cameraStationMap = new HashMap<>();
 
-        for(final CameraPreset cp : stations) {
+        for(final CameraPreset cp : cameraPresets) {
             // CameraPreset contains camera and preset informations and
             // camera info is duplicated on every preset db line
             // So we take camera only once
-            CameraStationFeature feature = cameraMap.get(cp.getCameraId());
-            if (feature == null) {
-                feature = convert(cp);
-                cameraMap.put(cp.getCameraId(), feature);
+            CameraStationFeature cameraStationFeature = cameraStationMap.get(cp.getCameraId());
+            if (cameraStationFeature == null) {
+                cameraStationFeature = convert(cp);
+                cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
+                collection.add(cameraStationFeature);
             }
-            feature.getProperties().addPreset(convertPreset(cp));
-        }
-        // Camera can have multiple presets, so we gather them together
-        for (CameraStationFeature cameraStationFeature : cameraMap.values()) {
-            collection.add(cameraStationFeature);
+            cameraStationFeature.getProperties().addPreset(convertPreset(cp));
         }
 
         return collection;
