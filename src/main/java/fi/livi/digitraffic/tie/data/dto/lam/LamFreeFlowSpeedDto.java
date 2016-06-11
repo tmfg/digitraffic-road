@@ -5,8 +5,10 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(value = "LamFreeFlowSpeedData")
 @Entity
 @Immutable
 public class LamFreeFlowSpeedDto {

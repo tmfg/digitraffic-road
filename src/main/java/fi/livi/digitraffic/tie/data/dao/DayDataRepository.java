@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.dto.daydata.LinkDataDto;
+import fi.livi.digitraffic.tie.data.dto.daydata.LinkMeasurementDataDto;
 
 @Repository
-public interface DayDataRepository extends org.springframework.data.repository.Repository<LinkDataDto, Long> {
+public interface DayDataRepository extends org.springframework.data.repository.Repository<LinkMeasurementDataDto, Long> {
     @Query(value =
             "SELECT ROWNUM\n" +
             "     , (M.END_TIMESTAMP - TRUNC(M.END_TIMESTAMP)) * 1440 AS MINUTE\n" +
@@ -28,5 +28,5 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LinkDataDto> listAllMedianTravelTimes();
+    List<LinkMeasurementDataDto> listAllMedianTravelTimes();
 }

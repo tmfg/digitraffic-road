@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.RoadStationStatusRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatuses;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
 
 @Service
 public class RoadStationStatusServiceImpl implements RoadStationStatusService {
@@ -18,7 +18,7 @@ public class RoadStationStatusServiceImpl implements RoadStationStatusService {
 
     @Override
     @Transactional(readOnly = true)
-    public RoadStationStatuses findAllRoadStationStatuses() {
-        return new RoadStationStatuses(roadStationStatusRepository.findAllRoadStationStatuses());
+    public RoadStationStatusesData findAllRoadStationStatuses() {
+        return new RoadStationStatusesData(roadStationStatusRepository.findAllRoadStationStatuses());
     }
 }

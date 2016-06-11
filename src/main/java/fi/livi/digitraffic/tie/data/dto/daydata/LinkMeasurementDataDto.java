@@ -9,12 +9,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
+@ApiModel(value = "LinkMeasurementData")
 @JsonPropertyOrder({"fc", "m", "sp", "tt"})
-public class LinkDataDto {
+public class LinkMeasurementDataDto {
     @Id
     @JsonIgnore
     private int rownum;

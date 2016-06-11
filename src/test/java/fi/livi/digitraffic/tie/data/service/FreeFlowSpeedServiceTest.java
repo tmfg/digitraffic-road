@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 
 public class FreeFlowSpeedServiceTest extends MetadataTest {
 
@@ -14,16 +14,16 @@ public class FreeFlowSpeedServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations() {
-        final FreeFlowSpeedDataObjectDto object = freeFlowSpeedService.listAllFreeFlowSpeeds();
+        final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listAllFreeFlowSpeeds();
 
         Assert.notNull(object);
         Assert.notNull(object.getDataLocalTime());
         Assert.notNull(object.getDataUtc());
 
-        Assert.notNull(object.getLamData());
-        Assert.notEmpty(object.getLamData());
+        Assert.notNull(object.getLamFreeFlowSpeeds());
+        Assert.notEmpty(object.getLamFreeFlowSpeeds());
 
-        Assert.notNull(object.getLinkData());
-        Assert.notEmpty(object.getLinkData());
+        Assert.notNull(object.getLinkFreeFlowSpeeds());
+        Assert.notEmpty(object.getLinkFreeFlowSpeeds());
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,8 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "RoadStationSensorValue", description = "Road wather station sensor value")
 @JsonPropertyOrder(value = { "sensorNameFi", "sensorNameEn", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RoadStationSensorValueDto {
-
+public class RoadStationSensorValueDto implements DataObjectDto {
 
     @Id
     @JsonIgnore
@@ -33,10 +31,6 @@ public class RoadStationSensorValueDto {
 
     @ApiModelProperty(value = "Measured sensor value unit", required = true, position = 4)
     private String sensorUnit;
-
-    @JsonIgnore
-    @ApiModelProperty(value = "Sensor value measurement time", required = true)
-    private LocalDateTime sensorValueMeasured;
 
     @JsonIgnore
     private long roadStationNaturalId;
@@ -65,6 +59,9 @@ public class RoadStationSensorValueDto {
 
     @ApiModelProperty(value = "Additional information of sensor value [en]")
     private String sensorValueDescriptionEn;
+
+    @JsonIgnore
+    private LocalDateTime measured;
 
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -114,24 +111,6 @@ public class RoadStationSensorValueDto {
         this.sensorValue = sensorValue;
     }
 
-    public LocalDateTime getSensorValueMeasured() {
-        return sensorValueMeasured;
-    }
-
-    public void setSensorValueMeasured(LocalDateTime sensorValueMeasured) {
-        this.sensorValueMeasured = sensorValueMeasured;
-    }
-
-    @ApiModelProperty(value = "Sensor value measurement " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true, position = 5)
-    public String getSensorValueMeasuredLocalTime() {
-        return ToStringHelpper.toString(sensorValueMeasured, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Sensor value measurement " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true, position = 6)
-    public String getSensorValueMeasuredUtc() {
-        return ToStringHelpper.toString(sensorValueMeasured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
-    }
-
     public String getSensorNameEn() {
         return sensorNameEn;
     }
@@ -178,5 +157,14 @@ public class RoadStationSensorValueDto {
 
     public void setSensorShortNameFi(String sensorShortNameFi) {
         this.sensorShortNameFi = sensorShortNameFi;
+    }
+
+    @Override
+    public LocalDateTime getMeasured() {
+        return measured;
+    }
+
+    public void setMeasured(LocalDateTime measured) {
+        this.measured = measured;
     }
 }

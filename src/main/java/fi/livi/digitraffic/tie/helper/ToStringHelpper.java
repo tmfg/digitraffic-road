@@ -120,7 +120,8 @@ public class ToStringHelpper {
         } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
             return zonedDateTime.toOffsetDateTime().toString();
         }
-        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() + " not implemented");
+        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() +
+                " for " + timestampFormat + " not implemented");
     }
 
     public static String toString(LocalDateTime localDateTime, TimestampFormat timestampFormat) {
@@ -133,6 +134,7 @@ public class ToStringHelpper {
         } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
             return zonedDateTime.toOffsetDateTime().toString();
         }
-        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() + " not implemented");
+        throw new NotImplementedException("ToString for " + localDateTime.getClass().getSimpleName() +
+                " for " + timestampFormat + " not implemented");
     }
 }

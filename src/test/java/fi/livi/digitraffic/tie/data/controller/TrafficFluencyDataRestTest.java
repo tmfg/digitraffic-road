@@ -23,16 +23,16 @@ public class TrafficFluencyDataRestTest extends RestTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.latestMedianData", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.latestMedianData[0]", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.latestMedianData[0].averageSpeed", Matchers.isA(Double.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].linkId", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].measurementLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].measurementUtc", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].medianJourneyTime", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].nobs", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].fluencyClass.code", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.latestMedianData[0].fluencyClass.nameEn", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.latestMedians", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.latestMedians[0]", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.latestMedians[0].averageSpeed", Matchers.isA(Double.class)))
+                .andExpect(jsonPath("$.latestMedians[0].linkId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.latestMedians[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.latestMedians[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.latestMedians[0].medianJourneyTime", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.latestMedians[0].nobs", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.latestMedians[0].fluencyClass.code", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.latestMedians[0].fluencyClass.nameEn", Matchers.isA(String.class)))
                 ;
     }
 }

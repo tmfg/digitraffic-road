@@ -1,11 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -25,10 +22,6 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name" })
 public class CameraProperties extends RoadStationProperties {
-
-    /** Presentation names that are set for unknown directions in Lotju */
-    private static final Set<String> UNKNOWN_PRESENTATION_NAMES =
-            new HashSet(Arrays.asList(new String[] {"-", "–", "PUUTTUU"}));
 
     @JsonIgnore // Camerapreset id
     private long id;
@@ -140,12 +133,5 @@ public class CameraProperties extends RoadStationProperties {
                 .append(description)
                 .append(presets)
                 .toHashCode();
-    }
-
-    public static boolean isUnknownPresentationName(String name) {
-        if (name == null) {
-            return false;
-        }
-        return UNKNOWN_PRESENTATION_NAMES.contains(name.trim().toUpperCase());
     }
 }

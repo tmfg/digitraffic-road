@@ -14,16 +14,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
 import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
-@ApiModel(description = "The message contains the latest 5 minute median, corresponding average speed, fluency class, and timestamp of the latest update for each link.")
+@ApiModel(value = "LatestMedianData", description = "The message contains the latest 5 minute median, corresponding average speed, fluency class, and timestamp of the latest update for each link.")
 @Immutable
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LatestMedianDataDto {
+public class LatestMedianDataDto implements DataObjectDto {
 
     @Id
     @JsonIgnore
@@ -32,9 +32,6 @@ public class LatestMedianDataDto {
     @ApiModelProperty(value = "Average speed, calculated based on the median journey time [km/h]", required = true)
     @NotNull
     private BigDecimal averageSpeed;
-
-    @JsonIgnore
-    private LocalDateTime measurementTimestamp;
 
     @ApiModelProperty(value = "Median of journey times for this link, based on 5 minutes [s]", required = true)
     private Long medianJourneyTime;
@@ -54,30 +51,15 @@ public class LatestMedianDataDto {
     @Transient
     private FluencyClass fluencyClass;
 
+    @JsonIgnore
+    private LocalDateTime measured;
+
     public BigDecimal getAverageSpeed() {
         return averageSpeed;
     }
 
     public void setAverageSpeed(BigDecimal averageSpeed) {
         this.averageSpeed = averageSpeed;
-    }
-
-    public LocalDateTime getMeasurementTimestamp() {
-        return measurementTimestamp;
-    }
-
-    public void setMeasurementTimestamp(LocalDateTime measurementTimestamp) {
-        this.measurementTimestamp = measurementTimestamp;
-    }
-
-    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    public String getMeasurementLocalTime() {
-        return ToStringHelpper.toString(measurementTimestamp, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
-    public String getMeasurementUtc() {
-        return ToStringHelpper.toString(measurementTimestamp, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 
     public Long getMedianJourneyTime() {
@@ -124,9 +106,17 @@ public class LatestMedianDataDto {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + ", avg speed=" + averageSpeed
-                + ", end time=" + measurementTimestamp + ", median tt="
+                + ", end time=" + getMeasuredLocalTime() + ", median tt="
                 + medianJourneyTime + ", nobs=" + nobs + ", ratio="
                 + ratioToFreeFlowSpeed + ", link=" + linkNaturalId;
     }
 
+    @Override
+    public LocalDateTime getMeasured() {
+        return measured;
+    }
+
+    public void setMeasured(LocalDateTime measured) {
+        this.measured = measured;
+    }
 }

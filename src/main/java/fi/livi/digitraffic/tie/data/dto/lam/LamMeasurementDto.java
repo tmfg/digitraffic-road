@@ -7,16 +7,17 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
-@JsonPropertyOrder({ "localTime", "utc"})
-public class LamMeasurementDto {
+@ApiModel(value = "LamMeasurementData")
+@JsonPropertyOrder({ "lamId", "trafficVolume1", "trafficVolume2", "averageSpeed1", "averageSpeed1", "localTime", "utc"})
+public class LamMeasurementDto implements DataObjectDto {
 
     @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
     @Id
@@ -34,7 +35,6 @@ public class LamMeasurementDto {
     @ApiModelProperty(value = "Average speed to direction 2", required = true)
     private long averageSpeed2;
 
-    @JsonIgnore
     private LocalDateTime measured;
 
     public long getLamId() {
@@ -81,17 +81,7 @@ public class LamMeasurementDto {
         return measured;
     }
 
-    public void setMeasured(final LocalDateTime measured) {
+    public void setMeasured(LocalDateTime measured) {
         this.measured = measured;
-    }
-
-    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    public String getMeasurementLocalTime() {
-        return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Measurement " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
-    public String getMeasurementUtc() {
-        return ToStringHelpper.toString(measured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 }

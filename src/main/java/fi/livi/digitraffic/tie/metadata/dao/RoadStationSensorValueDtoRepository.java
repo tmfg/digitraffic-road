@@ -17,7 +17,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
             "     , s.id sensor_id\n" +
             "     , sv.id sensor_value_id\n" +
             "     , sv.value sensor_value\n" +
-            "     , sv.measured sensor_value_measured\n" +
+            "     , sv.measured\n" +
             "     , s.name sensor_name_en\n" +
             "     , s.name_fi sensor_name_fi\n" +
             "     , s.short_name_fi sensor_short_name_fi\n" +
