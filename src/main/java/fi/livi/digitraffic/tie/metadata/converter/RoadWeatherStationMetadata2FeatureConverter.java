@@ -9,9 +9,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 
 public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -43,8 +41,10 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         properties.setLotjuId(rws.getLotjuId());
         properties.setRoadWeatherStationType(rws.getRoadWeatherStationType());
 
-        for (RoadWeatherSensor rwSensor : rws.getRoadWeatherSensors()) {
-            properties.addSensor(convert(rwSensor));
+        if (rws.getRoadStation() != null) {
+            for (fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
+                properties.addSensor(rSSensor);
+            }
         }
 
         // RoadStation properties
@@ -66,16 +66,5 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         }
 
         return f;
-    }
-
-    private static RoadWeatherStationSensor convert(RoadWeatherSensor roadWeatherSensor) {
-        RoadWeatherStationSensor meta = new RoadWeatherStationSensor();
-        meta.setId(roadWeatherSensor.getId());
-        meta.setLotjuId(roadWeatherSensor.getLotjuId());
-        meta.setAltitude(roadWeatherSensor.getAltitude());
-        meta.setDescription(roadWeatherSensor.getDescription());
-        meta.setName(roadWeatherSensor.getName());
-        meta.setSensorTypeId(roadWeatherSensor.getSensorTypeId());
-        return meta;
     }
 }

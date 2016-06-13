@@ -10,7 +10,6 @@
         <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>1</suunta>
-        <viive>10</viive>
         <id>1663</id>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -24,7 +23,6 @@
         <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>2</suunta>
-        <viive>10</viive>
         <id>1781</id>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

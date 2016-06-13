@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiResponses;
 public class Metadata {
 
     public static final String LAM_STATIONS_PATH = "/lam-stations";
-    public static final String CAMERA_PRESETS_PATH = "/camera-presets";
+    public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String ROAD_WEATHER_STATIONS_PATH = "/road-weather-stations";
     public static final String ROAD_STATION_SENSORS_PATH = "/road-station-sensors";
     public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
@@ -66,11 +66,11 @@ public class Metadata {
     }
 
     @ApiOperation("The static information of weather camera presets")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESETS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraPresetFeatureCollection listNonObsoleteCameraPresets() {
-        return cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
+    public CameraStationFeatureCollection listNonObsoleteCameraPresets() {
+        return cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
     }
 
     @ApiOperation("The static information of road weather stations")

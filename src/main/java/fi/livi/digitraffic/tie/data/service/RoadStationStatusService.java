@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatuses;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
 
 public interface RoadStationStatusService {
-    RoadStationStatuses findAllRoadStationStatuses();
+    RoadStationStatusesData findAllRoadStationStatuses();
 }

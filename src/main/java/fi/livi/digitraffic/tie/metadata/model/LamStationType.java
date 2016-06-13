@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.digitraffic.tie.wsdl.lam.LamAsemaTyyppi;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaTyyppi;
 
 public enum LamStationType {
 

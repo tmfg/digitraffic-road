@@ -9,7 +9,6 @@
         <nimiLaitteella>-</nimiLaitteella>
         <resoluutio>0x0</resoluutio>
         <suunta>0</suunta>
-        <viive>0</viive>
         <id>1165</id>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

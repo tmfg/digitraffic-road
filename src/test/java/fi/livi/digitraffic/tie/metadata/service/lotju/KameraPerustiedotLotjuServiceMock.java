@@ -13,33 +13,33 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.wsdl.kamera.Esiasento;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.digitraffic.tie.wsdl.kamera.HaeKaikkiKameratResponse;
-import fi.livi.digitraffic.tie.wsdl.kamera.Kamera;
-import fi.livi.digitraffic.tie.wsdl.kamera.KameraKokoonpano;
-import fi.livi.digitraffic.tie.wsdl.kamera.KameraPerustiedot;
-import fi.livi.digitraffic.tie.wsdl.kamera.KameraPerustiedotEndpointService;
-import fi.livi.digitraffic.tie.wsdl.kamera.KameraPerustiedotException;
-import fi.livi.digitraffic.tie.wsdl.kamera.ObjectFactory;
-import fi.livi.digitraffic.tie.wsdl.kamera.Videopalvelin;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKameratResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraKokoonpanoVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotEndpoint;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotException;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotV1;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.ObjectFactory;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.VideopalvelinVO;
 
 @Service
-public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implements KameraPerustiedot {
+public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implements KameraPerustiedotEndpoint {
 
     private static final Logger log = Logger.getLogger(KameraPerustiedotLotjuServiceMock.class);
 
-    private List<Kamera> initialKameras;
-    private List<Kamera> afterChangeKameras;
-    private Map<Long, List<Esiasento>> initialEsiasentos = new HashMap<>();
-    private Map<Long, List<Esiasento>> afterChangeEsiasentos = new HashMap<>();
+    private List<KameraVO> initialKameras;
+    private List<KameraVO> afterChangeKameras;
+    private Map<Long, List<EsiasentoVO>> initialEsiasentos = new HashMap<>();
+    private Map<Long, List<EsiasentoVO>> afterChangeEsiasentos = new HashMap<>();
     private boolean inited;
 
     @Autowired
     public KameraPerustiedotLotjuServiceMock(@Value("${metadata.server.address.camera}")
                                              final String metadataServerAddressCamera,
                                              final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedot.class, KameraPerustiedotEndpointService.SERVICE);
+        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV1.SERVICE);
     }
 
     @Override
@@ -56,11 +56,11 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         }
     }
 
-    private void appendEsiasentos(List<Esiasento> esiasentos, Map<Long, List<Esiasento>>...esiasentosMap) {
-        for (Esiasento ea : esiasentos) {
+    private void appendEsiasentos(List<EsiasentoVO> esiasentos, Map<Long, List<EsiasentoVO>>...esiasentosMap) {
+        for (EsiasentoVO ea : esiasentos) {
             long kId = ea.getKameraId();
-            for (Map<Long, List<Esiasento>> eaMap : esiasentosMap) {
-                List<Esiasento> eas = eaMap.get(Long.valueOf(kId));
+            for (Map<Long, List<EsiasentoVO>> eaMap : esiasentosMap) {
+                List<EsiasentoVO> eas = eaMap.get(Long.valueOf(kId));
                 if (eas == null) {
                     eas = new ArrayList<>();
                     eaMap.put(kId, eas);
@@ -70,9 +70,9 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         }
     }
 
-    private List<Kamera> readKameras(String filePath) {
+    private List<KameraVO> readKameras(String filePath) {
         HaeKaikkiKameratResponse responseValue = (HaeKaikkiKameratResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
-        for ( Kamera k : responseValue.getKamerat() ) {
+        for ( KameraVO k : responseValue.getKamerat() ) {
             Assert.assertEquals(0, k.getKokoonpanoId());
             Assert.assertEquals(0, k.getVideopalvelinId());
 
@@ -97,54 +97,54 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
         return responseValue.getKamerat();
     }
 
-    private List<Esiasento> readEsiasentos(String filePath) {
+    private List<EsiasentoVO> readEsiasentos(String filePath) {
         HaeEsiasennotKameranTunnuksellaResponse responseValue = (HaeEsiasennotKameranTunnuksellaResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
         return responseValue.getEsiasennot();
     }
 
-    public List<Kamera> getInitialKameras() {
+    public List<KameraVO> getInitialKameras() {
         return initialKameras;
     }
 
-    public void setInitialKameras(List<Kamera> initialKameras) {
+    public void setInitialKameras(List<KameraVO> initialKameras) {
         this.initialKameras = initialKameras;
     }
 
-    public void setAfterChangeKameras(List<Kamera> afterChangeKameras) {
+    public void setAfterChangeKameras(List<KameraVO> afterChangeKameras) {
         this.afterChangeKameras = afterChangeKameras;
     }
 
-    public List<Kamera> getAfterChangeKameras() {
+    public List<KameraVO> getAfterChangeKameras() {
         return afterChangeKameras;
     }
 
-    public void setInitialEsiasentos(Map<Long, List<Esiasento>> initialEsiasentos) {
+    public void setInitialEsiasentos(Map<Long, List<EsiasentoVO>> initialEsiasentos) {
         this.initialEsiasentos = initialEsiasentos;
     }
 
-    public Map<Long, List<Esiasento>> getInitialEsiasentos() {
+    public Map<Long, List<EsiasentoVO>> getInitialEsiasentos() {
         return initialEsiasentos;
     }
 
     /* KameraPerustiedot Service methods */
 
     @Override
-    public Kamera haeKamera(Long id) throws KameraPerustiedotException {
+    public KameraVO haeKamera(Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeKamera");
     }
 
     @Override
-    public List<Kamera> haeKameratVideopalvelimenTunnuksella(Long id) throws KameraPerustiedotException {
+    public List<KameraVO> haeKameratVideopalvelimenTunnuksella(Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override
-    public Videopalvelin haeVideopalvelin(Long id) throws KameraPerustiedotException {
+    public VideopalvelinVO haeVideopalvelin(Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeVideopalvelin");
     }
 
     @Override
-    public List<Esiasento> haeEsiasennotKameranTunnuksella(Long id) throws KameraPerustiedotException {
+    public List<EsiasentoVO> haeEsiasennotKameranTunnuksella(Long id) throws KameraPerustiedotException {
         log.info("haeEsiasennotKameranTunnuksella " + id);
         if (isStateAfterChange()) {
             return getAfterChangeEsiasentos().get(id);
@@ -153,17 +153,17 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     }
 
     @Override
-    public Esiasento haeEsiasento(Long id) throws KameraPerustiedotException {
+    public EsiasentoVO haeEsiasento(Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeEsiasento");
     }
 
     @Override
-    public KameraKokoonpano haeKokoonpanoKameranTunnuksella(Long id) throws KameraPerustiedotException {
+    public KameraKokoonpanoVO haeKokoonpanoKameranTunnuksella(Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeKokoonpanoKameranTunnuksella");
     }
 
     @Override
-    public List<Kamera> haeKaikkiKamerat() throws KameraPerustiedotException {
+    public List<KameraVO> haeKaikkiKamerat() throws KameraPerustiedotException {
         log.info("haeKaikkiKamerat isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
             return getAfterChangeKameras();
@@ -172,15 +172,15 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     }
 
     @Override
-    public List<Videopalvelin> haeKaikkiVideopalvelimet() throws KameraPerustiedotException {
+    public List<VideopalvelinVO> haeKaikkiVideopalvelimet() throws KameraPerustiedotException {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
-    public Map<Long, List<Esiasento>> getAfterChangeEsiasentos() {
+    public Map<Long, List<EsiasentoVO>> getAfterChangeEsiasentos() {
         return afterChangeEsiasentos;
     }
 
-    public void setAfterChangeEsiasentos(Map<Long, List<Esiasento>> afterChangeEsiasentos) {
+    public void setAfterChangeEsiasentos(Map<Long, List<EsiasentoVO>> afterChangeEsiasentos) {
         this.afterChangeEsiasentos = afterChangeEsiasentos;
     }
 }

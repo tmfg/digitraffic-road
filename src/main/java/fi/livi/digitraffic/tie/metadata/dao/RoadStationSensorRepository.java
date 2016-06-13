@@ -10,10 +10,11 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 public interface RoadStationSensorRepository extends JpaRepository<RoadStationSensor, Long> {
 
     @Query(value =
-            "select *\n" +
-            "from road_station_sensor\n" +
-            "where obsolete = 0\n" +
-            "  and natural_id < 60000",
+            "SELECT S.*\n" +
+            "FROM ROAD_STATION_SENSOR S\n" +
+            "WHERE S.OBSOLETE = 0\n" +
+            "  AND S.NATURAL_ID < 60000\n" +
+            "ORDER BY S.NATURAL_ID",
            nativeQuery = true)
     List<RoadStationSensor> findNonObsoleteRoadStationSensors();
 }

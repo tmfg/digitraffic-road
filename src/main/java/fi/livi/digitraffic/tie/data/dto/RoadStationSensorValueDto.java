@@ -8,18 +8,19 @@ import javax.persistence.Id;
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
 @ApiModel(value = "RoadStationSensorValue", description = "Road wather station sensor value")
-@JsonPropertyOrder(value = { "sensorName", "sensorId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
-public class RoadStationSensorValueDto {
+@JsonPropertyOrder(value = { "sensorNameFi", "sensorNameEn", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class RoadStationSensorValueDto implements DataObjectDto {
 
     @Id
     @JsonIgnore
@@ -32,24 +33,35 @@ public class RoadStationSensorValueDto {
     private String sensorUnit;
 
     @JsonIgnore
-    @ApiModelProperty(value = "Sensor value measurement time", required = true)
-    private LocalDateTime sensorValueMeasured;
-
-    @JsonIgnore
     private long roadStationNaturalId;
 
     @JsonIgnore
     private long roadStationId;
 
     @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 2)
-    @JsonProperty("sensorId")
+    @JsonProperty(value = "id")
     private long sensorNaturalId;
 
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor name", position = 1, required = true)
-    private String sensorName;
+    @ApiModelProperty(value = "Sensor name [en]", position = 1)
+    private String sensorNameEn;
+
+    @ApiModelProperty(value = "Sensor name [fi]", position = 1, required = true)
+    private String sensorNameFi;
+
+    @ApiModelProperty(value = "Sensor short name [fi]", position = 1, required = true)
+    private String sensorShortNameFi;
+
+    @ApiModelProperty(value = "Additional information of sensor value [fi]")
+    private String sensorValueDescriptionFi;
+
+    @ApiModelProperty(value = "Additional information of sensor value [en]")
+    private String sensorValueDescriptionEn;
+
+    @JsonIgnore
+    private LocalDateTime measured;
 
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -99,30 +111,12 @@ public class RoadStationSensorValueDto {
         this.sensorValue = sensorValue;
     }
 
-    public LocalDateTime getSensorValueMeasured() {
-        return sensorValueMeasured;
+    public String getSensorNameEn() {
+        return sensorNameEn;
     }
 
-    public void setSensorValueMeasured(LocalDateTime sensorValueMeasured) {
-        this.sensorValueMeasured = sensorValueMeasured;
-    }
-
-    @ApiModelProperty(value = "Sensor value measurement " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true, position = 5)
-    public String getSensorValueMeasuredLocalTime() {
-        return ToStringHelpper.toString(sensorValueMeasured, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Sensor value measurement " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true, position = 6)
-    public String getSensorValueMeasuredUtc() {
-        return ToStringHelpper.toString(sensorValueMeasured, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
-    }
-
-    public String getSensorName() {
-        return sensorName;
-    }
-
-    public void setSensorName(String sensorName) {
-        this.sensorName = sensorName;
+    public void setSensorNameEn(String sensorNameEn) {
+        this.sensorNameEn = sensorNameEn;
     }
 
     public String getSensorUnit() {
@@ -131,5 +125,46 @@ public class RoadStationSensorValueDto {
 
     public void setSensorUnit(String sensorUnit) {
         this.sensorUnit = sensorUnit;
+    }
+
+    public String getSensorValueDescriptionFi() {
+        return sensorValueDescriptionFi;
+    }
+
+    public void setSensorValueDescriptionFi(String sensorValueDescriptionFi) {
+        this.sensorValueDescriptionFi = sensorValueDescriptionFi;
+    }
+
+    public String getSensorValueDescriptionEn() {
+        return sensorValueDescriptionEn;
+    }
+
+    public void setSensorValueDescriptionEn(String sensorValueDescriptionEn) {
+        this.sensorValueDescriptionEn = sensorValueDescriptionEn;
+    }
+
+    public String getSensorNameFi() {
+        return sensorNameFi;
+    }
+
+    public void setSensorNameFi(String sensorNameFi) {
+        this.sensorNameFi = sensorNameFi;
+    }
+
+    public String getSensorShortNameFi() {
+        return sensorShortNameFi;
+    }
+
+    public void setSensorShortNameFi(String sensorShortNameFi) {
+        this.sensorShortNameFi = sensorShortNameFi;
+    }
+
+    @Override
+    public LocalDateTime getMeasured() {
+        return measured;
+    }
+
+    public void setMeasured(LocalDateTime measured) {
+        this.measured = measured;
     }
 }

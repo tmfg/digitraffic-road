@@ -29,7 +29,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Autowired
     public RoadStationSensorServiceImpl(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                         final RoadStationSensorRepository roadStationSensorRepository,
-                                        @Value("${roadWeatherStation.sensorValue.timeLimit}")
+                                        @Value("${roadWeatherStation.sensorValue.timeLimitInMinutes}")
                                         final int roadWeatherStationSensorValueTimeLimitInMins,
                                         @Value("${roadWeatherStation.includedSensorNaturalIds}")
                                         final String includedSensorNaturalIdsStr) {
@@ -49,6 +49,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         return roadStationSensorRepository.findNonObsoleteRoadStationSensors();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoleteRoadWeatherStationSensorValues() {
         Map<Long, List<RoadStationSensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();

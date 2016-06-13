@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "RoadWeatherStation", description = "Road wather station with sensor values")
+@ApiModel(value = "RoadWeatherStationData", description = "Road wather station with sensor values")
 @JsonPropertyOrder( value = {"roadStationId", "sensorValues"})
 public class RoadWeatherStationDto {
 
-    @ApiModelProperty(value = "Road weather station id", required = true)
-    @JsonProperty(value = "roadStationId")
+    @ApiModelProperty(value = "Road station id", required = true)
+    @JsonProperty(value = "id")
     private long roadStationNaturalId;
 
     @ApiModelProperty(value = "Measured sensor values of the road weather station", required = true)

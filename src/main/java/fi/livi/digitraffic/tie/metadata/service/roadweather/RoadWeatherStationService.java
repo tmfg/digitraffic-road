@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.RoadWeatherSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 
 public interface RoadWeatherStationService {
 
@@ -13,11 +14,13 @@ public interface RoadWeatherStationService {
 
     RoadWeatherStation save(RoadWeatherStation roadWeatherStation);
 
-    List<RoadWeatherSensor> findAllRoadStationSensors();
+    List<RoadStationSensor> findAllRoadStationSensors();
 
-    Map<Long, List<RoadWeatherSensor>> findAllRoadStationSensorsMappedByRoadStationLotjuId();
+    Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByNaturalId();
 
-    RoadWeatherSensor save(RoadWeatherSensor roadWeatherSensor);
+    RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor);
 
     RoadWeatherStationFeatureCollection findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+
+    List<SensorValue> findAllSensorValues();
 }

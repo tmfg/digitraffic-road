@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import fi.livi.digitraffic.tie.data.dto.lam.LamDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 
 public interface LamDataService {
-    LamDataObjectDto listAllLamDataFromNonObsoleteStations();
+    LamRootDataObjectDto listAllLamDataFromNonObsoleteStations();
 }

@@ -2,15 +2,25 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
@@ -18,12 +28,14 @@ import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 @Entity
 @DynamicUpdate
 public class RoadStation {
+
     @Id
     @SequenceGenerator(name = "RS_SEQ", sequenceName = "SEQ_ROAD_STATION")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")
     private Long id;
 
-    private long naturalId;
+    @NotNull
+    private Long naturalId;
 
     private String name;
 
@@ -38,14 +50,9 @@ public class RoadStation {
 
     private BigDecimal latitude, longitude, altitude;
 
-    private Integer roadNumber;
-
-    private Integer roadPart;
-
-    private Integer distanceFromRoadPartStart;
-
     private Integer collectionInterval;
 
+    @Enumerated(EnumType.STRING)
     private CollectionStatus collectionStatus;
 
     private String municipality;
@@ -60,6 +67,25 @@ public class RoadStation {
 
     private String additionalInformation;
 
+    protected RoadStation() {
+    }
+
+    public RoadStation(RoadStationType type) {
+        this.type = type;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="ROAD_ADDRESS_ID")
+    @Fetch(FetchMode.JOIN)
+    private RoadAddress roadAddress;
+
+
+    @ManyToMany
+    @JoinTable(name = "ROAD_STATION_SENSORS",
+               joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
+               inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
+    List<RoadStationSensor> roadStationSensors;
+
     public Long getId() {
         return id;
     }
@@ -68,11 +94,11 @@ public class RoadStation {
         this.id = id;
     }
 
-    public long getNaturalId() {
+    public Long getNaturalId() {
         return naturalId;
     }
 
-    public void setNaturalId(final long naturalId) {
+    public void setNaturalId(final Long naturalId) {
         this.naturalId = naturalId;
     }
 
@@ -89,6 +115,9 @@ public class RoadStation {
     }
 
     public void setType(final RoadStationType type) {
+        if (this.type != null && !this.type.equals(type)) {
+            throw new IllegalArgumentException("RoadStationType can not be changed once set. (" + this.type + " -> " + type + " )");
+        }
         this.type = type;
     }
 
@@ -168,30 +197,6 @@ public class RoadStation {
         return false;
     }
 
-    public Integer getRoadNumber() {
-        return roadNumber;
-    }
-
-    public void setRoadNumber(final Integer roadNumber) {
-        this.roadNumber = roadNumber;
-    }
-
-    public Integer getRoadPart() {
-        return roadPart;
-    }
-
-    public void setRoadPart(final Integer roadPart) {
-        this.roadPart = roadPart;
-    }
-
-    public Integer getDistanceFromRoadPartStart() {
-        return distanceFromRoadPartStart;
-    }
-
-    public void setDistanceFromRoadPartStart(final Integer distanceFromRoadPartStart) {
-        this.distanceFromRoadPartStart = distanceFromRoadPartStart;
-    }
-
     public Integer getCollectionInterval() {
         return collectionInterval;
     }
@@ -256,6 +261,14 @@ public class RoadStation {
         return additionalInformation;
     }
 
+    public List<RoadStationSensor> getRoadStationSensors() {
+        return roadStationSensors;
+    }
+
+    public void setRoadStationSensors(List<RoadStationSensor> roadStationSensors) {
+        this.roadStationSensors = roadStationSensors;
+    }
+
     @Override
     public String toString() {
         return new ToStringHelpper(this)
@@ -266,4 +279,11 @@ public class RoadStation {
                 .toString();
     }
 
+    public RoadAddress getRoadAddress() {
+        return roadAddress;
+    }
+
+    public void setRoadAddress(RoadAddress roadAddress) {
+        this.roadAddress = roadAddress;
+    }
 }

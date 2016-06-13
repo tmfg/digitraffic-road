@@ -161,6 +161,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
                 <configuration>
                     <formats>
                         <format>xml</format>
@@ -266,45 +267,57 @@
                         <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/xjc</sourceRoot>
+                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <wsdlOptions>
 
-                                <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
+                                <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
+                                <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/LAMMetatiedot.wsdl</wsdl>
-                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/LAMMetatiedot.wsdl</wsdl>-->
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306/TiesaaMetatiedot.wsdl</wsdl>-->
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/TiesaaMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/TiesaaMetatiedot.wsdl</wsdl>-->
                                     <extraargs>
                                         <!-- Generate package per targetNamespace in wsdl -->
                                         <extraarg>-p</extraarg>
-                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06=fi.livi.digitraffic.tie.wsdl.lam</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.tiesaa</extraarg>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>
+                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29=fi.livi.digitraffic.tie.wsdl.tiesaa</extraarg>-->
+                                    </extraargs>
+                                </wsdlOption>
+
+                                <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
+                                <wsdlOption>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306/LAMMetatiedot.wsdl</wsdl>-->
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/LAMMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/LAMMetatiedot.wsdl</wsdl>-->
+
+                                    <extraargs>
+                                        <!-- Generate package per targetNamespace in wsdl -->
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.lam</extraarg>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>
                                         <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29=fi.livi.digitraffic.tie.wsdl.lam</extraarg>-->
                                     </extraargs>
                                 </wsdlOption>
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/KameraMetatiedot.wsdl</wsdl>
-                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/KameraMetatiedot.wsdl</wsdl>-->
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306//KameraMetatiedot.wsdl</wsdl>-->
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/KameraMetatiedot.wsdl</wsdl>
+                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/KameraMetatiedot.wsdl</wsdl>-->
                                     <extraargs>
                                         <!-- Generate package per targetNamespace in wsdl -->
                                         <extraarg>-p</extraarg>
-                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06=fi.livi.digitraffic.tie.wsdl.kamera</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.kamera</extraarg>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>
                                         <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29=fi.livi.digitraffic.tie.wsdl.kamera</extraarg>-->
                                     </extraargs>
                                 </wsdlOption>
 
-                                <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
-                                <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
-                                <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20140306/TiesaaMetatiedot.wsdl</wsdl>
-                                    <!--<wsdl>${basedir}/src/main/resources/wsdl/20150929/TiesaaMetatiedot.wsdl</wsdl>-->
-                                    <extraargs>
-                                        <!-- Generate package per targetNamespace in wsdl -->
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06=fi.livi.digitraffic.tie.wsdl.tiesaa</extraarg>
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29=fi.livi.digitraffic.tie.wsdl.tiesaa</extraarg>-->
-                                    </extraargs>
-                                </wsdlOption>
+
 
                             </wsdlOptions>
                         </configuration>

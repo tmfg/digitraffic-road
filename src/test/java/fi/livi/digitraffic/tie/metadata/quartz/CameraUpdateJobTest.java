@@ -13,8 +13,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
@@ -39,18 +40,30 @@ public class CameraUpdateJobTest extends MetadataTest {
 
         // initial state 1 (443) active camera station with 2 presets
         cameraUpdater.updateCameras();
-        CameraPresetFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
-        // 443 camera has 2 presets and 56 has 1 preset
-        assertEquals(3, allInitial.getFeatures().size());
+        CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        // cameras with lotjuId 443 and 56 are in collection
+        assertEquals(2, allInitial.getFeatures().size());
+        int countPresets = 0;
+        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
+            countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
+        }
+        // cameras with lotjuId 443 has 2 and 56 has 1 preset
+        assertEquals(3, countPresets);
 
         // Update 121 camera to active and 56 removed
         kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
         cameraUpdater.updateCameras();
 
-        CameraPresetFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraPresetsAsFeatureCollection();
+        CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
 
-        // 443 has 3 presets and 121 has 2
-        assertEquals(5, allAfterChange.getFeatures().size());
+        // 443 has 3 presets, 121 has 2
+        assertEquals(2, allAfterChange.getFeatures().size());
+        int countPresetsAfter = 0;
+        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
+            countPresetsAfter = countPresets + cameraStationFeature.getProperties().getPresets().size();
+        }
+        // cameras with lotjuId 443 has 2 and 56 has 1 preset
+        assertEquals(5, countPresetsAfter);
 
 
         /*  Before:
@@ -95,37 +108,38 @@ public class CameraUpdateJobTest extends MetadataTest {
         // 56
         assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
 
-        // Test C0852001 changes
-        CameraPresetFeature before = findWithPresetId(allInitial, "C0852002");
-        CameraPresetFeature after = findWithPresetId(allAfterChange, "C0852002");
+        // Test C0852002 changes
+        CameraPresetDto before = findWithPresetId(allInitial, "C0852002");
+        CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
 
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
-                                                  "properties"));
-        assertTrue(EqualsBuilder.reflectionEquals(before.getProperties(),
-                                                  after.getProperties(),
-                                                  "compression", "resolution", "delay"));
-        assertEquals((Integer) 30, before.getProperties().getCompression());
-        assertEquals((Integer) 20, after.getProperties().getCompression());
-        assertEquals("704x576", before.getProperties().getResolution());
-        assertEquals("1200x900", after.getProperties().getResolution());
-        assertEquals((Integer) 10, before.getProperties().getDelay());
-        assertEquals((Integer) 20, after.getProperties().getDelay());
+                                                  "compression", "resolution"));
+        assertEquals((Integer) 30, before.getCompression());
+        assertEquals((Integer) 20, after.getCompression());
+        assertEquals("704x576", before.getResolution());
+        assertEquals("1200x900", after.getResolution());
 
         // C0852001 not changed
         assertEqualPresets(findWithPresetId(allInitial, "C0852001"),
                            findWithPresetId(allAfterChange, "C0852001"));
     }
 
-    private void assertEqualPresets(CameraPresetFeature preset1, CameraPresetFeature preset2) {
+    private void assertEqualPresets(CameraPresetDto preset1, CameraPresetDto preset2) {
         assertTrue(preset1.equals(preset2));
     }
 
-    private CameraPresetFeature findWithPresetId(CameraPresetFeatureCollection collection, String presetId) {
-        Optional<CameraPresetFeature> initial =
-                collection.getFeatures().stream()
-                        .filter(x -> x.getProperties().getPresetId().equals(presetId))
-                        .findFirst();
-        return initial.orElse(null);
+    private CameraPresetDto findWithPresetId(CameraStationFeatureCollection collection, String presetId) {
+
+        for (CameraStationFeature cameraStationFeature : collection) {
+            Optional<CameraPresetDto> initial =
+                    cameraStationFeature.getProperties().getPresets().stream()
+                            .filter(x -> x.getPresetId().equals(presetId))
+                            .findFirst();
+            if (initial.isPresent()) {
+                return initial.get();
+            }
+        }
+        return null;
     }
 }

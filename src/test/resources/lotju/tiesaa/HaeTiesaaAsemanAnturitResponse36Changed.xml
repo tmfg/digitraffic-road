@@ -1,37 +1,704 @@
-<ns2:HaeTiesaaAsemanAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06">
-    <ns2:tiesaaAnturi>
-        <kuvaus>HMP</kuvaus>
-        <nimi>HMP</nimi>
-        <anturityyppiId>17</anturityyppiId>
-        <id>140</id>
-        <tiesaaAsemaId>36</tiesaaAsemaId>
-    </ns2:tiesaaAnturi>
-    <ns2:tiesaaAnturi>
-        <kuvaus>PWD</kuvaus>
-        <nimi>PWD</nimi>
-        <anturityyppiId>19</anturityyppiId>
-        <id>141</id>
-        <tiesaaAsemaId>36</tiesaaAsemaId>
-    </ns2:tiesaaAnturi>
-    <ns2:tiesaaAnturi>
-        <kuvaus>DRS511_I</kuvaus>
-        <nimi>DRS511_I</nimi>
-        <anturityyppiId>13</anturityyppiId>
-        <id>142</id>
-        <tiesaaAsemaId>36</tiesaaAsemaId>
-    </ns2:tiesaaAnturi>
-    <ns2:tiesaaAnturi>
-        <kuvaus>DRS511_II</kuvaus>
-        <nimi>DRS511_III</nimi>
-        <anturityyppiId>14</anturityyppiId>
-        <id>143</id>
-        <tiesaaAsemaId>36</tiesaaAsemaId>
-    </ns2:tiesaaAnturi>
-    <ns2:tiesaaAnturi>
-        <kuvaus>WA</kuvaus>
-        <nimi>WA</nimi>
-        <anturityyppiId>21</anturityyppiId>
-        <id>2695</id>
-        <tiesaaAsemaId>36</tiesaaAsemaId>
-    </ns2:tiesaaAnturi>
-</ns2:HaeTiesaaAsemanAnturitResponse>
+<ns2:HaeTiesaaAsemanLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06">
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>180</g>
+        <kuvaus>Ilman lampotila</kuvaus>
+        <laskentaKaava>anturi('01')</laskentaKaava>
+        <lyhytNimi>Ilma </lyhytNimi>
+        <nimi>ILMA</nimi>
+        <r>50</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>1</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>1</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>180</g>
+        <kuvaus>Ilman lampotilan muutos</kuvaus>
+        <laskentaKaava>anturi('21')</laskentaKaava>
+        <lyhytNimi>DIlm</lyhytNimi>
+        <nimi>ILMA_DERIVAATTA</nimi>
+        <r>50</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>2</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>2</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>255</g>
+        <kuvaus>Tienpinnan lampotilan muutos tieanturi 1:ssa</kuvaus>
+        <laskentaKaava>anturi('38')</laskentaKaava>
+        <lyhytNimi>DTie1</lyhytNimi>
+        <nimi>TIE_1_DERIVAATTA</nimi>
+        <r>0</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>4</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>4</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>235</g>
+        <kuvaus>Tienpinnan lampotila tieanturi 2:ssa</kuvaus>
+        <laskentaKaava>anturi('45')</laskentaKaava>
+        <lyhytNimi>Tie2</lyhytNimi>
+        <nimi>TIE_2</nimi>
+        <r>0</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>5</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>5</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>235</g>
+        <kuvaus>Tienpinnan lampotilan muutos tieanturi 2:ssa</kuvaus>
+        <laskentaKaava>anturi('53')</laskentaKaava>
+        <lyhytNimi>DTie2</lyhytNimi>
+        <nimi>TIE_2_DERIVAATTA</nimi>
+        <r>0</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>6</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>6</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>195</g>
+        <kuvaus>Maan lampotila tieanturi 1:ssa</kuvaus>
+        <laskentaKaava>anturi('31')</laskentaKaava>
+        <lyhytNimi>Maa1</lyhytNimi>
+        <nimi>MAA_1</nimi>
+        <r>230</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>7</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>7</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>180</g>
+        <kuvaus>Maan lampotila tieanturi 2:ssa</kuvaus>
+        <laskentaKaava>anturi('46')</laskentaKaava>
+        <lyhytNimi>Maa2</lyhytNimi>
+        <nimi>MAA_2</nimi>
+        <r>215</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>8</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>8</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>173</b>
+        <g>173</g>
+        <kuvaus>lampotila, jossa ilman suhteellinen kosteus on 100%</kuvaus>
+        <laskentaKaava>anturi('03')</laskentaKaava>
+        <lyhytNimi>KastP</lyhytNimi>
+        <nimi>KASTEPISTE</nimi>
+        <r>173</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>9</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>9</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>250</b>
+        <g>100</g>
+        <kuvaus>Tienpinnalla olevan veden jaatymislampotila</kuvaus>
+        <laskentaKaava>anturi('35')</laskentaKaava>
+        <lyhytNimi>JääPi1</lyhytNimi>
+        <nimi>JAATYMISPISTE_1</nimi>
+        <r>200</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>10</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>10</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>235</b>
+        <g>90</g>
+        <kuvaus>Tienpinnalla olevan veden jaatymislampotila</kuvaus>
+        <laskentaKaava>anturi('50')</laskentaKaava>
+        <lyhytNimi>JääPi2</lyhytNimi>
+        <nimi>JAATYMISPISTE_2</nimi>
+        <r>185</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>11</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>11</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>100</b>
+        <g>255</g>
+        <kuvaus>Tuulen keskinopeus 10 minuutin ajalta                           </kuvaus>
+        <laskentaKaava>anturi('05')</laskentaKaava>
+        <lyhytNimi>KTuuli</lyhytNimi>
+        <nimi>KESKITUULI</nimi>
+        <r>170</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>16</vanhaId>
+        <yksikko>m/s</yksikko>
+        <id>16</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>100</b>
+        <g>170</g>
+        <kuvaus>Tuulen maksiminopeus 10 minuutin ajalta</kuvaus>
+        <laskentaKaava>anturi('26')</laskentaKaava>
+        <lyhytNimi>MTuuli</lyhytNimi>
+        <nimi>MAKSIMITUULI</nimi>
+        <r>255</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>17</vanhaId>
+        <yksikko>m/s</yksikko>
+        <id>17</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>245</b>
+        <g>245</g>
+        <kuvaus>Keskimaarainen tuulensuunta 10 minuutin ajalta</kuvaus>
+        <laskentaKaava>anturi('06')</laskentaKaava>
+        <lyhytNimi>TSuunt</lyhytNimi>
+        <nimi>TUULENSUUNTA</nimi>
+        <r>245</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>18</vanhaId>
+        <yksikko>°</yksikko>
+        <id>18</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>230</g>
+        <kuvaus>Ilmankosteus asemalla</kuvaus>
+        <laskentaKaava>anturi('02')</laskentaKaava>
+        <lyhytNimi>Koste</lyhytNimi>
+        <nimi>ILMAN_KOSTEUS</nimi>
+        <r>130</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>21</vanhaId>
+        <yksikko>%</yksikko>
+        <id>21</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Sataako ja miten paljon ?</kuvaus>
+        <laskentaKaava>anturi('23')</laskentaKaava>
+        <lyhytNimi>Sade</lyhytNimi>
+        <nimi>SADE</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>22</vanhaId>
+        <yksikko>///</yksikko>
+        <id>22</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>200</g>
+        <kuvaus>Sademaara 10 viimeisen minuutin aikana:muutettu tuntisateeksi</kuvaus>
+        <laskentaKaava>anturi('09')</laskentaKaava>
+        <lyhytNimi>S-Int</lyhytNimi>
+        <nimi>SADE_INTENSITEETTI</nimi>
+        <r>150</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>23</vanhaId>
+        <yksikko>mm/h</yksikko>
+        <id>23</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>170</g>
+        <kuvaus>Sadesumma normaalilla sadeanturilla:nollataan kello 6.00 aamull</kuvaus>
+        <laskentaKaava>anturi('08')</laskentaKaava>
+        <lyhytNimi>S-Sum</lyhytNimi>
+        <nimi>SADESUMMA</nimi>
+        <r>220</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>24</vanhaId>
+        <yksikko>mm</yksikko>
+        <id>24</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Sateen olomuoto nakyvyys-/saa-anturilla</kuvaus>
+        <laskentaKaava>anturi('90') + 7</laskentaKaava>
+        <lyhytNimi>S-Olom</lyhytNimi>
+        <nimi>SATEEN_OLOMUOTO_FD12P_PWD11</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>25</vanhaId>
+        <yksikko>///</yksikko>
+        <id>25</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>250</g>
+        <kuvaus>Nakyvyys s{{anturilta kilometreina</kuvaus>
+        <laskentaKaava>anturi('11') / 1000</laskentaKaava>
+        <lyhytNimi>Näk_km</lyhytNimi>
+        <nimi>NAKYVYYS</nimi>
+        <r>250</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>26</vanhaId>
+        <yksikko>km</yksikko>
+        <id>26</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Kelitieto1 asemalla, laskettu aseman statuksesta</kuvaus>
+        <laskentaKaava>anturi('36') % 10</laskentaKaava>
+        <lyhytNimi>Keli1</lyhytNimi>
+        <nimi>KELI_1</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>27</vanhaId>
+        <yksikko>***</yksikko>
+        <id>27</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Kelitieto2 asemalla, laskettu aseman toisesta statuksesta</kuvaus>
+        <laskentaKaava>anturi('51') % 10</laskentaKaava>
+        <lyhytNimi>Keli2</lyhytNimi>
+        <nimi>KELI_2</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>28</vanhaId>
+        <yksikko>***</yksikko>
+        <id>28</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Varoitus 1 asemalla, laskettu aseman ensimmdisestd statuksesta</kuvaus>
+        <laskentaKaava>(anturi('36') - (anturi('36') % 100)) / 100</laskentaKaava>
+        <lyhytNimi>Varo1</lyhytNimi>
+        <nimi>VAROITUS_1</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>29</vanhaId>
+        <yksikko>???</yksikko>
+        <id>29</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Varoitus2 asemalla, laskettu aseman toisesta statuksesta</kuvaus>
+        <laskentaKaava>(anturi('51') - (anturi('51') % 100)) / 100</laskentaKaava>
+        <lyhytNimi>Varo2</lyhytNimi>
+        <nimi>VAROITUS_2</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>30</vanhaId>
+        <yksikko>???</yksikko>
+        <id>30</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>255</g>
+        <kuvaus>Johtavuus1 tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('32')</laskentaKaava>
+        <lyhytNimi>Joht1</lyhytNimi>
+        <nimi>JOHTAVUUS_1</nimi>
+        <r>255</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>31</vanhaId>
+        <yksikko>V</yksikko>
+        <id>31</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>235</g>
+        <kuvaus>Johtavuus2 aseman toisessa tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('47')</laskentaKaava>
+        <lyhytNimi>Joht2</lyhytNimi>
+        <nimi>JOHTAVUUS_2</nimi>
+        <r>235</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>32</vanhaId>
+        <yksikko>V</yksikko>
+        <id>32</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>190</b>
+        <g>60</g>
+        <kuvaus>Pintasignaali1 aseman tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('33')</laskentaKaava>
+        <lyhytNimi>PSig1</lyhytNimi>
+        <nimi>PINTASIGNAALI_1</nimi>
+        <r>240</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>33</vanhaId>
+        <yksikko>V</yksikko>
+        <id>33</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>175</b>
+        <g>55</g>
+        <kuvaus>Pintasignaali2 aseman toisessa tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('48')</laskentaKaava>
+        <lyhytNimi>PSig2</lyhytNimi>
+        <nimi>PINTASIGNAALI_2</nimi>
+        <r>225</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>34</vanhaId>
+        <yksikko>V</yksikko>
+        <id>34</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>60</b>
+        <g>250</g>
+        <kuvaus>Jddtaajuus1 aseman tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('34')</laskentaKaava>
+        <lyhytNimi>JTaaj1</lyhytNimi>
+        <nimi>JAATAAJUUS_1</nimi>
+        <r>210</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>35</vanhaId>
+        <yksikko>Hz</yksikko>
+        <id>35</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>55</b>
+        <g>230</g>
+        <kuvaus>Jddtaajuus2 aseman toisessa tienpinta-anturissa</kuvaus>
+        <laskentaKaava>anturi('49')</laskentaKaava>
+        <lyhytNimi>JTaaj2</lyhytNimi>
+        <nimi>JAATAAJUUS_2</nimi>
+        <r>190</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>36</vanhaId>
+        <yksikko>Hz</yksikko>
+        <id>36</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>100</b>
+        <g>100</g>
+        <kuvaus>Status1 asemalla:halytys, sade, keli</kuvaus>
+        <laskentaKaava>anturi('36')</laskentaKaava>
+        <lyhytNimi>Stat1</lyhytNimi>
+        <nimi>ASEMAN_STATUS_1</nimi>
+        <r>100</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>37</vanhaId>
+        <yksikko>???</yksikko>
+        <id>37</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>100</b>
+        <g>100</g>
+        <kuvaus>Status2 asemalla:halytys, sade, keli</kuvaus>
+        <laskentaKaava>anturi('51')</laskentaKaava>
+        <lyhytNimi>Stat2</lyhytNimi>
+        <nimi>ASEMAN_STATUS_2</nimi>
+        <r>100</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>38</vanhaId>
+        <yksikko>???</yksikko>
+        <id>38</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Onko antureissa vikaa ?</kuvaus>
+        <laskentaKaava>anturi('16') * 9</laskentaKaava>
+        <lyhytNimi>AntVik</lyhytNimi>
+        <nimi>ANTURIVIKA</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>41</vanhaId>
+        <yksikko>???</yksikko>
+        <id>41</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>222</b>
+        <g>222</g>
+        <kuvaus>Sadetila ja pilvisyys aseman statuksesta</kuvaus>
+        <laskentaKaava>((anturi('36') - (anturi('36') % 10)) / 10 - ((anturi('36') - (anturi('36') % 100)) / 100 * 10)) + 16</laskentaKaava>
+        <lyhytNimi>S-Tila</lyhytNimi>
+        <nimi>SADE_TILA</nimi>
+        <r>222</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>48</vanhaId>
+        <yksikko>///</yksikko>
+        <id>48</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>255</g>
+        <kuvaus>Tienpinta- ja kastepistel{mp|tilan v{linen ero (pinta-kastep.)</kuvaus>
+        <laskentaKaava>anturi('30') - anturi('03')</laskentaKaava>
+        <lyhytNimi>KpEroT</lyhytNimi>
+        <nimi>KASTEPISTE_ERO_TIE</nimi>
+        <r>255</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>49</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>49</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>125</g>
+        <kuvaus>Tienpinnalla olevan kosteuden maara mm tienpinta-anturilla 1</kuvaus>
+        <laskentaKaava>anturi('42')</laskentaKaava>
+        <lyhytNimi>KosMä1</lyhytNimi>
+        <nimi>KOSTEUDEN_MAARA_1</nimi>
+        <r>45</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>50</vanhaId>
+        <yksikko>mm</yksikko>
+        <id>50</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>100</g>
+        <kuvaus>Tienpinnalla olevan kosteuden maara mm tienpinta-anturilla 2</kuvaus>
+        <laskentaKaava>anturi('57')</laskentaKaava>
+        <lyhytNimi>KosMä2</lyhytNimi>
+        <nimi>KOSTEUDEN_MAARA_2</nimi>
+        <r>35</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>51</vanhaId>
+        <yksikko>mm</yksikko>
+        <id>51</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>170</b>
+        <g>180</g>
+        <kuvaus>Tienpinnalla olevan suolan maara g/m2 tienpinta-anturilla 1</kuvaus>
+        <laskentaKaava>anturi('40')</laskentaKaava>
+        <lyhytNimi>SuoMä1</lyhytNimi>
+        <nimi>SUOLAN_MAARA_1</nimi>
+        <r>220</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>52</vanhaId>
+        <yksikko>g/m2</yksikko>
+        <id>52</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>150</b>
+        <g>160</g>
+        <kuvaus>Tienpinnalla olevan suolan maara g/m2 tienpinta-anturilla 2</kuvaus>
+        <laskentaKaava>anturi('55')</laskentaKaava>
+        <lyhytNimi>SuoMä2</lyhytNimi>
+        <nimi>SUOLAN_MAARA_2</nimi>
+        <r>200</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>53</vanhaId>
+        <yksikko>g/m2</yksikko>
+        <id>53</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>220</b>
+        <g>180</g>
+        <kuvaus>Tienpinnalla olevan suolan vakevyys g/l tienpinta-anturilla 1</kuvaus>
+        <laskentaKaava>anturi('39')</laskentaKaava>
+        <lyhytNimi>SuoVä1</lyhytNimi>
+        <nimi>SUOLAN_VAKEVYYS_1</nimi>
+        <r>180</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>54</vanhaId>
+        <yksikko>g/l</yksikko>
+        <id>54</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>200</b>
+        <g>160</g>
+        <kuvaus>Tienpinnalla olevan suolan vakevyys g/l tienpinta-anturilla 2</kuvaus>
+        <laskentaKaava>anturi('54')</laskentaKaava>
+        <lyhytNimi>SuoVä2</lyhytNimi>
+        <nimi>SUOLAN_VAKEVYYS_2</nimi>
+        <r>160</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>55</vanhaId>
+        <yksikko>g/l</yksikko>
+        <id>55</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>170</b>
+        <g>220</g>
+        <kuvaus>Lampotila, jonka ylapuolella tien ei pitaisi varmasti jaatya</kuvaus>
+        <laskentaKaava>anturi('41')</laskentaKaava>
+        <lyhytNimi>TurLä1</lyhytNimi>
+        <nimi>TURVALLISUUSLAMPO_1</nimi>
+        <r>180</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>56</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>56</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>150</b>
+        <g>200</g>
+        <kuvaus>Lampotila, jonka ylapuolella tien ei pitaisi varmasti jaatya</kuvaus>
+        <laskentaKaava>anturi('56')</laskentaKaava>
+        <lyhytNimi>TurLä2</lyhytNimi>
+        <nimi>TURVALLISUUSLAMPO_2</nimi>
+        <r>160</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>57</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>57</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>250</g>
+        <kuvaus>Nakyvyys saaanturilta metreissa                                 </kuvaus>
+        <laskentaKaava>anturi('11')</laskentaKaava>
+        <lyhytNimi>Näky_m</lyhytNimi>
+        <nimi>NAKYVYYS_METRIA</nimi>
+        <r>250</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>58</vanhaId>
+        <yksikko>m</yksikko>
+        <id>58</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>0</b>
+        <g>255</g>
+        <kuvaus>Ilman- ja kastepistelampotilan valinen ero (ilma-kastepiste)</kuvaus>
+        <laskentaKaava>anturi('01') - anturi('03')</laskentaKaava>
+        <lyhytNimi>KpEroI</lyhytNimi>
+        <nimi>KASTEPISTE_ERO_ILMA</nimi>
+        <r>255</r>
+        <tarkkuus>1</tarkkuus>
+        <vanhaId>73</vanhaId>
+        <yksikko>°C</yksikko>
+        <id>73</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>155</b>
+        <g>100</g>
+        <kuvaus>PWD sade-/näkyvyysanturin status</kuvaus>
+        <laskentaKaava>anturi('91')</laskentaKaava>
+        <lyhytNimi>PWD</lyhytNimi>
+        <nimi>PWD_STATUS</nimi>
+        <r>100</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>91</vanhaId>
+        <yksikko>???</yksikko>
+        <id>85</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>200</g>
+        <kuvaus>PWD:n Tila</kuvaus>
+        <laskentaKaava>anturi('91') % 10</laskentaKaava>
+        <lyhytNimi>S-Tila</lyhytNimi>
+        <nimi>PWD_TILA</nimi>
+        <r>200</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>92</vanhaId>
+        <yksikko>???</yksikko>
+        <id>86</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>200</g>
+        <kuvaus>PWD:n Näkyvyysanturin Tila</kuvaus>
+        <laskentaKaava>(anturi('91') - (anturi('91') % 10)) / 10</laskentaKaava>
+        <lyhytNimi>N-Tila</lyhytNimi>
+        <nimi>PWD_NAK_TILA</nimi>
+        <r>200</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>93</vanhaId>
+        <yksikko>???</yksikko>
+        <id>87</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>255</g>
+        <kuvaus>Onko aurinko jo noussut? Kulmana -0,833°</kuvaus>
+        <laskentaKaava>anturi('101')</laskentaKaava>
+        <lyhytNimi>Aurink</lyhytNimi>
+        <nimi>AURINKOUP</nimi>
+        <r>255</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>98</vanhaId>
+        <yksikko>???</yksikko>
+        <id>92</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>255</g>
+        <kuvaus>Onko valoisaa? Kulmana -6° = ns. "Porvarillinen hämärä".</kuvaus>
+        <laskentaKaava>anturi('102')</laskentaKaava>
+        <lyhytNimi>Valoa?</lyhytNimi>
+        <nimi>VALOISAA</nimi>
+        <r>255</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>99</vanhaId>
+        <yksikko>???</yksikko>
+        <id>93</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>200</b>
+        <g>200</g>
+        <kuvaus>PWD 12/22 anturien vallitseva sää</kuvaus>
+        <laskentaKaava>anturi('92')</laskentaKaava>
+        <lyhytNimi>V-Sää</lyhytNimi>
+        <nimi>VALLITSEVA_SAA</nimi>
+        <r>200</r>
+        <tarkkuus>0</tarkkuus>
+        <vanhaId>100</vanhaId>
+        <yksikko>///</yksikko>
+        <id>94</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>180</g>
+        <kuvaus>Pienemmän kuidun vaste, tieanturi 1</kuvaus>
+        <laskentaKaava>anturi('43')</laskentaKaava>
+        <lyhytNimi>KVaP1 </lyhytNimi>
+        <nimi>KUITUVASTE_PIENI_1</nimi>
+        <r>100</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>130</vanhaId>
+        <yksikko>###</yksikko>
+        <id>115</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>240</b>
+        <g>170</g>
+        <kuvaus>Pienemmän kuidun vaste, tieanturi 2</kuvaus>
+        <laskentaKaava>anturi('58')</laskentaKaava>
+        <lyhytNimi>KVaP2 </lyhytNimi>
+        <nimi>KUITUVASTE_PIENI_2</nimi>
+        <r>100</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>131</vanhaId>
+        <yksikko>###</yksikko>
+        <id>116</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>255</b>
+        <g>140</g>
+        <kuvaus>Suuremman kuidun vaste, tieanturi 1</kuvaus>
+        <laskentaKaava>anturi('44')</laskentaKaava>
+        <lyhytNimi>KVaS1 </lyhytNimi>
+        <nimi>KUITUVASTE_SUURI_1</nimi>
+        <r>140</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>132</vanhaId>
+        <yksikko>###</yksikko>
+        <id>117</id>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <b>240</b>
+        <g>130</g>
+        <kuvaus>Suuremman kuidun vaste, tieanturi 2</kuvaus>
+        <laskentaKaava>anturi('59')</laskentaKaava>
+        <lyhytNimi>KVaS2 </lyhytNimi>
+        <nimi>KUITUVASTE_SUURI_2</nimi>
+        <r>130</r>
+        <tarkkuus>2</tarkkuus>
+        <vanhaId>133</vanhaId>
+        <yksikko>###</yksikko>
+        <id>118</id>
+    </ns2:laskennallinenAnturi>
+</ns2:HaeTiesaaAsemanLaskennallisetAnturitResponse>

@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
-import fi.livi.digitraffic.tie.data.dto.daydata.HistoryDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.daydata.LinkDataDto;
-import fi.livi.digitraffic.tie.data.dto.daydata.LinkDynamicData;
+import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.daydata.LinkData;
+import fi.livi.digitraffic.tie.data.dto.daydata.LinkMeasurementDataDto;
 
 @Service
 public class DayDataServiceImpl implements DayDataService {
@@ -21,24 +21,24 @@ public class DayDataServiceImpl implements DayDataService {
     }
 
     @Override
-    public HistoryDataObjectDto listPreviousDayHistoryData() {
-        final List<LinkDataDto> linkData = dayDataRepository.listAllMedianTravelTimes();
+    public HistoryRootDataObjectDto listPreviousDayHistoryData() {
+        final List<LinkMeasurementDataDto> linkData = dayDataRepository.listAllMedianTravelTimes();
 
-        return new HistoryDataObjectDto(convertToDynamicData(linkData));
+        return new HistoryRootDataObjectDto(convertToDynamicData(linkData));
     }
 
-    private static List<LinkDynamicData> convertToDynamicData(final List<LinkDataDto> linkData) {
-        final List<LinkDynamicData> list = new ArrayList<>();
+    private static List<LinkData> convertToDynamicData(final List<LinkMeasurementDataDto> linkData) {
+        final List<LinkData> list = new ArrayList<>();
 
         // LinkData is sorted by linkId, so this works
-        LinkDynamicData previous = null;
-        for(final LinkDataDto ld : linkData) {
+        LinkData previous = null;
+        for(final LinkMeasurementDataDto ld : linkData) {
             if(previous == null || previous.getLinkNumber() != ld.getLinkId()) {
-                previous = new LinkDynamicData(ld.getLinkId(), new ArrayList<>());
+                previous = new LinkData(ld.getLinkId(), new ArrayList<>());
                 list.add(previous);
             }
 
-            previous.getLinkData().add(ld);
+            previous.getLinkMeasurements().add(ld);
         }
 
         return list;

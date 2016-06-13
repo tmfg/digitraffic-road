@@ -10,10 +10,12 @@ spring.datasource.password=<password>
 spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 spring.datasource.validationQuery=SELECT 1 FROM DUAL
 
-# Leave these blank not to run metadata updaters
-metadata.server.address.lam=
-metadata.server.address.camera=
-metadata.server.address.weather=
+metadata.server.address.lam=http://localhost:9011/LOTJU/LAMMetatiedot
+metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot
+metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
+
+# If set to false web app is not started. Should be false for daemon prosess.
+# spring.main.web_environment=false
 
 # Don't run updates for tests
 quartz.enabled=false

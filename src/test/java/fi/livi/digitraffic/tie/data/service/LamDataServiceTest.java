@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.MetadataTest;
-import fi.livi.digitraffic.tie.data.dto.lam.LamDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 
 public class LamDataServiceTest extends MetadataTest {
 
@@ -14,12 +14,12 @@ public class LamDataServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations()  {
-        final LamDataObjectDto object = lamDataService.listAllLamDataFromNonObsoleteStations();
+        final LamRootDataObjectDto object = lamDataService.listAllLamDataFromNonObsoleteStations();
 
         Assert.notNull(object);
         Assert.notNull(object.getDataLocalTime());
         Assert.notNull(object.getDataUtc());
-        Assert.notNull(object.getLamData());
-        Assert.notEmpty(object.getLamData());
+        Assert.notNull(object.getLamMeasurements());
+        Assert.notEmpty(object.getLamMeasurements());
     }
 }

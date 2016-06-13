@@ -10,32 +10,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.wsdl.lam.HaeKaikkiLAMAsematResponse;
-import fi.livi.digitraffic.tie.wsdl.lam.LAMMetatiedot;
-import fi.livi.digitraffic.tie.wsdl.lam.LAMMetatiedotException;
-import fi.livi.digitraffic.tie.wsdl.lam.LAMMetatiedotService;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAnturi;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAnturiVakio;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAnturiVakioArvo;
-import fi.livi.digitraffic.tie.wsdl.lam.LamArvoVastaavuus;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAsema;
-import fi.livi.digitraffic.tie.wsdl.lam.LamAsemaLaskennallinenAnturi;
-import fi.livi.digitraffic.tie.wsdl.lam.LamLaskennallinenAnturi;
-import fi.livi.digitraffic.tie.wsdl.lam.ObjectFactory;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.HaeKaikkiLAMAsematResponse;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LAMMetatiedotEndpoint;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LAMMetatiedotV1;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVakioArvoVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamArvoVastaavuusVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.lotju.wsdl.lam.ObjectFactory;
 
 @Service
-public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements LAMMetatiedot {
+public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements LAMMetatiedotEndpoint {
 
     private static final Logger log = Logger.getLogger(LamMetatiedotLotjuServiceMock.class);
 
-    private List<LamAsema> lamAsemasInitial;
-    private List<LamAsema> afterChangelamAsemas;
+    private List<LamAsemaVO> lamAsemasInitial;
+    private List<LamAsemaVO> afterChangelamAsemas;
 
     @Autowired
     public LamMetatiedotLotjuServiceMock(@Value("${metadata.server.address.lam}")
                                          final String metadataServerAddressCamera,
                                          final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedot.class, LAMMetatiedotService.SERVICE);
+        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV1.SERVICE);
 
     }
 
@@ -48,9 +47,9 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
         }
     }
 
-    private List<LamAsema> readLamAsemas(String filePath) {
+    private List<LamAsemaVO> readLamAsemas(String filePath) {
             HaeKaikkiLAMAsematResponse responseValue = (HaeKaikkiLAMAsematResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
-        for ( LamAsema k : responseValue.getAsemat() ) {
+        for ( LamAsemaVO k : responseValue.getAsemat() ) {
             Assert.assertNull(k.getAkku());
             Assert.assertNull(k.getAkkuKayttoonottoVuosi());
             Assert.assertNull(k.getIp());
@@ -84,96 +83,96 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
         return responseValue.getAsemat();
     }
 
-    public List<LamAsema> getLamAsemasInitial() {
+    public List<LamAsemaVO> getLamAsemasInitial() {
         return lamAsemasInitial;
     }
 
-    public void setLamAsemasInitial(List<LamAsema> lamAsemasInitial) {
+    public void setLamAsemasInitial(List<LamAsemaVO> lamAsemasInitial) {
         this.lamAsemasInitial = lamAsemasInitial;
     }
 
-    public List<LamAsema> getAfterChangelamAsemas() {
+    public List<LamAsemaVO> getAfterChangelamAsemas() {
         return afterChangelamAsemas;
     }
 
-    public void setAfterChangelamAsemas(List<LamAsema> afterChangelamAsemas) {
+    public void setAfterChangelamAsemas(List<LamAsemaVO> afterChangelamAsemas) {
         this.afterChangelamAsemas = afterChangelamAsemas;
     }
 
     /* LAMMetatiedot Service methods */
 
     @Override
-    public LamAnturiVakioArvo haeAnturiVakioArvot(Long anturiVakioId, Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
+    public LamAnturiVakioArvoVO haeAnturiVakioArvot(Long anturiVakioId, Integer paiva, Integer kuukausi) {
         throw new NotImplementedException("haeAnturiVakioArvot");
     }
 
     @Override
-    public LamAsema haeLAMAsema(Long id) throws LAMMetatiedotException {
+    public LamAsemaVO haeLAMAsema(Long id) {
         throw new NotImplementedException("haeLAMAsema");
     }
 
     @Override
-    public List<LamAnturiVakioArvo> haeKaikkiAnturiVakioArvot(Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
+    public List<LamAnturiVakioArvoVO> haeKaikkiAnturiVakioArvot(Integer paiva, Integer kuukausi) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public LamArvoVastaavuus haeArvovastaavuus(Long id) throws LAMMetatiedotException {
+    public LamArvoVastaavuusVO haeArvovastaavuus(Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAnturiVakioArvo> haeAsemanAnturiVakioArvot(Long asemaId, Integer paiva, Integer kuukausi) throws LAMMetatiedotException {
+    public List<LamAnturiVakioArvoVO> haeAsemanAnturiVakioArvot(Long asemaId, Integer paiva, Integer kuukausi) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public LamAnturi haeLAMAnturi(Long id) throws LAMMetatiedotException {
+    public LamAnturiVO haeLAMAnturi(Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamLaskennallinenAnturi> haeKaikkiLAMLaskennallisetAnturit() throws LAMMetatiedotException {
+    public List<LamLaskennallinenAnturiVO> haeKaikkiLAMLaskennallisetAnturit() {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamArvoVastaavuus> haeLaskennallisenAnturinArvovastaavuudet(Long arg0) throws LAMMetatiedotException {
+    public List<LamArvoVastaavuusVO> haeLaskennallisenAnturinArvovastaavuudet(Long arg0) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamArvoVastaavuus> haeKaikkiArvovastaavuudet() throws LAMMetatiedotException {
+    public List<LamArvoVastaavuusVO> haeKaikkiArvovastaavuudet() {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public LamAnturiVakio haeAnturiVakio(Long anturiVakioId) throws LAMMetatiedotException {
+    public LamAnturiVakioVO haeAnturiVakio(Long anturiVakioId) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAnturi> haeKaikkiLAMAnturit() throws LAMMetatiedotException {
+    public List<LamAnturiVO> haeKaikkiLAMAnturit() {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamLaskennallinenAnturi> haeLAMAsemanLaskennallisetAnturit(Long id) throws LAMMetatiedotException {
+    public List<LamLaskennallinenAnturiVO> haeLAMAsemanLaskennallisetAnturit(Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAsemaLaskennallinenAnturi> haeLAMAsemanLaskennallistenAntureidenTilat(Long asemaId) throws LAMMetatiedotException {
+    public List<LamAsemaLaskennallinenAnturiVO> haeLAMAsemanLaskennallistenAntureidenTilat(Long asemaId) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAnturi> haeLAMAsemanAnturit(Long id) throws LAMMetatiedotException {
+    public List<LamAnturiVO> haeLAMAsemanAnturit(Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAsema> haeKaikkiLAMAsemat() throws LAMMetatiedotException {
+    public List<LamAsemaVO> haeKaikkiLAMAsemat() {
         log.info("haeKaikkiLAMAsemat isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
             return getAfterChangelamAsemas();
@@ -182,12 +181,12 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     }
 
     @Override
-    public LamLaskennallinenAnturi haeLAMLaskennallinenAnturi(Long id) throws LAMMetatiedotException {
+    public LamLaskennallinenAnturiVO haeLAMLaskennallinenAnturi(Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public List<LamAnturiVakio> haeAsemanAnturiVakio(Long asemaId) throws LAMMetatiedotException {
+    public List<LamAnturiVakioVO> haeAsemanAnturiVakio(Long asemaId) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 

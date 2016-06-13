@@ -7,10 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.data.dto.roadweather.RoadWeatherDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.RoadWeatherStationDto;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.data.dto.roadweather.RoadWeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Service
@@ -25,7 +24,7 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
     }
 
     @Override
-    public RoadWeatherDataObjectDto findAllWeatherData() {
+    public RoadWeatherRootDataObjectDto findAllWeatherData() {
 
         Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoleteRoadWeatherStationSensorValues();
         List<RoadWeatherStationDto> stations = new ArrayList<>();
@@ -36,6 +35,6 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
             dto.setSensorValues(entry.getValue());
         }
 
-        return new RoadWeatherDataObjectDto(stations);
+        return new RoadWeatherRootDataObjectDto(stations);
     }
 }

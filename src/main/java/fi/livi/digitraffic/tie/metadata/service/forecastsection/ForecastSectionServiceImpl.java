@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
@@ -17,6 +18,7 @@ public class ForecastSectionServiceImpl implements ForecastSectionService {
         this.forecastSectionRepository = forecastSectionRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ForecastSection> findAllForecastSections() {
         return forecastSectionRepository.findAll();

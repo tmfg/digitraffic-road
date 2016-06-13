@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.digitraffic.tie.wsdl.kamera.KameraTyyppi;
+import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraTyyppi;
 
 public enum CameraType {
 

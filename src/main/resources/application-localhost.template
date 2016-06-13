@@ -14,13 +14,19 @@ metadata.server.address.lam=<address>
 metadata.server.address.camera=<address>
 metadata.server.address.weather=<address>
 
+# If set to false web app is not started. Should be false for daemon prosess.
+# spring.main.web_environment=false
+
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=true
 
-# Metadata update frequencies in ms, 300000 ms = 5 min
-cameraUpdateJob.frequency=300000
-lamStationUpdateJob.frequency=300000
-roadWeatherStationUpdateJob.frequency=300000
+# Metadata update frequencies in ms, 600000 ms = 10 min
+cameraUpdateJob.frequency=600000
+lamStationUpdateJob.frequency=600000
+roadWeatherStationUpdateJob.frequency=600000
+
+# Weathercam url for public fetch. Append camera preset + .jpg to get image url
+weathercam.baseurl=http://weathercam.url/
 
 logging.file=digitraffic-metadata
 logging.level.root=INFO

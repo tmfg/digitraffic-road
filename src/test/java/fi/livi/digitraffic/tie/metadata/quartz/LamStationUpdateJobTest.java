@@ -105,8 +105,8 @@ public class LamStationUpdateJobTest extends MetadataTest {
         assertEquals((Double) 0.0, before.getGeometry().getCoordinates().get(2));
         assertEquals((Double) 1.0, after.getGeometry().getCoordinates().get(2));
 
-        assertEquals((Integer) 4750, before.getProperties().getDistanceFromRoadPartStart());
-        assertEquals((Integer) 3750, after.getProperties().getDistanceFromRoadPartStart());
+        assertEquals((Integer) 4750, before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
+        assertEquals((Integer) 3750, after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
 
         assertEquals((Integer) 300, before.getProperties().getCollectionInterval());
         assertEquals((Integer) 200, after.getProperties().getCollectionInterval());

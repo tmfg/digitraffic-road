@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import java.util.List;
-
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
@@ -40,11 +37,6 @@ public class RoadWeatherStation {
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
-
-    @OneToMany
-    @JoinColumn(name="road_weather_station_id")
-    @Fetch(FetchMode.JOIN)
-    private List<RoadWeatherSensor> roadWeatherSensors;
 
     public long getId() {
         return id;
@@ -100,11 +92,4 @@ public class RoadWeatherStation {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
-    public List<RoadWeatherSensor> getRoadWeatherSensors() {
-        return roadWeatherSensors;
-    }
-
-    public void setRoadWeatherSensors(List<RoadWeatherSensor> roadWeatherSensors) {
-        this.roadWeatherSensors = roadWeatherSensors;
-    }
 }

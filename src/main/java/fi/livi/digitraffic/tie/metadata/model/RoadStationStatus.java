@@ -12,10 +12,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
+@ApiModel(value = "RoadStationStatusData")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"roadStationId", "conditionCode", "condition", "conditionUpdatedLocalTime", "conditionUpdatedUtc",
                     "collectionStatusCode", "collectionStatus", "collectionStatusUpdatedLocalTime", "collectionStatusUpdatedUtc"})

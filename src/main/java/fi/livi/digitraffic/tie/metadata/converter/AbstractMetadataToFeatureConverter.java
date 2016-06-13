@@ -38,19 +38,18 @@ public class AbstractMetadataToFeatureConverter {
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setDescription(roadStation.getDescription());
         properties.setAdditionalInformation(roadStation.getAdditionalInformation());
-        properties.setDistanceFromRoadPartStart(roadStation.getDistanceFromRoadPartStart());
         properties.setMunicipality(roadStation.getMunicipality());
         properties.setMunicipalityCode(roadStation.getMunicipalityCode());
 
         properties.setProvince(roadStation.getProvince());
         properties.setProvinceCode(roadStation.getProvinceCode());
-        properties.setRoadNumber(roadStation.getRoadNumber());
-        properties.setRoadPart(roadStation.getRoadPart());
 
         properties.setName(roadStation.getName());
         properties.addName("fi", roadStation.getNameFi());
         properties.addName("sv", roadStation.getNameSv());
         properties.addName("en", roadStation.getNameEn());
+
+        properties.setRoadAddress(roadStation.getRoadAddress());
     }
 
 

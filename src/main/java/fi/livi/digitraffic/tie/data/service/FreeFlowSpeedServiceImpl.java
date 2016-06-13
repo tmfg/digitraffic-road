@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.data.dao.LamFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dao.LinkFreeFlowSpeedRepository;
-import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 
 @Service
 public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
@@ -20,8 +20,8 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
     }
 
     @Override
-    public FreeFlowSpeedDataObjectDto listAllFreeFlowSpeeds() {
-        return new FreeFlowSpeedDataObjectDto(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
+    public FreeFlowSpeedRootDataObjectDto listAllFreeFlowSpeeds() {
+        return new FreeFlowSpeedRootDataObjectDto(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
                                            lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds());
     }
 }

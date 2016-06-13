@@ -23,7 +23,7 @@ public class LamDataRestTest extends RestTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamData", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamData[0].lamId", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.lamMeasurements", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.lamMeasurements[0].lamId", Matchers.notNullValue()));
     }
 }
