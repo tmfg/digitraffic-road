@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.trafficfluency;
+package fi.livi.digitraffic.tie.data.model;
 
 import java.math.BigDecimal;
 
