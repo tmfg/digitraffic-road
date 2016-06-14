@@ -12,12 +12,20 @@ import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 public interface ForecastSectionRepository extends JpaRepository<ForecastSection, Long> {
     @Override
     @Query(value =
-            "select fs.natural_id, road_section_number, fs.description, r.natural_id as road_number, srs.natural_id as " +
-                    "start_section_number, start_distance, ers.natural_id as end_section_number, fs.end_distance, length\n" +
-                    "from forecast_section fs, road r, road_section srs, road_section ers\n" +
-                    "where fs.road_id = r.id\n" +
-                    "and srs.id = start_road_section_id\n" +
-                    "and ers.id = end_road_section_id",
+            "select fs.natural_id\n" +
+            "     , road_section_number\n" +
+            "     , fs.description\n" +
+            "     , r.natural_id as road_number\n" +
+            "     , srs.natural_id as start_section_number\n" +
+            "     , start_distance\n" +
+            "     , ers.natural_id as end_section_number\n" +
+            "     , fs.end_distance\n" +
+            "     , fs.length\n" +
+            "from forecast_section fs\n" +
+            "inner join road r on r.id = fs.road_id \n" +
+            "inner join road_section srs on srs.id = fs.start_road_section_id\n" +
+            "inner join road_section ers on ers.id = fs.end_road_section_id\n" +
+            "ORDER BY fs.natural_id",
             nativeQuery = true)
     List<ForecastSection> findAll();
 }
