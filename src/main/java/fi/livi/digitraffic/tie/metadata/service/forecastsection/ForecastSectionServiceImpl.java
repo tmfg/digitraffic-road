@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 
 @Service
@@ -22,5 +23,10 @@ public class ForecastSectionServiceImpl implements ForecastSectionService {
     @Override
     public List<ForecastSection> findAllForecastSections() {
         return forecastSectionRepository.findAll();
+    }
+
+    @Override
+    public ForecastSectionsMetadata findForecastSectionsMetadata() {
+        return new ForecastSectionsMetadata(findAllForecastSections());
     }
 }

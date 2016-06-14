@@ -4,18 +4,16 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
+import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
@@ -85,15 +83,15 @@ public class Metadata {
     @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Sensors"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public List<RoadStationSensor> listNonObsoleteRoadStationSensors() {
-        return roadStationSensorService.findAllNonObsoleteRoadStationSensors();
+    public RoadStationsSensorsMetadata listNonObsoleteRoadStationSensors() {
+        return roadStationSensorService.findRoadStationsSensorsMetadata();
     }
 
     @ApiOperation("The static information of road weather forecast sections")
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public List<ForecastSection> listForecastSections() {
-        return forecastSectionService.findAllForecastSections();
+    public ForecastSectionsMetadata listForecastSections() {
+        return forecastSectionService.findForecastSectionsMetadata();
     }
 }

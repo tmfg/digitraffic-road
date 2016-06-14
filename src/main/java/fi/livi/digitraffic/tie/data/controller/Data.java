@@ -82,7 +82,7 @@ public class Data {
         this.cameraDataService = cameraDataService;
     }
 
-    @ApiOperation(value = "Current fluency data")
+    @ApiOperation(value = "Current fluency data including journey times")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                             @ApiResponse(code = 500, message = "Internal server error") })
