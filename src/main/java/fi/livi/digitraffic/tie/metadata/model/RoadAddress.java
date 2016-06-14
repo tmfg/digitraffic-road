@@ -131,7 +131,7 @@ public class RoadAddress {
         return id;
     }
 
-    public void setId(long Long) {
+    public void setId(long id) {
         this.id = id;
     }
 
