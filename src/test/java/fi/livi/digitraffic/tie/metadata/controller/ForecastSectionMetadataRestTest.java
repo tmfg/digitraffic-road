@@ -20,15 +20,15 @@ public class ForecastSectionMetadataRestTest extends MetadataRestTest {
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
-                .andExpect(jsonPath("$[0].roadSectionNumber", notNullValue())) //
-                .andExpect(jsonPath("$[0].description", notNullValue())) //
-                .andExpect(jsonPath("$[0].roadNumber", notNullValue())) //
-                .andExpect(jsonPath("$[0].startSectionNumber", notNullValue())) //
-                .andExpect(jsonPath("$[0].startDistance", notNullValue())) //
-                .andExpect(jsonPath("$[0].endSectionNumber", notNullValue())) //
-                .andExpect(jsonPath("$[0].endDistance", notNullValue())) //
-                .andExpect(jsonPath("$[0].length", notNullValue())) //
-                .andExpect(jsonPath("$[0].id", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].roadSectionNumber", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].description", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].roadNumber", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].startSectionNumber", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].startDistance", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].endSectionNumber", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].endDistance", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].length", notNullValue())) //
+                .andExpect(jsonPath("$.forecastSections[0].id", notNullValue())) //
         ;
     }
 
