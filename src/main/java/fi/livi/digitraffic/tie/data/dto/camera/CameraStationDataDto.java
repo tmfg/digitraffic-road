@@ -3,12 +3,14 @@ package fi.livi.digitraffic.tie.data.dto.camera;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "CameraStationData", description = "Road wather station with sensor values")
 @JsonPropertyOrder( value = {"id", "roadStationId", "nearestRoadWeatherStationId", "sensorValues"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraStationDataDto {
 
     private String id;

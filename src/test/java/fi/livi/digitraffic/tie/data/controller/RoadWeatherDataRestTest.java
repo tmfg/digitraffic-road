@@ -21,18 +21,18 @@ public class RoadWeatherDataRestTest extends RestTest {
                             Data.ROAD_WEATHER_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.roadWeatherStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.roadWeatherStations[0]", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.roadWeatherStations[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadWeatherStations[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.roadWeatherStations[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].sensorNameEn", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].sensorNameOld", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].sensorUnit", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.roadWeatherStations[0].sensorValues[0].measuredUtc", Matchers.isA(String.class)))
         ;
     }
 }

@@ -23,7 +23,9 @@ public interface RoadStationStatusRepository extends JpaRepository<RoadStationSt
             "LEFT OUTER JOIN SENSOR_VALUE SV1 ON SV1.ROAD_STATION_ID = RS.ID AND SV1.ROAD_STATION_SENSOR_ID = 1\n" +
             "LEFT OUTER JOIN SENSOR_VALUE SV2 ON SV2.ROAD_STATION_ID = RS.ID AND SV2.ROAD_STATION_SENSOR_ID = 2\n" +
             "WHERE RS.OBSOLETE = 0\n" +
-            "  AND NVL(SV1.VALUE, SV2.VALUE) IS NOT NULL", nativeQuery = true)
+            "  AND NVL(SV1.VALUE, SV2.VALUE) IS NOT NULL\n" +
+             "ORDER BY RS.NATURAL_ID",
+           nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationStatus> findAllRoadStationStatuses();
 }

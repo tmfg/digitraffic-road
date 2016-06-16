@@ -21,14 +21,18 @@ public class CameraDataServiceImpl implements CameraDataService {
         this.cameraPreset2CameraDataConverter = cameraPreset2CameraDataConverter;
     }
 
+    // TODO onlyUpdateInfo: do direct query to get update info
     @Transactional(readOnly = true)
     @Override
-    public CameraRootDataObjectDto findAllNonObsoleteCameraStationsData() {
+    public CameraRootDataObjectDto findAllNonObsoleteCameraStationsData(boolean onlyUpdateInfo) {
 
         CameraRootDataObjectDto data =
                 cameraPreset2CameraDataConverter.convert(
                         cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalseOrderByPresetId());
 
+        if (onlyUpdateInfo) {
+            data.setCameraStations(null);
+        }
         return data;
     }
 }

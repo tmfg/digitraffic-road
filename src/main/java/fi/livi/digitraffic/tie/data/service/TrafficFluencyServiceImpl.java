@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,12 +9,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.FluencyClassRepository;
 import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
+import fi.livi.digitraffic.tie.helper.DateHelpper;
 
 @Service
 public class TrafficFluencyServiceImpl implements TrafficFluencyService {
@@ -32,15 +35,25 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
         this.thresholdClasses = thresholdClasses;
     }
 
+    // TODO onlyUpdateInfo: do direct query to get update info
+    @Transactional(readOnly = true)
     @Override
-    public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData() {
-        TrafficFluencyRootDataObjectDto result = new TrafficFluencyRootDataObjectDto(trafficFluencyRepository.findLatestMediansForNonObsoleteLinks());
-        for (LatestMedianDataDto lmd : result.getLatestMedians()) {
+    public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo) {
+        List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
+
+
+        LocalDateTime updated = null;
+        for (LatestMedianDataDto lmd : latestMedians) {
+            updated  = DateHelpper.getNewest(updated, lmd.getMeasured());
             lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
         }
-        return result;
+
+        return new TrafficFluencyRootDataObjectDto(
+                onlyUpdateInfo ? null : latestMedians,
+                updated);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<FluencyClass> findAllFluencyClassesOrderByLowerLimitAsc() {
         return fluencyClassRepository.findAllOrderByLowerLimitAsc();

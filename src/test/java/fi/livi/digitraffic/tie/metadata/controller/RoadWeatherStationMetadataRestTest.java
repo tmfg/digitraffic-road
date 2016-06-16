@@ -33,7 +33,7 @@ public class RoadWeatherStationMetadataRestTest extends MetadataRestTest {
 //                .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", is("ROSA")))
                 .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", isA(String.class)))
 //                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus  ", is("GATHERING")))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
@@ -46,7 +46,7 @@ public class RoadWeatherStationMetadataRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.names.en", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.sensors[0].nameEn", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.stationSensors[0]", isA(Integer.class)))
                 ;
     }
 }

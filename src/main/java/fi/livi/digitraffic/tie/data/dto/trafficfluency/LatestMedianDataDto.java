@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "LatestMedianData", description = "The message contains the latest 5 minute median, corresponding average speed, fluency class, and timestamp of the latest update for each link.")
 @Immutable
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LatestMedianDataDto implements DataObjectDto {
+public class LatestMedianDataDto implements MeasuredDataObjectDto {
 
     @Id
     @JsonIgnore
@@ -40,8 +40,8 @@ public class LatestMedianDataDto implements DataObjectDto {
     @NotNull
     private BigDecimal ratioToFreeFlowSpeed;
 
-    @ApiModelProperty(name = "linkId", value = "Link identifier (naturalId)", required = true)
-    @JsonProperty(value = "linkId")
+    @ApiModelProperty(value = "Link identifier (naturalId)", required = true)
+    @JsonProperty(value = "id")
     @NotNull
     private long linkNaturalId;
 

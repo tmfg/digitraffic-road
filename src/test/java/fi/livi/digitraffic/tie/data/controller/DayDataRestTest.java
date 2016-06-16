@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import org.hamcrest.Matchers;
@@ -18,24 +18,25 @@ import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 /**
- * Test material contains journeytime_medians from 25.8.2015 ~ 21.12.
- * So we adjust the end_timestamp in database to now - 12 h for this test
- * to be in 24 h range from now.
+ * Test material contains journeytime_medians from 25.8.2015.
+ * So we adjust the end_timestamp in database to now - 24 h for this test
+ * to find history data for yesterday.
  */
 public class DayDataRestTest extends RestTest {
-    private long hoursDiff = 0;
+    private long days = 0;
 
-    private final LocalDateTime DATE = LocalDateTime.of(2015, 8, 25, 21, 12);
+    private final LocalDate DATE = LocalDate.of(2015, 8, 25);
 
     @Before
     public void alterEndTimeStamp() {
-        hoursDiff = ChronoUnit.HOURS.between(DATE, LocalDateTime.now()) - 12;
-        jdbcTemplate.update("update journeytime_median set end_timestamp = end_timestamp + ?/24", hoursDiff);
+        days = ChronoUnit.DAYS.between(DATE, LocalDate.now()) - 1;
+
+        jdbcTemplate.update("update journeytime_median set end_timestamp = end_timestamp + ?", days);
     }
 
     @After
     public void restoreEndTimestamp() {
-        jdbcTemplate.update("update journeytime_median set end_timestamp = end_timestamp - ?/24", hoursDiff);
+        jdbcTemplate.update("update journeytime_median set end_timestamp = end_timestamp - ?", days);
     }
 
     @Test
@@ -45,15 +46,19 @@ public class DayDataRestTest extends RestTest {
                             Data.DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.links[0].linkNumber", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.links[0].linkMeasurements", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].linkMeasurements[0].m", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].linkMeasurements[0].tt", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].minute", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
                 ;
     }
 }

@@ -23,7 +23,7 @@ public class RoadStationSensorMetadataRestTest extends MetadataRestTest {
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class))) //
-                .andExpect(jsonPath("$.roadStationSensors[0].nameEn", isA(String.class))) //
+                .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class))) //
                 .andExpect(jsonPath("$.roadStationSensors[0].unit", isA(String.class))) //
         ;
     }

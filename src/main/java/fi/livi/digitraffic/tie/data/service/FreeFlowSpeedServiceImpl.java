@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.LamFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dao.LinkFreeFlowSpeedRepository;
@@ -19,9 +22,18 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
         this.lamFreeFlowSpeedRepository = lamFreeFlowSpeedRepository;
     }
 
+    // TODO onlyUpdateInfo: do direct query to get update info
+    @Transactional(readOnly = true)
     @Override
-    public FreeFlowSpeedRootDataObjectDto listAllFreeFlowSpeeds() {
-        return new FreeFlowSpeedRootDataObjectDto(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
-                                           lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds());
+    public FreeFlowSpeedRootDataObjectDto listAllFreeFlowSpeeds(boolean onlyUpdateInfo) {
+        FreeFlowSpeedRootDataObjectDto data =
+                new FreeFlowSpeedRootDataObjectDto(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
+                                                   lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
+                                                   // TODO where should this info be found?
+                                                   LocalDateTime.now());
+        if (onlyUpdateInfo) {
+            data.clearData();
+        }
+        return data;
     }
 }

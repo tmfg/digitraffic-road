@@ -14,11 +14,11 @@ public class FreeFlowSpeedServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations() {
-        final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listAllFreeFlowSpeeds();
+        final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listAllFreeFlowSpeeds(false);
 
         Assert.notNull(object);
-        Assert.notNull(object.getDataLocalTime());
-        Assert.notNull(object.getDataUtc());
+        Assert.notNull(object.getDataUptadedLocalTime());
+        Assert.notNull(object.getDataUptadedUtc());
 
         Assert.notNull(object.getLamFreeFlowSpeeds());
         Assert.notEmpty(object.getLamFreeFlowSpeeds());

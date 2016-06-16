@@ -21,12 +21,12 @@ public class TrafficFluencyDataRestTest extends RestTest {
                             Data.TRAFFIC_FLUENCY_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0].averageSpeed", Matchers.isA(Double.class)))
-                .andExpect(jsonPath("$.latestMedians[0].linkId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.latestMedians[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.latestMedians[0].measuredLocalTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.latestMedians[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.latestMedians[0].medianJourneyTime", Matchers.isA(Integer.class)))

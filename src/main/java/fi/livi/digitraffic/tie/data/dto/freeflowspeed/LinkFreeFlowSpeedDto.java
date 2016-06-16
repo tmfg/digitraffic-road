@@ -5,6 +5,8 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,6 +17,7 @@ public class LinkFreeFlowSpeedDto {
 
     @Id
     @ApiModelProperty(value = "Link id", required = true)
+    @JsonProperty("id")
     private long linkNo;
 
     @ApiModelProperty(value = "Free flow speed [km/h]", required = true)

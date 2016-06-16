@@ -3,28 +3,35 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "Road station sensor")
+@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "calculationFormula", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
 public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     /** These id:s are for station status sensors */
-    public static final Set<Long> RS_STATUS_SENSORS_NATURAL_IDS_SET =
+    public static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
             new HashSet<Long>(Arrays.asList(60000L, 60002L));
 
     @JsonIgnore
@@ -36,12 +43,12 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @JsonIgnore
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Sensor id")
+    @ApiModelProperty(value = "Sensor id", position = 1)
     @JsonProperty("id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Sensor name [en]", position = 2)
-    @JsonProperty(value = "nameEn")
+    @ApiModelProperty(value = "Sensor old name. For new sensors will equal sensorNameFi. Will deprecate in future.", position = 2, notes = "noteja")
+    @JsonProperty(value = "nameOld")
     private String name;
 
     @ApiModelProperty(value = "Unit of sensor value")
@@ -67,6 +74,10 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     @ApiModelProperty(value = "Calculation fomula of sensor value")
     private String calculationFormula;
+
+    @ApiModelProperty("Possible additional descriptions for sensor values")
+    @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
+    private List<SensorValueDescription> sensorValueDescriptions;
 
     public long getId() {
         return id;
@@ -175,7 +186,7 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     @JsonIgnore
     public boolean isStatusSensor() {
-        return RS_STATUS_SENSORS_NATURAL_IDS_SET.contains(naturalId);
+        return STATUS_SENSORS_NATURAL_IDS_SET.contains(naturalId);
     }
 
     @Override
@@ -192,5 +203,13 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @Override
     public int compareTo(RoadStationSensor o) {
         return Long.compare(this.getNaturalId(), o.getNaturalId());
+    }
+
+    public List<SensorValueDescription> getSensorValueDescriptions() {
+        return sensorValueDescriptions;
+    }
+
+    public void setSensorValueDescriptions(List<SensorValueDescription> sensorValueDescriptions) {
+        this.sensorValueDescriptions = sensorValueDescriptions;
     }
 }

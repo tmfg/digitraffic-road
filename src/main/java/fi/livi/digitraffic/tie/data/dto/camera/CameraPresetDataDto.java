@@ -3,16 +3,18 @@ package fi.livi.digitraffic.tie.data.dto.camera;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "CameraPresetData", description = "Road wather station with sensor values")
 @JsonPropertyOrder( value = {"id", "presentationName", "nameOnDevice", "public", "imageUrl"})
-public class CameraPresetDataDto implements DataObjectDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
     @ApiModelProperty(value = "Camera preset id", position = 1)
     private String id;

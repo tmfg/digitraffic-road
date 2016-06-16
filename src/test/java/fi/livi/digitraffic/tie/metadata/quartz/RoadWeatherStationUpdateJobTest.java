@@ -39,16 +39,18 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         tiesaaPerustiedotLotjuServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
-        roadWeatherStationUpdater.updateWeatherStations();
+        roadWeatherStationUpdater.updateRoadWeatherStations();
         roadWeatherStationUpdater.updateRoadStationSensors();
+        roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
         RoadWeatherStationFeatureCollection allInitial =
                 roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
         assertEquals(2, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
         tiesaaPerustiedotLotjuServiceMock.setStateAfterChange(true);
-        roadWeatherStationUpdater.updateWeatherStations();
+        roadWeatherStationUpdater.updateRoadWeatherStations();
         roadWeatherStationUpdater.updateRoadStationSensors();
+        roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
         RoadWeatherStationFeatureCollection allAfterChange =
                 roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
         assertEquals(3, allAfterChange.getFeatures().size());
