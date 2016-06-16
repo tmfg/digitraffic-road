@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = {"metadata"}, description="Metadata for Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
-public class Metadata {
+public class MetadataController {
 
     public static final String LAM_STATIONS_PATH = "/lam-stations";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
@@ -43,11 +43,11 @@ public class Metadata {
     private ForecastSectionService forecastSectionService;
 
     @Autowired
-    public Metadata(final CameraPresetService cameraPresetService,
-                    final LamStationService lamStationService,
-                    final RoadWeatherStationService roadWeatherStationService,
-                    final RoadStationSensorService roadStationSensorService,
-                    final ForecastSectionService forecastSectionService) {
+    public MetadataController(final CameraPresetService cameraPresetService,
+                              final LamStationService lamStationService,
+                              final RoadWeatherStationService roadWeatherStationService,
+                              final RoadStationSensorService roadStationSensorService,
+                              final ForecastSectionService forecastSectionService) {
         this.cameraPresetService = cameraPresetService;
         this.lamStationService = lamStationService;
         this.roadWeatherStationService = roadWeatherStationService;

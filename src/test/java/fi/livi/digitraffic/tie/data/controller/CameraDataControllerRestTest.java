@@ -12,13 +12,13 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class CameraDataRestTest extends RestTest {
+public class CameraDataControllerRestTest extends RestTest {
 
     @Test
     public void testLamDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.CAMERA_DATA_PATH))
+                            DataController.CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //

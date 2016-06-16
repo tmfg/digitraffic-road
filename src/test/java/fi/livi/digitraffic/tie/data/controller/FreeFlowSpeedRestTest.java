@@ -17,7 +17,7 @@ public class FreeFlowSpeedRestTest extends RestTest {
     public void testFreeFlowSpeedDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.FREE_FLOW_SPEEDS_PATH))
+                            DataController.FREE_FLOW_SPEEDS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //

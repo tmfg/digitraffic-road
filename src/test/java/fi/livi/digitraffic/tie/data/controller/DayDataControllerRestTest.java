@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
  * So we adjust the end_timestamp in database to now - 24 h for this test
  * to find history data for yesterday.
  */
-public class DayDataRestTest extends RestTest {
+public class DayDataControllerRestTest extends RestTest {
     private long days = 0;
 
     private final LocalDate DATE = LocalDate.of(2015, 8, 25);
@@ -43,7 +43,7 @@ public class DayDataRestTest extends RestTest {
     public void testDayDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.DAY_DATA_PATH))
+                            DataController.DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //

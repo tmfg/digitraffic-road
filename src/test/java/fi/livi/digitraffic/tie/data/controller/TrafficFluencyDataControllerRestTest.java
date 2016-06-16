@@ -12,13 +12,13 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class TrafficFluencyDataRestTest extends RestTest {
+public class TrafficFluencyDataControllerRestTest extends RestTest {
 
     @Test
     public void testTrafficFluencyDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.TRAFFIC_FLUENCY_PATH))
+                            DataController.TRAFFIC_FLUENCY_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //

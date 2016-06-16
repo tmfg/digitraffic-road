@@ -49,7 +49,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = {"data"}, description="Data of Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
-public class Data {
+public class DataController {
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
@@ -68,13 +68,13 @@ public class Data {
     private CameraDataService cameraDataService;
 
     @Autowired
-    public Data(final TrafficFluencyService trafficFluencyService,
-                final DayDataService dayDataService,
-                final LamDataService lamDataService,
-                final FreeFlowSpeedService freeFlowSpeedService,
-                final RoadWeatherService roadWeatherService,
-                final RoadStationStatusService roadStationStatusService,
-                final CameraDataService cameraDataService) {
+    public DataController(final TrafficFluencyService trafficFluencyService,
+                          final DayDataService dayDataService,
+                          final LamDataService lamDataService,
+                          final FreeFlowSpeedService freeFlowSpeedService,
+                          final RoadWeatherService roadWeatherService,
+                          final RoadStationStatusService roadStationStatusService,
+                          final CameraDataService cameraDataService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
         this.lamDataService = lamDataService;

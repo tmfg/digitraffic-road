@@ -12,13 +12,13 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class RoadWeatherDataRestTest extends RestTest {
+public class RoadWeatherDataControllerRestTest extends RestTest {
 
     @Test
     public void testRoadWeatherDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.ROAD_WEATHER_PATH))
+                            DataController.ROAD_WEATHER_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue()))

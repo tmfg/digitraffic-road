@@ -7,7 +7,7 @@ import org.springframework.util.Assert;
 import fi.livi.digitraffic.tie.MetadataTest;
 import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 
-public class LamDataServiceTest extends MetadataTest {
+public class LamDataControllerServiceTest extends MetadataTest {
 
     @Autowired
     private LamDataService lamDataService;

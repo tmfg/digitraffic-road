@@ -12,13 +12,13 @@ import org.junit.Test;
 import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class LamMetadataRestTest extends MetadataRestTest {
+public class LamMetadataControllerRestTest extends MetadataRestTest {
 
     @Test
     public void testLamMetadataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            Metadata.LAM_STATIONS_PATH))
+                            MetadataController.LAM_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
