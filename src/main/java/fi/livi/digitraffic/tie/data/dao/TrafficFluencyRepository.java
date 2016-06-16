@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,13 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
           + "WHERE L.OBSOLETE = 0 \n"
           + "ORDER BY L.NATURAL_ID", nativeQuery = true)
     List<LatestMedianDataDto> findLatestMediansForNonObsoleteLinks();
+
+    @Query(value =
+           "SELECT max(M.END_TIMESTAMP) AS MEASURED\n" +
+           "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
+           "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
+           "WHERE L.OBSOLETE = 0",
+           nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime();
+
 }

@@ -39,18 +39,23 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
     @Transactional(readOnly = true)
     @Override
     public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo) {
-        List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
 
+        LocalDateTime updated = trafficFluencyRepository.getLatestMeasurementTime();
 
-        LocalDateTime updated = null;
-        for (LatestMedianDataDto lmd : latestMedians) {
-            updated  = DateHelpper.getNewest(updated, lmd.getMeasured());
-            lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+        if (onlyUpdateInfo) {
+            return new TrafficFluencyRootDataObjectDto(updated);
+        } else {
+            List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
+
+            for (LatestMedianDataDto lmd : latestMedians) {
+                updated = DateHelpper.getNewest(updated, lmd.getMeasured());
+                lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+            }
+
+            return new TrafficFluencyRootDataObjectDto(
+                    latestMedians,
+                    updated);
         }
-
-        return new TrafficFluencyRootDataObjectDto(
-                onlyUpdateInfo ? null : latestMedians,
-                updated);
     }
 
     @Transactional(readOnly = true)

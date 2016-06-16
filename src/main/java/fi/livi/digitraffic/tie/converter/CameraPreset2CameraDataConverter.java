@@ -17,7 +17,6 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
 import fi.livi.digitraffic.tie.helper.CameraPresetHelpper;
-import fi.livi.digitraffic.tie.helper.DateHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
@@ -34,13 +33,13 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets) {
+    public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets,
+                                           LocalDateTime updated) {
         final List<CameraStationDataDto> collection = new ArrayList<>();
 
         // Cameras mapped with cameraId
         Map<String, CameraStationDataDto> cameraStationMap = new HashMap<>();
 
-        LocalDateTime updated = null;
         for(final CameraPreset cp : cameraPresets) {
             // CameraPreset contains camera and preset informations and
             // camera info is duplicated on every preset db line
@@ -51,11 +50,8 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
                 cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
                 collection.add(cameraStationFeature);
             }
-            updated = DateHelpper.getNewest(updated, cp.getPictureLastModified());
             CameraPresetDataDto preset = convertPreset(cp);
             cameraStationFeature.addPreset(preset);
-            updated = DateHelpper.getNewest(updated, preset.getMeasured());
-
         }
 
         return new CameraRootDataObjectDto(collection, updated);

@@ -22,18 +22,22 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
         this.lamFreeFlowSpeedRepository = lamFreeFlowSpeedRepository;
     }
 
-    // TODO onlyUpdateInfo: do direct query to get update info
+
     @Transactional(readOnly = true)
     @Override
     public FreeFlowSpeedRootDataObjectDto listAllFreeFlowSpeeds(boolean onlyUpdateInfo) {
-        FreeFlowSpeedRootDataObjectDto data =
-                new FreeFlowSpeedRootDataObjectDto(linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
-                                                   lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
-                                                   // TODO where should this info be found?
-                                                   LocalDateTime.now());
+
+        // TODO: where to read update info?
+        LocalDateTime updated = LocalDateTime.now();
         if (onlyUpdateInfo) {
-            data.clearData();
+            return new FreeFlowSpeedRootDataObjectDto(updated);
+        } else {
+            FreeFlowSpeedRootDataObjectDto data =
+                    new FreeFlowSpeedRootDataObjectDto(
+                            linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
+                            lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
+                            updated);
+            return data;
         }
-        return data;
     }
 }

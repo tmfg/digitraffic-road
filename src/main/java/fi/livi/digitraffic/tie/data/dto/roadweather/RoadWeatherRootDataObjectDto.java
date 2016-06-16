@@ -24,6 +24,10 @@ public class RoadWeatherRootDataObjectDto extends RootDataObjectDto {
         this.roadWeatherStations = roadWeatherStations;
     }
 
+    public RoadWeatherRootDataObjectDto(LocalDateTime updated) {
+        this(null, updated);
+    }
+
     public List<RoadWeatherStationDto> getRoadWeatherStations() {
         return roadWeatherStations;
     }

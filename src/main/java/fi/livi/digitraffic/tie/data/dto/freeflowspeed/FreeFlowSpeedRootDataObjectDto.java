@@ -17,17 +17,21 @@ import io.swagger.annotations.ApiModelProperty;
 public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
 
     @ApiModelProperty(value = "Free flow speeds for links")
-    private List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds;
+    private final List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds;
 
     @ApiModelProperty(value = "Free flow speeds for LAM stations")
-    private List<LamFreeFlowSpeedDto> lamFreeFlowSpeeds;
+    private final List<LamFreeFlowSpeedDto> lamFreeFlowSpeeds;
 
     public FreeFlowSpeedRootDataObjectDto(final List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds,
                                           final List<LamFreeFlowSpeedDto> lamFreeFlowSpeeds,
-                                          final LocalDateTime lastUpdated) {
-        super(lastUpdated);
+                                          final LocalDateTime updated) {
+        super(updated);
         this.linkFreeFlowSpeeds = linkFreeFlowSpeeds;
         this.lamFreeFlowSpeeds = lamFreeFlowSpeeds;
+    }
+
+    public FreeFlowSpeedRootDataObjectDto(LocalDateTime updated) {
+        this(null, null, updated);
     }
 
     public List<LinkFreeFlowSpeedDto> getLinkFreeFlowSpeeds() {
@@ -38,8 +42,4 @@ public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
         return lamFreeFlowSpeeds;
     }
 
-    public void clearData() {
-        linkFreeFlowSpeeds = null;
-        lamFreeFlowSpeeds = null;
-    }
 }

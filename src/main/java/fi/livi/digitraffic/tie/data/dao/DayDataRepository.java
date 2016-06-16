@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.QueryHint;
@@ -31,4 +32,14 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LinkMeasurementDataDto> listAllMedianTravelTimes();
+
+    @Query(value =
+            "SELECT MAX(M.END_TIMESTAMP) AS UPTADED\n" +
+            "    FROM JOURNEYTIME_MEDIAN M\n" +
+            "    INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
+            "    WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +
+            "    AND M.END_TIMESTAMP < (TRUNC(SYSDATE))\n" +
+            "    AND L.OBSOLETE = 0",
+            nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime();
 }

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.QueryHint;
@@ -29,4 +30,12 @@ public interface LamMeasurementRepository extends JpaRepository<LamMeasurementDt
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LamMeasurementDto> listAllLamDataFromNonObsoleteStations();
+
+    @Query(value =
+            "SELECT MAX(LSD.MEASURED) AS UPDATED\n" +
+            "FROM LAM_STATION LS\n" +
+            "INNER JOIN LAM_STATION_DATA LSD ON LSD.LAM_STATION_ID = LS.ID\n" +
+            "WHERE LS.OBSOLETE = 0",
+           nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime();
 }

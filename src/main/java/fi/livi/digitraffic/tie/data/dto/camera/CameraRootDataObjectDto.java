@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class CameraRootDataObjectDto extends RootDataObjectDto {
 
     @ApiModelProperty(value = "Camera stations data")
-    private List<CameraStationDataDto> cameraStations;
+    private final List<CameraStationDataDto> cameraStations;
 
     public CameraRootDataObjectDto(List<CameraStationDataDto> cameraStationData,
                                    LocalDateTime updated) {
@@ -24,11 +24,11 @@ public class CameraRootDataObjectDto extends RootDataObjectDto {
         this.cameraStations = cameraStationData;
     }
 
-    public List<CameraStationDataDto> getCameraStations() {
-        return cameraStations;
+    public CameraRootDataObjectDto(LocalDateTime updated) {
+        this(null, updated);
     }
 
-    public void setCameraStations(List<CameraStationDataDto> cameraStations) {
-        this.cameraStations = cameraStations;
+    public List<CameraStationDataDto> getCameraStations() {
+        return cameraStations;
     }
 }

@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class LamRootDataObjectDto extends RootDataObjectDto {
 
     @ApiModelProperty(value = "Latest measurement data from LAM stations")
-    private List<LamMeasurementDto> lamMeasurements;
+    private final List<LamMeasurementDto> lamMeasurements;
 
     public LamRootDataObjectDto(final List<LamMeasurementDto> lamMeasurements,
                                 LocalDateTime updated) {
@@ -24,11 +24,11 @@ public class LamRootDataObjectDto extends RootDataObjectDto {
         this.lamMeasurements = lamMeasurements;
     }
 
-    public List<LamMeasurementDto> getLamMeasurements() {
-        return lamMeasurements;
+    public LamRootDataObjectDto(LocalDateTime updated) {
+        this(null, updated);
     }
 
-    public void clearData() {
-        lamMeasurements = null;
+    public List<LamMeasurementDto> getLamMeasurements() {
+        return lamMeasurements;
     }
 }

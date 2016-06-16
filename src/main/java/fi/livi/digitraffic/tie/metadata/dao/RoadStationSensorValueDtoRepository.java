@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,6 +44,29 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
            nativeQuery = true)
     // sensor typeid 2 = rws
     List<RoadStationSensorValueDto> findAllNonObsoleteRoadStationSensorValues(
+            @Param("sensorTypeId")
+            final int sensorTypeId,
+            @Param("timeLimitInMinutes")
+            final int timeLimitInMinutes,
+            @Param("includedSensorNaturalIds")
+            List<Long> includedSensorNaturalIds);
+
+    @Query(value =
+           "select max(sv.measured) as updated\n" +
+           "from road_station rs\n" +
+           "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
+           "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
+           "where rs.type = :sensorTypeId\n" +
+           "  and rs.obsolete = 0\n" +
+           "  and s.obsolete = 0\n" +
+           "  and sv.measured > (\n" +
+           "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
+           "    from sensor_value sensv\n" +
+           "    where sensv.road_station_id = sv.road_station_id\n" +
+           "  )\n" +
+           "  and s.natural_id in ( :includedSensorNaturalIds )",
+           nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime(
             @Param("sensorTypeId")
             final int sensorTypeId,
             @Param("timeLimitInMinutes")

@@ -20,15 +20,18 @@ public class LamDataServiceImpl implements LamDataService {
         this.lamMeasurementRepository = lamMeasurementRepository;
     }
 
-    // TODO onlyUpdateInfo: do direct query to get update info
     @Override
     @Transactional(readOnly = true)
     public LamRootDataObjectDto listAllLamDataFromNonObsoleteStations(boolean onlyUpdateInfo) {
-        List<LamMeasurementDto> all = lamMeasurementRepository.listAllLamDataFromNonObsoleteStations();
-        LocalDateTime updated = all.size() > 0 ? all.get(0).getMeasured() : null;
 
-        return new LamRootDataObjectDto(
-                onlyUpdateInfo ? null : all,
-                updated);
+        LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
+
+        if (onlyUpdateInfo) {
+            return new LamRootDataObjectDto(updated);
+        } else {
+            List<LamMeasurementDto> all = lamMeasurementRepository.listAllLamDataFromNonObsoleteStations();
+            return new LamRootDataObjectDto(all,
+                                            updated);
+        }
     }
 }

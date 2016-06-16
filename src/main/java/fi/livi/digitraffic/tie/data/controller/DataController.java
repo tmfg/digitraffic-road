@@ -59,6 +59,8 @@ public class DataController {
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
     public static final String ROAD_WEATHER_PATH = "/road-weather";
 
+    public static final String LAST_UPDATED_PARAM = "lastUpdated";
+
     private TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
     private LamDataService lamDataService;
@@ -90,7 +92,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public TrafficFluencyRootDataObjectDto listTrafficFluency(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
@@ -100,7 +103,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public HistoryRootDataObjectDto listPreviousDayHistoryData(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
@@ -110,7 +114,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public LamRootDataObjectDto listAllLamData(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return lamDataService.listAllLamDataFromNonObsoleteStations(lastUpdated);
     }
 
@@ -120,7 +125,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public FreeFlowSpeedRootDataObjectDto listFreeFlowSpeeds(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return freeFlowSpeedService.listAllFreeFlowSpeeds(lastUpdated);
     }
 
@@ -130,7 +136,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public CameraRootDataObjectDto listCameraStationData(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return cameraDataService.findAllNonObsoleteCameraStationsData(lastUpdated);
     }
 
@@ -140,7 +147,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadWeatherRootDataObjectDto listRoadWeatherStationData(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return roadWeatherService.findAllRoadWeatherData(lastUpdated);
     }
 
@@ -150,7 +158,8 @@ public class DataController {
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationStatusesData listNonObsoleteRoadStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") boolean lastUpdated) {
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
         return roadStationStatusService.findAllRoadStationStatuses(lastUpdated);
     }
 }

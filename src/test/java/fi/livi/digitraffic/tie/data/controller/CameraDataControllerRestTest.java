@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 public class CameraDataControllerRestTest extends RestTest {
 
     @Test
-    public void testLamDataRestApi() throws Exception {
+    public void testCameraDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.CAMERA_DATA_PATH))
@@ -25,6 +25,8 @@ public class CameraDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
+                .andExpect(jsonPath("$.cameraStations[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.cameraStations[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].id", Matchers.startsWith("C")))
@@ -34,9 +36,6 @@ public class CameraDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].imageUrl", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.cameraStations[0].averageSpeed2", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.cameraStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.cameraStations[0].measuredUtc", Matchers.isA(String.class)))
         ;
     }
 }

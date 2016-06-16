@@ -23,6 +23,9 @@ public class RoadStationStatusesData extends RootDataObjectDto {
         this.roadStationStatuses = roadStationStatuses;
     }
 
+    public RoadStationStatusesData(LocalDateTime updated) {
+        this(null, updated);
+    }
 
     public List<RoadStationStatus> getRoadStationStatuses() {
         return roadStationStatuses;
