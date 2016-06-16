@@ -15,5 +15,5 @@ public interface RoadWeatherStationRepository extends JpaRepository<RoadWeatherS
     @Override
     List<RoadWeatherStation> findAll();
 
-    List<RoadWeatherStation> findByRoadStationObsoleteFalse();
+    List<RoadWeatherStation> findByRoadStationObsoleteFalseOrderByRoadStation_NaturalId();
 }

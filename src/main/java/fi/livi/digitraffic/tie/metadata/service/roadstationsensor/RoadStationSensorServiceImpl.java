@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
+import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
@@ -47,6 +48,12 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllNonObsoleteRoadStationSensors() {
         return roadStationSensorRepository.findNonObsoleteRoadStationSensors();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata() {
+        return new RoadStationsSensorsMetadata(findAllNonObsoleteRoadStationSensors());
     }
 
     @Transactional(readOnly = true)

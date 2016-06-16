@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
+import fi.livi.digitraffic.tie.data.model.FluencyClass;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

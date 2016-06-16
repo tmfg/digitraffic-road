@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
+import fi.livi.digitraffic.tie.data.model.FluencyClass;
 
 @Repository
 public interface FluencyClassRepository extends JpaRepository<FluencyClass, Long> {

@@ -13,6 +13,15 @@ import io.swagger.annotations.ApiModelProperty;
 @Immutable
 public class ForecastSection {
 
+    /**
+     * Roadsection identifier 15 characters ie. 00004_112_000_0
+     * 1. Road number 5 characters ie. 00004
+     * 2. Road section 3 characters ie. 112
+     * 3. Road section version 3 characters ie. 000
+     * 4. Reserver for future needs 1 characters default 0
+     * Delimiter is underscore "_"
+     */
+
     @ApiModelProperty(value = "Forecast section id")
     @Id
     @JsonProperty("id")
@@ -112,5 +121,11 @@ public class ForecastSection {
 
     public void setLength(final int length) {
         this.length = length;
+    }
+
+    @ApiModelProperty(value = "Road section version number")
+    public int getRoadSectionVersion() {
+        System.out.println(naturalId.substring(10, 13));
+        return Integer.parseInt(naturalId.substring(10, 13));
     }
 }

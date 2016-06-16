@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.data.dao.FluencyClassRepository;
 import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.model.trafficfluency.FluencyClass;
+import fi.livi.digitraffic.tie.data.model.FluencyClass;
 
 @Service
 public class TrafficFluencyServiceImpl implements TrafficFluencyService {
