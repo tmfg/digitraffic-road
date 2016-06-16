@@ -25,8 +25,6 @@ public class CameraDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
-                .andExpect(jsonPath("$.cameraStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.cameraStations[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].id", Matchers.startsWith("C")))
