@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson.roadweather;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -31,6 +32,8 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     @ApiModelProperty(value = "Road Weather Station Sensors")
     private List<RoadStationSensor> sensors = new ArrayList<>();
+
+    private static RSComparator rsComparator = new RSComparator();
 
     public long getId() {
         return id;
@@ -64,12 +67,12 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     public void setSensors(List<RoadStationSensor> sensors) {
         this.sensors = sensors;
-        Collections.sort(sensors);
+        Collections.sort(sensors, rsComparator);
     }
 
     public void addSensor(RoadStationSensor roadStationSensor) {
         sensors.add(roadStationSensor);
-        Collections.sort(sensors);
+        Collections.sort(sensors, rsComparator);
     }
 
     @Override
@@ -101,4 +104,14 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
                 .append(sensors)
                 .toHashCode();
     }
+
+
+    private static class RSComparator implements Comparator<RoadStationSensor> {
+
+        @Override
+        public int compare(RoadStationSensor o1, RoadStationSensor o2) {
+            return Long.compare(o1.getNaturalId(), o2.getNaturalId());
+        }
+    }
+
 }
