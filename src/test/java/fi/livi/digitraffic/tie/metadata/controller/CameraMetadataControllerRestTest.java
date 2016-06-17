@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
 
-public class CameraMetadataRestTest extends MetadataRestTest {
+public class CameraMetadataControllerRestTest extends MetadataRestTest {
 
     @Autowired
     private KameraPerustiedotLotjuServiceMock kameraPerustiedotLotjuServiceMock;
@@ -48,7 +48,7 @@ public class CameraMetadataRestTest extends MetadataRestTest {
 
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            Metadata.CAMERA_STATIONS_PATH))
+                            MetadataController.CAMERA_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))

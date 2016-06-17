@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,5 +76,14 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
             values.add(sensor);
         }
         return rsNaturalIdToRsSensorValues;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public LocalDateTime getLatestMeasurementTime() {
+        return roadStationSensorValueDtoRepository.getLatestMeasurementTime(
+                RoadStationType.WEATHER_STATION.getTypeNumber(),
+                roadWeatherStationSensorValueTimeLimitInMins,
+                includedSensorNaturalIds);
     }
 }

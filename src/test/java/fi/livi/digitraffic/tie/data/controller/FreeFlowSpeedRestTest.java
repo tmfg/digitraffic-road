@@ -17,13 +17,13 @@ public class FreeFlowSpeedRestTest extends RestTest {
     public void testFreeFlowSpeedDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.FREE_FLOW_SPEEDS_PATH))
+                            DataController.FREE_FLOW_SPEEDS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].linkNo", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.lamFreeFlowSpeeds", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].lamId", Matchers.notNullValue()));
     }

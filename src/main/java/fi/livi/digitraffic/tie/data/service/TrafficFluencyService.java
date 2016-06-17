@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.data.model.FluencyClass;
 
 public interface TrafficFluencyService {
 
-    TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData();
+    TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo);
 
     List<FluencyClass> findAllFluencyClassesOrderByLowerLimitAsc();
 }

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -29,4 +30,11 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
             ")",
             nativeQuery = true)
     List<CameraPreset> finAllCameraPresetsWithOutRoadStation();
+
+
+    @Query(value =
+            "SELECT MAX(CP.PIC_LAST_MODIFIED) UPDATED\n" +
+            "FROM CAMERA_PRESET CP",
+            nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime();
 }

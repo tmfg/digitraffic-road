@@ -125,7 +125,6 @@ public class ForecastSection {
 
     @ApiModelProperty(value = "Road section version number")
     public int getRoadSectionVersion() {
-        System.out.println(naturalId.substring(10, 13));
         return Integer.parseInt(naturalId.substring(10, 13));
     }
 }

@@ -18,9 +18,9 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "RoadStationSensorValue", description = "Road wather station sensor value")
-@JsonPropertyOrder(value = { "sensorNameFi", "sensorNameEn", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonPropertyOrder(value = { "sensorNameFi", "sensorNameOld", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RoadStationSensorValueDto implements DataObjectDto {
+public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
 
     @Id
     @JsonIgnore
@@ -45,8 +45,8 @@ public class RoadStationSensorValueDto implements DataObjectDto {
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor name [en]", position = 1)
-    private String sensorNameEn;
+    @ApiModelProperty(value = "Sensor old name. For new sensors will equal sensorNameFi. Will deprecate in future.", position = 1, notes = "noteja")
+    private String sensorNameOld;
 
     @ApiModelProperty(value = "Sensor name [fi]", position = 1, required = true)
     private String sensorNameFi;
@@ -62,6 +62,9 @@ public class RoadStationSensorValueDto implements DataObjectDto {
 
     @JsonIgnore
     private LocalDateTime measured;
+
+    @JsonIgnore
+    private LocalDateTime stationLatestMeasured;
 
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -111,12 +114,12 @@ public class RoadStationSensorValueDto implements DataObjectDto {
         this.sensorValue = sensorValue;
     }
 
-    public String getSensorNameEn() {
-        return sensorNameEn;
+    public String getSensorNameOld() {
+        return sensorNameOld;
     }
 
-    public void setSensorNameEn(String sensorNameEn) {
-        this.sensorNameEn = sensorNameEn;
+    public void setSensorNameOld(String sensorNameOld) {
+        this.sensorNameOld = sensorNameOld;
     }
 
     public String getSensorUnit() {
@@ -159,12 +162,19 @@ public class RoadStationSensorValueDto implements DataObjectDto {
         this.sensorShortNameFi = sensorShortNameFi;
     }
 
-    @Override
     public LocalDateTime getMeasured() {
         return measured;
     }
 
     public void setMeasured(LocalDateTime measured) {
         this.measured = measured;
+    }
+
+    public LocalDateTime getStationLatestMeasured() {
+        return stationLatestMeasured;
+    }
+
+    public void setStationLatestMeasured(LocalDateTime stationLatestMeasured) {
+        this.stationLatestMeasured = stationLatestMeasured;
     }
 }

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,15 @@ public class RoadStationStatusServiceImpl implements RoadStationStatusService {
 
     @Override
     @Transactional(readOnly = true)
-    public RoadStationStatusesData findAllRoadStationStatuses() {
-        return new RoadStationStatusesData(roadStationStatusRepository.findAllRoadStationStatuses());
+    public RoadStationStatusesData findAllRoadStationStatuses(boolean onlyUpdateInfo) {
+        LocalDateTime updated = roadStationStatusRepository.getLatestMeasurementTime();
+
+        if (onlyUpdateInfo) {
+            return new RoadStationStatusesData(updated);
+        } else {
+            return new RoadStationStatusesData(
+                    roadStationStatusRepository.findAllRoadStationStatuses(),
+                    updated);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +25,15 @@ public class CameraDataServiceImpl implements CameraDataService {
 
     @Transactional(readOnly = true)
     @Override
-    public CameraRootDataObjectDto findAllNonObsoleteCameraStationsData() {
+    public CameraRootDataObjectDto findAllNonObsoleteCameraStationsData(boolean onlyUpdateInfo) {
 
-        CameraRootDataObjectDto data =
-                cameraPreset2CameraDataConverter.convert(
-                        cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalseOrderByPresetId());
-
-        return data;
+        LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        if (onlyUpdateInfo) {
+            return new CameraRootDataObjectDto(updated);
+        } else {
+            return cameraPreset2CameraDataConverter.convert(
+                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalseOrderByPresetId(),
+                    updated);
+        }
     }
 }

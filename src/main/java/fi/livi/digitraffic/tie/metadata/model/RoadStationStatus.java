@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.DateHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -91,6 +92,13 @@ public class RoadStationStatus {
         this.conditionUpdated = conditionUpdated;
     }
 
+    public LocalDateTime getCollectionStatusUpdated() {
+        return collectionStatusUpdated;
+    }
+
+    public LocalDateTime getConditionUpdated() {
+        return conditionUpdated;
+    }
 
     @ApiModelProperty(value = "Collection status updated " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true, position = 9)
     public String getCollectionStatusUpdatedLocalTime() {
@@ -115,6 +123,11 @@ public class RoadStationStatus {
                 .appendField("collectionStatusUpdatedLocalTime", getCollectionStatusUpdatedLocalTime())
                 .appendField("collectionStatusUpdatedUtc", getCollectionStatusUpdatedUtc())
                 .toString();
+    }
+
+    @JsonIgnore
+    public LocalDateTime getLastUpdated() {
+        return DateHelpper.getNewest(collectionStatusUpdated, conditionUpdated);
     }
 
 }

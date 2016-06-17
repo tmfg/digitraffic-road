@@ -48,8 +48,18 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
         return roadWeatherStationType;
     }
 
+    @JsonIgnore
     public List<RoadStationSensor> getSensors() {
         return sensors;
+    }
+
+    @ApiModelProperty(value = "Sensors ids of road station")
+    public List<Long> getStationSensors() {
+        List<Long> ids = new ArrayList<>();
+        for (RoadStationSensor sensor : sensors) {
+            ids.add(sensor.getNaturalId());
+        }
+        return ids;
     }
 
     public void setSensors(List<RoadStationSensor> sensors) {

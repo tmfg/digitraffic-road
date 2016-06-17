@@ -53,7 +53,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
      * Updates road weather stations
      */
     @Transactional
-    public void updateWeatherStations() {
+    public void updateRoadWeatherStations() {
         log.info("Update RoadWeatherStations start");
 
         if (lotjuRoadWeatherStationClient == null) {
@@ -69,21 +69,21 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
             }
         }
 
-        final boolean updateStaticDataStatus = updateWeatherStations(tiesaaAsemas);
+        final boolean updateStaticDataStatus = updateRoadWeatherStations(tiesaaAsemas);
         updateRoasWeatherStationStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update RoadWeatherStations end");
     }
 
     /**
-     * Updates all available road station sensors ("types") and sensors of road stations
+     * Updates all available road station sensors
      */
     @Transactional
     public void updateRoadStationSensors() {
         log.info("Update RoadStationSensors start");
 
         if (lotjuRoadWeatherStationClient == null) {
-            log.warn("Not updating RoadStationSensors metadatas because no lotjuRoadWeatherStationClient defined");
+            log.warn("Not updating RoadStationSensor metadatas because no lotjuRoadWeatherStationClient defined");
             return;
         }
 
@@ -92,6 +92,20 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                 lotjuRoadWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
 
         updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
+        log.info("Update RoadStationSensors end");
+    }
+
+    /**
+     * Updates all available sensors of road stations
+     */
+    @Transactional
+    public void updateRoadWeatherStationsRoadStationSensors() {
+        log.info("Update RoadWeatherStationsRoadStationSensors start");
+
+        if (lotjuRoadWeatherStationClient == null) {
+            log.warn("Not updating RoadWeatherStations metadatas because no lotjuRoadWeatherStationClient defined");
+            return;
+        }
 
         // Update sensors of road stations
         // Get current RoadWeatherStations
@@ -107,7 +121,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                                             currentLotjuIdToRoadWeatherStationsMap);
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
-        log.info("Update RoadStationSensors end");
+        log.info("Update RoadWeatherStationsRoadStationSensors end");
     }
 
     private boolean updateAllRoadStationSensors(List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
@@ -167,7 +181,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 
-    private boolean updateWeatherStations(final List<TiesaaAsemaVO> tiesaaAsemas) {
+    private boolean updateRoadWeatherStations(final List<TiesaaAsemaVO> tiesaaAsemas) {
 
         final Map<Long, RoadWeatherStation> currentLotjuIdToRoadWeatherStationMap =
                 roadWeatherStationService.findAllRoadWeatherStationsMappedByLotjuId();
@@ -205,7 +219,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         final int obsoleted = obsoleteWeatherStations(obsolete);
         log.info("Obsoleted " + obsoleted + " RoadWeatherStations");
 
-        final int uptaded = updateRoadWeatherStations(update);
+        final int uptaded = updateRoadWeatherStationsRoadStationSensors(update);
         log.info("Uptaded " + uptaded + " RoadWeatherStations");
 
         final int inserted = insertRoadWeatherStations(insert);
@@ -216,7 +230,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         return obsoleted > 0 || inserted > 0;
     }
 
-    private int updateRoadWeatherStations(final List<Pair<TiesaaAsemaVO, RoadWeatherStation>> update) {
+    private int updateRoadWeatherStationsRoadStationSensors(final List<Pair<TiesaaAsemaVO, RoadWeatherStation>> update) {
 
         Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);

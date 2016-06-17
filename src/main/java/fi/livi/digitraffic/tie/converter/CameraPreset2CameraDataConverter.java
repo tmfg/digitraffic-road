@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.converter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,8 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets) {
+    public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets,
+                                           LocalDateTime updated) {
         final List<CameraStationDataDto> collection = new ArrayList<>();
 
         // Cameras mapped with cameraId
@@ -48,10 +50,11 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
                 cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
                 collection.add(cameraStationFeature);
             }
-            cameraStationFeature.addPreset(convertPreset(cp));
+            CameraPresetDataDto preset = convertPreset(cp);
+            cameraStationFeature.addPreset(preset);
         }
 
-        return new CameraRootDataObjectDto(collection);
+        return new CameraRootDataObjectDto(collection, updated);
     }
 
     private CameraPresetDataDto convertPreset(CameraPreset cp) {

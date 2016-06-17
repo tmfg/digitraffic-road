@@ -12,18 +12,18 @@ import org.junit.Test;
 import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class RoadStationSensorMetadataRestTest extends MetadataRestTest {
+public class RoadStationSensorMetadataControllerRestTest extends MetadataRestTest {
 
     @Test
     public void testRoadStationSensorMetadataApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            Metadata.ROAD_STATION_SENSORS_PATH))
+                            MetadataController.ROAD_STATION_SENSORS_PATH))
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class))) //
-                .andExpect(jsonPath("$.roadStationSensors[0].nameEn", isA(String.class))) //
+                .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class))) //
                 .andExpect(jsonPath("$.roadStationSensors[0].unit", isA(String.class))) //
         ;
     }

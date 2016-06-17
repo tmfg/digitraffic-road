@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.data.dto.daydata;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
@@ -15,29 +16,29 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "LinkMeasurementData")
-@JsonPropertyOrder({"fc", "m", "sp", "tt"})
+@JsonPropertyOrder({"fluencyClass", "minute", "averageSpeed", "medianTravelTime", "nobs"})
 public class LinkMeasurementDataDto {
     @Id
     @JsonIgnore
     private int rownum;
 
     @ApiModelProperty(value = "Index of the minute. 0 = 00:00, 60 = 01:00, 1439 = 23:59", required = true)
-    @JsonProperty("m")
     private int minute;
 
     @ApiModelProperty(value = "Median travel time, in seconds", required = true)
-    @JsonProperty("tt")
     private int medianTravelTime;
 
     @ApiModelProperty(value = "Average speed, km/h", required = true)
-    @JsonProperty("sp")
     private double averageSpeed;
 
     @ApiModelProperty(value = "Fluency class", required = true)
-    private int fc;
+    private int fluencyClass;
 
     @JsonIgnore
     private int linkId;
+
+    @JsonIgnore
+    private LocalDateTime measured;
 
     public int getMedianTravelTime() {
         return medianTravelTime;
@@ -79,11 +80,24 @@ public class LinkMeasurementDataDto {
         this.minute = minute;
     }
 
-    public int getFc() {
-        return fc;
+    public int getFluencyClass() {
+        return fluencyClass;
     }
 
-    public void setFc(int fc) {
-        this.fc = fc;
+    public void setFluencyClass(int fluencyClass) {
+        this.fluencyClass = fluencyClass;
+    }
+
+    @ApiModelProperty(value = "Number of observations that were used to calculate the median journey time. (-1 = unknown)", required = true)
+    int getNobs() {
+        return -1;
+    }
+
+    public LocalDateTime getMeasured() {
+        return measured;
+    }
+
+    public void setMeasured(LocalDateTime measured) {
+        this.measured = measured;
     }
 }

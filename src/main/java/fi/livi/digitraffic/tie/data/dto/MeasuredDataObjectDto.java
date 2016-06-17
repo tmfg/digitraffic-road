@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonPropertyOrder({"dataLocalTime", "dataUtc"})
-public interface DataObjectDto {
+@JsonPropertyOrder({ "measuredLocalTime", "measuredUtc" })
+public interface MeasuredDataObjectDto {
 
     @JsonIgnore
     LocalDateTime getMeasured();

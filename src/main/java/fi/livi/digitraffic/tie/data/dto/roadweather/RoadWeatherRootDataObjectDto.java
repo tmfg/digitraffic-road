@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.data.dto.roadweather;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.dto.RoadWeatherStationDto;
@@ -10,14 +12,20 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "RoadWeatherData", description = "Latest measurement data from road weather stations", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataLocalTime", "dataUtc", "roadWeatherStations"})
+@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "roadWeatherStations"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadWeatherRootDataObjectDto extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Road weather stations data", required = true)
+    @ApiModelProperty(value = "Road weather stations data")
     private final List<RoadWeatherStationDto> roadWeatherStations;
 
-    public RoadWeatherRootDataObjectDto(List<RoadWeatherStationDto> roadWeatherStations) {
+    public RoadWeatherRootDataObjectDto(List<RoadWeatherStationDto> roadWeatherStations, LocalDateTime updated) {
+        super(updated);
         this.roadWeatherStations = roadWeatherStations;
+    }
+
+    public RoadWeatherRootDataObjectDto(LocalDateTime updated) {
+        this(null, updated);
     }
 
     public List<RoadWeatherStationDto> getRoadWeatherStations() {

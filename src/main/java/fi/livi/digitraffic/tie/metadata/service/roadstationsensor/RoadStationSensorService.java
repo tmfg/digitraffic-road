@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -13,4 +14,6 @@ public interface RoadStationSensorService {
     RoadStationsSensorsMetadata findRoadStationsSensorsMetadata();
 
     Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoleteRoadWeatherStationSensorValues();
+
+    LocalDateTime getLatestMeasurementTime();
 }

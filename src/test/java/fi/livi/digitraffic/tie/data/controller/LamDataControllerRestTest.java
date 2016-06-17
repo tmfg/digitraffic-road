@@ -12,18 +12,25 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class LamDataRestTest extends RestTest {
+public class LamDataControllerRestTest extends RestTest {
 
     @Test
     public void testLamDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            Data.LAM_DATA_PATH))
+                            DataController.LAM_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.lamMeasurements", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamMeasurements[0].lamId", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.lamMeasurements[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamMeasurements[0].trafficVolume1", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamMeasurements[0].trafficVolume2", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamMeasurements[0].averageSpeed1", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamMeasurements[0].averageSpeed2", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamMeasurements[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.lamMeasurements[0].measuredUtc", Matchers.isA(String.class)))
+        ;
     }
 }

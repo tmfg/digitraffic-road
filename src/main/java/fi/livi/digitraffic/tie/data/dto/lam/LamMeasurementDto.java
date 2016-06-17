@@ -7,21 +7,24 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.data.dto.DataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
 @ApiModel(value = "LamMeasurementData")
-@JsonPropertyOrder({ "lamId", "trafficVolume1", "trafficVolume2", "averageSpeed1", "averageSpeed1", "localTime", "utc"})
-public class LamMeasurementDto implements DataObjectDto {
+@JsonPropertyOrder({ "id", "trafficVolume1", "trafficVolume2", "averageSpeed1", "averageSpeed1", "localTime", "utc"})
+public class LamMeasurementDto implements MeasuredDataObjectDto {
 
     @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
+    @JsonProperty("id")
     @Id
-    private long lamId;
+    private long naturalId;
 
     @ApiModelProperty(value = "Traffic volume in 5 minutes to direction 1", required = true)
     private long trafficVolume1;
@@ -37,12 +40,15 @@ public class LamMeasurementDto implements DataObjectDto {
 
     private LocalDateTime measured;
 
-    public long getLamId() {
-        return lamId;
+    @JsonIgnore
+    private LocalDateTime stationLatestMeasured;
+
+    public long getNaturalId() {
+        return naturalId;
     }
 
-    public void setLamId(final long lamId) {
-        this.lamId = lamId;
+    public void setNaturalId(final long naturalId) {
+        this.naturalId = naturalId;
     }
 
     public long getTrafficVolume1() {
@@ -83,5 +89,13 @@ public class LamMeasurementDto implements DataObjectDto {
 
     public void setMeasured(LocalDateTime measured) {
         this.measured = measured;
+    }
+
+    public LocalDateTime getStationLatestMeasured() {
+        return stationLatestMeasured;
+    }
+
+    public void setStationLatestMeasured(LocalDateTime stationLatestMeasured) {
+        this.stationLatestMeasured = stationLatestMeasured;
     }
 }
