@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
-import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
@@ -30,7 +30,7 @@ public abstract class LamRoadStationAttributeUpdater {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if ( KeruunTilaHelpper.isUnactiveKeruunTila(from.getKeruunTila()) ) {
+        if ( KeruunTilaHelper.isUnactiveKeruunTila(from.getKeruunTila()) ) {
             to.obsolete();
         } else {
             to.setObsolete(false);

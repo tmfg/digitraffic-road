@@ -83,6 +83,7 @@ public class LamMeasurementDto implements MeasuredDataObjectDto {
         this.averageSpeed2 = averageSpeed2;
     }
 
+    @Override
     public LocalDateTime getMeasured() {
         return measured;
     }

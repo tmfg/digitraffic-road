@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
+import fi.livi.digitraffic.tie.helper.KeruunTilaHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
@@ -95,7 +95,7 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
 
                 final LamStation currentSaved = currentStations.remove(lamNaturalId);
 
-                if ( currentSaved != null && KeruunTilaHelpper.isUnactiveKeruunTila(la.getKeruunTila()) ) {
+                if ( currentSaved != null && KeruunTilaHelper.isUnactiveKeruunTila(la.getKeruunTila()) ) {
                     obsolete.add(currentSaved);
                 } else if ( currentSaved != null ) {
                     update.add(Pair.of(la, currentSaved));

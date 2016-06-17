@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
-import fi.livi.digitraffic.tie.helper.CameraPresetHelpper;
+import fi.livi.digitraffic.tie.helper.CameraPresetHelper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
@@ -62,8 +62,8 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         CameraPresetDataDto dto = new CameraPresetDataDto();
         dto.setMeasured(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());
-        dto.setPresentationName(CameraPresetHelpper.fixName(cp.getPresetName1()));
-        dto.setNameOnDevice(CameraPresetHelpper.fixName(cp.getPresetName2()));
+        dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));
+        dto.setNameOnDevice(CameraPresetHelper.fixName(cp.getPresetName2()));
         dto.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
         return dto;
