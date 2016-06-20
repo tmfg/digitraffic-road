@@ -56,8 +56,10 @@ public abstract class RoadWeatherRoadStationAttributeUpdater {
 
         to.setLiviId(from.getLiviId());
         to.setStartDate(from.getAlkamisPaiva() != null ? from.getAlkamisPaiva().toGregorianCalendar().toZonedDateTime().toLocalDateTime() : null);
-        to.setLocation(from.getAsemanSijainti());
+        to.setRepairMaintenanceDate(from.getKorjaushuolto() != null ? from.getKorjaushuolto().toGregorianCalendar().toZonedDateTime().toLocalDateTime() : null);
+        to.setAnnualMaintenanceDate(from.getVuosihuolto() != null ? from.getVuosihuolto().toGregorianCalendar().toZonedDateTime().toLocalDateTime(): null);
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
+        to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||

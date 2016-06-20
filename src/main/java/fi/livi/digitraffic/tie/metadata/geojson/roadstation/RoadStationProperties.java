@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
@@ -61,8 +62,13 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Country where station is located")
     private String country;
 
-    @ApiModelProperty(value = "Time when station was started")
+    @JsonIgnore
     private LocalDateTime startDate;
+
+    @JsonIgnore
+    private LocalDateTime repairMaintenanceDate;
+    @JsonIgnore
+    private LocalDateTime annualMaintenanceDate;
 
     @ApiModelProperty(value = "Location of the station")
     private String location;
@@ -156,7 +162,6 @@ public abstract class RoadStationProperties {
         }
     }
 
-
     public RoadAddress getRoadAddress() {
         return roadAddress;
     }
@@ -205,6 +210,52 @@ public abstract class RoadStationProperties {
         return state;
     }
 
+    public void setRepairMaintenanceDate(LocalDateTime repairMaintenanceDate) {
+        this.repairMaintenanceDate = repairMaintenanceDate;
+    }
+
+    public LocalDateTime getRepairMaintenanceDate() {
+        return repairMaintenanceDate;
+    }
+
+    public void setAnnualMaintenanceDate(LocalDateTime annualMaintenanceDate) {
+        this.annualMaintenanceDate = annualMaintenanceDate;
+    }
+
+    public LocalDateTime getAnnualMaintenanceDate() {
+        return annualMaintenanceDate;
+    }
+
+    @ApiModelProperty(value = "Station established " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    public String getStartLocalTime() {
+        return ToStringHelpper.toString(getStartDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    }
+
+    @ApiModelProperty(value = "Station established " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
+    public String getStartUtc() {
+        return ToStringHelpper.toString(getStartDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    }
+
+    @ApiModelProperty(value = "Repair maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    public String getRepairMaintenanceLocalTime() {
+        return ToStringHelpper.toString(getRepairMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    }
+
+    @ApiModelProperty(value = "Repair maintenance " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
+    public String getRepairMaintenanceUtc() {
+        return ToStringHelpper.toString(getRepairMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    }
+
+    @ApiModelProperty(value = "Annual maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    public String getAnnualMaintenanceLocalTime() {
+        return ToStringHelpper.toString(getAnnualMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    }
+
+    @ApiModelProperty(value = "Annual maintenance " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
+    public String getAnnualMaintenanceUtc() {
+        return ToStringHelpper.toString(getAnnualMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -232,6 +283,8 @@ public abstract class RoadStationProperties {
                 .append(startDate, that.startDate)
                 .append(location, that.location)
                 .append(state, that.state)
+                .append(repairMaintenanceDate, that.repairMaintenanceDate)
+                .append(annualMaintenanceDate, that.annualMaintenanceDate)
                 .isEquals();
     }
 
@@ -254,6 +307,8 @@ public abstract class RoadStationProperties {
                 .append(startDate)
                 .append(location)
                 .append(state)
+                .append(repairMaintenanceDate)
+                .append(annualMaintenanceDate)
                 .toHashCode();
     }
 }

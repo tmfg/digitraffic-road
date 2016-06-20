@@ -399,6 +399,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                                                               final RoadWeatherStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
+        to.setMaster(from.isMaster());
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
 
         // Update RoadStation
@@ -461,7 +462,6 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
         to.setNameFi(from.getNimi());
         to.setShortNameFi(from.getLyhytNimi());
         to.setDescription(from.getKuvaus());
-        to.setCalculationFormula(from.getLaskentaKaava());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(from.getYksikko());
 

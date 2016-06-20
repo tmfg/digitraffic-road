@@ -72,6 +72,8 @@ public class RoadStation {
     private LocalDateTime startDate;
     private String country;
     private String liviId;
+    private LocalDateTime repairMaintenanceDate;
+    private LocalDateTime annualMaintenanceDate;
 
     protected RoadStation() {
     }
@@ -259,14 +261,20 @@ public class RoadStation {
         this.roadStationSensors = roadStationSensors;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringHelpper(this)
-                .appendField("id", getId())
-                .appendField("naturalId", getNaturalId())
-                .appendField("name", getName())
-                .appendField("type", getType())
-                .toString();
+    public void setRepairMaintenanceDate(LocalDateTime repairMaintenanceDate) {
+        this.repairMaintenanceDate = repairMaintenanceDate;
+    }
+
+    public LocalDateTime getRepairMaintenanceDate() {
+        return repairMaintenanceDate;
+    }
+
+    public void setAnnualMaintenanceDate(LocalDateTime annualMaintenanceDate) {
+        this.annualMaintenanceDate = annualMaintenanceDate;
+    }
+
+    public LocalDateTime getAnnualMaintenanceDate() {
+        return annualMaintenanceDate;
     }
 
     public RoadAddress getRoadAddress() {
@@ -315,5 +323,15 @@ public class RoadStation {
 
     public String getLiviId() {
         return liviId;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("naturalId", getNaturalId())
+                .appendField("name", getName())
+                .appendField("type", getType())
+                .toString();
     }
 }

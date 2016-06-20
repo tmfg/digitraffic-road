@@ -52,6 +52,8 @@ public class AbstractMetadataToFeatureConverter {
         properties.setLiviId(roadStation.getLiviId());
         properties.setCountry(roadStation.getCountry());
         properties.setStartDate(roadStation.getStartDate());
+        properties.setRepairMaintenanceDate(roadStation.getRepairMaintenanceDate());
+        properties.setAnnualMaintenanceDate(roadStation.getAnnualMaintenanceDate());
         properties.setLocation(roadStation.getLocation());
         properties.setState(roadStation.getState());
     }

@@ -40,6 +40,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         properties.setId(rws.getRoadStationNaturalId());
         properties.setLotjuId(rws.getLotjuId());
         properties.setRoadWeatherStationType(rws.getRoadWeatherStationType());
+        properties.setMaster(rws.isMaster());
 
         if (rws.getRoadStation() != null) {
             for (fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {

@@ -33,6 +33,9 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Road Weather Station Sensors")
     private List<RoadStationSensor> sensors = new ArrayList<>();
 
+    @ApiModelProperty(value = "Is station master or slave station")
+    private Boolean master;
+
     private static RSComparator rsComparator = new RSComparator();
 
     public long getId() {
@@ -105,9 +108,15 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
                 .toHashCode();
     }
 
+    public void setMaster(Boolean master) {
+        this.master = master;
+    }
+
+    public Boolean isMaster() {
+        return master;
+    }
 
     private static class RSComparator implements Comparator<RoadStationSensor> {
-
         @Override
         public int compare(RoadStationSensor o1, RoadStationSensor o2) {
             return Long.compare(o1.getNaturalId(), o2.getNaturalId());

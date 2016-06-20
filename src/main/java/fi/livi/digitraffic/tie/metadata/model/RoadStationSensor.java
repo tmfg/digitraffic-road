@@ -72,9 +72,6 @@ public class RoadStationSensor {
     @ApiModelProperty(value = "Sensor accuracy")
     private Integer accuracy;
 
-    @ApiModelProperty(value = "Calculation fomula of sensor value")
-    private String calculationFormula;
-
     @ApiModelProperty("Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
     private List<SensorValueDescription> sensorValueDescriptions;
@@ -174,14 +171,6 @@ public class RoadStationSensor {
 
     public void setAccuracy(Integer accuracy) {
         this.accuracy = accuracy;
-    }
-
-    public String getCalculationFormula() {
-        return calculationFormula;
-    }
-
-    public void setCalculationFormula(String calculationFormula) {
-        this.calculationFormula = calculationFormula;
     }
 
     @JsonIgnore
