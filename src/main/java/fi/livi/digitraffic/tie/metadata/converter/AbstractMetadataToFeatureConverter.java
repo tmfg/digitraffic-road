@@ -36,8 +36,6 @@ public class AbstractMetadataToFeatureConverter {
         properties.setNaturalId(roadStation.getNaturalId());
         properties.setCollectionInterval(roadStation.getCollectionInterval());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
-        properties.setDescription(roadStation.getDescription());
-        properties.setAdditionalInformation(roadStation.getAdditionalInformation());
         properties.setMunicipality(roadStation.getMunicipality());
         properties.setMunicipalityCode(roadStation.getMunicipalityCode());
 
@@ -50,6 +48,12 @@ public class AbstractMetadataToFeatureConverter {
         properties.addName("en", roadStation.getNameEn());
 
         properties.setRoadAddress(roadStation.getRoadAddress());
+
+        properties.setLiviId(roadStation.getLiviId());
+        properties.setCountry(roadStation.getCountry());
+        properties.setStartDate(roadStation.getStartDate());
+        properties.setLocation(roadStation.getLocation());
+        properties.setState(roadStation.getState());
     }
 
 

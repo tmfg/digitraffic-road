@@ -44,14 +44,16 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
             // CameraPreset contains camera and preset informations and
             // camera info is duplicated on every preset db line
             // So we take camera only once
-            CameraStationDataDto cameraStationFeature = cameraStationMap.get(cp.getCameraId());
-            if (cameraStationFeature == null) {
-                cameraStationFeature = convert(cp);
-                cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
-                collection.add(cameraStationFeature);
+            if ( cp.isPublic() ) {
+                CameraStationDataDto cameraStationFeature = cameraStationMap.get(cp.getCameraId());
+                if (cameraStationFeature == null) {
+                    cameraStationFeature = convert(cp);
+                    cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
+                    collection.add(cameraStationFeature);
+                }
+                CameraPresetDataDto preset = convertPreset(cp);
+                cameraStationFeature.addPreset(preset);
             }
-            CameraPresetDataDto preset = convertPreset(cp);
-            cameraStationFeature.addPreset(preset);
         }
 
         return new CameraRootDataObjectDto(collection, updated);
@@ -64,7 +66,6 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         dto.setId(cp.getPresetId());
         dto.setPresentationName(CameraPresetHelpper.fixName(cp.getPresetName1()));
         dto.setNameOnDevice(CameraPresetHelpper.fixName(cp.getPresetName2()));
-        dto.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
         return dto;
     }

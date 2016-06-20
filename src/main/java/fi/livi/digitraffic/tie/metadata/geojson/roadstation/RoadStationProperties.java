@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -48,16 +50,25 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Province code")
     private String provinceCode;
 
-    @ApiModelProperty(value = "Road station description")
-    private String description;
-
-    @ApiModelProperty(value = "Additional information")
-    private String additionalInformation;
-
     @ApiModelProperty(value = "Map of namess [fi, sv, en]")
     private Map<String, String> names = new HashMap<>();
 
     private RoadAddress roadAddress = new RoadAddress();
+
+    @ApiModelProperty(value = "Id in road registry")
+    private String liviId;
+
+    @ApiModelProperty(value = "Country where station is located")
+    private String country;
+
+    @ApiModelProperty(value = "Time when station was started")
+    private LocalDateTime startDate;
+
+    @ApiModelProperty(value = "Location of the station")
+    private String location;
+
+    @ApiModelProperty(value = "Road station state")
+    private RoadStationState state;
 
     public long getNaturalId() {
         return naturalId;
@@ -131,22 +142,6 @@ public abstract class RoadStationProperties {
         this.provinceCode = provinceCode;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public void setAdditionalInformation(String additionalInformation) {
-        this.additionalInformation = additionalInformation;
-    }
-
-    public String getAdditionalInformation() {
-        return additionalInformation;
-    }
-
     public Map<String, String> getNames() {
         return names;
     }
@@ -170,51 +165,95 @@ public abstract class RoadStationProperties {
         this.roadAddress = roadAddress;
     }
 
+    public void setLiviId(String liviId) {
+        this.liviId = liviId;
+    }
+
+    public String getLiviId() {
+        return liviId;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setState(RoadStationState state) {
+        this.state = state;
+    }
+
+    public RoadStationState getState() {
+        return state;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj.getClass() != getClass()) {
+
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        RoadStationProperties rhs = (RoadStationProperties) obj;
+
+        RoadStationProperties that = (RoadStationProperties) o;
+
         return new EqualsBuilder()
-                .append(this.lotjuId, rhs.lotjuId)
-                .append(this.naturalId, rhs.naturalId)
-                .append(this.name, rhs.name)
-                .append(this.getRoadAddress(), rhs.getRoadAddress())
-                .append(this.collectionInterval, rhs.collectionInterval)
-                .append(this.collectionStatus, rhs.collectionStatus)
-                .append(this.municipality, rhs.municipality)
-                .append(this.municipalityCode, rhs.municipalityCode)
-                .append(this.province, rhs.province)
-                .append(this.provinceCode, rhs.provinceCode)
-                .append(this.description, rhs.description)
-                .append(this.additionalInformation, rhs.additionalInformation)
-                .append(this.names, rhs.names)
+                .append(naturalId, that.naturalId)
+                .append(lotjuId, that.lotjuId)
+                .append(name, that.name)
+                .append(collectionInterval, that.collectionInterval)
+                .append(collectionStatus, that.collectionStatus)
+                .append(municipality, that.municipality)
+                .append(municipalityCode, that.municipalityCode)
+                .append(province, that.province)
+                .append(provinceCode, that.provinceCode)
+                .append(names, that.names)
+                .append(roadAddress, that.roadAddress)
+                .append(liviId, that.liviId)
+                .append(country, that.country)
+                .append(startDate, that.startDate)
+                .append(location, that.location)
+                .append(state, that.state)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
+        return new HashCodeBuilder(17, 37)
                 .append(lotjuId)
                 .append(naturalId)
                 .append(name)
-                .append(getRoadAddress())
                 .append(collectionInterval)
                 .append(collectionStatus)
                 .append(municipality)
                 .append(municipalityCode)
                 .append(province)
                 .append(provinceCode)
-                .append(description)
-                .append(additionalInformation)
                 .append(names)
+                .append(roadAddress)
+                .append(liviId)
+                .append(country)
+                .append(startDate)
+                .append(location)
+                .append(state)
                 .toHashCode();
     }
 }

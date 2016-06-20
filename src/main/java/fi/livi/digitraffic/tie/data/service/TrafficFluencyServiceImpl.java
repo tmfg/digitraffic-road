@@ -35,7 +35,6 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
         this.thresholdClasses = thresholdClasses;
     }
 
-    // TODO onlyUpdateInfo: do direct query to get update info
     @Transactional(readOnly = true)
     @Override
     public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo) {

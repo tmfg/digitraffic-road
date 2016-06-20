@@ -53,19 +53,25 @@ public class CameraPreset {
 
     /**
      * presetName2 == nameOnDevice == nimiLaitteella
+     * Not for public use
      */
     @Column(name="PRESET_NAME_2")
     private String presetName2;
 
     private Integer presetOrder;
 
+    /**
+     * Web application's public value
+     */
     private boolean publicInternal;
 
+    /**
+     * Lotju's Esiasento#isJulkinen()
+     */
     private boolean publicExternal;
 
     private Boolean inCollection;
     private Integer compression;
-    private String description;
     private Boolean defaultDirection;
     private String resolution;
     private String direction;
@@ -82,8 +88,6 @@ public class CameraPreset {
 
     @Convert(converter = CameraTypeConverter.class)
     private CameraType cameraType;
-
-    private String cameraDescription;
 
     /**
      * RoadStation is same for one camera all presets
@@ -194,14 +198,6 @@ public class CameraPreset {
         this.compression = compression;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
     public Boolean getDefaultDirection() {
         return defaultDirection;
     }
@@ -289,12 +285,8 @@ public class CameraPreset {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public void setCameraDescription(String cameraDescription) {
-        this.cameraDescription = cameraDescription;
-    }
-
-    public String getCameraDescription() {
-        return cameraDescription;
+    public boolean isPublic() {
+        return isPublicInternal() && isPublicExternal();
     }
 
     @Override

@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = RoadWeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name" })
+@JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name", "cameraType" })
 public class CameraProperties extends RoadStationProperties {
 
     @JsonIgnore // Camerapreset id
@@ -39,9 +39,6 @@ public class CameraProperties extends RoadStationProperties {
     @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")
     @JsonProperty(value = "nearestRoadWeatherStationId")
     private Long nearestRoadWeatherStationNaturalId;
-
-    @ApiModelProperty(value = "Camera description")
-    private String description;
 
     @ApiModelProperty(value = "Camera presets")
     private List<CameraPresetDto> presets = new ArrayList<>();
@@ -68,14 +65,6 @@ public class CameraProperties extends RoadStationProperties {
 
     public CameraType getCameraType() {
         return cameraType;
-    }
-
-    public void setDefaultDirection(final Boolean defaultDirection) {
-        this.defaultDirection = defaultDirection;
-    }
-
-    public Boolean getDefaultDirection() {
-        return defaultDirection;
     }
 
     public void setNearestRoadWeatherStationNaturalId(Long nearestRoadWeatherStationNaturalId) {
@@ -116,7 +105,6 @@ public class CameraProperties extends RoadStationProperties {
                 .append(cameraType, that.cameraType)
                 .append(defaultDirection, that.defaultDirection)
                 .append(nearestRoadWeatherStationNaturalId, that.nearestRoadWeatherStationNaturalId)
-                .append(description, that.description)
                 .append(presets, that.presets)
                 .isEquals();
     }
@@ -130,7 +118,6 @@ public class CameraProperties extends RoadStationProperties {
                 .append(cameraType)
                 .append(defaultDirection)
                 .append(nearestRoadWeatherStationNaturalId)
-                .append(description)
                 .append(presets)
                 .toHashCode();
     }

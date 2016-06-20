@@ -78,7 +78,6 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
             Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
-            Assert.assertNull(k.getAlkamisPaiva());
             Assert.assertNull(k.getAsemanTila());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());

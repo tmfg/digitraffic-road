@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
+import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -43,6 +44,8 @@ public class LamStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Type of  lam station")
     private LamStationType lamStationType;
 
+    @ApiModelProperty(value = "Type of calculation device")
+    private CalculatorDeviceType calculatorDeviceType;
 
     public long getId() {
         return id;
@@ -100,33 +103,40 @@ public class LamStationProperties extends RoadStationProperties {
         this.lamStationType = lamStationType;
     }
 
+    public void setCalculatorDeviceType(CalculatorDeviceType calculatorDeviceType) {
+        this.calculatorDeviceType = calculatorDeviceType;
+    }
+
+    public CalculatorDeviceType getCalculatorDeviceType() {
+        return calculatorDeviceType;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj.getClass() != getClass()) {
+
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        LamStationProperties rhs = (LamStationProperties) obj;
+
+        LamStationProperties that = (LamStationProperties) o;
+
         return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(this.id, rhs.id)
-                .append(this.lamNaturalId, rhs.lamNaturalId)
-                .append(this.direction1Municipality, rhs.direction1Municipality)
-                .append(this.direction1MunicipalityCode, rhs.direction1MunicipalityCode)
-                .append(this.direction2Municipality, rhs.direction2Municipality)
-                .append(this.direction2MunicipalityCode, rhs.direction2MunicipalityCode)
-                .append(this.lamStationType, rhs.lamStationType)
+                .appendSuper(super.equals(o))
+                .append(id, that.id)
+                .append(lamNaturalId, that.lamNaturalId)
+                .append(direction1Municipality, that.direction1Municipality)
+                .append(direction1MunicipalityCode, that.direction1MunicipalityCode)
+                .append(direction2Municipality, that.direction2Municipality)
+                .append(direction2MunicipalityCode, that.direction2MunicipalityCode)
+                .append(lamStationType, that.lamStationType)
+                .append(calculatorDeviceType, that.calculatorDeviceType)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
+        return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
                 .append(id)
                 .append(lamNaturalId)
@@ -135,6 +145,7 @@ public class LamStationProperties extends RoadStationProperties {
                 .append(direction2Municipality)
                 .append(direction2MunicipalityCode)
                 .append(lamStationType)
+                .append(calculatorDeviceType)
                 .toHashCode();
     }
 }

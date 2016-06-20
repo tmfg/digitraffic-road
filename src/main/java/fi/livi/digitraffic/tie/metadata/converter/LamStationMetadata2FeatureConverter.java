@@ -45,6 +45,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         properties.setDirection2Municipality(lam.getDirection2Municipality());
         properties.setDirection2MunicipalityCode(lam.getDirection2MunicipalityCode());
         properties.setLamStationType(lam.getLamStationType());
+        properties.setCalculatorDeviceType(lam.getCalculatorDeviceType());
         properties.setName(lam.getName());
 
         // RoadStation properties

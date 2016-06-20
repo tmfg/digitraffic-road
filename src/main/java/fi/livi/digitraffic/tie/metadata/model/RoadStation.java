@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Convert;
@@ -23,6 +24,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationStateConverter;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 
 @Entity
@@ -41,6 +43,9 @@ public class RoadStation {
 
     @Convert(converter = RoadStationTypeConverter.class)
     private RoadStationType type;
+
+    @Convert(converter = RoadStationStateConverter.class)
+    private RoadStationState state;
 
     private boolean obsolete;
 
@@ -63,9 +68,10 @@ public class RoadStation {
 
     private String provinceCode;
 
-    private String description;
-
-    private String additionalInformation;
+    private String location;
+    private LocalDateTime startDate;
+    private String country;
+    private String liviId;
 
     protected RoadStation() {
     }
@@ -245,22 +251,6 @@ public class RoadStation {
         this.provinceCode = provinceCode;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public void setAdditionalInformation(String additionalInformation) {
-        this.additionalInformation = additionalInformation;
-    }
-
-    public String getAdditionalInformation() {
-        return additionalInformation;
-    }
-
     public List<RoadStationSensor> getRoadStationSensors() {
         return roadStationSensors;
     }
@@ -285,5 +275,45 @@ public class RoadStation {
 
     public void setRoadAddress(RoadAddress roadAddress) {
         this.roadAddress = roadAddress;
+    }
+
+    public RoadStationState getState() {
+        return state;
+    }
+
+    public void setState(RoadStationState state) {
+        this.state = state;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setLiviId(String liviId) {
+        this.liviId = liviId;
+    }
+
+    public String getLiviId() {
+        return liviId;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
@@ -274,7 +275,9 @@ public class LamStationUpdater extends LamRoadStationAttributeUpdater {
         to.setDirection1MunicipalityCode(from.getSuunta1KuntaKoodi());
         to.setDirection2Municipality(from.getSuunta2Kunta());
         to.setDirection2MunicipalityCode(from.getSuunta2KuntaKoodi());
-        to.setLamStationType(LamStationType.convertFromKameraTyyppi(from.getTyyppi()));
+        to.setLamStationType(LamStationType.convertFromLamasemaTyyppi(from.getTyyppi()));
+        to.setCalculatorDeviceType(CalculatorDeviceType.convertFromLaiteTyyppi(from.getLaskinlaite()));
+
         to.setRoadDistrict(roadDistrict);
 
         // Update RoadStation

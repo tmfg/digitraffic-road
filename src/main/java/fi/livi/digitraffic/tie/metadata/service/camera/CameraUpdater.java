@@ -295,7 +295,6 @@ public class CameraUpdater extends CameraRoadStationAttributeUpdater {
         to.setPublicExternal(esiasentoFrom.isJulkinen());
         to.setInCollection(esiasentoFrom.isKeruussa());
         to.setCompression(esiasentoFrom.getKompressio());
-        to.setDescription(esiasentoFrom.getKuvaus());
         to.setLotjuId(esiasentoFrom.getId());
         to.setPresetName1(esiasentoFrom.getNimiEsitys());
         to.setPresetName2(esiasentoFrom.getNimiLaitteella());
@@ -306,7 +305,6 @@ public class CameraUpdater extends CameraRoadStationAttributeUpdater {
         // Camera properties
         to.setCameraId(cameraId);
         to.setCameraLotjuId(kameraFrom.getId());
-        to.setCameraDescription(kameraFrom.getKuvaus());
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
 
         final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();

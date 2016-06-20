@@ -92,9 +92,6 @@ public class LamStationUpdateJobTest extends MetadataTest {
         LamStationFeature before = findWithLotjuId(allInitial, 310);
         LamStationFeature after = findWithLotjuId(allAfterChange, 310);
 
-        assertEquals("Liikennemittausasema", before.getProperties().getDescription());
-        assertEquals("Liikennemittausasema 1", after.getProperties().getDescription());
-
         assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
         assertEquals("L_vt5_Idensalmi", after.getProperties().getName());
 

@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.lam;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
@@ -13,6 +12,7 @@ import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 
@@ -43,8 +43,6 @@ public abstract class LamRoadStationAttributeUpdater {
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
-        to.setDescription(from.getKuvaus());
-        to.setAdditionalInformation(StringUtils.trimToNull(StringUtils.join(from.getLisatieto(), " ", from.getLisatietoja())));
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
         to.setAltitude(from.getKorkeus());
@@ -54,6 +52,12 @@ public abstract class LamRoadStationAttributeUpdater {
         to.setMunicipalityCode(from.getKuntaKoodi());
         to.setProvince(from.getMaakunta());
         to.setProvinceCode(from.getMaakuntaKoodi());
+
+        to.setLiviId(from.getLiviId());
+        to.setStartDate(from.getAlkamisPaiva() != null ? from.getAlkamisPaiva().toGregorianCalendar().toZonedDateTime().toLocalDateTime() : null);
+        to.setLocation(from.getAsemanSijainti());
+        to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
+        to.setCountry(from.getMaa());
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;

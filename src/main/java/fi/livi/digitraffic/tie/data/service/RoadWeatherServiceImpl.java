@@ -26,7 +26,6 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
         this.roadStationSensorService = roadStationSensorService;
     }
 
-    // TODO onlyUpdateInfo: do direct query to get update info
     @Transactional(readOnly = true)
     @Override
     public RoadWeatherRootDataObjectDto findAllRoadWeatherData(boolean onlyUpdateInfo) {

@@ -22,6 +22,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.CalculatorDeviceTypeConverter;
 import fi.livi.digitraffic.tie.metadata.converter.LamStationTypeConverter;
 
 @Entity
@@ -70,6 +71,9 @@ public class LamStation {
 
     @Convert(converter = LamStationTypeConverter.class)
     private LamStationType lamStationType;
+
+    @Convert(converter = CalculatorDeviceTypeConverter.class)
+    private CalculatorDeviceType calculatorDeviceType;
 
     @ManyToOne
     @JoinColumn(name="road_district_id", nullable = false)
@@ -232,6 +236,14 @@ public class LamStation {
 
     public void setLamStationType(final LamStationType lamStationType) {
         this.lamStationType = lamStationType;
+    }
+
+    public void setCalculatorDeviceType(CalculatorDeviceType calculatorDeviceType) {
+        this.calculatorDeviceType = calculatorDeviceType;
+    }
+
+    public CalculatorDeviceType getCalculatorDeviceType() {
+        return calculatorDeviceType;
     }
 
     @Override

@@ -59,12 +59,9 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
-        dto.setDescription(cp.getDescription());
         dto.setPresentationName(CameraPresetHelpper.fixName(cp.getPresetName1()));
         dto.setNameOnDevice(CameraPresetHelpper.fixName(cp.getPresetName2()));
         dto.setPresetOrder(cp.getPresetOrder());
-        dto.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
-        dto.setCompression(cp.getCompression());
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());
         dto.setLotjuId(cp.getLotjuId());
@@ -91,8 +88,6 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             properties.setLotjuId(cp.getCameraLotjuId());
             properties.setCameraId(cp.getCameraId());
             properties.setCameraType(cp.getCameraType());
-            properties.setDescription(cp.getCameraDescription());
-            properties.setDefaultDirection(cp.getDefaultDirection());
             properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
 
             // RoadStation properties

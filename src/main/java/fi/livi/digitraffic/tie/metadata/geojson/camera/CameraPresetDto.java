@@ -74,9 +74,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @JsonProperty("id")
     private String presetId;
 
-    @ApiModelProperty(value = "Preset description")
-    private String description;
-
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
     private String presentationName;
 
@@ -86,15 +83,8 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @ApiModelProperty(value = "Preset order")
     private Integer presetOrder;
 
-    @ApiModelProperty(name = "public", value = "Is image publicly available")
-    @JsonProperty(value = "public")
-    private boolean isPublic;
-
     @ApiModelProperty(value = "Is data in collection")
     private boolean inCollection;
-
-    @ApiModelProperty(value = "Jpeg image Quality Factor (Q)")
-    private Integer compression;
 
     @ApiModelProperty(value = "Resolution of camera [px x px]")
     private String resolution;
@@ -154,14 +144,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return presetId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public void setPresentationName(final String presentationName) {
         this.presentationName = presentationName;
     }
@@ -186,28 +168,12 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return presetOrder;
     }
 
-    public void setPublic(final boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public boolean isPublic() {
-        return isPublic;
-    }
-
     public void setInCollection(final boolean inCollection) {
         this.inCollection = inCollection;
     }
 
     public boolean isInCollection() {
         return inCollection;
-    }
-
-    public void setCompression(final Integer compression) {
-        this.compression = compression;
-    }
-
-    public Integer getCompression() {
-        return compression;
     }
 
     public void setResolution(final String resolution) {
@@ -239,7 +205,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return imageUrl;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -252,39 +217,35 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
         return new EqualsBuilder()
                 .append(id, that.id)
-                .append(isPublic, that.isPublic)
                 .append(inCollection, that.inCollection)
                 .append(lotjuId, that.lotjuId)
                 .append(cameraId, that.cameraId)
                 .append(presetId, that.presetId)
-                .append(description, that.description)
                 .append(presentationName, that.presentationName)
                 .append(nameOnDevice, that.nameOnDevice)
                 .append(presetOrder, that.presetOrder)
-                .append(compression, that.compression)
                 .append(resolution, that.resolution)
                 .append(cameraLotjuId, that.cameraLotjuId)
                 .append(directionCode, that.directionCode)
+                .append(imageUrl, that.imageUrl)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
+        return new HashCodeBuilder(17, 37)
                 .append(id)
+                .append(lotjuId)
                 .append(cameraId)
                 .append(presetId)
-                .append(description)
                 .append(presentationName)
                 .append(nameOnDevice)
                 .append(presetOrder)
-                .append(isPublic)
                 .append(inCollection)
-                .append(compression)
-                .append(nameOnDevice)
                 .append(resolution)
+                .append(cameraLotjuId)
                 .append(directionCode)
+                .append(imageUrl)
                 .toHashCode();
     }
 

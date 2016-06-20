@@ -16,7 +16,7 @@ public enum LamStationType {
         return value;
     }
 
-    public static LamStationType convertFromKameraTyyppi(final LamAsemaTyyppi lamAsemaTyyppi) {
+    public static LamStationType convertFromLamasemaTyyppi(final LamAsemaTyyppi lamAsemaTyyppi) {
         if (lamAsemaTyyppi != null) {
             return valueOf(lamAsemaTyyppi.name());
         }

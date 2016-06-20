@@ -115,8 +115,6 @@ public class CameraUpdateJobTest extends MetadataTest {
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
                                                   "compression", "resolution"));
-        assertEquals((Integer) 30, before.getCompression());
-        assertEquals((Integer) 20, after.getCompression());
         assertEquals("704x576", before.getResolution());
         assertEquals("1200x900", after.getResolution());
 
