@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,7 +34,10 @@ public class RoadWeatherStation {
     @Convert(converter = RoadWeatherStationTypeConverter.class)
     private RoadWeatherStationType roadWeatherStationType;
 
-    private Boolean master;
+    private boolean master;
+
+    @Column(name="IS_PUBLIC")
+    private boolean isPublic;
 
     @OneToOne
     @JoinColumn(name="road_station_id", nullable = false)
@@ -76,12 +80,20 @@ public class RoadWeatherStation {
         this.roadWeatherStationType = roadWeatherStationType;
     }
 
-    public Boolean isMaster() {
+    public boolean isMaster() {
         return master;
     }
 
-    public void setMaster(Boolean master) {
+    public void setMaster(boolean master) {
         this.master = master;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     @Override

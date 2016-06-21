@@ -43,7 +43,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         roadWeatherStationUpdater.updateRoadStationSensors();
         roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
         RoadWeatherStationFeatureCollection allInitial =
-                roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+                roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
         assertEquals(2, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
@@ -52,7 +52,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         roadWeatherStationUpdater.updateRoadStationSensors();
         roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
         RoadWeatherStationFeatureCollection allAfterChange =
-                roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+                roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
         assertEquals(3, allAfterChange.getFeatures().size());
 
         /*

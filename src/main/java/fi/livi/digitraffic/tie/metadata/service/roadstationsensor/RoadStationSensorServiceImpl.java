@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
+import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -25,19 +28,23 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private RoadStationSensorRepository roadStationSensorRepository;
 
+    private final RoadWeatherStationRepository roadWeatherStationRepository;
     private final int roadWeatherStationSensorValueTimeLimitInMins;
     private final ArrayList<Long> includedSensorNaturalIds;
 
     @Autowired
     public RoadStationSensorServiceImpl(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                         final RoadStationSensorRepository roadStationSensorRepository,
+                                        final RoadWeatherStationRepository roadWeatherStationRepository,
                                         @Value("${roadWeatherStation.sensorValue.timeLimitInMinutes}")
                                         final int roadWeatherStationSensorValueTimeLimitInMins,
                                         @Value("${roadWeatherStation.includedSensorNaturalIds}")
                                         final String includedSensorNaturalIdsStr) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
+        this.roadWeatherStationRepository = roadWeatherStationRepository;
         this.roadWeatherStationSensorValueTimeLimitInMins = roadWeatherStationSensorValueTimeLimitInMins;
+
         String[] ids = StringUtils.splitPreserveAllTokens(includedSensorNaturalIdsStr, ',');
         includedSensorNaturalIds = new ArrayList<>();
         for (String id : ids) {
@@ -60,6 +67,12 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Transactional(readOnly = true)
     @Override
     public Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoleteRoadWeatherStationSensorValues() {
+
+        List<Long> stations =
+                roadWeatherStationRepository.findNonObsoleteAndPublicRoadStationNaturalIds();
+        Set<Long> allowedRoadStations =
+                stations.stream().collect(Collectors.toSet());
+
         Map<Long, List<RoadStationSensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();
         List<RoadStationSensorValueDto> sensors =
                 roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
@@ -67,13 +80,14 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
                         roadWeatherStationSensorValueTimeLimitInMins,
                         includedSensorNaturalIds);
         for (RoadStationSensorValueDto sensor : sensors) {
-            List<RoadStationSensorValueDto> values = rsNaturalIdToRsSensorValues.get(Long.valueOf(sensor.getRoadStationNaturalId()));
-            if (values == null) {
-                values = new ArrayList<>();
-                rsNaturalIdToRsSensorValues.put(sensor.getRoadStationNaturalId(), values);
+            if (allowedRoadStations.contains(sensor.getRoadStationNaturalId())) {
+                List<RoadStationSensorValueDto> values = rsNaturalIdToRsSensorValues.get(Long.valueOf(sensor.getRoadStationNaturalId()));
+                if (values == null) {
+                    values = new ArrayList<>();
+                    rsNaturalIdToRsSensorValues.put(sensor.getRoadStationNaturalId(), values);
+                }
+                values.add(sensor);
             }
-
-            values.add(sensor);
         }
         return rsNaturalIdToRsSensorValues;
     }

@@ -76,7 +76,7 @@ public class MetadataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Weather Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadWeatherStationFeatureCollection listNonObsoleteRoadWeatherStations() {
-        return roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+        return roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
     }
 
     @ApiOperation("The static information of available sensors of road weather stations")

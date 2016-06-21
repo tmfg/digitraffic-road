@@ -399,7 +399,8 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
                                                               final RoadWeatherStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         to.setLotjuId(from.getId());
-        to.setMaster(from.isMaster());
+        to.setMaster(from.isMaster() != null ? from.isMaster() : true);
+        to.setPublic(from.isJulkinen() != null ? from.isJulkinen() : true);
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
 
         // Update RoadStation
