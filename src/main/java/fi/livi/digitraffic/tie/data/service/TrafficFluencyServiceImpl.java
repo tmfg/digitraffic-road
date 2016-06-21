@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
-import fi.livi.digitraffic.tie.helper.DateHelpper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @Service
 public class TrafficFluencyServiceImpl implements TrafficFluencyService {
@@ -47,7 +47,7 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
             List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
 
             for (LatestMedianDataDto lmd : latestMedians) {
-                updated = DateHelpper.getNewest(updated, lmd.getMeasured());
+                updated = DateHelper.getNewest(updated, lmd.getMeasured());
                 lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
             }
 

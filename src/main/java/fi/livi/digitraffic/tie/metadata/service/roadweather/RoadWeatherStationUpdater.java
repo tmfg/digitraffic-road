@@ -206,6 +206,7 @@ public class RoadWeatherStationUpdater extends RoadWeatherRoadStationAttributeUp
             } else {
                 invalid++;
             }
+
         }
 
         if (invalid > 0) {

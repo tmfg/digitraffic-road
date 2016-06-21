@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.LinkDataDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.LinkMeasurementDataDto;
-import fi.livi.digitraffic.tie.helper.DateHelpper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @Service
 public class DayDataServiceImpl implements DayDataService {
@@ -58,7 +58,7 @@ public class DayDataServiceImpl implements DayDataService {
                 previous = new LinkDataDto(ld.getLinkId(), new ArrayList<>());
                 linkDataTo.add(previous);
             }
-            previous.setMeasured(DateHelpper.getNewest(previous.getMeasured(), ld.getMeasured()));
+            previous.setMeasured(DateHelper.getNewest(previous.getMeasured(), ld.getMeasured()));
             previous.getLinkMeasurements().add(ld);
         }
         return linkDataTo;

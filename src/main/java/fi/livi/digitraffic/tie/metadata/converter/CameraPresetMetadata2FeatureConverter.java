@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.helper.CameraPresetHelpper;
+import fi.livi.digitraffic.tie.helper.CameraPresetHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
@@ -59,8 +59,8 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
-        dto.setPresentationName(CameraPresetHelpper.fixName(cp.getPresetName1()));
-        dto.setNameOnDevice(CameraPresetHelpper.fixName(cp.getPresetName2()));
+        dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));
+        dto.setNameOnDevice(CameraPresetHelper.fixName(cp.getPresetName2()));
         dto.setPresetOrder(cp.getPresetOrder());
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());

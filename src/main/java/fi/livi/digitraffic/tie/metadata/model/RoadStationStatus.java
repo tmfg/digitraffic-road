@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.DateHelpper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -127,7 +127,7 @@ public class RoadStationStatus {
 
     @JsonIgnore
     public LocalDateTime getLastUpdated() {
-        return DateHelpper.getNewest(collectionStatusUpdated, conditionUpdated);
+        return DateHelper.getNewest(collectionStatusUpdated, conditionUpdated);
     }
 
 }
