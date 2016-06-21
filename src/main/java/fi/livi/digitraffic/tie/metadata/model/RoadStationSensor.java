@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
-@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "calculationFormula", "nameOld", "sensorValueDescriptions"})
+@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
 public class RoadStationSensor {
