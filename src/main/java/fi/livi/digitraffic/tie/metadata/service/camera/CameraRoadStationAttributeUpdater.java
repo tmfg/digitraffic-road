@@ -5,7 +5,6 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
-import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
 import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
@@ -32,7 +31,7 @@ public abstract class CameraRoadStationAttributeUpdater {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if ( KeruunTilaHelpper.isUnactiveKeruunTila(from.getKeruunTila()) ) {
+        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila()) ) {
             to.obsolete();
         } else {
             to.setObsolete(false);

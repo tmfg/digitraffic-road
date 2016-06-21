@@ -62,7 +62,7 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
 //                .andExpect(jsonPath("$.features[0].properties.cameraType", Matchers.instanceOf(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))

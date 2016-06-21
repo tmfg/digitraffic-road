@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.KeruunTilaHelpper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.wsdl.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -132,7 +132,7 @@ public class CameraUpdater extends CameraRoadStationAttributeUpdater {
 
                 final CameraPreset currentSaved = presetsMappedByPresetId.remove(presetIdEntrySet.getKey());
 
-                if (currentSaved != null && KeruunTilaHelpper.isUnactiveKeruunTila(kamera.getKeruunTila()) ) {
+                if (currentSaved != null && CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila()) ) {
                     // If station is not used, obsolete also preset
                     obsoleteRoadStations.add(currentSaved.getRoadStation());
                     obsolete.add(currentSaved);

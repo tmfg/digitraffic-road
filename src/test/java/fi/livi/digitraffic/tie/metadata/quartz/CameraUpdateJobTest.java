@@ -42,13 +42,13 @@ public class CameraUpdateJobTest extends MetadataTest {
         cameraUpdater.updateCameras();
         CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
         // cameras with lotjuId 443 and 56 are in collection
-        assertEquals(2, allInitial.getFeatures().size());
+        assertEquals(3, allInitial.getFeatures().size());
         int countPresets = 0;
         for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
             countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
         }
-        // cameras with lotjuId 443 has 2 and 56 has 1 preset
-        assertEquals(3, countPresets);
+        // cameras with lotjuId 443 has 2, 121 has 2 and 56 has 1 preset
+        assertEquals(5, countPresets);
 
         // Update 121 camera to active and 56 removed
         kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
@@ -59,8 +59,8 @@ public class CameraUpdateJobTest extends MetadataTest {
         // 443 has 3 presets, 121 has 2
         assertEquals(2, allAfterChange.getFeatures().size());
         int countPresetsAfter = 0;
-        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
-            countPresetsAfter = countPresets + cameraStationFeature.getProperties().getPresets().size();
+        for (CameraStationFeature cameraStationFeature : allAfterChange.getFeatures()) {
+            countPresetsAfter = countPresetsAfter + cameraStationFeature.getProperties().getPresets().size();
         }
         // cameras with lotjuId 443 has 2 and 56 has 1 preset
         assertEquals(5, countPresetsAfter);
@@ -72,20 +72,20 @@ public class CameraUpdateJobTest extends MetadataTest {
             56:  C0155600
             After:
             443: C0852001
-            443: C0852002 kompressio 30 -> 20, resoluutio 704x576 -> 1200x900, viive 10 -> 20
+            443: C0852002 resoluutio 704x576 -> 1200x900, viive 10 -> 20
             121: C0162801
             121: C0162802
 
          */
 
-        // 443: C0852001, C0852002
+        // lotjuId 443
         assertNotNull(findWithPresetId(allInitial, "C0852001"));
         assertNotNull(findWithPresetId(allInitial, "C0852002"));
         assertNull(findWithPresetId(allInitial, "C0852009")); // preset not exists
-        // 121
-        assertNull(findWithPresetId(allInitial, "C0162801"));
-        assertNull(findWithPresetId(allInitial, "C0162802"));
-        // 2
+        // lotjuId 121
+        assertNotNull(findWithPresetId(allInitial, "C0162801"));
+        assertNotNull(findWithPresetId(allInitial, "C0162802"));
+        // lotjuId 2
         assertNull(findWithPresetId(allInitial, "C0150202"));
         assertNull(findWithPresetId(allInitial, "C0150209"));
         assertNull(findWithPresetId(allInitial, "C0150201"));
@@ -121,7 +121,14 @@ public class CameraUpdateJobTest extends MetadataTest {
         // C0852001 not changed
         assertEqualPresets(findWithPresetId(allInitial, "C0852001"),
                            findWithPresetId(allAfterChange, "C0852001"));
+
+        // 443 Kunta changed
+        CameraStationFeature beforeCam = findWithCameraId(allInitial, "C08520");
+        CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
+        assertEquals("Iidensalmi", beforeCam.getProperties().getMunicipality());
+        assertEquals("Iisalmi", afterCam.getProperties().getMunicipality());
     }
+
 
     private void assertEqualPresets(CameraPresetDto preset1, CameraPresetDto preset2) {
         assertTrue(preset1.equals(preset2));
@@ -139,5 +146,9 @@ public class CameraUpdateJobTest extends MetadataTest {
             }
         }
         return null;
+    }
+
+    private CameraStationFeature findWithCameraId(CameraStationFeatureCollection collection, String cameraId) {
+        return collection.getFeatures().stream().filter(x -> x.getId().endsWith(cameraId)).findFirst().orElseGet(null);
     }
 }

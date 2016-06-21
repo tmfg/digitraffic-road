@@ -13,7 +13,7 @@
         <tieosoiteId>81</tieosoiteId>
         <keruuVali>720</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
-        <kunta>Iisalmi</kunta>
+        <kunta>Iidensalmi</kunta>
         <kuntaKoodi>140</kuntaKoodi>
         <maakunta>Pohjois-Savo</maakunta>
         <maakuntaKoodi>11</maakuntaKoodi>
@@ -63,7 +63,7 @@
         </tieosoite>
         <tieosoiteId>411</tieosoiteId>
         <keruuVali>720</keruuVali>
-        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
         <kunta>Porvoo</kunta>
         <kuntaKoodi>638</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
@@ -90,7 +90,7 @@
         </tieosoite>
         <tieosoiteId>216</tieosoiteId>
         <keruuVali>720</keruuVali>
-        <keruunTila>KERUUSSA</keruunTila>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
         <kunta>Helsinki</kunta>
         <kuntaKoodi>91</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
