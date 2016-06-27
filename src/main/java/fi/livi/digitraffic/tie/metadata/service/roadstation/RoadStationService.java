@@ -25,7 +25,5 @@ public interface RoadStationService {
 
     List<RoadStation> findOrphanLamStationRoadStations();
 
-    Map<Long, RoadAddress> findAllRoadAddressesMappedByLotjuId();
-
     RoadAddress save(RoadAddress roadAddress);
 }

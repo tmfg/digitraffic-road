@@ -67,6 +67,7 @@ public abstract class RoadStationProperties {
 
     @JsonIgnore
     private LocalDateTime repairMaintenanceDate;
+
     @JsonIgnore
     private LocalDateTime annualMaintenanceDate;
 

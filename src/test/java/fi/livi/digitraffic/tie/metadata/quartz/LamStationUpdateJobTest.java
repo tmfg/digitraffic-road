@@ -49,7 +49,6 @@ public class LamStationUpdateJobTest extends MetadataTest {
                 lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
         assertEquals(2, allAfterChange.getFeatures().size());
 
-
         assertNotNull(findWithLotjuId(allInitial, 1));
         assertNull(findWithLotjuId(allInitial, 2));
         assertNotNull(findWithLotjuId(allInitial, 310));

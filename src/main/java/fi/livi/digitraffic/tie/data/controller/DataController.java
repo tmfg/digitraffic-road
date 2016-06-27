@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,6 +51,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class DataController {
+    private static final Logger log = Logger.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
@@ -60,6 +62,8 @@ public class DataController {
     public static final String ROAD_WEATHER_PATH = "/road-weather";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
+
+    private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
 
     private TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
@@ -94,6 +98,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
@@ -105,6 +110,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
@@ -116,6 +122,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH);
         return lamDataService.listAllLamDataFromNonObsoleteStations(lastUpdated);
     }
 
@@ -127,6 +134,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH);
         return freeFlowSpeedService.listAllFreeFlowSpeeds(lastUpdated);
     }
 
@@ -138,6 +146,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH);
         return cameraDataService.findAllNonObsoleteCameraStationsData(lastUpdated);
     }
 
@@ -149,6 +158,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH);
         return roadWeatherService.findAllRoadWeatherData(lastUpdated);
     }
 
@@ -160,6 +170,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH);
         return roadStationStatusService.findAllRoadStationStatuses(lastUpdated);
     }
 }

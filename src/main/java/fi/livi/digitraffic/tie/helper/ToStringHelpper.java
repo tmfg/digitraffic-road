@@ -49,7 +49,7 @@ public class ToStringHelpper {
     public static String toString(final KameraVO kamera) {
         final StringBuffer sb = createStartSb(kamera);
         JSON_STYLE.append(sb, LOTJU_ID, kamera.getId());
-        JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, kamera.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");

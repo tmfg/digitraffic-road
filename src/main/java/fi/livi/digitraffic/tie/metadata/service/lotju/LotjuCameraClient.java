@@ -46,13 +46,13 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
 
         final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraMap = new HashMap<>();
 
-        log.info("Fetch cameras");
+        log.info("Fetch Kameras");
 
         final List<KameraVO> kamerat = getKameras();
 
         log.info("Fetched " + kamerat.size() + " cameras");
 
-        log.info("Fetch presets for cameras");
+        log.info("Fetch Esiasentos for cameras");
         int counter = 0;
         for (final KameraVO kamera : kamerat) {
 

@@ -44,7 +44,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
 
-        log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " tiesaaAsemas");
+        log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " TiesaaAsemas");
 
         final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRwsLotjuIdToTiesaaAnturiMap =
                 new HashMap<>();

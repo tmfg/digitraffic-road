@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,20 +48,18 @@ public class DayDataServiceImpl implements DayDataService {
     }
 
     private static List<LinkDataDto> convertToDayDataData(final List<LinkMeasurementDataDto> linkDataFrom) {
-
-        List<LinkDataDto> linkDataTo = new ArrayList<>();
-        // LinkDataDto is sorted by linkId, so this works
-        LocalDateTime linkUpdated = null;
-        LinkDataDto previous = null;
+        HashMap<Integer, LinkDataDto> linkDataMap = new HashMap<>();
         for(final LinkMeasurementDataDto ld : linkDataFrom) {
-            if(previous == null || previous.getLinkNumber() != ld.getLinkId()) {
-                linkUpdated = null;
-                previous = new LinkDataDto(ld.getLinkId(), new ArrayList<>());
-                linkDataTo.add(previous);
+            LinkDataDto linkData = linkDataMap.get(ld.getLinkId());
+            if(linkData == null) {
+                linkData = new LinkDataDto(ld.getLinkId(), new ArrayList<>());
+                linkDataMap.put(ld.getLinkId(), linkData);
             }
-            previous.setMeasured(DateHelper.getNewest(previous.getMeasured(), ld.getMeasured()));
-            previous.getLinkMeasurements().add(ld);
+            linkData.setMeasured(DateHelper.getNewest(linkData.getMeasured(), ld.getMeasured()));
+            linkData.getLinkMeasurements().add(ld);
         }
-        return linkDataTo;
+        List<LinkDataDto> linkDatas = new ArrayList<>(linkDataMap.values());
+        linkDatas.sort((o1, o2) -> Integer.compare(o1.getLinkNumber(), o2.getLinkNumber()));
+        return linkDatas;
     }
 }

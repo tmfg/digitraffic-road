@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class RoadStationSensor {
 
     /** These id:s are for station status sensors */
-    public static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
+    protected static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
             new HashSet<Long>(Arrays.asList(60000L, 60002L));
 
     @JsonIgnore

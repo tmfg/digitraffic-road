@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -86,25 +87,22 @@ public class RoadAddress {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ROAD_ADDRESS")
     private Long id;
 
-    @JsonIgnore
-    private Long lotjuId;
-
     @ApiModelProperty(value = "Road number (values 1–99999)")
-    protected Integer roadNumber;
+    private Integer roadNumber;
 
     @ApiModelProperty(value = "Road section (values 1–999)")
-    protected Integer roadSection;
+    private Integer roadSection;
 
     @ApiModelProperty(value = "Distance from start of the road portion [m]")
     @Column(name="DISTANCE_FROM_ROAD_SECTION_ST")
-    protected Integer distanceFromRoadSectionStart;
+    private Integer distanceFromRoadSectionStart;
 
     @ApiModelProperty(value = "Carriageway (" +
                               "0 = One carriageway portion, " +
                               "1 = First carriageway of dual carriageway portion (measuring direction) " +
                               "2 = Second carriageway of dual carriageway portion (upstream))")
     @Column(name = "CARRIAGEWAY")
-    protected Integer carriagewayCode;
+    private Integer carriagewayCode;
 
     @ApiModelProperty(value = "Side of the road (" +
                               "0 = Unknown, " +
@@ -115,17 +113,22 @@ public class RoadAddress {
                               "8 = Middle, " +
                               "9 = Cross)")
     @Column(name = "SIDE")
-    protected Integer sideCode;
+    private Integer sideCode;
 
     @ApiModelProperty(value = "Road maintenance class")
-    protected String roadMaintenanceClass;
+    private String roadMaintenanceClass;
+
+    @JsonIgnore
+    @OneToOne(mappedBy="roadAddress")
+    private RoadStation roadStation;
 
     public RoadAddress() {
     }
 
-    public RoadAddress(final Long lotjuId) {
-        this.lotjuId = lotjuId;
+    public RoadAddress(RoadStation roadStation) {
+        this.roadStation = roadStation;
     }
+
 
     public Long getId() {
         return id;
@@ -133,14 +136,6 @@ public class RoadAddress {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getLotjuId() {
-        return lotjuId;
-    }
-
-    public void setLotjuId(Long lotjuId) {
-        this.lotjuId = lotjuId;
     }
 
     public Carriageway getCarriageway() {
@@ -200,11 +195,18 @@ public class RoadAddress {
         this.roadSection = roadSection;
     }
 
+    public RoadStation getRoadStation() {
+        return roadStation;
+    }
+
+    public void setRoadStation(RoadStation roadStation) {
+        this.roadStation = roadStation;
+    }
+
     @Override
     public String toString() {
         return new ToStringHelpper(this)
                 .appendField("id", getId())
-                .appendField("lotjuId", this.getLotjuId())
                 .appendField("roadNumber", getRoadNumber())
                 .appendField("roadSection", getRoadSection())
                 .toString();
@@ -222,13 +224,13 @@ public class RoadAddress {
 
         return new EqualsBuilder()
                 .append(id, that.id)
-                .append(lotjuId, that.lotjuId)
                 .append(roadNumber, that.roadNumber)
                 .append(roadSection, that.roadSection)
                 .append(distanceFromRoadSectionStart, that.distanceFromRoadSectionStart)
                 .append(carriagewayCode, that.carriagewayCode)
                 .append(sideCode, that.sideCode)
                 .append(roadMaintenanceClass, that.roadMaintenanceClass)
+                .append(roadStation, that.roadStation)
                 .isEquals();
     }
 
@@ -236,13 +238,13 @@ public class RoadAddress {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(id)
-                .append(lotjuId)
                 .append(roadNumber)
                 .append(roadSection)
                 .append(distanceFromRoadSectionStart)
                 .append(carriagewayCode)
                 .append(sideCode)
                 .append(roadMaintenanceClass)
+                .append(roadStation)
                 .toHashCode();
     }
 }

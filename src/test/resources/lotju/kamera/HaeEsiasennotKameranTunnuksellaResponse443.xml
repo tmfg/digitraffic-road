@@ -13,7 +13,7 @@
     </ns2:esiasennot>
     <ns2:esiasennot>
         <jarjestys>2</jarjestys>
-        <julkinen>true</julkinen>
+        <julkinen>false</julkinen>
         <kameraId>443</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
