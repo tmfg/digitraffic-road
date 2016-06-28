@@ -73,6 +73,8 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
         to.setCarriagewayCode(from.getAjorata());
         to.setSideCode(from.getPuoli());
         to.setRoadMaintenanceClass(from.getTienHoitoluokka());
+        // TODO should we use this for idenfying road address?
+        // from.getId()
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
             System.out.println("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }

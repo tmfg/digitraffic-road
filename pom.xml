@@ -274,7 +274,7 @@
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306/TiesaaMetatiedot.wsdl</wsdl>-->
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/TiesaaMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v1/TiesaaMetatiedot.wsdl</wsdl>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/TiesaaMetatiedot.wsdl</wsdl>-->
                                     <extraargs>
                                         <!-- Generate package per targetNamespace in wsdl -->
@@ -289,7 +289,7 @@
                                 <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
                                 <wsdlOption>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306/LAMMetatiedot.wsdl</wsdl>-->
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v1/LAMMetatiedot.wsdl</wsdl>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/LAMMetatiedot.wsdl</wsdl>-->
 
                                     <extraargs>
@@ -305,7 +305,7 @@
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
                                 <wsdlOption>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20140306//KameraMetatiedot.wsdl</wsdl>-->
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/v1/KameraMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v1/KameraMetatiedot.wsdl</wsdl>
                                     <!--<wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/KameraMetatiedot.wsdl</wsdl>-->
                                     <extraargs>
                                         <!-- Generate package per targetNamespace in wsdl -->
