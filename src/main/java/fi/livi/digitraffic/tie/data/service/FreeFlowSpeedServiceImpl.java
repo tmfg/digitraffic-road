@@ -32,12 +32,10 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
         if (onlyUpdateInfo) {
             return new FreeFlowSpeedRootDataObjectDto(updated);
         } else {
-            FreeFlowSpeedRootDataObjectDto data =
-                    new FreeFlowSpeedRootDataObjectDto(
-                            linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
-                            lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
-                            updated);
-            return data;
+            return new FreeFlowSpeedRootDataObjectDto(
+                    linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
+                    lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
+                    updated);
         }
     }
 }
