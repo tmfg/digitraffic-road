@@ -82,7 +82,8 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
         log.info("UpdateCameras end");
     }
 
-    private void fixCameraPresetsWithMissingRoadStations() {
+    @Transactional
+    public void fixCameraPresetsWithMissingRoadStations() {
 
         final List<CameraPreset> currentCameraPresetsWithOutRoadStation =
                 cameraPresetService.finAllCameraPresetsWithOutRoadStation();

@@ -39,7 +39,7 @@ public class ToStringHelpper {
     public static String toString(final LamAsemaVO la) {
         final StringBuffer sb = createStartSb(la);
         JSON_STYLE.append(sb, LOTJU_ID, la.getId());
-        JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, la.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
@@ -59,7 +59,7 @@ public class ToStringHelpper {
     public static String toString(final TiesaaAsemaVO tsa) {
         final StringBuffer sb = createStartSb(tsa);
         JSON_STYLE.append(sb, LOTJU_ID, tsa.getId());
-        JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, tsa.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");

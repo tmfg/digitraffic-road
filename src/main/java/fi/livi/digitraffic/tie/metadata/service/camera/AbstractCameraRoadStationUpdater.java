@@ -76,7 +76,7 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
         // TODO should we use this for idenfying road address?
         // from.getId()
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
-            System.out.println("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
+            log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

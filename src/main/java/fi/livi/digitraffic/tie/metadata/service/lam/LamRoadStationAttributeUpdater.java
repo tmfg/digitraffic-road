@@ -72,7 +72,7 @@ public abstract class LamRoadStationAttributeUpdater extends AbstractRoadStation
         to.setSideCode(from.getPuoli());
         to.setRoadMaintenanceClass(from.getTienHoitoluokka());
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
-            System.out.println("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
+            log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
