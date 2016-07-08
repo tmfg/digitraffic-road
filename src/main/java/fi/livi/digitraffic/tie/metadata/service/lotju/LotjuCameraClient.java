@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.EsiasentoVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksella;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKamerat;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKameratResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.ObjectFactory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksella;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeKaikkiKamerat;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.ObjectFactory;
 
 public class LotjuCameraClient extends WebServiceGatewaySupport {
 

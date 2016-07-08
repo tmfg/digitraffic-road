@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06">
+<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29">
     <ns2:tiesaaAsema>
         <kuvaus>GPRS</kuvaus>
         <nimi>OLD_vt1_Leppäkorpi_R</nimi>

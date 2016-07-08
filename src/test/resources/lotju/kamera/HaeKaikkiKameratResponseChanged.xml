@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
     <ns2:kamerat>
         <kuvaus>ADSL</kuvaus>
         <nimi>vt27_Runni</nimi>

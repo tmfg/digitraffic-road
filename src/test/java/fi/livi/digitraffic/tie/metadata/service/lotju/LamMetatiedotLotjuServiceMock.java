@@ -10,17 +10,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.ArvoVastaavuusVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.HaeKaikkiLAMAsematResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LAMMetatiedotEndpoint;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LAMMetatiedotV1;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVakioArvoVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAnturiVakioVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaLaskennallinenAnturiVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamLaskennallinenAnturiVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ArvoVastaavuusVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotV2;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
 
 @Service
 public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements LAMMetatiedotEndpoint {
@@ -34,8 +34,7 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     public LamMetatiedotLotjuServiceMock(@Value("${metadata.server.address.lam}")
                                          final String metadataServerAddressCamera,
                                          final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV1.SERVICE);
-
+        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV2.SERVICE);
     }
 
     @Override

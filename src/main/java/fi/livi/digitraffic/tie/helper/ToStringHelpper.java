@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
 
 /**
  * Provides helpper functions to stringify objects for logging

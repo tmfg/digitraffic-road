@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import javax.xml.bind.annotation.XmlEnumValue;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LaiteTyyppi;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LaiteTyyppi;
 
 public enum CalculatorDeviceType {
 

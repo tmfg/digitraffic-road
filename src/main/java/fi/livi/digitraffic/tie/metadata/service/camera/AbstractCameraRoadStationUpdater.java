@@ -4,8 +4,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.log4j.Logger;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.metatiedot.TieosoiteVO;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -13,7 +11,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStationUpdater {
 
@@ -73,8 +72,6 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
         to.setCarriagewayCode(from.getAjorata());
         to.setSideCode(from.getPuoli());
         to.setRoadMaintenanceClass(from.getTienHoitoluokka());
-        // TODO should we use this for idenfying road address?
-        // from.getId()
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
             log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }

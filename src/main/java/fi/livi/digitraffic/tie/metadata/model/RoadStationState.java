@@ -1,20 +1,18 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.KORJAUS_KESKEYTETTY;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.VIKAEPAILY;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.VIKA_VAHVISTETTU;
-import static fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.KORJAUS_KESKEYTETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VIKAEPAILY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VIKA_VAHVISTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
 
 import org.apache.log4j.Logger;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi;
-
 public enum RoadStationState {
 
-    OK(fi.livi.digitraffic.tie.lotju.wsdl.kamera.TilaTyyppi.OK.value()),
+    OK(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.OK.value()),
     OK_FAULT_DOUBT_CANCELLED(OK_VIKAEPAILY_PERUUTETTU.value()),
     FAULT_DOUBT(VIKAEPAILY.value()),
     FAULT_CONFIRMED(VIKA_VAHVISTETTU.value()),
@@ -35,7 +33,7 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState convertAsemanTila(TilaTyyppi asemanTila) {
+    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return getState(asemanTila.value());
         }
@@ -51,5 +49,4 @@ public enum RoadStationState {
         LOG.error("RoadStationState for TilaTyyppi " + fiValue + " not found");
         return null;
     }
-
 }
