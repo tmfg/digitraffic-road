@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.data.dto.RoadStationStatusesDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
@@ -24,7 +25,6 @@ import fi.livi.digitraffic.tie.data.service.LamDataService;
 import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
 import fi.livi.digitraffic.tie.data.service.RoadWeatherService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -123,7 +123,7 @@ public class DataController {
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH);
-        return lamDataService.listAllLamDataFromNonObsoleteStations(lastUpdated);
+        return lamDataService.listPublicLamData(lastUpdated);
     }
 
     @ApiOperation(value = "Current free flow speeds")
@@ -135,7 +135,7 @@ public class DataController {
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH);
-        return freeFlowSpeedService.listAllFreeFlowSpeeds(lastUpdated);
+        return freeFlowSpeedService.listPublicFreeFlowSpeeds(lastUpdated);
     }
 
     @ApiOperation(value = "Current camera station data")
@@ -147,7 +147,7 @@ public class DataController {
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH);
-        return cameraDataService.findAllNonObsoleteCameraStationsData(lastUpdated);
+        return cameraDataService.findPublicCameraStationsData(lastUpdated);
     }
 
     @ApiOperation(value = "Current road weather station data")
@@ -159,18 +159,18 @@ public class DataController {
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH);
-        return roadWeatherService.findAllRoadWeatherData(lastUpdated);
+        return roadWeatherService.findPublicRoadWeatherData(lastUpdated);
     }
 
     @ApiOperation(value = "Status of road stations")
     @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_STATUSES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationStatusesData listNonObsoleteRoadStationSensors(
+    public RoadStationStatusesDataObjectDto listNonObsoleteRoadStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH);
-        return roadStationStatusService.findAllRoadStationStatuses(lastUpdated);
+        return roadStationStatusService.findPublicRoadStationStatuses(lastUpdated);
     }
 }

@@ -45,9 +45,15 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             // So we take camera only once
             CameraStationFeature cameraStationFeature = cameraStationMap.get(cp.getCameraId());
             if (cameraStationFeature == null) {
-                cameraStationFeature = convert(cp);
-                cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
-                collection.add(cameraStationFeature);
+                try {
+                    cameraStationFeature = convert(cp);
+                    cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
+                    collection.add(cameraStationFeature);
+                } catch (NonPublicRoadStationException nprse) {
+                    //Skip non public roadstation
+                    log.warn("Skipping: " + nprse.getMessage());
+                    continue;
+                }
             }
             cameraStationFeature.getProperties().addPreset(convertPreset(cp));
         }
@@ -72,8 +78,13 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         return dto;
     }
 
-    private static CameraStationFeature convert(final CameraPreset cp) {
-        try {
+    /**
+     *
+     * @param cp
+     * @return
+     * @throws NonPublicRoadStationException If road station is non public exception is thrown
+     */
+    private static CameraStationFeature convert(final CameraPreset cp) throws NonPublicRoadStationException {
             final CameraStationFeature f = new CameraStationFeature();
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
@@ -107,9 +118,5 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             }
 
             return f;
-        } catch (RuntimeException e) {
-            log.error("Cold not convert " + cp + " to " + CameraStationFeature.class.getSimpleName());
-            return null;
-        }
     }
 }

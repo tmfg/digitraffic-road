@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 
 @Service
-public class LamStationUpdater extends LamRoadStationAttributeUpdater {
+public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
 
     private static final Logger log = Logger.getLogger(LamStationUpdater.class);
 

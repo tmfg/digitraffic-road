@@ -34,7 +34,7 @@ public abstract class AbstractRoadWeatherRoadStationUpdater extends AbstractRoad
             to.setObsolete(false);
             to.setObsoleteDate(null);
         }
-
+        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.WEATHER_STATION);
         to.setName(from.getNimi());

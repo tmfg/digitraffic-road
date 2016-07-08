@@ -406,7 +406,6 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
 
         to.setLotjuId(from.getId());
         to.setMaster(from.isMaster() != null ? from.isMaster() : true);
-        to.setPublic(from.isJulkinen() != null ? from.isJulkinen() : true);
         to.setRoadWeatherStationType(RoadWeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
 
         // Update RoadStation

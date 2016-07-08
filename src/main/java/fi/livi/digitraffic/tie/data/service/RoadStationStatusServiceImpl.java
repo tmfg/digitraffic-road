@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.RoadStationStatusRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
+import fi.livi.digitraffic.tie.data.dto.RoadStationStatusesDataObjectDto;
 
 @Service
 public class RoadStationStatusServiceImpl implements RoadStationStatusService {
@@ -20,14 +20,14 @@ public class RoadStationStatusServiceImpl implements RoadStationStatusService {
 
     @Override
     @Transactional(readOnly = true)
-    public RoadStationStatusesData findAllRoadStationStatuses(boolean onlyUpdateInfo) {
+    public RoadStationStatusesDataObjectDto findPublicRoadStationStatuses(boolean onlyUpdateInfo) {
         LocalDateTime updated = roadStationStatusRepository.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
-            return new RoadStationStatusesData(updated);
+            return new RoadStationStatusesDataObjectDto(updated);
         } else {
-            return new RoadStationStatusesData(
-                    roadStationStatusRepository.findAllRoadStationStatuses(),
+            return new RoadStationStatusesDataObjectDto(
+                    roadStationStatusRepository.findAllPublicRoadStationStatuses(),
                     updated);
         }
     }

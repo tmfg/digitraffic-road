@@ -6,7 +6,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAsemaTyyppi;
 
 public enum RoadWeatherStationType {
 
-     ROSA("ROSA"),
+    ROSA("ROSA"),
     E_18("E18"),
     FINAVIA("FINAVIA"),
     ISGN("ISGN"),

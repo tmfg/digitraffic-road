@@ -91,6 +91,6 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
     @Override
     public RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection() {
         return RoadWeatherStationMetadata2FeatureConverter.convert(
-                roadWeatherStationRepository.findByRoadStationObsoleteFalseAndIsPublicTrueOrderByRoadStation_NaturalId());
+                roadWeatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId());
     }
 }

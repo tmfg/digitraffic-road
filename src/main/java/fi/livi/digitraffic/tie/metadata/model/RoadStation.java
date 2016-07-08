@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -51,6 +52,9 @@ public class RoadStation {
     private boolean obsolete;
 
     private LocalDate obsoleteDate;
+
+    @Column(name="IS_PUBLIC")
+    private boolean isPublic;
 
     private String nameFi, nameSv, nameEn;
 
@@ -129,6 +133,14 @@ public class RoadStation {
             throw new IllegalArgumentException("RoadStationType can not be changed once set. (" + this.type + " -> " + type + " )");
         }
         this.type = type;
+    }
+
+    public void setPublic(boolean aPublic) {
+        this.isPublic = aPublic;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     public boolean isObsolete() {

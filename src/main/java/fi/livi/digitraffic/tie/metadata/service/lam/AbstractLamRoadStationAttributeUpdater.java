@@ -14,13 +14,13 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
-public abstract class LamRoadStationAttributeUpdater extends AbstractRoadStationUpdater {
+public abstract class AbstractLamRoadStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = Logger.getLogger(LamRoadStationAttributeUpdater.class);
+    private static final Logger log = Logger.getLogger(AbstractLamRoadStationAttributeUpdater.class);
 
     protected RoadStationService roadStationService;
 
-    public LamRoadStationAttributeUpdater(RoadStationService roadStationService) {
+    public AbstractLamRoadStationAttributeUpdater(RoadStationService roadStationService) {
         this.roadStationService = roadStationService;
     }
 
@@ -34,6 +34,7 @@ public abstract class LamRoadStationAttributeUpdater extends AbstractRoadStation
             to.setObsolete(false);
             to.setObsoleteDate(null);
         }
+        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.LAM_STATION);
         to.setName(from.getNimi());

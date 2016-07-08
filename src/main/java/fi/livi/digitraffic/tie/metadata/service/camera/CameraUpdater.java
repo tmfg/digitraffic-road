@@ -22,7 +22,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
@@ -140,9 +139,9 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
 
                 final CameraPreset currentSaved = presetsMappedByPresetId.remove(presetIdEntrySet.getKey());
 
-                if (currentSaved != null &&
-                        (CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila()) ||
-                        Objects.equals(esiasento.isJulkinen(), false)) ) {
+                if ( currentSaved != null
+                     && ( CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())
+                        || Objects.equals(esiasento.isJulkinen(), false) ) ) {
                     // If station is not used or preset is not public -> obsolete preset
                     obsoleteRoadStations.add(currentSaved.getRoadStation());
                     obsolete.add(currentSaved);
@@ -273,9 +272,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
             }
             cp.setRoadStation(rs);
 
-            if (rs.getRoadAddress() == null) {
-                rs.setRoadAddress(new RoadAddress());
-            }
+            setRoadAddressIfNotSet(rs);
 
             updateCameraPresetAtributes(kamera, esiasento, lotjuIdToRoadWeatherStationMap, cp);
 

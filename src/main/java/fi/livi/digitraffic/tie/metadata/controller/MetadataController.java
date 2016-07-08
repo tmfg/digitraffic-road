@@ -63,9 +63,9 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LAM_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Lam Station Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public LamStationFeatureCollection listNonObsoleteLamStations() {
+    public LamStationFeatureCollection listLamStations() {
         log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_PATH);
-        return lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
+        return lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
     }
 
     @ApiOperation("The static information of weather camera presets")

@@ -25,14 +25,14 @@ public class CameraDataServiceImpl implements CameraDataService {
 
     @Transactional(readOnly = true)
     @Override
-    public CameraRootDataObjectDto findAllNonObsoleteCameraStationsData(boolean onlyUpdateInfo) {
+    public CameraRootDataObjectDto findPublicCameraStationsData(boolean onlyUpdateInfo) {
 
         LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
         } else {
             return cameraPreset2CameraDataConverter.convert(
-                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalseOrderByPresetId(),
+                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(),
                     updated);
         }
     }

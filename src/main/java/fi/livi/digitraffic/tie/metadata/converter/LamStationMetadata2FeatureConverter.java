@@ -22,12 +22,23 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         final LamStationFeatureCollection collection = new LamStationFeatureCollection();
 
         for(final LamStation lam : stations) {
-            collection.add(convert(lam));
+            try {
+                collection.add(convert(lam));
+            } catch (NonPublicRoadStationException nprse) {
+                //Skip non public roadstation
+                log.warn("Skipping: " + nprse.getMessage());
+            }
         }
         return collection;
     }
 
-    private static LamStationFeature convert(final LamStation lam) {
+    /**
+     *
+     * @param lam
+     * @return
+     * @throws NonPublicRoadStationException If road station is non public exception is thrown
+     */
+    private static LamStationFeature convert(final LamStation lam) throws NonPublicRoadStationException {
         final LamStationFeature f = new LamStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + lam);

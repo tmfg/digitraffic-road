@@ -12,16 +12,25 @@ public enum CalculatorDeviceType {
     @XmlEnumValue("DSL_4G")
     DSL_4_G("DSL_4G"),
     DSL_5("DSL_5"),
-    MUU("MUU");
+    OTHER("OTHER");
+
     private final String value;
 
     CalculatorDeviceType(String v) {
         value = v;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public static CalculatorDeviceType convertFromLaiteTyyppi(LaiteTyyppi laskinlaite) {
         if (laskinlaite != null) {
-            return valueOf(laskinlaite.value());
+            for (CalculatorDeviceType calculatorDeviceType : values()) {
+                if (calculatorDeviceType.getValue().equals(laskinlaite.value())) {
+                    return calculatorDeviceType;
+                }
+            }
         }
         return null;
     }

@@ -25,7 +25,7 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
 
     @Transactional(readOnly = true)
     @Override
-    public FreeFlowSpeedRootDataObjectDto listAllFreeFlowSpeeds(boolean onlyUpdateInfo) {
+    public FreeFlowSpeedRootDataObjectDto listPublicFreeFlowSpeeds(boolean onlyUpdateInfo) {
 
         // TODO: where to read update info?
         LocalDateTime updated = LocalDateTime.now();
@@ -34,7 +34,7 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
         } else {
             return new FreeFlowSpeedRootDataObjectDto(
                     linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
-                    lamFreeFlowSpeedRepository.listAllLamFreeFlowSpeeds(),
+                    lamFreeFlowSpeedRepository.listAllPublicLamFreeFlowSpeeds(),
                     updated);
         }
     }

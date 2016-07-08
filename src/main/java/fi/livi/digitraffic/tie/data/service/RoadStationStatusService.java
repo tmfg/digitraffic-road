@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
+import fi.livi.digitraffic.tie.data.dto.RoadStationStatusesDataObjectDto;
 
 public interface RoadStationStatusService {
-    RoadStationStatusesData findAllRoadStationStatuses(boolean onlyUpdateInfo);
+    RoadStationStatusesDataObjectDto findPublicRoadStationStatuses(boolean onlyUpdateInfo);
 }

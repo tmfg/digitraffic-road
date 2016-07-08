@@ -35,6 +35,7 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
             to.setObsolete(false);
             to.setObsoleteDate(null);
         }
+        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.CAMERA);
         to.setName(from.getNimi());

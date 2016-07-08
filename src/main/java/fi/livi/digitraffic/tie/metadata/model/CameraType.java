@@ -9,7 +9,9 @@ public enum CameraType {
     VMX_MPH,
     D_LINK,
     ZAVIO,
-    ENEO;
+    ENEO,
+    BOSCH,
+    SONY;
 
     public static CameraType convertFromKameraTyyppi(final KameraTyyppi kameraTyyppi) {
         if (kameraTyyppi != null) {
