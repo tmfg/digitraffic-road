@@ -20,7 +20,7 @@ public interface RoadWeatherStationService {
 
     RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor);
 
-    RoadWeatherStationFeatureCollection findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+    RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
 
     List<SensorValue> findAllSensorValues();
 }

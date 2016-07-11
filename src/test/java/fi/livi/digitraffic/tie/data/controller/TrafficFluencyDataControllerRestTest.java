@@ -25,7 +25,7 @@ public class TrafficFluencyDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0]", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.latestMedians[0].averageSpeed", Matchers.isA(Double.class)))
+                .andExpect(jsonPath("$.latestMedians[0].medianSpeed", Matchers.isA(Double.class)))
                 .andExpect(jsonPath("$.latestMedians[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.latestMedians[0].measuredLocalTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.latestMedians[0].measuredUtc", Matchers.isA(String.class)))

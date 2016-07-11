@@ -2,8 +2,11 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,7 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +26,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationStateConverter;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 
 @Entity
@@ -42,9 +46,15 @@ public class RoadStation {
     @Convert(converter = RoadStationTypeConverter.class)
     private RoadStationType type;
 
+    @Convert(converter = RoadStationStateConverter.class)
+    private RoadStationState state;
+
     private boolean obsolete;
 
     private LocalDate obsoleteDate;
+
+    @Column(name="IS_PUBLIC")
+    private boolean isPublic;
 
     private String nameFi, nameSv, nameEn;
 
@@ -63,9 +73,12 @@ public class RoadStation {
 
     private String provinceCode;
 
-    private String description;
-
-    private String additionalInformation;
+    private String location;
+    private LocalDateTime startDate;
+    private String country;
+    private String liviId;
+    private LocalDateTime repairMaintenanceDate;
+    private LocalDateTime annualMaintenanceDate;
 
     protected RoadStation() {
     }
@@ -74,8 +87,9 @@ public class RoadStation {
         this.type = type;
     }
 
-    @ManyToOne
-    @JoinColumn(name="ROAD_ADDRESS_ID")
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
     @Fetch(FetchMode.JOIN)
     private RoadAddress roadAddress;
 
@@ -119,6 +133,14 @@ public class RoadStation {
             throw new IllegalArgumentException("RoadStationType can not be changed once set. (" + this.type + " -> " + type + " )");
         }
         this.type = type;
+    }
+
+    public void setPublic(boolean aPublic) {
+        this.isPublic = aPublic;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     public boolean isObsolete() {
@@ -245,28 +267,76 @@ public class RoadStation {
         this.provinceCode = provinceCode;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public void setAdditionalInformation(String additionalInformation) {
-        this.additionalInformation = additionalInformation;
-    }
-
-    public String getAdditionalInformation() {
-        return additionalInformation;
-    }
-
     public List<RoadStationSensor> getRoadStationSensors() {
         return roadStationSensors;
     }
 
     public void setRoadStationSensors(List<RoadStationSensor> roadStationSensors) {
         this.roadStationSensors = roadStationSensors;
+    }
+
+    public void setRepairMaintenanceDate(LocalDateTime repairMaintenanceDate) {
+        this.repairMaintenanceDate = repairMaintenanceDate;
+    }
+
+    public LocalDateTime getRepairMaintenanceDate() {
+        return repairMaintenanceDate;
+    }
+
+    public void setAnnualMaintenanceDate(LocalDateTime annualMaintenanceDate) {
+        this.annualMaintenanceDate = annualMaintenanceDate;
+    }
+
+    public LocalDateTime getAnnualMaintenanceDate() {
+        return annualMaintenanceDate;
+    }
+
+    public RoadAddress getRoadAddress() {
+        return roadAddress;
+    }
+
+    public void setRoadAddress(RoadAddress roadAddress) {
+        this.roadAddress = roadAddress;
+    }
+
+    public RoadStationState getState() {
+        return state;
+    }
+
+    public void setState(RoadStationState state) {
+        this.state = state;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setLiviId(String liviId) {
+        this.liviId = liviId;
+    }
+
+    public String getLiviId() {
+        return liviId;
     }
 
     @Override
@@ -277,13 +347,5 @@ public class RoadStation {
                 .appendField("name", getName())
                 .appendField("type", getType())
                 .toString();
-    }
-
-    public RoadAddress getRoadAddress() {
-        return roadAddress;
-    }
-
-    public void setRoadAddress(RoadAddress roadAddress) {
-        this.roadAddress = roadAddress;
     }
 }

@@ -36,31 +36,35 @@ public class LamStationUpdateJobTest extends MetadataTest {
 
         lamMetatiedotLotjuServiceMock.initDataAndService();
 
-        // Update lamstations to initial state (2 non obsolete stations and 2 obsolete)
+        // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
         lamStationUpdater.updateLamStations();
         LamStationFeatureCollection allInitial =
-                lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
-        assertEquals(2, allInitial.getFeatures().size());
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+        assertEquals(3, allInitial.getFeatures().size());
 
-        // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
+        // Now change lotju metadata and update lam stations (2 non obsolete stations and 2 obsolete)
         lamMetatiedotLotjuServiceMock.setStateAfterChange(true);
         lamStationUpdater.updateLamStations();
         LamStationFeatureCollection allAfterChange =
-                lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
-        assertEquals(3, allAfterChange.getFeatures().size());
-
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+        assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));
         assertNull(findWithLotjuId(allInitial, 2));
         assertNotNull(findWithLotjuId(allInitial, 310));
-        assertNull(findWithLotjuId(allInitial, 581));
+        assertNotNull(findWithLotjuId(allInitial, 581));
 
         assertNotNull(findWithLotjuId(allAfterChange, 1));
         assertNull(findWithLotjuId(allAfterChange, 2));
         assertNotNull(findWithLotjuId(allAfterChange, 310));
-        assertNotNull(findWithLotjuId(allAfterChange, 581));
+        assertNull(findWithLotjuId(allAfterChange, 581));
 
-        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 581).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allInitial, 1).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allInitial, 310).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.REMOVED_TEMPORARILY, findWithLotjuId(allInitial, 581).getProperties().getCollectionStatus());
+
+        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 1).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 310).getProperties().getCollectionStatus());
 
         /*
         <id>310</id>
@@ -91,9 +95,6 @@ public class LamStationUpdateJobTest extends MetadataTest {
         */
         LamStationFeature before = findWithLotjuId(allInitial, 310);
         LamStationFeature after = findWithLotjuId(allAfterChange, 310);
-
-        assertEquals("Liikennemittausasema", before.getProperties().getDescription());
-        assertEquals("Liikennemittausasema 1", after.getProperties().getDescription());
 
         assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
         assertEquals("L_vt5_Idensalmi", after.getProperties().getName());

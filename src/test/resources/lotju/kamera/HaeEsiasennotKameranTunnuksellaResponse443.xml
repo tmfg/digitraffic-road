@@ -1,4 +1,4 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
     <ns2:esiasennot>
         <jarjestys>1</jarjestys>
         <julkinen>true</julkinen>
@@ -13,7 +13,7 @@
     </ns2:esiasennot>
     <ns2:esiasennot>
         <jarjestys>2</jarjestys>
-        <julkinen>true</julkinen>
+        <julkinen>false</julkinen>
         <kameraId>443</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>

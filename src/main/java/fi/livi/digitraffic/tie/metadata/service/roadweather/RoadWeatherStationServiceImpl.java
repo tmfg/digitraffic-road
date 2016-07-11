@@ -89,7 +89,8 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
 
     @Transactional(readOnly = true)
     @Override
-    public RoadWeatherStationFeatureCollection findAllNonObsoleteRoadWeatherStationAsFeatureCollection() {
-        return RoadWeatherStationMetadata2FeatureConverter.convert(roadWeatherStationRepository.findByRoadStationObsoleteFalseOrderByRoadStation_NaturalId());
+    public RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection() {
+        return RoadWeatherStationMetadata2FeatureConverter.convert(
+                roadWeatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId());
     }
 }

@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,12 +30,15 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 public class MetadataController {
+    private static final Logger log = Logger.getLogger(MetadataController.class);
 
     public static final String LAM_STATIONS_PATH = "/lam-stations";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String ROAD_WEATHER_STATIONS_PATH = "/road-weather-stations";
     public static final String ROAD_STATION_SENSORS_PATH = "/road-station-sensors";
     public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
+
+    private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 
     private final CameraPresetService cameraPresetService;
     private LamStationService lamStationService;
@@ -59,8 +63,9 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LAM_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Lam Station Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public LamStationFeatureCollection listNonObsoleteLamStations() {
-        return lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
+    public LamStationFeatureCollection listLamStations() {
+        log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_PATH);
+        return lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
     }
 
     @ApiOperation("The static information of weather camera presets")
@@ -68,6 +73,7 @@ public class MetadataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public CameraStationFeatureCollection listNonObsoleteCameraPresets() {
+        log.info(REQUEST_LOG_PREFIX + CAMERA_STATIONS_PATH);
         return cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
     }
 
@@ -76,7 +82,8 @@ public class MetadataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Weather Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadWeatherStationFeatureCollection listNonObsoleteRoadWeatherStations() {
-        return roadWeatherStationService.findAllNonObsoleteRoadWeatherStationAsFeatureCollection();
+        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_STATIONS_PATH);
+        return roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
     }
 
     @ApiOperation("The static information of available sensors of road weather stations")
@@ -84,6 +91,7 @@ public class MetadataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Sensors"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationsSensorsMetadata listNonObsoleteRoadStationSensors() {
+        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata();
     }
 
@@ -92,6 +100,7 @@ public class MetadataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public ForecastSectionsMetadata listForecastSections() {
+        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
         return forecastSectionService.findForecastSectionsMetadata();
     }
 }

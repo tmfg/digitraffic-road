@@ -7,10 +7,10 @@ import javax.xml.bind.JAXBElement;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.HaeKaikkiLAMAsemat;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.HaeKaikkiLAMAsematResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMAsemat;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
 
 public class LotjuLamStationClient extends WebServiceGatewaySupport {
 

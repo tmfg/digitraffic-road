@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraTyyppi;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraTyyppi;
 
 public enum CameraType {
 
@@ -9,7 +9,9 @@ public enum CameraType {
     VMX_MPH,
     D_LINK,
     ZAVIO,
-    ENEO;
+    ENEO,
+    BOSCH,
+    SONY;
 
     public static CameraType convertFromKameraTyyppi(final KameraTyyppi kameraTyyppi) {
         if (kameraTyyppi != null) {

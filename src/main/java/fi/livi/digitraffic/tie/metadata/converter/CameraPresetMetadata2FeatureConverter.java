@@ -45,9 +45,15 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             // So we take camera only once
             CameraStationFeature cameraStationFeature = cameraStationMap.get(cp.getCameraId());
             if (cameraStationFeature == null) {
-                cameraStationFeature = convert(cp);
-                cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
-                collection.add(cameraStationFeature);
+                try {
+                    cameraStationFeature = convert(cp);
+                    cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
+                    collection.add(cameraStationFeature);
+                } catch (NonPublicRoadStationException nprse) {
+                    //Skip non public roadstation
+                    log.warn("Skipping: " + nprse.getMessage());
+                    continue;
+                }
             }
             cameraStationFeature.getProperties().addPreset(convertPreset(cp));
         }
@@ -59,12 +65,9 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
-        dto.setDescription(cp.getDescription());
         dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));
         dto.setNameOnDevice(CameraPresetHelper.fixName(cp.getPresetName2()));
         dto.setPresetOrder(cp.getPresetOrder());
-        dto.setPublic(cp.isPublicInternal() && cp.isPublicExternal());
-        dto.setCompression(cp.getCompression());
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());
         dto.setLotjuId(cp.getLotjuId());
@@ -75,8 +78,13 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         return dto;
     }
 
-    private static CameraStationFeature convert(final CameraPreset cp) {
-        try {
+    /**
+     *
+     * @param cp
+     * @return
+     * @throws NonPublicRoadStationException If road station is non public exception is thrown
+     */
+    private static CameraStationFeature convert(final CameraPreset cp) throws NonPublicRoadStationException {
             final CameraStationFeature f = new CameraStationFeature();
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
@@ -91,8 +99,6 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             properties.setLotjuId(cp.getCameraLotjuId());
             properties.setCameraId(cp.getCameraId());
             properties.setCameraType(cp.getCameraType());
-            properties.setDescription(cp.getCameraDescription());
-            properties.setDefaultDirection(cp.getDefaultDirection());
             properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
 
             // RoadStation properties
@@ -112,9 +118,5 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             }
 
             return f;
-        } catch (RuntimeException e) {
-            log.error("Cold not convert " + cp + " to " + CameraStationFeature.class.getSimpleName());
-            return null;
-        }
     }
 }

@@ -1,11 +1,15 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import org.apache.log4j.Logger;
+
 import fi.livi.digitraffic.tie.metadata.geojson.Crs;
 import fi.livi.digitraffic.tie.metadata.geojson.CrsType;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {
+
+    private static final Logger log = Logger.getLogger(AbstractMetadataToFeatureConverter.class);
 
     protected static final Crs crs;
 
@@ -32,12 +36,20 @@ public class AbstractMetadataToFeatureConverter {
         crs.getProperties().setName("urn:ogc:def:crs:EPSG::3067");
     }
 
-    protected static void setRoadStationProperties(final RoadStationProperties properties, final RoadStation roadStation) {
+    /**
+     *
+     * @param properties
+     * @param roadStation
+     * @throws NonPublicRoadStationException If road station is non public exception is thrown
+     */
+    protected static void setRoadStationProperties(final RoadStationProperties properties, final RoadStation roadStation)
+            throws NonPublicRoadStationException {
+        if (!roadStation.isPublic()) {
+            throw new NonPublicRoadStationException("Non public RoadStation fetched for api: " + roadStation);
+        }
         properties.setNaturalId(roadStation.getNaturalId());
         properties.setCollectionInterval(roadStation.getCollectionInterval());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
-        properties.setDescription(roadStation.getDescription());
-        properties.setAdditionalInformation(roadStation.getAdditionalInformation());
         properties.setMunicipality(roadStation.getMunicipality());
         properties.setMunicipalityCode(roadStation.getMunicipalityCode());
 
@@ -50,6 +62,14 @@ public class AbstractMetadataToFeatureConverter {
         properties.addName("en", roadStation.getNameEn());
 
         properties.setRoadAddress(roadStation.getRoadAddress());
+
+        properties.setLiviId(roadStation.getLiviId());
+        properties.setCountry(roadStation.getCountry());
+        properties.setStartDate(roadStation.getStartDate());
+        properties.setRepairMaintenanceDate(roadStation.getRepairMaintenanceDate());
+        properties.setAnnualMaintenanceDate(roadStation.getAnnualMaintenanceDate());
+        properties.setLocation(roadStation.getLocation());
+        properties.setState(roadStation.getState());
     }
 
 

@@ -31,7 +31,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
             "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
             "                                            and svd.sensor_value = sv.value\n" +
-            "where rs.type = :sensorTypeId\n" +
+            "where rs.type = :stationTypeId\n" +
             "  and rs.obsolete = 0\n" +
             "  and s.obsolete = 0\n" +
             "  and sv.measured > (\n" +
@@ -44,8 +44,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
            nativeQuery = true)
     // sensor typeid 2 = rws
     List<RoadStationSensorValueDto> findAllNonObsoleteRoadStationSensorValues(
-            @Param("sensorTypeId")
-            final int sensorTypeId,
+            @Param("stationTypeId")
+            final int stationTypeId,
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes,
             @Param("includedSensorNaturalIds")
@@ -56,7 +56,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
            "from road_station rs\n" +
            "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
            "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
-           "where rs.type = :sensorTypeId\n" +
+           "where rs.type = :stationTypeId\n" +
            "  and rs.obsolete = 0\n" +
            "  and s.obsolete = 0\n" +
            "  and sv.measured > (\n" +
@@ -67,7 +67,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<RoadS
            "  and s.natural_id in ( :includedSensorNaturalIds )",
            nativeQuery = true)
     LocalDateTime getLatestMeasurementTime(
-            @Param("sensorTypeId")
+            @Param("stationTypeId")
             final int sensorTypeId,
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes,

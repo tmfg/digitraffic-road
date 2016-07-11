@@ -25,13 +25,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
-@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "calculationFormula", "nameOld", "sensorValueDescriptions"})
+@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
-public class RoadStationSensor implements Comparable<RoadStationSensor> {
+public class RoadStationSensor {
 
     /** These id:s are for station status sensors */
-    public static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
+    protected static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
             new HashSet<Long>(Arrays.asList(60000L, 60002L));
 
     @JsonIgnore
@@ -71,9 +71,6 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     @ApiModelProperty(value = "Sensor accuracy")
     private Integer accuracy;
-
-    @ApiModelProperty(value = "Calculation fomula of sensor value")
-    private String calculationFormula;
 
     @ApiModelProperty("Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
@@ -176,14 +173,6 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
         this.accuracy = accuracy;
     }
 
-    public String getCalculationFormula() {
-        return calculationFormula;
-    }
-
-    public void setCalculationFormula(String calculationFormula) {
-        this.calculationFormula = calculationFormula;
-    }
-
     @JsonIgnore
     public boolean isStatusSensor() {
         return STATUS_SENSORS_NATURAL_IDS_SET.contains(naturalId);
@@ -198,11 +187,6 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
                 .appendField("nameFi", getNameFi())
                 .appendField("unit", getUnit())
                 .toString();
-    }
-
-    @Override
-    public int compareTo(RoadStationSensor o) {
-        return Long.compare(this.getNaturalId(), o.getNaturalId());
     }
 
     public List<SensorValueDescription> getSensorValueDescriptions() {

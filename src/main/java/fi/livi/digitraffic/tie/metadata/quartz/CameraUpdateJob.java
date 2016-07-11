@@ -20,6 +20,7 @@ public class CameraUpdateJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) {
         log.info("Quartz CameraUpdateJob start");
         long start = System.currentTimeMillis();
+        cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
         long time = (System.currentTimeMillis() - start) / 1000;
 

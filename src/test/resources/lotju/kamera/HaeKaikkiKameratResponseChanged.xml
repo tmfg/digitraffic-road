@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2014/03/06">
+<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
     <ns2:kamerat>
         <kuvaus>ADSL</kuvaus>
         <nimi>vt27_Runni</nimi>
@@ -63,7 +63,7 @@
         </tieosoite>
         <tieosoiteId>411</tieosoiteId>
         <keruuVali>720</keruuVali>
-        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
         <kunta>Porvoo</kunta>
         <kuntaKoodi>638</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
@@ -75,5 +75,32 @@
         <lahinTiesaaAsemaId>19</lahinTiesaaAsemaId>
         <tyyppi>VMX_MPH</tyyppi>
         <id>2</id>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <kuvaus>Vuolin liikennekamera</kuvaus>
+        <nimi>VUO_NIIN</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6677406</latitudi>
+        <longitudi>398110</longitudi>
+        <tieosoite>
+            <ajorata>0</ajorata>
+            <etaisyysTieosanAlusta>1</etaisyysTieosanAlusta>
+            <tienumero>99999</tienumero>
+            <tieosa>2</tieosa>
+        </tieosoite>
+        <tieosoiteId>216</tieosoiteId>
+        <keruuVali>720</keruuVali>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <kunta>Helsinki</kunta>
+        <kuntaKoodi>91</kuntaKoodi>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 103 Vuosaari harbor tunne</nimiEn>
+        <nimiFi>Tie 103 Vuosaaren satama,</nimiFi>
+        <nimiSe>Väg 103 Nordsjö hamn, tunnel</nimiSe>
+        <vanhaId>1556</vanhaId>
+        <lahinTiesaaAsemaId>73</lahinTiesaaAsemaId>
+        <tyyppi>VMX_MPC</tyyppi>
+        <id>56</id>
     </ns2:kamerat>
 </ns2:HaeKaikkiKameratResponse>

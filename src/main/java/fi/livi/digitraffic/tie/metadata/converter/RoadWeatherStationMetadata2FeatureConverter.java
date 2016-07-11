@@ -22,12 +22,24 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         final RoadWeatherStationFeatureCollection collection = new RoadWeatherStationFeatureCollection();
 
         for(final RoadWeatherStation rws : stations) {
-            collection.add(convert(rws));
+            try {
+                collection.add(convert(rws));
+            } catch (NonPublicRoadStationException nprse) {
+                //Skip non public roadstation
+                log.warn("Skipping: " + nprse.getMessage());
+                continue;
+            }
         }
         return collection;
     }
 
-    private static RoadWeatherStationFeature convert(final RoadWeatherStation rws) {
+    /**
+     *
+     * @param rws
+     * @return
+     * @throws NonPublicRoadStationException If road station is non public exception is thrown
+     */
+    private static RoadWeatherStationFeature convert(final RoadWeatherStation rws) throws NonPublicRoadStationException {
         final RoadWeatherStationFeature f = new RoadWeatherStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + rws);
@@ -40,6 +52,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         properties.setId(rws.getRoadStationNaturalId());
         properties.setLotjuId(rws.getLotjuId());
         properties.setRoadWeatherStationType(rws.getRoadWeatherStationType());
+        properties.setMaster(rws.isMaster());
 
         if (rws.getRoadStation() != null) {
             for (fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
@@ -50,8 +63,6 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         // RoadStation properties
         final RoadStation rs = rws.getRoadStation();
         setRoadStationProperties(properties, rs);
-
-
 
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             if (rs.getAltitude() != null) {

@@ -55,6 +55,7 @@ public class CameraPresetServiceImpl implements CameraPresetService {
     @Transactional(readOnly = true)
     @Override
     public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection() {
-        return cameraPresetMetadata2FeatureConverter.convert(cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteFalseOrderByPresetId());
+        return cameraPresetMetadata2FeatureConverter.convert(
+                cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId());
     }
 }

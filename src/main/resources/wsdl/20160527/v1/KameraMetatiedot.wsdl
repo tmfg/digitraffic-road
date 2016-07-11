@@ -90,13 +90,6 @@
   </xs:complexType>
   <xs:complexType name="videopalvelinVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractVideopalvelinVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractVideopalvelinVO">
-    <xs:complexContent>
       <xs:extension base="tns:laiteVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="adminKayttajatunnus" type="xs:string"/>
@@ -194,7 +187,6 @@
           <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
           <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
           <xs:element minOccurs="0" name="tieosoite" type="ns1:tieosoiteVO"/>
-          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -250,13 +242,6 @@
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="kameraKokoonpanoVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractKameraKokoonpanoVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractKameraKokoonpanoVO">
     <xs:complexContent>
       <xs:extension base="tns:abstractVO">
         <xs:sequence>

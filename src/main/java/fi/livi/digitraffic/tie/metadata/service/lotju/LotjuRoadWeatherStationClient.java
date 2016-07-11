@@ -10,15 +10,15 @@ import javax.xml.bind.JAXBElement;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturit;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiTiesaaAsemat;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.ObjectFactory;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiTiesaaAsemat;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeTiesaaAsemanLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
 
 public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
@@ -44,7 +44,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
 
-        log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " tiesaaAsemas");
+        log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " TiesaaAsemas");
 
         final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRwsLotjuIdToTiesaaAnturiMap =
                 new HashMap<>();

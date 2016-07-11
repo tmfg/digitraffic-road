@@ -13,16 +13,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.EsiasentoVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.HaeKaikkiKameratResponse;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraKokoonpanoVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotEndpoint;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotException;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraPerustiedotV1;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.ObjectFactory;
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.VideopalvelinVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraKokoonpanoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotException;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotV2;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.VideopalvelinVO;
 
 @Service
 public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implements KameraPerustiedotEndpoint {
@@ -39,7 +39,7 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
     public KameraPerustiedotLotjuServiceMock(@Value("${metadata.server.address.camera}")
                                              final String metadataServerAddressCamera,
                                              final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV1.SERVICE);
+        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV2.SERVICE);
     }
 
     @Override
@@ -78,7 +78,6 @@ public class KameraPerustiedotLotjuServiceMock extends LotjuServiceMock implemen
 
             Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
-            Assert.assertNull(k.getAlkamisPaiva());
             Assert.assertNull(k.getAsemanTila());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());

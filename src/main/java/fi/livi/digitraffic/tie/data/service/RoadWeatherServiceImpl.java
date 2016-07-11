@@ -26,10 +26,9 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
         this.roadStationSensorService = roadStationSensorService;
     }
 
-    // TODO onlyUpdateInfo: do direct query to get update info
     @Transactional(readOnly = true)
     @Override
-    public RoadWeatherRootDataObjectDto findAllRoadWeatherData(boolean onlyUpdateInfo) {
+    public RoadWeatherRootDataObjectDto findPublicRoadWeatherData(boolean onlyUpdateInfo) {
 
         LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime();
 
@@ -37,7 +36,7 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
             return new RoadWeatherRootDataObjectDto(updated);
         } else {
 
-            Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoleteRoadWeatherStationSensorValues();
+            Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoletePublicRoadWeatherStationSensorValues();
             List<RoadWeatherStationDto> stations = new ArrayList<>();
             for (Map.Entry<Long, List<RoadStationSensorValueDto>> entry : values.entrySet()) {
                 RoadWeatherStationDto dto = new RoadWeatherStationDto();

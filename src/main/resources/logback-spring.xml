@@ -12,7 +12,7 @@
         <!-- Support multiple-JVM writing to the same log file -->
         <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>metadata.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>

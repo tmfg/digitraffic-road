@@ -16,7 +16,7 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
             "SELECT M.ID\n"
           + "     , M.END_TIMESTAMP AS MEASURED\n"
           + "     , M.MEDIAN_TRAVEL_TIME AS MEDIAN_JOURNEY_TIME\n"
-          + "     , M.AVERAGE_SPEED\n"
+          + "     , M.AVERAGE_SPEED AS MEDIAN_SPEED\n"
           + "     , M.RATIO_TO_FREE_FLOW_SPEED\n"
           + "     , M.NOBS\n"
           + "     , L.NATURAL_ID AS LINK_NATURAL_ID\n"

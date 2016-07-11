@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2014/03/06">
+<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29">
     <ns2:tiesaaAsema>
         <kuvaus>GPRS</kuvaus>
         <nimi>OLD_vt1_Leppäkorpi_R</nimi>
@@ -64,7 +64,7 @@
         </tieosoite>
         <tieosoiteId>261</tieosoiteId>
         <keruuVali>300</keruuVali>
-        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>

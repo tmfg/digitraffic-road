@@ -4,12 +4,14 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.data.dto.RoadStationStatusesDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
@@ -23,7 +25,6 @@ import fi.livi.digitraffic.tie.data.service.LamDataService;
 import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
 import fi.livi.digitraffic.tie.data.service.RoadWeatherService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationStatusesData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -50,6 +51,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class DataController {
+    private static final Logger log = Logger.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
@@ -60,6 +62,8 @@ public class DataController {
     public static final String ROAD_WEATHER_PATH = "/road-weather";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
+
+    private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
 
     private TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
@@ -94,6 +98,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
@@ -105,6 +110,7 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
@@ -116,7 +122,8 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        return lamDataService.listAllLamDataFromNonObsoleteStations(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH);
+        return lamDataService.listPublicLamData(lastUpdated);
     }
 
     @ApiOperation(value = "Current free flow speeds")
@@ -127,7 +134,8 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        return freeFlowSpeedService.listAllFreeFlowSpeeds(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH);
+        return freeFlowSpeedService.listPublicFreeFlowSpeeds(lastUpdated);
     }
 
     @ApiOperation(value = "Current camera station data")
@@ -138,7 +146,8 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        return cameraDataService.findAllNonObsoleteCameraStationsData(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH);
+        return cameraDataService.findPublicCameraStationsData(lastUpdated);
     }
 
     @ApiOperation(value = "Current road weather station data")
@@ -149,17 +158,19 @@ public class DataController {
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        return roadWeatherService.findAllRoadWeatherData(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH);
+        return roadWeatherService.findPublicRoadWeatherData(lastUpdated);
     }
 
     @ApiOperation(value = "Status of road stations")
     @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_STATUSES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationStatusesData listNonObsoleteRoadStationSensors(
+    public RoadStationStatusesDataObjectDto listNonObsoleteRoadStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        return roadStationStatusService.findAllRoadStationStatuses(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH);
+        return roadStationStatusService.findPublicRoadStationStatuses(lastUpdated);
     }
 }

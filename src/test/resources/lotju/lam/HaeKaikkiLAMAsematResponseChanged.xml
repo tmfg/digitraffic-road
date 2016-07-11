@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06">
+<ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29">
     <ns2:asemat>
         <kuvaus>Liikennemittausasema - Porvoo</kuvaus>
         <nimi>L_vt7_Rita</nimi>
@@ -87,7 +87,7 @@
         </tieosoite>
         <tieosoiteId>581</tieosoiteId>
         <keruuVali>300</keruuVali>
-        <keruunTila>KERUUSSA</keruunTila>
+        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
@@ -15,5 +16,12 @@ public interface RoadWeatherStationRepository extends JpaRepository<RoadWeatherS
     @Override
     List<RoadWeatherStation> findAll();
 
-    List<RoadWeatherStation> findByRoadStationObsoleteFalseOrderByRoadStation_NaturalId();
+    List<RoadWeatherStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId();
+
+    @Query(value =
+            "SELECT rws.roadStation.naturalId\n" +
+            "FROM RoadWeatherStation rws\n" +
+            "WHERE rws.roadStation.isPublic = 1\n" +
+            "  AND rws.roadStation.obsolete = 0")
+    List<Long> findNonObsoleteAndPublicRoadStationNaturalIds();
 }

@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaTyyppi;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaTyyppi;
 
 public enum LamStationType {
 
     DSL("DSL"),
-    E_18("E18");
+    E_18("E18"),
+    FINAVIA("FINAVIA");
     private final String value;
 
     LamStationType(final String v) {
@@ -16,7 +17,7 @@ public enum LamStationType {
         return value;
     }
 
-    public static LamStationType convertFromKameraTyyppi(final LamAsemaTyyppi lamAsemaTyyppi) {
+    public static LamStationType convertFromLamasemaTyyppi(final LamAsemaTyyppi lamAsemaTyyppi) {
         if (lamAsemaTyyppi != null) {
             return valueOf(lamAsemaTyyppi.name());
         }

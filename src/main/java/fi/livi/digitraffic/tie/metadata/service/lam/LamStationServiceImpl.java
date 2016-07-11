@@ -24,8 +24,8 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public LamStationFeatureCollection findAllNonObsoleteLamStationsAsFeatureCollection() {
-        return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalse());
+    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection() {
+        return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue());
     }
 
     @Transactional

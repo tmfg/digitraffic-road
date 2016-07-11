@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.kamera.KameraVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.lam.LamAsemaVO;
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
 
 /**
  * Provides helpper functions to stringify objects for logging
@@ -39,7 +39,7 @@ public class ToStringHelpper {
     public static String toString(final LamAsemaVO la) {
         final StringBuffer sb = createStartSb(la);
         JSON_STYLE.append(sb, LOTJU_ID, la.getId());
-        JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, la.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, la.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
@@ -49,7 +49,7 @@ public class ToStringHelpper {
     public static String toString(final KameraVO kamera) {
         final StringBuffer sb = createStartSb(kamera);
         JSON_STYLE.append(sb, LOTJU_ID, kamera.getId());
-        JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, kamera.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
@@ -59,7 +59,7 @@ public class ToStringHelpper {
     public static String toString(final TiesaaAsemaVO tsa) {
         final StringBuffer sb = createStartSb(tsa);
         JSON_STYLE.append(sb, LOTJU_ID, tsa.getId());
-        JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId());
+        JSON_STYLE.append(sb, VANHA_ID, tsa.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, tsa.getNimi(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");

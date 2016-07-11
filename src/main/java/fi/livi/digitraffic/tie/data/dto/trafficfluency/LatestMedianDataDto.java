@@ -29,9 +29,9 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
     @JsonIgnore
     private int id;
 
-    @ApiModelProperty(value = "Average speed, calculated based on the median journey time [km/h]", required = true)
+    @ApiModelProperty(value = "Median speed, calculated based on the median journey time [km/h]", required = true)
     @NotNull
-    private BigDecimal averageSpeed;
+    private BigDecimal medianSpeed;
 
     @ApiModelProperty(value = "Median of journey times for this link, based on 5 minutes [s]", required = true)
     private Long medianJourneyTime;
@@ -54,12 +54,12 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
     @JsonIgnore
     private LocalDateTime measured;
 
-    public BigDecimal getAverageSpeed() {
-        return averageSpeed;
+    public BigDecimal getMedianSpeed() {
+        return medianSpeed;
     }
 
-    public void setAverageSpeed(BigDecimal averageSpeed) {
-        this.averageSpeed = averageSpeed;
+    public void setMedianSpeed(BigDecimal medianSpeed) {
+        this.medianSpeed = medianSpeed;
     }
 
     public Long getMedianJourneyTime() {
@@ -105,7 +105,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ", avg speed=" + averageSpeed
+        return this.getClass().getSimpleName() + ", median speed=" + medianSpeed
                 + ", end time=" + getMeasuredLocalTime() + ", median tt="
                 + medianJourneyTime + ", nobs=" + nobs + ", ratio="
                 + ratioToFreeFlowSpeed + ", link=" + linkNaturalId;

@@ -16,7 +16,7 @@ public class LamStationServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllNonObsoleteLamStationsAsFeatureCollection() {
-        final LamStationFeatureCollection stations = lamStationService.findAllNonObsoleteLamStationsAsFeatureCollection();
+        final LamStationFeatureCollection stations = lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 

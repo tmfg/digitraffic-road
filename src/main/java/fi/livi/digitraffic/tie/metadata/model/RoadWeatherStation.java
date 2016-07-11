@@ -33,6 +33,8 @@ public class RoadWeatherStation {
     @Convert(converter = RoadWeatherStationTypeConverter.class)
     private RoadWeatherStationType roadWeatherStationType;
 
+    private boolean master;
+
     @OneToOne
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
@@ -72,6 +74,14 @@ public class RoadWeatherStation {
 
     public void setRoadWeatherStationType(final RoadWeatherStationType roadWeatherStationType) {
         this.roadWeatherStationType = roadWeatherStationType;
+    }
+
+    public boolean isMaster() {
+        return master;
+    }
+
+    public void setMaster(boolean master) {
+        this.master = master;
     }
 
     @Override

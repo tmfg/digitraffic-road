@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.isIn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +34,7 @@ public class RoadWeatherStationMetadataControllerRestTest extends MetadataRestTe
 //                .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", is("ROSA")))
                 .andExpect(jsonPath("$.features[0].properties.roadWeatherStationType", isA(String.class)))
 //                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))

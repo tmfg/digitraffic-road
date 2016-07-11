@@ -44,13 +44,6 @@
   </xs:complexType>
   <xs:complexType name="arvoVastaavuusVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractArvoVastaavuusVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractArvoVastaavuusVO">
-    <xs:complexContent>
       <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="b" type="xs:int"/>
@@ -85,13 +78,6 @@
   </xs:complexType>
   <xs:complexType name="anturiSanomaVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractAnturiSanomaVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractAnturiSanomaVO">
-    <xs:complexContent>
       <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="max" type="xs:int"/>
@@ -123,13 +109,6 @@
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="tiesaaAsemaVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractTiesaaAsemaVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:complexType abstract="true" name="abstractTiesaaAsemaVO">
     <xs:complexContent>
       <xs:extension base="ns1:havaintoAsemaVO">
         <xs:sequence>
@@ -168,7 +147,6 @@
           <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
           <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
           <xs:element minOccurs="0" name="tieosoite" type="ns1:tieosoiteVO"/>
-          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

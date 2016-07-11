@@ -98,19 +98,6 @@ public class RoadStationServiceImpl implements RoadStationService {
         return roadStationRepository.findOrphanLamStationRoadStations();
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Map<Long, RoadAddress> findAllRoadAddressesMappedByLotjuId() {
-        List<RoadAddress> all = roadAddressRepository.findAll();
-        Map<Long, RoadAddress> map = new HashMap<>();
-        for (RoadAddress roadAddress : all) {
-            map.put(roadAddress.getLotjuId(), roadAddress);
-        }
-        return map;
-    }
-
-
-
     @Transactional
     @Override
     public RoadAddress save(final RoadAddress roadAddress) {

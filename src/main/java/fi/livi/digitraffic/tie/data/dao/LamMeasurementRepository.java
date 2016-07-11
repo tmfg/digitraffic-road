@@ -22,10 +22,13 @@ public interface LamMeasurementRepository extends JpaRepository<LamMeasurementDt
             "     , LSD.AVERAGE_SPEED_1 AS AVERAGE_SPEED1\n" +
             "     , LSD.AVERAGE_SPEED_2 AS AVERAGE_SPEED2\n" +
             "     , LSD.MEASURED\n" +
-            "     , max(LSD.MEASURED) over (partition by null) STATION_LATEST_MEASURED\n" +
+            // over (partition by null) or over() give a calculation on a row basis.
+            "     , max(LSD.MEASURED) over () STATION_LATEST_MEASURED\n" +
             "FROM LAM_STATION LS\n" +
+            "INNER JOIN ROAD_STATION RS ON RS.ID = LS.ROAD_STATION_ID\n" +
             "INNER JOIN LAM_STATION_DATA LSD ON LSD.LAM_STATION_ID = LS.ID\n" +
-            "WHERE LS.OBSOLETE = 0" +
+            "WHERE LS.OBSOLETE = 0\n" +
+            "  AND RS.IS_PUBLIC = 1\n" +
             "ORDER BY LS.NATURAL_ID",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

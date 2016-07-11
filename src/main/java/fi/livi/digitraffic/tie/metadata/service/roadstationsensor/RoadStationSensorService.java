@@ -13,7 +13,7 @@ public interface RoadStationSensorService {
 
     RoadStationsSensorsMetadata findRoadStationsSensorsMetadata();
 
-    Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoleteRoadWeatherStationSensorValues();
+    Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoletePublicRoadWeatherStationSensorValues();
 
     LocalDateTime getLatestMeasurementTime();
 }

@@ -36,6 +36,6 @@ public class RoadWeatherStationUpdateJob implements Job {
 
 
         log.info("Quartz RoadWeatherStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +
-                 " updateRoadWeatherStations took: " + timeStations + " s, updateRoadWeatherStationsRoadStationSensors took: " + timeStationsSensors + " s)");
+                 " s, updateRoadWeatherStations took: " + timeStations + " s, updateRoadWeatherStationsRoadStationSensors took: " + timeStationsSensors + " s)");
     }
 }

@@ -3,7 +3,7 @@
                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
-<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" version="1.0">
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" version="1.0">
 
   <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29"/>
 
@@ -11,7 +11,7 @@
 
   <xs:complexType abstract="true" name="havaintoAsemaVO">
     <xs:complexContent>
-      <xs:extension base="tns:laiteSijainnillaVO">
+      <xs:extension base="ns1:laiteSijainnillaVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="aikakatkaisu" type="xs:int"/>
           <xs:element minOccurs="0" name="aikavyohyke" type="xs:string"/>
@@ -21,6 +21,7 @@
           <xs:element minOccurs="0" name="asemanTila" type="ns1:tilaTyyppi"/>
           <xs:element minOccurs="0" name="huoltoPuutteet" type="xs:string"/>
           <xs:element minOccurs="0" name="huoltolevikkeenEtaisyysAsemasta" type="xs:int"/>
+          <xs:element minOccurs="0" name="julkinen" type="xs:boolean"/>
           <xs:element minOccurs="0" name="keruuVali" type="xs:int"/>
           <xs:element minOccurs="0" name="keruunTila" type="ns1:keruunTILA"/>
           <xs:element minOccurs="0" name="korjaushuolto" type="xs:dateTime"/>
@@ -49,25 +50,12 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType abstract="true" name="laiteSijainnillaVO">
-    <xs:complexContent>
-      <xs:extension base="ns1:laiteVO">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
-          <xs:element minOccurs="0" name="tieosoite" type="tns:tieosoiteVO"/>
-          <xs:element minOccurs="0" name="tieosoiteId" type="xs:long"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="tieosoiteVO">
     <xs:complexContent>
       <xs:extension base="ns2:tieosoiteVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="urakkaAlue" type="xs:string"/>
+          <xs:element minOccurs="0" name="urakkaAlueKoodi" type="xs:int"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -94,7 +82,9 @@
   </xs:complexType>
 
 </xs:schema>
-<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" version="1.0">
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06"/>
 
   <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29"/>
 
@@ -174,27 +164,8 @@
 
   <xs:complexType name="HaeAsemanAnturiVakioResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="ns1:lamAnturiVakioVO"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="lamAnturiVakioVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAnturiVakioVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="abstractLAMAnturiVakioVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractVO">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="asemaId" type="xs:long"/>
-          <xs:element minOccurs="0" name="nimi" type="xs:string"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType abstract="true" name="abstractVO">
@@ -217,29 +188,8 @@
 
   <xs:complexType name="HaeAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakioArvoVO"/>
+      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="ns1:lamAnturiVakioArvoVO"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="lamAnturiVakioArvoVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAnturiVakioArvoVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="abstractLAMAnturiVakioArvoVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractVO">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="anturiVakioId" type="xs:long"/>
-          <xs:element minOccurs="0" name="arvo" type="xs:int"/>
-          <xs:element minOccurs="0" name="voimassaAlku" type="xs:int"/>
-          <xs:element minOccurs="0" name="voimassaLoppu" type="xs:int"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="HaeLaskennallisenAnturinArvovastaavuudet">
@@ -250,25 +200,16 @@
 
   <xs:complexType name="HaeLaskennallisenAnturinArvovastaavuudetResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuudet" type="tns:lamArvoVastaavuusVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuudet" type="tns:arvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="lamArvoVastaavuusVO">
+  <xs:complexType name="arvoVastaavuusVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractArvoVastaavuus">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="abstractArvoVastaavuus">
-    <xs:complexContent>
-      <xs:extension base="tns:pojo">
+      <xs:extension base="tns:abstractVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="b" type="xs:int"/>
           <xs:element minOccurs="0" name="g" type="xs:int"/>
-          <xs:element minOccurs="0" name="id" type="xs:long"/>
           <xs:element minOccurs="0" name="kuvaus" type="xs:string"/>
           <xs:element minOccurs="0" name="laskennallinenAnturiId" type="xs:long"/>
           <xs:element minOccurs="0" name="max" type="xs:decimal"/>
@@ -277,10 +218,6 @@
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="pojo">
-    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="HaeLAMAsema">
@@ -297,15 +234,7 @@
 
   <xs:complexType name="lamAsemaVO">
     <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAsemaVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="abstractLAMAsemaVO">
-    <xs:complexContent>
-      <xs:extension base="ns1:havaintoAsemaVO">
+      <xs:extension base="ns2:havaintoAsemaVO">
         <xs:sequence>
           <xs:element minOccurs="0" name="akku" type="xs:string"/>
           <xs:element minOccurs="0" name="akkuKayttoonottoVuosi" type="xs:int"/>
@@ -323,6 +252,19 @@
           <xs:element minOccurs="0" name="suunta2Kunta" type="xs:string"/>
           <xs:element minOccurs="0" name="suunta2KuntaKoodi" type="xs:int"/>
           <xs:element minOccurs="0" name="tyyppi" type="tns:lamAsemaTyyppi"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="laiteSijainnillaVO">
+    <xs:complexContent>
+      <xs:extension base="tns:laiteVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="korkeus" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="latitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="longitudi" type="xs:decimal"/>
+          <xs:element minOccurs="0" name="tieosoite" type="ns2:tieosoiteVO"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -346,26 +288,8 @@
 
   <xs:complexType name="HaeKaikkiLAMAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturiVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="ns1:lamAnturiVO"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="lamAnturiVO">
-    <xs:complexContent>
-      <xs:extension base="tns:laiteVO">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="kaapelikaivonKunto" type="xs:string"/>
-          <xs:element minOccurs="0" name="korkeus" type="xs:int"/>
-          <xs:element minOccurs="0" name="lamAsemaId" type="xs:long"/>
-          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta1" type="xs:int"/>
-          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta2" type="xs:int"/>
-          <xs:element minOccurs="0" name="pisteellaKaapelikaivo" type="xs:boolean"/>
-          <xs:element minOccurs="0" name="silmukkakaapelitSuojaputkessa" type="xs:boolean"/>
-          <xs:element minOccurs="0" name="suojaputkenMateriaali" type="xs:string"/>
-          <xs:element minOccurs="0" name="valmistusAika" type="xs:dateTime"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="HaeLAMAsemanAnturit">
@@ -376,7 +300,7 @@
 
   <xs:complexType name="HaeLAMAsemanAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="tns:lamAnturiVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="anturit" type="ns1:lamAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -388,28 +312,8 @@
 
   <xs:complexType name="HaeLAMAsemanLaskennallisetAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamlaskennallisetanturit" type="tns:lamLaskennallinenAnturiVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamlaskennallisetanturit" type="ns1:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="lamLaskennallinenAnturiVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractLAMLaskennallinenAnturiVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="abstractLAMLaskennallinenAnturiVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractLaskennallinenAnturiVO">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="ajoneuvoluokka" type="tns:ajoneuvoluokkaTyyppi"/>
-          <xs:element minOccurs="0" name="kaista" type="xs:int"/>
-          <xs:element minOccurs="0" name="suunta" type="xs:int"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType abstract="true" name="abstractLaskennallinenAnturiVO">
@@ -439,7 +343,7 @@
 
   <xs:complexType name="HaeArvovastaavuusResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuusVO"/>
+      <xs:element form="qualified" minOccurs="0" name="arvovastaavuus" type="tns:arvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -453,7 +357,7 @@
 
   <xs:complexType name="HaeAsemanAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvoVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="ns1:lamAnturiVakioArvoVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -465,7 +369,7 @@
 
   <xs:complexType name="HaeLAMLaskennallinenAnturiResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamlaskennallinenanturi" type="tns:lamLaskennallinenAnturiVO"/>
+      <xs:element form="qualified" minOccurs="0" name="lamlaskennallinenanturi" type="ns1:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -482,14 +386,6 @@
   </xs:complexType>
 
   <xs:complexType name="lamAsemaLaskennallinenAnturiVO">
-    <xs:complexContent>
-      <xs:extension base="tns:abstractLAMAsemaLaskennallinenAnturiVO">
-        <xs:sequence/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType abstract="true" name="abstractLAMAsemaLaskennallinenAnturiVO">
     <xs:sequence>
       <xs:element minOccurs="0" name="asemaId" type="xs:long"/>
       <xs:element minOccurs="0" name="laskennallinenAnturiId" type="xs:long"/>
@@ -506,7 +402,7 @@
 
   <xs:complexType name="HaeKaikkiAnturiVakioArvotResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="tns:lamAnturiVakioArvoVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="lamanturivakiot" type="ns1:lamAnturiVakioArvoVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -516,7 +412,7 @@
 
   <xs:complexType name="HaeKaikkiArvovastaavuudetResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuus" type="tns:lamArvoVastaavuusVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="arvovastaavuus" type="tns:arvoVastaavuusVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -538,7 +434,7 @@
 
   <xs:complexType name="HaeAnturiVakioResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="tns:lamAnturiVakioVO"/>
+      <xs:element form="qualified" minOccurs="0" name="lamanturivakio" type="ns1:lamAnturiVakioVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -550,7 +446,7 @@
 
   <xs:complexType name="HaeLAMAnturiResponse">
     <xs:sequence>
-      <xs:element form="qualified" minOccurs="0" name="anturi" type="tns:lamAnturiVO"/>
+      <xs:element form="qualified" minOccurs="0" name="anturi" type="ns1:lamAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -560,7 +456,7 @@
 
   <xs:complexType name="HaeKaikkiLAMLaskennallisetAnturitResponse">
     <xs:sequence>
-      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laskennallinenAnturi" type="tns:lamLaskennallinenAnturiVO"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="laskennallinenAnturi" type="ns1:lamLaskennallinenAnturiVO"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -613,6 +509,65 @@
       <xs:enumeration value="KATP"/>
     </xs:restriction>
   </xs:simpleType>
+
+</xs:schema>
+<xs:schema xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06" version="1.0">
+
+  <xs:import namespace="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29"/>
+
+  <xs:complexType name="lamAnturiVakioVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:abstractVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="asemaId" type="xs:long"/>
+          <xs:element minOccurs="0" name="nimi" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="lamAnturiVakioArvoVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:abstractVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="anturiVakioId" type="xs:long"/>
+          <xs:element minOccurs="0" name="arvo" type="xs:int"/>
+          <xs:element minOccurs="0" name="voimassaAlku" type="xs:int"/>
+          <xs:element minOccurs="0" name="voimassaLoppu" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="lamAnturiVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:laiteVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="kaapelikaivonKunto" type="xs:string"/>
+          <xs:element minOccurs="0" name="korkeus" type="xs:int"/>
+          <xs:element minOccurs="0" name="lamAsemaId" type="xs:long"/>
+          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta1" type="xs:int"/>
+          <xs:element minOccurs="0" name="laskettavienKaistojenLkmSuunta2" type="xs:int"/>
+          <xs:element minOccurs="0" name="pisteellaKaapelikaivo" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="silmukkakaapelitSuojaputkessa" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="suojaputkenMateriaali" type="xs:string"/>
+          <xs:element minOccurs="0" name="valmistusAika" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="lamLaskennallinenAnturiVO">
+    <xs:complexContent>
+      <xs:extension base="ns1:abstractLaskennallinenAnturiVO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ajoneuvoluokka" type="ns1:ajoneuvoluokkaTyyppi"/>
+          <xs:element minOccurs="0" name="kaista" type="xs:int"/>
+          <xs:element minOccurs="0" name="suunta" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 
 </xs:schema>
   </wsdl:types>

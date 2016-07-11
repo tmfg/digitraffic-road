@@ -34,6 +34,7 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
 
         // initialize state
         kameraPerustiedotLotjuServiceMock.initDataAndService();
+        cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
 
         ArrayList<String> cameraTypes = new ArrayList<>();
@@ -62,7 +63,7 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
 //                .andExpect(jsonPath("$.features[0].properties.cameraType", Matchers.instanceOf(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is("GATHERING")))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
@@ -77,11 +78,9 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[0].cameraId", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].presetOrder", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].compression", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].resolution", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].direction", isIn(directions)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].public", Matchers.isA(Boolean.class)))
                 ;
 
     }

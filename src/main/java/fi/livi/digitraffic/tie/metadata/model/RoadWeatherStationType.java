@@ -1,16 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import javax.xml.bind.annotation.XmlEnumValue;
-
 import org.apache.log4j.Logger;
 
-import fi.livi.digitraffic.tie.lotju.wsdl.tiesaa.TiesaaAsemaTyyppi;
+import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAsemaTyyppi;
 
 public enum RoadWeatherStationType {
 
     ROSA("ROSA"),
-    @XmlEnumValue("E18")
     E_18("E18"),
+    FINAVIA("FINAVIA"),
     ISGN("ISGN"),
     OLD("OLD");
 
@@ -32,6 +30,4 @@ public enum RoadWeatherStationType {
         }
         return null;
     }
-
-
 }
