@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +30,8 @@ public class LamMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
                 .andExpect(jsonPath("$.features[0].properties", Matchers.anything()))
+                .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.lamId", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
