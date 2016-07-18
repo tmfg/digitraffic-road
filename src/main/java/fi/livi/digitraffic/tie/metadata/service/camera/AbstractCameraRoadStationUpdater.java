@@ -73,6 +73,8 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
         to.setCarriagewayCode(from.getAjorata());
         to.setSideCode(from.getPuoli());
         to.setRoadMaintenanceClass(from.getTienHoitoluokka());
+        to.setContractArea(from.getUrakkaAlue());
+        to.setContractAreaCode(from.getUrakkaAlueKoodi());
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
             log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }

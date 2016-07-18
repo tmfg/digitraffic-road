@@ -32,6 +32,9 @@ Download Oracle JDBC driver and add it to your local Maven repository.
 ### Build project
 
     $ mvn clean install
+    
+    # Or with out tests
+    $ mvn clean install -DskipTests
 
 ### Running the application
 

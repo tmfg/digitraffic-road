@@ -32,7 +32,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
 
     private static final Logger log = Logger.getLogger(LamStationUpdater.class);
 
-    public static final String INSERT_FAILED = "Insert failed: ";
+    public static final String INSERT_FAILED = "Insert failed ";
 
     private final LamStationService lamStationService;
     private final RoadDistrictService roadDistrictService;
@@ -123,7 +123,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
         log.info("Uptaded " + uptaded + " LamStations");
         log.info("Inserted " + inserted + " LamStations");
         if (insert.size() > inserted) {
-            log.warn(INSERT_FAILED + " for " + (insert.size()-inserted) + " LamStations");
+            log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " LamStations");
         }
 
         return obsoleted > 0 || inserted > 0;

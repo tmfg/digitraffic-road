@@ -39,12 +39,12 @@ public class RoadAddress {
         CROSS (9); // poikki
 
         private final int code;
+
         private static final Logger log = Logger.getLogger(Side.class);
 
         Side(int code) {
             this.code = code;
         }
-
         public static Side getByCode(Integer code) {
             if (code != null) {
                 for (RoadAddress.Side side : values()) {
@@ -52,6 +52,7 @@ public class RoadAddress {
                         return side;
                     }
                 }
+                log.error("No Side found with code " + code);
             }
             return null;
         }
@@ -69,7 +70,6 @@ public class RoadAddress {
         Carriageway(int code) {
             this.code = code;
         }
-
         public static Carriageway getByCode(Integer code) {
             if (code != null) {
                 for (RoadAddress.Carriageway carriageway : values()) {
@@ -77,19 +77,19 @@ public class RoadAddress {
                         return carriageway;
                     }
                 }
+                log.error("No Carriageway found with code " + code);
             }
             return null;
         }
     }
+
     @JsonIgnore
     @Id
     @SequenceGenerator(name = "SEQ_ROAD_ADDRESS", sequenceName = "SEQ_ROAD_ADDRESS")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ROAD_ADDRESS")
     private Long id;
-
     @ApiModelProperty(value = "Road number (values 1–99999)")
     private Integer roadNumber;
-
     @ApiModelProperty(value = "Road section (values 1–999)")
     private Integer roadSection;
 
@@ -118,6 +118,12 @@ public class RoadAddress {
     @ApiModelProperty(value = "Road maintenance class")
     private String roadMaintenanceClass;
 
+    @ApiModelProperty(value = "Road contract area")
+    private String contractArea;
+
+    @ApiModelProperty(value = "Road contract area code")
+    private Integer contractAreaCode;
+
     @JsonIgnore
     @OneToOne(mappedBy="roadAddress")
     private RoadStation roadStation;
@@ -128,7 +134,6 @@ public class RoadAddress {
     public RoadAddress(RoadStation roadStation) {
         this.roadStation = roadStation;
     }
-
 
     public Long getId() {
         return id;
@@ -177,6 +182,22 @@ public class RoadAddress {
 
     public void setRoadMaintenanceClass(String roadMaintenanceClass) {
         this.roadMaintenanceClass = roadMaintenanceClass;
+    }
+
+    public void setContractArea(String contractArea) {
+        this.contractArea = contractArea;
+    }
+
+    public String getContractArea() {
+        return contractArea;
+    }
+
+    public void setContractAreaCode(Integer contractAreaCode) {
+        this.contractAreaCode = contractAreaCode;
+    }
+
+    public Integer getContractAreaCode() {
+        return contractAreaCode;
     }
 
     public Integer getRoadNumber() {
@@ -230,6 +251,8 @@ public class RoadAddress {
                 .append(carriagewayCode, that.carriagewayCode)
                 .append(sideCode, that.sideCode)
                 .append(roadMaintenanceClass, that.roadMaintenanceClass)
+                .append(contractArea, that.contractArea)
+                .append(contractAreaCode, that.contractAreaCode)
                 .append(roadStation, that.roadStation)
                 .isEquals();
     }
@@ -244,6 +267,8 @@ public class RoadAddress {
                 .append(carriagewayCode)
                 .append(sideCode)
                 .append(roadMaintenanceClass)
+                .append(contractArea)
+                .append(contractAreaCode)
                 .append(roadStation)
                 .toHashCode();
     }

@@ -9,6 +9,8 @@
             <etaisyysTieosanAlusta>4066</etaisyysTieosanAlusta>
             <tienumero>1</tienumero>
             <tieosa>16</tieosa>
+            <urakkaAlue>Helsinki 1-10</urakkaAlue>
+            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
         <tieosoiteId>259</tieosoiteId>
         <keruuVali>300</keruuVali>
@@ -35,6 +37,8 @@
             <etaisyysTieosanAlusta>5915</etaisyysTieosanAlusta>
             <tienumero>3</tienumero>
             <tieosa>101</tieosa>
+            <urakkaAlue>Helsinki 1-10</urakkaAlue>
+            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
         <tieosoiteId>260</tieosoiteId>
         <keruuVali>600</keruuVali>
@@ -61,6 +65,8 @@
             <etaisyysTieosanAlusta>4000</etaisyysTieosanAlusta>
             <tienumero>50</tienumero>
             <tieosa>4</tieosa>
+            <urakkaAlue>Helsinki 1-10</urakkaAlue>
+            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
         <tieosoiteId>261</tieosoiteId>
         <keruuVali>300</keruuVali>
@@ -88,6 +94,8 @@
             <etaisyysTieosanAlusta>3200</etaisyysTieosanAlusta>
             <tienumero>45</tienumero>
             <tieosa>3</tieosa>
+            <urakkaAlue>Helsinki 1-10</urakkaAlue>
+            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
         <tieosoiteId>262</tieosoiteId>
         <keruuVali>600</keruuVali>
