@@ -16,7 +16,7 @@
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>"%d{ISO8601} %p&#9;[%t] - %c: %m%n"</pattern>
+            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
         </encoder>
     </appender>
 
