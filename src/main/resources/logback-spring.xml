@@ -12,7 +12,7 @@
         <file>metadata-daily.log</file>
         <!-- Support multiple-JVM writing to the same log file -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>ais.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>metadata-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
