@@ -10,13 +10,14 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public abstract class LotjuServiceMock {
 
-    private static final Logger log = Logger.getLogger(LamMetatiedotLotjuServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LamMetatiedotLotjuServiceMock.class);
     private final String metadataServerAddress;
     private Class<?> metatiedotClass;
     private QName serviceName;

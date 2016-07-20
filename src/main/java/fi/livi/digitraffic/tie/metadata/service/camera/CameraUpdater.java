@@ -13,7 +13,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 
 @Service
 public class CameraUpdater extends AbstractCameraRoadStationUpdater {
-    private static final Logger log = Logger.getLogger(CameraUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraUpdater.class);
 
     private final CameraPresetService cameraPresetService;
     private final RoadWeatherStationService roadWeatherStationService;

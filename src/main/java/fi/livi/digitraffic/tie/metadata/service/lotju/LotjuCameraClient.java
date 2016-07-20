@@ -7,7 +7,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
@@ -22,7 +23,7 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.ObjectFactory;
 
 public class LotjuCameraClient extends WebServiceGatewaySupport {
 
-    private static final Logger log = Logger.getLogger(LotjuCameraClient.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuCameraClient.class);
 
     private String address;
 
@@ -57,7 +58,7 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
         for (final KameraVO kamera : kamerat) {
 
             if (kamera.getVanhaId() == null) {
-                log.error("Cannot update " + ToStringHelpper.toString(kamera) + " with vanhaId null");
+                log.error("Cannot update " + ToStringHelpper.toString(kamera) + " is invalid: has null vanhaId");
             } else {
                 final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
                         new HaeEsiasennotKameranTunnuksella();

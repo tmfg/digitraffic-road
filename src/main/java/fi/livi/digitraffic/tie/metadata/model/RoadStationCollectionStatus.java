@@ -4,7 +4,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum RoadStationCollectionStatus {
 
@@ -23,7 +24,7 @@ public enum RoadStationCollectionStatus {
     /** 5 = connection successful, but not data available */
     NO_DATA_AVAILABLE(5);
 
-    private static final Logger log = Logger.getLogger(RoadStationCollectionStatus.class);
+    private static final Logger log = LoggerFactory.getLogger(RoadStationCollectionStatus.class);
 
     private final int typeNumber;
 

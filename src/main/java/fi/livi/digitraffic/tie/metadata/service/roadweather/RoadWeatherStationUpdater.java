@@ -13,7 +13,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpdater {
-    private static final Logger log = Logger.getLogger(RoadWeatherStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(RoadWeatherStationUpdater.class);
 
     private final RoadWeatherStationService roadWeatherStationService;
     private final StaticDataStatusService staticDataStatusService;
@@ -213,7 +214,7 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
         }
 
         if (invalid > 0) {
-            log.warn("Found " + invalid + " TiesaaAsema from LOTJU");
+            log.warn("Found " + invalid + " invalid TiesaaAsema from LOTJU");
         }
 
         // rws in database, but not in server

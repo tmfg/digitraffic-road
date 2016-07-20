@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 
 @Service
 public class RoadWeatherServiceImpl implements RoadWeatherService {
-    private static final Logger log = Logger.getLogger(RoadWeatherServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(RoadWeatherServiceImpl.class);
     private RoadStationSensorService roadStationSensorService;
 
     @Autowired

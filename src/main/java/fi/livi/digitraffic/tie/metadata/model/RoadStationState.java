@@ -8,7 +8,8 @@ import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VI
 import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VIKA_VAHVISTETTU;
 import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum RoadStationState {
 
@@ -21,7 +22,7 @@ public enum RoadStationState {
     REPAIR_MAINTENANCE_DONE(KORJAUSHUOLTO_TEHTY.value()),
     REPAIR_INTERRUPTED(KORJAUS_KESKEYTETTY.value());
 
-    private static final Logger LOG = Logger.getLogger(RoadStationState.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RoadStationState.class);
 
     private final String fiValue;
 

@@ -3,7 +3,8 @@ package fi.livi.digitraffic.tie.metadata.service;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jcabi.manifests.Manifests;
@@ -11,7 +12,7 @@ import com.jcabi.manifests.Manifests;
 @Service
 public class BuildVersionServiceImpl implements BuildVersionService{
 
-    private static final Logger log = Logger.getLogger(BuildVersionServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(BuildVersionServiceImpl.class);
 
     private static final String GIT_PROPERTIES  = "git.properties";
     private static final String GIT_REVISION_PROPERTY  = "git.commit.id.abbrev";

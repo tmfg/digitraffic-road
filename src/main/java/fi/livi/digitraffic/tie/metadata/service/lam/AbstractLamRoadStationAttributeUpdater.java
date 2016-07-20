@@ -2,7 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.lam;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
@@ -16,7 +17,7 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractLamRoadStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = Logger.getLogger(AbstractLamRoadStationAttributeUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractLamRoadStationAttributeUpdater.class);
 
     protected RoadStationService roadStationService;
 

@@ -4,7 +4,8 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,7 +52,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class DataController {
-    private static final Logger log = Logger.getLogger(DataController.class);
+    private static final Logger log = LoggerFactory.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";

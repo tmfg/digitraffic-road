@@ -16,10 +16,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.CalculatorDeviceTypeConverter;
@@ -30,7 +31,7 @@ import fi.livi.digitraffic.tie.metadata.converter.LamStationTypeConverter;
 @DynamicUpdate
 @NamedEntityGraph(name = "lamStation", attributeNodes = {@NamedAttributeNode("roadStation"), @NamedAttributeNode("roadDistrict")})
 public class LamStation {
-    private static final Logger log = Logger.getLogger(LamStation.class);
+    private static final Logger log = LoggerFactory.getLogger(LamStation.class);
 
     @Id
     @SequenceGenerator(name = "LS_SEQ", sequenceName = "SEQ_LAM_STATION")
