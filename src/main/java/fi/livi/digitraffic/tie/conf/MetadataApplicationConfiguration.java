@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -42,4 +43,13 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         registry.addInterceptor(localeChangeInterceptor);
     }
 
+    /**
+     * This redirects requests from root to /swagger-ui.html.
+     * After that nginx redirects /swagger-ui.html to /api/v1/metadata/documentation/swagger-ui.html
+     * @param registry
+     */
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("redirect:swagger-ui.html");
+    }
 }
