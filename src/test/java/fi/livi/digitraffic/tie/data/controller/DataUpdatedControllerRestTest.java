@@ -8,9 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.log4j.Logger;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -21,7 +22,7 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
  * Test that every data-api has working last update query
  */
 public class DataUpdatedControllerRestTest extends RestTest {
-    private static final Logger log = Logger.getLogger(DataUpdatedControllerRestTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DataUpdatedControllerRestTest.class);
 
     @Autowired
     DataController controller;

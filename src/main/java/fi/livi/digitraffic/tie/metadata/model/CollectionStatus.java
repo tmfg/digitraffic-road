@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA;
 
@@ -18,7 +19,7 @@ public enum CollectionStatus {
             new HashSet<>(Arrays.asList(KeruunTILA.POISTETTU_PYSYVASTI.name(),
                     KeruunTILA.POISTETTU_TILAPAISESTI.name()));
 
-    private static final Logger LOG = Logger.getLogger(CollectionStatus.class);
+    private static final Logger log = LoggerFactory.getLogger(CollectionStatus.class);
 
     private final String fiValue;
 
@@ -57,7 +58,7 @@ public enum CollectionStatus {
                 return collectionStatus;
             }
         }
-        LOG.error("CollectionStatus for KeruunTILA " + fiValue + " not found");
+        log.error("CollectionStatus for KeruunTILA " + fiValue + " not found");
         return null;
     }
 

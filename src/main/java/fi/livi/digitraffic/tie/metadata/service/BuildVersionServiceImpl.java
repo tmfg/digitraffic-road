@@ -1,11 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
+import java.io.IOException;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jcabi.manifests.Manifests;
 
 @Service
 public class BuildVersionServiceImpl implements BuildVersionService{
+
+    private static final Logger log = LoggerFactory.getLogger(BuildVersionServiceImpl.class);
+
+    private static final String GIT_PROPERTIES  = "git.properties";
+    private static final String GIT_REVISION_PROPERTY  = "git.commit.id.abbrev";
 
     @Override
     public String getAppVersion() {
@@ -17,14 +27,18 @@ public class BuildVersionServiceImpl implements BuildVersionService{
 
     @Override
     public String getAppBuildRevision() {
-        if (Manifests.exists("MetadataApplication-Build")) {
-            return Manifests.read("MetadataApplication-Build");
+        Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"));
+            return "" + properties.get(GIT_REVISION_PROPERTY);
+        } catch (IOException e) {
+            log.error("Failed to load git properties from file: " + GIT_PROPERTIES, e);
+            return "?";
         }
-        return "X";
     }
 
     @Override
     public String getAppFullVersion() {
-        return getAppVersion() + "-" + getAppBuildRevision();
+        return getAppVersion() + "#" + getAppBuildRevision();
     }
 }

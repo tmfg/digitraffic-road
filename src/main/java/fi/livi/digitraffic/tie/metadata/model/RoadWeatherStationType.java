@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import org.apache.log4j.Logger;
-
 import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAsemaTyyppi;
 
 public enum RoadWeatherStationType {
@@ -11,8 +9,6 @@ public enum RoadWeatherStationType {
     FINAVIA("FINAVIA"),
     ISGN("ISGN"),
     OLD("OLD");
-
-    private static final Logger LOG = Logger.getLogger(RoadWeatherStationType.class);
 
     private final String value;
 

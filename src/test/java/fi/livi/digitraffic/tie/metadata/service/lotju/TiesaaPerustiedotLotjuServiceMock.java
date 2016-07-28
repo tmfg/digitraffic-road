@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -30,7 +31,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaPerustiedotV2;
 @Service
 public class TiesaaPerustiedotLotjuServiceMock extends LotjuServiceMock implements TiesaaPerustiedotEndpoint {
 
-    private static final Logger log = Logger.getLogger(TiesaaPerustiedotLotjuServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(TiesaaPerustiedotLotjuServiceMock.class);
 
     private List<TiesaaAsemaVO> initialTiesaaAsemas;
     private List<TiesaaAsemaVO> afterChangeTiesaaAsemas;

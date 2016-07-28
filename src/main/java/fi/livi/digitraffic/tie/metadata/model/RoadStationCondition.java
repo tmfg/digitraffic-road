@@ -4,7 +4,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum RoadStationCondition {
 
@@ -23,7 +24,7 @@ public enum RoadStationCondition {
     /** 6 = repair work interrupted */
     REPAIR_WORK_INTERRUPTED(6);
 
-    private static final Logger log = Logger.getLogger(RoadStationCondition.class);
+    private static final Logger log = LoggerFactory.getLogger(RoadStationCondition.class);
 
     private final int typeNumber;
 

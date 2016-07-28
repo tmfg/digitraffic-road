@@ -4,14 +4,15 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum RoadStationType {
     LAM_STATION(1),
     WEATHER_STATION(2),
     CAMERA(3);
 
-    private static final Logger LOG = Logger.getLogger(RoadStationType.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RoadStationType.class);
 
     private final int typeNumber;
 

@@ -3,8 +3,9 @@ package fi.livi.digitraffic.tie.metadata.service.lotju;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -25,7 +26,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
 @Service
 public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements LAMMetatiedotEndpoint {
 
-    private static final Logger log = Logger.getLogger(LamMetatiedotLotjuServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LamMetatiedotLotjuServiceMock.class);
 
     private List<LamAsemaVO> lamAsemasInitial;
     private List<LamAsemaVO> afterChangelamAsemas;

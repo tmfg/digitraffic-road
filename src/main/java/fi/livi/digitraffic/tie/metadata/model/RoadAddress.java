@@ -10,8 +10,9 @@ import javax.persistence.SequenceGenerator;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.DynamicUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,7 +41,7 @@ public class RoadAddress {
 
         private final int code;
 
-        private static final Logger log = Logger.getLogger(Side.class);
+        private static final Logger log = LoggerFactory.getLogger(Side.class);
 
         Side(int code) {
             this.code = code;
@@ -65,7 +66,7 @@ public class RoadAddress {
         DUAL_CARRIAGEWAY_SECOND_UPSTREAM(2); // kaksiajorataisen osuuden kakkosajorata (vastasuunta)
 
         private final int code;
-        private static final Logger log = Logger.getLogger(Side.class);
+        private static final Logger log = LoggerFactory.getLogger(Side.class);
 
         Carriageway(int code) {
             this.code = code;

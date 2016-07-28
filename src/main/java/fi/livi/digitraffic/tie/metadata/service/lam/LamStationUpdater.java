@@ -8,7 +8,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 @Service
 public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
 
-    private static final Logger log = Logger.getLogger(LamStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(LamStationUpdater.class);
 
     public static final String INSERT_FAILED = "Insert failed ";
 
@@ -92,8 +93,6 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
 
             if ( validate(la) ) {
                 final Long lamNaturalId = convertToLamNaturalId(la.getVanhaId());
-
-
                 final LamStation currentSaved = currentStations.remove(lamNaturalId);
 
                 if ( currentSaved != null && CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
@@ -193,7 +192,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
     private static boolean validate(final LamAsemaVO la) {
         final boolean valid = la.getVanhaId() != null;
         if (!valid) {
-            log.error(ToStringHelpper.toString(la) +" is invalid: has null vanhaId");
+            log.error(ToStringHelpper.toString(la) + " is invalid: has null vanhaId");
         }
         return valid;
     }

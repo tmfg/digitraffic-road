@@ -7,7 +7,8 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
@@ -22,7 +23,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
 
 public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
 
-    private static final Logger log = Logger.getLogger(LotjuRoadWeatherStationClient.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuRoadWeatherStationClient.class);
 
     private String address;
 

@@ -6,9 +6,10 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataTest;
@@ -22,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationUp
 
 public class RoadWeatherStationUpdateJobTest extends MetadataTest {
 
-    private static final Logger log = Logger.getLogger(RoadWeatherStationUpdateJobTest.class);
+    private static final Logger log = LoggerFactory.getLogger(RoadWeatherStationUpdateJobTest.class);
 
     @Autowired
     private RoadWeatherStationUpdater roadWeatherStationUpdater;
