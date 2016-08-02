@@ -49,7 +49,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
      * @param registry
      */
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
+    public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:swagger-ui.html");
     }
 }

@@ -25,7 +25,7 @@ public class LinkDataDto implements MeasuredDataObjectDto {
     @JsonIgnore
     private LocalDateTime measured;
 
-    public LinkDataDto(int linkNumber, List<LinkMeasurementDataDto> linkMeasurements) {
+    public LinkDataDto(final int linkNumber, final List<LinkMeasurementDataDto> linkMeasurements) {
         this.linkNumber = linkNumber;
         this.linkMeasurements = linkMeasurements;
     }
@@ -43,7 +43,7 @@ public class LinkDataDto implements MeasuredDataObjectDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 }

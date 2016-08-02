@@ -111,7 +111,7 @@ public class ToStringHelpper {
         ISO_8601_WITH_ZONE_OFFSET
     }
 
-    public static String toString(ZonedDateTime zonedDateTime, TimestampFormat timestampFormat) {
+    public static String toString(final ZonedDateTime zonedDateTime, final TimestampFormat timestampFormat) {
         if (zonedDateTime == null) {
             return null;
         }
@@ -124,11 +124,11 @@ public class ToStringHelpper {
                 " for " + timestampFormat + " not implemented");
     }
 
-    public static String toString(LocalDateTime localDateTime, TimestampFormat timestampFormat) {
+    public static String toString(final LocalDateTime localDateTime, final TimestampFormat timestampFormat) {
         if (localDateTime == null) {
             return null;
         }
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        final ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         if (TimestampFormat.ISO_8601_UTC == timestampFormat) {
             return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC).toString();
         } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {

@@ -42,11 +42,11 @@ public class CameraUpdateJobTest extends MetadataTest {
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
-        CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
         // cameras with lotjuId 443 and 56 are in collection
         assertEquals(2, allInitial.getFeatures().size());
         int countPresets = 0;
-        for (CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
+        for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
             countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
         }
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset -> 3 public
@@ -56,12 +56,12 @@ public class CameraUpdateJobTest extends MetadataTest {
         kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
         cameraUpdater.updateCameras();
 
-        CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
 
         // 443 has 3 presets, 121 has 2
         assertEquals(2, allAfterChange.getFeatures().size());
         int countPresetsAfter = 0;
-        for (CameraStationFeature cameraStationFeature : allAfterChange.getFeatures()) {
+        for (final CameraStationFeature cameraStationFeature : allAfterChange.getFeatures()) {
             countPresetsAfter = countPresetsAfter + cameraStationFeature.getProperties().getPresets().size();
         }
         // cameras with lotjuId 443 has 2 and 56 has 1 preset
@@ -112,8 +112,8 @@ public class CameraUpdateJobTest extends MetadataTest {
         assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
 
         // Test C0852002 changes
-        CameraPresetDto before = findWithPresetId(allInitial, "C0852002");
-        CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
+        final CameraPresetDto before = findWithPresetId(allInitial, "C0852002");
+        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
 
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
@@ -122,21 +122,21 @@ public class CameraUpdateJobTest extends MetadataTest {
         assertEquals("1200x900", after.getResolution());
 
         // 443 Kunta changed
-        CameraStationFeature beforeCam = findWithCameraId(allInitial, "C08520");
-        CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
+        final CameraStationFeature beforeCam = findWithCameraId(allInitial, "C08520");
+        final CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
         assertEquals("Iidensalmi", beforeCam.getProperties().getMunicipality());
         assertEquals("Iisalmi", afterCam.getProperties().getMunicipality());
     }
 
 
-    private void assertEqualPresets(CameraPresetDto preset1, CameraPresetDto preset2) {
+    private void assertEqualPresets(final CameraPresetDto preset1, final CameraPresetDto preset2) {
         assertTrue(preset1.equals(preset2));
     }
 
-    private CameraPresetDto findWithPresetId(CameraStationFeatureCollection collection, String presetId) {
+    private CameraPresetDto findWithPresetId(final CameraStationFeatureCollection collection, final String presetId) {
 
-        for (CameraStationFeature cameraStationFeature : collection) {
-            Optional<CameraPresetDto> initial =
+        for (final CameraStationFeature cameraStationFeature : collection) {
+            final Optional<CameraPresetDto> initial =
                     cameraStationFeature.getProperties().getPresets().stream()
                             .filter(x -> x.getPresetId().equals(presetId))
                             .findFirst();
@@ -147,7 +147,7 @@ public class CameraUpdateJobTest extends MetadataTest {
         return null;
     }
 
-    private CameraStationFeature findWithCameraId(CameraStationFeatureCollection collection, String cameraId) {
+    private CameraStationFeature findWithCameraId(final CameraStationFeatureCollection collection, final String cameraId) {
         return collection.getFeatures().stream().filter(x -> x.getId().endsWith(cameraId)).findFirst().orElseGet(null);
     }
 }

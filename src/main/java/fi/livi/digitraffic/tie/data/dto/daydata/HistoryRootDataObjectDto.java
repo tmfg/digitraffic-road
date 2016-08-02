@@ -18,13 +18,13 @@ public class HistoryRootDataObjectDto extends RootDataObjectDto {
     @ApiModelProperty(value = "Links")
     private final List<LinkDataDto> links;
 
-    public HistoryRootDataObjectDto(List<LinkDataDto> links,
-                                    LocalDateTime uptaded) {
+    public HistoryRootDataObjectDto(final List<LinkDataDto> links,
+                                    final LocalDateTime uptaded) {
         super(uptaded);
         this.links = links;
     }
 
-    public HistoryRootDataObjectDto(LocalDateTime updated) {
+    public HistoryRootDataObjectDto(final LocalDateTime updated) {
         super(updated);
         this.links = null;
     }

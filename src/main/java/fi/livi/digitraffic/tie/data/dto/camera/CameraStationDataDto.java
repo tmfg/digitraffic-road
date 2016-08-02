@@ -19,7 +19,7 @@ public class CameraStationDataDto {
 
     private List<CameraPresetDataDto> cameraPresets = new ArrayList<>();
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -27,7 +27,7 @@ public class CameraStationDataDto {
         return id;
     }
 
-    public void setRoadStationId(Long roadStationId) {
+    public void setRoadStationId(final Long roadStationId) {
         this.roadStationId = roadStationId;
     }
 
@@ -35,7 +35,7 @@ public class CameraStationDataDto {
         return roadStationId;
     }
 
-    public void setNearestRoadWeatherStationId(Long nearestRoadWeatherStationId) {
+    public void setNearestRoadWeatherStationId(final Long nearestRoadWeatherStationId) {
         this.nearestRoadWeatherStationId = nearestRoadWeatherStationId;
     }
 
@@ -47,11 +47,11 @@ public class CameraStationDataDto {
         return cameraPresets;
     }
 
-    public void setCameraPresets(List<CameraPresetDataDto> cameraPresets) {
+    public void setCameraPresets(final List<CameraPresetDataDto> cameraPresets) {
         this.cameraPresets = cameraPresets;
     }
 
-    public void addPreset(CameraPresetDataDto cameraPresetDataDto) {
+    public void addPreset(final CameraPresetDataDto cameraPresetDataDto) {
         this.cameraPresets.add(cameraPresetDataDto);
     }
 }

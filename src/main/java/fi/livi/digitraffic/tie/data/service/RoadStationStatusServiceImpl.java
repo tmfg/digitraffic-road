@@ -14,14 +14,14 @@ public class RoadStationStatusServiceImpl implements RoadStationStatusService {
     private final RoadStationStatusRepository roadStationStatusRepository;
 
     @Autowired
-    public RoadStationStatusServiceImpl(RoadStationStatusRepository roadStationStatusRepository) {
+    public RoadStationStatusServiceImpl(final RoadStationStatusRepository roadStationStatusRepository) {
         this.roadStationStatusRepository = roadStationStatusRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public RoadStationStatusesDataObjectDto findPublicRoadStationStatuses(boolean onlyUpdateInfo) {
-        LocalDateTime updated = roadStationStatusRepository.getLatestMeasurementTime();
+    public RoadStationStatusesDataObjectDto findPublicRoadStationStatuses(final boolean onlyUpdateInfo) {
+        final LocalDateTime updated = roadStationStatusRepository.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
             return new RoadStationStatusesDataObjectDto(updated);

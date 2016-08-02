@@ -21,13 +21,13 @@ public class DayDataServiceImpl implements DayDataService {
     private final DayDataRepository dayDataRepository;
 
     @Autowired
-    public DayDataServiceImpl(DayDataRepository dayDataRepository) {
+    public DayDataServiceImpl(final DayDataRepository dayDataRepository) {
         this.dayDataRepository = dayDataRepository;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public HistoryRootDataObjectDto listPreviousDayHistoryData(boolean onlyUpdateInfo) {
+    public HistoryRootDataObjectDto listPreviousDayHistoryData(final boolean onlyUpdateInfo) {
 
         LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
 
@@ -48,7 +48,7 @@ public class DayDataServiceImpl implements DayDataService {
     }
 
     private static List<LinkDataDto> convertToDayDataData(final List<LinkMeasurementDataDto> linkDataFrom) {
-        HashMap<Integer, LinkDataDto> linkDataMap = new HashMap<>();
+        final HashMap<Integer, LinkDataDto> linkDataMap = new HashMap<>();
         for(final LinkMeasurementDataDto ld : linkDataFrom) {
             LinkDataDto linkData = linkDataMap.get(ld.getLinkId());
             if(linkData == null) {
@@ -58,7 +58,7 @@ public class DayDataServiceImpl implements DayDataService {
             linkData.setMeasured(DateHelper.getNewest(linkData.getMeasured(), ld.getMeasured()));
             linkData.getLinkMeasurements().add(ld);
         }
-        List<LinkDataDto> linkDatas = new ArrayList<>(linkDataMap.values());
+        final List<LinkDataDto> linkDatas = new ArrayList<>(linkDataMap.values());
         linkDatas.sort((o1, o2) -> Integer.compare(o1.getLinkNumber(), o2.getLinkNumber()));
         return linkDatas;
     }

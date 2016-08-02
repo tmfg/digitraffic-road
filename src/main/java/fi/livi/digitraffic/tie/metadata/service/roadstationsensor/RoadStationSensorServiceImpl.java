@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
-    private RoadStationSensorRepository roadStationSensorRepository;
+    private final RoadStationSensorRepository roadStationSensorRepository;
 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
     private final int roadWeatherStationSensorValueTimeLimitInMins;
@@ -45,9 +45,9 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         this.roadWeatherStationRepository = roadWeatherStationRepository;
         this.roadWeatherStationSensorValueTimeLimitInMins = roadWeatherStationSensorValueTimeLimitInMins;
 
-        String[] ids = StringUtils.splitPreserveAllTokens(includedSensorNaturalIdsStr, ',');
+        final String[] ids = StringUtils.splitPreserveAllTokens(includedSensorNaturalIdsStr, ',');
         includedSensorNaturalIds = new ArrayList<>();
-        for (String id : ids) {
+        for (final String id : ids) {
             includedSensorNaturalIds.add(Long.parseLong(id.trim()));
         }
     }
@@ -68,18 +68,18 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Override
     public Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoletePublicRoadWeatherStationSensorValues() {
 
-        List<Long> stations =
+        final List<Long> stations =
                 roadWeatherStationRepository.findNonObsoleteAndPublicRoadStationNaturalIds();
-        Set<Long> allowedRoadStations =
+        final Set<Long> allowedRoadStations =
                 stations.stream().collect(Collectors.toSet());
 
-        Map<Long, List<RoadStationSensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();
-        List<RoadStationSensorValueDto> sensors =
+        final Map<Long, List<RoadStationSensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();
+        final List<RoadStationSensorValueDto> sensors =
                 roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
                         RoadStationType.WEATHER_STATION.getTypeNumber(),
                         roadWeatherStationSensorValueTimeLimitInMins,
                         includedSensorNaturalIds);
-        for (RoadStationSensorValueDto sensor : sensors) {
+        for (final RoadStationSensorValueDto sensor : sensors) {
             if (allowedRoadStations.contains(sensor.getRoadStationNaturalId())) {
                 List<RoadStationSensorValueDto> values = rsNaturalIdToRsSensorValues.get(Long.valueOf(sensor.getRoadStationNaturalId()));
                 if (values == null) {

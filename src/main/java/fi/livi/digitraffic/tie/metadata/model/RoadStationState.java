@@ -34,7 +34,7 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi asemanTila) {
+    public static RoadStationState convertAsemanTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return getState(asemanTila.value());
         }

@@ -44,8 +44,8 @@ public class RoadStationServiceImpl implements RoadStationService {
     }
 
     @Override
-    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(RoadStationType type) {
-        List<RoadStation> orphans;
+    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
+        final List<RoadStation> orphans;
         if (RoadStationType.LAM_STATION == type) {
             orphans = roadStationRepository.findOrphanLamStationRoadStations();
         } else if (RoadStationType.CAMERA == type) {
@@ -56,26 +56,26 @@ public class RoadStationServiceImpl implements RoadStationService {
             throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
         }
 
-        Map<Long, RoadStation> map = new HashMap<>();
-        for (RoadStation roadStation : orphans) {
+        final Map<Long, RoadStation> map = new HashMap<>();
+        for (final RoadStation roadStation : orphans) {
             map.put(roadStation.getNaturalId(), roadStation);
         }
         return map;
     }
 
     @Override
-    public Map<Long, RoadStation> findByTypeMappedByNaturalId(RoadStationType type) {
-        List<RoadStation> all = findByType(type);
+    public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
+        final List<RoadStation> all = findByType(type);
 
-        Map<Long, RoadStation> map = new HashMap<>();
-        for (RoadStation roadStation : all) {
+        final Map<Long, RoadStation> map = new HashMap<>();
+        for (final RoadStation roadStation : all) {
             map.put(roadStation.getNaturalId(), roadStation);
         }
         return map;
     }
 
     @Override
-    public RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId) {
+    public RoadStation findByTypeAndNaturalId(final RoadStationType type, final long naturalId) {
         return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
     }
 

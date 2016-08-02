@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 public class CameraPresetServiceImpl implements CameraPresetService {
 
     private final CameraPresetRepository cameraPresetRepository;
-    private CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
+    private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
 
     @Autowired
     CameraPresetServiceImpl(final CameraPresetRepository cameraPresetRepository,

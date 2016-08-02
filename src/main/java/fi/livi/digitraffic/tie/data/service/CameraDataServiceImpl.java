@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
 public class CameraDataServiceImpl implements CameraDataService {
 
     private final CameraPresetRepository cameraPresetRepository;
-    private CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter;
+    private final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter;
 
     @Autowired
     CameraDataServiceImpl(final CameraPresetRepository cameraPresetRepository,
@@ -25,9 +25,9 @@ public class CameraDataServiceImpl implements CameraDataService {
 
     @Transactional(readOnly = true)
     @Override
-    public CameraRootDataObjectDto findPublicCameraStationsData(boolean onlyUpdateInfo) {
+    public CameraRootDataObjectDto findPublicCameraStationsData(final boolean onlyUpdateInfo) {
 
-        LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        final LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
         } else {

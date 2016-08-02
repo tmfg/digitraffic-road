@@ -43,7 +43,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         roadWeatherStationUpdater.updateRoadWeatherStations();
         roadWeatherStationUpdater.updateRoadStationSensors();
         roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
-        RoadWeatherStationFeatureCollection allInitial =
+        final RoadWeatherStationFeatureCollection allInitial =
                 roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
         assertEquals(2, allInitial.getFeatures().size());
 
@@ -52,7 +52,7 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         roadWeatherStationUpdater.updateRoadWeatherStations();
         roadWeatherStationUpdater.updateRoadStationSensors();
         roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();;
-        RoadWeatherStationFeatureCollection allAfterChange =
+        final RoadWeatherStationFeatureCollection allAfterChange =
                 roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection();
         assertEquals(3, allAfterChange.getFeatures().size());
 
@@ -82,8 +82,8 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         Assert.assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
         Assert.assertNotNull(findWithLotjuId(allAfterChange, 36));
 
-        RoadWeatherStationFeature before = findWithLotjuId(allInitial, 34);
-        RoadWeatherStationFeature after = findWithLotjuId(allAfterChange, 34);
+        final RoadWeatherStationFeature before = findWithLotjuId(allInitial, 34);
+        final RoadWeatherStationFeature after = findWithLotjuId(allAfterChange, 34);
 
         assertEquals(before.getProperties().getName() + "R", after.getProperties().getName());
 
@@ -109,11 +109,11 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         assertEquals(before.getGeometry().getCoordinates().get(2), (Double) 0.0);
         assertEquals(after.getGeometry().getCoordinates().get(2), (Double) 1.0);
 
-        RoadWeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
-        RoadWeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
+        final RoadWeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
+        final RoadWeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
 
-        RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1);
-        RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1);
+        final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1);
+        final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1);
 
         assertEquals("Ilman nopeus", sensorInitial.getDescription());
         assertEquals("Ilman lampotila", sensorAfter.getDescription());
@@ -124,14 +124,14 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
         assertEquals(10, sensorInitial.getAccuracy().intValue());
         assertEquals(1, sensorAfter.getAccuracy().intValue());
 
-        RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2);
-        RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2);
+        final RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2);
+        final RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2);
 
         assertNull(sensor2Initial);
         assertNotNull(sensor2After);
 
-        RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3);
-        RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3);
+        final RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3);
+        final RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3);
 
         assertNotNull(sensor3Initial);
         assertNull(sensor3After);
@@ -140,16 +140,16 @@ public class RoadWeatherStationUpdateJobTest extends MetadataTest {
                      findWithLotjuId(allAfterChange, 35).getProperties().getCollectionStatus());
     }
 
-    private RoadWeatherStationFeature findWithLotjuId(RoadWeatherStationFeatureCollection collection, long lotjuId) {
-        Optional<RoadWeatherStationFeature> initial =
+    private RoadWeatherStationFeature findWithLotjuId(final RoadWeatherStationFeatureCollection collection, final long lotjuId) {
+        final Optional<RoadWeatherStationFeature> initial =
                 collection.getFeatures().stream()
                         .filter(x -> x.getProperties().getLotjuId() == lotjuId)
                         .findFirst();
         return initial.orElse(null);
     }
 
-    private RoadStationSensor findSensorWithLotjuId(RoadWeatherStationFeature feature, long lotjuId) {
-        Optional<RoadStationSensor> initial =
+    private RoadStationSensor findSensorWithLotjuId(final RoadWeatherStationFeature feature, final long lotjuId) {
+        final Optional<RoadStationSensor> initial =
                 feature.getProperties().getSensors().stream()
                         .filter(x -> x.getLotjuId() == lotjuId)
                         .findFirst();

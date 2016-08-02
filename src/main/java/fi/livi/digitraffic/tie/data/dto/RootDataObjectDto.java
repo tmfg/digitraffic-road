@@ -20,7 +20,7 @@ public class RootDataObjectDto {
         this.timestamp = timestamp;
     }
 
-    public RootDataObjectDto(LocalDateTime localTimestamp) {
+    public RootDataObjectDto(final LocalDateTime localTimestamp) {
         if (localTimestamp != null) {
             timestamp = localTimestamp.atZone(ZoneId.systemDefault());
         } else {

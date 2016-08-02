@@ -34,7 +34,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
         private final Integer code;
 
-        Direction(Integer code) {
+        Direction(final Integer code) {
             this.code = code;
         }
 
@@ -42,19 +42,19 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
             return code;
         }
 
-        public static Direction getDirection(String code) {
+        public static Direction getDirection(final String code) {
             if (code == null) {
                 return UNKNOWN;
             }
             try {
-                int parsed = Integer.parseInt(code);
-                for (Direction direction : Direction.values()) {
+                final int parsed = Integer.parseInt(code);
+                for (final Direction direction : Direction.values()) {
                     if (direction.getCode() != null && direction.getCode().equals(parsed)) {
                         return direction;
                     }
                 }
                 return SPECIAL_DIRECTION;
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 return UNKNOWN;
             }
         }
@@ -112,7 +112,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         this.id = id;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -124,7 +124,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return cameraLotjuId;
     }
 
-    public void setCameraLotjuId(Long cameraLotjuId) {
+    public void setCameraLotjuId(final Long cameraLotjuId) {
         this.cameraLotjuId = cameraLotjuId;
     }
 
@@ -197,7 +197,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return Direction.getDirection(directionCode);
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(final String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -206,14 +206,14 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraPresetDto that = (CameraPresetDto) o;
+        final CameraPresetDto that = (CameraPresetDto) o;
 
         return new EqualsBuilder()
                 .append(id, that.id)
@@ -249,7 +249,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
                 .toHashCode();
     }
 
-    public static boolean isUnknownPresentationName(String name) {
+    public static boolean isUnknownPresentationName(final String name) {
         if (name == null) {
             return false;
         }
@@ -257,7 +257,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     }
 
     @Override
-    public int compareTo(CameraPresetDto other) {
+    public int compareTo(final CameraPresetDto other) {
         if (other == null) {
             return 1;
         }

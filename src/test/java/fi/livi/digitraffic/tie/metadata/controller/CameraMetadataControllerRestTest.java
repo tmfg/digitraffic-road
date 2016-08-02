@@ -37,13 +37,13 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
         cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
 
-        ArrayList<String> cameraTypes = new ArrayList<>();
-        for (CameraType cameraType : CameraType.values()) {
+        final ArrayList<String> cameraTypes = new ArrayList<>();
+        for (final CameraType cameraType : CameraType.values()) {
             cameraTypes.add(cameraType.name());
         }
 
-        ArrayList<String> directions = new ArrayList<>();
-        for (CameraPresetDto.Direction direction : CameraPresetDto.Direction.values()) {
+        final ArrayList<String> directions = new ArrayList<>();
+        for (final CameraPresetDto.Direction direction : CameraPresetDto.Direction.values()) {
             directions.add(direction.name());
         }
 

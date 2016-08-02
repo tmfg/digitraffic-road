@@ -42,10 +42,10 @@ public class MetadataController {
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 
     private final CameraPresetService cameraPresetService;
-    private LamStationService lamStationService;
-    private RoadWeatherStationService roadWeatherStationService;
-    private RoadStationSensorService roadStationSensorService;
-    private ForecastSectionService forecastSectionService;
+    private final LamStationService lamStationService;
+    private final RoadWeatherStationService roadWeatherStationService;
+    private final RoadStationSensorService roadStationSensorService;
+    private final ForecastSectionService forecastSectionService;
 
     @Autowired
     public MetadataController(final CameraPresetService cameraPresetService,

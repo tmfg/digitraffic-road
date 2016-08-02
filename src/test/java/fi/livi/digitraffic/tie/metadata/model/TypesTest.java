@@ -15,28 +15,28 @@ public class TypesTest {
 
     @Test
     public void testAllCameraTypes() {
-        for (KameraTyyppi kt : KameraTyyppi.values()) {
+        for (final KameraTyyppi kt : KameraTyyppi.values()) {
             Assert.notNull(CameraType.convertFromKameraTyyppi(kt));
         }
     }
 
     @Test
     public void testAllLamStationTypes() {
-        for (LamAsemaTyyppi lat : LamAsemaTyyppi.values()) {
+        for (final LamAsemaTyyppi lat : LamAsemaTyyppi.values()) {
             Assert.notNull(LamStationType.convertFromLamasemaTyyppi(lat));
         }
     }
 
     @Test
     public void testAllRoadStationStates() {
-        for (TilaTyyppi tt : TilaTyyppi.values()) {
+        for (final TilaTyyppi tt : TilaTyyppi.values()) {
             Assert.notNull(RoadStationState.convertAsemanTila(tt));
         }
     }
 
     @Test
     public void testAllRoadWeatherStationTypes() {
-        for (TiesaaAsemaTyyppi tsat : TiesaaAsemaTyyppi.values()) {
+        for (final TiesaaAsemaTyyppi tsat : TiesaaAsemaTyyppi.values()) {
             Assert.notNull(RoadWeatherStationType.fromTiesaaAsemaTyyppi(tsat));
         }
     }

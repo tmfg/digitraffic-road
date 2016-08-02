@@ -70,7 +70,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return roadStationNaturalId;
     }
 
-    public void setRoadStationNaturalId(long roadStationNaturalId) {
+    public void setRoadStationNaturalId(final long roadStationNaturalId) {
         this.roadStationNaturalId = roadStationNaturalId;
     }
 
@@ -78,7 +78,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return roadStationId;
     }
 
-    public void setRoadStationId(long roadStationId) {
+    public void setRoadStationId(final long roadStationId) {
         this.roadStationId = roadStationId;
     }
 
@@ -86,7 +86,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorNaturalId;
     }
 
-    public void setSensorNaturalId(long sensorNaturalId) {
+    public void setSensorNaturalId(final long sensorNaturalId) {
         this.sensorNaturalId = sensorNaturalId;
     }
 
@@ -94,7 +94,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorId;
     }
 
-    public void setSensorId(long sensorId) {
+    public void setSensorId(final long sensorId) {
         this.sensorId = sensorId;
     }
 
@@ -102,7 +102,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorValueId;
     }
 
-    public void setSensorValueId(long sensorValueId) {
+    public void setSensorValueId(final long sensorValueId) {
         this.sensorValueId = sensorValueId;
     }
 
@@ -110,7 +110,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorValue;
     }
 
-    public void setSensorValue(double sensorValue) {
+    public void setSensorValue(final double sensorValue) {
         this.sensorValue = sensorValue;
     }
 
@@ -118,7 +118,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorNameOld;
     }
 
-    public void setSensorNameOld(String sensorNameOld) {
+    public void setSensorNameOld(final String sensorNameOld) {
         this.sensorNameOld = sensorNameOld;
     }
 
@@ -126,7 +126,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorUnit;
     }
 
-    public void setSensorUnit(String sensorUnit) {
+    public void setSensorUnit(final String sensorUnit) {
         this.sensorUnit = sensorUnit;
     }
 
@@ -134,7 +134,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorValueDescriptionFi;
     }
 
-    public void setSensorValueDescriptionFi(String sensorValueDescriptionFi) {
+    public void setSensorValueDescriptionFi(final String sensorValueDescriptionFi) {
         this.sensorValueDescriptionFi = sensorValueDescriptionFi;
     }
 
@@ -142,7 +142,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorValueDescriptionEn;
     }
 
-    public void setSensorValueDescriptionEn(String sensorValueDescriptionEn) {
+    public void setSensorValueDescriptionEn(final String sensorValueDescriptionEn) {
         this.sensorValueDescriptionEn = sensorValueDescriptionEn;
     }
 
@@ -150,7 +150,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorNameFi;
     }
 
-    public void setSensorNameFi(String sensorNameFi) {
+    public void setSensorNameFi(final String sensorNameFi) {
         this.sensorNameFi = sensorNameFi;
     }
 
@@ -158,7 +158,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return sensorShortNameFi;
     }
 
-    public void setSensorShortNameFi(String sensorShortNameFi) {
+    public void setSensorShortNameFi(final String sensorShortNameFi) {
         this.sensorShortNameFi = sensorShortNameFi;
     }
 
@@ -166,7 +166,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 
@@ -174,7 +174,7 @@ public class RoadStationSensorValueDto /*implements MeasuredDataObjectDto*/ {
         return stationLatestMeasured;
     }
 
-    public void setStationLatestMeasured(LocalDateTime stationLatestMeasured) {
+    public void setStationLatestMeasured(final LocalDateTime stationLatestMeasured) {
         this.stationLatestMeasured = stationLatestMeasured;
     }
 }

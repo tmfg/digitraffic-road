@@ -28,7 +28,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
     private final String weathercamBaseurl;
 
     @Autowired
-    public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.baseurl}")
+    public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.baseurl}") final
                                                  String weathercamBaseurl) {
         this.weathercamBaseurl = weathercamBaseurl;
     }
@@ -37,7 +37,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         final CameraStationFeatureCollection collection = new CameraStationFeatureCollection();
 
         // Cameras mapped with cameraId
-        Map<String, CameraStationFeature> cameraStationMap = new HashMap<>();
+        final Map<String, CameraStationFeature> cameraStationMap = new HashMap<>();
 
         for(final CameraPreset cp : cameraPresets) {
             // CameraPreset contains camera and preset informations and
@@ -49,7 +49,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
                     cameraStationFeature = convert(cp);
                     cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
                     collection.add(cameraStationFeature);
-                } catch (NonPublicRoadStationException nprse) {
+                } catch (final NonPublicRoadStationException nprse) {
                     //Skip non public roadstation
                     log.warn("Skipping: " + nprse.getMessage());
                     continue;
@@ -61,8 +61,8 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         return collection;
     }
 
-    private CameraPresetDto convertPreset(CameraPreset cp) {
-        CameraPresetDto dto = new CameraPresetDto();
+    private CameraPresetDto convertPreset(final CameraPreset cp) {
+        final CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
         dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));

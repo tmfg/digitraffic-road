@@ -80,7 +80,7 @@ public class RoadWeatherStation {
         return master;
     }
 
-    public void setMaster(boolean master) {
+    public void setMaster(final boolean master) {
         this.master = master;
     }
 

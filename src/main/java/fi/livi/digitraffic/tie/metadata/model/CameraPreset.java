@@ -273,7 +273,7 @@ public class CameraPreset {
         return pictureLastModified;
     }
 
-    public void setPictureLastModified(LocalDateTime pictureLastModified) {
+    public void setPictureLastModified(final LocalDateTime pictureLastModified) {
         this.pictureLastModified = pictureLastModified;
     }
 
@@ -281,7 +281,7 @@ public class CameraPreset {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(LocalDate obsoleteDate) {
+    public void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
 

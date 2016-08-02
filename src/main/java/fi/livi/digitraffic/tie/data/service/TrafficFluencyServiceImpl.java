@@ -37,16 +37,16 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
 
     @Transactional(readOnly = true)
     @Override
-    public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo) {
+    public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(final boolean onlyUpdateInfo) {
 
         LocalDateTime updated = trafficFluencyRepository.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
             return new TrafficFluencyRootDataObjectDto(updated);
         } else {
-            List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
+            final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
 
-            for (LatestMedianDataDto lmd : latestMedians) {
+            for (final LatestMedianDataDto lmd : latestMedians) {
                 updated = DateHelper.getNewest(updated, lmd.getMeasured());
                 lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
             }
@@ -72,7 +72,7 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
      * @param ratioToFreeFlowSpeed
      * @return
      */
-    private FluencyClass getMatchingFluencyClass(BigDecimal ratioToFreeFlowSpeed) {
+    private FluencyClass getMatchingFluencyClass(final BigDecimal ratioToFreeFlowSpeed) {
         if (ratioToFreeFlowSpeed == null) {
             throw new NullPointerException();
         }
@@ -81,11 +81,11 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
         // this way, if ratio belongs to two classes (such as 0.1
         // matches A (0 - 0.1), B (0.1 - 0.25), we always return
         // the larger one (B)
-        List reverseOrderForBorderCases = findAllFluencyClassesOrderByLowerLimitAsc();
-        List cloned = new ArrayList(reverseOrderForBorderCases);
+        final List reverseOrderForBorderCases = findAllFluencyClassesOrderByLowerLimitAsc();
+        final List cloned = new ArrayList(reverseOrderForBorderCases);
         Collections.reverse(cloned);
-        for (Object o : cloned) {
-            FluencyClass fc = (FluencyClass) o;
+        for (final Object o : cloned) {
+            final FluencyClass fc = (FluencyClass) o;
             if ( ( fc.getUpperLimit() == null || ratioToFreeFlowSpeed.compareTo(fc.getUpperLimit()) <= 0 )
                     && ratioToFreeFlowSpeed.compareTo(fc.getLowerLimit()) >= 0 ) {
                 return fc;

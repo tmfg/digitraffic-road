@@ -88,7 +88,7 @@ public class RoadStationSensor {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -145,7 +145,7 @@ public class RoadStationSensor {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -153,7 +153,7 @@ public class RoadStationSensor {
         return nameFi;
     }
 
-    public void setNameFi(String nameFi) {
+    public void setNameFi(final String nameFi) {
         this.nameFi = nameFi;
     }
 
@@ -161,7 +161,7 @@ public class RoadStationSensor {
         return shortNameFi;
     }
 
-    public void setShortNameFi(String shortNameFi) {
+    public void setShortNameFi(final String shortNameFi) {
         this.shortNameFi = shortNameFi;
     }
 
@@ -169,7 +169,7 @@ public class RoadStationSensor {
         return accuracy;
     }
 
-    public void setAccuracy(Integer accuracy) {
+    public void setAccuracy(final Integer accuracy) {
         this.accuracy = accuracy;
     }
 
@@ -193,7 +193,7 @@ public class RoadStationSensor {
         return sensorValueDescriptions;
     }
 
-    public void setSensorValueDescriptions(List<SensorValueDescription> sensorValueDescriptions) {
+    public void setSensorValueDescriptions(final List<SensorValueDescription> sensorValueDescriptions) {
         this.sensorValueDescriptions = sensorValueDescriptions;
     }
 }

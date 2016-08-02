@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 public class NonPublicRoadStationException extends Exception {
 
-    NonPublicRoadStationException(String message) {
+    NonPublicRoadStationException(final String message) {
         super(message);
     }
 }

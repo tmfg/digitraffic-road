@@ -39,14 +39,14 @@ public class LamStationUpdateJobTest extends MetadataTest {
 
         // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
         lamStationUpdater.updateLamStations();
-        LamStationFeatureCollection allInitial =
+        final LamStationFeatureCollection allInitial =
                 lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update lam stations (2 non obsolete stations and 2 obsolete)
         lamMetatiedotLotjuServiceMock.setStateAfterChange(true);
         lamStationUpdater.updateLamStations();
-        LamStationFeatureCollection allAfterChange =
+        final LamStationFeatureCollection allAfterChange =
                 lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
         assertEquals(2, allAfterChange.getFeatures().size());
 
@@ -94,8 +94,8 @@ public class LamStationUpdateJobTest extends MetadataTest {
             <suunta2KuntaKoodi>297</suunta2KuntaKoodi>
             <tyyppi>DSL</tyyppi>
         */
-        LamStationFeature before = findWithLotjuId(allInitial, 310);
-        LamStationFeature after = findWithLotjuId(allAfterChange, 310);
+        final LamStationFeature before = findWithLotjuId(allInitial, 310);
+        final LamStationFeature after = findWithLotjuId(allAfterChange, 310);
 
         assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
         assertEquals("L_vt5_Idensalmi", after.getProperties().getName());
@@ -133,8 +133,8 @@ public class LamStationUpdateJobTest extends MetadataTest {
 
     }
 
-    private LamStationFeature findWithLotjuId(LamStationFeatureCollection collection, long lotjuId) {
-        Optional<LamStationFeature> initial =
+    private LamStationFeature findWithLotjuId(final LamStationFeatureCollection collection, final long lotjuId) {
+        final Optional<LamStationFeature> initial =
                 collection.getFeatures().stream()
                         .filter(x -> x.getProperties().getLotjuId() == lotjuId)
                         .findFirst();

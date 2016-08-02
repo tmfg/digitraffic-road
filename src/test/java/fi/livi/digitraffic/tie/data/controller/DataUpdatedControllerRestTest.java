@@ -30,11 +30,11 @@ public class DataUpdatedControllerRestTest extends RestTest {
     @Test
     public void testCameraDataRestApi() throws Exception {
 
-        Field[] fields = FieldUtils.getAllFields(DataController.class);
-        for (Field field : fields) {
+        final Field[] fields = FieldUtils.getAllFields(DataController.class);
+        for (final Field field : fields) {
             if ( field.getName().endsWith("_PATH") ) {
 
-                String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
                              MetadataApplicationConfiguration.API_DATA_PART_PATH +
                              field.get(controller) +
                              "?" + DataController.LAST_UPDATED_PARAM + "=true";

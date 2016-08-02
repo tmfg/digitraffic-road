@@ -16,7 +16,7 @@ public enum CalculatorDeviceType {
 
     private final String value;
 
-    CalculatorDeviceType(String v) {
+    CalculatorDeviceType(final String v) {
         value = v;
     }
 
@@ -24,9 +24,9 @@ public enum CalculatorDeviceType {
         return value;
     }
 
-    public static CalculatorDeviceType convertFromLaiteTyyppi(LaiteTyyppi laskinlaite) {
+    public static CalculatorDeviceType convertFromLaiteTyyppi(final LaiteTyyppi laskinlaite) {
         if (laskinlaite != null) {
-            for (CalculatorDeviceType calculatorDeviceType : values()) {
+            for (final CalculatorDeviceType calculatorDeviceType : values()) {
                 if (calculatorDeviceType.getValue().equals(laskinlaite.value())) {
                     return calculatorDeviceType;
                 }

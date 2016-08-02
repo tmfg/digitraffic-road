@@ -30,11 +30,11 @@ public class RoadWeatherStationDto {
         return roadStationNaturalId;
     }
 
-    public void setRoadStationNaturalId(long roadStationNaturalId) {
+    public void setRoadStationNaturalId(final long roadStationNaturalId) {
         this.roadStationNaturalId = roadStationNaturalId;
     }
 
-    public void addSensorValue(RoadStationSensorValueDto sensorValue) {
+    public void addSensorValue(final RoadStationSensorValueDto sensorValue) {
         sensorValues.add(sensorValue);
     }
 
@@ -42,7 +42,7 @@ public class RoadWeatherStationDto {
         return sensorValues;
     }
 
-    public void setSensorValues(List<RoadStationSensorValueDto> sensorValues) {
+    public void setSensorValues(final List<RoadStationSensorValueDto> sensorValues) {
         this.sensorValues = sensorValues;
     }
 
@@ -50,7 +50,7 @@ public class RoadWeatherStationDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 

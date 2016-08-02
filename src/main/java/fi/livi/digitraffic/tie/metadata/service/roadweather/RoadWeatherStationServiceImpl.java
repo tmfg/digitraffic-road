@@ -21,8 +21,8 @@ import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 public class RoadWeatherStationServiceImpl implements RoadWeatherStationService {
 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
-    private RoadStationSensorRepository roadStationSensorRepository;
-    private SensorValueRepository sensorValueRepository;
+    private final RoadStationSensorRepository roadStationSensorRepository;
+    private final SensorValueRepository sensorValueRepository;
 
     @Autowired
     public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository,
@@ -62,10 +62,10 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
     @Transactional(readOnly = true)
     @Override
     public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByNaturalId() {
-        List<RoadStationSensor> all = findAllRoadStationSensors();
+        final List<RoadStationSensor> all = findAllRoadStationSensors();
 
-        HashMap<Long, RoadStationSensor> naturalIdToRSS = new HashMap<>();
-        for (RoadStationSensor roadStationSensor : all) {
+        final HashMap<Long, RoadStationSensor> naturalIdToRSS = new HashMap<>();
+        for (final RoadStationSensor roadStationSensor : all) {
             if ( !roadStationSensor.isStatusSensor() ) {
                 naturalIdToRSS.put(roadStationSensor.getNaturalId(), roadStationSensor);
             }
@@ -75,7 +75,7 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
 
     @Transactional
     @Override
-    public RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor) {
+    public RoadStationSensor saveRoadStationSensor(final RoadStationSensor roadStationSensor) {
         final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
         roadStationSensorRepository.flush();
         return sensor;

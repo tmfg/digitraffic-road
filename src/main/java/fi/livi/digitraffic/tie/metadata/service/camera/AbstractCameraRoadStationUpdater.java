@@ -22,7 +22,7 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
     protected RoadStationService roadStationService;
 
     public AbstractCameraRoadStationUpdater(
-            RoadStationService roadStationService) {
+            final RoadStationService roadStationService) {
         this.roadStationService = roadStationService;
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractCameraRoadStationUpdater extends AbstractRoadStati
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
-        String before = ReflectionToStringBuilder.toString(to);
+        final String before = ReflectionToStringBuilder.toString(to);
 
         to.setRoadNumber(from.getTienumero());
         to.setRoadSection(from.getTieosa());

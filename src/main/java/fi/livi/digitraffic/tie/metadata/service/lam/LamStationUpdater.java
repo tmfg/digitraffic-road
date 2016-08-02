@@ -199,7 +199,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
 
     private int updateLamStations(final List<Pair<LamAsemaVO, LamStation>> update) {
 
-        Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
+        final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.LAM_STATION);
 
         int counter = 0;
@@ -208,8 +208,8 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
             final LamAsemaVO la = pair.getLeft();
             final LamStation ls = pair.getRight();
 
-            int hash = HashCodeBuilder.reflectionHashCode(ls);
-            String before = ReflectionToStringBuilder.toString(ls);
+            final int hash = HashCodeBuilder.reflectionHashCode(ls);
+            final String before = ReflectionToStringBuilder.toString(ls);
 
             log.debug("Updating " + ToStringHelpper.toString(la));
 
@@ -286,7 +286,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
         to.setRoadDistrict(roadDistrict);
 
         // Update RoadStation
-        boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
+        final boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
         to.setObsolete(to.getRoadStation().isObsolete());
         to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
 

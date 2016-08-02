@@ -43,12 +43,12 @@ public class RoadAddress {
 
         private static final Logger log = LoggerFactory.getLogger(Side.class);
 
-        Side(int code) {
+        Side(final int code) {
             this.code = code;
         }
-        public static Side getByCode(Integer code) {
+        public static Side getByCode(final Integer code) {
             if (code != null) {
-                for (RoadAddress.Side side : values()) {
+                for (final RoadAddress.Side side : values()) {
                     if (side.code == code) {
                         return side;
                     }
@@ -68,12 +68,12 @@ public class RoadAddress {
         private final int code;
         private static final Logger log = LoggerFactory.getLogger(Side.class);
 
-        Carriageway(int code) {
+        Carriageway(final int code) {
             this.code = code;
         }
-        public static Carriageway getByCode(Integer code) {
+        public static Carriageway getByCode(final Integer code) {
             if (code != null) {
-                for (RoadAddress.Carriageway carriageway : values()) {
+                for (final RoadAddress.Carriageway carriageway : values()) {
                     if (carriageway.code == code) {
                         return carriageway;
                     }
@@ -132,7 +132,7 @@ public class RoadAddress {
     public RoadAddress() {
     }
 
-    public RoadAddress(RoadStation roadStation) {
+    public RoadAddress(final RoadStation roadStation) {
         this.roadStation = roadStation;
     }
 
@@ -140,7 +140,7 @@ public class RoadAddress {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -152,7 +152,7 @@ public class RoadAddress {
         return carriagewayCode;
     }
 
-    public void setCarriagewayCode(Integer carriagewayCode) {
+    public void setCarriagewayCode(final Integer carriagewayCode) {
         this.carriagewayCode = carriagewayCode;
     }
 
@@ -160,7 +160,7 @@ public class RoadAddress {
         return distanceFromRoadSectionStart;
     }
 
-    public void setDistanceFromRoadSectionStart(Integer distanceFromRoadSectionStart) {
+    public void setDistanceFromRoadSectionStart(final Integer distanceFromRoadSectionStart) {
         this.distanceFromRoadSectionStart = distanceFromRoadSectionStart;
     }
 
@@ -173,7 +173,7 @@ public class RoadAddress {
         return sideCode;
     }
 
-    public void setSideCode(Integer sideCode) {
+    public void setSideCode(final Integer sideCode) {
         this.sideCode = sideCode;
     }
 
@@ -181,11 +181,11 @@ public class RoadAddress {
         return roadMaintenanceClass;
     }
 
-    public void setRoadMaintenanceClass(String roadMaintenanceClass) {
+    public void setRoadMaintenanceClass(final String roadMaintenanceClass) {
         this.roadMaintenanceClass = roadMaintenanceClass;
     }
 
-    public void setContractArea(String contractArea) {
+    public void setContractArea(final String contractArea) {
         this.contractArea = contractArea;
     }
 
@@ -193,7 +193,7 @@ public class RoadAddress {
         return contractArea;
     }
 
-    public void setContractAreaCode(Integer contractAreaCode) {
+    public void setContractAreaCode(final Integer contractAreaCode) {
         this.contractAreaCode = contractAreaCode;
     }
 
@@ -205,7 +205,7 @@ public class RoadAddress {
         return roadNumber;
     }
 
-    public void setRoadNumber(Integer roadNumber) {
+    public void setRoadNumber(final Integer roadNumber) {
         this.roadNumber = roadNumber;
     }
 
@@ -213,7 +213,7 @@ public class RoadAddress {
         return roadSection;
     }
 
-    public void setRoadSection(Integer roadSection) {
+    public void setRoadSection(final Integer roadSection) {
         this.roadSection = roadSection;
     }
 
@@ -221,7 +221,7 @@ public class RoadAddress {
         return roadStation;
     }
 
-    public void setRoadStation(RoadStation roadStation) {
+    public void setRoadStation(final RoadStation roadStation) {
         this.roadStation = roadStation;
     }
 
@@ -235,14 +235,14 @@ public class RoadAddress {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        RoadAddress that = (RoadAddress) o;
+        final RoadAddress that = (RoadAddress) o;
 
         return new EqualsBuilder()
                 .append(id, that.id)

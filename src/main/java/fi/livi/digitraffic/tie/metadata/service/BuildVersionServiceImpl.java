@@ -27,11 +27,11 @@ public class BuildVersionServiceImpl implements BuildVersionService{
 
     @Override
     public String getAppBuildRevision() {
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try {
             properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"));
             return "" + properties.get(GIT_REVISION_PROPERTY);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("Failed to load git properties from file: " + GIT_PROPERTIES, e);
             return "?";
         }

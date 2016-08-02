@@ -30,7 +30,7 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
     @JsonIgnore
     private LocalDateTime measured;
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -38,7 +38,7 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
         return id;
     }
 
-    public void setNameOnDevice(String nameOnDevice) {
+    public void setNameOnDevice(final String nameOnDevice) {
         this.nameOnDevice = nameOnDevice;
     }
 
@@ -46,7 +46,7 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
         return nameOnDevice;
     }
 
-    public void setPresentationName(String presentationName) {
+    public void setPresentationName(final String presentationName) {
         this.presentationName = presentationName;
     }
 
@@ -54,7 +54,7 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
         return presentationName;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(final String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -67,7 +67,7 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 }

@@ -21,7 +21,7 @@ public class SensorValueDescriptionPK implements Serializable {
         return sensorId;
     }
 
-    public void setSensorId(long sensorId) {
+    public void setSensorId(final long sensorId) {
         this.sensorId = sensorId;
     }
 
@@ -29,19 +29,19 @@ public class SensorValueDescriptionPK implements Serializable {
         return sensorValue;
     }
 
-    public void setSensorValue(Double sensorValue) {
+    public void setSensorValue(final Double sensorValue) {
         this.sensorValue = sensorValue;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        SensorValueDescriptionPK that = (SensorValueDescriptionPK) o;
+        final SensorValueDescriptionPK that = (SensorValueDescriptionPK) o;
 
         return new EqualsBuilder()
                 .append(sensorId, that.sensorId)

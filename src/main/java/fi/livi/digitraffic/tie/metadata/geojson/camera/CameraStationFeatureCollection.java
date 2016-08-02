@@ -50,14 +50,14 @@ public class CameraStationFeatureCollection implements Iterable<CameraStationFea
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraStationFeatureCollection that = (CameraStationFeatureCollection) o;
+        final CameraStationFeatureCollection that = (CameraStationFeatureCollection) o;
 
         return new EqualsBuilder()
                 .append(type, that.type)

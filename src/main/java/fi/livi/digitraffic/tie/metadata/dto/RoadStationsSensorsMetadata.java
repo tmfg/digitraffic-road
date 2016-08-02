@@ -12,7 +12,7 @@ public class RoadStationsSensorsMetadata {
     @ApiModelProperty(value = "Available sensors of road weather stations", required = true)
     private final List<RoadStationSensor> roadStationSensors;
 
-    public RoadStationsSensorsMetadata(List<RoadStationSensor> roadStationSensors) {
+    public RoadStationsSensorsMetadata(final List<RoadStationSensor> roadStationSensors) {
         this.roadStationSensors = roadStationSensors;
     }
 

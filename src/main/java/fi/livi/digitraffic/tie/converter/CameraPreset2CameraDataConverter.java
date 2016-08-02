@@ -28,17 +28,17 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
     private final String weathercamBaseurl;
 
     @Autowired
-    public CameraPreset2CameraDataConverter(@Value("${weathercam.baseurl}")
-                                                 String weathercamBaseurl) {
+    public CameraPreset2CameraDataConverter(@Value("${weathercam.baseurl}") final
+                                            String weathercamBaseurl) {
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
     public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets,
-                                           LocalDateTime updated) {
+                                           final LocalDateTime updated) {
         final List<CameraStationDataDto> collection = new ArrayList<>();
 
         // Cameras mapped with cameraId
-        Map<String, CameraStationDataDto> cameraStationMap = new HashMap<>();
+        final Map<String, CameraStationDataDto> cameraStationMap = new HashMap<>();
 
         for(final CameraPreset cp : cameraPresets) {
             // CameraPreset contains camera and preset informations and
@@ -51,7 +51,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
                     cameraStationMap.put(cp.getCameraId(), cameraStationFeature);
                     collection.add(cameraStationFeature);
                 }
-                CameraPresetDataDto preset = convertPreset(cp);
+                final CameraPresetDataDto preset = convertPreset(cp);
                 cameraStationFeature.addPreset(preset);
             }
         }
@@ -59,9 +59,9 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         return new CameraRootDataObjectDto(collection, updated);
     }
 
-    private CameraPresetDataDto convertPreset(CameraPreset cp) {
+    private CameraPresetDataDto convertPreset(final CameraPreset cp) {
 
-        CameraPresetDataDto dto = new CameraPresetDataDto();
+        final CameraPresetDataDto dto = new CameraPresetDataDto();
         dto.setMeasured(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());
         dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));

@@ -12,7 +12,7 @@ public class ForecastSectionsMetadata {
     @ApiModelProperty(value = "Road weather forecast sections", required = true)
     private final List<ForecastSection> forecastSections;
 
-    public ForecastSectionsMetadata(List<ForecastSection> forecastSections) {
+    public ForecastSectionsMetadata(final List<ForecastSection> forecastSections) {
         this.forecastSections = forecastSections;
     }
 

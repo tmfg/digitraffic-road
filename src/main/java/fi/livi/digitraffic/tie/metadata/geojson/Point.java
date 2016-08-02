@@ -66,7 +66,7 @@ public class Point {
             return false;
         }
         final Point point = (Point) o;
-        EqualsBuilder eq = new EqualsBuilder();
+        final EqualsBuilder eq = new EqualsBuilder();
         eq.append(getCoordinates(), point.getCoordinates())
                 .append(getCrs(), point.getCrs())
                 .append(getType(), point.getType());

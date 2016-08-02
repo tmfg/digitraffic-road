@@ -52,7 +52,7 @@ public class RoadStationStatus {
         return conditionCode;
     }
 
-    public void setConditionCode(Integer conditionCode) {
+    public void setConditionCode(final Integer conditionCode) {
         this.conditionCode = conditionCode;
     }
 
@@ -71,7 +71,7 @@ public class RoadStationStatus {
         return ToStringHelpper.toString(conditionUpdated, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 
-    public void setCollectionStatusCode(Integer collectionStatusCode) {
+    public void setCollectionStatusCode(final Integer collectionStatusCode) {
         this.collectionStatusCode = collectionStatusCode;
     }
 
@@ -84,11 +84,11 @@ public class RoadStationStatus {
         return RoadStationCollectionStatus.fromCollectionStatusCode(collectionStatusCode);
     }
 
-    public void setCollectionStatusUpdated(LocalDateTime collectionStatusUpdated) {
+    public void setCollectionStatusUpdated(final LocalDateTime collectionStatusUpdated) {
         this.collectionStatusUpdated = collectionStatusUpdated;
     }
 
-    public void setConditionUpdated(LocalDateTime conditionUpdated) {
+    public void setConditionUpdated(final LocalDateTime conditionUpdated) {
         this.conditionUpdated = conditionUpdated;
     }
 

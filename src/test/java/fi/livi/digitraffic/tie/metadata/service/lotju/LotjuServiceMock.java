@@ -19,8 +19,8 @@ public abstract class LotjuServiceMock {
 
     private static final Logger log = LoggerFactory.getLogger(LamMetatiedotLotjuServiceMock.class);
     private final String metadataServerAddress;
-    private Class<?> metatiedotClass;
-    private QName serviceName;
+    private final Class<?> metatiedotClass;
+    private final QName serviceName;
 
     private boolean stateAfterChange = false;
 
@@ -48,7 +48,7 @@ public abstract class LotjuServiceMock {
      */
     protected void initService() {
         log.info("Init LotjuServiceMock with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
-        JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
+        final JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(metatiedotClass);
         svrFactory.setAddress(metadataServerAddress);
         svrFactory.setServiceBean(this);
@@ -65,7 +65,7 @@ public abstract class LotjuServiceMock {
         return stateAfterChange;
     }
 
-    public void setStateAfterChange(boolean stateChanged) {
+    public void setStateAfterChange(final boolean stateChanged) {
         this.stateAfterChange = stateChanged;
     }
 
@@ -75,19 +75,19 @@ public abstract class LotjuServiceMock {
      * @param objectFactoryClass
      * @return response value Object returned from JAXBElement<?>.getValue()
      */
-    protected Object readLotjuMetadataXml(String filePath, final Class<?> objectFactoryClass) {
+    protected Object readLotjuMetadataXml(final String filePath, final Class<?> objectFactoryClass) {
         try {
-            Resource resource = resourceLoader.getResource("classpath:" + filePath);
-            File xmlFile = resource.getFile();
-            JAXBContext jaxbContext = JAXBContext.newInstance(objectFactoryClass);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            final Resource resource = resourceLoader.getResource("classpath:" + filePath);
+            final File xmlFile = resource.getFile();
+            final JAXBContext jaxbContext = JAXBContext.newInstance(objectFactoryClass);
+            final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            JAXBElement<?> response =
+            final JAXBElement<?> response =
                     (JAXBElement<?>) jaxbUnmarshaller.unmarshal(xmlFile);
             return response.getValue();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             throw new RuntimeException(e);
         }
     }

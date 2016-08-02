@@ -83,7 +83,7 @@ public class RoadStation {
     protected RoadStation() {
     }
 
-    public RoadStation(RoadStationType type) {
+    public RoadStation(final RoadStationType type) {
         this.type = type;
     }
 
@@ -135,7 +135,7 @@ public class RoadStation {
         this.type = type;
     }
 
-    public void setPublic(boolean aPublic) {
+    public void setPublic(final boolean aPublic) {
         this.isPublic = aPublic;
     }
 
@@ -271,11 +271,11 @@ public class RoadStation {
         return roadStationSensors;
     }
 
-    public void setRoadStationSensors(List<RoadStationSensor> roadStationSensors) {
+    public void setRoadStationSensors(final List<RoadStationSensor> roadStationSensors) {
         this.roadStationSensors = roadStationSensors;
     }
 
-    public void setRepairMaintenanceDate(LocalDateTime repairMaintenanceDate) {
+    public void setRepairMaintenanceDate(final LocalDateTime repairMaintenanceDate) {
         this.repairMaintenanceDate = repairMaintenanceDate;
     }
 
@@ -283,7 +283,7 @@ public class RoadStation {
         return repairMaintenanceDate;
     }
 
-    public void setAnnualMaintenanceDate(LocalDateTime annualMaintenanceDate) {
+    public void setAnnualMaintenanceDate(final LocalDateTime annualMaintenanceDate) {
         this.annualMaintenanceDate = annualMaintenanceDate;
     }
 
@@ -295,7 +295,7 @@ public class RoadStation {
         return roadAddress;
     }
 
-    public void setRoadAddress(RoadAddress roadAddress) {
+    public void setRoadAddress(final RoadAddress roadAddress) {
         this.roadAddress = roadAddress;
     }
 
@@ -303,11 +303,11 @@ public class RoadStation {
         return state;
     }
 
-    public void setState(RoadStationState state) {
+    public void setState(final RoadStationState state) {
         this.state = state;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(final String location) {
         this.location = location;
     }
 
@@ -315,7 +315,7 @@ public class RoadStation {
         return location;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(final LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
@@ -323,7 +323,7 @@ public class RoadStation {
         return startDate;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -331,7 +331,7 @@ public class RoadStation {
         return country;
     }
 
-    public void setLiviId(String liviId) {
+    public void setLiviId(final String liviId) {
         this.liviId = liviId;
     }
 

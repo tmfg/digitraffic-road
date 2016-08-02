@@ -25,10 +25,10 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
 
     @Transactional(readOnly = true)
     @Override
-    public FreeFlowSpeedRootDataObjectDto listPublicFreeFlowSpeeds(boolean onlyUpdateInfo) {
+    public FreeFlowSpeedRootDataObjectDto listPublicFreeFlowSpeeds(final boolean onlyUpdateInfo) {
 
         // TODO: where to read update info?
-        LocalDateTime updated = LocalDateTime.now();
+        final LocalDateTime updated = LocalDateTime.now();
         if (onlyUpdateInfo) {
             return new FreeFlowSpeedRootDataObjectDto(updated);
         } else {

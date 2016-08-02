@@ -19,12 +19,12 @@ public class RoadWeatherRootDataObjectDto extends RootDataObjectDto {
     @ApiModelProperty(value = "Road weather stations data")
     private final List<RoadWeatherStationDto> roadWeatherStations;
 
-    public RoadWeatherRootDataObjectDto(List<RoadWeatherStationDto> roadWeatherStations, LocalDateTime updated) {
+    public RoadWeatherRootDataObjectDto(final List<RoadWeatherStationDto> roadWeatherStations, final LocalDateTime updated) {
         super(updated);
         this.roadWeatherStations = roadWeatherStations;
     }
 
-    public RoadWeatherRootDataObjectDto(LocalDateTime updated) {
+    public RoadWeatherRootDataObjectDto(final LocalDateTime updated) {
         this(null, updated);
     }
 

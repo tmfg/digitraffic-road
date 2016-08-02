@@ -103,7 +103,7 @@ public class LamStationProperties extends RoadStationProperties {
         this.lamStationType = lamStationType;
     }
 
-    public void setCalculatorDeviceType(CalculatorDeviceType calculatorDeviceType) {
+    public void setCalculatorDeviceType(final CalculatorDeviceType calculatorDeviceType) {
         this.calculatorDeviceType = calculatorDeviceType;
     }
 
@@ -112,14 +112,14 @@ public class LamStationProperties extends RoadStationProperties {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        LamStationProperties that = (LamStationProperties) o;
+        final LamStationProperties that = (LamStationProperties) o;
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))

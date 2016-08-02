@@ -19,12 +19,12 @@ public class LamRootDataObjectDto extends RootDataObjectDto {
     private final List<LamMeasurementDto> lamMeasurements;
 
     public LamRootDataObjectDto(final List<LamMeasurementDto> lamMeasurements,
-                                LocalDateTime updated) {
+                                final LocalDateTime updated) {
         super(updated);
         this.lamMeasurements = lamMeasurements;
     }
 
-    public LamRootDataObjectDto(LocalDateTime updated) {
+    public LamRootDataObjectDto(final LocalDateTime updated) {
         this(null, updated);
     }
 

@@ -24,7 +24,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         for(final RoadWeatherStation rws : stations) {
             try {
                 collection.add(convert(rws));
-            } catch (NonPublicRoadStationException nprse) {
+            } catch (final NonPublicRoadStationException nprse) {
                 //Skip non public roadstation
                 log.warn("Skipping: " + nprse.getMessage());
                 continue;
@@ -55,7 +55,7 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
         properties.setMaster(rws.isMaster());
 
         if (rws.getRoadStation() != null) {
-            for (fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
+            for (final fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
                 properties.addSensor(rSSensor);
             }
         }

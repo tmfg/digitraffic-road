@@ -19,12 +19,12 @@ public class TrafficFluencyRootDataObjectDto extends RootDataObjectDto {
     private final List<LatestMedianDataDto> latestMedians;
 
     public TrafficFluencyRootDataObjectDto(final List<LatestMedianDataDto> latestMedians,
-                                           LocalDateTime uptaded) {
+                                           final LocalDateTime uptaded) {
         super(uptaded);
         this.latestMedians = latestMedians;
     }
 
-    public TrafficFluencyRootDataObjectDto(LocalDateTime updated) {
+    public TrafficFluencyRootDataObjectDto(final LocalDateTime updated) {
         super(updated);
         this.latestMedians = null;
     }

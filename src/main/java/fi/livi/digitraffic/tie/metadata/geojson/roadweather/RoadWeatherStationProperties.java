@@ -36,7 +36,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Is station master or slave station")
     private Boolean master;
 
-    private static RSComparator rsComparator = new RSComparator();
+    private static final RSComparator rsComparator = new RSComparator();
 
     public long getId() {
         return id;
@@ -46,7 +46,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
         this.id = id;
     }
 
-    public void setRoadWeatherStationType(RoadWeatherStationType roadWeatherStationType) {
+    public void setRoadWeatherStationType(final RoadWeatherStationType roadWeatherStationType) {
         this.roadWeatherStationType = roadWeatherStationType;
     }
 
@@ -61,25 +61,25 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     @ApiModelProperty(value = "Sensors ids of road station")
     public List<Long> getStationSensors() {
-        List<Long> ids = new ArrayList<>();
-        for (RoadStationSensor sensor : sensors) {
+        final List<Long> ids = new ArrayList<>();
+        for (final RoadStationSensor sensor : sensors) {
             ids.add(sensor.getNaturalId());
         }
         return ids;
     }
 
-    public void setSensors(List<RoadStationSensor> sensors) {
+    public void setSensors(final List<RoadStationSensor> sensors) {
         this.sensors = sensors;
         Collections.sort(sensors, rsComparator);
     }
 
-    public void addSensor(RoadStationSensor roadStationSensor) {
+    public void addSensor(final RoadStationSensor roadStationSensor) {
         sensors.add(roadStationSensor);
         Collections.sort(sensors, rsComparator);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -89,7 +89,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        RoadWeatherStationProperties rhs = (RoadWeatherStationProperties) obj;
+        final RoadWeatherStationProperties rhs = (RoadWeatherStationProperties) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
                 .append(this.id, rhs.id)
@@ -108,7 +108,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
                 .toHashCode();
     }
 
-    public void setMaster(Boolean master) {
+    public void setMaster(final Boolean master) {
         this.master = master;
     }
 
@@ -118,7 +118,7 @@ public class RoadWeatherStationProperties extends RoadStationProperties {
 
     private static class RSComparator implements Comparator<RoadStationSensor> {
         @Override
-        public int compare(RoadStationSensor o1, RoadStationSensor o2) {
+        public int compare(final RoadStationSensor o1, final RoadStationSensor o2) {
             return Long.compare(o1.getNaturalId(), o2.getNaturalId());
         }
     }

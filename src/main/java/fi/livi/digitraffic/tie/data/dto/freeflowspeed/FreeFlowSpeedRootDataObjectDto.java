@@ -30,7 +30,7 @@ public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
         this.lamFreeFlowSpeeds = lamFreeFlowSpeeds;
     }
 
-    public FreeFlowSpeedRootDataObjectDto(LocalDateTime updated) {
+    public FreeFlowSpeedRootDataObjectDto(final LocalDateTime updated) {
         this(null, null, updated);
     }
 

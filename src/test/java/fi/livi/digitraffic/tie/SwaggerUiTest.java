@@ -29,12 +29,12 @@ public class SwaggerUiTest extends MetadataTest {
     @Autowired
     private BuildVersionService versionService;
 
-    private final MediaType restContentType = MediaType.APPLICATION_JSON;
+    private final MediaType restContentType = MediaType.APPLICATION_JSON_UTF8;
 
 
     @Before
     public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
     @Test

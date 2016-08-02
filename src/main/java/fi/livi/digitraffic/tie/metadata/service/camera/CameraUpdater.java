@@ -88,17 +88,17 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
         final List<CameraPreset> currentCameraPresetsWithOutRoadStation =
                 cameraPresetService.finAllCameraPresetsWithOutRoadStation();
 
-        Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
+        final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA);
 
         for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
 
             // Convert presetId to naturalId because using cameraId is not reliable before first run
-            long naturalId = convertPresetIdToVanhaId(cameraPreset.getPresetId());
+            final long naturalId = convertPresetIdToVanhaId(cameraPreset.getPresetId());
             // Fix cameraId for all
             cameraPreset.setCameraId(convertPresetIdToCameraId(cameraPreset.getPresetId()));
 
-            RoadStation existingRs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
+            final RoadStation existingRs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
 
             if (existingRs != null) {
                 cameraPreset.setRoadStation(existingRs);
@@ -213,7 +213,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
             final CameraPreset cameraPreset = pair.getRight();
 
             final int hash = HashCodeBuilder.reflectionHashCode(cameraPreset);
-            String before = ReflectionToStringBuilder.toString(cameraPreset);
+            final String before = ReflectionToStringBuilder.toString(cameraPreset);
 
             RoadStation rs = cameraPreset.getRoadStation();
             if (rs == null) {
@@ -263,7 +263,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
             cp.setPublicInternal(true);
 
             // Do not remove from map. because one roadstation can have multiple presets
-            long roadStationNaturalId = kamera.getVanhaId().longValue();
+            final long roadStationNaturalId = kamera.getVanhaId().longValue();
             RoadStation rs = cameraRoadStationsMappedByNaturalId.get( roadStationNaturalId );
             boolean roadStationNew = false;
             if (rs == null) {
@@ -366,7 +366,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
         return counter;
     }
 
-    private static int obsoleteRoadStations(List<RoadStation> obsoleteRoadStations) {
+    private static int obsoleteRoadStations(final List<RoadStation> obsoleteRoadStations) {
         int counter = 0;
         for (final RoadStation rs : obsoleteRoadStations) {
             if (rs.obsolete()) {

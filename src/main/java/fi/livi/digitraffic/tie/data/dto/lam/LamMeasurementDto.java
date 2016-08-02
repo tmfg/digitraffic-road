@@ -88,7 +88,7 @@ public class LamMeasurementDto implements MeasuredDataObjectDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 
@@ -96,7 +96,7 @@ public class LamMeasurementDto implements MeasuredDataObjectDto {
         return stationLatestMeasured;
     }
 
-    public void setStationLatestMeasured(LocalDateTime stationLatestMeasured) {
+    public void setStationLatestMeasured(final LocalDateTime stationLatestMeasured) {
         this.stationLatestMeasured = stationLatestMeasured;
     }
 }

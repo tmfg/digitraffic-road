@@ -239,7 +239,7 @@ public class LamStation {
         this.lamStationType = lamStationType;
     }
 
-    public void setCalculatorDeviceType(CalculatorDeviceType calculatorDeviceType) {
+    public void setCalculatorDeviceType(final CalculatorDeviceType calculatorDeviceType) {
         this.calculatorDeviceType = calculatorDeviceType;
     }
 

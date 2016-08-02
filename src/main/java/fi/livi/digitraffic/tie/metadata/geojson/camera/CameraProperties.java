@@ -67,7 +67,7 @@ public class CameraProperties extends RoadStationProperties {
         return cameraType;
     }
 
-    public void setNearestRoadWeatherStationNaturalId(Long nearestRoadWeatherStationNaturalId) {
+    public void setNearestRoadWeatherStationNaturalId(final Long nearestRoadWeatherStationNaturalId) {
         this.nearestRoadWeatherStationNaturalId = nearestRoadWeatherStationNaturalId;
     }
 
@@ -79,24 +79,24 @@ public class CameraProperties extends RoadStationProperties {
         return presets;
     }
 
-    public void setPresets(List<CameraPresetDto> presets) {
+    public void setPresets(final List<CameraPresetDto> presets) {
         this.presets = presets;
     }
 
-    public void addPreset(CameraPresetDto preset) {
+    public void addPreset(final CameraPresetDto preset) {
         this.presets.add(preset);
         Collections.sort(this.presets);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraProperties that = (CameraProperties) o;
+        final CameraProperties that = (CameraProperties) o;
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))

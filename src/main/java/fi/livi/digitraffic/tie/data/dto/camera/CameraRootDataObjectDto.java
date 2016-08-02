@@ -18,13 +18,13 @@ public class CameraRootDataObjectDto extends RootDataObjectDto {
     @ApiModelProperty(value = "Camera stations data")
     private final List<CameraStationDataDto> cameraStations;
 
-    public CameraRootDataObjectDto(List<CameraStationDataDto> cameraStationData,
-                                   LocalDateTime updated) {
+    public CameraRootDataObjectDto(final List<CameraStationDataDto> cameraStationData,
+                                   final LocalDateTime updated) {
         super(updated);
         this.cameraStations = cameraStationData;
     }
 
-    public CameraRootDataObjectDto(LocalDateTime updated) {
+    public CameraRootDataObjectDto(final LocalDateTime updated) {
         this(null, updated);
     }
 

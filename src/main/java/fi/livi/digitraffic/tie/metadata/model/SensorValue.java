@@ -40,7 +40,7 @@ public class SensorValue {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class SensorValue {
         return value;
     }
 
-    public void setValue(Double value) {
+    public void setValue(final Double value) {
         this.value = value;
     }
 
@@ -56,7 +56,7 @@ public class SensorValue {
         return sensorValueMeasured;
     }
 
-    public void setSensorValueMeasured(LocalDateTime sensorValueMeasured) {
+    public void setSensorValueMeasured(final LocalDateTime sensorValueMeasured) {
         this.sensorValueMeasured = sensorValueMeasured;
     }
 
@@ -64,7 +64,7 @@ public class SensorValue {
         return roadStation;
     }
 
-    public void setRoadStation(RoadStation roadStation) {
+    public void setRoadStation(final RoadStation roadStation) {
         this.roadStation = roadStation;
     }
 
@@ -72,7 +72,7 @@ public class SensorValue {
         return roadStationSensor;
     }
 
-    public void setRoadStationSensor(RoadStationSensor roadStationSensor) {
+    public void setRoadStationSensor(final RoadStationSensor roadStationSensor) {
         this.roadStationSensor = roadStationSensor;
     }
 }

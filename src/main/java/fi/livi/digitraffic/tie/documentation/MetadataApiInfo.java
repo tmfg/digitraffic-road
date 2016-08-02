@@ -7,7 +7,7 @@ import springfox.documentation.service.Contact;
 
 public class MetadataApiInfo extends ApiInfo {
 
-    private BuildVersionService buildVersionService;
+    private final BuildVersionService buildVersionService;
     protected MessageService messageService;
 
     public MetadataApiInfo(final MessageService messageService, final BuildVersionService buildVersionService) {

@@ -45,7 +45,7 @@ public class FluencyClass {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(final int code) {
         this.code = code;
     }
 
@@ -53,7 +53,7 @@ public class FluencyClass {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -62,7 +62,7 @@ public class FluencyClass {
         return lowerLimit;
     }
 
-    public void setLowerLimit(BigDecimal lowerLimit) {
+    public void setLowerLimit(final BigDecimal lowerLimit) {
         this.lowerLimit = lowerLimit;
     }
 
@@ -70,7 +70,7 @@ public class FluencyClass {
         return nameEn;
     }
 
-    public void setNameEn(String nameEn) {
+    public void setNameEn(final String nameEn) {
         this.nameEn = nameEn;
     }
 
@@ -85,7 +85,7 @@ public class FluencyClass {
      *          Use <code>null</code>, if no upper limit is defined and any ratio above lower
      *          limit fits into this class.
      */
-    public void setUpperLimit(BigDecimal upperLimit) {
+    public void setUpperLimit(final BigDecimal upperLimit) {
         this.upperLimit = upperLimit;
     }
 }

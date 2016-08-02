@@ -58,7 +58,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return medianSpeed;
     }
 
-    public void setMedianSpeed(BigDecimal medianSpeed) {
+    public void setMedianSpeed(final BigDecimal medianSpeed) {
         this.medianSpeed = medianSpeed;
     }
 
@@ -66,7 +66,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return medianJourneyTime;
     }
 
-    public void setMedianJourneyTime(Long medianJourneyTime) {
+    public void setMedianJourneyTime(final Long medianJourneyTime) {
         this.medianJourneyTime = medianJourneyTime;
     }
 
@@ -74,7 +74,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return ratioToFreeFlowSpeed;
     }
 
-    public void setRatioToFreeFlowSpeed(BigDecimal ratioToFreeFlowSpeed) {
+    public void setRatioToFreeFlowSpeed(final BigDecimal ratioToFreeFlowSpeed) {
         this.ratioToFreeFlowSpeed = ratioToFreeFlowSpeed;
     }
 
@@ -82,7 +82,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return linkNaturalId;
     }
 
-    public void setLinkNaturalId(long linkId) {
+    public void setLinkNaturalId(final long linkId) {
         this.linkNaturalId = linkId;
     }
 
@@ -90,7 +90,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return nobs;
     }
 
-    public void setNobs(Integer nobs) {
+    public void setNobs(final Integer nobs) {
         this.nobs = nobs;
     }
 
@@ -99,7 +99,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return fluencyClass;
     }
 
-    public void setFluencyClass(FluencyClass fluencyClass) {
+    public void setFluencyClass(final FluencyClass fluencyClass) {
         this.fluencyClass = fluencyClass;
     }
 
@@ -116,7 +116,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 }

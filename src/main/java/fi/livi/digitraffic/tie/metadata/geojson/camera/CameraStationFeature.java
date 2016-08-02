@@ -62,14 +62,14 @@ public class CameraStationFeature {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CameraStationFeature that = (CameraStationFeature) o;
+        final CameraStationFeature that = (CameraStationFeature) o;
 
         return new EqualsBuilder()
                 .append(type, that.type)

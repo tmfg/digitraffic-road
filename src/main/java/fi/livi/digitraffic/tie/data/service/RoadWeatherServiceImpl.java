@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @Service
 public class RoadWeatherServiceImpl implements RoadWeatherService {
     private static final Logger log = LoggerFactory.getLogger(RoadWeatherServiceImpl.class);
-    private RoadStationSensorService roadStationSensorService;
+    private final RoadStationSensorService roadStationSensorService;
 
     @Autowired
     public RoadWeatherServiceImpl(final RoadStationSensorService roadStationSensorService) {
@@ -29,18 +29,18 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
 
     @Transactional(readOnly = true)
     @Override
-    public RoadWeatherRootDataObjectDto findPublicRoadWeatherData(boolean onlyUpdateInfo) {
+    public RoadWeatherRootDataObjectDto findPublicRoadWeatherData(final boolean onlyUpdateInfo) {
 
-        LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime();
+        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
             return new RoadWeatherRootDataObjectDto(updated);
         } else {
 
-            Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoletePublicRoadWeatherStationSensorValues();
-            List<RoadWeatherStationDto> stations = new ArrayList<>();
-            for (Map.Entry<Long, List<RoadStationSensorValueDto>> entry : values.entrySet()) {
-                RoadWeatherStationDto dto = new RoadWeatherStationDto();
+            final Map<Long, List<RoadStationSensorValueDto>> values = roadStationSensorService.findAllNonObsoletePublicRoadWeatherStationSensorValues();
+            final List<RoadWeatherStationDto> stations = new ArrayList<>();
+            for (final Map.Entry<Long, List<RoadStationSensorValueDto>> entry : values.entrySet()) {
+                final RoadWeatherStationDto dto = new RoadWeatherStationDto();
                 stations.add(dto);
                 dto.setRoadStationNaturalId(entry.getKey());
                 dto.setSensorValues(entry.getValue());
@@ -51,7 +51,7 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
         }
     }
 
-    private static LocalDateTime getStationMeasurement(List<RoadStationSensorValueDto> sensorValues) {
+    private static LocalDateTime getStationMeasurement(final List<RoadStationSensorValueDto> sensorValues) {
         if (sensorValues != null && !sensorValues.isEmpty()) {
             return sensorValues.get(0).getStationLatestMeasured();
         }

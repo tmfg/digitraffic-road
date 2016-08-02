@@ -22,14 +22,14 @@ public class LamDataServiceImpl implements LamDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public LamRootDataObjectDto listPublicLamData(boolean onlyUpdateInfo) {
+    public LamRootDataObjectDto listPublicLamData(final boolean onlyUpdateInfo) {
 
-        LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
+        final LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
             return new LamRootDataObjectDto(updated);
         } else {
-            List<LamMeasurementDto> all = lamMeasurementRepository.listAllLamDataFromNonObsoleteStations();
+            final List<LamMeasurementDto> all = lamMeasurementRepository.listAllLamDataFromNonObsoleteStations();
             return new LamRootDataObjectDto(all,
                                             updated);
         }

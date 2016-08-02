@@ -24,7 +24,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         for(final LamStation lam : stations) {
             try {
                 collection.add(convert(lam));
-            } catch (NonPublicRoadStationException nprse) {
+            } catch (final NonPublicRoadStationException nprse) {
                 //Skip non public roadstation
                 log.warn("Skipping: " + nprse.getMessage());
             }

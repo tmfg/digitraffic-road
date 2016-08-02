@@ -19,12 +19,12 @@ public class RoadStationStatusesDataObjectDto extends RootDataObjectDto {
     @ApiModelProperty(value = "Road station statuses'")
     private final List<RoadStationStatus> roadStationStatuses;
 
-    public RoadStationStatusesDataObjectDto(final List<RoadStationStatus> roadStationStatuses, LocalDateTime lastUpdated) {
+    public RoadStationStatusesDataObjectDto(final List<RoadStationStatus> roadStationStatuses, final LocalDateTime lastUpdated) {
         super(lastUpdated);
         this.roadStationStatuses = roadStationStatuses;
     }
 
-    public RoadStationStatusesDataObjectDto(LocalDateTime updated) {
+    public RoadStationStatusesDataObjectDto(final LocalDateTime updated) {
         this(null, updated);
     }
 

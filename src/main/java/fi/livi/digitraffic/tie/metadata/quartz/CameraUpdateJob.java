@@ -18,12 +18,12 @@ public class CameraUpdateJob implements Job {
     public CameraUpdater cameraUpdater;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) {
+    public void execute(final JobExecutionContext jobExecutionContext) {
         log.info("Quartz CameraUpdateJob start");
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
-        long time = (System.currentTimeMillis() - start) / 1000;
+        final long time = (System.currentTimeMillis() - start) / 1000;
 
         log.info("Quartz CameraUpdateJob end (took " + time + " s)");
     }

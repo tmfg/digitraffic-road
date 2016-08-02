@@ -19,22 +19,22 @@ public class RoadWeatherStationUpdateJob implements Job {
     public RoadWeatherStationUpdater roadWeatherStationUpdater;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) {
+    public void execute(final JobExecutionContext jobExecutionContext) {
         log.info("Quartz RoadWeatherStationUpdateJob start");
 
-        long startSensors = System.currentTimeMillis();
+        final long startSensors = System.currentTimeMillis();
         roadWeatherStationUpdater.updateRoadStationSensors();
 
-        long startStationsEndSensors = System.currentTimeMillis();
+        final long startStationsEndSensors = System.currentTimeMillis();
         roadWeatherStationUpdater.updateRoadWeatherStations();
 
-        long startStationsSensorsEndStations = System.currentTimeMillis();
+        final long startStationsSensorsEndStations = System.currentTimeMillis();
         roadWeatherStationUpdater.updateRoadWeatherStationsRoadStationSensors();
-        long endStationsSensors = System.currentTimeMillis();
+        final long endStationsSensors = System.currentTimeMillis();
 
-        long timeSensors = (startStationsEndSensors - startSensors)/1000;
-        long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
-        long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
+        final long timeSensors = (startStationsEndSensors - startSensors)/1000;
+        final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
+        final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
 
         log.info("Quartz RoadWeatherStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +

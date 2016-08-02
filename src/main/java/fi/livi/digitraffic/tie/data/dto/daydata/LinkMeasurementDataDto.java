@@ -44,7 +44,7 @@ public class LinkMeasurementDataDto {
         return medianTravelTime;
     }
 
-    public void setMedianTravelTime(int medianTravelTime) {
+    public void setMedianTravelTime(final int medianTravelTime) {
         this.medianTravelTime = medianTravelTime;
     }
 
@@ -52,7 +52,7 @@ public class LinkMeasurementDataDto {
         return averageSpeed;
     }
 
-    public void setAverageSpeed(double averageSpeed) {
+    public void setAverageSpeed(final double averageSpeed) {
         this.averageSpeed = averageSpeed;
     }
 
@@ -60,7 +60,7 @@ public class LinkMeasurementDataDto {
         return linkId;
     }
 
-    public void setLinkId(int linkId) {
+    public void setLinkId(final int linkId) {
         this.linkId = linkId;
     }
 
@@ -68,7 +68,7 @@ public class LinkMeasurementDataDto {
         return rownum;
     }
 
-    public void setRownum(int rownum) {
+    public void setRownum(final int rownum) {
         this.rownum = rownum;
     }
 
@@ -76,7 +76,7 @@ public class LinkMeasurementDataDto {
         return minute;
     }
 
-    public void setMinute(int minute) {
+    public void setMinute(final int minute) {
         this.minute = minute;
     }
 
@@ -84,7 +84,7 @@ public class LinkMeasurementDataDto {
         return fluencyClass;
     }
 
-    public void setFluencyClass(int fluencyClass) {
+    public void setFluencyClass(final int fluencyClass) {
         this.fluencyClass = fluencyClass;
     }
 
@@ -97,7 +97,7 @@ public class LinkMeasurementDataDto {
         return measured;
     }
 
-    public void setMeasured(LocalDateTime measured) {
+    public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
 }

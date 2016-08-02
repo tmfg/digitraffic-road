@@ -21,7 +21,7 @@ public abstract class AbstractLamRoadStationAttributeUpdater extends AbstractRoa
 
     protected RoadStationService roadStationService;
 
-    public AbstractLamRoadStationAttributeUpdater(RoadStationService roadStationService) {
+    public AbstractLamRoadStationAttributeUpdater(final RoadStationService roadStationService) {
         this.roadStationService = roadStationService;
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractLamRoadStationAttributeUpdater extends AbstractRoa
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
-        String before = ReflectionToStringBuilder.toString(to);
+        final String before = ReflectionToStringBuilder.toString(to);
 
         to.setRoadNumber(from.getTienumero());
         to.setRoadSection(from.getTieosa());

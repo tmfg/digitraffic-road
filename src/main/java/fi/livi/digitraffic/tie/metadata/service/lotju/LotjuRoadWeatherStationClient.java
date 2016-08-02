@@ -43,7 +43,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
         return response.getValue().getTiesaaAsema();
     }
 
-    public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(Set<Long> tiesaaAsemaLotjuIds) {
+    public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(final Set<Long> tiesaaAsemaLotjuIds) {
 
         log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " TiesaaAsemas");
 
@@ -54,7 +54,7 @@ public class LotjuRoadWeatherStationClient extends WebServiceGatewaySupport {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
 
         int counter = 0;
-        for (Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
+        for (final Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
             request.setId(tiesaaAsemaLotjuId);
 
             final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)

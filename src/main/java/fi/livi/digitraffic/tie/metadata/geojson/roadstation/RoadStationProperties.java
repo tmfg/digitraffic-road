@@ -89,7 +89,7 @@ public abstract class RoadStationProperties {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -167,11 +167,11 @@ public abstract class RoadStationProperties {
         return roadAddress;
     }
 
-    public void setRoadAddress(RoadAddress roadAddress) {
+    public void setRoadAddress(final RoadAddress roadAddress) {
         this.roadAddress = roadAddress;
     }
 
-    public void setLiviId(String liviId) {
+    public void setLiviId(final String liviId) {
         this.liviId = liviId;
     }
 
@@ -179,7 +179,7 @@ public abstract class RoadStationProperties {
         return liviId;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -187,7 +187,7 @@ public abstract class RoadStationProperties {
         return country;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(final LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
@@ -195,7 +195,7 @@ public abstract class RoadStationProperties {
         return startDate;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(final String location) {
         this.location = location;
     }
 
@@ -203,7 +203,7 @@ public abstract class RoadStationProperties {
         return location;
     }
 
-    public void setState(RoadStationState state) {
+    public void setState(final RoadStationState state) {
         this.state = state;
     }
 
@@ -211,7 +211,7 @@ public abstract class RoadStationProperties {
         return state;
     }
 
-    public void setRepairMaintenanceDate(LocalDateTime repairMaintenanceDate) {
+    public void setRepairMaintenanceDate(final LocalDateTime repairMaintenanceDate) {
         this.repairMaintenanceDate = repairMaintenanceDate;
     }
 
@@ -219,7 +219,7 @@ public abstract class RoadStationProperties {
         return repairMaintenanceDate;
     }
 
-    public void setAnnualMaintenanceDate(LocalDateTime annualMaintenanceDate) {
+    public void setAnnualMaintenanceDate(final LocalDateTime annualMaintenanceDate) {
         this.annualMaintenanceDate = annualMaintenanceDate;
     }
 
@@ -258,14 +258,14 @@ public abstract class RoadStationProperties {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
 
         if (o == null || getClass() != o.getClass())
             return false;
 
-        RoadStationProperties that = (RoadStationProperties) o;
+        final RoadStationProperties that = (RoadStationProperties) o;
 
         return new EqualsBuilder()
                 .append(naturalId, that.naturalId)
