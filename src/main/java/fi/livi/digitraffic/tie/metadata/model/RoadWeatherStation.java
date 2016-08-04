@@ -9,11 +9,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationTypeConverter;
@@ -24,7 +25,9 @@ import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationTypeConverte
 public class RoadWeatherStation {
 
     @Id
-    @SequenceGenerator(name = "RWS_SEQ", sequenceName = "SEQ_ROAD_WEATHER_STATION")
+    @GenericGenerator(name = "RWS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_WEATHER_STATION"))
+
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RWS_SEQ")
     private long id;
 

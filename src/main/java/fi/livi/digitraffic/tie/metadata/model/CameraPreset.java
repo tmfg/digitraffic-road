@@ -13,11 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
@@ -28,7 +29,8 @@ import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
 public class CameraPreset {
 
     @Id
-    @SequenceGenerator(name = "SEQ_CAMERA_PRESET", sequenceName = "SEQ_CAMERA_PRESET")
+    @GenericGenerator(name = "SEQ_CAMERA_PRESET", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_CAMERA_PRESET"))
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")
     private long id;
 

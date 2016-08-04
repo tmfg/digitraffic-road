@@ -18,12 +18,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationStateConverter;
@@ -34,7 +35,8 @@ import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 public class RoadStation {
 
     @Id
-    @SequenceGenerator(name = "RS_SEQ", sequenceName = "SEQ_ROAD_STATION")
+    @GenericGenerator(name = "RS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_STATION"))
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")
     private Long id;
 

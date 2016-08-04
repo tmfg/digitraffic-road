@@ -6,11 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,8 @@ public class RoadAddress {
 
     @JsonIgnore
     @Id
-    @SequenceGenerator(name = "SEQ_ROAD_ADDRESS", sequenceName = "SEQ_ROAD_ADDRESS")
+    @GenericGenerator(name = "SEQ_ROAD_ADDRESS", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_ADDRESS"))
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ROAD_ADDRESS")
     private Long id;
     @ApiModelProperty(value = "Road number (values 1–99999)")

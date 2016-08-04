@@ -13,12 +13,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,8 @@ public class LamStation {
     private static final Logger log = LoggerFactory.getLogger(LamStation.class);
 
     @Id
-    @SequenceGenerator(name = "LS_SEQ", sequenceName = "SEQ_LAM_STATION")
+    @GenericGenerator(name = "LS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "LS_SEQ"))
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LS_SEQ")
     private long id;
 

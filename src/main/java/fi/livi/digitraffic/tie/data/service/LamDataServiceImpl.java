@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,23 @@ public class LamDataServiceImpl implements LamDataService {
     @Override
     @Transactional(readOnly = true)
     public LamRootDataObjectDto listPublicLamData(final boolean onlyUpdateInfo) {
-
         final LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
 
         if (onlyUpdateInfo) {
             return new LamRootDataObjectDto(updated);
         } else {
             final List<LamMeasurementDto> all = lamMeasurementRepository.listAllLamDataFromNonObsoleteStations();
-            return new LamRootDataObjectDto(all,
-                                            updated);
+
+            return new LamRootDataObjectDto(all, updated);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LamRootDataObjectDto listPublicLamData(long id) {
+        final LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
+        final LamMeasurementDto dto = lamMeasurementRepository.listLamDataFromStation(id);
+
+        return new LamRootDataObjectDto(Arrays.asList(dto), updated);
     }
 }

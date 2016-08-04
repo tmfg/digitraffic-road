@@ -12,9 +12,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,7 +37,8 @@ public class RoadStationSensor {
 
     @JsonIgnore
     @Id
-    @SequenceGenerator(name = "RSS_SENSOR_SEQ", sequenceName = "SEQ_ROAD_STATION_SENSOR")
+    @GenericGenerator(name = "RSS_SENSOR_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_STATION_SENSOR"))
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RSS_SENSOR_SEQ")
     private long id;
 

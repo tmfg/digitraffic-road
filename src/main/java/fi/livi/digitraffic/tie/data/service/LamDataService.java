@@ -4,4 +4,6 @@ import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 
 public interface LamDataService {
     LamRootDataObjectDto listPublicLamData(boolean onlyUpdateInfo);
+
+    LamRootDataObjectDto listPublicLamData(long id);
 }
