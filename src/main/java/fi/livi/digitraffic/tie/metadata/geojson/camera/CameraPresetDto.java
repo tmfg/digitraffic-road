@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -21,8 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
     /** Presentation names that are set for unknown directions in Lotju */
-    private static final Set<String> UNKNOWN_PRESENTATION_NAMES =
-            new HashSet(Arrays.asList(new String[] {"-", "–", "PUUTTUU"}));
+    private static final Set<String> UNKNOWN_PRESENTATION_NAMES = Arrays.stream(new String[] {"-", "–", "PUUTTUU"}).collect(Collectors.toSet());
 
     public enum Direction {
         UNKNOWN(0),
