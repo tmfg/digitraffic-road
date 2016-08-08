@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.model;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
@@ -25,10 +24,9 @@ import fi.livi.digitraffic.tie.metadata.converter.RoadWeatherStationTypeConverte
 public class RoadWeatherStation {
 
     @Id
-    @GenericGenerator(name = "RWS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_WEATHER_STATION"))
-
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RWS_SEQ")
+    @GenericGenerator(name = "SEQ_ROAD_WEATHER_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_WEATHER_STATION"))
+    @GeneratedValue(generator = "SEQ_ROAD_WEATHER_STATION")
     private long id;
 
     private long lotjuId;

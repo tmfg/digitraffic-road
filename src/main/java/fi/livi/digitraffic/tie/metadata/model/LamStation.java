@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,9 +34,9 @@ public class LamStation {
     private static final Logger log = LoggerFactory.getLogger(LamStation.class);
 
     @Id
-    @GenericGenerator(name = "LS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "LS_SEQ"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LS_SEQ")
+    @GenericGenerator(name = "SEQ_LAM_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_LAM_STATION"))
+    @GeneratedValue(generator = "SEQ_LAM_STATION")
     private long id;
 
     private long naturalId;

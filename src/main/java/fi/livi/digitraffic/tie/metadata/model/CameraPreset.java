@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,8 +29,8 @@ public class CameraPreset {
 
     @Id
     @GenericGenerator(name = "SEQ_CAMERA_PRESET", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_CAMERA_PRESET"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_CAMERA_PRESET"))
+    @GeneratedValue(generator = "SEQ_CAMERA_PRESET")
     private long id;
 
     private String presetId;

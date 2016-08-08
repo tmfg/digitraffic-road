@@ -3,15 +3,21 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Immutable
 public class RoadDistrict {
 
     @Id
+    @GenericGenerator(name = "SEQ_ROAD_DISTRICT", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_DISTRICT"))
+    @GeneratedValue(generator = "SEQ_ROAD_DISTRICT")
     private long id;
     private int naturalId;
     private String name;

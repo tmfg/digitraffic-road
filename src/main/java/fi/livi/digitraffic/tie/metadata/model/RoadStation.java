@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -35,9 +34,9 @@ import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
 public class RoadStation {
 
     @Id
-    @GenericGenerator(name = "RS_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_STATION"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RS_SEQ")
+    @GenericGenerator(name = "SEQ_ROAD_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION"))
+    @GeneratedValue(generator = "SEQ_ROAD_STATION")
     private Long id;
 
     @NotNull

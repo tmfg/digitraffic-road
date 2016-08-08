@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -37,9 +36,9 @@ public class RoadStationSensor {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "RSS_SENSOR_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_STATION_SENSOR"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RSS_SENSOR_SEQ")
+    @GenericGenerator(name = "SEQ_ROAD_STATION_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION_SENSOR"))
+    @GeneratedValue(generator = "SEQ_ROAD_STATION_SENSOR")
     private long id;
 
     @JsonIgnore

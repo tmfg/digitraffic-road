@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
@@ -12,7 +13,8 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @DynamicUpdate
@@ -20,6 +22,9 @@ import org.hibernate.annotations.FetchMode;
 public class SensorValue {
 
     @Id
+    @GenericGenerator(name = "SEQ_SENSOR_VALUE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE"))
+    @GeneratedValue(generator = "SEQ_SENSOR_VALUE")
     private long id;
 
     private Double value;
