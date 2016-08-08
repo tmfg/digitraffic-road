@@ -42,7 +42,7 @@ public class CameraUpdateJobTest extends MetadataTest {
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraUpdater.updateCameras();
-        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(false);
         // cameras with lotjuId 443 and 56 are in collection
         assertEquals(2, allInitial.getFeatures().size());
         int countPresets = 0;
@@ -56,7 +56,7 @@ public class CameraUpdateJobTest extends MetadataTest {
         kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
         cameraUpdater.updateCameras();
 
-        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection();
+        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(false);
 
         // 443 has 3 presets, 121 has 2
         assertEquals(2, allAfterChange.getFeatures().size());

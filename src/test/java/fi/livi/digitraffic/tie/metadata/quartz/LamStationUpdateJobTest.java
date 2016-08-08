@@ -40,14 +40,14 @@ public class LamStationUpdateJobTest extends MetadataTest {
         // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
         lamStationUpdater.updateLamStations();
         final LamStationFeatureCollection allInitial =
-                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update lam stations (2 non obsolete stations and 2 obsolete)
         lamMetatiedotLotjuServiceMock.setStateAfterChange(true);
         lamStationUpdater.updateLamStations();
         final LamStationFeatureCollection allAfterChange =
-                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));

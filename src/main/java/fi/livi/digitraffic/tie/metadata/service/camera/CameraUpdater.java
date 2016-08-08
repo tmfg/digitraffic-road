@@ -56,15 +56,13 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
     }
 
     @Transactional
-    public void updateCameras() {
+    public boolean updateCameras() {
         log.info("Update Cameras start");
 
         if (lotjuCameraClient == null) {
             log.warn("Not updating cameraPresets metadatas because no lotjuCameraClient defined");
-            return;
+            return false;
         }
-
-        fixCameraPresetsWithMissingRoadStations();
 
         final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraAndEsiasento =
                 lotjuCameraClient.getPresetIdToKameraAndEsiasentoMap();
@@ -78,12 +76,12 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
 
         final boolean updateStaticDataStatus = updateCameras(presetIdToKameraAndEsiasento);
         updateStaticDataStatus(updateStaticDataStatus);
-
         log.info("UpdateCameras end");
+        return updateStaticDataStatus;
     }
 
     @Transactional
-    public void fixCameraPresetsWithMissingRoadStations() {
+    public boolean fixCameraPresetsWithMissingRoadStations() {
 
         final List<CameraPreset> currentCameraPresetsWithOutRoadStation =
                 cameraPresetService.finAllCameraPresetsWithOutRoadStation();
@@ -114,6 +112,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
                 log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
             }
         }
+        return currentCameraPresetsWithOutRoadStation.size() > 0;
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
@@ -190,7 +189,7 @@ public class CameraUpdater extends AbstractCameraRoadStationUpdater {
             log.warn("Insert failed for " + (insert.size()-inserted) + " CameraPresets");
         }
 
-        return obsoleted > 0 || obsoletedRs > 0 || inserted > 0;
+        return obsoleted > 0 || obsoletedRs > 0 || updated > 0 || inserted > 0;
     }
 
     private static boolean validate(final KameraVO kamera) {

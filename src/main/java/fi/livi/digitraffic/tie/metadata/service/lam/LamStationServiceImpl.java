@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +13,33 @@ import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConv
 import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class LamStationServiceImpl implements LamStationService {
     private final LamStationRepository lamStationRepository;
+    private StaticDataStatusService staticDataStatusService;
 
     @Autowired
-    public LamStationServiceImpl(final LamStationRepository lamStationRepository) {
+    public LamStationServiceImpl(final LamStationRepository lamStationRepository,
+                                 final StaticDataStatusService staticDataStatusService) {
         this.lamStationRepository = lamStationRepository;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection() {
-        return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue());
+    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.LAM_STATION);
+
+        return LamStationMetadata2FeatureConverter.convert(
+                onlyUpdateInfo == false ?
+                    lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue() :
+                    Collections.emptyList(),
+                updated != null ? updated.getUpdated() : null);
     }
 
     @Transactional

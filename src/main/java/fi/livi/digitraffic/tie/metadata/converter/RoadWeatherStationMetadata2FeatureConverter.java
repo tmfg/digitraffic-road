@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -18,8 +19,8 @@ public final class RoadWeatherStationMetadata2FeatureConverter extends AbstractM
 
     private RoadWeatherStationMetadata2FeatureConverter() {}
 
-    public static RoadWeatherStationFeatureCollection convert(final List<RoadWeatherStation> stations) {
-        final RoadWeatherStationFeatureCollection collection = new RoadWeatherStationFeatureCollection();
+    public static RoadWeatherStationFeatureCollection convert(final List<RoadWeatherStation> stations, final LocalDateTime lastUpdated) {
+        final RoadWeatherStationFeatureCollection collection = new RoadWeatherStationFeatureCollection(lastUpdated);
 
         for(final RoadWeatherStation rws : stations) {
             try {

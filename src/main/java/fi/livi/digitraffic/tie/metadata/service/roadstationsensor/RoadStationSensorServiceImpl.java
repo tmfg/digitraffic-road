@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,11 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class RoadStationSensorServiceImpl implements RoadStationSensorService {
@@ -30,12 +34,14 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
     private final int roadWeatherStationSensorValueTimeLimitInMins;
+    private StaticDataStatusService staticDataStatusService;
     private final ArrayList<Long> includedSensorNaturalIds;
 
     @Autowired
     public RoadStationSensorServiceImpl(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                         final RoadStationSensorRepository roadStationSensorRepository,
                                         final RoadWeatherStationRepository roadWeatherStationRepository,
+                                        final StaticDataStatusService staticDataStatusService,
                                         @Value("${roadWeatherStation.sensorValue.timeLimitInMinutes}")
                                         final int roadWeatherStationSensorValueTimeLimitInMins,
                                         @Value("${roadWeatherStation.includedSensorNaturalIds}")
@@ -44,6 +50,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadWeatherStationRepository = roadWeatherStationRepository;
         this.roadWeatherStationSensorValueTimeLimitInMins = roadWeatherStationSensorValueTimeLimitInMins;
+        this.staticDataStatusService = staticDataStatusService;
 
         final String[] ids = StringUtils.splitPreserveAllTokens(includedSensorNaturalIdsStr, ',');
         includedSensorNaturalIds = new ArrayList<>();
@@ -60,8 +67,15 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
     @Override
     @Transactional(readOnly = true)
-    public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata() {
-        return new RoadStationsSensorsMetadata(findAllNonObsoleteRoadStationSensors());
+    public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
+
+        MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.ROAD_STATION_SENSOR);
+
+        return new RoadStationsSensorsMetadata(
+                onlyUpdateInfo == false ?
+                    findAllNonObsoleteRoadStationSensors() :
+                    Collections.emptyList(),
+                updated != null ? updated.getUpdated() : null);
     }
 
     @Transactional(readOnly = true)

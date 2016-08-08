@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,18 +13,24 @@ import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureCo
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class CameraPresetServiceImpl implements CameraPresetService {
 
     private final CameraPresetRepository cameraPresetRepository;
     private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
+    private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
     CameraPresetServiceImpl(final CameraPresetRepository cameraPresetRepository,
-                            final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter) {
+                            final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
+                            final StaticDataStatusService staticDataStatusService) {
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional(readOnly = true)
@@ -54,8 +61,14 @@ public class CameraPresetServiceImpl implements CameraPresetService {
 
     @Transactional(readOnly = true)
     @Override
-    public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection() {
+    public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+
+        MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.CAMERA_STATION);
+
         return cameraPresetMetadata2FeatureConverter.convert(
-                cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId());
+                onlyUpdateInfo == false ?
+                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId() :
+                    Collections.emptyList(),
+                updated != null ? updated.getUpdated() : null);
     }
 }

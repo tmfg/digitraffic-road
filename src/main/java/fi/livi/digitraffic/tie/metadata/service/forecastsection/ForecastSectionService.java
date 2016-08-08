@@ -7,5 +7,5 @@ import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 
 public interface ForecastSectionService {
     List<ForecastSection> findAllForecastSections();
-    ForecastSectionsMetadata findForecastSectionsMetadata();
+    ForecastSectionsMetadata findForecastSectionsMetadata(boolean onlyUpdateInfo);
 }

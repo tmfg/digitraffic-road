@@ -10,7 +10,7 @@ public interface LamStationService {
     /**
      * @return current non obsolete lam stations metadata as LamStationFeatureCollection
      */
-    LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection();
+    LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(boolean onlyUpdateInfo);
 
     LamStation save(final LamStation lamStation);
 

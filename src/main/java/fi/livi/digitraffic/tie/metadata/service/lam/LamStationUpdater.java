@@ -55,12 +55,12 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
     }
 
     @Transactional
-    public void updateLamStations() {
+    public boolean updateLamStations() {
         log.info("Update Lam Stations start");
 
         if (lotjuLamStationClient == null) {
             log.warn("Not updating lam stations because no lotjuLamStationClient defined");
-            return;
+            return false;
         }
 
         final List<LamAsemaVO> stations = lotjuLamStationClient.getLamAsemas();
@@ -77,6 +77,7 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
         final boolean updateStaticDataStatus = updateLamStations(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);
         log.info("updateLamStations end");
+        return updateStaticDataStatus;
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {

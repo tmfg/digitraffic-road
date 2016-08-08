@@ -55,12 +55,12 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
      * Updates road weather stations
      */
     @Transactional
-    public void updateRoadWeatherStations() {
+    public boolean updateRoadWeatherStations() {
         log.info("Update RoadWeatherStations start");
 
         if (lotjuRoadWeatherStationClient == null) {
             log.warn("Not updating WeatherStations metadatas because no lotjuRoadWeatherStationClient defined");
-            return;
+            return false;
         }
 
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuRoadWeatherStationClient.getTiesaaAsemmas();
@@ -75,38 +75,40 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
         updateRoasWeatherStationStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update RoadWeatherStations end");
+        return updateStaticDataStatus;
     }
 
     /**
      * Updates all available road station sensors
      */
     @Transactional
-    public void updateRoadStationSensors() {
+    public boolean updateRoadStationSensors() {
         log.info("Update RoadStationSensors start");
 
         if (lotjuRoadWeatherStationClient == null) {
             log.warn("Not updating RoadStationSensor metadatas because no lotjuRoadWeatherStationClient defined");
-            return;
+            return false;
         }
 
         // Update available RoadStationSensors types to db
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuRoadWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
 
-        updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
+        boolean uptaded = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("Update RoadStationSensors end");
+        return uptaded;
     }
 
     /**
      * Updates all available sensors of road stations
      */
     @Transactional
-    public void updateRoadWeatherStationsRoadStationSensors() {
+    public boolean updateRoadWeatherStationsRoadStationSensors() {
         log.info("Update RoadWeatherStationsRoadStationSensors start");
 
         if (lotjuRoadWeatherStationClient == null) {
             log.warn("Not updating RoadWeatherStations metadatas because no lotjuRoadWeatherStationClient defined");
-            return;
+            return false;
         }
 
         // Update sensors of road stations
@@ -124,6 +126,7 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update RoadWeatherStationsRoadStationSensors end");
+        return updateStaticDataStatus;
     }
 
     private boolean updateAllRoadStationSensors(final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
@@ -170,7 +173,7 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
             log.warn("Insert failed for " + (insert.size()-inserted) + " RoadStationSensors");
         }
 
-        return obsoleted > 0 || inserted > 0;
+        return obsoleted > 0 || inserted > 0 || uptaded > 0;
     }
 
 
@@ -230,7 +233,7 @@ public class RoadWeatherStationUpdater extends AbstractRoadWeatherRoadStationUpd
         if (insert.size() > inserted) {
             log.warn("Insert failed for " + (insert.size()-inserted) + " RoadWeatherStations");
         }
-        return obsoleted > 0 || inserted > 0;
+        return obsoleted > 0 || inserted > 0 || uptaded > 0;
     }
 
     private int updateRoadWeatherStationsRoadStationSensors(final List<Pair<TiesaaAsemaVO, RoadWeatherStation>> update) {

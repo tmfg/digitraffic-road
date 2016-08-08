@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 public interface RoadStationSensorService {
     List<RoadStationSensor> findAllNonObsoleteRoadStationSensors();
 
-    RoadStationsSensorsMetadata findRoadStationsSensorsMetadata();
+    RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(boolean onlyUpdateInfo);
 
     Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoletePublicRoadWeatherStationSensorValues();
 

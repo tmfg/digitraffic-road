@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadweather;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,12 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadWeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadWeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class RoadWeatherStationServiceImpl implements RoadWeatherStationService {
@@ -23,15 +27,18 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
     private final RoadWeatherStationRepository roadWeatherStationRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private final SensorValueRepository sensorValueRepository;
+    private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
     public RoadWeatherStationServiceImpl(final RoadWeatherStationRepository roadWeatherStationRepository,
                                          final RoadStationSensorRepository roadStationSensorRepository,
-                                         final SensorValueRepository sensorValueRepository) {
+                                         final SensorValueRepository sensorValueRepository,
+                                         final StaticDataStatusService staticDataStatusService) {
 
         this.roadWeatherStationRepository = roadWeatherStationRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.sensorValueRepository = sensorValueRepository;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional(readOnly = true)
@@ -89,8 +96,14 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
 
     @Transactional(readOnly = true)
     @Override
-    public RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection() {
+    public RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
+
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.ROAD_WEATHER_STATION);
+
         return RoadWeatherStationMetadata2FeatureConverter.convert(
-                roadWeatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId());
+                onlyUpdateInfo == false ?
+                    roadWeatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId() :
+                    Collections.emptyList(),
+                updated != null ? updated.getUpdated() : null);
     }
 }

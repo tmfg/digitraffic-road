@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -18,8 +19,8 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
 
     private LamStationMetadata2FeatureConverter() {}
 
-    public static LamStationFeatureCollection convert(final List<LamStation> stations) {
-        final LamStationFeatureCollection collection = new LamStationFeatureCollection();
+    public static LamStationFeatureCollection convert(final List<LamStation> stations, final LocalDateTime lastUpdated) {
+        final LamStationFeatureCollection collection = new LamStationFeatureCollection(lastUpdated);
 
         for(final LamStation lam : stations) {
             try {
