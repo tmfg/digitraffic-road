@@ -171,16 +171,19 @@ public class LamStation {
      * @return true if state changed
      */
     public boolean obsolete() {
+        boolean obsoleted = false;
         if (roadStation == null) {
             log.error("Cannot obsolete LamStation (" + getId() + ", lotjuId " + getLotjuId() + ") with null roadstation");
             if (obsoleteDate == null || !obsolete) {
                 obsoleteDate = LocalDate.now();
                 obsolete = true;
+                obsoleted = true;
             }
+        } else {
+            obsoleted = roadStation.obsolete();
+            obsoleteDate = roadStation.getObsoleteDate();
+            obsolete = roadStation.isObsolete();
         }
-        final boolean obsoleted = roadStation.obsolete();
-        obsoleteDate = roadStation.getObsoleteDate();
-        obsolete = roadStation.isObsolete();
         return obsoleted;
     }
 
