@@ -9,5 +9,5 @@ public interface TrafficFluencyService {
 
     TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(boolean onlyUpdateInfo);
 
-    List<FluencyClass> findAllFluencyClassesOrderByLowerLimitAsc();
+    List<FluencyClass> findAllFluencyClassesOrderByLowerLimitDesc();
 }

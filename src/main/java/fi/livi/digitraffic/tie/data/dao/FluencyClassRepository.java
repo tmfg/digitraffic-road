@@ -16,7 +16,7 @@ public interface FluencyClassRepository extends JpaRepository<FluencyClass, Long
     @Query(value =
            "SELECT *\n"
          + "FROM FLUENCY_CLASS\n"
-         + "ORDER BY LOWER_LIMIT ASC",
+         + "ORDER BY LOWER_LIMIT DESC",
            nativeQuery = true)
-    List<FluencyClass> findAllOrderByLowerLimitAsc();
+    List<FluencyClass> findAllOrderByLowerLimitDesc();
 }
