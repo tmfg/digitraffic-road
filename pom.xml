@@ -187,34 +187,6 @@
                 </configuration>
             </plugin>
 
-            <!-- generate build number -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <id>generate-buildNumber</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <!-- This ensures that even if we are not connected to scm the revision is generated -->
-                    <revisionOnScmFailure />
-                    <format>{0}</format>
-                    <!--<format>{0,date,yyyy-MM-dd_HH:mm:ss}</format>-->
-                    <items>
-                        <!--<item>timestamp</item>-->
-                        <item>buildNumber</item>
-                    </items>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -229,9 +201,7 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
                             <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                            <MetadataApplication-Build>${buildNumber}</MetadataApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -251,9 +221,7 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
                             <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                            <MetadataApplication-Build>${buildNumber}</MetadataApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
