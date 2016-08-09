@@ -15,7 +15,7 @@ public class BuildVersionServiceImpl implements BuildVersionService{
     private static final Logger log = LoggerFactory.getLogger(BuildVersionServiceImpl.class);
 
     private static final String GIT_PROPERTIES  = "git.properties";
-    private static final String GIT_REVISION_PROPERTY  = "git.commit.id.abbrev";
+    private static final String GIT_REVISION_PROPERTY  = "git.commit.id.describe-short"; //"git.commit.id.abbrev" doesn't include dirty info;
 
     @Override
     public String getAppVersion() {
