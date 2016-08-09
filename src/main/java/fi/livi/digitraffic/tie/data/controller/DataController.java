@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,19 +92,31 @@ public class DataController {
         this.cameraDataService = cameraDataService;
     }
 
-    @ApiOperation("Current fluency data including journey times")
+    @ApiOperation("Current fluency data of links including journey times")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficFluencyRootDataObjectDto listTrafficFluency(
+    public TrafficFluencyRootDataObjectDto listLinksTrafficFluency(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH);
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH + "?lastUpdated=" + lastUpdated);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
-    @ApiOperation("History data for previous day")
+    @ApiOperation("Current fluency data of link including journey times")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public TrafficFluencyRootDataObjectDto listLinkTrafficFluency(
+            @ApiParam("Link id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH + "/" + id);
+        return trafficFluencyService.listCurrentTrafficFluencyData(id);
+    }
+
+    @ApiOperation("History data of links for previous day")
     @RequestMapping(method = RequestMethod.GET, path = DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -111,8 +124,20 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH);
+        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH + "?lastUpdated=" + lastUpdated);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
+    }
+
+    @ApiOperation("History data of link for previous day")
+    @RequestMapping(method = RequestMethod.GET, path = DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public HistoryRootDataObjectDto listLinkPreviousDayHistoryData(
+            @ApiParam("Link id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH + "/" + id);
+        return dayDataService.listPreviousDayHistoryData(id);
     }
 
     @ApiOperation("Current data from TMS (LAM) stations")
@@ -120,20 +145,21 @@ public class DataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS (LAM) data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LamRootDataObjectDto listAllLamData(
-            @ApiParam("If parameter is given result will only contain update status.")
+            @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH);
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "?lastUpdated=" + lastUpdated);
         return lamDataService.listPublicLamData(lastUpdated);
     }
 
     @ApiOperation("Current data from TMS (LAM) station")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id]}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS (LAM) data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LamRootDataObjectDto listLamStationData(
-            @ApiParam("Station id.")
-            @RequestParam(value="id", required = true) final long id) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH);
+            @ApiParam("LAM station id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "/" + id);
         return lamDataService.listPublicLamData(id);
     }
 
@@ -142,26 +168,62 @@ public class DataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public FreeFlowSpeedRootDataObjectDto listFreeFlowSpeeds(
-            @ApiParam("If parameter is given result will only contain update status.")
+            @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH);
-        return freeFlowSpeedService.listPublicFreeFlowSpeeds(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "?lastUpdated=" + lastUpdated);
+        return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
     }
 
-    @ApiOperation("Current camera station data")
+    @ApiOperation("Current free flow speeds of link")
+    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/link/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public FreeFlowSpeedRootDataObjectDto listLinkFreeFlowSpeeds(
+            @ApiParam("Link id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/link/" + id);
+        return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(id);
+    }
+
+    @ApiOperation("Current free flow speeds of LAM station")
+    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/lam/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public FreeFlowSpeedRootDataObjectDto listLamFreeFlowSpeeds(
+            @ApiParam("Lam station id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/lam/" + id);
+        return freeFlowSpeedService.listLamsPublicFreeFlowSpeeds(id);
+    }
+
+    @ApiOperation("Current data of cameras")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of camera station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraRootDataObjectDto listCameraStationData(
+    public CameraRootDataObjectDto listCameraStationsData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH);
+        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "?lastUpdated=" + lastUpdated);
         return cameraDataService.findPublicCameraStationsData(lastUpdated);
     }
 
-    @ApiOperation("Current road weather station data")
+    @ApiOperation("Current data of camera")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of camera station data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public CameraRootDataObjectDto listCameraStationData(
+            @ApiParam("Camera id")
+            @PathVariable
+            final String id) {
+        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "/" + id);
+        return cameraDataService.findPublicCameraStationsData(id);
+    }
+
+    @ApiOperation("Current data of road weather stations")
     @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -169,9 +231,22 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH);
+        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH + "?lastUpdated=" + lastUpdated);
         return roadWeatherService.findPublicRoadWeatherData(lastUpdated);
     }
+
+    @ApiOperation("Current data of road weather station")
+    @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public RoadWeatherRootDataObjectDto listRoadWeatherStationData(
+            @ApiParam("Road weather station id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH + "/" + id);
+        return roadWeatherService.findPublicRoadWeatherData(id);
+    }
+
 
     @ApiOperation("Status of road stations")
     @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_STATUSES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
@@ -181,7 +256,19 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH);
+        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH + "?lastUpdated=" + lastUpdated);
         return roadStationStatusService.findPublicRoadStationStatuses(lastUpdated);
+    }
+
+    @ApiOperation("Status of road station")
+    @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_STATUSES_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public RoadStationStatusesDataObjectDto listNonObsoleteRoadStationSensors(
+            @ApiParam("Road weather station id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH + "/" + id);
+        return roadStationStatusService.findPublicRoadStationStatus(id);
     }
 }

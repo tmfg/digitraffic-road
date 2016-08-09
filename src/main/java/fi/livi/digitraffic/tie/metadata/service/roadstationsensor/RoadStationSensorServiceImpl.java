@@ -114,4 +114,23 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
                 roadWeatherStationSensorValueTimeLimitInMins,
                 includedSensorNaturalIds);
     }
+
+    @Override
+    public List<RoadStationSensorValueDto> findAllNonObsoletePublicRoadWeatherStationSensorValues(final long roadWeatherStationId) {
+
+        final List<Long> stations =
+                roadWeatherStationRepository.findNonObsoleteAndPublicRoadStationNaturalIds();
+        final Set<Long> allowedRoadStations =
+                stations.stream().collect(Collectors.toSet());
+
+        if ( !allowedRoadStations.contains(roadWeatherStationId) ) {
+            return Collections.emptyList();
+        }
+
+        return roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
+                roadWeatherStationId,
+                RoadStationType.WEATHER_STATION.getTypeNumber(),
+                roadWeatherStationSensorValueTimeLimitInMins,
+                includedSensorNaturalIds);
+    }
 }

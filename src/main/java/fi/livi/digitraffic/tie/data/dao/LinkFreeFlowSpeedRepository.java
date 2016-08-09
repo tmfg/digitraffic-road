@@ -25,4 +25,18 @@ public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowS
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LinkFreeFlowSpeedDto> listAllLinkFreeFlowSpeeds();
+
+    @Query(value =
+            "SELECT L.NATURAL_ID AS LINK_NO" +
+            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
+            "           THEN L.SUMMER_FREE_FLOW_SPEED\n" +
+            "           ELSE L.WINTER_FREE_FLOW_SPEED\n" +
+            "       END AS FREE_FLOW_SPEED\n" +
+            "FROM LINK L\n" +
+            "INNER JOIN ROAD_DISTRICT RD ON L.ROAD_DISTRICT_ID = RD.ID\n" +
+            "WHERE L.OBSOLETE = 0\n" +
+            "  AND L.NATURAL_ID = ?1",
+           nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<LinkFreeFlowSpeedDto> listAllLinkFreeFlowSpeeds(final long linkId);
 }

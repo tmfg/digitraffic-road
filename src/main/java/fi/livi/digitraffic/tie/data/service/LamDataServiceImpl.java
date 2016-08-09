@@ -39,7 +39,7 @@ public class LamDataServiceImpl implements LamDataService {
     @Transactional(readOnly = true)
     public LamRootDataObjectDto listPublicLamData(long id) {
         final LocalDateTime updated = lamMeasurementRepository.getLatestMeasurementTime();
-        final LamMeasurementDto dto = lamMeasurementRepository.listLamDataFromStation(id);
+        final LamMeasurementDto dto = lamMeasurementRepository.getLamDataFromStation(id);
 
         return new LamRootDataObjectDto(Arrays.asList(dto), updated);
     }

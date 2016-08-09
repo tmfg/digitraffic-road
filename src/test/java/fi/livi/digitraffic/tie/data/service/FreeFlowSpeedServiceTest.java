@@ -14,7 +14,7 @@ public class FreeFlowSpeedServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations() {
-        final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listPublicFreeFlowSpeeds(false);
+        final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(false);
 
         Assert.notNull(object);
         Assert.notNull(object.getDataUptadedLocalTime());

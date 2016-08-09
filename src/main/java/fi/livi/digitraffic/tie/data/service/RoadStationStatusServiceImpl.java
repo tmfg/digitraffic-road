@@ -31,4 +31,14 @@ public class RoadStationStatusServiceImpl implements RoadStationStatusService {
                     updated);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoadStationStatusesDataObjectDto findPublicRoadStationStatus(final long roadStationId) {
+        final LocalDateTime updated = roadStationStatusRepository.getLatestMeasurementTime();
+
+        return new RoadStationStatusesDataObjectDto(
+                    roadStationStatusRepository.findPublicRoadStationStatus(roadStationId),
+                    updated);
+    }
 }

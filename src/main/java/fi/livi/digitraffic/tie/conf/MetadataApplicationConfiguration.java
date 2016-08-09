@@ -22,7 +22,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String API_DATA_PART_PATH = "/data";
 
     @Autowired
-    LocaleChangeInterceptor localeChangeInterceptor;
+    private LocaleChangeInterceptor localeChangeInterceptor;
 
     @Bean
     public LocaleResolver localeResolver() {

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,23 @@ public class RoadWeatherServiceImpl implements RoadWeatherService {
 
             return new RoadWeatherRootDataObjectDto(stations, updated);
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public RoadWeatherRootDataObjectDto findPublicRoadWeatherData(final long roadWeatherStationId) {
+
+        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime();
+
+        final List<RoadStationSensorValueDto> values =
+                roadStationSensorService.findAllNonObsoletePublicRoadWeatherStationSensorValues(roadWeatherStationId);
+
+        final RoadWeatherStationDto dto = new RoadWeatherStationDto();
+        dto.setRoadStationNaturalId(roadWeatherStationId);
+        dto.setSensorValues(values);
+        dto.setMeasured(getStationMeasurement(dto.getSensorValues()));
+
+        return new RoadWeatherRootDataObjectDto(Collections.singletonList(dto), updated);
     }
 
     private static LocalDateTime getStationMeasurement(final List<RoadStationSensorValueDto> sensorValues) {

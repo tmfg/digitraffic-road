@@ -16,6 +16,14 @@ import fi.livi.digitraffic.tie.data.dto.lam.LamMeasurementDto;
 public interface LamMeasurementRepository extends JpaRepository<LamMeasurementDto, Long> {
 
     @Query(value =
+                   "SELECT MAX(LSD.MEASURED) AS UPDATED\n" +
+                           "FROM LAM_STATION LS\n" +
+                           "INNER JOIN LAM_STATION_DATA LSD ON LSD.LAM_STATION_ID = LS.ID\n" +
+                           "WHERE LS.OBSOLETE = 0",
+           nativeQuery = true)
+    LocalDateTime getLatestMeasurementTime();
+
+    @Query(value =
             "SELECT LS.NATURAL_ID\n" +
             "     , LSD.TRAFFIC_VOLUME_1 AS TRAFFIC_VOLUME1\n" +
             "     , LSD.TRAFFIC_VOLUME_2 AS TRAFFIC_VOLUME2\n" +
@@ -35,14 +43,6 @@ public interface LamMeasurementRepository extends JpaRepository<LamMeasurementDt
     List<LamMeasurementDto> listAllLamDataFromNonObsoleteStations();
 
     @Query(value =
-            "SELECT MAX(LSD.MEASURED) AS UPDATED\n" +
-            "FROM LAM_STATION LS\n" +
-            "INNER JOIN LAM_STATION_DATA LSD ON LSD.LAM_STATION_ID = LS.ID\n" +
-            "WHERE LS.OBSOLETE = 0",
-           nativeQuery = true)
-    LocalDateTime getLatestMeasurementTime();
-
-    @Query(value =
             "SELECT LS.NATURAL_ID\n" +
                     "     , LSD.TRAFFIC_VOLUME_1 AS TRAFFIC_VOLUME1\n" +
                     "     , LSD.TRAFFIC_VOLUME_2 AS TRAFFIC_VOLUME2\n" +
@@ -60,5 +60,5 @@ public interface LamMeasurementRepository extends JpaRepository<LamMeasurementDt
                     "ORDER BY LS.NATURAL_ID",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    LamMeasurementDto listLamDataFromStation(final long id);
+    LamMeasurementDto getLamDataFromStation(final long id);
 }

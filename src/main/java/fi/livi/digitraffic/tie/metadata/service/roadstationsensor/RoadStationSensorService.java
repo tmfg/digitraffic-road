@@ -16,4 +16,6 @@ public interface RoadStationSensorService {
     Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoletePublicRoadWeatherStationSensorValues();
 
     LocalDateTime getLatestMeasurementTime();
+
+    List<RoadStationSensorValueDto> findAllNonObsoletePublicRoadWeatherStationSensorValues(long roadWeatherStationId);
 }
