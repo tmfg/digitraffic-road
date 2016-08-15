@@ -96,6 +96,12 @@ public class RoadWeatherStationServiceImpl implements RoadWeatherStationService 
 
     @Transactional(readOnly = true)
     @Override
+    public RoadWeatherStation findByLotjuId(long lotjuId) {
+        return roadWeatherStationRepository.findByLotjuId(lotjuId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
 
         final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.ROAD_WEATHER_STATION);

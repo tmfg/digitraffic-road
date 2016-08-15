@@ -23,4 +23,6 @@ public interface RoadWeatherStationService {
     RoadWeatherStationFeatureCollection findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection(boolean onlyUpdateInfo);
 
     List<SensorValue> findAllSensorValues();
+
+    RoadWeatherStation findByLotjuId(long lotjuId);
 }

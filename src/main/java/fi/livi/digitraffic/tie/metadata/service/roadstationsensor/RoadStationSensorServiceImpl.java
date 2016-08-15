@@ -66,6 +66,11 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     }
 
     @Override
+    public List<RoadStationSensor> findAllRoadStationSensors() {
+        return roadStationSensorRepository.findAll();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
 

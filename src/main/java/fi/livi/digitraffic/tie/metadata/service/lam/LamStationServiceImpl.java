@@ -62,4 +62,10 @@ public class LamStationServiceImpl implements LamStationService {
 
         return stationMap;
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public LamStation findByLotjuId(long lamStationLotjuId) {
+        return lamStationRepository.findByLotjuId(lamStationLotjuId);
+    }
 }

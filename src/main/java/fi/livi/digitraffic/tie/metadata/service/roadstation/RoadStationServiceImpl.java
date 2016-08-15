@@ -43,7 +43,20 @@ public class RoadStationServiceImpl implements RoadStationService {
         return roadStationRepository.findByType(type);
     }
 
+    @Transactional(readOnly = true)
     @Override
+    public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
+        final List<RoadStation> all = findByType(type);
+
+        final Map<Long, RoadStation> map = new HashMap<>();
+        for (final RoadStation roadStation : all) {
+            map.put(roadStation.getNaturalId(), roadStation);
+        }
+        return map;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
         final List<RoadStation> orphans;
         if (RoadStationType.LAM_STATION == type) {
@@ -64,42 +77,31 @@ public class RoadStationServiceImpl implements RoadStationService {
     }
 
     @Override
-    public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> all = findByType(type);
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : all) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public RoadStation findByTypeAndNaturalId(final RoadStationType type, final long naturalId) {
         return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
     }
 
-
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanWeatherStationRoadStations() {
         return roadStationRepository.findOrphanWeatherStationRoadStations();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanCameraStationRoadStations() {
         return roadStationRepository.findOrphanCameraStationRoadStations();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanLamStationRoadStations() {
         return roadStationRepository.findOrphanLamStationRoadStations();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public RoadAddress save(final RoadAddress roadAddress) {
         final RoadAddress value = roadAddressRepository.save(roadAddress);
         roadAddressRepository.flush();

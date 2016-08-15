@@ -40,7 +40,7 @@ public class MetadataMarshallerConfiguration {
     @Bean
     public LotjuLamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
                                                   @Value("${metadata.server.address.lam}")
-                                             final String lamMetadataServerAddress) {
+                                                  final String lamMetadataServerAddress) {
         log.info("metadata.server.address.lam: " + lamMetadataServerAddress);
         if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
              !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {

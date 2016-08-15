@@ -14,11 +14,11 @@ metadata.server.address.lam=<address>
 metadata.server.address.camera=<address>
 metadata.server.address.weather=<address>
 
-# If set to false web app is not started. Should be false for daemon prosess.
+# If set to false web app is not started. Should be set false for daemon prosess.
 # spring.main.web_environment=false
 
 # Is metadata updates on. Should be true only for daemon process.
-quartz.enabled=true
+# quartz.enabled=true
 
 # Metadata update frequencies in ms, 600000 ms = 10 min
 cameraUpdateJob.frequency=600000
@@ -30,3 +30,20 @@ weathercam.baseurl=http://weathercam.url/
 
 logging.file=digitraffic-metadata
 logging.level.root=INFO
+
+# JMS settings
+
+jms.userId=<userid>
+jms.password=<password>
+jms.connectionUrls=tcp://ip:port,tcp:ip:port
+
+# JMS settings
+jms.reconnectionDelayInSeconds=60
+jms.reconnectionTries=20
+
+# JMS config for Tiesää
+jms.inQueue.roadWeather=<topic>
+jms.inQueue.lam=<topic>
+
+#jms.roadweather.enabled=true
+#jms.lam.enabled=true

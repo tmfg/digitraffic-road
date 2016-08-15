@@ -15,4 +15,6 @@ public interface LamStationService {
     LamStation save(final LamStation lamStation);
 
     Map<Long, LamStation> findAllLamStationsMappedByByNaturalId();
+
+    LamStation findByLotjuId(long lamStationLotjuId);
 }

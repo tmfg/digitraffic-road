@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,17 +30,29 @@ public class SensorValue {
 
     private Double value;
 
+    @Column(name = "MEASURED")
     private LocalDateTime sensorValueMeasured;
 
     @OneToOne
-    @JoinColumn(name="road_station_id", nullable = false)
+    @JoinColumn(name="ROAD_STATION_ID", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
 
     @OneToOne
-    @JoinColumn(name="road_station_sensor_id", nullable = false)
+    @JoinColumn(name="ROAD_STATION_SENSOR_ID", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
+
+    public SensorValue() {
+        // default;
+    }
+
+    public SensorValue(RoadStation roadStation, RoadStationSensor roadStationSensor, double value, LocalDateTime sensorValueMeasured) {
+        this.roadStation = roadStation;
+        this.roadStationSensor = roadStationSensor;
+        this.value = value;
+        this.sensorValueMeasured = sensorValueMeasured;
+    }
 
     public long getId() {
         return id;

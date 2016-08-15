@@ -19,9 +19,12 @@ public interface RoadWeatherStationRepository extends JpaRepository<RoadWeatherS
     List<RoadWeatherStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId();
 
     @Query(value =
-            "SELECT rws.roadStation.naturalId\n" +
-            "FROM RoadWeatherStation rws\n" +
-            "WHERE rws.roadStation.isPublic = 1\n" +
-            "  AND rws.roadStation.obsolete = 0")
+           "SELECT rws.roadStation.naturalId\n" +
+           "FROM RoadWeatherStation rws\n" +
+           "WHERE rws.roadStation.isPublic = 1\n" +
+           "  AND rws.roadStation.obsolete = 0",
+           nativeQuery = false)
     List<Long> findNonObsoleteAndPublicRoadStationNaturalIds();
+
+    RoadWeatherStation findByLotjuId(long lotjuId);
 }
