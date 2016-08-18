@@ -4,9 +4,10 @@ import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 
 public interface LamDataService {
-    LamRootDataObjectDto listPublicLamData(boolean onlyUpdateInfo);
 
-    LamRootDataObjectDto listPublicLamData(long id);
+    LamRootDataObjectDto findPublicLamData(boolean onlyUpdateInfo);
+
+    LamRootDataObjectDto findPublicLamData(long roadStationNaturalId);
 
     void updateLamData(Lam data);
 }

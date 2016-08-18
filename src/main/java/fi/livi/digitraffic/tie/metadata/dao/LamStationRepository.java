@@ -15,4 +15,6 @@ public interface LamStationRepository extends JpaRepository<LamStation, Long> {
     List<LamStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue();
 
     LamStation findByLotjuId(long lamStationLotjuId);
+
+    LamStation findByRoadStation_NaturalId(long roadStationNaturalId);
 }

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dto.weather;
+package fi.livi.digitraffic.tie.data.dto.lam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.weather.WeatherStationDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "WeatherData", description = "Latest measurement data from Weather Stations", parent = RootDataObjectDto.class)
+@ApiModel(value = "WeatherData", description = "Latest measurement data from weather stations", parent = RootDataObjectDto.class)
 @JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "weatherStations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WeatherRootDataObjectDto extends RootDataObjectDto {

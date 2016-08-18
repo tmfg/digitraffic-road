@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.DataValidyHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationSensorUpdater;
@@ -152,7 +153,7 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         to.setShortNameFi(from.getLyhytNimi());
         to.setDescription(from.getKuvaus());
         to.setAccuracy(from.getTarkkuus());
-        to.setUnit(from.getYksikko());
+        to.setUnit(DataValidyHelper.nullifyUnknownValue(from.getYksikko()));
 
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

@@ -72,7 +72,7 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
             }
         }
 
-        final Map<Long, LamStation> currentStations = lamStationService.findAllLamStationsMappedByByNaturalId();
+        final Map<Long, LamStation> currentStations = lamStationService.findAllLamStationsMappedByByLamNaturalId();
 
         final boolean updateStaticDataStatus = updateLamStations(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);

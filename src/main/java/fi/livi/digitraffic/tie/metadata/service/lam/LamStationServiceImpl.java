@@ -52,12 +52,25 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public Map<Long, LamStation> findAllLamStationsMappedByByNaturalId() {
+    public Map<Long, LamStation> findAllLamStationsMappedByByLamNaturalId() {
         final List<LamStation> allStations = lamStationRepository.findAll();
         final Map<Long, LamStation> stationMap = new HashMap<>();
 
         for(final LamStation lam : allStations) {
             stationMap.put(lam.getNaturalId(), lam);
+        }
+
+        return stationMap;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, LamStation> findAllLamStationsMappedByByRoadStationNaturalId() {
+        final List<LamStation> allStations = lamStationRepository.findAll();
+        final Map<Long, LamStation> stationMap = new HashMap<>();
+
+        for(final LamStation lam : allStations) {
+            stationMap.put(lam.getRoadStationNaturalId(), lam);
         }
 
         return stationMap;
@@ -80,5 +93,11 @@ public class LamStationServiceImpl implements LamStationService {
             }
         }
         return map;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public LamStation findByRoadStationNaturalId(long roadStationNaturalId) {
+        return lamStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
     }
 }

@@ -141,29 +141,6 @@ public class DataController {
         return dayDataService.listPreviousDayHistoryData(id);
     }
 
-    @ApiOperation("Current data from TMS (LAM) stations")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS (LAM) data"),
-                    @ApiResponse(code = 500, message = "Internal server error") })
-    public LamRootDataObjectDto listAllLamData(
-            @ApiParam("If parameter is given result will only contain update status")
-            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "?lastUpdated=" + lastUpdated);
-        return lamDataService.listPublicLamData(lastUpdated);
-    }
-
-    @ApiOperation("Current data from TMS (LAM) station")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS (LAM) data"),
-                    @ApiResponse(code = 500, message = "Internal server error") })
-    public LamRootDataObjectDto listLamStationData(
-            @ApiParam("LAM station id")
-            @PathVariable
-            final long id) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "/" + id);
-        return lamDataService.listPublicLamData(id);
-    }
-
     @ApiOperation("Current free flow speeds")
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
@@ -224,9 +201,33 @@ public class DataController {
         return cameraDataService.findPublicCameraStationsData(id);
     }
 
-    @ApiOperation("Current data of weather stations")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Current data of Lam Stations (TMS)")
+    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Lam Station data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public LamRootDataObjectDto listLamStationData(
+            @ApiParam("If parameter is given result will only contain update status.")
+            @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
+            boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "?lastUpdated=" + lastUpdated);
+        return lamDataService.findPublicLamData(lastUpdated);
+    }
+
+    @ApiOperation("Current data of Lam Station (TMS)")
+    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public LamRootDataObjectDto listLamStationData(
+            @ApiParam("Lam Station id")
+            @PathVariable
+            final long id) {
+        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "/" + id);
+        return lamDataService.findPublicLamData(id);
+    }
+
+    @ApiOperation("Current data of Weather Stations")
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public WeatherRootDataObjectDto listWeatherStationData(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -236,12 +237,12 @@ public class DataController {
         return weatherService.findPublicWeatherData(lastUpdated);
     }
 
-    @ApiOperation("Current data of weather station")
+    @ApiOperation("Current data of Weather Station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public WeatherRootDataObjectDto listWeatherStationData(
-            @ApiParam("Weather station id")
+            @ApiParam("Weather Station id")
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);

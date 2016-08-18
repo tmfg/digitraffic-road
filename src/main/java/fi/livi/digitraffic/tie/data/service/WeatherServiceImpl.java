@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.dto.WeatherStationDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.weather.WeatherStationDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -64,7 +64,7 @@ public class WeatherServiceImpl implements WeatherService {
                 stations.add(dto);
                 dto.setRoadStationNaturalId(entry.getKey());
                 dto.setSensorValues(entry.getValue());
-                dto.setMeasured(getStationMeasurement(dto.getSensorValues()));
+                dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
             }
 
             return new WeatherRootDataObjectDto(stations, updated);
@@ -84,7 +84,7 @@ public class WeatherServiceImpl implements WeatherService {
         final WeatherStationDto dto = new WeatherStationDto();
         dto.setRoadStationNaturalId(roadStationNaturalIdId);
         dto.setSensorValues(values);
-        dto.setMeasured(getStationMeasurement(dto.getSensorValues()));
+        dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
 
         return new WeatherRootDataObjectDto(Collections.singletonList(dto), updated);
     }
@@ -132,7 +132,7 @@ public class WeatherServiceImpl implements WeatherService {
                     SensorValue sv = new SensorValue(rws.getRoadStation(), sensor, anturi.getArvo(), sensorValueMeasured);
                     insert.add(sv);
                 } else {
-                    log.warn("Could not save sensor value: RoadStationSensor not found with lotjuId: " + anturi.getLaskennallinenAnturiId());
+                    log.warn("Could not save weather sensor value: RoadStationSensor not found with lotjuId: " + anturi.getLaskennallinenAnturiId());
                 }
             } else {
                 // update
@@ -153,12 +153,4 @@ public class WeatherServiceImpl implements WeatherService {
             log.info("JPA save time for " + insert.size() + ": " + (millisJPASaveEnd - millisJPASaveStart));
         }
     }
-
-    private static LocalDateTime getStationMeasurement(final List<SensorValueDto> sensorValues) {
-        if (sensorValues != null && !sensorValues.isEmpty()) {
-            return sensorValues.get(0).getStationLatestMeasured();
-        }
-        return null;
-    }
-
 }

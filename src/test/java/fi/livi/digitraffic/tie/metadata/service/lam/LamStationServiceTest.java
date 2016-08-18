@@ -22,7 +22,7 @@ public class LamStationServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllLamStationsMappedByByNaturalId() {
-        final Map<Long, LamStation> stations = lamStationService.findAllLamStationsMappedByByNaturalId();
+        final Map<Long, LamStation> stations = lamStationService.findAllLamStationsMappedByByLamNaturalId();
         Assert.assertTrue(stations.size() > 0);
     }
 

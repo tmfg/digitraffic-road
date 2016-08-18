@@ -4,7 +4,8 @@ import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 
 public interface WeatherService {
-    WeatherRootDataObjectDto findPublicWeatherData(boolean b);
+
+    WeatherRootDataObjectDto findPublicWeatherData(boolean onlyUpdateInfo);
 
     WeatherRootDataObjectDto findPublicWeatherData(long roadStationNaturalId);
 

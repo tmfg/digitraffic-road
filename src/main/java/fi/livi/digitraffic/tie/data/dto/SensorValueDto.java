@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -45,7 +46,8 @@ public class SensorValueDto /*implements MeasuredDataObjectDto*/ {
     @JsonIgnore
     private long sensorId;
 
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future.", position = 1, notes = "noteja")
+    @Deprecated
+    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future version.", position = 1, notes = "noteja")
     private String sensorNameOld;
 
     @ApiModelProperty(value = "Sensor name", position = 1, required = true)
@@ -178,5 +180,12 @@ public class SensorValueDto /*implements MeasuredDataObjectDto*/ {
 
     public void setStationLatestMeasured(final LocalDateTime stationLatestMeasured) {
         this.stationLatestMeasured = stationLatestMeasured;
+    }
+
+    public static LocalDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
+        if (sensorValues != null && !sensorValues.isEmpty()) {
+            return sensorValues.get(0).getStationLatestMeasured();
+        }
+        return null;
     }
 }
