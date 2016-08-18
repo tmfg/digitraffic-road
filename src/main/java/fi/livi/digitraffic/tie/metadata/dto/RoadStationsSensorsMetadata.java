@@ -8,10 +8,10 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Available sensors of road weather stations")
+@ApiModel(description = "Available sensors of weather stations")
 public class RoadStationsSensorsMetadata extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Available sensors of road weather stations", required = true)
+    @ApiModelProperty(value = "Available sensors of weather stations", required = true)
     private final List<RoadStationSensor> roadStationSensors;
 
     public RoadStationsSensorsMetadata(final List<RoadStationSensor> roadStationSensors, final LocalDateTime lastUptaded) {

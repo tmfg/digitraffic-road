@@ -224,7 +224,7 @@ public class DataController {
         return cameraDataService.findPublicCameraStationsData(id);
     }
 
-    @ApiOperation("Current data of road weather stations")
+    @ApiOperation("Current data of weather stations")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -236,12 +236,12 @@ public class DataController {
         return weatherService.findPublicWeatherData(lastUpdated);
     }
 
-    @ApiOperation("Current data of road weather station")
+    @ApiOperation("Current data of weather station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public WeatherRootDataObjectDto listWeatherStationData(
-            @ApiParam("Road weather station id")
+            @ApiParam("Weather station id")
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
@@ -266,7 +266,7 @@ public class DataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of road station statuses"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationStatusesDataObjectDto listNonObsoleteRoadStationSensors(
-            @ApiParam("Road weather station id")
+            @ApiParam("Weather station id")
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + ROAD_STATION_STATUSES_PATH + "/" + id);

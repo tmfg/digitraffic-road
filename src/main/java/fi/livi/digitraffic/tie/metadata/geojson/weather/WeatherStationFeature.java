@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON WeatherStation Feature Object
  */
-@ApiModel(description = "GeoJSON Feature Object of Road Weather Station", value = "Feature")
+@ApiModel(description = "GeoJSON Feature Object of Weather Station", value = "Feature")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class WeatherStationFeature {
@@ -19,7 +19,7 @@ public class WeatherStationFeature {
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Road weather stationid, same as roadStationId in WeatherStationProperties", required = true, position = 2)
+    @ApiModelProperty(value = "Weather stationid, same as roadStationId in WeatherStationProperties", required = true, position = 2)
     private long id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -27,7 +27,7 @@ public class WeatherStationFeature {
     private Point geometry;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Road weather station properties", required = true, position = 4)
+    @ApiModelProperty(value = "Weather station properties", required = true, position = 4)
     private WeatherStationProperties properties = new WeatherStationProperties();
 
     public String getType() {

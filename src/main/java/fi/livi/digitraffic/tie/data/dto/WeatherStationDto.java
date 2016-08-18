@@ -20,7 +20,7 @@ public class WeatherStationDto {
     @JsonProperty(value = "id")
     private long roadStationNaturalId;
 
-    @ApiModelProperty(value = "Measured sensor values of the road weather station", required = true)
+    @ApiModelProperty(value = "Measured sensor values of the Weather Station", required = true)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
     @JsonIgnore

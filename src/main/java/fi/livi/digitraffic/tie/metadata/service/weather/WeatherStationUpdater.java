@@ -48,7 +48,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
     }
 
     /**
-     * Updates road weather stations
+     * Updates Weather Stations
      */
     @Transactional
     public boolean updateWeatherStations() {

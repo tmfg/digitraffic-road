@@ -49,7 +49,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
 
         final WeatherStationProperties properties = f.getProperties();
 
-        // road weather station properties
+        // weather station properties
         properties.setId(rws.getRoadStationNaturalId());
         properties.setLotjuId(rws.getLotjuId());
         properties.setWeatherStationType(rws.getWeatherStationType());

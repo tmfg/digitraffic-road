@@ -338,7 +338,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getLotjuId())) {
                 final WeatherStation nearestRWS = lotjuIdToWeatherStationMap.get(tsaLotjuId);
                 if (nearestRWS == null) {
-                    log.error("Could not set set nearest road weather station for cameraPreset " + to.getPresetId() + ". Weather station with lotjuId " + tsaLotjuId + " not found.");
+                    log.error("Could not set set nearest Weather Station for cameraPreset " + to.getPresetId() + ". Weather station with lotjuId " + tsaLotjuId + " not found.");
                 }
                 to.setNearestWeatherStation(nearestRWS);
             }

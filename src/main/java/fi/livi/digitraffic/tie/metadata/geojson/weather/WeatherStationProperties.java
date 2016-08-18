@@ -24,13 +24,13 @@ import io.swagger.annotations.ApiModelProperty;
 public class WeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id
-    @ApiModelProperty(name = "id", value = "Road weather station's unique id", required = true)
+    @ApiModelProperty(name = "id", value = "Weather station's unique id", required = true)
     private long id;
 
-    @ApiModelProperty(value = "Type of Road Weather Station")
+    @ApiModelProperty(value = "Type of Weather Station")
     private WeatherStationType weatherStationType;
 
-    @ApiModelProperty(value = "Road Weather Station Sensors")
+    @ApiModelProperty(value = "Weather Station Sensors")
     private List<RoadStationSensor> sensors = new ArrayList<>();
 
     @ApiModelProperty(value = "Is station master or slave station")

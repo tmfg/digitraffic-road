@@ -36,7 +36,7 @@ public class CameraProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Is camera targeted to default direction")
     private Boolean defaultDirection;
 
-    @ApiModelProperty(name = "nearestWeatherStationId", value = "Id of nearest road weather station")
+    @ApiModelProperty(name = "nearestWeatherStationId", value = "Id of nearest Weather Station")
     @JsonProperty(value = "nearestWeatherStationId")
     private Long nearestWeatherStationNaturalId;
 

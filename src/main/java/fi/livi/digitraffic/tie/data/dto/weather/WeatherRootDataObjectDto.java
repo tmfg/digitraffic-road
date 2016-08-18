@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WeatherRootDataObjectDto extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Road weather stations data")
+    @ApiModelProperty(value = "Weather Stations data")
     private final List<WeatherStationDto> weatherStations;
 
     public WeatherRootDataObjectDto(final List<WeatherStationDto> weatherStations, final LocalDateTime updated) {

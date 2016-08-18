@@ -41,7 +41,7 @@ public class CameraPreset {
     /** Old field, this station id ? */
     @Column(name="ROADSTATION_ID")
     private Long roadStationId;
-    /** Old field, means road weather station? */
+    /** Old field, means weather station? */
     @Column(name="NEAREST_ROADSTATION_ID")
     private Long nearestRoadstationIid;
 

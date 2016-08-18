@@ -8,10 +8,10 @@ import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Road weather forecast sections")
+@ApiModel(description = "Weather forecast sections")
 public class ForecastSectionsMetadata extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Road weather forecast sections", required = true)
+    @ApiModelProperty(value = "Weather forecast sections", required = true)
     private final List<ForecastSection> forecastSections;
 
     public ForecastSectionsMetadata(final List<ForecastSection> forecastSections, final LocalDateTime lastUptaded) {

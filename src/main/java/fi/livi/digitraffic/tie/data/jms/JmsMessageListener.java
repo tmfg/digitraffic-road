@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import java.io.StringReader;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -21,17 +22,22 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final JAXBContext jaxbTiesaaContext;
     private final String beanName;
     private final Unmarshaller jaxbUnmarshaller;
+    private final LinkedBlockingQueue<T> queue;
+    private final JMSMessageConsumer JMSMessageConsumer;
 
     public JmsMessageListener(Class<T> typeClass, String beanName) throws JAXBException {
         jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
         this.beanName = beanName;
         jaxbUnmarshaller = jaxbTiesaaContext.createUnmarshaller();
+        queue = new LinkedBlockingQueue<T>();
+        JMSMessageConsumer = new JMSMessageConsumer(queue);
     }
 
     @Override
     public void onMessage(Message message) {
         T data = unmarshalMessage(message);
-        handleData(data);
+        log.info(beanName + " received " + data.getClass().getSimpleName());
+        queue.add(data);
     }
 
     private T unmarshalMessage(Message message) {
@@ -41,7 +47,6 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 String text = xmlMessage.getText();
                 StringReader sr = new StringReader(text);
                 T object = (T) jaxbUnmarshaller.unmarshal(sr);
-                log.info(beanName + " received " + object.getClass().getSimpleName());
                 return object;
             } catch (JMSException e) {
                 throw new RuntimeException("Message unmarshal error in " + beanName, e);
@@ -57,4 +62,30 @@ public abstract class JmsMessageListener<T> implements MessageListener {
      */
     protected abstract void handleData(T data);
 
+
+    private class JMSMessageConsumer implements Runnable
+    {
+        private LinkedBlockingQueue<T> blockingQueue;
+
+        public JMSMessageConsumer(LinkedBlockingQueue<T> blockingQueue) {
+
+            this.blockingQueue = blockingQueue;
+            Thread consumer = new Thread(this);
+            consumer.start();
+        }
+
+        public void run()
+        {
+            while(true)
+            {
+                try {
+                    log.info(beanName + " queue size: " + blockingQueue.size());
+                    T data = blockingQueue.take();
+                    handleData(data);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

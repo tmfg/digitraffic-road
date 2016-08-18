@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
-@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
+@JsonPropertyOrder(value = {"id", "name", "shortName", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
 public class RoadStationSensor {
@@ -50,7 +50,7 @@ public class RoadStationSensor {
     @JsonProperty("id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal sensorNameFi. Will deprecate in future.", position = 2, notes = "noteja")
+    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future.", position = 2, notes = "noteja")
     @JsonProperty(value = "nameOld")
     private String name;
 
@@ -63,13 +63,15 @@ public class RoadStationSensor {
     @JsonIgnore
     private LocalDate obsoleteDate;
 
-    @ApiModelProperty(value = "Sensor descriptionFi [fi]")
+    @ApiModelProperty(value = "Sensor description [fi]")
     private String description;
 
     @ApiModelProperty(value = "Sensor name [fi]")
+    @JsonProperty(value = "name")
     private String nameFi;
 
     @ApiModelProperty(value = "Short name for sensor [fi]")
+    @JsonProperty(value = "shortName")
     private String shortNameFi;
 
     @ApiModelProperty(value = "Sensor accuracy")
