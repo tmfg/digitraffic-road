@@ -35,9 +35,9 @@ public class TypesTest {
     }
 
     @Test
-    public void testAllRoadWeatherStationTypes() {
+    public void testAllWeatherStationTypes() {
         for (final TiesaaAsemaTyyppi tsat : TiesaaAsemaTyyppi.values()) {
-            Assert.notNull(RoadWeatherStationType.fromTiesaaAsemaTyyppi(tsat));
+            Assert.notNull(WeatherStationType.fromTiesaaAsemaTyyppi(tsat));
         }
     }
 

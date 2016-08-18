@@ -41,15 +41,13 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 String text = xmlMessage.getText();
                 StringReader sr = new StringReader(text);
                 T object = (T) jaxbUnmarshaller.unmarshal(sr);
-                log.info("Bean " + beanName + " received " + object.getClass().getSimpleName());
+                log.info(beanName + " received " + object.getClass().getSimpleName());
                 log.debug(text);
                 return object;
             } catch (JMSException e) {
-                log.error("Message unmarshal error in bean " + beanName, e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Message unmarshal error in " + beanName, e);
             } catch (JAXBException e) {
-                log.error("Message unmarshal error in bean " + beanName, e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Message unmarshal error in " + beanName, e);
             }
         }
         return null;

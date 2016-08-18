@@ -60,11 +60,11 @@ public class RoadStationServiceImpl implements RoadStationService {
     public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
         final List<RoadStation> orphans;
         if (RoadStationType.LAM_STATION == type) {
-            orphans = roadStationRepository.findOrphanLamStationRoadStations();
-        } else if (RoadStationType.CAMERA == type) {
-            orphans = roadStationRepository.findOrphanCameraStationRoadStations();
+            orphans = roadStationRepository.findOrphanLamRoadStations();
+        } else if (RoadStationType.CAMERA_STATION == type) {
+            orphans = roadStationRepository.findOrphanCameraRoadStations();
         } else if (RoadStationType.WEATHER_STATION == type) {
-            orphans = roadStationRepository.findOrphanWeatherStationRoadStations();
+            orphans = roadStationRepository.findOrphanWeatherRoadStations();
         } else {
             throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
         }
@@ -85,19 +85,19 @@ public class RoadStationServiceImpl implements RoadStationService {
     @Override
     @Transactional(readOnly = true)
     public List<RoadStation> findOrphanWeatherStationRoadStations() {
-        return roadStationRepository.findOrphanWeatherStationRoadStations();
+        return roadStationRepository.findOrphanWeatherRoadStations();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoadStation> findOrphanCameraStationRoadStations() {
-        return roadStationRepository.findOrphanCameraStationRoadStations();
+        return roadStationRepository.findOrphanCameraRoadStations();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoadStation> findOrphanLamStationRoadStations() {
-        return roadStationRepository.findOrphanLamStationRoadStations();
+        return roadStationRepository.findOrphanLamRoadStations();
     }
 
     @Override

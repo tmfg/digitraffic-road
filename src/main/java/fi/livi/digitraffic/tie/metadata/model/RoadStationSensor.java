@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -76,6 +78,10 @@ public class RoadStationSensor {
     @ApiModelProperty("Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
     private List<SensorValueDescription> sensorValueDescriptions;
+
+    @JsonIgnore
+    @Convert(converter = RoadStationTypeEnumConverter.class)
+    private RoadStationType roadStationType;
 
     public long getId() {
         return id;
@@ -185,8 +191,10 @@ public class RoadStationSensor {
                 .appendField("id", getId())
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("naturalId", getNaturalId())
+                .appendField("name", getName())
                 .appendField("nameFi", getNameFi())
                 .appendField("unit", getUnit())
+                .appendField("roadStationType", getRoadStationType())
                 .toString();
     }
 
@@ -196,5 +204,17 @@ public class RoadStationSensor {
 
     public void setSensorValueDescriptions(final List<SensorValueDescription> sensorValueDescriptions) {
         this.sensorValueDescriptions = sensorValueDescriptions;
+    }
+
+    public RoadStationType getRoadStationType() {
+        return roadStationType;
+    }
+
+    public void setRoadStationType(RoadStationType roadStationType) {
+        if (this.roadStationType != null && !this.roadStationType.equals(roadStationType)) {
+            throw new IllegalStateException("Cannot change roadStationType of RoadStationSensor from " +
+                    this.roadStationType + " to " + roadStationType + ". (" + this.toString() + ")");
+        }
+        this.roadStationType = roadStationType;
     }
 }

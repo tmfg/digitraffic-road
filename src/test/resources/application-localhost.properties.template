@@ -21,9 +21,9 @@ metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
 quartz.enabled=false
 
 # Metadata update frequencies in ms, 300000 ms = 5 min
-cameraUpdateJob.frequency=300000
+cameraStationUpdateJob.frequency=300000
 lamStationUpdateJob.frequency=300000
-roadWeatherStationUpdateJob.frequency=300000
+weatherStationUpdateJob.frequency=300000
 
 logging.file=digitraffic-metadata
 logging.level.root=INFO

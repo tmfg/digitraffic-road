@@ -29,9 +29,9 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 
 @Service
-public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
+public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(LamStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractLamStationAttributeUpdater.class);
 
     public static final String INSERT_FAILED = "Insert failed ";
 

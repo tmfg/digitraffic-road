@@ -77,7 +77,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         }
         c.setId(cp.getCameraId());
         c.setRoadStationId(cp.getRoadStationNaturalId());
-        c.setNearestRoadWeatherStationId(cp.getNearestRoadWeatherStationNaturalId());
+        c.setNearestWeatherStationId(cp.getNearestWeatherStationNaturalId());
         return c;
     }
 }

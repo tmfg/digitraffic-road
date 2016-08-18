@@ -45,9 +45,9 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = LAM_JMS_DESTINATION_BEAN)
     public Destination createJMSDestinationBean(@Value("${jms.inQueue.lam}")
-                                              final String jmsInQueueRoadWeather) throws JMSException {
+                                              final String jmsInQueue) throws JMSException {
         Topic destination = new Topic();
-        destination.setTopicName(jmsInQueueRoadWeather);
+        destination.setTopicName(jmsInQueue);
         return destination;
     }
 

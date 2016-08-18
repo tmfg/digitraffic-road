@@ -101,7 +101,7 @@ public class CameraPreset {
     @ManyToOne
     @JoinColumn(name="NEAREST_RD_WEATHER_STATION_ID")
     @Fetch(FetchMode.JOIN)
-    private RoadWeatherStation nearestRoadWeatherStation;
+    private WeatherStation nearestWeatherStation;
 
     public long getId() {
         return id;
@@ -231,12 +231,12 @@ public class CameraPreset {
         this.roadStation = roadStation;
     }
 
-    public RoadWeatherStation getNearestRoadWeatherStation() {
-        return nearestRoadWeatherStation;
+    public WeatherStation getNearestWeatherStation() {
+        return nearestWeatherStation;
     }
 
-    public void setNearestRoadWeatherStation(final RoadWeatherStation nearestRoadWeatherStation) {
-        this.nearestRoadWeatherStation = nearestRoadWeatherStation;
+    public void setNearestWeatherStation(final WeatherStation nearestWeatherStation) {
+        this.nearestWeatherStation = nearestWeatherStation;
     }
 
     /**
@@ -266,8 +266,8 @@ public class CameraPreset {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
-    public Long getNearestRoadWeatherStationNaturalId() {
-        return nearestRoadWeatherStation != null ? nearestRoadWeatherStation.getRoadStationNaturalId() : null;
+    public Long getNearestWeatherStationNaturalId() {
+        return nearestWeatherStation != null ? nearestWeatherStation.getRoadStationNaturalId() : null;
     }
 
     public LocalDateTime getPictureLastModified() {

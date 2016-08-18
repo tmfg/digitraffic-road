@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraUpdater;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
 
 public class CameraMetadataControllerRestTest extends MetadataRestTest {
@@ -27,15 +27,15 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
     private KameraPerustiedotLotjuServiceMock kameraPerustiedotLotjuServiceMock;
 
     @Autowired
-    private CameraUpdater cameraUpdater;
+    private CameraStationUpdater cameraStationUpdater;
 
     @Test
     public void testCameraPresetMetadataRestApi() throws Exception {
 
         // initialize state
         kameraPerustiedotLotjuServiceMock.initDataAndService();
-        cameraUpdater.fixCameraPresetsWithMissingRoadStations();
-        cameraUpdater.updateCameras();
+        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        cameraStationUpdater.updateCameras();
 
         final ArrayList<String> cameraTypes = new ArrayList<>();
         for (final CameraType cameraType : CameraType.values()) {

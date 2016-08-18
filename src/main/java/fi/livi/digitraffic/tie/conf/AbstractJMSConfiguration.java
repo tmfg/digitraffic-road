@@ -39,7 +39,7 @@ public abstract class AbstractJMSConfiguration {
         this.jmsReconnectionTries = jmsReconnectionTries;
     }
 
-    public abstract Destination createJMSDestinationBean(final String jmsInQueueRoadWeather) throws JMSException;
+    public abstract Destination createJMSDestinationBean(final String jmsInQueue) throws JMSException;
     public abstract MessageListener createJMSMessageListener();
     public abstract JMSParameters createJMSParameters(String jmsUserId, String jmsPassword);
     public abstract Connection createJmsConnection();

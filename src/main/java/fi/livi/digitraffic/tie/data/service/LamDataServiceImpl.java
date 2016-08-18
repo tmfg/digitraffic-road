@@ -2,8 +2,12 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +21,13 @@ import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
+import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
+import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Service
 public class LamDataServiceImpl implements LamDataService {
@@ -26,12 +35,18 @@ public class LamDataServiceImpl implements LamDataService {
 
     private final LamMeasurementRepository lamMeasurementRepository;
     private final LamStationService lamStationService;
+    private SensorValueRepository sensorValueRepository;
+    private RoadStationSensorService roadStationSensorService;
 
     @Autowired
     public LamDataServiceImpl(final LamMeasurementRepository lamMeasurementRepository,
-                              final LamStationService lamStationService) {
+                              final LamStationService lamStationService,
+                              final SensorValueRepository sensorValueRepository,
+                              final RoadStationSensorService roadStationSensorService) {
         this.lamMeasurementRepository = lamMeasurementRepository;
         this.lamStationService = lamStationService;
+        this.sensorValueRepository = sensorValueRepository;
+        this.roadStationSensorService = roadStationSensorService;
     }
 
     @Override
@@ -59,7 +74,7 @@ public class LamDataServiceImpl implements LamDataService {
 
     @Override
     public void updateLamData(Lam data) {
-        log.info("Update road weather with station lotjuId: " + data.getAsemaId());
+        log.info("Update lam sensor with station lotjuId: " + data.getAsemaId());
         long lamStationLotjuId = data.getAsemaId();
         LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(data.getAika(), ZoneId.systemDefault());
 
@@ -70,6 +85,54 @@ public class LamDataServiceImpl implements LamDataService {
             log.warn("LamStation not found for " + ToStringHelpper.toString(data));
             return;
         }
-        // TODO sensorvalue updates
+
+        List<Lam.Anturit.Anturi> anturit = data.getAnturit().getAnturi();
+
+        List<SensorValue> existingSensorValues =
+                sensorValueRepository.findSensorvaluesByRoadStationNaturalId(rws.getRoadStationNaturalId(), RoadStationType.LAM_STATION);
+        List<RoadStationSensor> existingSensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.LAM_STATION);
+
+        Map<Long, RoadStationSensor> existingSensorsMapByLotjuId =
+                existingSensors
+                        .stream()
+                        .filter(p -> !p.isStatusSensor()) // filter status sensors
+                        .collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        Map<Long, SensorValue> existingSensorValueMapByLotjuId =
+                existingSensorValues
+                        .stream()
+                        .collect(Collectors.toMap(p -> p.getRoadStationSensor().getLotjuId(), p -> p));
+
+        List<SensorValue> insert = new ArrayList<>();
+
+        for (Lam.Anturit.Anturi anturi : anturit) {
+            SensorValue existingSensorValue = existingSensorValueMapByLotjuId.remove(anturi.getLaskennallinenAnturiId());
+            if (existingSensorValue == null) {
+                // insert new
+                RoadStationSensor sensor = existingSensorsMapByLotjuId.get(anturi.getLaskennallinenAnturiId());
+                if (sensor != null) {
+                    SensorValue sv = new SensorValue(rws.getRoadStation(), sensor, anturi.getArvo(), sensorValueMeasured);
+                    insert.add(sv);
+                } else {
+                    log.warn("Could not save sensor value: RoadStationSensor not found with lotjuId: " + anturi.getLaskennallinenAnturiId());
+                }
+            } else {
+                // update
+                if (existingSensorValue.getSensorValueMeasured().isBefore(sensorValueMeasured)) {
+                    existingSensorValue.setValue((double) anturi.getArvo());
+                    existingSensorValue.setSensorValueMeasured(sensorValueMeasured);
+                } else {
+                    // Skip old value
+                    log.warn("Skipping old value for sensor " + existingSensorValue.getSensorValueMeasured() + " vs new " + sensorValueMeasured);
+                }
+            }
+        }
+
+        if (!insert.isEmpty()) {
+            long millisJPASaveStart = Calendar.getInstance().getTimeInMillis();
+            sensorValueRepository.save(insert);
+            long millisJPASaveEnd = Calendar.getInstance().getTimeInMillis();
+            log.info("JPA save time for " + insert.size() + ": " + (millisJPASaveEnd - millisJPASaveStart));
+        }
+
     }
 }

@@ -16,12 +16,13 @@ import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.roadweather.RoadWeatherStationService;
+import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,27 +38,27 @@ public class MetadataController {
 
     public static final String LAM_STATIONS_PATH = "/lam-stations";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
-    public static final String ROAD_WEATHER_STATIONS_PATH = "/road-weather-stations";
-    public static final String ROAD_STATION_SENSORS_PATH = "/road-station-sensors";
+    public static final String WEATHER_STATIONS_PATH = "/weather-stations";
+    public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
     public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
 
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 
     private final CameraPresetService cameraPresetService;
     private final LamStationService lamStationService;
-    private final RoadWeatherStationService roadWeatherStationService;
+    private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
     private final ForecastSectionService forecastSectionService;
 
     @Autowired
     public MetadataController(final CameraPresetService cameraPresetService,
                               final LamStationService lamStationService,
-                              final RoadWeatherStationService roadWeatherStationService,
+                              final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
                               final ForecastSectionService forecastSectionService) {
         this.cameraPresetService = cameraPresetService;
         this.lamStationService = lamStationService;
-        this.roadWeatherStationService = roadWeatherStationService;
+        this.weatherStationService = weatherStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.forecastSectionService = forecastSectionService;
     }
@@ -87,27 +88,27 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of road weather stations")
-    @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Weather Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadWeatherStationFeatureCollection listNonObsoleteRoadWeatherStations(
+    public WeatherStationFeatureCollection listNonObsoleteWeatherStations(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_STATIONS_PATH);
-        return roadWeatherStationService.findAllNonObsoletePublicRoadWeatherStationAsFeatureCollection(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_PATH);
+        return weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(lastUpdated);
     }
 
     @ApiOperation("The static information of available sensors of road weather stations")
-    @RequestMapping(method = RequestMethod.GET, path = ROAD_STATION_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Road Station Sensors"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationsSensorsMetadata listNonObsoleteRoadStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_STATION_SENSORS_PATH);
-        return roadStationSensorService.findRoadStationsSensorsMetadata(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH);
+        return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
 
     @ApiOperation("The static information of road weather forecast sections")

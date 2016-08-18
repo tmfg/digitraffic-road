@@ -23,8 +23,8 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LamStationUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.RoadWeatherStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.LamRoadStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -41,12 +41,12 @@ public class SchedulerConfig {
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
                                                      final JobFactory jobFactory,
-                                                     @Qualifier("roadWeatherStationUpdateJobTrigger") final
-                                                     Trigger roadWeatherStationUpdateJobTrigger,
+                                                     @Qualifier("weatherStationUpdateJobTrigger") final
+                                                     Trigger weatherStationUpdateJobTrigger,
                                                      @Qualifier("cameraUpdateJobTrigger") final
                                                      Trigger cameraUpdateJobTrigger,
                                                      @Qualifier("lamStationUpdateJobTrigger") final
-                                                         Trigger lamStationUpdateJobTrigger) throws IOException {
+                                                     Trigger lamStationUpdateJobTrigger) throws IOException {
 
         final SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
@@ -57,7 +57,7 @@ public class SchedulerConfig {
 
         factory.setQuartzProperties(quartzProperties());
         factory.setTriggers(
-                roadWeatherStationUpdateJobTrigger,
+                weatherStationUpdateJobTrigger,
                 cameraUpdateJobTrigger,
                 lamStationUpdateJobTrigger);
 
@@ -79,18 +79,18 @@ public class SchedulerConfig {
 
     @Bean
     public JobDetailFactoryBean lamStationUpdateJobDetail() {
-        return createJobDetail(LamStationUpdateJob.class);
+        return createJobDetail(LamRoadStationUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean roadWeatherStationUpdateJobDetail() {
-        return createJobDetail(RoadWeatherStationUpdateJob.class);
+    public JobDetailFactoryBean weatherStationUpdateJobDetail() {
+        return createJobDetail(WeatherStationUpdateJob.class);
     }
 
 
     @Bean(name = "cameraUpdateJobTrigger")
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(@Qualifier("cameraUpdateJobDetail") final JobDetail jobDetail,
-                                                           @Value("${cameraUpdateJob.frequency}") final long frequency) {
+                                                           @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createTrigger(jobDetail, frequency);
     }
 
@@ -100,9 +100,9 @@ public class SchedulerConfig {
         return createTrigger(jobDetail, frequency);
     }
 
-    @Bean(name = "roadWeatherStationUpdateJobTrigger")
-    public SimpleTriggerFactoryBean roadWeatherStationUpdateJobTrigger(@Qualifier("roadWeatherStationUpdateJobDetail") final JobDetail jobDetail,
-                                                                       @Value("${roadWeatherStationUpdateJob.frequency}") final long frequency) {
+    @Bean(name = "weatherStationUpdateJobTrigger")
+    public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(@Qualifier("weatherStationUpdateJobDetail") final JobDetail jobDetail,
+                                                                   @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
         return createTrigger(jobDetail, frequency);
     }
 

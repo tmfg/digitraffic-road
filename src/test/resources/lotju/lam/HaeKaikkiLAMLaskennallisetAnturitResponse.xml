@@ -1,0 +1,50 @@
+<ns2:HaeKaikkiLAMLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29">
+    <ns2:laskennallinenAnturi>
+        <id>147</id>
+        <b>194</b>
+        <g>194</g>
+        <kuvaus>Ajoneuvomäärä suunta 1 (-5 min)</kuvaus>
+        <laskentaKaava>select asemaId, sum(liukuvat_5min.lukumaara) * 12 as ohitukset_5min_liukuva_suunta1 from liukuvat_5min (suunta in (0, 1)) group by asemaId</laskentaKaava>
+        <lyhytNimi>kpl/h1</lyhytNimi>
+        <nimi>ohitukset_5min_liukuva_suunta1</nimi>
+        <r>0</r>
+        <vanhaId>5116</vanhaId>
+        <yksikko>kpl/h</yksikko>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <id>148</id>
+        <b>194</b>
+        <g>194</g>
+        <kuvaus>Ajoneuvomäärä suunta 2 (-5 min)</kuvaus>
+        <laskentaKaava>select asemaId, sum(liukuvat_5min.lukumaara) * 12 as ohitukset_5min_liukuva_suunta2 from liukuvat_5min (suunta in (0, 2)) group by asemaId</laskentaKaava>
+        <lyhytNimi>kpl/h2</lyhytNimi>
+        <nimi>ohitukset_5min_liukuva_suunta2</nimi>
+        <r>0</r>
+        <vanhaId>5119</vanhaId>
+        <yksikko>kpl/h</yksikko>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <id>149</id>
+        <b>128</b>
+        <g>169</g>
+        <kuvaus>Keskinopeus suunta 1 (-5 min)</kuvaus>
+        <laskentaKaava>@Audit select asemaId, sum(liukuvat_5min.nopeus) / sum(liukuvat_5min.lukumaara) as keskinopeus_5min_liukuva_suunta1 from liukuvat_5min (suunta in (0, 1)) group by asemaId</laskentaKaava>
+        <lyhytNimi>km/h1</lyhytNimi>
+        <nimi>keskinopeus_5min_liukuva_suunta1</nimi>
+        <r>255</r>
+        <vanhaId>5122</vanhaId>
+        <yksikko>km/h</yksikko>
+    </ns2:laskennallinenAnturi>
+    <ns2:laskennallinenAnturi>
+        <id>150</id>
+        <b>128</b>
+        <g>169</g>
+        <kuvaus>Keskinopeus suunta 2 (-5 min)</kuvaus>
+        <laskentaKaava>select asemaId, sum(liukuvat_5min.nopeus) / sum(liukuvat_5min.lukumaara) as keskinopeus_5min_liukuva_suunta2 from liukuvat_5min (suunta in (0, 2)) group by asemaId</laskentaKaava>
+        <lyhytNimi>km/h2</lyhytNimi>
+        <nimi>keskinopeus_5min_liukuva_suunta2</nimi>
+        <r>255</r>
+        <vanhaId>5125</vanhaId>
+        <yksikko>km/h</yksikko>
+    </ns2:laskennallinenAnturi>
+</ns2:HaeKaikkiLAMLaskennallisetAnturitResponse>

@@ -18,15 +18,15 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.roadweather.RoadWeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.LamDataService;
 import fi.livi.digitraffic.tie.data.service.RoadStationStatusService;
-import fi.livi.digitraffic.tie.data.service.RoadWeatherService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
+import fi.livi.digitraffic.tie.data.service.WeatherService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -56,12 +56,13 @@ public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
     public static final String LAM_DATA_PATH = "/lam-data";
+    public static final String WEATHER_DATA_PATH = "/weather-data";
+
+    public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
     public static final String ROAD_STATION_STATUSES_PATH = "/road-station-statuses";
     public static final String DAY_DATA_PATH = "/previous-day-data";
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
-    public static final String ROAD_WEATHER_PATH = "/road-weather";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
@@ -71,7 +72,7 @@ public class DataController {
     private final DayDataService dayDataService;
     private final LamDataService lamDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
-    private final RoadWeatherService roadWeatherService;
+    private final WeatherService weatherService;
     private final RoadStationStatusService roadStationStatusService;
     private final CameraDataService cameraDataService;
 
@@ -80,14 +81,14 @@ public class DataController {
                           final DayDataService dayDataService,
                           final LamDataService lamDataService,
                           final FreeFlowSpeedService freeFlowSpeedService,
-                          final RoadWeatherService roadWeatherService,
+                          final WeatherService weatherService,
                           final RoadStationStatusService roadStationStatusService,
                           final CameraDataService cameraDataService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
         this.lamDataService = lamDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
-        this.roadWeatherService = roadWeatherService;
+        this.weatherService = weatherService;
         this.roadStationStatusService = roadStationStatusService;
         this.cameraDataService = cameraDataService;
     }
@@ -224,27 +225,27 @@ public class DataController {
     }
 
     @ApiOperation("Current data of road weather stations")
-    @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadWeatherRootDataObjectDto listRoadWeatherStationData(
+    public WeatherRootDataObjectDto listWeatherStationData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value="lastUpdated", required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH + "?lastUpdated=" + lastUpdated);
-        return roadWeatherService.findPublicRoadWeatherData(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "?lastUpdated=" + lastUpdated);
+        return weatherService.findPublicWeatherData(lastUpdated);
     }
 
     @ApiOperation("Current data of road weather station")
-    @RequestMapping(method = RequestMethod.GET, path = ROAD_WEATHER_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadWeatherRootDataObjectDto listRoadWeatherStationData(
+    public WeatherRootDataObjectDto listWeatherStationData(
             @ApiParam("Road weather station id")
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + ROAD_WEATHER_PATH + "/" + id);
-        return roadWeatherService.findPublicRoadWeatherData(id);
+        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
+        return weatherService.findPublicWeatherData(id);
     }
 
 

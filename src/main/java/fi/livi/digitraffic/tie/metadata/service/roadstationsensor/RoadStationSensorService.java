@@ -4,20 +4,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import fi.livi.digitraffic.tie.data.dto.RoadStationSensorValueDto;
+import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 public interface RoadStationSensorService {
-    List<RoadStationSensor> findAllNonObsoleteRoadStationSensors();
+    List<RoadStationSensor> findAllNonObsoleteRoadStationSensors(RoadStationType roadStationType);
 
-    List<RoadStationSensor> findAllRoadStationSensors();
+    List<RoadStationSensor> findAllRoadStationSensors(RoadStationType roadStationType);
 
-    RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(boolean onlyUpdateInfo);
+    Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByNaturalId(RoadStationType roadStationType);
 
-    Map<Long, List<RoadStationSensorValueDto>> findAllNonObsoletePublicRoadWeatherStationSensorValues();
+    RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(RoadStationType roadStationType, boolean onlyUpdateInfo);
 
-    LocalDateTime getLatestMeasurementTime();
+    Map<Long, List<SensorValueDto>> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(RoadStationType roadStationType);
 
-    List<RoadStationSensorValueDto> findAllNonObsoletePublicRoadWeatherStationSensorValues(long roadWeatherStationId);
+    LocalDateTime getLatestMeasurementTime(RoadStationType roadStationType);
+
+    List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(long roadStationNaturalId, RoadStationType roadStationType);
+
+    RoadStationSensor saveRoadStationSensor(RoadStationSensor sensor);
 }

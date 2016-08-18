@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "CameraStationData", description = "Road wather station with sensor values")
-@JsonPropertyOrder( value = {"id", "roadStationId", "nearestRoadWeatherStationId", "sensorValues"})
+@JsonPropertyOrder( value = {"id", "roadStationId", "nearestWeatherStationId", "sensorValues"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraStationDataDto {
 
     private String id;
     private Long roadStationId;
-    private Long nearestRoadWeatherStationId;
+    private Long nearestWeatherStationId;
 
     private List<CameraPresetDataDto> cameraPresets = new ArrayList<>();
 
@@ -35,12 +35,12 @@ public class CameraStationDataDto {
         return roadStationId;
     }
 
-    public void setNearestRoadWeatherStationId(final Long nearestRoadWeatherStationId) {
-        this.nearestRoadWeatherStationId = nearestRoadWeatherStationId;
+    public void setNearestWeatherStationId(final Long nearestWeatherStationId) {
+        this.nearestWeatherStationId = nearestWeatherStationId;
     }
 
-    public Long getNearestRoadWeatherStationId() {
-        return nearestRoadWeatherStationId;
+    public Long getNearestWeatherStationId() {
+        return nearestWeatherStationId;
     }
 
     public List<CameraPresetDataDto> getCameraPresets() {

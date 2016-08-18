@@ -68,4 +68,17 @@ public class LamStationServiceImpl implements LamStationService {
     public LamStation findByLotjuId(long lamStationLotjuId) {
         return lamStationRepository.findByLotjuId(lamStationLotjuId);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, LamStation> findAllLamStationsMappedByByMappedByLotjuId() {
+        final Map<Long, LamStation> map = new HashMap<>();
+        final List<LamStation> all = lamStationRepository.findAll();
+        for (final LamStation lamStation : all) {
+            if (lamStation.getLotjuId() != null) {
+                map.put(lamStation.getLotjuId(), lamStation);
+            }
+        }
+        return map;
+    }
 }
