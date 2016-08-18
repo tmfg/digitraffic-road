@@ -13,24 +13,33 @@ import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-public abstract class JmsMessageListener<T> implements MessageListener {
+public abstract class JmsMessageListener<T> implements MessageListener, ApplicationListener<ContextClosedEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
     private final JAXBContext jaxbTiesaaContext;
     private final String beanName;
     private final Unmarshaller jaxbUnmarshaller;
     private final LinkedBlockingQueue<T> queue;
-    private final JMSMessageConsumer JMSMessageConsumer;
+    private final JMSMessageConsumer jmsMessageConsumer;
 
     public JmsMessageListener(Class<T> typeClass, String beanName) throws JAXBException {
         jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
         this.beanName = beanName;
         jaxbUnmarshaller = jaxbTiesaaContext.createUnmarshaller();
         queue = new LinkedBlockingQueue<T>();
-        JMSMessageConsumer = new JMSMessageConsumer(queue);
+        jmsMessageConsumer = new JMSMessageConsumer(queue);
+    }
+
+    @Override
+    public void onApplicationEvent(final ContextClosedEvent event) {
+        log.info(beanName + " stopping... " + event);
+        jmsMessageConsumer.getConsumer().interrupt();
+        log.info(beanName + " topped");
     }
 
     @Override
@@ -65,13 +74,18 @@ public abstract class JmsMessageListener<T> implements MessageListener {
 
     private class JMSMessageConsumer implements Runnable
     {
+        private final Thread consumer;
         private LinkedBlockingQueue<T> blockingQueue;
 
         public JMSMessageConsumer(LinkedBlockingQueue<T> blockingQueue) {
 
             this.blockingQueue = blockingQueue;
-            Thread consumer = new Thread(this);
+            consumer = new Thread(this);
             consumer.start();
+        }
+
+        public Thread getConsumer() {
+            return consumer;
         }
 
         public void run()
@@ -84,6 +98,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                     handleData(data);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    return;
                 }
             }
         }
