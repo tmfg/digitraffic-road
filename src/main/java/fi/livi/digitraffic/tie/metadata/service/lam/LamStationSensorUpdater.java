@@ -54,7 +54,7 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         return uptaded;
     }
 
-    private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
+    private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {
         final Map<Long, RoadStationSensor> currentNaturalIdToSensorMap =
                 roadStationSensorService.findAllRoadStationSensorsMappedByNaturalId(RoadStationType.LAM_STATION);
 
@@ -63,7 +63,7 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // new WeatherStations
 
         int invalid = 0;
-        for (final LamLaskennallinenAnturiVO anturi : allTiesaaLaskennallinenAnturis) {
+        for (final LamLaskennallinenAnturiVO anturi : allLamLaskennallinenAnturis) {
             if (validate(anturi)) {
                 final RoadStationSensor currentSaved = currentNaturalIdToSensorMap.remove(Long.valueOf(anturi.getVanhaId()));
 
