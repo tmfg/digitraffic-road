@@ -48,7 +48,7 @@ public class LamStationUpdateJobTest extends MetadataTest {
         // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
         lamStationSensorUpdater.updateRoadStationSensors();
         lamStationUpdater.updateLamStations();
-        lamStationsSensorsUpdater.updateLamRoadStationsSensors();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
         final LamStationFeatureCollection allInitial =
                 lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(3, allInitial.getFeatures().size());
@@ -57,7 +57,7 @@ public class LamStationUpdateJobTest extends MetadataTest {
         lamMetatiedotLotjuServiceMock.setStateAfterChange(true);
         lamStationSensorUpdater.updateRoadStationSensors();
         lamStationUpdater.updateLamStations();
-        lamStationsSensorsUpdater.updateLamRoadStationsSensors();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
         final LamStationFeatureCollection allAfterChange =
                 lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(2, allAfterChange.getFeatures().size());

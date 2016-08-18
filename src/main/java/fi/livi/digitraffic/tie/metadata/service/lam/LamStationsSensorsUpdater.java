@@ -52,24 +52,20 @@ public class LamStationsSensorsUpdater extends AbstractWeatherStationUpdater {
      * Updates all available sensors of weather road stations
      */
     @Transactional
-    public boolean updateLamRoadStationsSensors() {
+    public boolean updateLamStationsSensors() {
         log.info("Update LamStations Sensors start");
 
         if (lotjuLamStationClient == null) {
-            log.warn("Not updating LamRoadStationsSensors metadatas because no lotjuLamStationClient defined");
+            log.warn("Not updating LamStations Sensors metadatas because no lotjuLamStationClient defined");
             return false;
         }
 
         // Update sensors of road stations
-        // Get current WeatherStations
+        // Get current LamStations
         final Map<Long, LamStation> currentLamStationMapByLotjuId =
                 lamStationService.findAllLamStationsMappedByByMappedByLotjuId();
 
         final Set<Long> rwsLotjuIds = currentLamStationMapByLotjuId.keySet();
-        // Get sensors for current WeatherStations
-//        final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamStationLotjuIdToTiesaaLaskennallinenAnturiMap =
-//                        lotjuLamStationClient.getTiesaaLaskennallinenAnturis(rwsLotjuIds);
-
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
         final Set<Long> lamAsemaLotjuIdsWithError = new HashSet<>();

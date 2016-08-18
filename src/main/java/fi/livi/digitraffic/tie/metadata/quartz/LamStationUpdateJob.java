@@ -12,9 +12,9 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class LamRoadStationUpdateJob extends AbstractUpdateJob {
+public class LamStationUpdateJob extends AbstractUpdateJob {
 
-    private static final Logger log =  LoggerFactory.getLogger(LamRoadStationUpdateJob.class);
+    private static final Logger log =  LoggerFactory.getLogger(LamStationUpdateJob.class);
 
     @Autowired
     public LamStationSensorUpdater lamStationSensorUpdater;
@@ -27,8 +27,7 @@ public class LamRoadStationUpdateJob extends AbstractUpdateJob {
 
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) {
-        log.info("Quartz LamRoadStationUpdateJob start");
-
+        log.info("Quartz LamStationUpdateJob start");
 
         final long startSensors = System.currentTimeMillis();
         final boolean sensorsUpdated = lamStationSensorUpdater.updateRoadStationSensors();
@@ -40,8 +39,7 @@ public class LamRoadStationUpdateJob extends AbstractUpdateJob {
         final long startStationsEndSensors = System.currentTimeMillis();
         boolean stationsUpdated = lamStationUpdater.updateLamStations();
         final long startStationsSensorsEndStations = System.currentTimeMillis();
-        // TODO update station sensors
-        lamStationsSensorsUpdater.updateLamRoadStationsSensors();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
         final long endStationsSensors = System.currentTimeMillis();
 
         if (stationsUpdated) {
@@ -52,7 +50,7 @@ public class LamRoadStationUpdateJob extends AbstractUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("Quartz LamRoadStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +
+        log.info("Quartz LamStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +
                 " s, updateLamStations took: " + timeStations + " s, updateRoadStationSensors took: " + timeStationsSensors + " s)");
     }
 }

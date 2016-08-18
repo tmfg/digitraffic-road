@@ -23,7 +23,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LamRoadStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.LamStationUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
@@ -79,7 +79,7 @@ public class SchedulerConfig {
 
     @Bean
     public JobDetailFactoryBean lamStationUpdateJobDetail() {
-        return createJobDetail(LamRoadStationUpdateJob.class);
+        return createJobDetail(LamStationUpdateJob.class);
     }
 
     @Bean

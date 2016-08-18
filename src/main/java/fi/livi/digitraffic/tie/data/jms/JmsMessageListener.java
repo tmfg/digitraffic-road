@@ -42,7 +42,6 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 StringReader sr = new StringReader(text);
                 T object = (T) jaxbUnmarshaller.unmarshal(sr);
                 log.info(beanName + " received " + object.getClass().getSimpleName());
-                log.debug(text);
                 return object;
             } catch (JMSException e) {
                 throw new RuntimeException("Message unmarshal error in " + beanName, e);
