@@ -18,7 +18,7 @@ public class RoadStationSensorMetadataControllerRestTest extends MetadataRestTes
     public void testRoadStationSensorMetadataApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            MetadataController.ROAD_STATION_SENSORS_PATH))
+                            MetadataController.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //

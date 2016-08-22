@@ -10,25 +10,26 @@ import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "LamData", description = "Latest measurement data from LAM stations.", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "lamMeasurements"})
+@ApiModel(value = "LamData", description = "Latest measurement data from Lam Stations", parent = RootDataObjectDto.class)
+@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "lamStations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LamRootDataObjectDto extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Latest measurement data from LAM stations")
-    private final List<LamMeasurementDto> lamMeasurements;
+    @ApiModelProperty(value = "Lam Stations data")
+    private final List<LamStationDto> lamStations;
 
-    public LamRootDataObjectDto(final List<LamMeasurementDto> lamMeasurements,
-                                final LocalDateTime updated) {
+    public LamRootDataObjectDto(final List<LamStationDto> lamStations, final LocalDateTime updated) {
         super(updated);
-        this.lamMeasurements = lamMeasurements;
+        this.lamStations = lamStations;
     }
 
     public LamRootDataObjectDto(final LocalDateTime updated) {
         this(null, updated);
     }
 
-    public List<LamMeasurementDto> getLamMeasurements() {
-        return lamMeasurements;
+    public List<LamStationDto> getLamStations() {
+        return lamStations;
     }
+
 }
+

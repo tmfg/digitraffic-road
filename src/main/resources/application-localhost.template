@@ -4,29 +4,52 @@
 # http-server port
 server.port = 9010
 
+# Oracle datasource
 spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
-spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
-spring.datasource.validationQuery=SELECT 1 FROM DUAL
 
 metadata.server.address.lam=<address>
 metadata.server.address.camera=<address>
 metadata.server.address.weather=<address>
 
-# If set to false web app is not started. Should be false for daemon prosess.
+# If set to false web app is not started. Should be set false for daemon prosess.
 # spring.main.web_environment=false
 
 # Is metadata updates on. Should be true only for daemon process.
-quartz.enabled=true
+# quartz.enabled=true
 
 # Metadata update frequencies in ms, 600000 ms = 10 min
-cameraUpdateJob.frequency=600000
+cameraStationUpdateJob.frequency=600000
 lamStationUpdateJob.frequency=600000
-roadWeatherStationUpdateJob.frequency=600000
+weatherStationUpdateJob.frequency=600000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseurl=http://weathercam.url/
 
 logging.file=digitraffic-metadata
 logging.level.root=INFO
+
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+#logging.level.fi.livi.digitraffic.tie.service.camera=DEBUG
+
+# JMS settings
+
+# Sonic
+jms.connectionUrls=tcp://ip:port,tcp:ip:port
+jms.userId=<userid>
+jms.password=<password>
+
+# JMS settings
+jms.reconnectionDelayInSeconds=60
+jms.reconnectionTries=20
+
+# JMS queues
+jms.inQueue.weather=<topic>
+jms.inQueue.
+
+# JMS queue status
+jms.weather.enabled=true
+jms.lam.enabled=true

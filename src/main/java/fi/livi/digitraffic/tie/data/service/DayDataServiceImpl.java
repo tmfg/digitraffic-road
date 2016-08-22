@@ -42,9 +42,19 @@ public class DayDataServiceImpl implements DayDataService {
 
             final List<LinkMeasurementDataDto> linkData = dayDataRepository.listAllMedianTravelTimes();
 
-            return new HistoryRootDataObjectDto(convertToDayDataData(linkData),
+            return new HistoryRootDataObjectDto(
+                    convertToDayDataData(linkData),
                     updated);
         }
+    }
+
+    @Override
+    public HistoryRootDataObjectDto listPreviousDayHistoryData(long linkId) {
+        LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
+        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId);
+        return new HistoryRootDataObjectDto(
+                convertToDayDataData(linkData),
+                updated);
     }
 
     private static List<LinkDataDto> convertToDayDataData(final List<LinkMeasurementDataDto> linkDataFrom) {

@@ -43,26 +43,7 @@ public class RoadStationServiceImpl implements RoadStationService {
         return roadStationRepository.findByType(type);
     }
 
-    @Override
-    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> orphans;
-        if (RoadStationType.LAM_STATION == type) {
-            orphans = roadStationRepository.findOrphanLamStationRoadStations();
-        } else if (RoadStationType.CAMERA == type) {
-            orphans = roadStationRepository.findOrphanCameraStationRoadStations();
-        } else if (RoadStationType.WEATHER_STATION == type) {
-            orphans = roadStationRepository.findOrphanWeatherStationRoadStations();
-        } else {
-            throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
-        }
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : orphans) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
-    }
-
+    @Transactional(readOnly = true)
     @Override
     public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
         final List<RoadStation> all = findByType(type);
@@ -75,31 +56,52 @@ public class RoadStationServiceImpl implements RoadStationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
+        final List<RoadStation> orphans;
+        if (RoadStationType.LAM_STATION == type) {
+            orphans = roadStationRepository.findOrphanLamRoadStations();
+        } else if (RoadStationType.CAMERA_STATION == type) {
+            orphans = roadStationRepository.findOrphanCameraRoadStations();
+        } else if (RoadStationType.WEATHER_STATION == type) {
+            orphans = roadStationRepository.findOrphanWeatherRoadStations();
+        } else {
+            throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
+        }
+
+        final Map<Long, RoadStation> map = new HashMap<>();
+        for (final RoadStation roadStation : orphans) {
+            map.put(roadStation.getNaturalId(), roadStation);
+        }
+        return map;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public RoadStation findByTypeAndNaturalId(final RoadStationType type, final long naturalId) {
         return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
     }
 
-
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanWeatherStationRoadStations() {
-        return roadStationRepository.findOrphanWeatherStationRoadStations();
+        return roadStationRepository.findOrphanWeatherRoadStations();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanCameraStationRoadStations() {
-        return roadStationRepository.findOrphanCameraStationRoadStations();
+        return roadStationRepository.findOrphanCameraRoadStations();
     }
 
+    @Override
     @Transactional(readOnly = true)
-    @Override
     public List<RoadStation> findOrphanLamStationRoadStations() {
-        return roadStationRepository.findOrphanLamStationRoadStations();
+        return roadStationRepository.findOrphanLamRoadStations();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public RoadAddress save(final RoadAddress roadAddress) {
         final RoadAddress value = roadAddressRepository.save(roadAddress);
         roadAddressRepository.flush();

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.helper.CameraPresetHelper;
+import fi.livi.digitraffic.tie.helper.DataValidyHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
@@ -33,8 +34,8 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets) {
-        final CameraStationFeatureCollection collection = new CameraStationFeatureCollection();
+    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final LocalDateTime lastUpdated) {
+        final CameraStationFeatureCollection collection = new CameraStationFeatureCollection(lastUpdated);
 
         // Cameras mapped with cameraId
         final Map<String, CameraStationFeature> cameraStationMap = new HashMap<>();
@@ -65,8 +66,8 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         final CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
-        dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));
-        dto.setNameOnDevice(CameraPresetHelper.fixName(cp.getPresetName2()));
+        dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
+        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
         dto.setPresetOrder(cp.getPresetOrder());
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());
@@ -99,7 +100,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             properties.setLotjuId(cp.getCameraLotjuId());
             properties.setCameraId(cp.getCameraId());
             properties.setCameraType(cp.getCameraType());
-            properties.setNearestRoadWeatherStationNaturalId(cp.getNearestRoadWeatherStationNaturalId());
+            properties.setNearestWeatherStationNaturalId(cp.getNearestWeatherStationNaturalId());
 
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();

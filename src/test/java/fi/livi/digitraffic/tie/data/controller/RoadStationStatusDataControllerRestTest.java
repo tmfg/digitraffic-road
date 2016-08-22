@@ -35,4 +35,22 @@ public class RoadStationStatusDataControllerRestTest extends RestTest {
 //                .andExpect(jsonPath("$.roadStationStatusData[0].collectionStatusUpdatedLocalTime", Matchers.notNullValue()))
         ;
     }
+
+    @Test
+    public void testRoadStatusDataRestApiById() throws Exception {
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                MetadataApplicationConfiguration.API_DATA_PART_PATH +
+                DataController.ROAD_STATION_STATUSES_PATH + "/1043"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses[0].roadStationId", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses[0].condition", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses[0].conditionCode", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses[0].conditionUpdatedUtc", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.roadStationStatuses[0].conditionUpdatedLocalTime", Matchers.notNullValue()))
+        ;
+    }
 }

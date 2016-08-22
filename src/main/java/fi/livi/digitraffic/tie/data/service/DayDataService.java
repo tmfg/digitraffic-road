@@ -4,4 +4,6 @@ import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 
 public interface DayDataService {
     HistoryRootDataObjectDto listPreviousDayHistoryData(boolean onlyUpdateInfo);
+
+    HistoryRootDataObjectDto listPreviousDayHistoryData(long linkId);
 }

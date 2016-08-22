@@ -22,7 +22,7 @@ public class RoadStationServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllCameras() {
-        final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA);
+        final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA_STATION);
         Assert.assertTrue(cameras.size() >= 2);
     }
 

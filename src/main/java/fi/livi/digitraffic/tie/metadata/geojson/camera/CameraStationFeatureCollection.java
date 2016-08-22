@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,18 +11,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of Cameras with presets", value = "CameraStationFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
-public class CameraStationFeatureCollection implements Iterable<CameraStationFeature> {
+public class CameraStationFeatureCollection extends RootDataObjectDto implements Iterable<CameraStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<CameraStationFeature> features = new ArrayList<CameraStationFeature>();
+
+    public CameraStationFeatureCollection(final LocalDateTime localTimestamp) {
+        super(localTimestamp);
+    }
 
     public String getType() {
         return type;

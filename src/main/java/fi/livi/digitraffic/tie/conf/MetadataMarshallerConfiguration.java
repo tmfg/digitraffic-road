@@ -10,7 +10,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuRoadWeatherStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
 
 @Configuration
 public class MetadataMarshallerConfiguration {
@@ -40,7 +40,7 @@ public class MetadataMarshallerConfiguration {
     @Bean
     public LotjuLamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
                                                   @Value("${metadata.server.address.lam}")
-                                             final String lamMetadataServerAddress) {
+                                                  final String lamMetadataServerAddress) {
         log.info("metadata.server.address.lam: " + lamMetadataServerAddress);
         if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
              !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
@@ -77,22 +77,22 @@ public class MetadataMarshallerConfiguration {
     }
 
     @Bean
-    public LotjuRoadWeatherStationClient roadWeatherStationClient(final Jaxb2Marshaller marshaller,
-                                                                  @Value("${metadata.server.address.weather}")
-                                                             final String roadWeatherServerAddress) {
+    public LotjuWeatherStationClient weatherStationClient(final Jaxb2Marshaller marshaller,
+                                                          @Value("${metadata.server.address.weather}")
+                                                          final String weatherServerAddress) {
 
-        log.info("metadata.server.address.weather: " + roadWeatherServerAddress);
-        if ( StringUtils.isNotBlank(roadWeatherServerAddress) &&
-                !"${metadata.server.address.weather}".equals(roadWeatherServerAddress) ) {
-            log.info("Creating LotjuRoadWeatherStationClient");
-            final LotjuRoadWeatherStationClient client = new LotjuRoadWeatherStationClient();
-            client.setAddress(roadWeatherServerAddress);
+        log.info("metadata.server.address.weather: " + weatherServerAddress);
+        if ( StringUtils.isNotBlank(weatherServerAddress) &&
+                !"${metadata.server.address.weather}".equals(weatherServerAddress) ) {
+            log.info("Creating LotjuWeatherStationClient");
+            final LotjuWeatherStationClient client = new LotjuWeatherStationClient();
+            client.setAddress(weatherServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
             return client;
         }
-        log.warn(NOT_CREATING_BEAN + LotjuRoadWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
+        log.warn(NOT_CREATING_BEAN + LotjuWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
         return null;
     }
 }

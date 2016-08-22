@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -22,11 +22,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
-@JsonPropertyOrder(value = {"id", "nameFi", "shortNameFi", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
+@JsonPropertyOrder(value = {"id", "name", "shortName", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
 public class RoadStationSensor {
@@ -37,9 +38,9 @@ public class RoadStationSensor {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "RSS_SENSOR_SEQ", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_STATION_SENSOR"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RSS_SENSOR_SEQ")
+    @GenericGenerator(name = "SEQ_ROAD_STATION_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION_SENSOR"))
+    @GeneratedValue(generator = "SEQ_ROAD_STATION_SENSOR")
     private long id;
 
     @JsonIgnore
@@ -49,7 +50,7 @@ public class RoadStationSensor {
     @JsonProperty("id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal sensorNameFi. Will deprecate in future.", position = 2, notes = "noteja")
+    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future.", position = 2, notes = "noteja")
     @JsonProperty(value = "nameOld")
     private String name;
 
@@ -62,13 +63,15 @@ public class RoadStationSensor {
     @JsonIgnore
     private LocalDate obsoleteDate;
 
-    @ApiModelProperty(value = "Sensor descriptionFi [fi]")
+    @ApiModelProperty(value = "Sensor description [fi]")
     private String description;
 
     @ApiModelProperty(value = "Sensor name [fi]")
+    @JsonProperty(value = "name")
     private String nameFi;
 
     @ApiModelProperty(value = "Short name for sensor [fi]")
+    @JsonProperty(value = "shortName")
     private String shortNameFi;
 
     @ApiModelProperty(value = "Sensor accuracy")
@@ -77,6 +80,10 @@ public class RoadStationSensor {
     @ApiModelProperty("Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
     private List<SensorValueDescription> sensorValueDescriptions;
+
+    @JsonIgnore
+    @Convert(converter = RoadStationTypeEnumConverter.class)
+    private RoadStationType roadStationType;
 
     public long getId() {
         return id;
@@ -186,8 +193,10 @@ public class RoadStationSensor {
                 .appendField("id", getId())
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("naturalId", getNaturalId())
+                .appendField("name", getName())
                 .appendField("nameFi", getNameFi())
                 .appendField("unit", getUnit())
+                .appendField("roadStationType", getRoadStationType())
                 .toString();
     }
 
@@ -197,5 +206,17 @@ public class RoadStationSensor {
 
     public void setSensorValueDescriptions(final List<SensorValueDescription> sensorValueDescriptions) {
         this.sensorValueDescriptions = sensorValueDescriptions;
+    }
+
+    public RoadStationType getRoadStationType() {
+        return roadStationType;
+    }
+
+    public void setRoadStationType(RoadStationType roadStationType) {
+        if (this.roadStationType != null && !this.roadStationType.equals(roadStationType)) {
+            throw new IllegalStateException("Cannot change roadStationType of RoadStationSensor from " +
+                    this.roadStationType + " to " + roadStationType + ". (" + this.toString() + ")");
+        }
+        this.roadStationType = roadStationType;
     }
 }

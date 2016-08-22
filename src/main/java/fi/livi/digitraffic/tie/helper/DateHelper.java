@@ -2,6 +2,10 @@ package fi.livi.digitraffic.tie.helper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public final class DateHelper {
     private DateHelper() {}
@@ -24,5 +28,11 @@ public final class DateHelper {
         }
 
         return second;
+    }
+
+    public static LocalDateTime toLocalDateTimeAtZone(XMLGregorianCalendar aika, ZoneId toLocalDateTimeZoneId) {
+        ZonedDateTime zonedDateTime = aika.toGregorianCalendar().toZonedDateTime();
+        LocalDateTime localDateTimeAtZone = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), toLocalDateTimeZoneId).toLocalDateTime();
+        return localDateTimeAtZone;
     }
 }

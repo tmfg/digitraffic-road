@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,8 +29,8 @@ public class CameraPreset {
 
     @Id
     @GenericGenerator(name = "SEQ_CAMERA_PRESET", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_CAMERA_PRESET"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CAMERA_PRESET")
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_CAMERA_PRESET"))
+    @GeneratedValue(generator = "SEQ_CAMERA_PRESET")
     private long id;
 
     private String presetId;
@@ -42,7 +41,7 @@ public class CameraPreset {
     /** Old field, this station id ? */
     @Column(name="ROADSTATION_ID")
     private Long roadStationId;
-    /** Old field, means road weather station? */
+    /** Old field, means weather station? */
     @Column(name="NEAREST_ROADSTATION_ID")
     private Long nearestRoadstationIid;
 
@@ -102,7 +101,7 @@ public class CameraPreset {
     @ManyToOne
     @JoinColumn(name="NEAREST_RD_WEATHER_STATION_ID")
     @Fetch(FetchMode.JOIN)
-    private RoadWeatherStation nearestRoadWeatherStation;
+    private WeatherStation nearestWeatherStation;
 
     public long getId() {
         return id;
@@ -232,12 +231,12 @@ public class CameraPreset {
         this.roadStation = roadStation;
     }
 
-    public RoadWeatherStation getNearestRoadWeatherStation() {
-        return nearestRoadWeatherStation;
+    public WeatherStation getNearestWeatherStation() {
+        return nearestWeatherStation;
     }
 
-    public void setNearestRoadWeatherStation(final RoadWeatherStation nearestRoadWeatherStation) {
-        this.nearestRoadWeatherStation = nearestRoadWeatherStation;
+    public void setNearestWeatherStation(final WeatherStation nearestWeatherStation) {
+        this.nearestWeatherStation = nearestWeatherStation;
     }
 
     /**
@@ -267,8 +266,8 @@ public class CameraPreset {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
-    public Long getNearestRoadWeatherStationNaturalId() {
-        return nearestRoadWeatherStation != null ? nearestRoadWeatherStation.getRoadStationNaturalId() : null;
+    public Long getNearestWeatherStationNaturalId() {
+        return nearestWeatherStation != null ? nearestWeatherStation.getRoadStationNaturalId() : null;
     }
 
     public LocalDateTime getPictureLastModified() {

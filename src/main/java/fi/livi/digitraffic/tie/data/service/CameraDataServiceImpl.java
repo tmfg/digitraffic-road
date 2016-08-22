@@ -36,4 +36,14 @@ public class CameraDataServiceImpl implements CameraDataService {
                     updated);
         }
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CameraRootDataObjectDto findPublicCameraStationsData(final String cameraId) {
+
+        final LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        return cameraPreset2CameraDataConverter.convert(
+                cameraPresetRepository.findByCameraIdAndObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(cameraId),
+                updated);
+    }
 }

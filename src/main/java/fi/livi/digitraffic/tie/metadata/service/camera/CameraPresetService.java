@@ -14,5 +14,5 @@ public interface CameraPresetService {
 
     List<CameraPreset> finAllCameraPresetsWithOutRoadStation();
 
-    CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection();
+    CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection(boolean onlyUpdateInfo);
 }

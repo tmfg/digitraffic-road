@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
@@ -17,6 +20,8 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ArvoVastaavuusVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeLAMAsemanLaskennallisetAnturitResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotEndpoint;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotV2;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaLaskennallinenAnturiVO;
@@ -28,8 +33,12 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
 
     private static final Logger log = LoggerFactory.getLogger(LamMetatiedotLotjuServiceMock.class);
 
-    private List<LamAsemaVO> lamAsemasInitial;
-    private List<LamAsemaVO> afterChangelamAsemas;
+    private List<LamAsemaVO> initialLamAsemas;
+    private List<LamAsemaVO> afterChangeLamAsemas;
+    private List<LamLaskennallinenAnturiVO> initialLAMLaskennallisetAnturis;
+    private List<LamLaskennallinenAnturiVO> afterChangeLAMLaskennallisetAnturis;
+    private Map<Long, List<LamLaskennallinenAnturiVO>> initialLamAsemasSensorsMap = new HashMap<>();
+    private final Map<Long, List<LamLaskennallinenAnturiVO>> afterChangeLamAsemasAnturisMap = new HashMap<>();
 
     @Autowired
     public LamMetatiedotLotjuServiceMock(@Value("${metadata.server.address.lam}")
@@ -42,8 +51,21 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     public void initDataAndService() {
         if (!isInited()) {
             initService();
-            setLamAsemasInitial(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseInitial.xml"));
-            setAfterChangelamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseChanged.xml"));
+            setInitialLamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseInitial.xml"));
+            setAfterChangeLamAsemas(readLamAsemas("lotju/lam/HaeKaikkiLAMAsematResponseChanged.xml"));
+            setInitialLAMLaskennallisetAnturis(readLamLaskennallinenAnturis("lotju/lam/HaeKaikkiLAMLaskennallisetAnturitResponse.xml"));
+            setAfterChangeLAMLaskennallisetAnturis(readLamLaskennallinenAnturis("lotju/lam/HaeKaikkiLAMLaskennallisetAnturitResponseChanged.xml"));
+
+            appendTiesaaAnturis(
+                    1,
+                    readLamAsemasLaskennallinenAnturis("lotju/lam/HaeLAMAsemanLaskennallisetAnturitResponse1.xml"),
+                    initialLamAsemasSensorsMap,
+                    afterChangeLamAsemasAnturisMap);
+            appendTiesaaAnturis(
+                    310,
+                    readLamAsemasLaskennallinenAnturis("lotju/lam/HaeLAMAsemanLaskennallisetAnturitResponse310.xml"),
+                    initialLamAsemasSensorsMap,
+                    afterChangeLamAsemasAnturisMap);
         }
     }
 
@@ -83,20 +105,61 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
         return responseValue.getAsemat();
     }
 
-    public List<LamAsemaVO> getLamAsemasInitial() {
-        return lamAsemasInitial;
+    private List<LamLaskennallinenAnturiVO> readLamLaskennallinenAnturis(final String filePath) {
+        final HaeKaikkiLAMLaskennallisetAnturitResponse
+                responseValue = (HaeKaikkiLAMLaskennallisetAnturitResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        return responseValue.getLaskennallinenAnturi();
     }
 
-    public void setLamAsemasInitial(final List<LamAsemaVO> lamAsemasInitial) {
-        this.lamAsemasInitial = lamAsemasInitial;
+    private List<LamLaskennallinenAnturiVO> readLamAsemasLaskennallinenAnturis(final String filePath) {
+        final HaeLAMAsemanLaskennallisetAnturitResponse responseValue = (HaeLAMAsemanLaskennallisetAnturitResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        return responseValue.getLamlaskennallisetanturit();
     }
 
-    public List<LamAsemaVO> getAfterChangelamAsemas() {
-        return afterChangelamAsemas;
+    private void appendTiesaaAnturis(final long tsaId, final List<LamLaskennallinenAnturiVO> tiesaaLaskennallinenAnturis, final Map<Long, List<LamLaskennallinenAnturiVO>>... tiesaaAnturisMaps) {
+        for (final LamLaskennallinenAnturiVO tsa : tiesaaLaskennallinenAnturis) {
+
+            for (final Map<Long, List<LamLaskennallinenAnturiVO>> tiesaaAnturisMap : tiesaaAnturisMaps) {
+                List<LamLaskennallinenAnturiVO> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
+                if (eas == null) {
+                    eas = new ArrayList<>();
+                    tiesaaAnturisMap.put(tsaId, eas);
+                }
+                eas.add(tsa);
+            }
+        }
     }
 
-    public void setAfterChangelamAsemas(final List<LamAsemaVO> afterChangelamAsemas) {
-        this.afterChangelamAsemas = afterChangelamAsemas;
+    public List<LamAsemaVO> getInitialLamAsemas() {
+        return initialLamAsemas;
+    }
+
+    public void setInitialLamAsemas(final List<LamAsemaVO> initialLamAsemas) {
+        this.initialLamAsemas = initialLamAsemas;
+    }
+
+    public List<LamAsemaVO> getAfterChangeLamAsemas() {
+        return afterChangeLamAsemas;
+    }
+
+    public void setAfterChangeLamAsemas(final List<LamAsemaVO> afterChangeLamAsemas) {
+        this.afterChangeLamAsemas = afterChangeLamAsemas;
+    }
+
+    public void setInitialLAMLaskennallisetAnturis(List<LamLaskennallinenAnturiVO> initialLAMLaskennallisetAnturis) {
+        this.initialLAMLaskennallisetAnturis = initialLAMLaskennallisetAnturis;
+    }
+
+    public List<LamLaskennallinenAnturiVO> getInitialLAMLaskennallisetAnturis() {
+        return initialLAMLaskennallisetAnturis;
+    }
+
+    public void setAfterChangeLAMLaskennallisetAnturis(List<LamLaskennallinenAnturiVO> afterChangeLAMLaskennallisetAnturis) {
+        this.afterChangeLAMLaskennallisetAnturis = afterChangeLAMLaskennallisetAnturis;
+    }
+
+    public List<LamLaskennallinenAnturiVO> getAfterChangeLAMLaskennallisetAnturis() {
+        return afterChangeLAMLaskennallisetAnturis;
     }
 
     /* LAMMetatiedot Service methods */
@@ -113,57 +176,65 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
 
     @Override
     public List<LamAnturiVakioArvoVO> haeKaikkiAnturiVakioArvot(final Integer paiva, final Integer kuukausi) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeKaikkiAnturiVakioArvot");
     }
 
     @Override
     public ArvoVastaavuusVO haeArvovastaavuus(final Long id) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeArvovastaavuus");
     }
 
     @Override
     public List<LamAnturiVakioArvoVO> haeAsemanAnturiVakioArvot(final Long asemaId, final Integer paiva, final Integer kuukausi) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeAsemanAnturiVakioArvot");
     }
 
     @Override
     public LamAnturiVO haeLAMAnturi(final Long id) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeLAMAnturi");
     }
 
     @Override
     public List<LamLaskennallinenAnturiVO> haeKaikkiLAMLaskennallisetAnturit() {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        log.info("haeKaikkiLAMLaskennallisetAnturit isStateAfterChange: " + isStateAfterChange());
+        if (isStateAfterChange()) {
+            return getAfterChangeLAMLaskennallisetAnturis();
+        }
+        return getInitialLAMLaskennallisetAnturis();
     }
 
     @Override
     public List<ArvoVastaavuusVO> haeLaskennallisenAnturinArvovastaavuudet(final Long arg0) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeLaskennallisenAnturinArvovastaavuudet");
     }
 
     @Override
     public List<ArvoVastaavuusVO> haeKaikkiArvovastaavuudet() {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeKaikkiArvovastaavuudet");
     }
 
     @Override
     public LamAnturiVakioVO haeAnturiVakio(final Long anturiVakioId) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeAnturiVakio");
     }
 
     @Override
     public List<LamAnturiVO> haeKaikkiLAMAnturit() {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeKaikkiLAMAnturit");
     }
 
     @Override
     public List<LamLaskennallinenAnturiVO> haeLAMAsemanLaskennallisetAnturit(final Long id) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        log.info("haeLAMAsemanLaskennallisetAnturit " + id + " isStateAfterChange: " + isStateAfterChange());
+        if (isStateAfterChange()) {
+            return afterChangeLamAsemasAnturisMap.get(Long.valueOf(id));
+        }
+        return initialLamAsemasSensorsMap.get(Long.valueOf(id));
     }
 
     @Override
     public List<LamAsemaLaskennallinenAnturiVO> haeLAMAsemanLaskennallistenAntureidenTilat(final Long asemaId) {
-        throw new NotImplementedException("haeKaikkiVideopalvelimet");
+        throw new NotImplementedException("haeLAMAsemanLaskennallistenAntureidenTilat");
     }
 
     @Override
@@ -175,9 +246,9 @@ public class LamMetatiedotLotjuServiceMock extends LotjuServiceMock implements L
     public List<LamAsemaVO> haeKaikkiLAMAsemat() {
         log.info("haeKaikkiLAMAsemat isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
-            return getAfterChangelamAsemas();
+            return getAfterChangeLamAsemas();
         }
-        return getLamAsemasInitial();
+        return getInitialLamAsemas();
     }
 
     @Override

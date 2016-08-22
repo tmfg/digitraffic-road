@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "CameraData", description = "Latest measurement data from road weather stations", parent = RootDataObjectDto.class)
+@ApiModel(value = "CameraData", description = "Latest measurement data from weather stations", parent = RootDataObjectDto.class)
 @JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "cameraStationData"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraRootDataObjectDto extends RootDataObjectDto {

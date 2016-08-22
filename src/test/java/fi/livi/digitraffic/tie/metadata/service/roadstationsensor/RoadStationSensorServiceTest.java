@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.MetadataTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RoadStationSensorServiceTest extends MetadataTest {
@@ -19,7 +20,13 @@ public class RoadStationSensorServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllNonObsoleteRoadStationSensors() {
-        final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors();
+        final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
+        Assert.assertTrue(sensors.size() >= 56);
+    }
+
+    @Test
+    public void testFindRoadStationSensorsByRoadStationType() {
+        List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
         Assert.assertTrue(sensors.size() >= 56);
     }
 }

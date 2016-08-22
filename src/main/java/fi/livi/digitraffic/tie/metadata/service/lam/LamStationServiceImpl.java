@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +13,33 @@ import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConv
 import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class LamStationServiceImpl implements LamStationService {
     private final LamStationRepository lamStationRepository;
+    private StaticDataStatusService staticDataStatusService;
 
     @Autowired
-    public LamStationServiceImpl(final LamStationRepository lamStationRepository) {
+    public LamStationServiceImpl(final LamStationRepository lamStationRepository,
+                                 final StaticDataStatusService staticDataStatusService) {
         this.lamStationRepository = lamStationRepository;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection() {
-        return LamStationMetadata2FeatureConverter.convert(lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue());
+    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.LAM_STATION);
+
+        return LamStationMetadata2FeatureConverter.convert(
+                onlyUpdateInfo == false ?
+                    lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue() :
+                    Collections.emptyList(),
+                updated != null ? updated.getUpdated() : null);
     }
 
     @Transactional
@@ -38,7 +52,7 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public Map<Long, LamStation> findAllLamStationsMappedByByNaturalId() {
+    public Map<Long, LamStation> findAllLamStationsMappedByByLamNaturalId() {
         final List<LamStation> allStations = lamStationRepository.findAll();
         final Map<Long, LamStation> stationMap = new HashMap<>();
 
@@ -47,5 +61,43 @@ public class LamStationServiceImpl implements LamStationService {
         }
 
         return stationMap;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, LamStation> findAllLamStationsMappedByByRoadStationNaturalId() {
+        final List<LamStation> allStations = lamStationRepository.findAll();
+        final Map<Long, LamStation> stationMap = new HashMap<>();
+
+        for(final LamStation lam : allStations) {
+            stationMap.put(lam.getRoadStationNaturalId(), lam);
+        }
+
+        return stationMap;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public LamStation findByLotjuId(long lamStationLotjuId) {
+        return lamStationRepository.findByLotjuId(lamStationLotjuId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, LamStation> findAllLamStationsMappedByByMappedByLotjuId() {
+        final Map<Long, LamStation> map = new HashMap<>();
+        final List<LamStation> all = lamStationRepository.findAll();
+        for (final LamStation lamStation : all) {
+            if (lamStation.getLotjuId() != null) {
+                map.put(lamStation.getLotjuId(), lamStation);
+            }
+        }
+        return map;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public LamStation findByRoadStationNaturalId(long roadStationNaturalId) {
+        return lamStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
     }
 }

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public enum RoadStationType {
     LAM_STATION(1),
     WEATHER_STATION(2),
-    CAMERA(3);
+    CAMERA_STATION(3);
 
     private static final Logger LOG = LoggerFactory.getLogger(RoadStationType.class);
 

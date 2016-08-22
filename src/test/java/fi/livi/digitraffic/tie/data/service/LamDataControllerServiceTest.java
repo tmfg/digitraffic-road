@@ -14,12 +14,12 @@ public class LamDataControllerServiceTest extends MetadataTest {
 
     @Test
     public void testListAllLamDataFromNonObsoleteStations()  {
-        final LamRootDataObjectDto object = lamDataService.listPublicLamData(false);
+        final LamRootDataObjectDto object = lamDataService.findPublicLamData(false);
 
         Assert.notNull(object);
         Assert.notNull(object.getDataUptadedLocalTime());
         Assert.notNull(object.getDataUptadedUtc());
-        Assert.notNull(object.getLamMeasurements());
-        Assert.notEmpty(object.getLamMeasurements());
+        Assert.notNull(object.getLamStations());
+        Assert.notEmpty(object.getLamStations());
     }
 }

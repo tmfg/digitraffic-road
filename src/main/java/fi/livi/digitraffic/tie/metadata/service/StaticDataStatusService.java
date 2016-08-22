@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+
 public interface StaticDataStatusService {
 
     enum StaticStatusType {
@@ -21,4 +24,8 @@ public interface StaticDataStatusService {
     }
 
     void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus);
+
+    void updateMetadataUptaded(MetadataType metadataType);
+
+    MetadataUpdated findMetadataUptadedByMetadataType(MetadataType metadataType);
 }

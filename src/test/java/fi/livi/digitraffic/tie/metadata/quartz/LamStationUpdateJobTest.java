@@ -15,13 +15,21 @@ import fi.livi.digitraffic.tie.MetadataTest;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
 
 public class LamStationUpdateJobTest extends MetadataTest {
 
     private static final Logger log = LoggerFactory.getLogger(LamStationUpdateJobTest.class);
+
+    @Autowired
+    private LamStationSensorUpdater lamStationSensorUpdater;
+
+    @Autowired
+    private LamStationsSensorsUpdater lamStationsSensorsUpdater;
 
     @Autowired
     private LamStationUpdater lamStationUpdater;
@@ -38,16 +46,20 @@ public class LamStationUpdateJobTest extends MetadataTest {
         lamMetatiedotLotjuServiceMock.initDataAndService();
 
         // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
+        lamStationSensorUpdater.updateRoadStationSensors();
         lamStationUpdater.updateLamStations();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
         final LamStationFeatureCollection allInitial =
-                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update lam stations (2 non obsolete stations and 2 obsolete)
         lamMetatiedotLotjuServiceMock.setStateAfterChange(true);
+        lamStationSensorUpdater.updateRoadStationSensors();
         lamStationUpdater.updateLamStations();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
         final LamStationFeatureCollection allAfterChange =
-                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+                lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));

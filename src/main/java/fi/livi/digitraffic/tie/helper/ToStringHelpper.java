@@ -2,14 +2,17 @@ package fi.livi.digitraffic.tie.helper;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
+import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
@@ -66,8 +69,19 @@ public class ToStringHelpper {
         return sb.toString();
     }
 
-    public static String toStringFull(final Object object) {
-        return object.getClass().getSimpleName() + ": " + ToStringBuilder.reflectionToString(object, JSON_STYLE);
+    public static String toStringFull(final Object object, final String...secretFields) {
+        ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
+            @Override
+            protected Object getValue(Field field) throws IllegalArgumentException, IllegalAccessException {
+                for (String excludeFieldName : secretFields) {
+                    if (field.getName().equals(excludeFieldName)) {
+                        return "*****";
+                    }
+                }
+                return super.getValue(field);
+            }
+        };
+        return object.getClass().getSimpleName() + ": " + refBuiler;
     }
 
     private static StringBuffer createStartSb(final Object object) {
@@ -103,6 +117,68 @@ public class ToStringHelpper {
         JSON_STYLE.append(sb, NAME, lamStation.getName(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
+        return sb.toString();
+    }
+
+    public static String  toString(Tiesaa tiesaa) {
+        final StringBuffer sb = createStartSb(tiesaa);
+        JSON_STYLE.append(sb, "asemaId", tiesaa.getAsemaId());
+        if (tiesaa.getAika() != null) {
+            JSON_STYLE.append(sb, "aika", tiesaa.getAika().toGregorianCalendar().toZonedDateTime().toLocalDate(), true);
+        } else {
+            JSON_STYLE.append(sb, "aika", "null", true);
+        }
+
+        sb.append("anturit: [");
+
+        boolean first = true;
+        for (Tiesaa.Anturit.Anturi anturi : tiesaa.getAnturit().getAnturi()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append("{");
+            JSON_STYLE.append(sb, "laskennallinenAnturiId", anturi.getLaskennallinenAnturiId(), true);
+            JSON_STYLE.append(sb, "arvo", anturi.getArvo());
+            sb.append("}");
+            first = false;
+        }
+
+        sb.append("]");
+
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    public static String  toString(Lam lam) {
+        final StringBuffer sb = createStartSb(lam);
+        JSON_STYLE.append(sb, "asemaId", lam.getAsemaId());
+        if (lam.getAika() != null) {
+            JSON_STYLE.append(sb, "aika", lam.getAika().toGregorianCalendar().toZonedDateTime().toLocalDate(), true);
+        } else {
+            JSON_STYLE.append(sb, "aika", "null", true);
+        }
+
+        sb.append("anturit: [");
+
+        boolean first = true;
+        for (Lam.Anturit.Anturi anturi : lam.getAnturit().getAnturi()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append("{");
+            JSON_STYLE.append(sb, "laskennallinenAnturiId", anturi.getLaskennallinenAnturiId(), true);
+            JSON_STYLE.append(sb, "arvo", anturi.getArvo());
+            sb.append("}");
+            first = false;
+        }
+
+        sb.append("]");
+
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+
         return sb.toString();
     }
 

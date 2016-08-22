@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
-import fi.livi.digitraffic.tie.helper.CameraPresetHelper;
+import fi.livi.digitraffic.tie.helper.DataValidyHelper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
@@ -64,8 +64,8 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         final CameraPresetDataDto dto = new CameraPresetDataDto();
         dto.setMeasured(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());
-        dto.setPresentationName(CameraPresetHelper.fixName(cp.getPresetName1()));
-        dto.setNameOnDevice(CameraPresetHelper.fixName(cp.getPresetName2()));
+        dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
+        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
         return dto;
     }
@@ -77,7 +77,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         }
         c.setId(cp.getCameraId());
         c.setRoadStationId(cp.getRoadStationNaturalId());
-        c.setNearestRoadWeatherStationId(cp.getNearestRoadWeatherStationNaturalId());
+        c.setNearestWeatherStationId(cp.getNearestWeatherStationNaturalId());
         return c;
     }
 }

@@ -134,20 +134,38 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>3.1.6</version>
+            <version>3.1.7</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.progress.message</groupId>
+            <artifactId>sonic_Client</artifactId>
+            <version>8.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.progress.message</groupId>
+            <artifactId>sonic_Crypto</artifactId>
+            <version>8.6.0</version>
+        </dependency>
+
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -187,34 +205,6 @@
                 </configuration>
             </plugin>
 
-            <!-- generate build number -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <id>generate-buildNumber</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <!-- This ensures that even if we are not connected to scm the revision is generated -->
-                    <revisionOnScmFailure />
-                    <format>{0}</format>
-                    <!--<format>{0,date,yyyy-MM-dd_HH:mm:ss}</format>-->
-                    <items>
-                        <!--<item>timestamp</item>-->
-                        <item>buildNumber</item>
-                    </items>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -229,9 +219,7 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
                             <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                            <MetadataApplication-Build>${buildNumber}</MetadataApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -251,9 +239,7 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
                             <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                            <MetadataApplication-Build>${buildNumber}</MetadataApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -282,7 +268,7 @@
                                 <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/TiesaaMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/TiesaaMetatiedot.wsdl</wsdl>
                                     <!--<extraargs>-->
                                         <!--<extraarg>-p</extraarg>-->
                                         <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.tiesaa</extraarg>-->
@@ -297,7 +283,7 @@
 
                                 <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/LAMMetatiedot.wsdl</wsdl>
                                     <!--<extraargs>-->
                                         <!--<extraarg>-p</extraarg>-->
                                         <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.lam</extraarg>-->
@@ -312,7 +298,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/20160527/v2/KameraMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/KameraMetatiedot.wsdl</wsdl>
                                     <!--<extraargs>-->
                                         <!--<extraarg>-p</extraarg>-->
                                         <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.kamera</extraarg>-->
@@ -334,6 +320,41 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>3.0.5</version>
+                <configuration>
+                    <extensions>
+                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.0.5</extension>
+                    </extensions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xsdtojava</goal>
+                        </goals>
+                        <configuration>
+                            <!--<sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>-->
+                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
+                            <xsdOptions>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/tiesaa_tietovirta.xsd</xsd>
+                                    <!--<xsd>classpath:/schemas/wsdl/http.xsd</xsd>-->
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.tiesaa</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/lam_tietovirta.xsd</xsd>
+                                    <!--<xsd>classpath:/schemas/wsdl/http.xsd</xsd>-->
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.lam</packagename>
+                                </xsdOption>
+                            </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>pl.project13.maven</groupId>

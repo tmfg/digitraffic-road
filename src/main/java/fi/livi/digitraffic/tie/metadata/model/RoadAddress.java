@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
@@ -88,8 +87,8 @@ public class RoadAddress {
     @JsonIgnore
     @Id
     @GenericGenerator(name = "SEQ_ROAD_ADDRESS", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = @Parameter(name = "SequenceStyleGenerator.SEQUENCE_PARAM", value = "SEQ_ROAD_ADDRESS"))
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ROAD_ADDRESS")
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_ADDRESS"))
+    @GeneratedValue(generator = "SEQ_ROAD_ADDRESS")
     private Long id;
     @ApiModelProperty(value = "Road number (values 1–99999)")
     private Integer roadNumber;

@@ -13,12 +13,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = RoadWeatherStationProperties.class)
+@ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = WeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name", "cameraType" })
 public class CameraProperties extends RoadStationProperties {
@@ -36,9 +36,9 @@ public class CameraProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Is camera targeted to default direction")
     private Boolean defaultDirection;
 
-    @ApiModelProperty(name = "nearestRoadWeatherStationId", value = "Id of nearest road weather station")
-    @JsonProperty(value = "nearestRoadWeatherStationId")
-    private Long nearestRoadWeatherStationNaturalId;
+    @ApiModelProperty(name = "nearestWeatherStationId", value = "Id of nearest Weather Station")
+    @JsonProperty(value = "nearestWeatherStationId")
+    private Long nearestWeatherStationNaturalId;
 
     @ApiModelProperty(value = "Camera presets")
     private List<CameraPresetDto> presets = new ArrayList<>();
@@ -67,12 +67,12 @@ public class CameraProperties extends RoadStationProperties {
         return cameraType;
     }
 
-    public void setNearestRoadWeatherStationNaturalId(final Long nearestRoadWeatherStationNaturalId) {
-        this.nearestRoadWeatherStationNaturalId = nearestRoadWeatherStationNaturalId;
+    public void setNearestWeatherStationNaturalId(final Long nearestWeatherStationNaturalId) {
+        this.nearestWeatherStationNaturalId = nearestWeatherStationNaturalId;
     }
 
-    public Long getNearestRoadWeatherStationNaturalId() {
-        return nearestRoadWeatherStationNaturalId;
+    public Long getNearestWeatherStationNaturalId() {
+        return nearestWeatherStationNaturalId;
     }
 
     public List<CameraPresetDto> getPresets() {
@@ -104,7 +104,7 @@ public class CameraProperties extends RoadStationProperties {
                 .append(cameraId, that.cameraId)
                 .append(cameraType, that.cameraType)
                 .append(defaultDirection, that.defaultDirection)
-                .append(nearestRoadWeatherStationNaturalId, that.nearestRoadWeatherStationNaturalId)
+                .append(nearestWeatherStationNaturalId, that.nearestWeatherStationNaturalId)
                 .append(presets, that.presets)
                 .isEquals();
     }
@@ -117,7 +117,7 @@ public class CameraProperties extends RoadStationProperties {
                 .append(cameraId)
                 .append(cameraType)
                 .append(defaultDirection)
-                .append(nearestRoadWeatherStationNaturalId)
+                .append(nearestWeatherStationNaturalId)
                 .append(presets)
                 .toHashCode();
     }

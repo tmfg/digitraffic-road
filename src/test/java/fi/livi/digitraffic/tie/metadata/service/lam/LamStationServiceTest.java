@@ -16,13 +16,13 @@ public class LamStationServiceTest extends MetadataTest {
 
     @Test
     public void testFindAllNonObsoleteLamStationsAsFeatureCollection() {
-        final LamStationFeatureCollection stations = lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection();
+        final LamStationFeatureCollection stations = lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(false);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 
     @Test
     public void testFindAllLamStationsMappedByByNaturalId() {
-        final Map<Long, LamStation> stations = lamStationService.findAllLamStationsMappedByByNaturalId();
+        final Map<Long, LamStation> stations = lamStationService.findAllLamStationsMappedByByLamNaturalId();
         Assert.assertTrue(stations.size() > 0);
     }
 

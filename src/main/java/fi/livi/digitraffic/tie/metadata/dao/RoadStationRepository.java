@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -19,12 +20,12 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
             "FROM ROAD_STATION RS\n" +
             "WHERE NOT EXISTS (\n" +
             "  SELECT NULL\n" +
-            "  FROM ROAD_WEATHER_STATION RWS\n" +
+            "  FROM WEATHER_STATION RWS\n" +
             "  WHERE RWS.ROAD_STATION_ID = RS.ID\n" +
             ")\n" +
             "AND RS.TYPE = 2",
             nativeQuery = true)
-    List<RoadStation> findOrphanWeatherStationRoadStations();
+    List<RoadStation> findOrphanWeatherRoadStations();
 
     @Query(value =
             "SELECT RS.*\n" +
@@ -36,7 +37,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                     ")\n" +
                     "AND RS.TYPE = 3",
             nativeQuery = true)
-    List<RoadStation> findOrphanCameraStationRoadStations();
+    List<RoadStation> findOrphanCameraRoadStations();
 
     @Query(value =
                    "SELECT RS.*\n" +
@@ -48,7 +49,27 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                    ")\n" +
                    "AND RS.TYPE = 1",
            nativeQuery = true)
-    List<RoadStation> findOrphanLamStationRoadStations();
+    List<RoadStation> findOrphanLamRoadStations();
 
     RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId);
+
+    @Query(value =
+           "SELECT rs.naturalId\n" +
+           "FROM RoadStation rs\n" +
+           "WHERE rs.type = ?1\n" +
+           "  AND rs.obsolete = false\n" +
+           "  AND rs.isPublic = true")
+    List<Long> findNonObsoleteAndPublicRoadStationsNaturalIds(final RoadStationType roadStationType);
+
+
+    @Query("SELECT CASE WHEN count(rs) > 0 THEN TRUE ELSE FALSE END\n" +
+           "FROM RoadStation rs\n" +
+           "WHERE rs.isPublic = 1\n" +
+           "  AND rs.obsolete = 0\n" +
+           "  AND rs.type = :roadStationType\n" +
+           "  AND rs.naturalId = :roadStationNaturalId")
+    boolean isPublicAndNotObsoleteRoadStation(@Param("roadStationNaturalId")
+                                              final long roadStationNaturalId,
+                                              @Param("roadStationType")
+                                              final RoadStationType roadStationType);
 }

@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.roadweather.RoadWeatherStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = RoadWeatherStationProperties.class)
+@ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = WeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "lamNaturalId", "naturalId", "name" })
 public class LamStationProperties extends RoadStationProperties {

@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.lam;
 
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 
@@ -10,9 +12,18 @@ public interface LamStationService {
     /**
      * @return current non obsolete lam stations metadata as LamStationFeatureCollection
      */
-    LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection();
+    LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(boolean onlyUpdateInfo);
 
     LamStation save(final LamStation lamStation);
 
-    Map<Long, LamStation> findAllLamStationsMappedByByNaturalId();
+    Map<Long, LamStation> findAllLamStationsMappedByByLamNaturalId();
+
+    @Transactional(readOnly = true)
+    Map<Long, LamStation> findAllLamStationsMappedByByRoadStationNaturalId();
+
+    LamStation findByLotjuId(long lamStationLotjuId);
+
+    Map<Long,LamStation> findAllLamStationsMappedByByMappedByLotjuId();
+
+    LamStation findByRoadStationNaturalId(long roadStationNaturalId);
 }

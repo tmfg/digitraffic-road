@@ -1,9 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -19,9 +15,6 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "presetId", "cameraId", "name" })
 public class CameraPresetDto implements Comparable<CameraPresetDto>{
-
-    /** Presentation names that are set for unknown directions in Lotju */
-    private static final Set<String> UNKNOWN_PRESENTATION_NAMES = Arrays.stream(new String[] {"-", "–", "PUUTTUU"}).collect(Collectors.toSet());
 
     public enum Direction {
         UNKNOWN(0),
@@ -246,13 +239,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
                 .append(directionCode)
                 .append(imageUrl)
                 .toHashCode();
-    }
-
-    public static boolean isUnknownPresentationName(final String name) {
-        if (name == null) {
-            return false;
-        }
-        return UNKNOWN_PRESENTATION_NAMES.contains(name.trim().toUpperCase());
     }
 
     @Override

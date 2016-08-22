@@ -29,9 +29,9 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 
 @Service
-public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
+public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(LamStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractLamStationAttributeUpdater.class);
 
     public static final String INSERT_FAILED = "Insert failed ";
 
@@ -55,12 +55,12 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
     }
 
     @Transactional
-    public void updateLamStations() {
+    public boolean updateLamStations() {
         log.info("Update Lam Stations start");
 
         if (lotjuLamStationClient == null) {
             log.warn("Not updating lam stations because no lotjuLamStationClient defined");
-            return;
+            return false;
         }
 
         final List<LamAsemaVO> stations = lotjuLamStationClient.getLamAsemas();
@@ -72,11 +72,12 @@ public class LamStationUpdater extends AbstractLamRoadStationAttributeUpdater {
             }
         }
 
-        final Map<Long, LamStation> currentStations = lamStationService.findAllLamStationsMappedByByNaturalId();
+        final Map<Long, LamStation> currentStations = lamStationService.findAllLamStationsMappedByByLamNaturalId();
 
         final boolean updateStaticDataStatus = updateLamStations(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);
         log.info("updateLamStations end");
+        return updateStaticDataStatus;
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
