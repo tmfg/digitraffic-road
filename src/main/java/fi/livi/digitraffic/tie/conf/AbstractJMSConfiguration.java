@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import progress.message.jclient.ErrorCodes;
 import progress.message.jclient.QueueConnectionFactory;
@@ -72,7 +73,7 @@ public abstract class AbstractJMSConfiguration {
         ConnectionMetaData meta = connection.getMetaData();
         log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
         if (meta.getProviderMajorVersion() < 8 || meta.getProviderMinorVersion() < 6) {
-            throw new RuntimeException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
+            throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
         }
 
         Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -88,15 +89,15 @@ public abstract class AbstractJMSConfiguration {
     private class JMSExceptionListener implements ExceptionListener {
 
         private QueueConnection connection;
-        private JMSParameters jmsParameters;
+        private final JMSParameters jmsParameters;
 
-        public JMSExceptionListener(QueueConnection connection, JMSParameters jmsParameters) {
+        public JMSExceptionListener(final QueueConnection connection, final JMSParameters jmsParameters) {
             this.connection = connection;
             this.jmsParameters = jmsParameters;
         }
 
         @Override
-        public void onException(JMSException jsme) {
+        public void onException(final JMSException jsme) {
 
             log.error("JMSException: errorCode: " + resolveErrorByCode(jsme.getErrorCode()) + " for " + jmsParameters.getMessageListenerBeanName(), jsme);
 
@@ -109,16 +110,17 @@ public abstract class AbstractJMSConfiguration {
 
                 // Always try to disconnect old connection and then reconnect
                 try {
-                    connection.close();
+                    if (connection != null) {
+                        connection.close();
+                    }
                 } catch (Exception e) {
-                    // don't care
-                    //log.error("Connection closing error", e);
+                    log.error("Connection closing error", e);
                 }
                 connection = null;
 
+                log.info("Try to reconnect..., (tries left " + triesLeft + ")");
+                triesLeft--;
                 try {
-                    log.info("Try to reconnect..., (tries left " + triesLeft + ")");
-                    triesLeft--;
                     startMessagelistener(jmsParameters);
                     log.info("Reconnect success " + jmsParameters.getMessageListenerBeanName());
                     triesLeft = 0;
@@ -127,7 +129,7 @@ public abstract class AbstractJMSConfiguration {
                     log.error("Reconnect failed, tries left " + triesLeft + ", trying again in " + jmsReconnectionDelayInSeconds + " seconds", ex);
                     if (triesLeft > 0) {
                         try {
-                            Thread.sleep(jmsReconnectionDelayInSeconds * 1000);
+                            Thread.sleep((long)jmsReconnectionDelayInSeconds * 1000);
                         } catch (InterruptedException e) {
                             log.error("Sleep interrupted", e);
                         }
@@ -140,16 +142,11 @@ public abstract class AbstractJMSConfiguration {
         }
     }
 
-    private boolean isConnectionError(String errCode) {
-        return StringUtils.equals(errCode, "" + ErrorCodes.ERR_CONNECTION_DROPPED) ||
-               StringUtils.equals(errCode, "" + ErrorCodes.ERR_SOCKET_CONNECT_TIMEOUT);
-    }
-
-    private String resolveErrorByCode(String errCode) {
+    private static String resolveErrorByCode(String errCode) {
         try {
             ErrorCodes errorCodes = new ErrorCodes();
             for (Field field : ErrorCodes.class.getDeclaredFields()) {
-                field.setAccessible(true); // You might want to set modifier to public first.
+                field.setAccessible(true); // Modifier to public
                 Object value = field.get(errorCodes);
                 if (value != null && StringUtils.equals(errCode, "" + value)) {
                     return ErrorCodes.class.getSimpleName() + "." + field.getName();

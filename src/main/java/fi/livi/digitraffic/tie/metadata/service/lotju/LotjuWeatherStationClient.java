@@ -24,6 +24,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
 public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuWeatherStationClient.class);
+    public static final String FETCHED = "Fetched ";
 
     private String address;
 
@@ -39,7 +40,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiTiesaaAsemat(request));
 
-        log.info("Fetched " + response.getValue().getTiesaaAsema().size() + " TiesaaAsemas");
+        log.info(FETCHED + response.getValue().getTiesaaAsema().size() + " TiesaaAsemas");
         return response.getValue().getTiesaaAsema();
     }
 
@@ -64,7 +65,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
             counter += anturis.size();
         }
 
-        log.info("Fetched " + counter + " TiesaaAnturis");
+        log.info(FETCHED + counter + " TiesaaAnturis");
         return currentRwsLotjuIdToTiesaaAnturiMap;
     }
 
@@ -82,7 +83,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
                 getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
         final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
 
-        log.info("Fetched " + anturis.size() + " LaskennallisetAnturits");
+        log.info(FETCHED + anturis.size() + " LaskennallisetAnturits");
         return anturis;
     }
 

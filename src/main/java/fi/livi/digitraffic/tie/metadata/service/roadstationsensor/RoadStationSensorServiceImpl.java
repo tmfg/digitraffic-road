@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
-import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
@@ -32,7 +32,6 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
-    private final WeatherStationRepository weatherStationRepository;
     private RoadStationRepository roadStationRepository;
     private StaticDataStatusService staticDataStatusService;
 
@@ -42,7 +41,6 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Autowired
     public RoadStationSensorServiceImpl(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                         final RoadStationSensorRepository roadStationSensorRepository,
-                                        final WeatherStationRepository weatherStationRepository,
                                         final StaticDataStatusService staticDataStatusService,
                                         final RoadStationRepository roadStationRepository,
                                         @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
@@ -55,7 +53,6 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
                                         final String includedLamSensorNaturalIdsStr) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
-        this.weatherStationRepository = weatherStationRepository;
         this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
 
@@ -77,7 +74,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
         includedSensorsNaturalIds.put(RoadStationType.LAM_STATION, includedLamSensors);
 
-        sensorValueTimeLimitInMins = new HashMap<>();
+        sensorValueTimeLimitInMins = new EnumMap<RoadStationType, Integer>(RoadStationType.class);
         sensorValueTimeLimitInMins.put(RoadStationType.WEATHER_STATION, weatherStationSensorValueTimeLimitInMins);
         sensorValueTimeLimitInMins.put(RoadStationType.LAM_STATION, lamStationSensorValueTimeLimitInMins);
     }
@@ -114,7 +111,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.getForRoadStationType(roadStationType));
 
         return new RoadStationsSensorsMetadata(
-                onlyUpdateInfo == false ?
+                !onlyUpdateInfo ?
                     findAllNonObsoleteRoadStationSensors(roadStationType) :
                     Collections.emptyList(),
                 updated != null ? updated.getUpdated() : null);

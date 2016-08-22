@@ -39,7 +39,7 @@ public abstract class JmsMessageListener<T> implements MessageListener, Applicat
     public void onApplicationEvent(final ContextClosedEvent event) {
         log.info(beanName + " stopping... " + event);
         jmsMessageConsumer.getConsumer().interrupt();
-        log.info(beanName + " topped");
+        log.info(beanName + " stopped");
     }
 
     @Override
@@ -58,9 +58,9 @@ public abstract class JmsMessageListener<T> implements MessageListener, Applicat
                 T object = (T) jaxbUnmarshaller.unmarshal(sr);
                 return object;
             } catch (JMSException e) {
-                throw new RuntimeException("Message unmarshal error in " + beanName, e);
+                throw new JMSUnmarshalMessageException("Message unmarshal error in " + beanName, e);
             } catch (JAXBException e) {
-                throw new RuntimeException("Message unmarshal error in " + beanName, e);
+                throw new JMSUnmarshalMessageException("Message unmarshal error in " + beanName, e);
             }
         }
         return null;

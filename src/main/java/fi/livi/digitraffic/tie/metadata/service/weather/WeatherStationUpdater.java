@@ -31,6 +31,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
 @Service
 public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdater.class);
+    public static final String WEATHER_STATIONS = " WeatherStations";
 
     private final WeatherStationService weatherStationService;
     private final StaticDataStatusService staticDataStatusService;
@@ -120,11 +121,11 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         final int uptaded = updateWeatherStationsRoadStationSensors(update);
         final int inserted = insertWeatherStations(insert);
 
-        log.info("Obsoleted " + obsoleted + " WeatherStations");
-        log.info("Uptaded " + uptaded + " WeatherStations");
-        log.info("Inserted " + inserted + " WeatherStations");
+        log.info("Obsoleted " + obsoleted + WEATHER_STATIONS);
+        log.info("Uptaded " + uptaded + WEATHER_STATIONS);
+        log.info("Inserted " + inserted + WEATHER_STATIONS);
         if (insert.size() > inserted) {
-            log.warn("Insert failed for " + (insert.size()-inserted) + " WeatherStations");
+            log.warn("Insert failed for " + (insert.size()-inserted) + WEATHER_STATIONS);
         }
         return obsoleted > 0 || inserted > 0 || uptaded > 0;
     }
@@ -143,20 +144,9 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
             final int hash = HashCodeBuilder.reflectionHashCode(rws);
             final String before = ReflectionToStringBuilder.toString(rws);
 
+            setRoadStationIfNotSet(rws, (long)tsa.getVanhaId(), orphansNaturalIdToRoadStationMap);
+
             RoadStation rs = rws.getRoadStation();
-            if (rs == null) {
-                final Integer naturalId = tsa.getVanhaId();
-
-                rs = naturalId != null ? orphansNaturalIdToRoadStationMap.get(naturalId.longValue()) : null;
-                if (rs == null) {
-                    rs = new RoadStation(RoadStationType.WEATHER_STATION);
-                    if (naturalId != null) {
-                        orphansNaturalIdToRoadStationMap.put(naturalId.longValue(), rs);
-                    }
-                }
-                rws.setRoadStation(rs);
-            }
-
             setRoadAddressIfNotSet(rs);
 
             if ( updateWeatherStationAttributes(tsa, rws) ||
@@ -175,6 +165,18 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
             }
          }
         return counter;
+    }
+
+    private static void setRoadStationIfNotSet(WeatherStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
+        RoadStation rs = rws.getRoadStation();
+
+        if (rs == null) {
+            rs = tsaVanhaId != null ? orphansNaturalIdToRoadStationMap.remove(tsaVanhaId) : null;
+            if (rs == null) {
+                rs = new RoadStation(RoadStationType.WEATHER_STATION);
+            }
+            rws.setRoadStation(rs);
+        }
     }
 
     private int insertWeatherStations(final List<TiesaaAsemaVO> insert) {
