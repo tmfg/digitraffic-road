@@ -10,8 +10,6 @@ import fi.livi.digitraffic.tie.metadata.model.LamStation;
 @Repository
 public interface LamStationRepository extends JpaRepository<LamStation, Long> {
 
-    List<LamStation> findAll();
-
     List<LamStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue();
 
     LamStation findByLotjuId(long lamStationLotjuId);

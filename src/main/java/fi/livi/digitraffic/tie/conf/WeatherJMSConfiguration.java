@@ -46,7 +46,7 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = WEATHER_JMS_DESTINATION_BEAN)
     public Destination createJMSDestinationBean(@Value("${jms.inQueue.weather}")
-                                              final String jmsInQueue) throws JMSException {
+                                                final String jmsInQueue) throws JMSException {
         Topic destination = new Topic();
         destination.setTopicName(jmsInQueue);
         return destination;
