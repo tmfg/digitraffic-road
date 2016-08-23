@@ -124,16 +124,17 @@ public abstract class AbstractJMSConfiguration {
                     startMessagelistener(jmsParameters);
                     log.info("Reconnect success " + jmsParameters.getMessageListenerBeanName());
                     triesLeft = 0;
-                    return;
                 } catch (Exception ex) {
                     log.error("Reconnect failed, tries left " + triesLeft + ", trying again in " + jmsReconnectionDelayInSeconds + " seconds", ex);
                     if (triesLeft > 0) {
                         try {
                             Thread.sleep((long)jmsReconnectionDelayInSeconds * 1000);
                         } catch (InterruptedException e) {
-                            log.error("Sleep interrupted", e);
+                            triesLeft = 0;
+                            log.info("Sleep interrupted", e);
                         }
                     } else {
+                        log.error("Reconnect failed, no tries left. Shutting down application.");
                         // If reconnection fails too many times shut down whole application
                         applicationContext.close();
                     }
