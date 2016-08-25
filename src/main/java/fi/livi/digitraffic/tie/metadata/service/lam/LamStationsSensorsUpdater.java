@@ -68,6 +68,8 @@ public class LamStationsSensorsUpdater extends AbstractWeatherStationUpdater {
         final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
         final Set<Long> lamAsemaLotjuIdsWithError = new HashSet<>();
 
+        log.info("Fetching LamLaskennallinenAnturis for " + lamsLotjuIds.size() + " LamAsemas");
+
         int counter = 0;
         for (final Long lamAsemaLotjuId : lamsLotjuIds) {
             try {
