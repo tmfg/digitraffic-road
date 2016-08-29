@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
@@ -45,6 +46,7 @@ public class LamDataServiceImpl implements LamDataService {
         this.roadStationSensorService = roadStationSensorService;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public LamRootDataObjectDto findPublicLamData(boolean onlyUpdateInfo) {
         final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.LAM_STATION);
@@ -72,6 +74,7 @@ public class LamDataServiceImpl implements LamDataService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public LamRootDataObjectDto findPublicLamData(long roadStationNaturalId) {
         final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.LAM_STATION);
@@ -89,6 +92,7 @@ public class LamDataServiceImpl implements LamDataService {
         return new LamRootDataObjectDto(Collections.singletonList(dto), updated);
     }
 
+    @Transactional
     @Override
     public void updateLamData(Lam data) {
         log.info("Update lam sensor with station lotjuId: " + data.getAsemaId());
