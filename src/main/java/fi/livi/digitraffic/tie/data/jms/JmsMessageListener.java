@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import java.io.StringReader;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
@@ -25,7 +26,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final Unmarshaller jaxbUnmarshaller;
     private final LinkedBlockingQueue<T> queue;
     private final JMSMessageConsumer jmsMessageConsumer;
-    private boolean shutdownCalled = false;
+    private AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
     public JmsMessageListener(Class<T> typeClass, String beanName) throws JAXBException {
         jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
@@ -38,13 +39,19 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     @PreDestroy
     public void onShutdown() {
         log.info("Shutdown " + beanName + "... ");
-        shutdownCalled = true;
+        shutdownCalled.set(true);
         jmsMessageConsumer.getConsumer().interrupt();
+        try {
+            log.info("Wait a second for consumer to shut down");
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            log.error("Sleep in shutdown interrupted", e);
+        }
     }
 
     @Override
     public void onMessage(Message message) {
-        if (!shutdownCalled) {
+        if (!shutdownCalled.get()) {
             T data = unmarshalMessage(message);
             log.info(beanName + " received " + data.getClass().getSimpleName());
             queue.add(data);
@@ -93,12 +100,12 @@ public abstract class JmsMessageListener<T> implements MessageListener {
 
         public void run()
         {
-            while(!shutdownCalled)
+            while(!shutdownCalled.get())
             {
                 try {
                     log.info(beanName + " queue size: " + blockingQueue.size());
                     T data = blockingQueue.take();
-                    if (!shutdownCalled) {
+                    if (!shutdownCalled.get()) {
                         handleData(data);
                     }
                 } catch (InterruptedException iqnore) {
