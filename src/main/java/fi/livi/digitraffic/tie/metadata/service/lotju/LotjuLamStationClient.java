@@ -25,15 +25,14 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
     private static final Logger log = LoggerFactory.getLogger(LotjuLamStationClient.class);
     public static final String FETCHED = "Fetched ";
 
-    private String address;
-
     public List<LamAsemaVO> getLamAsemas() {
+
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
         final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLAMAsemat(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
 
         log.info(FETCHED + response.getValue().getAsemat().size() + " LamAsemas");
         return response.getValue().getAsemat();
@@ -50,7 +49,7 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
         request.setId(lamAsemaLotjuId);
         final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
+                    getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
         final List<LamLaskennallinenAnturiVO> anturis = response.getValue().getLamlaskennallisetanturit();
 
 //        log.info(FETCHED + anturis.size() + " LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
@@ -63,13 +62,10 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
 
         log.info(FETCHED + response.getValue().getLaskennallinenAnturi().size() + " LAMLaskennallisetAnturis");
         return response.getValue().getLaskennallinenAnturi();
     }
 
-    public void setAddress(final String address) {
-        this.address = address;
-    }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
@@ -46,9 +47,14 @@ public class MetadataMarshallerConfiguration {
              !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
             log.info("Creating LotjuLamStationClient");
             final LotjuLamStationClient client = new LotjuLamStationClient();
-            client.setAddress(lamMetadataServerAddress);
+            client.setDefaultUri(lamMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
+
+            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+            sender.setConnectionTimeout(30000);
+            sender.setReadTimeout(30000);
+            client.setMessageSender(sender);
 
             return client;
         }
@@ -66,9 +72,14 @@ public class MetadataMarshallerConfiguration {
              !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
             log.info("Creating LotjuCameraClient");
             final LotjuCameraClient client = new LotjuCameraClient();
-            client.setAddress(cameraMetadataServerAddress);
+            client.setDefaultUri(cameraMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
+
+            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+            sender.setConnectionTimeout(30000);
+            sender.setReadTimeout(30000);
+            client.setMessageSender(sender);
 
             return client;
         }
@@ -86,9 +97,14 @@ public class MetadataMarshallerConfiguration {
                 !"${metadata.server.address.weather}".equals(weatherServerAddress) ) {
             log.info("Creating LotjuWeatherStationClient");
             final LotjuWeatherStationClient client = new LotjuWeatherStationClient();
-            client.setAddress(weatherServerAddress);
+            client.setDefaultUri(weatherServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
+
+            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+            sender.setConnectionTimeout(30000);
+            sender.setReadTimeout(30000);
+            client.setMessageSender(sender);
 
             return client;
         }
