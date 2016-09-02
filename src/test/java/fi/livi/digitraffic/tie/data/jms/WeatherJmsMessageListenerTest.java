@@ -186,7 +186,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000 + 5000;
+        long maxHandleTime = testBurstsLeft * 1000 + 30000;
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
