@@ -46,6 +46,7 @@ public class SensorValueDto /*implements MeasuredDataObjectDto*/ {
     @JsonIgnore
     private long sensorId;
 
+    /** @deprecated */
     @Deprecated
     @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future version.", position = 1, notes = "noteja")
     private String sensorNameOld;

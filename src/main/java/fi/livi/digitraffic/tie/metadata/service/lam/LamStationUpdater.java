@@ -214,20 +214,9 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
 
             log.debug("Updating " + ToStringHelpper.toString(la));
 
+            setRoadStationIfNotSet(ls, (long)la.getVanhaId(), orphansNaturalIdToRoadStationMap);
+
             RoadStation rs = ls.getRoadStation();
-            if (rs == null) {
-                final Integer naturalId = la.getVanhaId();
-
-                rs = naturalId != null ? orphansNaturalIdToRoadStationMap.get(naturalId.longValue()) : null;
-                if (rs == null) {
-                    rs = new RoadStation(RoadStationType.LAM_STATION);
-                    if (naturalId != null) {
-                        orphansNaturalIdToRoadStationMap.put(naturalId.longValue(), rs);
-                    }
-                }
-                ls.setRoadStation(rs);
-            }
-
             setRoadAddressIfNotSet(rs);
 
             final Integer roadNaturalId = la.getTieosoite() != null ? la.getTieosoite().getTienumero() : null;
@@ -269,6 +258,18 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
             }
         }
         return counter;
+    }
+
+    private static void setRoadStationIfNotSet(LamStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
+        RoadStation rs = rws.getRoadStation();
+
+        if (rs == null) {
+            rs = tsaVanhaId != null ? orphansNaturalIdToRoadStationMap.remove(tsaVanhaId) : null;
+            if (rs == null) {
+                rs = new RoadStation(RoadStationType.LAM_STATION);
+            }
+            rws.setRoadStation(rs);
+        }
     }
 
     private static boolean updateLamStationAttributes(final LamAsemaVO from, final RoadDistrict roadDistrict, final LamStation to) {

@@ -48,6 +48,7 @@ public class DayDataServiceImpl implements DayDataService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public HistoryRootDataObjectDto listPreviousDayHistoryData(long linkId) {
         LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();

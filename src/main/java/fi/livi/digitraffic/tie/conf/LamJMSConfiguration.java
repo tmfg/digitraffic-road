@@ -14,6 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
 import fi.livi.digitraffic.tie.data.service.LamDataServiceImpl;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
@@ -63,7 +64,7 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
                 }
             };
         } catch (JAXBException e) {
-            throw new RuntimeException("Error in LAM MessageListener init", e);
+            throw new JMSInitException("Error in LAM MessageListener init", e);
         }
     }
 
@@ -87,7 +88,7 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
             return startMessagelistener(jmsParameters);
         } catch (Exception e) {
             // Must success on application startup, so any error on init throws exception and exits application
-            throw new RuntimeException("Error in createJmsConnection, exiting...", e);
+            throw new JMSInitException("Error in createJmsConnection, exiting...", e);
         }
     }
 }

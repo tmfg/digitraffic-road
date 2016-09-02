@@ -25,19 +25,13 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuCameraClient.class);
 
-    private String address;
-
     final ObjectFactory objectFactory = new ObjectFactory();
-
-    public void setAddress(final String address) {
-        this.address = address;
-    }
 
     public List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
 
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiKamerat(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
 
         return response.getValue().getKamerat();
     }
@@ -65,7 +59,7 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
                 haeEsiasennotKameranTunnuksellaRequest.setId(kamera.getId());
 
                 final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse = (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
-                        getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
                 final List<EsiasentoVO> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
                 counter += esiasennot.size();
 

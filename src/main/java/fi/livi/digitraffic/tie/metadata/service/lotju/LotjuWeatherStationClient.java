@@ -24,12 +24,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
 public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuWeatherStationClient.class);
-
-    private String address;
-
-    public void setAddress(final String address) {
-        this.address = address;
-    }
+    public static final String FETCHED = "Fetched ";
 
     public List<TiesaaAsemaVO> getTiesaaAsemmas() {
         final ObjectFactory objectFactory = new ObjectFactory();
@@ -37,9 +32,9 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
 
         log.info("Fetching TiesaaAsemas");
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiTiesaaAsemat(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
 
-        log.info("Fetched " + response.getValue().getTiesaaAsema().size() + " TiesaaAsemas");
+        log.info(FETCHED + response.getValue().getTiesaaAsema().size() + " TiesaaAsemas");
         return response.getValue().getTiesaaAsema();
     }
 
@@ -57,14 +52,30 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         for (final Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
             request.setId(tiesaaAsemaLotjuId);
 
-            final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+            int triesLeft = 3;
+            JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = null;
+            while (response == null && triesLeft > 0) {
+                triesLeft--;
+                try {
+                    response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
+                            getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+                } catch (Exception fail) {
+                    if (triesLeft <= 0) {
+                        throw new RuntimeException("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 5th time - giving up");
+                    }
+                    try {
+                        log.info("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " - " + triesLeft + " tries left");
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
             final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
             currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
             counter += anturis.size();
         }
 
-        log.info("Fetched " + counter + " TiesaaAnturis");
+        log.info(FETCHED + counter + " TiesaaAnturis");
         return currentRwsLotjuIdToTiesaaAnturiMap;
     }
 
@@ -79,10 +90,10 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
 
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
         final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
 
-        log.info("Fetched " + anturis.size() + " LaskennallisetAnturits");
+        log.info(FETCHED + anturis.size() + " LaskennallisetAnturits");
         return anturis;
     }
 

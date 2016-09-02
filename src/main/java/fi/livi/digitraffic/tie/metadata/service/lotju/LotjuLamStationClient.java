@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.service.lotju;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
@@ -24,48 +23,24 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
 public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuLamStationClient.class);
-
-    private String address;
+    public static final String FETCHED = "Fetched ";
 
     public List<LamAsemaVO> getLamAsemas() {
+
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
         final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLAMAsemat(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
 
-        log.info("Fetched " + response.getValue().getAsemat().size() + " LamAsemas");
+        log.info(FETCHED + response.getValue().getAsemat().size() + " LamAsemas");
         return response.getValue().getAsemat();
-    }
-
-
-    public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(final Set<Long> lamAsemaLotjuIds) {
-
-        log.info("Fetching LamLaskennallinenAnturis for " + lamAsemaLotjuIds.size() + " LamAsemas");
-
-        final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
-
-        final ObjectFactory objectFactory = new ObjectFactory();
-        final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
-
-        int counter = 0;
-        for (final Long lamAsemaLotjuId : lamAsemaLotjuIds) {
-            request.setId(lamAsemaLotjuId);
-            final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
-            final List<LamLaskennallinenAnturiVO> anturis = response.getValue().getLamlaskennallisetanturit();
-            currentLamAnturiMapByLamLotjuId.put(lamAsemaLotjuId, anturis);
-            counter += anturis.size();
-        }
-
-        log.info("Fetched " + counter + " LamLaskennallinenAnturis");
-        return currentLamAnturiMapByLamLotjuId;
     }
 
     public List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
 
-        log.info("Fetching LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
+//        log.info("Fetching LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
 
@@ -74,10 +49,10 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
         request.setId(lamAsemaLotjuId);
         final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
+                    getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
         final List<LamLaskennallinenAnturiVO> anturis = response.getValue().getLamlaskennallisetanturit();
 
-        log.info("Fetched " + anturis.size() + " LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
+//        log.info(FETCHED + anturis.size() + " LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
         return anturis;
     }
 
@@ -87,13 +62,10 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(address, objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
 
-        log.info("Fetched " + response.getValue().getLaskennallinenAnturi().size() + " LAMLaskennallisetAnturis");
+        log.info(FETCHED + response.getValue().getLaskennallinenAnturi().size() + " LAMLaskennallisetAnturis");
         return response.getValue().getLaskennallinenAnturi();
     }
 
-    public void setAddress(final String address) {
-        this.address = address;
-    }
 }

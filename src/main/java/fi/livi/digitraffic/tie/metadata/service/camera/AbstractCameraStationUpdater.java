@@ -83,22 +83,20 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    public static long convertCameraIdToVanhaId(final String cameraId) {
-        // Starts either C0 or C
-        String vanhaId = StringUtils.removeStart(cameraId, "C0");
-        vanhaId = StringUtils.removeStart(vanhaId, "C");
-        return Long.parseLong(vanhaId);
-    }
+//    public static long convertCameraIdToVanhaId(final String cameraId) {
+//        // Starts either C0 or C
+//        String vanhaId = StringUtils.removeStart(cameraId, "C0");
+//        vanhaId = StringUtils.removeStart(vanhaId, "C");
+//        return Long.parseLong(vanhaId);
+//    }
 
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {
         final String vanha = vanhaId.toString();
-        final String cameraId = StringUtils.leftPad(vanha, 6, "C00000");
-        return cameraId;
+        return StringUtils.leftPad(vanha, 6, "C00000");
     }
 
     public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
-        final String presetId = cameraId + StringUtils.leftPad(suunta, 2, "00");
-        return presetId;
+        return cameraId + StringUtils.leftPad(suunta, 2, "00");
     }
 
     public static String convertPresetIdToCameraId(final String presetId) {

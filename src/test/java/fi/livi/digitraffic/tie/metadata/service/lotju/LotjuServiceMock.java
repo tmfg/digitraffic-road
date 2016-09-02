@@ -86,9 +86,15 @@ public abstract class LotjuServiceMock {
                     (JAXBElement<?>) jaxbUnmarshaller.unmarshal(xmlFile);
             return response.getValue();
         } catch (final IOException e) {
-            throw new RuntimeException(e);
+            throw new LotjuTestException(e);
         } catch (final JAXBException e) {
-            throw new RuntimeException(e);
+            throw new LotjuTestException(e);
+        }
+    }
+
+    private class LotjuTestException extends RuntimeException {
+        public LotjuTestException(Exception e) {
+            super(e);
         }
     }
 }

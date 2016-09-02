@@ -1,8 +1,12 @@
 package fi.livi.digitraffic.tie.conf;
 
+import java.sql.SQLException;
 import java.util.Locale;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -13,7 +17,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import oracle.jdbc.pool.OracleDataSource;
+
 @Configuration
+//@EnableAutoConfiguration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
@@ -23,6 +30,24 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
     private LocaleChangeInterceptor localeChangeInterceptor;
+
+    /**
+     * Initialize OracleDataSource manually because datasource property spring.datasource.type=oracle.jdbc.pool.OracleDataSource
+     * is not correctly handled by spring https://github.com/spring-projects/spring-boot/issues/6027#issuecomment-221582708
+     * @param properties
+     * @return
+     * @throws SQLException
+     */
+    @Bean
+    public DataSource dataSource(DataSourceProperties properties) throws SQLException {
+        OracleDataSource dataSource = new OracleDataSource();
+        dataSource.setUser(properties.getUsername());
+        dataSource.setPassword(properties.getPassword());
+        dataSource.setURL(properties.getUrl());
+        dataSource.setImplicitCachingEnabled(true);
+        dataSource.setFastConnectionFailoverEnabled(true);
+        return dataSource;
+    }
 
     @Bean
     public LocaleResolver localeResolver() {
