@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -22,6 +23,7 @@ import oracle.jdbc.pool.OracleDataSource;
 @Configuration
 //@EnableAutoConfiguration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
+@EnableTransactionManagement
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     public static final String API_V1_BASE_PATH = "/api/v1";

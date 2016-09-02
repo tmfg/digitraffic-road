@@ -39,17 +39,20 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "    from sensor_value sensv\n" +
             "    where sensv.road_station_id = sv.road_station_id\n" +
             "  )\n" +
-            "  and s.natural_id in ( :includedSensorNaturalIds ) \n" +
+            "  and exists (\n" +
+            "     select null\n" +
+            "     from allowed_road_station_sensor allowed\n" +
+            "     where allowed.natural_id = s.natural_id\n" +
+            "       and allowed.road_station_type = s.road_station_type\n" +
+            "  )\n" +
             "order by rs.natural_id, s.natural_id",
            nativeQuery = true)
     // sensor typeid 2 = rws
-    List<SensorValueDto> findAllNonObsoleteRoadStationSensorValues(
+    List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValues(
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("timeLimitInMinutes")
-            final int timeLimitInMinutes,
-            @Param("includedSensorNaturalIds")
-            List<Long> includedSensorNaturalIds);
+            final int timeLimitInMinutes);
 
         @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
@@ -80,19 +83,22 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "    from sensor_value sensv\n" +
             "    where sensv.road_station_id = sv.road_station_id\n" +
             "  )\n" +
-            "  and s.natural_id in ( :includedSensorNaturalIds ) \n" +
+            "  and exists (\n" +
+            "     select null\n" +
+            "     from allowed_road_station_sensor allowed\n" +
+            "     where allowed.natural_id = s.natural_id\n" +
+            "       and allowed.road_station_type = s.road_station_type\n" +
+            "  )\n" +
             "order by rs.natural_id, s.natural_id",
            nativeQuery = true)
     // sensor typeid 2 = rws
-    List<SensorValueDto> findAllNonObsoleteRoadStationSensorValues(
+    List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValues(
             @Param("stationNaturalId")
             final long stationNaturalId,
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("timeLimitInMinutes")
-            final int timeLimitInMinutes,
-            @Param("includedSensorNaturalIds")
-            List<Long> includedSensorNaturalIds);
+            final int timeLimitInMinutes);
 
     @Query(value =
            "select max(sv.measured) as updated\n" +
@@ -107,13 +113,16 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "    from sensor_value sensv\n" +
            "    where sensv.road_station_id = sv.road_station_id\n" +
            "  )\n" +
-           "  and s.natural_id in ( :includedSensorNaturalIds )",
+           "  and exists (\n" +
+           "     select null\n" +
+           "     from allowed_road_station_sensor allowed\n" +
+           "     where allowed.natural_id = s.natural_id\n" +
+           "       and allowed.road_station_type = s.road_station_type\n" +
+           "  )",
            nativeQuery = true)
     LocalDateTime getLatestMeasurementTime(
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("timeLimitInMinutes")
-            final int timeLimitInMinutes,
-            @Param("includedSensorNaturalIds")
-            List<Long> includedSensorNaturalIds);
+            final int timeLimitInMinutes);
 }

@@ -61,7 +61,7 @@ public class LamStationsSensorsUpdater extends AbstractWeatherStationUpdater {
         // Update sensors of road stations
         // Get current LamStations
         final Map<Long, LamStation> currentLamStationMapByLotjuId =
-                lamStationService.findAllLamStationsMappedByByMappedByLotjuId();
+                lamStationService.findAllLamStationsByMappedByLotjuId();
 
         final Set<Long> lamsLotjuIds = currentLamStationMapByLotjuId.keySet();
 
@@ -89,16 +89,16 @@ public class LamStationsSensorsUpdater extends AbstractWeatherStationUpdater {
 
         // Update sensros of road stations
         final boolean updateStaticDataStatus =
-                updateSensorsOfWeatherRoadStations(currentLamAnturiMapByLamLotjuId,
-                                                   currentLamStationMapByLotjuId,
-                                                   lamAsemaLotjuIdsWithError);
+                updateSensorsOfLamStations(currentLamAnturiMapByLamLotjuId,
+                                           currentLamStationMapByLotjuId,
+                                           lamAsemaLotjuIdsWithError);
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update LamStations Sensors end");
         return updateStaticDataStatus;
     }
 
-    private boolean updateSensorsOfWeatherRoadStations(
+    private boolean updateSensorsOfLamStations(
             final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamLaskennallinenAnturiMapByLamStationLotjuId,
             final Map<Long, LamStation> currentLamStationMapByLotjuId,
             Set<Long> skipLamAsemasWithLotjuIds) {

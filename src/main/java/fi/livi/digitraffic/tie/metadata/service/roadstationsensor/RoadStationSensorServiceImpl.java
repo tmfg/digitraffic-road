@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,11 +21,13 @@ import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
+import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
@@ -34,6 +37,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     private final RoadStationSensorRepository roadStationSensorRepository;
     private RoadStationRepository roadStationRepository;
     private StaticDataStatusService staticDataStatusService;
+    private final SensorValueRepository sensorValueRepository;
 
     private final Map<RoadStationType, Integer> sensorValueTimeLimitInMins;
     private final Map<RoadStationType, ArrayList<Long>> includedSensorsNaturalIds;
@@ -43,6 +47,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
                                         final RoadStationSensorRepository roadStationSensorRepository,
                                         final StaticDataStatusService staticDataStatusService,
                                         final RoadStationRepository roadStationRepository,
+                                        final SensorValueRepository sensorValueRepository,
                                         @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
                                         final int weatherStationSensorValueTimeLimitInMins,
                                         @Value("${weatherStation.includedSensorNaturalIds}")
@@ -55,6 +60,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
+        this.sensorValueRepository = sensorValueRepository;
 
         // Parse included sensors id:s
         includedSensorsNaturalIds = new HashMap<>();
@@ -82,7 +88,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Override
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllNonObsoleteRoadStationSensors(RoadStationType roadStationType) {
-        return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalse(roadStationType);
+        return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalseAndAllowed(roadStationType);
     }
 
     @Override
@@ -128,10 +134,9 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
 
         final Map<Long, List<SensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();
         final List<SensorValueDto> sensors =
-                roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
+                roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValues(
                         roadStationType.getTypeNumber(),
-                        sensorValueTimeLimitInMins.get(roadStationType),
-                        resolveIncludedSensorsNaturalIds(roadStationType));
+                        sensorValueTimeLimitInMins.get(roadStationType));
         for (final SensorValueDto sensor : sensors) {
 
             if (allowedRoadStationsNaturalIds.contains(sensor.getRoadStationNaturalId())) {
@@ -151,8 +156,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     public LocalDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.getLatestMeasurementTime(
                 roadStationType.getTypeNumber(),
-                sensorValueTimeLimitInMins.get(roadStationType),
-                resolveIncludedSensorsNaturalIds(roadStationType));
+                sensorValueTimeLimitInMins.get(roadStationType));
     }
 
     @Transactional(readOnly = true)
@@ -166,11 +170,10 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
             return Collections.emptyList();
         }
 
-        return roadStationSensorValueDtoRepository.findAllNonObsoleteRoadStationSensorValues(
+        return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValues(
                 roadStationNaturalId,
                 roadStationType.getTypeNumber(),
-                sensorValueTimeLimitInMins.get(roadStationType),
-                resolveIncludedSensorsNaturalIds(roadStationType));
+                sensorValueTimeLimitInMins.get(roadStationType));
     }
 
     @Transactional
@@ -181,19 +184,20 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
         return sensor;
     }
 
-    /**
-     * Checks if include list is empty and returns then all sensors.
-     * Otherwise returns only explicit declared allowed sensors natural ids.
-     * @param roadStationType
-     * @return
-     */
-    private List<Long> resolveIncludedSensorsNaturalIds(final RoadStationType roadStationType) {
+    @Override
+    public Map<Long, List<SensorValue>> findSensorvaluesListMappedByLamLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
+        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
 
-        // All sensors allowed if set is empty
-        if (includedSensorsNaturalIds.get(roadStationType).isEmpty()) {
-            return roadStationSensorRepository.findAllNonObsoleteRoadStationSensorNaturalIdsByRoadStationType(roadStationType);
+        HashMap<Long, List<SensorValue>> sensorValuesListByLamLotjuIdMap = new HashMap<>();
+        for (SensorValue sensorValue : sensorValues) {
+            Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
+            List<SensorValue> list = sensorValuesListByLamLotjuIdMap.get(rsLotjuId);
+            if (list == null) {
+                list = new LinkedList<>();
+                sensorValuesListByLamLotjuIdMap.put(rsLotjuId, list);
+            }
+            list.add(sensorValue);
         }
-        return includedSensorsNaturalIds.get(roadStationType);
+        return sensorValuesListByLamLotjuIdMap;
     }
-
 }

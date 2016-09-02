@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import java.io.StringReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,7 +44,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
         shutdownCalled.set(true);
         jmsMessageConsumer.getConsumer().interrupt();
         try {
-            log.info("Wait a second for consumer to shut down");
+            log.info("Waiting a second for consumer to shut down");
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             log.error("Sleep in shutdown interrupted", e);
@@ -52,8 +54,8 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (!shutdownCalled.get()) {
+            log.info(beanName + " received " + message.getClass().getSimpleName() + " message");
             T data = unmarshalMessage(message);
-            log.info(beanName + " received " + data.getClass().getSimpleName());
             queue.add(data);
         } else {
             log.error("Shut down called, not handling any messages anymore");
@@ -80,8 +82,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     /**
      * Implement to handle received message data
      */
-    protected abstract void handleData(T data);
-
+    protected abstract void handleData(List<T> data);
 
     private class JMSMessageConsumer implements Runnable
     {
@@ -103,12 +104,19 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             while(!shutdownCalled.get())
             {
                 try {
-                    log.info(beanName + " queue size: " + blockingQueue.size());
-                    T data = blockingQueue.take();
+                    Thread.sleep(1000); // 1 s
                     if (!shutdownCalled.get()) {
-                        handleData(data);
+                        if (blockingQueue.size() > 0) {
+                            LinkedList<T> targetList = new LinkedList<T>();
+                            int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
+                            if (drained > 0) {
+                                handleData(targetList);
+                            }
+                        }
                     }
                 } catch (InterruptedException iqnore) {
+                } catch (Exception other) {
+                    log.error("Error while handling data", other);
                 }
             }
             log.info("Shutdown " + beanName + " " + getClass().getSimpleName() + " thread");

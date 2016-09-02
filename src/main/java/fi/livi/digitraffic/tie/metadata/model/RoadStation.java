@@ -28,6 +28,7 @@ import org.hibernate.annotations.Parameter;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationStateConverter;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
 
 @Entity
 @DynamicUpdate
@@ -42,10 +43,18 @@ public class RoadStation {
     @NotNull
     private Long naturalId;
 
+    private Long lotjuId;
+
     private String name;
 
     @Convert(converter = RoadStationTypeConverter.class)
     private RoadStationType type;
+
+    /**
+     * This is used only in db queries
+     */
+    @Convert(converter = RoadStationTypeEnumConverter.class)
+    private RoadStationType roadStationType;
 
     @Convert(converter = RoadStationStateConverter.class)
     private RoadStationState state;
@@ -85,7 +94,7 @@ public class RoadStation {
     }
 
     public RoadStation(final RoadStationType type) {
-        this.type = type;
+        setType(type);
     }
 
 
@@ -117,6 +126,15 @@ public class RoadStation {
         this.naturalId = naturalId;
     }
 
+
+    public Long getLotjuId() {
+        return lotjuId;
+    }
+
+    public void setLotjuId(Long lotjuId) {
+        this.lotjuId = lotjuId;
+    }
+
     public String getName() {
         return name;
     }
@@ -134,6 +152,7 @@ public class RoadStation {
             throw new IllegalArgumentException("RoadStationType can not be changed once set. (" + this.type + " -> " + type + " )");
         }
         this.type = type;
+        this.roadStationType = type;
     }
 
     public void setPublic(final boolean aPublic) {

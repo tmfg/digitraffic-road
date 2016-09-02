@@ -17,6 +17,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+
 @Entity
 @DynamicUpdate
 @NamedEntityGraph(name = "sensorValue", attributeNodes = @NamedAttributeNode("roadStation"))
@@ -92,5 +94,15 @@ public class SensorValue {
 
     public void setRoadStationSensor(final RoadStationSensor roadStationSensor) {
         this.roadStationSensor = roadStationSensor;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelpper(this)
+                .appendField("id", getId())
+                .appendField("value", this.getValue())
+                .appendField("measured", getSensorValueMeasured())
+                .appendField("sensor", getRoadStationSensor())
+                .toString();
     }
 }

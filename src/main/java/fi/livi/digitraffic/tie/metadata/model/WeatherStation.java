@@ -29,7 +29,7 @@ public class WeatherStation {
     @GeneratedValue(generator = "SEQ_WEATHER_STATION")
     private long id;
 
-    private long lotjuId;
+    private Long lotjuId;
 
     @Convert(converter = WeatherStationTypeConverter.class)
     private WeatherStationType weatherStationType;
@@ -49,11 +49,11 @@ public class WeatherStation {
         this.id = id;
     }
 
-    public long getLotjuId() {
+    public Long getLotjuId() {
         return lotjuId;
     }
 
-    public void setLotjuId(final long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -89,7 +89,7 @@ public class WeatherStation {
     public String toString() {
         return new ToStringHelpper(this)
                 .appendField("id", getId())
-                .appendField("lotjuId", this.getLotjuId())
+                .appendField("lotjuId", getLotjuId())
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();

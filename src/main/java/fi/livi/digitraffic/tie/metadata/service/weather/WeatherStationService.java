@@ -18,4 +18,8 @@ public interface WeatherStationService {
     List<SensorValue> findAllSensorValues();
 
     WeatherStation findByLotjuId(long lotjuId);
+
+    Map<Long, WeatherStation> findWeatherStationsMappedByLotjuId(List<Long> weatherStationLotjuIds);
+
+    Map<Long, WeatherStation> findAllWeatherStationsMappedByByRoadStationNaturalId();
 }
