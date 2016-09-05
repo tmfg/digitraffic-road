@@ -17,10 +17,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 @Configuration
-//@EnableAutoConfiguration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
@@ -40,12 +40,18 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
      */
     @Bean
     public DataSource dataSource(DataSourceProperties properties) throws SQLException {
-        OracleDataSource dataSource = new OracleDataSource();
+        final PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
-        dataSource.setImplicitCachingEnabled(true);
         dataSource.setFastConnectionFailoverEnabled(true);
+        dataSource.setMaxPoolSize(20);
+        dataSource.setMinPoolSize(5);
+        dataSource.setMaxIdleTime(5);
+        dataSource.setValidateConnectionOnBorrow(true);
+        dataSource.setMaxStatements(10);
+        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+
         return dataSource;
     }
 
