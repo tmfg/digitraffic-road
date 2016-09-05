@@ -18,4 +18,6 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
            "WHERE sv.roadStation.naturalId = ?1\n" +
            "  AND sv.roadStationSensor.roadStationType = ?2")
     List<SensorValue> findSensorvaluesByRoadStationNaturalId(long roadStationNaturalId, RoadStationType roadStationType);
+
+    List<SensorValue> findByRoadStationLotjuIdInAndRoadStationType(List<Long> lamLotjuIds, RoadStationType roadStationType);
 }

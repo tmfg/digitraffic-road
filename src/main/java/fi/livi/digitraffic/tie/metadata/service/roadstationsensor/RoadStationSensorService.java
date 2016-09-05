@@ -8,6 +8,7 @@ import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 
 public interface RoadStationSensorService {
     List<RoadStationSensor> findAllNonObsoleteRoadStationSensors(RoadStationType roadStationType);
@@ -25,4 +26,6 @@ public interface RoadStationSensorService {
     List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(long roadStationNaturalId, RoadStationType roadStationType);
 
     RoadStationSensor saveRoadStationSensor(RoadStationSensor sensor);
+
+    Map<Long,List<SensorValue>> findSensorvaluesListMappedByLamLotjuId(List<Long> lamLotjuIds, RoadStationType lamStation);
 }

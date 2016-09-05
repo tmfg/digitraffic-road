@@ -115,6 +115,7 @@ public class RoadAddress {
                               "8 = Middle, " +
                               "9 = Cross)")
     @Column(name = "SIDE")
+    @JsonIgnore
     private Integer sideCode;
 
     @ApiModelProperty(value = "Road maintenance class")
@@ -166,6 +167,7 @@ public class RoadAddress {
     }
 
     @ApiModelProperty(value = "Side of the as enum value")
+    @JsonIgnore
     public Side getSide() {
         return Side.getByCode(getSideCode());
     }

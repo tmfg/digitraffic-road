@@ -15,7 +15,9 @@ public interface WeatherStationRepository extends JpaRepository<WeatherStation, 
     @Override
     List<WeatherStation> findAll();
 
-    List<WeatherStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueOrderByRoadStation_NaturalId();
+    List<WeatherStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
 
     WeatherStation findByLotjuId(long lotjuId);
+
+    List<WeatherStation> findByLotjuIdIn(List<Long> weatherStationLotjuIds);
 }

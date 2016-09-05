@@ -9,14 +9,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationSensorUpdater;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
 
 public class LamMetadataControllerRestTest extends MetadataRestTest {
 
+    @Autowired
+    private LamMetatiedotLotjuServiceMock lamMetatiedotLotjuServiceMock;
+
+    @Autowired
+    private LamStationSensorUpdater lamStationSensorUpdater;
+
+    @Autowired
+    private LamStationsSensorsUpdater lamStationsSensorsUpdater;
+
+    @Autowired
+    private LamStationUpdater lamStationUpdater;
+
     @Test
     public void testLamMetadataRestApi() throws Exception {
+
+
+        // Init data
+        lamMetatiedotLotjuServiceMock.initDataAndService();
+
+        // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
+        lamStationSensorUpdater.updateRoadStationSensors();
+        lamStationUpdater.updateLamStations();
+        lamStationsSensorsUpdater.updateLamStationsSensors();
+
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.LAM_STATIONS_PATH))

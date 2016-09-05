@@ -66,15 +66,15 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationUpdater
                         lotjuWeatherStationClient.getTiesaaLaskennallinenAnturis(rwsLotjuIds);
         // Update sensros of road stations
         final boolean updateStaticDataStatus =
-                updateSensorsOfWeatherRoadStations(currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,
-                                            currentLotjuIdToWeatherStationsMap);
+                updateSensorsOfWeatherStations(currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,
+                                               currentLotjuIdToWeatherStationsMap);
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update WeatherStations RoadStationSensors end");
         return updateStaticDataStatus;
     }
 
-    private boolean updateSensorsOfWeatherRoadStations(
+    private boolean updateSensorsOfWeatherStations(
             final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap,
             final Map<Long, WeatherStation> currentLotjuIdToWeatherStationsMap) {
 

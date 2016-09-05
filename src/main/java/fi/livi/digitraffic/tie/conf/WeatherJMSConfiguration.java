@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.conf;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -8,6 +11,7 @@ import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
-import fi.livi.digitraffic.tie.data.service.WeatherService;
+import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import progress.message.jclient.Topic;
 
@@ -31,16 +35,17 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
     private static final String WEATHER_JMS_DESTINATION_BEAN = "weatherJMSDestination";
     private static final String WEATHER_JMS_CONNECTION_BEAN = "weatherJMSConnection";
 
-    private final WeatherService weatherService;
+    private final SensorDataUpdateService sensorDataUpdateService;
 
+    @Autowired
     public WeatherJMSConfiguration(ConfigurableApplicationContext applicationContext,
                                    @Value("${jms.reconnectionDelayInSeconds}")
-                                       int jmsReconnectionDelayInSeconds,
+                                   int jmsReconnectionDelayInSeconds,
                                    @Value("${jms.reconnectionTries}")
-                                       int jmsReconnectionTries,
-                                   WeatherService weatherService) {
+                                   int jmsReconnectionTries,
+                                   SensorDataUpdateService sensorDataUpdateService) {
         super(applicationContext, jmsReconnectionDelayInSeconds, jmsReconnectionTries);
-        this.weatherService = weatherService;
+        this.sensorDataUpdateService = sensorDataUpdateService;
     }
 
     @Override
@@ -58,8 +63,13 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
         try {
             return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN) {
                 @Override
-                protected void handleData(Tiesaa data) {
-                    weatherService.updateTiesaaData(data);
+                protected void handleData(List<Tiesaa> data) {
+                    try {
+                        sensorDataUpdateService.updateWeatherData(data);
+                    } catch (SQLException e) {
+                        log.error("Update weather data failed", e);
+                    }
+
                 }
             };
         } catch (JAXBException e) {
@@ -70,11 +80,11 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = WEATHER_JMS_PARAMS_BEAN)
     public JMSParameters createJMSParameters(@Value("${jms.userId}")
-                                                  final String jmsUserId,
+                                             final String jmsUserId,
                                              @Value("${jms.password}")
-                                                  final String jmsPassword) {
+                                             final String jmsPassword) {
         return new JMSParameters(WEATHER_JMS_DESTINATION_BEAN,
-                WEATHER_JMS_MESSAGE_LISTENER_BEAN,
+                                 WEATHER_JMS_MESSAGE_LISTENER_BEAN,
                                  jmsUserId,
                                  jmsPassword);
     }

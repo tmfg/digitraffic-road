@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,9 @@ public interface LamStationService {
 
     LamStation findByLotjuId(long lamStationLotjuId);
 
-    Map<Long,LamStation> findAllLamStationsMappedByByMappedByLotjuId();
+    Map<Long, LamStation> findAllLamStationsByMappedByLotjuId();
+
+    Map<Long, LamStation> findLamStationsMappedByLotjuId(List<Long> lamStationLotjuIds);
 
     LamStation findByRoadStationNaturalId(long roadStationNaturalId);
 }

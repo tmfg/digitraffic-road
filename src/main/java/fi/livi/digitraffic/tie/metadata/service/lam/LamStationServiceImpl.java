@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,8 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class LamStationServiceImpl implements LamStationService {
+
+    private static final Logger log = LoggerFactory.getLogger(LamStationServiceImpl.class);
     private final LamStationRepository lamStationRepository;
     private StaticDataStatusService staticDataStatusService;
 
@@ -37,7 +42,7 @@ public class LamStationServiceImpl implements LamStationService {
 
         return LamStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo == false ?
-                    lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrue() :
+                    lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
                 updated != null ? updated.getUpdated() : null);
     }
@@ -84,15 +89,26 @@ public class LamStationServiceImpl implements LamStationService {
 
     @Transactional(readOnly = true)
     @Override
-    public Map<Long, LamStation> findAllLamStationsMappedByByMappedByLotjuId() {
+    public Map<Long, LamStation> findAllLamStationsByMappedByLotjuId() {
         final Map<Long, LamStation> map = new HashMap<>();
         final List<LamStation> all = lamStationRepository.findAll();
         for (final LamStation lamStation : all) {
             if (lamStation.getLotjuId() != null) {
                 map.put(lamStation.getLotjuId(), lamStation);
+            } else {
+                log.warn("Null lotjuId: " + lamStation);
             }
         }
         return map;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, LamStation> findLamStationsMappedByLotjuId(List<Long> lamStationLotjuIds) {
+
+        final List<LamStation> all = lamStationRepository.findByLotjuIdIn(lamStationLotjuIds);
+        Map<Long, LamStation> result = all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        return result;
     }
 
     @Transactional(readOnly = true)
