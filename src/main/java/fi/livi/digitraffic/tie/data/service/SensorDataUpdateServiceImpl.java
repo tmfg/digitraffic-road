@@ -87,23 +87,22 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
         try {
             connection = (OracleConnection) dataSource.getConnection();
             opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
+            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Lam> newestLamData = filterNewestLamValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
             final int rows = appendLamBatchData(opsUpdate, newestLamData);
-            opsUpdate.executeBatch();
-
-            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
             appendLamBatchData(opsInsert, newestLamData);
-            final long endAppendStartBatch = System.currentTimeMillis();
-            opsInsert.executeBatch();
 
+            final long endAppendStartBatch = System.currentTimeMillis();
+            opsUpdate.executeBatch();
+            opsInsert.executeBatch();
             final long endBatch = System.currentTimeMillis();
 
             log.info(String.format("Update lam sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, merge: %5$d ms)",
+                                   "append batch: %4$d ms, update/insert: %5$d ms)",
                                    rows,
                                    (endBatch - startFilter), (endFilterStartAppend - startFilter), (endAppendStartBatch - endFilterStartAppend),
                                    (endBatch - endAppendStartBatch)));
@@ -144,23 +143,22 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
         try {
             connection = (OracleConnection) dataSource.getConnection();
             opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
+            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
+
             final long startFilter = System.currentTimeMillis();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
             final int rows = appendTiesaaBatchData(opsUpdate, newestTiesaaData);
-            opsUpdate.executeBatch();
-
-            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
-
             appendTiesaaBatchData(opsInsert, newestTiesaaData);
-            final long endAppendStartBatch = System.currentTimeMillis();
-            opsInsert.executeBatch();
 
+            final long endAppendStartBatch = System.currentTimeMillis();
+            opsUpdate.executeBatch();
+            opsInsert.executeBatch();
             final long endBatch = System.currentTimeMillis();
 
             log.info(String.format("Update weather sensors data for %1$d "  +
                                    "rows took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, merge: %5$d ms)",
+                                   "append batch: %4$d ms, update/insert: %5$d ms)",
                                    rows,
                                    (endBatch - startFilter),
                                    (endFilterStartAppend - startFilter),

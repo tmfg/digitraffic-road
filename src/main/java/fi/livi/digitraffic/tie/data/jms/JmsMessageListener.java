@@ -54,7 +54,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (!shutdownCalled.get()) {
-            log.info(beanName + " received " + message.getClass().getSimpleName() + " message");
+            log.info(beanName + " received " + message.getClass().getSimpleName());
             T data = unmarshalMessage(message);
             queue.add(data);
         } else {
