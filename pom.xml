@@ -222,6 +222,7 @@
                         <ignoreTrivial>true</ignoreTrivial>
                         <ignoreMethodAnnotation>fi.livi.digitraffic.tie.annotation.CoverageIgnore</ignoreMethodAnnotation>
                         <excludes>
+                            <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/lotju/wsdl/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.class</exclude>

@@ -22,7 +22,6 @@ import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 @Configuration
-//@EnableAutoConfiguration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 @EnableTransactionManagement
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
