@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "HistoryData", description = "Average median data calculated for the previous day", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "links"})
+@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "links"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HistoryRootDataObjectDto extends RootDataObjectDto {
 
@@ -19,8 +19,8 @@ public class HistoryRootDataObjectDto extends RootDataObjectDto {
     private final List<LinkDataDto> links;
 
     public HistoryRootDataObjectDto(final List<LinkDataDto> links,
-                                    final LocalDateTime uptaded) {
-        super(uptaded);
+                                    final LocalDateTime updated) {
+        super(updated);
         this.links = links;
     }
 

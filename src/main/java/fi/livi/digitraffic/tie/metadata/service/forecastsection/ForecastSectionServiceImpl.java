@@ -34,7 +34,7 @@ public class ForecastSectionServiceImpl implements ForecastSectionService {
     @Override
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.FORACAST_SECTION);
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORACAST_SECTION);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo == false ?

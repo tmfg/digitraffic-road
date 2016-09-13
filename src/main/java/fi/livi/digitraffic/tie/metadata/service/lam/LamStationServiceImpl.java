@@ -38,7 +38,7 @@ public class LamStationServiceImpl implements LamStationService {
     @Override
     public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.LAM_STATION);
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
 
         return LamStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo == false ?

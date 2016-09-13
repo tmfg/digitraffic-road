@@ -33,7 +33,7 @@ public class WeatherStationUpdateJob extends AbstractUpdateJob {
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
 
         if (sensorsUpdated) {
-            staticDataStatusService.updateMetadataUptaded(MetadataType.WEATHER_STATION_SENSOR);
+            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION_SENSOR);
         }
 
         final long startStationsEndSensors = System.currentTimeMillis();
@@ -44,7 +44,7 @@ public class WeatherStationUpdateJob extends AbstractUpdateJob {
         final long endStationsSensors = System.currentTimeMillis();
 
         if (stationsUpdated) {
-            staticDataStatusService.updateMetadataUptaded(MetadataType.WEATHER_STATION);
+            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
         }
 
         final long timeSensors = (startStationsEndSensors - startSensors)/1000;

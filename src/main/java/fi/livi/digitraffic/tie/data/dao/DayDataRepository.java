@@ -34,7 +34,7 @@ public interface DayDataRepository extends org.springframework.data.repository.R
     List<LinkMeasurementDataDto> listAllMedianTravelTimes();
 
     @Query(value =
-            "SELECT MAX(M.END_TIMESTAMP) AS UPTADED\n" +
+            "SELECT MAX(M.END_TIMESTAMP) AS UPDATED\n" +
             "    FROM JOURNEYTIME_MEDIAN M\n" +
             "    INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
             "    WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +

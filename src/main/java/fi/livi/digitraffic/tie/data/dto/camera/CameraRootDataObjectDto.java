@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "CameraData", description = "Latest measurement data from weather stations", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "cameraStationData"})
+@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "cameraStationData"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraRootDataObjectDto extends RootDataObjectDto {
 

@@ -49,9 +49,9 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
 
-        boolean uptaded = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
+        boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("Update weather RoadStationSensors end");
-        return uptaded;
+        return updated;
     }
 
     private boolean updateAllRoadStationSensors(final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
@@ -87,18 +87,18 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         }
 
         final int obsoleted = obsoleteRoadStationSensors(obsolete);
-        final int uptaded = updateRoadStationSensors(update);
+        final int updated = updateRoadStationSensors(update);
         final int inserted = insertRoadStationSensors(insert);
 
         log.info("Obsoleted " + obsoleted + " RoadStationSensors");
-        log.info("Uptaded " + uptaded + " RoadStationSensors");
+        log.info("Updated " + updated + " RoadStationSensors");
         log.info("Inserted " + inserted + " RoadStationSensors");
 
         if (insert.size() > inserted) {
             log.warn("Insert failed for " + (insert.size()-inserted) + " RoadStationSensors");
         }
 
-        return obsoleted > 0 || inserted > 0 || uptaded > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private static boolean validate(final TiesaaLaskennallinenAnturiVO anturi) {

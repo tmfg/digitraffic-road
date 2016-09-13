@@ -33,7 +33,7 @@ public class StaticDataStatusServiceImpl implements StaticDataStatusService {
 
     @Transactional
     @Override
-    public void updateMetadataUptaded(final MetadataType metadataType) {
+    public void updateMetadataUpdated(final MetadataType metadataType) {
         MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
         if (updated == null) {
             updated = new MetadataUpdated(metadataType, LocalDateTime.now());
@@ -45,7 +45,7 @@ public class StaticDataStatusServiceImpl implements StaticDataStatusService {
 
     @Transactional(readOnly = true)
     @Override
-    public MetadataUpdated findMetadataUptadedByMetadataType(final MetadataType metadataType) {
+    public MetadataUpdated findMetadataUpdatedByMetadataType(final MetadataType metadataType) {
         return metadataUpdatedRepository.findByMetadataType(metadataType.name());
     }
 

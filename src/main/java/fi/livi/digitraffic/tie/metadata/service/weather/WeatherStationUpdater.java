@@ -118,16 +118,16 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         obsolete.addAll(currentLotjuIdToWeatherStationMap.values());
 
         final int obsoleted = obsoleteWeatherStations(obsolete);
-        final int uptaded = updateWeatherStationsRoadStationSensors(update);
+        final int updated = updateWeatherStationsRoadStationSensors(update);
         final int inserted = insertWeatherStations(insert);
 
         log.info("Obsoleted " + obsoleted + WEATHER_STATIONS);
-        log.info("Uptaded " + uptaded + WEATHER_STATIONS);
+        log.info("Updated " + updated + WEATHER_STATIONS);
         log.info("Inserted " + inserted + WEATHER_STATIONS);
         if (insert.size() > inserted) {
             log.warn("Insert failed for " + (insert.size()-inserted) + WEATHER_STATIONS);
         }
-        return obsoleted > 0 || inserted > 0 || uptaded > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private int updateWeatherStationsRoadStationSensors(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {

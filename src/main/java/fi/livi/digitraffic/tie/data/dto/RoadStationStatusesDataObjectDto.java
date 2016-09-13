@@ -35,8 +35,8 @@ public class RoadStationStatusesDataObjectDto extends RootDataObjectDto {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
-                .appendField("localTime", getDataUptadedLocalTime())
-                .appendField("dataUtc", getDataUptadedUtc())
+                .appendField("localTime", getDataUpdatedLocalTime())
+                .appendField("dataUtc", getDataUpdatedUtc())
                 .appendField("roadStationStatuses", getRoadStationStatuses())
                 .toString();
     }

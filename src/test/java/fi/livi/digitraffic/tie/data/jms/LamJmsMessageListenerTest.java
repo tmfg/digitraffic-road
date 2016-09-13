@@ -251,7 +251,7 @@ public class LamJmsMessageListenerTest extends MetadataTest {
             }
         }
         log.info("End with arvo " + arvo);
-        log.info("Handle data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
+        log.info("Handle lam data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
 
         // Assert sensor values are updated to db

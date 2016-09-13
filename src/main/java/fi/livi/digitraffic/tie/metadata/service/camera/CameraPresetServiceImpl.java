@@ -63,7 +63,7 @@ public class CameraPresetServiceImpl implements CameraPresetService {
     @Override
     public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
-        MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.CAMERA_STATION);
+        MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo == false ?

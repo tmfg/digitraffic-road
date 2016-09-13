@@ -114,7 +114,7 @@ public class RoadStationSensorServiceImpl implements RoadStationSensorService {
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
 
-        MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.getForRoadStationType(roadStationType));
+        MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType(roadStationType));
 
         return new RoadStationsSensorsMetadata(
                 !onlyUpdateInfo ?

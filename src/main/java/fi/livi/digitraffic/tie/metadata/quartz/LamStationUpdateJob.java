@@ -33,7 +33,7 @@ public class LamStationUpdateJob extends AbstractUpdateJob {
         final boolean sensorsUpdated = lamStationSensorUpdater.updateRoadStationSensors();
 
         if (sensorsUpdated) {
-            staticDataStatusService.updateMetadataUptaded(MetadataType.LAM_ROAD_STATION_SENSOR);
+            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_ROAD_STATION_SENSOR);
         }
 
         final long startStationsEndSensors = System.currentTimeMillis();
@@ -43,7 +43,7 @@ public class LamStationUpdateJob extends AbstractUpdateJob {
         final long endStationsSensors = System.currentTimeMillis();
 
         if (stationsUpdated) {
-            staticDataStatusService.updateMetadataUptaded(MetadataType.LAM_STATION);
+            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
         }
 
         final long timeSensors = (startStationsEndSensors - startSensors)/1000;
