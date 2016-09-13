@@ -10,10 +10,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -35,6 +36,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
@@ -51,10 +53,6 @@ public class LamJmsMessageListenerTest extends MetadataTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
-
-    @Autowired
-    DataSource dataSource;
-
 
     @Before
     public void setUpTestData() {
@@ -183,9 +181,14 @@ public class LamJmsMessageListenerTest extends MetadataTest {
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        float arvo = -10;
+        final float minX = 0.0f;
+        final float maxX = 100.0f;
+        final Random rand = new Random();
+        float arvo = rand.nextFloat() * (maxX - minX) + minX;
+        log.info("Start with arvo " + arvo);
 
-        List<RoadStationSensor> availableSensors =
+
+        final List<RoadStationSensor> availableSensors =
                 roadStationSensorService.findAllRoadStationSensors(RoadStationType.LAM_STATION);
 
         Iterator<LamStation> stationsIter = lamsWithLotjuId.values().iterator();
@@ -193,11 +196,12 @@ public class LamJmsMessageListenerTest extends MetadataTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000;
+        final List<Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
             long start = System.currentTimeMillis();
-            List<Lam> data = new ArrayList<>();
+            data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
                     stationsIter = lamsWithLotjuId.values().iterator();
@@ -220,7 +224,7 @@ public class LamJmsMessageListenerTest extends MetadataTest {
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
                 }
                 xgcal.add(df.newDuration(1000));
-                arvo = arvo + 0.1f;
+                arvo += 0.1f;
 
                 if (data.size() >= 100) {
                     break;
@@ -246,7 +250,29 @@ public class LamJmsMessageListenerTest extends MetadataTest {
                 e.printStackTrace();
             }
         }
+        log.info("End with arvo " + arvo);
         log.info("Handle data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+
+        // Assert sensor values are updated to db
+        List<Long> lamLotjuIds = data.stream().map(Lam::getAsemaId).collect(Collectors.toList());
+        Map<Long, List<SensorValue>> valuesMap =
+                roadStationSensorService.findSensorvaluesListMappedByLamLotjuId(lamLotjuIds, RoadStationType.LAM_STATION);
+
+        for (Lam lam : data) {
+            long asemaLotjuId = lam.getAsemaId();
+            List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
+            List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
+
+            for (SensorValue sensorValue : sensorValues) {
+                if (sensorValue.getRoadStationSensor().getLotjuId() != null) {
+                    Optional<Lam.Anturit.Anturi> found = anturit.stream()
+                            .filter(anturi -> anturi.getLaskennallinenAnturiId().equals(sensorValue.getRoadStationSensor().getLotjuId().toString()))
+                            .findFirst();
+                    Assert.assertTrue(found.isPresent());
+                    Assert.assertEquals((double) found  .get().getArvo(), sensorValue.getValue(), 0.05d);
+                }
+            }
+        }
     }
 }

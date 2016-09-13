@@ -27,69 +27,172 @@ import oracle.jdbc.internal.OracleConnection;
 public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateServiceImpl.class);
 
-    private final OracleConnection connection;
+    private final DataSource dataSource;
 
-    private static final String MERGE_STATEMENT =
-            "MERGE INTO SENSOR_VALUE dst\n" +
-            "  USING (SELECT station.id AS stationId\n" +
-            "              , sensor.id AS sensorId\n" +
+    private static final String INSERT_STATEMENT =
+            "INSERT INTO SENSOR_VALUE \n" +
+            "  (id, road_station_id, road_station_sensor_id, value, measured)\n" +
+            "       ( SELECT SEQ_SENSOR_VALUE.nextval AS id\n" +
+            "              , station.id AS road_station_id\n" +
+            "              , sensor.id AS road_station_sensor_id\n" +
             "              , :value AS value\n" +
-            "              , :measured AS sensorValueMeasured\n" +
+            "              , :measured AS measured\n" +
             "         FROM ROAD_STATION_SENSOR sensor\n" +
             "            , ROAD_STATION station\n" +
             "         WHERE station.lotju_id = :rsLotjuId\n" +
             "           AND station.road_station_type = :stationType\n" +
             "           AND sensor.lotju_id = :sensorLotjuId\n" +
-            "           AND sensor.road_station_type = :stationType) src\n" +
-            "    ON (dst.road_station_sensor_id = src.sensorId AND dst.road_station_id = src.stationId)\n" +
-            "  WHEN MATCHED THEN UPDATE\n" +
-            "    SET dst.value = src.value, dst.measured = src.sensorValueMeasured\n" +
-            "  WHEN NOT MATCHED THEN INSERT \n" +
-            "    (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured)\n" +
-            "    VALUES (SEQ_SENSOR_VALUE.nextval, src.stationId, src.sensorId, src.value, src.sensorValueMeasured)";
+            "           AND sensor.road_station_type = :stationType\n" +
+            "           AND NOT EXISTS (\n" +
+            "                   SELECT NULL\n" +
+            "                   FROM SENSOR_VALUE sv\n" +
+            "                   WHERE sv.road_station_sensor_id = sensor.id\n" +
+            "                     AND sv.road_station_id = station.id\n" +
+            "               )\n" +
+            "       )";
+
+    private static final String UPDATE_STATEMENT =
+            "UPDATE ( SELECT station.id AS stationId\n" +
+            "              , sensor.id AS sensorId\n" +
+            "              , :value AS value\n" +
+            "              , :measured AS sensorValueMeasured\n" +
+            "              , dst.road_station_sensor_id dst_rss_id\n" +
+            "              , dst.road_station_id dst_rs_id\n" +
+            "              , dst.value dst_value\n" +
+            "              , dst.measured dst_measured\n" +
+            "         FROM ROAD_STATION_SENSOR sensor\n" +
+            "            , ROAD_STATION station\n" +
+            "            , SENSOR_VALUE dst\n" +
+            "         WHERE station.lotju_id = :rsLotjuId\n" +
+            "           AND station.road_station_type = :stationType\n" +
+            "           AND sensor.lotju_id = :sensorLotjuId\n" +
+            "           AND sensor.road_station_type = :stationType\n" +
+            "           AND dst.road_station_sensor_id = sensor.id\n" +
+            "           AND dst.road_station_id = station.id )\n" +
+            "SET dst_value = value\n" +
+            "  , dst_measured = sensorValueMeasured";
 
     @Autowired
     public SensorDataUpdateServiceImpl(final DataSource dataSource) throws SQLException {
-        this.connection = (OracleConnection)dataSource.getConnection();
-
+        this.dataSource = dataSource;
     }
 
     @Transactional
+    @Override
     public void updateLamData(List<Lam> data) throws SQLException {
+        OracleConnection connection = null;
+        OraclePreparedStatement opsUpdate = null;
+        OraclePreparedStatement opsInsert = null;
 
-        final OraclePreparedStatement ops =
-                (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT);
+        try {
+            connection = (OracleConnection) dataSource.getConnection();
+            opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
 
-        final long startFilter = System.currentTimeMillis();
-        final Collection<Lam> newestLamData = filterNewestLamValues(data);
-        final long endFilterStartAppend = System.currentTimeMillis();
-        final int rows = appendLamBatchData(ops, newestLamData);
-        final long endAppendStartBatch = System.currentTimeMillis();
-        ops.executeBatch();
-        final long endBatch = System.currentTimeMillis();
+            final long startFilter = System.currentTimeMillis();
+            final Collection<Lam> newestLamData = filterNewestLamValues(data);
+            final long endFilterStartAppend = System.currentTimeMillis();
+            final int rows = appendLamBatchData(opsUpdate, newestLamData);
+            opsUpdate.executeBatch();
 
-        log.info(String.format("Update lam sensors data for " + rows + " rows took %1$d ms (data filter: %2$d ms, append batch: %3$d ms, merge: %4$d ms)",
-                (endBatch - startFilter), (endFilterStartAppend - startFilter), (endAppendStartBatch - endFilterStartAppend),
-                (endBatch - endAppendStartBatch)));
+            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
+            appendLamBatchData(opsInsert, newestLamData);
+            final long endAppendStartBatch = System.currentTimeMillis();
+            opsInsert.executeBatch();
+
+            final long endBatch = System.currentTimeMillis();
+
+            log.info(String.format("Update lam sensors data for %1$d " +
+                                   "rows, took %2$d ms (data filter: %3$d ms, " +
+                                   "append batch: %4$d ms, merge: %5$d ms)",
+                                   rows,
+                                   (endBatch - startFilter), (endFilterStartAppend - startFilter), (endAppendStartBatch - endFilterStartAppend),
+                                   (endBatch - endAppendStartBatch)));
+        } catch (Exception e) {
+
+        } finally {
+            if (opsUpdate != null) {
+                try {
+                    opsUpdate.close();
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+            if (opsInsert != null) {
+                try {
+                    opsInsert.close();
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();;
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+        }
     }
 
+    @Transactional
     @Override
     public void updateWeatherData(List<Tiesaa> data) throws SQLException {
-        final OraclePreparedStatement ops =
-                (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT);
+        OracleConnection connection = null;
+        OraclePreparedStatement opsUpdate = null;
+        OraclePreparedStatement opsInsert = null;
 
-        final long startFilter = System.currentTimeMillis();
-        final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
-        final long endFilterStartAppend = System.currentTimeMillis();
-        final int rows = appendTiesaaBatchData(ops, newestTiesaaData);
-        final long endAppendStartBatch = System.currentTimeMillis();
-        ops.executeBatch();
-        final long endBatch = System.currentTimeMillis();
+        try {
+            connection = (OracleConnection) dataSource.getConnection();
+            opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
+            final long startFilter = System.currentTimeMillis();
+            final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
+            final long endFilterStartAppend = System.currentTimeMillis();
+            final int rows = appendTiesaaBatchData(opsUpdate, newestTiesaaData);
+            opsUpdate.executeBatch();
 
-        log.info(String.format("Update weather sensors data for " + rows + " rows took %1$d ms (data filter: %2$d ms, append batch: %3$d ms, merge: %4$d ms)",
-                (endBatch - startFilter), (endFilterStartAppend - startFilter), (endAppendStartBatch - endFilterStartAppend),
-                (endBatch - endAppendStartBatch)));
+            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
 
+            appendTiesaaBatchData(opsInsert, newestTiesaaData);
+            final long endAppendStartBatch = System.currentTimeMillis();
+            opsInsert.executeBatch();
+
+            final long endBatch = System.currentTimeMillis();
+
+            log.info(String.format("Update weather sensors data for %1$d "  +
+                                   "rows took %2$d ms (data filter: %3$d ms, " +
+                                   "append batch: %4$d ms, merge: %5$d ms)",
+                                   rows,
+                                   (endBatch - startFilter),
+                                   (endFilterStartAppend - startFilter),
+                                   (endAppendStartBatch - endFilterStartAppend),
+                                   (endBatch - endAppendStartBatch)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (opsUpdate != null) {
+                try {
+                    opsUpdate.close();
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+            if (opsInsert != null) {
+                try {
+                    opsInsert.close();
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();;
+                } catch (SQLException e) {
+                    // skip
+                }
+            }
+        }
     }
 
     private Collection<Lam> filterNewestLamValues(List<Lam> data) {
@@ -128,12 +231,9 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
 
         for (Lam lam : lams) {
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-
             LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(lam.getAika(), ZoneId.systemDefault());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Lam.Anturit.Anturi anturi : anturit) {
-
-                Object[] arr = { anturi.getLaskennallinenAnturiId(), lam.getAsemaId(), anturi.getArvo(), measured };
                 rows++;
                 ops.setDoubleAtName("value", (double) anturi.getArvo());
                 ops.setTimestampAtName("measured", measured);
@@ -151,12 +251,9 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
 
         for (Tiesaa tiesaa : tiesaas) {
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-
             LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(tiesaa.getAika(), ZoneId.systemDefault());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
-
-                Object[] arr = { anturi.getLaskennallinenAnturiId(), tiesaa.getAsemaId(), anturi.getArvo(), measured };
                 rows++;
                 ops.setDoubleAtName("value", (double) anturi.getArvo());
                 ops.setTimestampAtName("measured", measured);

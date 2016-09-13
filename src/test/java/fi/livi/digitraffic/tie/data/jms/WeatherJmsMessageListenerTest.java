@@ -10,10 +10,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -34,6 +35,7 @@ import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
@@ -51,9 +53,6 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
-
-    @Autowired
-    DataSource dataSource;
 
     @Before
     public void setUpTestData() {
@@ -163,7 +162,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
                 try {
                     sensorDataUpdateService.updateWeatherData(data);
                 } catch (SQLException e) {
-                    throw new RuntimeException("FAIL" + e);
+                    throw new RuntimeException("UPDATE FAIL", e);
                 }
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
@@ -177,9 +176,13 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        float arvo = -10;
+        final float minX = 0.0f;
+        final float maxX = 100.0f;
+        Random rand = new Random();
+        float arvo = rand.nextFloat() * (maxX - minX) + minX;
+        log.info("Start with arvo " + arvo);
 
-        List<RoadStationSensor> availableSensors =
+        final List<RoadStationSensor> availableSensors =
                 roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
@@ -187,11 +190,12 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000 + 30000;
+        final List<Tiesaa> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
             long start = System.currentTimeMillis();
-            List<Tiesaa> data = new ArrayList<>();
+            data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
                     stationsIter = weatherStationsWithLotjuId.values().iterator();
@@ -240,7 +244,30 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
                 e.printStackTrace();
             }
         }
+        log.info("End with arvo " + arvo);
         log.info("Handle data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+
+        // Assert sensor values are updated to db
+        List<Long> tiesaaLotjuIds = data.stream().map(Tiesaa::getAsemaId).collect(Collectors.toList());
+        Map<Long, List<SensorValue>> valuesMap =
+                    roadStationSensorService.findSensorvaluesListMappedByLamLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
+
+        for (Tiesaa tiesaa : data) {
+            long asemaLotjuId = tiesaa.getAsemaId();
+            List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
+            List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
+
+            for (SensorValue sensorValue : sensorValues) {
+                if (sensorValue.getRoadStationSensor().getLotjuId() != null) {
+                    Optional<Tiesaa.Anturit.Anturi> found =
+                            anturit.stream()
+                                    .filter(anturi -> anturi.getLaskennallinenAnturiId() == sensorValue.getRoadStationSensor().getLotjuId())
+                                    .findFirst();
+                    Assert.assertTrue(found.isPresent());
+                    Assert.assertEquals((double) found.get().getArvo(), sensorValue.getValue(), 0.05d);
+                }
+            }
+        }
     }
 }
