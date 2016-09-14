@@ -15,7 +15,8 @@ import fi.livi.digitraffic.tie.data.dto.lam.LamFreeFlowSpeedDto;
 public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpeedDto, Long> {
 
     @Query(value =
-            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
+            "SELECT RS.NATURAL_ID AS ROAD_STATION_NATURAL_ID" +
+            "     , LS.NATURAL_ID AS LAM_NATURAL_ID\n" +
             "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
             "            THEN LS.SUMMER_FREE_FLOW_SPEED_1\n" +
             "            ELSE LS.WINTER_FREE_FLOW_SPEED_1\n" +
@@ -34,7 +35,8 @@ public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpe
     List<LamFreeFlowSpeedDto> listAllPublicLamFreeFlowSpeeds();
 
     @Query(value =
-            "SELECT LS.NATURAL_ID AS LAM_ID\n" +
+            "SELECT RS.NATURAL_ID AS ROAD_STATION_NATURAL_ID" +
+            "     , LS.NATURAL_ID AS LAM_NATURAL_ID\n" +
             "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
             "            THEN LS.SUMMER_FREE_FLOW_SPEED_1\n" +
             "            ELSE LS.WINTER_FREE_FLOW_SPEED_1\n" +
@@ -48,8 +50,8 @@ public interface LamFreeFlowSpeedRepository extends JpaRepository<LamFreeFlowSpe
             "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
             "WHERE LS.OBSOLETE = 0\n" +
             "  AND RS.IS_PUBLIC = 1\n" +
-            "  AND LS.NATURAL_ID = ?1",
+            "  AND RS.NATURAL_ID = ?1",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LamFreeFlowSpeedDto> listAllPublicLamFreeFlowSpeeds(final long lamId);
+    List<LamFreeFlowSpeedDto> listAllPublicLamFreeFlowSpeeds(final long roadStationNaturalId);
 }

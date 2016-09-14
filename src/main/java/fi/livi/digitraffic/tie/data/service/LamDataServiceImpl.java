@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.lam.LamStationDto;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
@@ -25,13 +26,16 @@ public class LamDataServiceImpl implements LamDataService {
     private static final Logger log = LoggerFactory.getLogger(LamDataServiceImpl.class);
 
     private final LamStationService lamStationService;
-    private RoadStationSensorService roadStationSensorService;
+    private final RoadStationSensorService roadStationSensorService;
+    private final RoadStationRepository roadStationRepository;
 
     @Autowired
     public LamDataServiceImpl(final LamStationService lamStationService,
-                              final RoadStationSensorService roadStationSensorService) {
+                              final RoadStationSensorService roadStationSensorService,
+                              final RoadStationRepository roadStationRepository) {
         this.lamStationService = lamStationService;
         this.roadStationSensorService = roadStationSensorService;
+        this.roadStationRepository = roadStationRepository;
     }
 
     @Transactional(readOnly = true)
@@ -65,6 +69,9 @@ public class LamDataServiceImpl implements LamDataService {
     @Transactional(readOnly = true)
     @Override
     public LamRootDataObjectDto findPublicLamData(long roadStationNaturalId) {
+        if ( !roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, RoadStationType.LAM_STATION) ) {
+            throw new ObjectNotFoundException("LamStation", roadStationNaturalId);
+        }
         final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.LAM_STATION);
 
         final List<SensorValueDto> values =

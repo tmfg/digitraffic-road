@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
@@ -114,6 +115,20 @@ public class LamStationServiceImpl implements LamStationService {
     @Transactional(readOnly = true)
     @Override
     public LamStation findByRoadStationNaturalId(long roadStationNaturalId) {
-        return lamStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
+        LamStation entity = lamStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
+        if (entity == null) {
+            throw new ObjectNotFoundException(LamStation.class, roadStationNaturalId);
+        }
+        return entity;
+    }
+
+    @Override
+    public boolean lamStationExistsWithRoadStationNaturalId(long roadStationNaturalId) {
+        return lamStationRepository.lamExistsWithRoadStationNaturalId(roadStationNaturalId);
+    }
+
+    @Override
+    public boolean lamStationExistsWithNaturalId(long lamNaturalId) {
+        return lamStationRepository.lamExistsWithLamNaturalId(lamNaturalId);
     }
 }

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.CameraPreset2CameraDataConverter;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
+import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Service
 public class CameraDataServiceImpl implements CameraDataService {
@@ -42,8 +44,13 @@ public class CameraDataServiceImpl implements CameraDataService {
     public CameraRootDataObjectDto findPublicCameraStationsData(final String cameraId) {
 
         final LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        List<CameraPreset> data = cameraPresetRepository
+                .findByCameraIdAndObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(cameraId);
+        if (data.isEmpty()) {
+            throw new ObjectNotFoundException("CameraStation", cameraId);
+        }
         return cameraPreset2CameraDataConverter.convert(
-                cameraPresetRepository.findByCameraIdAndObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(cameraId),
+                data,
                 updated);
     }
 }

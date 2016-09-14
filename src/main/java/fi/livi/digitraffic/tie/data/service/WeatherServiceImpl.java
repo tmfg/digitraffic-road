@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherStationDto;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
@@ -23,10 +24,13 @@ public class WeatherServiceImpl implements WeatherService {
     private static final Logger log = LoggerFactory.getLogger(WeatherServiceImpl.class);
 
     private final RoadStationSensorService roadStationSensorService;
+    private final RoadStationRepository roadStationRepository;
 
     @Autowired
-    public WeatherServiceImpl(final RoadStationSensorService roadStationSensorService) {
+    public WeatherServiceImpl(final RoadStationSensorService roadStationSensorService,
+                              final RoadStationRepository roadStationRepository) {
         this.roadStationSensorService = roadStationSensorService;
+        this.roadStationRepository = roadStationRepository;
     }
 
     @Transactional(readOnly = true)
@@ -56,16 +60,20 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Transactional(readOnly = true)
     @Override
-    public WeatherRootDataObjectDto findPublicWeatherData(final long roadStationNaturalIdId) {
+    public WeatherRootDataObjectDto findPublicWeatherData(final long roadStationNaturalId) {
+
+        if ( !roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
+            throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
+        }
 
         final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
         final List<SensorValueDto> values =
-                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(roadStationNaturalIdId,
+                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(roadStationNaturalId,
                                                                                                           RoadStationType.WEATHER_STATION);
 
         final WeatherStationDto dto = new WeatherStationDto();
-        dto.setRoadStationNaturalId(roadStationNaturalIdId);
+        dto.setRoadStationNaturalId(roadStationNaturalId);
         dto.setSensorValues(values);
         dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
 
