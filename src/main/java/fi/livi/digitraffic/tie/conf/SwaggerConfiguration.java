@@ -4,7 +4,7 @@ import static com.google.common.base.Predicates.or;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Predicate;
 
@@ -25,14 +26,19 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
+    private final MetadataApiInfoService metadataApiInfoService;
+
     @Autowired
-    MetadataApiInfoService metadataApiInfoService;
+    public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService) {
+        Assert.notNull(metadataApiInfoService);
+        this.metadataApiInfoService = metadataApiInfoService;
+    }
 
     @Bean
     public Docket metadataApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("metadata-api")
-                .produces(new HashSet<>(Arrays.asList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+                .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
                 .apiInfo(metadataApiInfoService.getApiInfo())
                 .select()
                 .paths(getMetadataApiPaths())

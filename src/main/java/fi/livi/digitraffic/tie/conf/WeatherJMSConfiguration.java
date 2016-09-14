@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
@@ -45,6 +46,7 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
                                    int jmsReconnectionTries,
                                    SensorDataUpdateService sensorDataUpdateService) {
         super(applicationContext, jmsReconnectionDelayInSeconds, jmsReconnectionTries);
+        Assert.notNull(sensorDataUpdateService);
         this.sensorDataUpdateService = sensorDataUpdateService;
     }
 
