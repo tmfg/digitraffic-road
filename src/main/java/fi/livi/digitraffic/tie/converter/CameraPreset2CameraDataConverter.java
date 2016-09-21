@@ -28,7 +28,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
     private final String weathercamBaseurl;
 
     @Autowired
-    public CameraPreset2CameraDataConverter(@Value("${weathercam.baseurl}") final
+    public CameraPreset2CameraDataConverter(@Value("${weathercam.base-url}") final
                                             String weathercamBaseurl) {
         this.weathercamBaseurl = weathercamBaseurl;
     }

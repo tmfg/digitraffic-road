@@ -150,7 +150,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
-        JmsMessageListener<Tiesaa> tiesaaJmsMessageListener = new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener") {
+        JmsMessageListener<Tiesaa> tiesaaJmsMessageListener = new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener", 1000) {
             @Override
             protected void handleData(List<Tiesaa> data) {
                 long start = System.currentTimeMillis();

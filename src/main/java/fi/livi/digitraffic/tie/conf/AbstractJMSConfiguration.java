@@ -68,7 +68,7 @@ public abstract class AbstractJMSConfiguration {
     }
 
     public abstract Destination createJMSDestinationBean(final String jmsInQueue) throws JMSException;
-    public abstract MessageListener createJMSMessageListener();
+    public abstract MessageListener createJMSMessageListener(final int pollingInterval);
     public abstract JMSParameters createJMSParameters(String jmsUserId, String jmsPassword);
     public abstract Connection createJmsConnection();
 

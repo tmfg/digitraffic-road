@@ -29,7 +29,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
     private final String weathercamBaseurl;
 
     @Autowired
-    public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.baseurl}") final
+    public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.base-url}") final
                                                  String weathercamBaseurl) {
         this.weathercamBaseurl = weathercamBaseurl;
     }
