@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
@@ -66,7 +67,7 @@ public class CameraDataUpdateService {
         String presetId = kuva.getNimi().substring(0, 8);
         String filename = presetId + ".jpg";
         LocalDateTime pictureTaken = DateHelper.toLocalDateTimeAtZone(kuva.getAika(), ZoneId.systemDefault());
-        log.info("Handling kuva " + kuva.getNimi() + " to " + filename + ", pictureTaken: " + pictureTaken);
+        log.info("Handling kuva: " +ToStringHelpper.toString(kuva));
         CameraPreset cameraPreset = cameraPresetService.findCameraPresetByPresetId(presetId);
 
         // Update CameraPreset
