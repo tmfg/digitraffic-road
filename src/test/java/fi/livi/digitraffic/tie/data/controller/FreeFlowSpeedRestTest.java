@@ -21,12 +21,13 @@ public class FreeFlowSpeedRestTest extends RestTest {
                             DataController.FREE_FLOW_SPEEDS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.lamFreeFlowSpeeds", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].lamNumber", Matchers.notNullValue()));
     }
 
     @Test
@@ -36,8 +37,8 @@ public class FreeFlowSpeedRestTest extends RestTest {
                 DataController.FREE_FLOW_SPEEDS_PATH + "/link/16"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()));
     }
@@ -46,12 +47,13 @@ public class FreeFlowSpeedRestTest extends RestTest {
     public void testFreeFlowSpeedDataRestApiByLamId() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.FREE_FLOW_SPEEDS_PATH + "/lam/1"))
+                DataController.FREE_FLOW_SPEEDS_PATH + "/lam/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.lamFreeFlowSpeeds", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].lamNumber", Matchers.notNullValue()));
     }
 }

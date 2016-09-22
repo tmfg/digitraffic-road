@@ -25,7 +25,7 @@ public interface StaticDataStatusService {
 
     void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus);
 
-    void updateMetadataUptaded(MetadataType metadataType);
+    void updateMetadataUpdated(MetadataType metadataType);
 
-    MetadataUpdated findMetadataUptadedByMetadataType(MetadataType metadataType);
+    MetadataUpdated findMetadataUpdatedByMetadataType(MetadataType metadataType);
 }

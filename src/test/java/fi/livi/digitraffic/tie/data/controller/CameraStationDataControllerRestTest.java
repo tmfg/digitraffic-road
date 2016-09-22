@@ -21,8 +21,8 @@ public class CameraStationDataControllerRestTest extends RestTest {
                             DataController.CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))
@@ -43,8 +43,8 @@ public class CameraStationDataControllerRestTest extends RestTest {
                 DataController.CAMERA_DATA_PATH + "/C08520"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))

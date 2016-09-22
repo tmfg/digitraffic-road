@@ -175,10 +175,16 @@ public class CameraPreset {
         this.presetOrder = presetOrder;
     }
 
+    /**
+     * Lotju's Esiasento#isJulkinen()
+     */
     public boolean isPublicExternal() {
         return publicExternal;
     }
 
+    /**
+     * Lotju's Esiasento#isJulkinen()
+     */
     public void setPublicExternal(final Boolean publicExternal) {
         this.publicExternal = publicExternal;
     }
@@ -250,10 +256,16 @@ public class CameraPreset {
         return false;
     }
 
+    /**
+     * Web application's public value
+     */
     public boolean isPublicInternal() {
         return publicInternal;
     }
 
+    /**
+     * Web application's public value
+     */
     public void setPublicInternal(final boolean publicInternal) {
         this.publicInternal = publicInternal;
     }

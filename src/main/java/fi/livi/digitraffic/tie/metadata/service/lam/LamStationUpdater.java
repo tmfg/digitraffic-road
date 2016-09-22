@@ -116,11 +116,11 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
         obsolete.addAll(currentStations.values());
 
         final int obsoleted = obsoleteLamStations(obsolete);
-        final int uptaded = updateLamStations(update);
+        final int updated = updateLamStations(update);
         final int inserted = insertLamStations(insert);
 
         log.info("Obsoleted " + obsoleted + " LamStations");
-        log.info("Uptaded " + uptaded + " LamStations");
+        log.info("Updated " + updated + " LamStations");
         log.info("Inserted " + inserted + " LamStations");
         if (insert.size() > inserted) {
             log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " LamStations");

@@ -29,4 +29,8 @@ public interface LamStationService {
     Map<Long, LamStation> findLamStationsMappedByLotjuId(List<Long> lamStationLotjuIds);
 
     LamStation findByRoadStationNaturalId(long roadStationNaturalId);
+
+    boolean lamStationExistsWithRoadStationNaturalId(long roadStationNaturalId);
+
+    boolean lamStationExistsWithNaturalId(long roadStationNaturalId);
 }

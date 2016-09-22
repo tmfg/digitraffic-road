@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.jms;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+
 @Component
 public abstract class JmsMessageListener<T> implements MessageListener {
 
@@ -26,16 +29,17 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final JAXBContext jaxbTiesaaContext;
     private final String beanName;
     private final Unmarshaller jaxbUnmarshaller;
-    private final LinkedBlockingQueue<T> queue;
+    private final BlockingQueue<T> blockingQueue;
     private final JMSMessageConsumer jmsMessageConsumer;
-    private AtomicBoolean shutdownCalled = new AtomicBoolean(false);
+    private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
-    public JmsMessageListener(Class<T> typeClass, String beanName) throws JAXBException {
+    public JmsMessageListener(final Class<T> typeClass, final String beanName, final long pollingIntervalMs) throws JAXBException {
         jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
         this.beanName = beanName;
         jaxbUnmarshaller = jaxbTiesaaContext.createUnmarshaller();
-        queue = new LinkedBlockingQueue<T>();
-        jmsMessageConsumer = new JMSMessageConsumer(queue);
+        jmsMessageConsumer = new JMSMessageConsumer(pollingIntervalMs);
+        blockingQueue = jmsMessageConsumer.getBlockingQueue();
+        log.info("Initialized JmsMessageListener for " + beanName + " with pollingInterval " + pollingIntervalMs + " ms");
     }
 
     @PreDestroy
@@ -44,8 +48,8 @@ public abstract class JmsMessageListener<T> implements MessageListener {
         shutdownCalled.set(true);
         jmsMessageConsumer.getConsumer().interrupt();
         try {
-            log.info("Waiting a second for consumer to shut down");
-            Thread.sleep(1000);
+            log.info("Waiting 3 seconds for consumer to shut down");
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             log.error("Sleep in shutdown interrupted", e);
         }
@@ -54,15 +58,16 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     @Override
     public void onMessage(Message message) {
         if (!shutdownCalled.get()) {
-            log.info(beanName + " received " + message.getClass().getSimpleName() + " message");
+            log.info(beanName + " received " + message.getClass().getSimpleName());
             T data = unmarshalMessage(message);
-            queue.add(data);
+            blockingQueue.add(data);
         } else {
             log.error("Shut down called, not handling any messages anymore");
         }
     }
 
     private T unmarshalMessage(Message message) {
+        log.debug("JMS Message:\n" + ToStringHelpper.toStringFull(message));
         if (message instanceof TextMessage) {
             try {
                 TextMessage xmlMessage = (TextMessage) message;
@@ -87,10 +92,12 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private class JMSMessageConsumer implements Runnable
     {
         private final Thread consumer;
-        private LinkedBlockingQueue<T> blockingQueue;
+        private final LinkedBlockingQueue<T> blockingQueue;
+        private long pollingIntervalMs;
 
-        public JMSMessageConsumer(LinkedBlockingQueue<T> blockingQueue) {
-            this.blockingQueue = blockingQueue;
+        public JMSMessageConsumer(final long pollingIntervalMs) {
+            this.pollingIntervalMs = pollingIntervalMs;
+            blockingQueue = new LinkedBlockingQueue<T>();
             consumer = new Thread(this);
             consumer.start();
         }
@@ -99,12 +106,16 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             return consumer;
         }
 
+        public BlockingQueue<T> getBlockingQueue() {
+            return blockingQueue;
+        }
+
         public void run()
         {
             while(!shutdownCalled.get())
             {
                 try {
-                    Thread.sleep(1000); // 1 s
+                    Thread.sleep(pollingIntervalMs);
                     if (!shutdownCalled.get()) {
                         if (blockingQueue.size() > 0) {
                             LinkedList<T> targetList = new LinkedList<T>();

@@ -91,7 +91,7 @@ public class WeatherStationServiceImpl implements WeatherStationService {
     @Override
     public WeatherStationFeatureCollection findAllNonObsoletePublicWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUptadedByMetadataType(MetadataType.WEATHER_STATION);
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
 
         return WeatherStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo == false ?

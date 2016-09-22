@@ -21,8 +21,8 @@ public class TrafficFluencyDataControllerRestTest extends RestTest {
                             DataController.TRAFFIC_FLUENCY_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0].medianSpeed", Matchers.isA(Double.class)))
@@ -43,8 +43,8 @@ public class TrafficFluencyDataControllerRestTest extends RestTest {
                 DataController.TRAFFIC_FLUENCY_PATH + "/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.latestMedians[0].medianSpeed", Matchers.isA(Double.class)))

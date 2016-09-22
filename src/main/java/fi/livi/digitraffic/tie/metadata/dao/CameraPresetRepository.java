@@ -40,4 +40,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
             "FROM CAMERA_PRESET CP",
             nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
+
+    CameraPreset findCameraPresetByPresetId(String presetId);
 }

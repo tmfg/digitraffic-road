@@ -46,8 +46,8 @@ public class DayDataControllerRestTest extends RestTest {
                             DataController.DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
@@ -69,8 +69,8 @@ public class DayDataControllerRestTest extends RestTest {
                 DataController.DAY_DATA_PATH + "/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))

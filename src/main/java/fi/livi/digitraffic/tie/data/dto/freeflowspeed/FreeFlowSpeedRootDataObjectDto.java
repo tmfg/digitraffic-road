@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "FreeFlowSpeedData", description = "Current free flow speed values for links and LAM stations", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUptadedLocalTime", "dataUptadedUtc", "linkFreeFlowSpeeds", "lamFreeFlowSpeeds"})
+@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "linkFreeFlowSpeeds", "lamFreeFlowSpeeds"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
 

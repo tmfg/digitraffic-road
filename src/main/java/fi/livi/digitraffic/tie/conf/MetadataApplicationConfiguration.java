@@ -7,10 +7,12 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -30,8 +32,13 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
 
+    private final ConfigurableApplicationContext applicationContext;
+
     @Autowired
-    private LocaleChangeInterceptor localeChangeInterceptor;
+    public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
+        Assert.notNull(applicationContext);
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * Initialize OracleDataSource manually because datasource property spring.datasource.type=oracle.jdbc.pool.OracleDataSource
@@ -41,7 +48,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
      * @throws SQLException
      */
     @Bean
-    public DataSource dataSource(DataSourceProperties properties) throws SQLException {
+    public DataSource dataSource(final DataSourceProperties properties) throws SQLException {
         final PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
@@ -53,7 +60,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setValidateConnectionOnBorrow(true);
         dataSource.setMaxStatements(10);
         dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-
         return dataSource;
     }
 
@@ -73,6 +79,8 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
+        LocaleChangeInterceptor localeChangeInterceptor = applicationContext.getBean(LocaleChangeInterceptor.class);
+        Assert.notNull(localeChangeInterceptor);
         registry.addInterceptor(localeChangeInterceptor);
     }
 

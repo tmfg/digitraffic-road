@@ -21,8 +21,8 @@ public class LamStationDataControllerRestTest extends RestTest {
                             DataController.LAM_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
 
                 .andExpect(jsonPath("$.lamStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.lamStations[0].id", Matchers.notNullValue()))
@@ -42,8 +42,8 @@ public class LamStationDataControllerRestTest extends RestTest {
                 DataController.LAM_DATA_PATH + "/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUptadedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUptadedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
 
                 .andExpect(jsonPath("$.lamStations", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.lamStations[0].id", Matchers.notNullValue()))

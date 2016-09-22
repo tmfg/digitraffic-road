@@ -13,9 +13,9 @@ spring.datasource.username=<username>
 spring.datasource.password=<password>
 
 # Lotju-test v2 soap api
-metadata.server.address.lam=https://LOTJU/LAMMetatiedot/v2
-metadata.server.address.camera=https://LOTJU/KameraPerustiedot/v2
-metadata.server.address.weather=https://LOTJU/TiesaaPerustiedot/v2
+metadata.server.address.lam=<https://LOTJU/LAMMetatiedot/v2>
+metadata.server.address.camera=<https://LOTJU/KameraPerustiedot/v2>
+metadata.server.address.weather=<https://LOTJU/TiesaaPerustiedot/v2>
 
 # Metadata update frequencies in ms, 43200000 ms = 12 h
 cameraStationUpdateJob.frequency=43200000
@@ -23,7 +23,8 @@ lamStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseurl=http://weathercam.url/
+weathercam.base-url=http://weathercam.url/
+weathercam.import-dir=/tmp/weathercam
 
 # JMS settings
 
@@ -33,8 +34,13 @@ jms.userId=<username>
 jms.password=<password>
 
 # JMS topics
-jms.inQueue.weather=weather.topic
-jms.inQueue.lam=lam.topic
+jms.weather.inQueue=<weather-topic>
+jms.lam.inQueue=<lam-topic>
+jms.camera.inQueue=<camera-topic>
+
+jms.weather.queue.pollingIntervalMs = 1000
+jms.lam.queue.pollingIntervalMs = 1000
+jms.camera.queue.pollingIntervalMs = 100
 
 # Services enabled/disabled
 
@@ -47,3 +53,4 @@ quartz.enabled=true
 # JMS queue enabled/disabled (Only daemond should have these enabled)
 jms.weather.enabled=true
 jms.lam.enabled=true
+jms.camera.enabled=true

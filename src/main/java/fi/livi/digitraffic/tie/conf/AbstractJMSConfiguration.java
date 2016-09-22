@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
@@ -40,6 +41,9 @@ public abstract class AbstractJMSConfiguration {
     public AbstractJMSConfiguration(final ConfigurableApplicationContext applicationContext,
                                     final int jmsReconnectionDelayInSeconds,
                                     final int jmsReconnectionTries) {
+        Assert.notNull(applicationContext);
+        Assert.notNull(jmsReconnectionDelayInSeconds);
+        Assert.notNull(jmsReconnectionTries);
         this.applicationContext = applicationContext;
         this.jmsReconnectionDelayInSeconds = jmsReconnectionDelayInSeconds;
         this.jmsReconnectionTries = jmsReconnectionTries;
@@ -64,7 +68,7 @@ public abstract class AbstractJMSConfiguration {
     }
 
     public abstract Destination createJMSDestinationBean(final String jmsInQueue) throws JMSException;
-    public abstract MessageListener createJMSMessageListener();
+    public abstract MessageListener createJMSMessageListener(final int pollingInterval);
     public abstract JMSParameters createJMSParameters(String jmsUserId, String jmsPassword);
     public abstract Connection createJmsConnection();
 

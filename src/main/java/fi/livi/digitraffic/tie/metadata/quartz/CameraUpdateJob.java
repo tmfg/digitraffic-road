@@ -27,7 +27,7 @@ public class CameraUpdateJob extends AbstractUpdateJob {
         final long time = (System.currentTimeMillis() - start) / 1000;
 
         if (updated) {
-            staticDataStatusService.updateMetadataUptaded(MetadataType.CAMERA_STATION);
+            staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
         }
 
         log.info("Quartz CameraUpdateJob end (took " + time + " s)");

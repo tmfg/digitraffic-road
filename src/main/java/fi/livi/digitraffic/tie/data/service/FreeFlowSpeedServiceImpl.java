@@ -10,17 +10,21 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dao.LamFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dao.LinkFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
+import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 
 @Service
 public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
     private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
     private final LamFreeFlowSpeedRepository lamFreeFlowSpeedRepository;
+    private final LamStationService lamStationService;
 
     @Autowired
-    public FreeFlowSpeedServiceImpl(final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository, final LamFreeFlowSpeedRepository
-            lamFreeFlowSpeedRepository) {
+    public FreeFlowSpeedServiceImpl(final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository,
+                                    final LamFreeFlowSpeedRepository lamFreeFlowSpeedRepository,
+                                    final LamStationService lamStationService) {
         this.linkFreeFlowSpeedRepository = linkFreeFlowSpeedRepository;
         this.lamFreeFlowSpeedRepository = lamFreeFlowSpeedRepository;
+        this.lamStationService = lamStationService;
     }
 
 
@@ -43,7 +47,9 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
     @Transactional(readOnly = true)
     @Override
     public FreeFlowSpeedRootDataObjectDto listLinksPublicFreeFlowSpeeds(final long linkId) {
-
+        if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
+            throw new ObjectNotFoundException("Link", linkId);
+        }
         // TODO: where to read update info?
         final LocalDateTime updated = LocalDateTime.now();
         return new FreeFlowSpeedRootDataObjectDto(
@@ -55,13 +61,16 @@ public class FreeFlowSpeedServiceImpl implements FreeFlowSpeedService {
 
     @Transactional(readOnly = true)
     @Override
-    public FreeFlowSpeedRootDataObjectDto listLamsPublicFreeFlowSpeeds(final long lamId) {
+    public FreeFlowSpeedRootDataObjectDto listLamsPublicFreeFlowSpeeds(final long roadStationNaturalId) {
 
         // TODO: where to read update info?
         final LocalDateTime updated = LocalDateTime.now();
+        if (!lamStationService.lamStationExistsWithRoadStationNaturalId(roadStationNaturalId)) {
+            throw new ObjectNotFoundException("LamStation", roadStationNaturalId);
+        }
         return new FreeFlowSpeedRootDataObjectDto(
                 Collections.emptyList(),
-                lamFreeFlowSpeedRepository.listAllPublicLamFreeFlowSpeeds(lamId),
+                lamFreeFlowSpeedRepository.listAllPublicLamFreeFlowSpeeds(roadStationNaturalId),
                 updated);
 
     }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.FluencyClassRepository;
+import fi.livi.digitraffic.tie.data.dao.LinkFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
@@ -19,12 +20,15 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
 
     private final TrafficFluencyRepository trafficFluencyRepository;
     private final FluencyClassRepository fluencyClassRepository;
+    private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
 
     @Autowired
     TrafficFluencyServiceImpl(final TrafficFluencyRepository trafficFluencyRepository,
-                              final FluencyClassRepository fluencyClassRepository) {
+                              final FluencyClassRepository fluencyClassRepository,
+                              final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository) {
         this.trafficFluencyRepository = trafficFluencyRepository;
         this.fluencyClassRepository = fluencyClassRepository;
+        this.linkFreeFlowSpeedRepository = linkFreeFlowSpeedRepository;
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +55,9 @@ public class TrafficFluencyServiceImpl implements TrafficFluencyService {
     @Transactional(readOnly = true)
     @Override
     public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(final long linkId) {
+        if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
+            throw new ObjectNotFoundException("Link", linkId);
+        }
 
         LocalDateTime updated = trafficFluencyRepository.getLatestMeasurementTime();
 

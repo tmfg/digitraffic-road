@@ -14,8 +14,8 @@ public class RoadStationsSensorsMetadata extends RootDataObjectDto {
     @ApiModelProperty(value = "Available sensors of weather stations", required = true)
     private final List<RoadStationSensor> roadStationSensors;
 
-    public RoadStationsSensorsMetadata(final List<RoadStationSensor> roadStationSensors, final LocalDateTime lastUptaded) {
-        super(lastUptaded);
+    public RoadStationsSensorsMetadata(final List<RoadStationSensor> roadStationSensors, final LocalDateTime lastUpdated) {
+        super(lastUpdated);
         this.roadStationSensors = roadStationSensors;
     }
 

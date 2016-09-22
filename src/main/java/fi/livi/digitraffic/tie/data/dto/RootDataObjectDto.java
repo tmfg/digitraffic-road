@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonPropertyOrder({"dataUptadedLocalTime", "dataUptadedUtc"})
+@JsonPropertyOrder({"dataUpdatedLocalTime", "dataUpdatedUtc"})
 public class RootDataObjectDto {
 
     @JsonIgnore
@@ -29,12 +29,12 @@ public class RootDataObjectDto {
     }
 
     @ApiModelProperty(value = "Data last updated " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    public String getDataUptadedLocalTime() {
+    public String getDataUpdatedLocalTime() {
         return ToStringHelpper.toString(timestamp, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
     @ApiModelProperty(value = "Data last updated " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
-    public String getDataUptadedUtc() {
+    public String getDataUpdatedUtc() {
         return ToStringHelpper.toString(timestamp, ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 }

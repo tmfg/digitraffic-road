@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
@@ -45,12 +46,13 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
                                    int jmsReconnectionTries,
                                    SensorDataUpdateService sensorDataUpdateService) {
         super(applicationContext, jmsReconnectionDelayInSeconds, jmsReconnectionTries);
+        Assert.notNull(sensorDataUpdateService);
         this.sensorDataUpdateService = sensorDataUpdateService;
     }
 
     @Override
     @Bean(name = WEATHER_JMS_DESTINATION_BEAN)
-    public Destination createJMSDestinationBean(@Value("${jms.inQueue.weather}")
+    public Destination createJMSDestinationBean(@Value("${jms.weather.inQueue}")
                                                 final String jmsInQueue) throws JMSException {
         Topic destination = new Topic();
         destination.setTopicName(jmsInQueue);
@@ -59,9 +61,10 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
 
     @Override
     @Bean(name = WEATHER_JMS_MESSAGE_LISTENER_BEAN)
-    public MessageListener createJMSMessageListener() {
+    public MessageListener createJMSMessageListener(@Value("${jms.weather.queue.pollingIntervalMs}")
+                                                    final int pollingInterval) {
         try {
-            return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN) {
+            return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
                 @Override
                 protected void handleData(List<Tiesaa> data) {
                     try {

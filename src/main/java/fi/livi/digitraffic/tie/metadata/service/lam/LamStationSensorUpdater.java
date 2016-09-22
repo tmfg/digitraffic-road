@@ -50,9 +50,9 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
                 lotjuLamStationClient.getAllLamLaskennallinenAnturis();
 
-        boolean uptaded = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
+        boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
         log.info("Update LAM RoadStationSensors end");
-        return uptaded;
+        return updated;
     }
 
     private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {
@@ -88,18 +88,18 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         }
 
         final int obsoleted = obsoleteRoadStationSensors(obsolete);
-        final int uptaded = updateRoadStationSensors(update);
+        final int updated = updateRoadStationSensors(update);
         final int inserted = insertRoadStationSensors(insert);
 
         log.info("Obsoleted " + obsoleted + " RoadStationSensors");
-        log.info("Uptaded " + uptaded + " RoadStationSensors");
+        log.info("Updated " + updated + " RoadStationSensors");
         log.info("Inserted " + inserted + " RoadStationSensors");
 
         if (insert.size() > inserted) {
             log.warn("Insert failed for " + (insert.size()-inserted) + " RoadStationSensors");
         }
 
-        return obsoleted > 0 || inserted > 0 || uptaded > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private boolean validate(LamLaskennallinenAnturiVO anturi) {

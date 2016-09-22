@@ -18,7 +18,11 @@ public class LamFreeFlowSpeedDto {
     @Id
     @JsonProperty("id")
     @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
-    private long lamId;
+    private long roadStationNaturalId;
+
+    @JsonProperty("lamNumber")
+    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
+    private long lamNaturalId;
 
     @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]", required = true)
     private double freeFlowSpeed1;
@@ -26,13 +30,7 @@ public class LamFreeFlowSpeedDto {
     @ApiModelProperty(value = "Free flow speed to direction 2 [km/h]", required = true)
     private double freeFlowSpeed2;
 
-    public long getLamId() {
-        return lamId;
-    }
 
-    public void setLamId(final long lamId) {
-        this.lamId = lamId;
-    }
 
     public double getFreeFlowSpeed1() {
         return freeFlowSpeed1;
@@ -48,5 +46,21 @@ public class LamFreeFlowSpeedDto {
 
     public void setFreeFlowSpeed2(final double freeFlowSpeed2) {
         this.freeFlowSpeed2 = freeFlowSpeed2;
+    }
+
+    public long getRoadStationNaturalId() {
+        return roadStationNaturalId;
+    }
+
+    public void setRoadStationNaturalId(long roadStationNaturalId) {
+        this.roadStationNaturalId = roadStationNaturalId;
+    }
+
+    public long getLamNaturalId() {
+        return lamNaturalId;
+    }
+
+    public void setLamNaturalId(long lamNaturalId) {
+        this.lamNaturalId = lamNaturalId;
     }
 }
