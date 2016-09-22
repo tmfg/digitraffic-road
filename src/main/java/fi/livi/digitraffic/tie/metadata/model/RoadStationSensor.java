@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -163,7 +164,7 @@ public class RoadStationSensor {
     }
 
     public void setNameFi(final String nameFi) {
-        this.nameFi = nameFi;
+        this.nameFi = StringUtils.upperCase(nameFi);
     }
 
     public String getShortNameFi() {
