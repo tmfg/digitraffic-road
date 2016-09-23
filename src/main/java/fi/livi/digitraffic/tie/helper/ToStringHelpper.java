@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
@@ -179,6 +180,23 @@ public class ToStringHelpper {
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
 
+        return sb.toString();
+    }
+
+    public static String toString(Kuva kuva) {
+        final StringBuffer sb = createStartSb(kuva);
+        JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
+        JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
+        JSON_STYLE.append(sb, "esiasennonNimi", kuva.getEsiasennonNimi(), true);
+        JSON_STYLE.append(sb, "esiasentoId", kuva.getEsiasentoId());
+        JSON_STYLE.append(sb, "kameraId", kuva.getKameraId());
+        JSON_STYLE.append(sb, "aika", kuva.getAika(), true);
+        JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
+        JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
+        JSON_STYLE.append(sb, "tieosa", kuva.isJulkinen());
+        JSON_STYLE.append(sb, "url", kuva.getUrl(), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
         return sb.toString();
     }
 
