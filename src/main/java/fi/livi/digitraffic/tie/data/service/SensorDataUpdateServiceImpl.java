@@ -79,7 +79,7 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
 
     @Transactional
     @Override
-    public void updateLamData(List<Lam> data) throws SQLException {
+    public void updateLamData(List<Lam> data) {
         OracleConnection connection = null;
         OraclePreparedStatement opsUpdate = null;
         OraclePreparedStatement opsInsert = null;
@@ -104,30 +104,32 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
                                    "append batch: %4$d ms, update/insert: %5$d ms)",
                                    rows,
-                                   (endBatch - startFilter), (endFilterStartAppend - startFilter), (endAppendStartBatch - endFilterStartAppend),
-                                   (endBatch - endAppendStartBatch)));
+                                   endBatch - startFilter,
+                                   endFilterStartAppend - startFilter,
+                                   endAppendStartBatch - endFilterStartAppend,
+                                   endBatch - endAppendStartBatch));
         } catch (Exception e) {
-
+            log.error("Error while updating lam data", e);
         } finally {
             if (opsUpdate != null) {
                 try {
                     opsUpdate.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.warn("Update OraclePreparedStatement close failed", e);
                 }
             }
             if (opsInsert != null) {
                 try {
                     opsInsert.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.warn("Insert OraclePreparedStatement close failed", e);
                 }
             }
             if (connection != null) {
                 try {
-                    connection.close();;
+                    connection.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.warn("OracleConnection close failed", e);
                 }
             }
         }
@@ -135,7 +137,7 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
 
     @Transactional
     @Override
-    public void updateWeatherData(List<Tiesaa> data) throws SQLException {
+    public void updateWeatherData(List<Tiesaa> data) {
         OracleConnection connection = null;
         OraclePreparedStatement opsUpdate = null;
         OraclePreparedStatement opsInsert = null;
@@ -160,40 +162,39 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
                                    "rows took %2$d ms (data filter: %3$d ms, " +
                                    "append batch: %4$d ms, update/insert: %5$d ms)",
                                    rows,
-                                   (endBatch - startFilter),
-                                   (endFilterStartAppend - startFilter),
-                                   (endAppendStartBatch - endFilterStartAppend),
-                                   (endBatch - endAppendStartBatch)));
+                                   endBatch - startFilter,
+                                   endFilterStartAppend - startFilter,
+                                   endAppendStartBatch - endFilterStartAppend,
+                                   endBatch - endAppendStartBatch));
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            log.error("Error while updating weather data", e);
         } finally {
             if (opsUpdate != null) {
                 try {
                     opsUpdate.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.error("Update PreparedStatement close failed", e);
                 }
             }
             if (opsInsert != null) {
                 try {
                     opsInsert.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.error("Insert PreparedStatement close failed", e);
                 }
             }
             if (connection != null) {
                 try {
-                    connection.close();;
+                    connection.close();
                 } catch (SQLException e) {
-                    // skip
+                    log.error("Connection close failed", e);
                 }
             }
         }
     }
 
-    private Collection<Lam> filterNewestLamValues(List<Lam> data) {
+    private static Collection<Lam> filterNewestLamValues(List<Lam> data) {
         // Collect newest data per station
         HashMap<Long, Lam> lamMapByLamStationLotjuId = new HashMap<Long, Lam>();
         for (Lam lam : data) {
@@ -208,7 +209,7 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
         return lamMapByLamStationLotjuId.values();
     }
 
-    private Collection<Tiesaa> filterNewestTiesaaValues(List<Tiesaa> data) {
+    private static Collection<Tiesaa> filterNewestTiesaaValues(List<Tiesaa> data) {
         // Collect newest data per station
         HashMap<Long, Tiesaa> tiesaaMapByLamStationLotjuId = new HashMap<>();
         for (Tiesaa tiesaa : data) {
@@ -224,7 +225,7 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
     }
 
 
-    private int appendLamBatchData(OraclePreparedStatement ops, Collection<Lam> lams) throws SQLException {
+    private static int appendLamBatchData(OraclePreparedStatement ops, Collection<Lam> lams) throws SQLException {
         int rows = 0;
 
         for (Lam lam : lams) {
@@ -244,7 +245,7 @@ public class SensorDataUpdateServiceImpl implements SensorDataUpdateService {
         return rows;
     }
 
-    private int appendTiesaaBatchData(OraclePreparedStatement ops, Collection<Tiesaa> tiesaas) throws SQLException {
+    private static int appendTiesaaBatchData(OraclePreparedStatement ops, Collection<Tiesaa> tiesaas) throws SQLException {
         int rows = 0;
 
         for (Tiesaa tiesaa : tiesaas) {

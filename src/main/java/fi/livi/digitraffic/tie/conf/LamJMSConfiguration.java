@@ -62,21 +62,17 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = LAM_JMS_MESSAGE_LISTENER_BEAN)
     public MessageListener createJMSMessageListener(@Value("${jms.lam.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) {
-        try {
-            return new JmsMessageListener<Lam>(Lam.class, LAM_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
-                @Override
-                protected void handleData(List<Lam> data) {
-                    try {
-                        sensorDataUpdateService.updateLamData(data);
-                    } catch (SQLException e) {
-                        log.error("Update lam data failed", e);
-                    }
+                                                    final int pollingInterval) throws JAXBException {
+        return new JmsMessageListener<Lam>(Lam.class, LAM_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+            @Override
+            protected void handleData(List<Lam> data) {
+                try {
+                    sensorDataUpdateService.updateLamData(data);
+                } catch (SQLException e) {
+                    log.error("Update lam data failed", e);
                 }
-            };
-        } catch (JAXBException e) {
-            throw new JMSInitException("Error in LAM MessageListener init", e);
-        }
+            }
+        };
     }
 
     @Override

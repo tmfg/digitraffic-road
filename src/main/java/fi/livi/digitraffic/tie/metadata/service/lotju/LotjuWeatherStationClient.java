@@ -53,26 +53,29 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
             request.setId(tiesaaAsemaLotjuId);
 
             int triesLeft = 3;
-            JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response = null;
-            while (response == null && triesLeft > 0) {
+            while (triesLeft > 0) {
                 triesLeft--;
                 try {
-                    response = (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
+                    final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response =
+                            (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
                             getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+                    final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
+                    currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
+                    counter += anturis.size();
+                    triesLeft = 0;
                 } catch (Exception fail) {
                     if (triesLeft <= 0) {
-                        throw new RuntimeException("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 5th time - giving up");
+                        throw new RuntimeException("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 3rd time - giving up");
                     }
                     try {
                         log.info("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " - " + triesLeft + " tries left");
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
+                        log.warn("Sleep interrupted", e);
                     }
                 }
             }
-            final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
-            currentRwsLotjuIdToTiesaaAnturiMap.put(tiesaaAsemaLotjuId, anturis);
-            counter += anturis.size();
+
         }
 
         log.info(FETCHED + counter + " TiesaaAnturis");

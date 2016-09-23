@@ -51,7 +51,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             log.info("Waiting 3 seconds for consumer to shut down");
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            log.error("Sleep in shutdown interrupted", e);
+            log.warn("Sleep in shutdown interrupted", e);
         }
     }
 
@@ -73,8 +73,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 TextMessage xmlMessage = (TextMessage) message;
                 String text = xmlMessage.getText();
                 StringReader sr = new StringReader(text);
-                T object = (T) jaxbUnmarshaller.unmarshal(sr);
-                return object;
+                return(T) jaxbUnmarshaller.unmarshal(sr);
             } catch (JMSException e) {
                 throw new JMSUnmarshalMessageException("Message unmarshal error in " + beanName, e);
             } catch (JAXBException e) {
@@ -110,22 +109,23 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             return blockingQueue;
         }
 
+        @Override
         public void run()
         {
             while(!shutdownCalled.get())
             {
                 try {
                     Thread.sleep(pollingIntervalMs);
-                    if (!shutdownCalled.get()) {
-                        if (blockingQueue.size() > 0) {
+                    if (!shutdownCalled.get() &&
+                        !blockingQueue.isEmpty()) {
                             LinkedList<T> targetList = new LinkedList<T>();
                             int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
                             if (drained > 0) {
                                 handleData(targetList);
                             }
-                        }
                     }
                 } catch (InterruptedException iqnore) {
+                    log.warn("Queue polling thread interrupted", iqnore);
                 } catch (Exception other) {
                     log.error("Error while handling data", other);
                 }

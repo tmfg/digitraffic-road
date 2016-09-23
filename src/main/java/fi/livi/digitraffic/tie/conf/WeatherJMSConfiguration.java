@@ -62,22 +62,18 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = WEATHER_JMS_MESSAGE_LISTENER_BEAN)
     public MessageListener createJMSMessageListener(@Value("${jms.weather.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) {
-        try {
-            return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
-                @Override
-                protected void handleData(List<Tiesaa> data) {
-                    try {
-                        sensorDataUpdateService.updateWeatherData(data);
-                    } catch (SQLException e) {
-                        log.error("Update weather data failed", e);
-                    }
-
+                                                    final int pollingInterval) throws JAXBException {
+        return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+            @Override
+            protected void handleData(List<Tiesaa> data) {
+                try {
+                    sensorDataUpdateService.updateWeatherData(data);
+                } catch (SQLException e) {
+                    log.error("Update weather data failed", e);
                 }
-            };
-        } catch (JAXBException e) {
-            throw new JMSInitException("Error in createJMSMessageListener init", e);
-        }
+
+            }
+        };
     }
 
     @Override

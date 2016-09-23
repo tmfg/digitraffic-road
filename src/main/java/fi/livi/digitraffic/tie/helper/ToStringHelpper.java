@@ -73,7 +73,7 @@ public class ToStringHelpper {
     public static String toStringFull(final Object object, final String...secretFields) {
         ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
             @Override
-            protected Object getValue(Field field) throws IllegalArgumentException, IllegalAccessException {
+            protected Object getValue(Field field) throws IllegalAccessException {
                 for (String excludeFieldName : secretFields) {
                     if (field.getName().equals(excludeFieldName)) {
                         return "*****";

@@ -40,8 +40,6 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
     public List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
 
-//        log.info("Fetching LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
-
         final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
 
         final ObjectFactory objectFactory = new ObjectFactory();
@@ -52,7 +50,6 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
                     getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
         final List<LamLaskennallinenAnturiVO> anturis = response.getValue().getLamlaskennallisetanturit();
 
-//        log.info(FETCHED + anturis.size() + " LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
         return anturis;
     }
 

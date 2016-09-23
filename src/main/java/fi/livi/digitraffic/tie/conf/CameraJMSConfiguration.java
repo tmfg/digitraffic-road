@@ -62,21 +62,17 @@ public class CameraJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = CAMERA_JMS_MESSAGE_LISTENER_BEAN)
     public MessageListener createJMSMessageListener(@Value("${jms.camera.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) {
-        try {
-            return new JmsMessageListener<Kuva>(Kuva.class, CAMERA_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
-                @Override
-                protected void handleData(final List<Kuva> data) {
-                    try {
-                        cameraDataUpdateService.updateCameraData(data);
-                    } catch (SQLException e) {
-                        log.error("Update lam data failed", e);
-                    }
+                                                    final int pollingInterval) throws JAXBException {
+        return new JmsMessageListener<Kuva>(Kuva.class, CAMERA_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+            @Override
+            protected void handleData(final List<Kuva> data) {
+                try {
+                    cameraDataUpdateService.updateCameraData(data);
+                } catch (SQLException e) {
+                    log.error("Update lam data failed", e);
                 }
-            };
-        } catch (JAXBException e) {
-            throw new JMSInitException("Error in LAM MessageListener init", e);
-        }
+            }
+        };
     }
 
     @Override

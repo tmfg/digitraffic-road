@@ -157,23 +157,22 @@ public class CameraDataUpdateService {
         long endMove = System.currentTimeMillis();
         final long timeMove = endMove - startMove;
         log.info(String.format("File handling took %1$d ms (%2$d bytes, read %3$d ms, write to disk %4$d ms, and move to dst %5$d ms, open streams %6$d ms",
-                (endMove-start), bytesTotal, timeReadMs, timeWriteMs, timeMove, endOpenStreams-startOpenStreams));
+                endMove-start, bytesTotal, timeReadMs, timeWriteMs, timeMove, endOpenStreams-startOpenStreams));
     }
 
     private static FileOutputStream openOutputStream(File file) throws IOException {
+        String MESSAGE_START = "File '";
         if (file.exists()) {
             if (file.isDirectory()) {
-                throw new IOException("File '" + file + "' exists but is a directory");
+                throw new IOException(MESSAGE_START + file + "' exists but is a directory");
             }
-            if (file.canWrite() == false) {
-                throw new IOException("File '" + file + "' cannot be written to");
+            if (!file.canWrite()) {
+                throw new IOException(MESSAGE_START + file + "' cannot be written to");
             }
         } else {
             File parent = file.getParentFile();
-            if (parent != null && parent.exists() == false) {
-                if (parent.mkdirs() == false) {
-                    throw new IOException("File '" + file + "' could not be created");
-                }
+            if (parent != null && !parent.exists() && !parent.mkdirs()) {
+                    throw new IOException(MESSAGE_START + file + "' could not be created");
             }
         }
         return new FileOutputStream(file);
