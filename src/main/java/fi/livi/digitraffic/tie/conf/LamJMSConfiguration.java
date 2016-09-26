@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -66,11 +65,7 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
         return new JmsMessageListener<Lam>(Lam.class, LAM_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
             @Override
             protected void handleData(List<Lam> data) {
-                try {
-                    sensorDataUpdateService.updateLamData(data);
-                } catch (SQLException e) {
-                    log.error("Update lam data failed", e);
-                }
+                sensorDataUpdateService.updateLamData(data);
             }
         };
     }

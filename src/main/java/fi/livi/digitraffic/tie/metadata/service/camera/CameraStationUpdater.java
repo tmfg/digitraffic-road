@@ -111,7 +111,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                 log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
             }
         }
-        return currentCameraPresetsWithOutRoadStation.size() > 0;
+        return !currentCameraPresetsWithOutRoadStation.isEmpty();
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
@@ -235,7 +235,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                 log.info("Updated CameraPreset:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(cameraPreset));
             }
 
-            if (rs.getRoadAddress() != null && rs.getRoadAddress().getId() == null) {
+            if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
                 log.info("Created new RoadAddress " + rs.getRoadAddress());
             }

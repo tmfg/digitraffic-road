@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -66,12 +65,7 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
         return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
             @Override
             protected void handleData(List<Tiesaa> data) {
-                try {
-                    sensorDataUpdateService.updateWeatherData(data);
-                } catch (SQLException e) {
-                    log.error("Update weather data failed", e);
-                }
-
+                sensorDataUpdateService.updateWeatherData(data);
             }
         };
     }

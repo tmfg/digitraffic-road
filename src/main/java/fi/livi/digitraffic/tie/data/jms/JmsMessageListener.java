@@ -116,14 +116,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             {
                 try {
                     Thread.sleep(pollingIntervalMs);
-                    if (!shutdownCalled.get() &&
-                        !blockingQueue.isEmpty()) {
-                            LinkedList<T> targetList = new LinkedList<T>();
-                            int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
-                            if (drained > 0) {
-                                handleData(targetList);
-                            }
-                    }
+                    drainQueue();
                 } catch (InterruptedException iqnore) {
                     log.warn("Queue polling thread interrupted", iqnore);
                 } catch (Exception other) {
@@ -131,6 +124,17 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 }
             }
             log.info("Shutdown " + beanName + " " + getClass().getSimpleName() + " thread");
+        }
+
+        private void drainQueue() {
+            if ( !shutdownCalled.get() &&
+                 !blockingQueue.isEmpty() ) {
+                    LinkedList<T> targetList = new LinkedList<T>();
+                    int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
+                    if (drained > 0) {
+                        handleData(targetList);
+                    }
+            }
         }
     }
 }

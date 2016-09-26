@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
@@ -195,18 +197,21 @@ public abstract class AbstractJMSConfiguration {
     }
 
     private static String resolveErrorByCode(String errCode) {
-        try {
-            for (Field field : ErrorCodes.class.getDeclaredFields()) {
-                if ( Modifier.isStatic(field.getModifiers()) ) {
-                    Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
-                    if (value != null && StringUtils.equals(errCode, "" + value)) {
-                        return ErrorCodes.class.getSimpleName() + "." + field.getName();
-
+        Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
+                .filter(field -> {
+                    try {
+                        if (Modifier.isStatic(field.getModifiers())) {
+                            Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
+                            return value != null && StringUtils.equals(errCode, "" + value);
+                        }
+                    } catch (Exception e) {
+                        return false;
                     }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Code resolving failed", e);
+                    return false;
+                })
+                .findFirst();
+        if (errorField.isPresent()) {
+            return ErrorCodes.class.getSimpleName() + "." + errorField.get().getName();
         }
         return null;
     }

@@ -34,6 +34,7 @@ public class CameraDataUpdateService {
     private CameraPresetService cameraPresetService;
 
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    private static final String OPEN_OS_FAIL_MESSAGE_START = "File '";
 
     @Autowired
     CameraDataUpdateService(@Value("${weathercam.import-dir}")
@@ -161,21 +162,19 @@ public class CameraDataUpdateService {
     }
 
     private static FileOutputStream openOutputStream(File file) throws IOException {
-        String MESSAGE_START = "File '";
         if (file.exists()) {
             if (file.isDirectory()) {
-                throw new IOException(MESSAGE_START + file + "' exists but is a directory");
+                throw new IOException(OPEN_OS_FAIL_MESSAGE_START + file + "' exists but is a directory");
             }
             if (!file.canWrite()) {
-                throw new IOException(MESSAGE_START + file + "' cannot be written to");
+                throw new IOException(OPEN_OS_FAIL_MESSAGE_START + file + "' cannot be written to");
             }
         } else {
             File parent = file.getParentFile();
             if (parent != null && !parent.exists() && !parent.mkdirs()) {
-                    throw new IOException(MESSAGE_START + file + "' could not be created");
+                    throw new IOException(OPEN_OS_FAIL_MESSAGE_START + file + "' could not be created");
             }
         }
         return new FileOutputStream(file);
     }
-
 }

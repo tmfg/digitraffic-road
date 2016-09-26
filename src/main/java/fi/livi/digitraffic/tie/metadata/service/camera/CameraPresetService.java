@@ -62,9 +62,9 @@ public class CameraPresetService {
         MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
-                onlyUpdateInfo == false ?
-                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId() :
-                    Collections.emptyList(),
+                onlyUpdateInfo ?
+                    Collections.emptyList() :
+                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(),
                 updated != null ? updated.getUpdated() : null);
     }
 

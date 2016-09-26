@@ -102,7 +102,7 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
-    private boolean validate(LamLaskennallinenAnturiVO anturi) {
+    private static boolean validate(LamLaskennallinenAnturiVO anturi) {
         return anturi.getId() != null && anturi.getVanhaId() != null;
     }
 

@@ -107,7 +107,6 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
             } else {
                 invalid++;
             }
-
         }
 
         if (invalid > 0) {
@@ -155,7 +154,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
                 log.info("Updated WeatherStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(rws));
             }
 
-            if (rs.getRoadAddress() != null && rs.getRoadAddress().getId() == null) {
+            if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
                 log.info("Created new RoadAddress " + rs.getRoadAddress());
             }
@@ -206,8 +205,9 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
 
             updateWeatherStationAttributes(tsa, rws);
 
-            if (rs.getRoadAddress() != null) {
+            if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
+                log.info("Created new RoadAddress " + rs.getRoadAddress());
             }
             roadStationService.save(rws.getRoadStation());
             rws = weatherStationService.save(rws);

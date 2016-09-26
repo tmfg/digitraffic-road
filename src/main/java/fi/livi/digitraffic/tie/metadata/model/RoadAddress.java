@@ -132,6 +132,7 @@ public class RoadAddress {
     private RoadStation roadStation;
 
     public RoadAddress() {
+        // Possibility to initialize empty road address
     }
 
     public RoadAddress(final RoadStation roadStation) {

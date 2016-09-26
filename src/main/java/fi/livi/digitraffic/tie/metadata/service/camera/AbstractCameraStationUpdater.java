@@ -84,13 +84,6 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-//    public static long convertCameraIdToVanhaId(final String cameraId) {
-//        // Starts either C0 or C
-//        String vanhaId = StringUtils.removeStart(cameraId, "C0");
-//        vanhaId = StringUtils.removeStart(vanhaId, "C");
-//        return Long.parseLong(vanhaId);
-//    }
-
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {
         final String vanha = vanhaId.toString();
         return StringUtils.leftPad(vanha, 6, "C00000");

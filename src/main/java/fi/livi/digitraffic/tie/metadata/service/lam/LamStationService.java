@@ -1,36 +1,124 @@
 package fi.livi.digitraffic.tie.metadata.service.lam;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.metadata.converter.LamStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.dao.LamStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
-public interface LamStationService {
+@Service
+public class LamStationService {
 
-    /**
-     * @return current non obsolete lam stations metadata as LamStationFeatureCollection
-     */
-    LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(boolean onlyUpdateInfo);
+    private static final Logger log = LoggerFactory.getLogger(LamStationService.class);
+    private final LamStationRepository lamStationRepository;
+    private StaticDataStatusService staticDataStatusService;
 
-    LamStation save(final LamStation lamStation);
-
-    Map<Long, LamStation> findAllLamStationsMappedByByLamNaturalId();
+    @Autowired
+    public LamStationService(final LamStationRepository lamStationRepository,
+                             final StaticDataStatusService staticDataStatusService) {
+        this.lamStationRepository = lamStationRepository;
+        this.staticDataStatusService = staticDataStatusService;
+    }
 
     @Transactional(readOnly = true)
-    Map<Long, LamStation> findAllLamStationsMappedByByRoadStationNaturalId();
+    public LamStationFeatureCollection findAllNonObsoletePublicLamStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
-    LamStation findByLotjuId(long lamStationLotjuId);
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
 
-    Map<Long, LamStation> findAllLamStationsByMappedByLotjuId();
+        return LamStationMetadata2FeatureConverter.convert(
+                onlyUpdateInfo ?
+                    Collections.emptyList() :
+                    lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId(),
+                updated != null ? updated.getUpdated() : null);
+    }
 
-    Map<Long, LamStation> findLamStationsMappedByLotjuId(List<Long> lamStationLotjuIds);
+    @Transactional
+    public LamStation save(final LamStation lamStation) {
+        final LamStation lam = lamStationRepository.save(lamStation);
+        lamStationRepository.flush();
+        return lam;
+    }
 
-    LamStation findByRoadStationNaturalId(long roadStationNaturalId);
+    @Transactional(readOnly = true)
+    public Map<Long, LamStation> findAllLamStationsMappedByByLamNaturalId() {
+        final List<LamStation> allStations = lamStationRepository.findAll();
+        final Map<Long, LamStation> stationMap = new HashMap<>();
 
-    boolean lamStationExistsWithRoadStationNaturalId(long roadStationNaturalId);
+        for(final LamStation lam : allStations) {
+            stationMap.put(lam.getNaturalId(), lam);
+        }
 
-    boolean lamStationExistsWithNaturalId(long roadStationNaturalId);
+        return stationMap;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, LamStation> findAllLamStationsMappedByByRoadStationNaturalId() {
+        final List<LamStation> allStations = lamStationRepository.findAll();
+        final Map<Long, LamStation> stationMap = new HashMap<>();
+
+        for(final LamStation lam : allStations) {
+            stationMap.put(lam.getRoadStationNaturalId(), lam);
+        }
+
+        return stationMap;
+    }
+
+    @Transactional(readOnly = true)
+    public LamStation findByLotjuId(long lamStationLotjuId) {
+        return lamStationRepository.findByLotjuId(lamStationLotjuId);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, LamStation> findAllLamStationsByMappedByLotjuId() {
+        final Map<Long, LamStation> map = new HashMap<>();
+        final List<LamStation> all = lamStationRepository.findAll();
+        for (final LamStation lamStation : all) {
+            if (lamStation.getLotjuId() != null) {
+                map.put(lamStation.getLotjuId(), lamStation);
+            } else {
+                log.warn("Null lotjuId: " + lamStation);
+            }
+        }
+        return map;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, LamStation> findLamStationsMappedByLotjuId(List<Long> lamStationLotjuIds) {
+        final List<LamStation> all = lamStationRepository.findByLotjuIdIn(lamStationLotjuIds);
+        return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+    }
+
+    @Transactional(readOnly = true)
+    public LamStation findByRoadStationNaturalId(long roadStationNaturalId) {
+        LamStation entity = lamStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
+        if (entity == null) {
+            throw new ObjectNotFoundException(LamStation.class, roadStationNaturalId);
+        }
+        return entity;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean lamStationExistsWithRoadStationNaturalId(long roadStationNaturalId) {
+        return lamStationRepository.lamExistsWithRoadStationNaturalId(roadStationNaturalId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean lamStationExistsWithNaturalId(long lamNaturalId) {
+        return lamStationRepository.lamExistsWithLamNaturalId(lamNaturalId);
+    }
 }

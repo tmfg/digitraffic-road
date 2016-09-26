@@ -90,14 +90,6 @@ public class RoadStation {
     private LocalDateTime repairMaintenanceDate;
     private LocalDateTime annualMaintenanceDate;
 
-    protected RoadStation() {
-    }
-
-    public RoadStation(final RoadStationType type) {
-        setType(type);
-    }
-
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
     @Fetch(FetchMode.JOIN)
@@ -109,6 +101,13 @@ public class RoadStation {
                joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
     List<RoadStationSensor> roadStationSensors;
+
+    protected RoadStation() {
+    }
+
+    public RoadStation(final RoadStationType type) {
+        setType(type);
+    }
 
     public Long getId() {
         return id;

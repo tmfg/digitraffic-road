@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.weather;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -116,7 +117,7 @@ public class WeatherStationProperties extends RoadStationProperties {
         return master;
     }
 
-    private static class RSComparator implements Comparator<RoadStationSensor> {
+    private static class RSComparator implements Comparator<RoadStationSensor>, Serializable {
         @Override
         public int compare(final RoadStationSensor o1, final RoadStationSensor o2) {
             return Long.compare(o1.getNaturalId(), o2.getNaturalId());

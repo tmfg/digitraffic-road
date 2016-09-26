@@ -176,8 +176,9 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
 
             updateLamStationAttributes(la, roadDistrict, newLamStation);
 
-            if (rs.getRoadAddress() != null) {
+            if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
+                log.info("Created new RoadAddress " + rs.getRoadAddress());
             }
             roadStationService.save(rs);
             lamStationService.save(newLamStation);
@@ -248,7 +249,7 @@ public class LamStationUpdater extends AbstractLamStationAttributeUpdater {
                 counter++;
                 log.info("Updated LamStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(ls));
             }
-            if (rs.getRoadAddress() != null && rs.getRoadAddress().getId() == null) {
+            if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
                 log.info("Created new RoadAddress " + rs.getRoadAddress());
             }
