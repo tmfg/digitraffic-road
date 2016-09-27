@@ -56,7 +56,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
     @Before
     public void setUpTestData() {
         // Currently slow ass hell
-        // TOD: Generate data with direct sql
+        // TODO: Generate data with direct sql
 
         // Generate test-data: WeatherStations with sensors
         Map<Long, WeatherStation> lamsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
@@ -185,7 +185,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000;
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.5);
         final List<Tiesaa> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
