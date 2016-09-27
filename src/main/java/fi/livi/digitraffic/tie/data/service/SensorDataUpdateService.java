@@ -99,19 +99,21 @@ public class SensorDataUpdateService {
             final int rows = appendLamBatchData(opsUpdate, newestLamData);
             appendLamBatchData(opsInsert, newestLamData);
 
-            final long endAppendStartBatch = System.currentTimeMillis();
+            final long endAppendStartUpdate = System.currentTimeMillis();
             opsUpdate.executeBatch();
+            final long endUpdateStartInsert = System.currentTimeMillis();
             opsInsert.executeBatch();
-            final long endBatch = System.currentTimeMillis();
+            final long endInsert = System.currentTimeMillis();
 
             log.info(String.format("Update lam sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update/insert: %5$d ms)",
+                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
                                    rows,
-                                   endBatch - startFilter,
-                                   endFilterStartAppend - startFilter,
-                                   endAppendStartBatch - endFilterStartAppend,
-                                   endBatch - endAppendStartBatch));
+                                   endInsert - startFilter, // total
+                                   endFilterStartAppend - startFilter, // filter data
+                                   endAppendStartUpdate - endFilterStartAppend, // append data
+                                   endUpdateStartInsert - endAppendStartUpdate, // update
+                                   endInsert-endUpdateStartInsert)); // insert
             return true;
         } catch (Exception e) {
             log.error("Error while updating lam data", e);
@@ -163,19 +165,21 @@ public class SensorDataUpdateService {
             final int rows = appendTiesaaBatchData(opsUpdate, newestTiesaaData);
             appendTiesaaBatchData(opsInsert, newestTiesaaData);
 
-            final long endAppendStartBatch = System.currentTimeMillis();
-            opsUpdate.executeBatch(); //479 ms
-            opsInsert.executeBatch(); // 276 ms
-            final long endBatch = System.currentTimeMillis();
+            final long endAppendStartUpdate = System.currentTimeMillis();
+            opsUpdate.executeBatch();
+            final long endUpdateStartInsert = System.currentTimeMillis();
+            opsInsert.executeBatch();
+            final long endInsert = System.currentTimeMillis();
 
-            log.info(String.format("Update weather sensors data for %1$d "  +
-                                   "rows took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update/insert: %5$d ms)",
+            log.info(String.format("Update weather sensors data for %1$d " +
+                                   "rows, took %2$d ms (data filter: %3$d ms, " +
+                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
                                    rows,
-                                   endBatch - startFilter,
-                                   endFilterStartAppend - startFilter,
-                                   endAppendStartBatch - endFilterStartAppend,
-                                   endBatch - endAppendStartBatch));
+                                   endInsert - startFilter, // total
+                                   endFilterStartAppend - startFilter, // filter data
+                                   endAppendStartUpdate - endFilterStartAppend, // append data
+                                   endUpdateStartInsert - endAppendStartUpdate, // update
+                                   endInsert-endUpdateStartInsert)); // insert
             return true;
         } catch (Exception e) {
             log.error("Error while updating weather data", e);
