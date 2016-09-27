@@ -8,8 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.xml.bind.JAXBException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,8 +25,6 @@ import progress.message.jclient.Topic;
 @ConditionalOnProperty(name = "jms.lam.enabled")
 @Configuration
 public class LamJMSConfiguration extends AbstractJMSConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(LamJMSConfiguration.class);
 
     private static final String LAM_JMS_PARAMS_BEAN = "lamJMSParameters";
     private static final String LAM_JMS_MESSAGE_LISTENER_BEAN = "lamJMSMessageListener";

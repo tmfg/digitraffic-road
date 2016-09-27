@@ -34,7 +34,7 @@ import progress.message.jclient.QueueConnectionFactory;
 
 public abstract class AbstractJMSConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractJMSConfiguration.class);
+    protected static final Logger log = LoggerFactory.getLogger(AbstractJMSConfiguration.class);
     protected final ConfigurableApplicationContext applicationContext;
     private final int jmsReconnectionDelayInSeconds;
     private final int jmsReconnectionTries;
