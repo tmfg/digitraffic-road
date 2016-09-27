@@ -51,7 +51,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             log.info("Waiting 3 seconds for consumer to shut down");
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            log.warn("Sleep in shutdown interrupted", e);
+            log.debug("Sleep in shutdown interrupted", e);
         }
     }
 
@@ -118,7 +118,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                     Thread.sleep(pollingIntervalMs);
                     drainQueue();
                 } catch (InterruptedException iqnore) {
-                    log.warn("Queue polling thread interrupted", iqnore);
+                    log.debug("Queue polling thread interrupted", iqnore);
                 } catch (Exception other) {
                     log.error("Error while handling data", other);
                 }
@@ -132,6 +132,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                     LinkedList<T> targetList = new LinkedList<T>();
                     int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
                     if (drained > 0) {
+                        log.info("Drain " + beanName + " queue of size " + drained);
                         handleData(targetList);
                     }
             }

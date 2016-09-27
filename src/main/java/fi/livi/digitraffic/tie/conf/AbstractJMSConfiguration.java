@@ -185,7 +185,7 @@ public abstract class AbstractJMSConfiguration {
                 try {
                     Thread.sleep((long)jmsReconnectionDelayInSeconds * 1000);
                 } catch (InterruptedException ignore) {
-                    log.warn("Interrupted " + jmsParameters.getMessageListenerBeanName());
+                    log.debug("Interrupted " + jmsParameters.getMessageListenerBeanName(), ignore);
                 }
             } else {
                 log.error("Reconnect failed, no tries left. Shutting down application.");

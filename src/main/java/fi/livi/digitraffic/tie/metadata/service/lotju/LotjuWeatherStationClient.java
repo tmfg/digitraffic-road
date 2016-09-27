@@ -71,7 +71,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
                         log.info("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " - " + triesLeft + " tries left");
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
-                        log.warn("Sleep interrupted", e);
+                        log.debug("Sleep interrupted", e);
                     }
                 }
             }
