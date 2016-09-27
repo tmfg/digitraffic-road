@@ -94,7 +94,7 @@ public abstract class AbstractJMSConfiguration {
             QueueConnection connection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
             JMSExceptionListener jmsExceptionListener =
                     new JMSExceptionListener(connection,
-                            jmsParameters);
+                                             jmsParameters);
             connection.setExceptionListener(jmsExceptionListener);
 
             log.info("Connection created for " + jmsParameters.getMessageListenerBeanName() + ": " + connectionFactory.toString());
@@ -105,7 +105,7 @@ public abstract class AbstractJMSConfiguration {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
             }
 
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             final MessageConsumer consumer = session.createConsumer(destination);
 
             consumer.setMessageListener(jmsMessageListener);

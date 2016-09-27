@@ -25,8 +25,8 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 @Component
 public abstract class JmsMessageListener<T> implements MessageListener {
 
-    private static final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
-    private final JAXBContext jaxbTiesaaContext;
+    private final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
+    private final JAXBContext jaxbContext;
     private final String beanName;
     private final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<T> blockingQueue;
@@ -34,9 +34,9 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
     public JmsMessageListener(final Class<T> typeClass, final String beanName, final long pollingIntervalMs) throws JAXBException {
-        jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
+        jaxbContext = JAXBContext.newInstance(typeClass);
         this.beanName = beanName;
-        jaxbUnmarshaller = jaxbTiesaaContext.createUnmarshaller();
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         jmsMessageConsumer = new JMSMessageConsumer(pollingIntervalMs);
         blockingQueue = jmsMessageConsumer.getBlockingQueue();
         log.info("Initialized JmsMessageListener for " + beanName + " with pollingInterval " + pollingIntervalMs + " ms");
@@ -112,11 +112,17 @@ public abstract class JmsMessageListener<T> implements MessageListener {
         @Override
         public void run()
         {
+            long prevTookMs = 0;
             while(!shutdownCalled.get())
             {
                 try {
-                    Thread.sleep(pollingIntervalMs);
-                    drainQueue();
+                    Thread.sleep(Math.max(pollingIntervalMs-prevTookMs, 0));
+                    long start = System.currentTimeMillis();
+                    int drained = drainQueue();
+                    prevTookMs = System.currentTimeMillis() - start;
+                    if (drained > 0) {
+                        log.info(beanName + " drainQueue of size " + drained + " took " + prevTookMs + " ms");
+                    }
                 } catch (InterruptedException iqnore) {
                     log.debug("Queue polling thread interrupted", iqnore);
                 } catch (Exception other) {
@@ -126,16 +132,17 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             log.info("Shutdown " + beanName + " " + getClass().getSimpleName() + " thread");
         }
 
-        private void drainQueue() {
+        private int drainQueue() {
             if ( !shutdownCalled.get() &&
                  !blockingQueue.isEmpty() ) {
                     LinkedList<T> targetList = new LinkedList<T>();
                     int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
                     if (drained > 0) {
-                        log.info("Drain " + beanName + " queue of size " + drained);
                         handleData(targetList);
                     }
+                    return drained;
             }
+            return 0;
         }
     }
 }
