@@ -84,14 +84,10 @@ public class SensorDataUpdateService {
      */
     @Transactional
     public boolean updateLamData(List<Lam> data) {
-        OracleConnection connection = null;
-        OraclePreparedStatement opsUpdate = null;
-        OraclePreparedStatement opsInsert = null;
 
-        try {
-            connection = (OracleConnection) dataSource.getConnection();
-            opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
+        try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
+             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
+             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Lam> newestLamData = filterNewestLamValues(data);
@@ -117,28 +113,6 @@ public class SensorDataUpdateService {
             return true;
         } catch (Exception e) {
             log.error("Error while updating lam data", e);
-        } finally {
-            if (opsUpdate != null) {
-                try {
-                    opsUpdate.close();
-                } catch (SQLException e) {
-                    log.warn("Update OraclePreparedStatement close failed", e);
-                }
-            }
-            if (opsInsert != null) {
-                try {
-                    opsInsert.close();
-                } catch (SQLException e) {
-                    log.warn("Insert OraclePreparedStatement close failed", e);
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.warn("OracleConnection close failed", e);
-                }
-            }
         }
         return false;
     }
@@ -150,14 +124,10 @@ public class SensorDataUpdateService {
      */
     @Transactional
     public boolean updateWeatherData(List<Tiesaa> data) {
-        OracleConnection connection = null;
-        OraclePreparedStatement opsUpdate = null;
-        OraclePreparedStatement opsInsert = null;
 
-        try {
-            connection = (OracleConnection) dataSource.getConnection();
-            opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-            opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT);
+        try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
+             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
+             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
@@ -183,28 +153,6 @@ public class SensorDataUpdateService {
             return true;
         } catch (Exception e) {
             log.error("Error while updating weather data", e);
-        } finally {
-            if (opsUpdate != null) {
-                try {
-                    opsUpdate.close();
-                } catch (SQLException e) {
-                    log.error("Update PreparedStatement close failed", e);
-                }
-            }
-            if (opsInsert != null) {
-                try {
-                    opsInsert.close();
-                } catch (SQLException e) {
-                    log.error("Insert PreparedStatement close failed", e);
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Connection close failed", e);
-                }
-            }
         }
         return false;
     }

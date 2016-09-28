@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -42,4 +43,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     LocalDateTime getLatestMeasurementTime();
 
     CameraPreset findCameraPresetByPresetId(String presetId);
+
+    List<CameraPreset> findCameraPresetByPresetIdIn(Collection<String> presetIds);
 }

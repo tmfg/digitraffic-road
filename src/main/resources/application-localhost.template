@@ -38,9 +38,7 @@ jms.weather.inQueue=<weather-topic>
 jms.lam.inQueue=<lam-topic>
 jms.camera.inQueue=<camera-topic>
 
-jms.weather.queue.pollingIntervalMs = 1000
-jms.lam.queue.pollingIntervalMs = 1000
-jms.camera.queue.pollingIntervalMs = 100
+jms.queue.pollingIntervalMs = 100
 
 # Services enabled/disabled
 
