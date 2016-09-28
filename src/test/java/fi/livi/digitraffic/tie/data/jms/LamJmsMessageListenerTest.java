@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -164,11 +163,7 @@ public class LamJmsMessageListenerTest extends MetadataTest {
                     TestTransaction.end();
                 }
                 TestTransaction.start();
-                try {
-                    sensorDataUpdateService.updateLamData(data);
-                } catch (SQLException e) {
-                    throw new RuntimeException("FAIL" + e);
-                }
+                Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data));
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
                 long end = System.currentTimeMillis();

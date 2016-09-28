@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
@@ -16,6 +19,7 @@ import javax.jms.Session;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,13 +34,12 @@ import progress.message.jclient.QueueConnectionFactory;
 
 public abstract class AbstractJMSConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractJMSConfiguration.class);
+    protected static final Logger log = LoggerFactory.getLogger(AbstractJMSConfiguration.class);
     protected final ConfigurableApplicationContext applicationContext;
     private final int jmsReconnectionDelayInSeconds;
     private final int jmsReconnectionTries;
     private AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private JMSExceptionListener currentJmsExceptionListener;
-    private final String lock = "LOCK";
 
     public AbstractJMSConfiguration(final ConfigurableApplicationContext applicationContext,
                                     final int jmsReconnectionDelayInSeconds,
@@ -68,7 +71,7 @@ public abstract class AbstractJMSConfiguration {
     }
 
     public abstract Destination createJMSDestinationBean(final String jmsInQueue) throws JMSException;
-    public abstract MessageListener createJMSMessageListener(final int pollingInterval);
+    public abstract MessageListener createJMSMessageListener(final int pollingInterval) throws JAXBException;
     public abstract JMSParameters createJMSParameters(String jmsUserId, String jmsPassword);
     public abstract Connection createJmsConnection();
 
@@ -91,7 +94,7 @@ public abstract class AbstractJMSConfiguration {
             QueueConnection connection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
             JMSExceptionListener jmsExceptionListener =
                     new JMSExceptionListener(connection,
-                            jmsParameters);
+                                             jmsParameters);
             connection.setExceptionListener(jmsExceptionListener);
 
             log.info("Connection created for " + jmsParameters.getMessageListenerBeanName() + ": " + connectionFactory.toString());
@@ -102,7 +105,7 @@ public abstract class AbstractJMSConfiguration {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
             }
 
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             final MessageConsumer consumer = session.createConsumer(destination);
 
             consumer.setMessageListener(jmsMessageListener);
@@ -160,23 +163,9 @@ public abstract class AbstractJMSConfiguration {
 
                 log.info("Try to reconnect... (tries left " + triesLeft + ")");
                 triesLeft--;
-                try {
-                    startMessagelistener(jmsParameters);
-                    log.info("Reconnect success " + jmsParameters.getMessageListenerBeanName());
+                boolean success = tryToReconnect(jmsParameters, triesLeft);
+                if (success) {
                     triesLeft = 0;
-                } catch (Exception ex) {
-                    log.error("Reconnect failed (tries left " + triesLeft + ", trying again in " + jmsReconnectionDelayInSeconds + " seconds)", ex);
-                    if (triesLeft > 0 && !shutdownCalled.get()) {
-                        try {
-                            Thread.sleep((long)jmsReconnectionDelayInSeconds * 1000);
-                        } catch (InterruptedException ignore) {
-                            log.warn("Interrupted " + jmsParameters.getMessageListenerBeanName());
-                        }
-                    } else {
-                        log.error("Reconnect failed, no tries left. Shutting down application.");
-                        // If reconnection fails too many times shut down whole application
-                        applicationContext.close();
-                    }
                 }
             }
             if (triesLeft > 0 && shutdownCalled.get()) {
@@ -185,18 +174,44 @@ public abstract class AbstractJMSConfiguration {
         }
     }
 
-    private static String resolveErrorByCode(String errCode) {
+    protected boolean tryToReconnect(JMSParameters jmsParameters, final int triesLeft) {
         try {
-            ErrorCodes errorCodes = new ErrorCodes();
-            for (Field field : ErrorCodes.class.getDeclaredFields()) {
-                field.setAccessible(true); // Modifier to public
-                Object value = field.get(errorCodes);
-                if (value != null && StringUtils.equals(errCode, "" + value)) {
-                    return ErrorCodes.class.getSimpleName() + "." + field.getName();
+            startMessagelistener(jmsParameters);
+            log.info("Reconnect success " + jmsParameters.getMessageListenerBeanName());
+            return true;
+        } catch (Exception ex) {
+            log.error("Reconnect failed (tries left " + triesLeft + ", trying again in " + jmsReconnectionDelayInSeconds + " seconds)", ex);
+            if (triesLeft > 0 && !shutdownCalled.get()) {
+                try {
+                    Thread.sleep((long)jmsReconnectionDelayInSeconds * 1000);
+                } catch (InterruptedException ignore) {
+                    log.debug("Interrupted " + jmsParameters.getMessageListenerBeanName(), ignore);
                 }
+            } else {
+                log.error("Reconnect failed, no tries left. Shutting down application.");
+                // If reconnection fails too many times shut down whole application
+                applicationContext.close();
             }
-        } catch (Exception e) {
-            // nothing
+        }
+        return false;
+    }
+
+    private static String resolveErrorByCode(String errCode) {
+        Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
+                .filter(field -> {
+                    try {
+                        if (Modifier.isStatic(field.getModifiers())) {
+                            Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
+                            return value != null && StringUtils.equals(errCode, "" + value);
+                        }
+                    } catch (Exception e) {
+                        return false;
+                    }
+                    return false;
+                })
+                .findFirst();
+        if (errorField.isPresent()) {
+            return ErrorCodes.class.getSimpleName() + "." + errorField.get().getName();
         }
         return null;
     }

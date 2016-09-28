@@ -135,7 +135,7 @@ public class RoadStationSensor {
     }
 
     public boolean obsolete() {
-        if (obsoleteDate == null || obsolete == false) {
+        if (obsoleteDate == null || !obsolete ) {
             obsoleteDate = LocalDate.now();
             obsolete = true;
             return true;

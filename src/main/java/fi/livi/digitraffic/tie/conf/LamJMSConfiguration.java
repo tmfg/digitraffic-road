@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -9,8 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.xml.bind.JAXBException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,8 +25,6 @@ import progress.message.jclient.Topic;
 @ConditionalOnProperty(name = "jms.lam.enabled")
 @Configuration
 public class LamJMSConfiguration extends AbstractJMSConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(LamJMSConfiguration.class);
 
     private static final String LAM_JMS_PARAMS_BEAN = "lamJMSParameters";
     private static final String LAM_JMS_MESSAGE_LISTENER_BEAN = "lamJMSMessageListener";
@@ -62,21 +57,13 @@ public class LamJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = LAM_JMS_MESSAGE_LISTENER_BEAN)
     public MessageListener createJMSMessageListener(@Value("${jms.lam.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) {
-        try {
-            return new JmsMessageListener<Lam>(Lam.class, LAM_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
-                @Override
-                protected void handleData(List<Lam> data) {
-                    try {
-                        sensorDataUpdateService.updateLamData(data);
-                    } catch (SQLException e) {
-                        log.error("Update lam data failed", e);
-                    }
-                }
-            };
-        } catch (JAXBException e) {
-            throw new JMSInitException("Error in LAM MessageListener init", e);
-        }
+                                                    final int pollingInterval) throws JAXBException {
+        return new JmsMessageListener<Lam>(Lam.class, LAM_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+            @Override
+            protected void handleData(List<Lam> data) {
+                sensorDataUpdateService.updateLamData(data);
+            }
+        };
     }
 
     @Override

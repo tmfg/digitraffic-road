@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -9,8 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.xml.bind.JAXBException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,8 +25,6 @@ import progress.message.jclient.Topic;
 @ConditionalOnProperty(name = "jms.weather.enabled")
 @Configuration
 public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(WeatherJMSConfiguration.class);
 
     private static final String WEATHER_JMS_PARAMS_BEAN = "weatherJMSParameters";
     private static final String WEATHER_JMS_MESSAGE_LISTENER_BEAN = "weatherJMSMessageListener";
@@ -62,22 +57,13 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = WEATHER_JMS_MESSAGE_LISTENER_BEAN)
     public MessageListener createJMSMessageListener(@Value("${jms.weather.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) {
-        try {
-            return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
-                @Override
-                protected void handleData(List<Tiesaa> data) {
-                    try {
-                        sensorDataUpdateService.updateWeatherData(data);
-                    } catch (SQLException e) {
-                        log.error("Update weather data failed", e);
-                    }
-
-                }
-            };
-        } catch (JAXBException e) {
-            throw new JMSInitException("Error in createJMSMessageListener init", e);
-        }
+                                                    final int pollingInterval) throws JAXBException {
+        return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+            @Override
+            protected void handleData(List<Tiesaa> data) {
+                sensorDataUpdateService.updateWeatherData(data);
+            }
+        };
     }
 
     @Override

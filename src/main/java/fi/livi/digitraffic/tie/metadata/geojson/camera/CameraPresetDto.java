@@ -243,15 +243,13 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
     @Override
     public int compareTo(final CameraPresetDto other) {
-        if (other == null) {
-            return 1;
-        }
-        if (this.getPresetOrder() == null && other.getPresetOrder() == null) {
-            return 0;
-        } else if (this.getPresetOrder() != null && other.getPresetOrder() == null) {
+        if ( other == null ||
+             (this.getPresetOrder() != null && other.getPresetOrder() == null)) {
             return 1;
         } else if (this.getPresetOrder() == null && other.getPresetOrder() != null) {
             return -1;
+        } else if (this.getPresetOrder() == null && other.getPresetOrder() == null) {
+            return 0;
         }
         return this.getPresetOrder().compareTo(other.getPresetOrder());
     }

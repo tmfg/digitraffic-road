@@ -69,7 +69,15 @@ public class ForeignKeyIndexTest extends MetadataTest {
         StringBuilder sb = new StringBuilder();
 
         for (Map<String, Object> stringObjectMap : foreignKeysWithoutIndex) {
-            sb.append("CREATE INDEX " + StringUtils.substring(stringObjectMap.get("CONSTRAINT_NAME").toString(), 0, 28) +  "_I ON " + stringObjectMap.get("TABLE_NAME") + " (" + StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", ") + "); -- " + stringObjectMap + "\n");
+            sb.append("CREATE INDEX ");
+            sb.append(StringUtils.substring(stringObjectMap.get("CONSTRAINT_NAME").toString(), 0, 28));
+            sb.append("_I ON ");
+            sb.append(stringObjectMap.get("TABLE_NAME"));
+            sb.append(" (");
+            sb.append(StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
+            sb.append("); -- ");
+            sb.append(stringObjectMap);
+            sb.append("\n");
         }
         Assert.assertTrue(
                 "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n" + sb.toString(),

@@ -25,8 +25,8 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 @Component
 public abstract class JmsMessageListener<T> implements MessageListener {
 
-    private static final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
-    private final JAXBContext jaxbTiesaaContext;
+    private final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
+    private final JAXBContext jaxbContext;
     private final String beanName;
     private final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<T> blockingQueue;
@@ -34,9 +34,9 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
     public JmsMessageListener(final Class<T> typeClass, final String beanName, final long pollingIntervalMs) throws JAXBException {
-        jaxbTiesaaContext = JAXBContext.newInstance(typeClass);
+        jaxbContext = JAXBContext.newInstance(typeClass);
         this.beanName = beanName;
-        jaxbUnmarshaller = jaxbTiesaaContext.createUnmarshaller();
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         jmsMessageConsumer = new JMSMessageConsumer(pollingIntervalMs);
         blockingQueue = jmsMessageConsumer.getBlockingQueue();
         log.info("Initialized JmsMessageListener for " + beanName + " with pollingInterval " + pollingIntervalMs + " ms");
@@ -51,7 +51,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             log.info("Waiting 3 seconds for consumer to shut down");
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            log.error("Sleep in shutdown interrupted", e);
+            log.debug("Sleep in shutdown interrupted", e);
         }
     }
 
@@ -73,8 +73,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
                 TextMessage xmlMessage = (TextMessage) message;
                 String text = xmlMessage.getText();
                 StringReader sr = new StringReader(text);
-                T object = (T) jaxbUnmarshaller.unmarshal(sr);
-                return object;
+                return(T) jaxbUnmarshaller.unmarshal(sr);
             } catch (JMSException e) {
                 throw new JMSUnmarshalMessageException("Message unmarshal error in " + beanName, e);
             } catch (JAXBException e) {
@@ -110,27 +109,40 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             return blockingQueue;
         }
 
+        @Override
         public void run()
         {
+            long prevTookMs = 0;
             while(!shutdownCalled.get())
             {
                 try {
-                    Thread.sleep(pollingIntervalMs);
-                    if (!shutdownCalled.get()) {
-                        if (blockingQueue.size() > 0) {
-                            LinkedList<T> targetList = new LinkedList<T>();
-                            int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
-                            if (drained > 0) {
-                                handleData(targetList);
-                            }
-                        }
+                    Thread.sleep(Math.max(pollingIntervalMs-prevTookMs, 0));
+                    long start = System.currentTimeMillis();
+                    int drained = drainQueue();
+                    prevTookMs = System.currentTimeMillis() - start;
+                    if (drained > 0) {
+                        log.info(beanName + " drainQueue of size " + drained + " took " + prevTookMs + " ms");
                     }
                 } catch (InterruptedException iqnore) {
+                    log.debug("Queue polling thread interrupted", iqnore);
                 } catch (Exception other) {
                     log.error("Error while handling data", other);
                 }
             }
             log.info("Shutdown " + beanName + " " + getClass().getSimpleName() + " thread");
+        }
+
+        private int drainQueue() {
+            if ( !shutdownCalled.get() &&
+                 !blockingQueue.isEmpty() ) {
+                    LinkedList<T> targetList = new LinkedList<T>();
+                    int drained = blockingQueue.drainTo(targetList, blockingQueue.size());
+                    if (drained > 0) {
+                        handleData(targetList);
+                    }
+                    return drained;
+            }
+            return 0;
         }
     }
 }

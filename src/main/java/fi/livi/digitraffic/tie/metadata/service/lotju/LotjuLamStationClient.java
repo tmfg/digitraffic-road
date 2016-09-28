@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
@@ -40,20 +38,13 @@ public class LotjuLamStationClient extends WebServiceGatewaySupport {
 
     public List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
 
-//        log.info("Fetching LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
-
-        final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByLamLotjuId = new HashMap<>();
-
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
 
         request.setId(lamAsemaLotjuId);
         final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
                     getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
-        final List<LamLaskennallinenAnturiVO> anturis = response.getValue().getLamlaskennallisetanturit();
-
-//        log.info(FETCHED + anturis.size() + " LamLaskennallinenAnturis for LamAsema with lotjuId: " + lamAsemaLotjuId);
-        return anturis;
+        return response.getValue().getLamlaskennallisetanturit();
     }
 
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {

@@ -1,25 +1,41 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-/**
- * Application build information.
- */
-public interface BuildVersionService {
+import java.io.IOException;
+import java.util.Properties;
 
-    /**
-     * Return app's base version
-     * @return version
-     */
-    String getAppVersion();
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-    /**
-     * Return app's build revision
-     * @return revision
-     */
-    String getAppBuildRevision();
+import com.jcabi.manifests.Manifests;
 
-    /**
-     * Returns app's base version + build revision
-     * @return  version + revision
-     */
-    String getAppFullVersion();
+@Service
+public class BuildVersionService {
+
+    private static final Logger log = LoggerFactory.getLogger(BuildVersionService.class);
+
+    private static final String GIT_PROPERTIES  = "git.properties";
+    private static final String GIT_REVISION_PROPERTY  = "git.commit.id.describe-short";
+
+    public String getAppVersion() {
+        if (Manifests.exists("MetadataApplication-Version")) {
+            return Manifests.read("MetadataApplication-Version");
+        }
+        return "DEV-BUILD";
+    }
+
+    public String getAppBuildRevision() {
+        final Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"));
+            return "" + properties.get(GIT_REVISION_PROPERTY);
+        } catch (final IOException e) {
+            log.error("Failed to load git properties from file: " + GIT_PROPERTIES, e);
+            return "?";
+        }
+    }
+
+    public String getAppFullVersion() {
+        return getAppVersion() + "#" + getAppBuildRevision();
+    }
 }

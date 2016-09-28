@@ -167,10 +167,10 @@ public class LamStationsSensorsUpdater extends AbstractWeatherStationUpdater {
         return countAdd > 0 || countRemove > 0;
     }
 
-    private boolean addSensorIfMissing(RoadStation rs,
-                                       Map<Long, RoadStationSensor> naturalIdToCurrentSensorMap,
-                                       LamLaskennallinenAnturiVO anturi,
-                                       Map<Long, RoadStationSensor> allSensors) {
+    private static boolean addSensorIfMissing(RoadStation rs,
+                                              Map<Long, RoadStationSensor> naturalIdToCurrentSensorMap,
+                                              LamLaskennallinenAnturiVO anturi,
+                                              Map<Long, RoadStationSensor> allSensors) {
         final Long sensorNaturalId = Long.valueOf(anturi.getVanhaId());
         final RoadStationSensor sensor = naturalIdToCurrentSensorMap.remove(sensorNaturalId);
         // road station doesn't have mapping for sensor -> add it

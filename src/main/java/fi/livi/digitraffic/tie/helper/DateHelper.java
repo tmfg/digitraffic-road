@@ -32,7 +32,6 @@ public final class DateHelper {
 
     public static LocalDateTime toLocalDateTimeAtZone(XMLGregorianCalendar aika, ZoneId toLocalDateTimeZoneId) {
         ZonedDateTime zonedDateTime = aika.toGregorianCalendar().toZonedDateTime();
-        LocalDateTime localDateTimeAtZone = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), toLocalDateTimeZoneId).toLocalDateTime();
-        return localDateTimeAtZone;
+        return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), toLocalDateTimeZoneId).toLocalDateTime();
     }
 }

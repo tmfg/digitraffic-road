@@ -1,16 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fi.livi.digitraffic.tie.metadata.geojson.Crs;
 import fi.livi.digitraffic.tie.metadata.geojson.CrsType;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractMetadataToFeatureConverter.class);
 
     protected static final Crs crs;
 

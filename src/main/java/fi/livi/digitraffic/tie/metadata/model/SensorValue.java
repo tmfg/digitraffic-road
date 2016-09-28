@@ -45,8 +45,10 @@ public class SensorValue {
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
 
-    public SensorValue() {
-        // default;
+    /**
+     * Default constructor fo Hibernate
+     */
+    private SensorValue() {
     }
 
     public SensorValue(RoadStation roadStation, RoadStationSensor roadStationSensor, double value, LocalDateTime sensorValueMeasured) {

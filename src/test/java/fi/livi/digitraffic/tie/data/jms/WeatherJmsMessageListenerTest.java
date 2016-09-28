@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -57,7 +56,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
     @Before
     public void setUpTestData() {
         // Currently slow ass hell
-        // TOD: Generate data with direct sql
+        // TODO: Generate data with direct sql
 
         // Generate test-data: WeatherStations with sensors
         Map<Long, WeatherStation> lamsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
@@ -65,9 +64,9 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         long stationGeneratedLotjuId = -1;
         ArrayList<WeatherStation> stations = new ArrayList<>();
-        Map<Long, WeatherStation> lams = weatherStationService.findAllWeatherStationsMappedByByRoadStationNaturalId();
+        Map<Long, WeatherStation> weatherStations = weatherStationService.findAllWeatherStationsMappedByByRoadStationNaturalId();
 
-        for (Map.Entry<Long, WeatherStation> longLamStationEntry : lams.entrySet()) {
+        for (Map.Entry<Long, WeatherStation> longLamStationEntry : weatherStations.entrySet()) {
             WeatherStation lam = longLamStationEntry.getValue();
             if (lam.getLotjuId() == null) {
                 while (usedLotjuIds.contains(stationGeneratedLotjuId)) {
@@ -86,7 +85,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         long sensorGeneratedLotjuId = -1;
         List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
+                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         log.info("Found " + availableSensors.size() + " available sensors for Weather Stations");
 
@@ -159,11 +158,8 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
                     TestTransaction.end();
                 }
                 TestTransaction.start();
-                try {
-                    sensorDataUpdateService.updateWeatherData(data);
-                } catch (SQLException e) {
-                    throw new RuntimeException("UPDATE FAIL", e);
-                }
+                Assert.assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data));
+
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
                 long end = System.currentTimeMillis();
@@ -189,7 +185,7 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000;
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.5);
         final List<Tiesaa> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
