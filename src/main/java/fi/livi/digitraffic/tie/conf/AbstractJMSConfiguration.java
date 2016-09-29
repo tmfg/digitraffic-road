@@ -1,9 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
@@ -18,8 +14,6 @@ import javax.jms.QueueConnection;
 import javax.jms.Session;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,11 +22,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
+import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import progress.message.jclient.ErrorCodes;
 import progress.message.jclient.QueueConnectionFactory;
+import progress.message.jclient.Topic;
 
-public abstract class AbstractJMSConfiguration {
+public abstract class AbstractJMSConfiguration<T> {
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractJMSConfiguration.class);
     protected final ConfigurableApplicationContext applicationContext;
@@ -59,7 +54,7 @@ public abstract class AbstractJMSConfiguration {
         shutdownCalled.set(true);
         if (currentJmsExceptionListener != null) {
             try {
-                log.info("Closing JMS connection for " + currentJmsExceptionListener.getJmsParameters().getDestinationBeanName());
+                log.info("Closing JMS connection for " + currentJmsExceptionListener.getJmsParameters().getMessageListenerBeanName());
                 QueueConnection connection = currentJmsExceptionListener.getConnection();
                 if (connection != null) {
                     connection.close();
@@ -71,11 +66,20 @@ public abstract class AbstractJMSConfiguration {
     }
 
     public abstract Destination createJMSDestinationBean(final String jmsInQueue) throws JMSException;
-    public abstract MessageListener createJMSMessageListener(final int pollingInterval) throws JAXBException;
-    public abstract JMSParameters createJMSParameters(String jmsUserId, String jmsPassword);
-    public abstract Connection createJmsConnection();
+    public abstract MessageListener createJMSMessageListener() throws JAXBException;
+    public abstract JMSParameters createJMSParameters(String jmsUserId,
+                                                      String jmsPassword,
+                                                      final Destination cameraJmsDestinationBean,
+                                                      final JmsMessageListener<T> cameraJMSMessageListener);
+    public abstract Connection createJmsConnection() throws JMSException;
 
-    @Bean(name = "jmsQueueConnectionFactory")
+    protected Destination createDestination(String jmsInQueue) throws JMSException {
+        Topic destination = new Topic();
+        destination.setTopicName(jmsInQueue);
+        return destination;
+    }
+
+    @Bean
     public QueueConnectionFactory queueConnectionFactory(@Value("${jms.connectionUrls}")
                                                          final String jmsConnectionUrls) throws JMSException {
         QueueConnectionFactory connectionFactory = new QueueConnectionFactory(jmsConnectionUrls);
@@ -84,12 +88,12 @@ public abstract class AbstractJMSConfiguration {
         return connectionFactory;
     }
 
-    protected QueueConnection startMessagelistener(final JMSParameters jmsParameters) throws JMSException, JAXBException {
+    protected QueueConnection startMessagelistener(final JMSParameters jmsParameters) throws JMSException {
         if (!shutdownCalled.get()) {
             log.info("Start Messagelistener with parameters: " + jmsParameters);
             QueueConnectionFactory connectionFactory = applicationContext.getBean(QueueConnectionFactory.class);
-            Destination destination = applicationContext.getBean(jmsParameters.getDestinationBeanName(), Destination.class);
-            MessageListener jmsMessageListener = applicationContext.getBean(jmsParameters.getMessageListenerBeanName(), MessageListener.class);
+            Destination destination = jmsParameters.getDestinationBean();
+            MessageListener jmsMessageListener = jmsParameters.getMessageListenerBean();
 
             QueueConnection connection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
             JMSExceptionListener jmsExceptionListener =
@@ -142,7 +146,7 @@ public abstract class AbstractJMSConfiguration {
         @Override
         public void onException(final JMSException jsme) {
 
-            log.error("JMSException: errorCode: " + resolveErrorByCode(jsme.getErrorCode()) + " for " + jmsParameters.getMessageListenerBeanName(), jsme);
+            log.error("JMSException: errorCode: " + JMSErrorResolver.resolveErrorMessageByErrorCode(jsme.getErrorCode()) + " for " + jmsParameters.getMessageListenerBeanName(), jsme);
 
             int triesLeft = jmsReconnectionTries;
 
@@ -196,46 +200,31 @@ public abstract class AbstractJMSConfiguration {
         return false;
     }
 
-    private static String resolveErrorByCode(String errCode) {
-        Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
-                .filter(field -> {
-                    try {
-                        if (Modifier.isStatic(field.getModifiers())) {
-                            Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
-                            return value != null && StringUtils.equals(errCode, "" + value);
-                        }
-                    } catch (Exception e) {
-                        return false;
-                    }
-                    return false;
-                })
-                .findFirst();
-        if (errorField.isPresent()) {
-            return ErrorCodes.class.getSimpleName() + "." + errorField.get().getName();
-        }
-        return null;
-    }
 
     protected class JMSParameters {
 
-        private final String destinationBeanName;
-        private final String messageListenerBeanName;
+        private final Destination destinationBean;
+        private final JmsMessageListener messageListenerBean;
         private final String jmsUserId;
         private final String jmsPassword;
 
-        public JMSParameters(String destinationBeanName, String messageListenerBeanName, String jmsUserId, String jmsPassword) {
-            this.destinationBeanName = destinationBeanName;
-            this.messageListenerBeanName = messageListenerBeanName;
+        public JMSParameters(Destination destinationBean, JmsMessageListener messageListenerBean, String jmsUserId, String jmsPassword) {
+            this.destinationBean = destinationBean;
+            this.messageListenerBean = messageListenerBean;
             this.jmsUserId = jmsUserId;
             this.jmsPassword = jmsPassword;
         }
 
-        public String getDestinationBeanName() {
-            return destinationBeanName;
+        public Destination getDestinationBean() {
+            return destinationBean;
+        }
+
+        public MessageListener getMessageListenerBean() {
+            return messageListenerBean;
         }
 
         public String getMessageListenerBeanName() {
-            return messageListenerBeanName;
+            return messageListenerBean.getBeanName();
         }
 
         public String getJmsPassword() {

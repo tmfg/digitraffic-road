@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -71,5 +72,10 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public CameraPreset findCameraPresetByPresetId(final String presetId) {
         return cameraPresetRepository.findCameraPresetByPresetId(presetId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CameraPreset> findCameraPresetByPresetIdIn(final Collection<String> presetIds) {
+        return cameraPresetRepository.findCameraPresetByPresetIdIn(presetIds);
     }
 }

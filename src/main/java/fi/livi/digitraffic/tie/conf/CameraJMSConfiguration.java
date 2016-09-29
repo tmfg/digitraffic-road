@@ -6,12 +6,12 @@ import java.util.List;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.MessageListener;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -19,15 +19,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
-import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
-import progress.message.jclient.Topic;
 
 @ConditionalOnProperty(name = "jms.camera.enabled")
 @Configuration
-public class CameraJMSConfiguration extends AbstractJMSConfiguration {
+public class CameraJMSConfiguration extends AbstractJMSConfiguration<Kuva> {
 
     private static final Logger log = LoggerFactory.getLogger(CameraJMSConfiguration.class);
 
@@ -54,16 +52,13 @@ public class CameraJMSConfiguration extends AbstractJMSConfiguration {
     @Bean(name = CAMERA_JMS_DESTINATION_BEAN)
     public Destination createJMSDestinationBean(@Value("${jms.camera.inQueue}")
                                                 final String jmsInQueue) throws JMSException {
-        Topic destination = new Topic();
-        destination.setTopicName(jmsInQueue);
-        return destination;
+        return createDestination(jmsInQueue);
     }
 
     @Override
     @Bean(name = CAMERA_JMS_MESSAGE_LISTENER_BEAN)
-    public MessageListener createJMSMessageListener(@Value("${jms.camera.queue.pollingIntervalMs}")
-                                                    final int pollingInterval) throws JAXBException {
-        return new JmsMessageListener<Kuva>(Kuva.class, CAMERA_JMS_MESSAGE_LISTENER_BEAN, pollingInterval) {
+    public JmsMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
+        return new JmsMessageListener<Kuva>(Kuva.class, CAMERA_JMS_MESSAGE_LISTENER_BEAN) {
             @Override
             protected void handleData(final List<Kuva> data) {
                 try {
@@ -78,24 +73,23 @@ public class CameraJMSConfiguration extends AbstractJMSConfiguration {
     @Override
     @Bean(name = CAMERA_JMS_PARAMS_BEAN)
     public JMSParameters createJMSParameters(@Value("${jms.userId}")
-                                                  final String jmsUserId,
+                                             final String jmsUserId,
                                              @Value("${jms.password}")
-                                                  final String jmsPassword) {
-        return new JMSParameters(CAMERA_JMS_DESTINATION_BEAN,
-                CAMERA_JMS_MESSAGE_LISTENER_BEAN,
+                                             final String jmsPassword,
+                                             @Qualifier(CAMERA_JMS_DESTINATION_BEAN)
+                                             final Destination cameraJmsDestinationBean,
+                                             @Qualifier(CAMERA_JMS_MESSAGE_LISTENER_BEAN)
+                                             final JmsMessageListener<Kuva> cameraJMSMessageListener) {
+        return new JMSParameters(cameraJmsDestinationBean,
+                                 cameraJMSMessageListener,
                                  jmsUserId,
                                  jmsPassword);
     }
 
     @Override
     @Bean(name = CAMERA_JMS_CONNECTION_BEAN)
-    public Connection createJmsConnection() {
-        try {
-            JMSParameters jmsParameters = applicationContext.getBean(CAMERA_JMS_PARAMS_BEAN, JMSParameters.class);
-            return startMessagelistener(jmsParameters);
-        } catch (Exception e) {
-            // Must success on application startup, so any error on init throws exception and exits application
-            throw new JMSInitException("Error in createJmsConnection, exiting...", e);
-        }
+    public Connection createJmsConnection() throws JMSException {
+        JMSParameters jmsParameters = applicationContext.getBean(CAMERA_JMS_PARAMS_BEAN, JMSParameters.class);
+        return startMessagelistener(jmsParameters);
     }
 }

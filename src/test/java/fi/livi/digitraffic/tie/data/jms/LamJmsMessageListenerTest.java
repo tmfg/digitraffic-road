@@ -154,7 +154,7 @@ public class LamJmsMessageListenerTest extends MetadataTest {
 
         Map<Long, LamStation> lamsWithLotjuId = lamStationService.findAllLamStationsByMappedByLotjuId();
 
-        JmsMessageListener<Lam> lamJmsMessageListener = new JmsMessageListener<Lam>(Lam.class, "lamJmsMessageListener", 1000) {
+        JmsMessageListener<Lam> lamJmsMessageListener = new JmsMessageListener<Lam>(Lam.class, "lamJmsMessageListener") {
             @Override
             protected void handleData(List<Lam> data) {
                 long start = System.currentTimeMillis();
