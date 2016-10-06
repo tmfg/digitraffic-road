@@ -25,16 +25,16 @@ public class RoadConditionsClient {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<RoadSection> getRoadSections() {
+    public List<RoadSectionCoordinatesDto> getRoadSections() {
 
         LinkedHashMap<String, Object> response = get(roadsUrl, LinkedHashMap.class);
 
         return response.entrySet().stream().map(entry -> mapRoadSection(entry)).collect(Collectors.toList());
     }
 
-    private RoadSection mapRoadSection(Map.Entry<String, Object> RoadSection) {
-        RoadSectionEntry entryValue = objectMapper.convertValue(RoadSection.getValue(), RoadSectionEntry.class);
-        return new RoadSection(RoadSection.getKey(), entryValue.getName(), entryValue.getCoordinates());
+    private RoadSectionCoordinatesDto mapRoadSection(Map.Entry<String, Object> RoadSection) {
+        RoadSectionCoordinatesEntry entryValue = objectMapper.convertValue(RoadSection.getValue(), RoadSectionCoordinatesEntry.class);
+        return new RoadSectionCoordinatesDto(RoadSection.getKey(), entryValue.getName(), entryValue.getCoordinates());
     }
 
     private <T> T get(String url, Class<T> responseType) {

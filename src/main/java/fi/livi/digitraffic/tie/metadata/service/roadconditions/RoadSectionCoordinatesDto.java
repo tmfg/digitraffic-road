@@ -1,16 +1,17 @@
 package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public class RoadSection {
+public class RoadSectionCoordinatesDto {
 
     private String naturalId;
 
     private String name;
 
-    private List<List<Double>> coordinates;
+    private List<List<BigDecimal>> coordinates;
 
-    public RoadSection(String naturalId, String name, List<List<Double>> coordinates) {
+    public RoadSectionCoordinatesDto(String naturalId, String name, List<List<BigDecimal>> coordinates) {
         this.naturalId = naturalId;
         this.name = name;
         this.coordinates = coordinates;
@@ -24,7 +25,7 @@ public class RoadSection {
         return name;
     }
 
-    public List<List<Double>> getCoordinates() {
+    public List<List<BigDecimal>> getCoordinates() {
         return coordinates;
     }
 }

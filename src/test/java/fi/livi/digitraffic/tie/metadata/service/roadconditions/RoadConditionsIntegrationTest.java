@@ -18,12 +18,12 @@ public class RoadConditionsIntegrationTest extends MetadataTest {
     @Test
     public void getRoadSectionsSucceeds() {
 
-        List<RoadSection> roadSections = roadConditionsClient.getRoadSections();
+        List<RoadSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getRoadSections();
 
-        assertTrue(roadSections.size() > 2);
-        assertEquals("00001_001_000_0", roadSections.get(0).getNaturalId());
-        assertEquals("Vt 1: Helsinki - Kehä III", roadSections.get(0).getName());
-        assertEquals(10, roadSections.get(0).getCoordinates().size());
-        assertEquals(Arrays.asList(24.944, 60.167), roadSections.get(0).getCoordinates().get(0));
+        assertTrue(roadSectionCoordinates.size() > 2);
+        assertEquals("00001_001_000_0", roadSectionCoordinates.get(0).getNaturalId());
+        assertEquals("Vt 1: Helsinki - Kehä III", roadSectionCoordinates.get(0).getName());
+        assertEquals(10, roadSectionCoordinates.get(0).getCoordinates().size());
+        assertEquals(Arrays.asList(24.944, 60.167), roadSectionCoordinates.get(0).getCoordinates().get(0));
     }
 }
