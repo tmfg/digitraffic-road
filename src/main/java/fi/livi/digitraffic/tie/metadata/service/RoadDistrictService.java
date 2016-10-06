@@ -1,11 +1,30 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fi.livi.digitraffic.tie.metadata.dao.RoadDistrictRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 
-public interface RoadDistrictService {
+@Service
+public class RoadDistrictService {
 
-    RoadDistrict findByNaturalId(int roadDistrictNumber);
+    private final RoadDistrictRepository roadDistrictRepository;
 
-    RoadDistrict findByRoadSectionAndRoadNaturalId(final int roadSectionNaturalId,
-                                                   final int roadNaturalId);
+    @Autowired
+    public RoadDistrictService(final RoadDistrictRepository roadDistrictRepository) {
+        this.roadDistrictRepository = roadDistrictRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public RoadDistrict findByNaturalId(final int roadDistrictNumber) {
+        return roadDistrictRepository.findByNaturalId(roadDistrictNumber);
+    }
+
+    @Transactional(readOnly = true)
+    public RoadDistrict findByRoadSectionAndRoadNaturalId(final int roadSectionNaturalId, final int roadNaturalId) {
+        return roadDistrictRepository.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
+    }
+
 }

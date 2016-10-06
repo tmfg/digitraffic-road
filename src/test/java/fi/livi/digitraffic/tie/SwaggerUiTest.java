@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import fi.livi.digitraffic.tie.metadata.service.BuildVersionService;
 
-public class SwaggerUiTest extends MetadataTest {
+public class SwaggerUiTest extends AbstractMetadataTest {
     @Autowired
     private WebApplicationContext wac;
 

@@ -1,11 +1,20 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
+import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
+import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 
-public interface StaticDataStatusService {
+@Service
+public class StaticDataStatusService {
 
-    enum StaticStatusType {
+    public enum StaticStatusType {
         LAM("LAM_DATA_LAST_UPDATED"),
         ROAD_WEATHER("RWS_DATA_LAST_UPDATED"),
         ROAD_WEATHER_SENSOR("RW_SENSOR_DATA_LAST_UPDATED"),
@@ -23,9 +32,36 @@ public interface StaticDataStatusService {
         }
     }
 
-    void updateStaticDataStatus(StaticStatusType type, boolean updateStaticDataStatus);
+    private final StaticDataStatusDAO staticDataStatusDAO;
+    private final MetadataUpdatedRepository metadataUpdatedRepository;
 
-    void updateMetadataUpdated(MetadataType metadataType);
 
-    MetadataUpdated findMetadataUpdatedByMetadataType(MetadataType metadataType);
+    @Autowired
+    public StaticDataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
+                                   final MetadataUpdatedRepository metadataUpdatedRepository) {
+        this.staticDataStatusDAO = staticDataStatusDAO;
+        this.metadataUpdatedRepository = metadataUpdatedRepository;
+    }
+
+    @Transactional
+    public void updateStaticDataStatus(final StaticStatusType type, final boolean updateStaticDataStatus) {
+        staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
+    }
+
+    @Transactional
+    public void updateMetadataUpdated(final MetadataType metadataType) {
+        MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+        if (updated == null) {
+            updated = new MetadataUpdated(metadataType, LocalDateTime.now());
+            metadataUpdatedRepository.save(updated);
+        } else {
+            updated.setUpdated(LocalDateTime.now());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public MetadataUpdated findMetadataUpdatedByMetadataType(final MetadataType metadataType) {
+        return metadataUpdatedRepository.findByMetadataType(metadataType.name());
+    }
+
 }

@@ -32,7 +32,7 @@ public class CameraDataUpdateService {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    CameraDataUpdateService(@Value("${weathercam.import-dir}")
+    CameraDataUpdateService(@Value("${weathercam.importDir}")
                             final String weathercamImportDir,
                             final CameraPresetService cameraPresetService) {
         this.weathercamImportDir = weathercamImportDir;
