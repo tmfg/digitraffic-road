@@ -112,11 +112,11 @@ public abstract class AbstractJMSConfiguration<T> {
                                                             JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If aquired lock then start listening otherwice stop listening
             if (lockAquired && !shutdownCalled.get()) {
-                log.info("MessageListener lock aquired (" + jmsParameters.getMessageListenerName() + ", instance: " + jmsParameters.getLockInstanceId() + "), start listening");
+                log.info("MessageListener lock aquired for " + jmsParameters.getMessageListenerName() + " (instanceId: " + jmsParameters.getLockInstanceId() + ")");
                 // Calling start multiple times is safe
                 connection.start();
             } else {
-                log.info("MessageListener lock not aquired (" + jmsParameters.getMessageListenerName() + ", instance: " + jmsParameters.getLockInstanceId() + "), another instance is holding lock");
+                log.info("MessageListener lock not aquired for " + jmsParameters.getMessageListenerName() + " (instanceId: " + jmsParameters.getLockInstanceId() + "), another instance is holding the lock");
                 // Calling stop multiple times is safe
                 connection.stop();
             }

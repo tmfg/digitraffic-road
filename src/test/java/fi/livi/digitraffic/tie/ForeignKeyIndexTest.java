@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 
-public class ForeignKeyIndexTest extends AbstractMetadataTest {
+public class ForeignKeyIndexTest extends AbstractIntegrationMetadataTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
