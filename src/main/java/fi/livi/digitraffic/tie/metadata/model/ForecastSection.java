@@ -62,8 +62,12 @@ public class ForecastSection {
     @ApiModelProperty(value = "Forecast section leght")
     private int length;
 
-    @OneToMany(mappedBy = "forecastSection", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "roadSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<RoadSectionCoordinates> roadSectionCoordinates;
+
+    public Long getId() {
+        return id;
+    }
 
     public String getNaturalId() {
         return naturalId;
