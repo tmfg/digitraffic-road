@@ -37,6 +37,7 @@ public abstract class AbstractJMSConfiguration<T> {
 
     private AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 10;
+    private static final int JMS_QUEUE_LOCK_EXPIRATION_S = 10;
     private final LockingService lockingService;
 
     private QueueConnection connection;
@@ -138,7 +139,7 @@ public abstract class AbstractJMSConfiguration<T> {
      */
     @Scheduled(fixedRateString = "${jms.queue.pollingIntervalMs}")
     public void callMessageListenerDrainQueue() {
-        jmsParameters.getMessageListener().drainQueue();
+        jmsParameters.getMessageListener().drainQueue(JMS_QUEUE_LOCK_EXPIRATION_S);
     }
 
     @PreDestroy

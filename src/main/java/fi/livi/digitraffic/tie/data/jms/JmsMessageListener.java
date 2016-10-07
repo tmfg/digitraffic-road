@@ -26,8 +26,6 @@ public abstract class JmsMessageListener<T> implements MessageListener {
 
     private static final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
 
-    private static final int LOCK_EXPIRATION_S = 10;
-
     private final JAXBContext jaxbContext;
     private final String name;
     private final String lockInstaceId;
@@ -101,8 +99,9 @@ public abstract class JmsMessageListener<T> implements MessageListener {
 
     /**
      * Drain queue with fixed interval
+     * @param lockExpirationSeconds how long will this thread hold the lock for jms draining
      */
-    public void drainQueue() {
+    public void drainQueue(int lockExpirationSeconds) {
         if ( !shutdownCalled.get() ) {
             long start = System.currentTimeMillis();
             // Allocate array with some extra because queue size can change any time
@@ -111,7 +110,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             if ( drained > 0 &&
                 // Don't relase lock to keep execution only in this thread. If this thread hangs,
                 // other instance will start excecuting after lock has been expired.
-                lockingService.aquireLock(name, lockInstaceId, LOCK_EXPIRATION_S)) {
+                lockingService.aquireLock(name, lockInstaceId, lockExpirationSeconds)) {
 
                 log.info("Lock for " + name + " / "+ lockInstaceId);
                 handleData(targetList);
