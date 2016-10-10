@@ -1,12 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import fi.livi.digitraffic.tie.metadata.quartz.*;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -25,10 +19,11 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
-import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LamStationUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -90,6 +85,10 @@ public class SchedulerConfig {
         return createJobDetail(WeatherStationUpdateJob.class);
     }
 
+    @Bean
+    public JobDetailFactoryBean roadSectionCoordinatesUpdateJobDetail() {
+        return createJobDetail(RoadSectionCoordinatesUpdateJob.class);
+    }
 
     @Bean(name = "cameraUpdateJobTrigger")
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(@Qualifier("cameraUpdateJobDetail") final JobDetail jobDetail,
@@ -106,6 +105,12 @@ public class SchedulerConfig {
     @Bean(name = "weatherStationUpdateJobTrigger")
     public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(@Qualifier("weatherStationUpdateJobDetail") final JobDetail jobDetail,
                                                                    @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
+        return createTrigger(jobDetail, frequency);
+    }
+
+    @Bean(name = "roadSectionCoordinatesUpdateJobTrigger")
+    public SimpleTriggerFactoryBean roadSectionCoordinatesUpdateJobTrigger(@Qualifier("roadSectionCoordinatesUpdateJobDetail") final JobDetail jobDetail,
+                                                                           @Value("${roadSectionCoordinatesUpdateJob.frequency}") final long frequency) {
         return createTrigger(jobDetail, frequency);
     }
 
