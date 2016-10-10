@@ -4,7 +4,7 @@ import fi.livi.digitraffic.tie.AbstractMetadataTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +24,7 @@ public class RoadConditionsIntegrationTest extends AbstractMetadataTest {
         assertEquals("00001_001_000_0", roadSectionCoordinates.get(0).getNaturalId());
         assertEquals("Vt 1: Helsinki - Kehä III", roadSectionCoordinates.get(0).getName());
         assertEquals(10, roadSectionCoordinates.get(0).getCoordinates().size());
-        assertEquals(Arrays.asList(24.944, 60.167), roadSectionCoordinates.get(0).getCoordinates().get(0));
+        assertEquals(BigDecimal.valueOf(24.944), roadSectionCoordinates.get(0).getCoordinates().get(0).getLeft());
+        assertEquals(BigDecimal.valueOf(60.167), roadSectionCoordinates.get(0).getCoordinates().get(0).getRight());
     }
 }
