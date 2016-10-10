@@ -40,10 +40,10 @@ public class DayDataControllerRestTest extends RestTest {
     }
 
     @Test
-    public void testDayDataRestApi() throws Exception {
+    public void testFluencyHistoryDayApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            DataController.DAY_DATA_PATH))
+                            DataController.FLUENCY_HISTORY_DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
@@ -57,16 +57,20 @@ public class DayDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].minute", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
                 ;
     }
 
     @Test
-    public void testDayDataRestApiById() throws Exception {
+    public void testFluencyHistoryDayApiById() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.DAY_DATA_PATH + "/4"))
+                DataController.FLUENCY_HISTORY_DAY_DATA_PATH + "/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
@@ -82,6 +86,33 @@ public class DayDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].minute", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
+        ;
+    }
+
+    @Test
+    public void testFluencyHistoryApi() throws Exception {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+                MetadataApplicationConfiguration.API_DATA_PART_PATH +
+                DataController.FLUENCY_HISTORY_DATA_PATH + "/4?year=" + yesterday.getYear() + "&month=" + yesterday.getMonthValue()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].linkMeasurements", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].minute", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].measuredLocalTime", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].measuredUtc", Matchers.notNullValue())) //
+
         ;
     }
 

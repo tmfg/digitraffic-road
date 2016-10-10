@@ -43,7 +43,7 @@ public class DayDataService {
 
         } else {
 
-            final List<LinkMeasurementDataDto> linkData = dayDataRepository.listAllMedianTravelTimes();
+            final List<LinkMeasurementDataDto> linkData = dayDataRepository.listAllMedianTravelTimesForPreviousDay();
 
             return new HistoryRootDataObjectDto(
                     convertToDayDataData(linkData),
@@ -57,7 +57,25 @@ public class DayDataService {
             throw new ObjectNotFoundException("Link", linkId);
         }
         LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
-        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId);
+        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLinkPreviousDay(linkId);
+        return new HistoryRootDataObjectDto(
+                convertToDayDataData(linkData),
+                updated);
+    }
+
+    @Transactional(readOnly = true)
+    public HistoryRootDataObjectDto listHistoryData(long linkId, int year, int month) {
+        if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
+            throw new ObjectNotFoundException("Link", linkId);
+        }
+        if (year < 2015) {
+            throw new IllegalArgumentException("Illegal year value " + year + "! Minimum year is 2015");
+        }
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Illegal month value " + month + "! Month must be between 1 and 12");
+        }
+        LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
+        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId, year, month);
         return new HistoryRootDataObjectDto(
                 convertToDayDataData(linkData),
                 updated);

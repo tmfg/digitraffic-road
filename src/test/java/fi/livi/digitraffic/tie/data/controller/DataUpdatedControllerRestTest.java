@@ -32,7 +32,7 @@ public class DataUpdatedControllerRestTest extends RestTest {
 
         final Field[] fields = FieldUtils.getAllFields(DataController.class);
         for (final Field field : fields) {
-            if ( field.getName().endsWith("_PATH") ) {
+            if ( field.getName().endsWith("_PATH") && !field.getName().equals("FLUENCY_HISTORY_DATA_PATH") ) {
 
                 final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
                              MetadataApplicationConfiguration.API_DATA_PART_PATH +
