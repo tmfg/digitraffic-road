@@ -16,7 +16,7 @@ public class RoadConditionsIntegrationTest extends MetadataTest {
     private RoadConditionsClient roadConditionsClient;
 
     @Test
-    public void getRoadSectionsSucceeds() {
+    public void getRoadSectionCoordinatesSucceeds() {
 
         List<RoadSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getRoadSections();
 

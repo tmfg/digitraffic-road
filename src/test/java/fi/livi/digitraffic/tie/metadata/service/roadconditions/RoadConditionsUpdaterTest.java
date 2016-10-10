@@ -13,10 +13,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RoadSectionUpdaterTest extends MetadataTest {
+public class RoadConditionsUpdaterTest extends MetadataTest {
 
     @Autowired
-    private RoadSectionUpdater roadSectionUpdater;
+    private RoadConditionsUpdater roadConditionsUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -24,7 +24,7 @@ public class RoadSectionUpdaterTest extends MetadataTest {
     @Test
     @Transactional
     public void updateRoadSectionCoordinatesSucceeds() {
-        roadSectionUpdater.updateRoadSections();
+        roadConditionsUpdater.updateRoadSectionCoordinates();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
 
