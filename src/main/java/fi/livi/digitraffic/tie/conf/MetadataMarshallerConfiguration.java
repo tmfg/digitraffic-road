@@ -65,7 +65,7 @@ public class MetadataMarshallerConfiguration {
     @Bean
     public LotjuCameraClient cameraClient(final Jaxb2Marshaller marshaller,
                                           @Value("${metadata.server.address.camera}")
-                                     final String cameraMetadataServerAddress) {
+                                          final String cameraMetadataServerAddress) {
 
         log.info("metadata.server.address.camera: " + cameraMetadataServerAddress);
         if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&

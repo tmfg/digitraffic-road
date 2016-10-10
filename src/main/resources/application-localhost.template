@@ -1,6 +1,3 @@
-# Copy this file as application-localhost.properties and configure
-# datasource etc. according to your environment.
-
 logging.file=digitraffic-metadata
 logging.level.root=INFO
 
@@ -23,8 +20,8 @@ lamStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.base-url=http://weathercam.url/
-weathercam.import-dir=/tmp/weathercam
+weathercam.baseUrl=http://weathercam.url/
+weathercam.importDir=/tmp/weathercam
 
 # JMS settings
 

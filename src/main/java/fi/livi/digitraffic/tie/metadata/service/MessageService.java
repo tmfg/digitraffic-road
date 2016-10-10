@@ -2,14 +2,21 @@ package fi.livi.digitraffic.tie.metadata.service;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
-/**
- * Simplification of {@link org.springframework.context.MessageSource}.
- * @see org.springframework.context.MessageSource
- */
-public interface MessageService {
+@Service
+public class MessageService {
+
+    private final MessageSource messageSource;
+
+    @Autowired
+    public MessageService(final MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     /**
      * Try to resolve the message. Treat as an error if the message can't be found.
@@ -21,7 +28,9 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code);
+    public String getMessage(final String code) {
+        return getMessage(code, (Object[])null);
+    }
 
     /**
      * Try to resolve the message. Treat as an error if the message can't be found.
@@ -34,7 +43,9 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code, Object[] args);
+    public String getMessage(final String code, final Object[] args) {
+        return getMessage(code, args, null, LocaleContextHolder.getLocale());
+    }
 
     /**
      * Try to resolve the message. Return default message if no message was found.
@@ -47,7 +58,9 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code, String defaultMessage);
+    public String getMessage(final String code, final String defaultMessage) {
+        return getMessage(code, null, defaultMessage);
+    }
 
     /**
      * Try to resolve the message. Return default message if no message was found.
@@ -63,7 +76,9 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(String code, Object[] args, String defaultMessage);
+    public String getMessage(final String code, final Object[] args, final String defaultMessage) {
+        return getMessage(code, args, defaultMessage, LocaleContextHolder.getLocale());
+    }
 
     /**
      * Try to resolve the message using all the attributes contained within the
@@ -77,7 +92,15 @@ public interface MessageService {
      * @see java.text.MessageFormat
      * @see org.springframework.context.MessageSource
      */
-    String getMessage(MessageSourceResolvable resolvable);
+    public String getMessage(final MessageSourceResolvable resolvable) {
+        return messageSource.getMessage(resolvable, LocaleContextHolder.getLocale());
+    }
 
-    Locale getLocale();
+    public Locale getLocale() {
+        return LocaleContextHolder.getLocale();
+    }
+
+    protected String getMessage(final String code, final Object[] args, final String defaultMessage, final Locale locale) {
+        return messageSource.getMessage(code, args, defaultMessage, locale);
+    }
 }

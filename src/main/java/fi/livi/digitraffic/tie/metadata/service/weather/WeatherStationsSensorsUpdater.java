@@ -52,7 +52,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationUpdater
         log.info("Update WeatherStations RoadStationSensors start");
 
         if (lotjuWeatherStationClient == null) {
-            log.warn("Not updating WeatherStations metadatas because no lotjuWeatherStationClient defined");
+            log.warn("Not updating WeatherStations Sensors metadatas because no lotjuWeatherStationClient defined");
             return false;
         }
 
