@@ -5,13 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.AbstractMetadataTest;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
 
 @RunWith(JUnit4.class)
-public class ToStringHelpperTest extends MetadataTest {
+public class ToStringHelpperTest extends AbstractMetadataTest {
 
     @Test
     public void testKameraToString() {

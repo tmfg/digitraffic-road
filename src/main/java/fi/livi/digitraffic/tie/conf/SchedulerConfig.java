@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -9,6 +11,8 @@ import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -30,6 +34,8 @@ import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 @ConditionalOnProperty(name = "quartz.enabled")
 public class SchedulerConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(SchedulerConfig.class);
+
     @Bean
     public JobFactory jobFactory(final ApplicationContext applicationContext)
     {
@@ -41,12 +47,7 @@ public class SchedulerConfig {
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
                                                      final JobFactory jobFactory,
-                                                     @Qualifier("weatherStationUpdateJobTrigger") final
-                                                     Trigger weatherStationUpdateJobTrigger,
-                                                     @Qualifier("cameraUpdateJobTrigger") final
-                                                     Trigger cameraUpdateJobTrigger,
-                                                     @Qualifier("lamStationUpdateJobTrigger") final
-                                                     Trigger lamStationUpdateJobTrigger) throws IOException {
+                                                     Optional<List<Trigger>> triggerBeans) throws IOException {
 
         final SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
@@ -56,11 +57,13 @@ public class SchedulerConfig {
         factory.setJobFactory(jobFactory);
 
         factory.setQuartzProperties(quartzProperties());
-        factory.setTriggers(
-                weatherStationUpdateJobTrigger,
-                cameraUpdateJobTrigger,
-                lamStationUpdateJobTrigger);
 
+        if (triggerBeans.isPresent()) {
+            for (Trigger triggerBean : triggerBeans.get()) {
+                log.info("Schedule trigger " + triggerBean.getJobKey());
+            }
+            factory.setTriggers(triggerBeans.get().toArray(new Trigger[0]));
+        }
         return factory;
     }
 

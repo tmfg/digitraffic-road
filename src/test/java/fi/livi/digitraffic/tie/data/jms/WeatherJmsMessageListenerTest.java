@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -29,7 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -40,7 +42,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @Transactional
-public class WeatherJmsMessageListenerTest extends MetadataTest {
+public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
     
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
@@ -52,6 +54,9 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
+
+    @Autowired
+    LockingService lockingService;
 
     @Before
     public void setUpTestData() {
@@ -149,7 +154,8 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
 
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
-        JmsMessageListener<Tiesaa> tiesaaJmsMessageListener = new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener") {
+        JmsMessageListener<Tiesaa> tiesaaJmsMessageListener =
+                new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener", lockingService, UUID.randomUUID().toString()) {
             @Override
             protected void handleData(List<Tiesaa> data) {
                 long start = System.currentTimeMillis();
@@ -242,8 +248,8 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
         }
         log.info("End with arvo " + arvo);
         log.info("Handle weather data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
 
+        log.info("Check data validy");
         // Assert sensor values are updated to db
         List<Long> tiesaaLotjuIds = data.stream().map(Tiesaa::getAsemaId).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
@@ -254,16 +260,18 @@ public class WeatherJmsMessageListenerTest extends MetadataTest {
             List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
 
-            for (SensorValue sensorValue : sensorValues) {
-                if (sensorValue.getRoadStationSensor().getLotjuId() != null) {
-                    Optional<Tiesaa.Anturit.Anturi> found =
-                            anturit.stream()
-                                    .filter(anturi -> anturi.getLaskennallinenAnturiId() == sensorValue.getRoadStationSensor().getLotjuId())
-                                    .findFirst();
-                    Assert.assertTrue(found.isPresent());
-                    Assert.assertEquals((double) found.get().getArvo(), sensorValue.getValue(), 0.05d);
-                }
+            for (Tiesaa.Anturit.Anturi anturi : anturit) {
+                Optional<SensorValue> found =
+                        sensorValues
+                                .stream()
+                                .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
+                                .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
+                                .findFirst();
+                Assert.assertTrue(found.isPresent());
+                Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
             }
         }
+
+        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 }

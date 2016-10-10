@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -29,7 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.MetadataTest;
+import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
@@ -40,7 +42,7 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Transactional
-public class LamJmsMessageListenerTest extends MetadataTest {
+public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
     
     private static final Logger log = LoggerFactory.getLogger(LamJmsMessageListenerTest.class);
 
@@ -52,6 +54,9 @@ public class LamJmsMessageListenerTest extends MetadataTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
+
+    @Autowired
+    LockingService lockingService;
 
     @Before
     public void setUpTestData() {
@@ -146,15 +151,13 @@ public class LamJmsMessageListenerTest extends MetadataTest {
         assertFalse(TestTransaction.isActive());
     }
 
-
-
-
     @Test
     public void testPerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
         Map<Long, LamStation> lamsWithLotjuId = lamStationService.findAllLamStationsByMappedByLotjuId();
 
-        JmsMessageListener<Lam> lamJmsMessageListener = new JmsMessageListener<Lam>(Lam.class, "lamJmsMessageListener") {
+        JmsMessageListener<Lam> lamJmsMessageListener =
+                new JmsMessageListener<Lam>(Lam.class, "lamJmsMessageListener", lockingService, UUID.randomUUID().toString()) {
             @Override
             protected void handleData(List<Lam> data) {
                 long start = System.currentTimeMillis();
@@ -245,10 +248,11 @@ public class LamJmsMessageListenerTest extends MetadataTest {
                 e.printStackTrace();
             }
         }
+
         log.info("End with arvo " + arvo);
         log.info("Handle lam data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
 
+        log.info("Check data validy");
         // Assert sensor values are updated to db
         List<Long> lamLotjuIds = data.stream().map(Lam::getAsemaId).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
@@ -259,15 +263,18 @@ public class LamJmsMessageListenerTest extends MetadataTest {
             List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
 
-            for (SensorValue sensorValue : sensorValues) {
-                if (sensorValue.getRoadStationSensor().getLotjuId() != null) {
-                    Optional<Lam.Anturit.Anturi> found = anturit.stream()
-                            .filter(anturi -> anturi.getLaskennallinenAnturiId().equals(sensorValue.getRoadStationSensor().getLotjuId().toString()))
-                            .findFirst();
-                    Assert.assertTrue(found.isPresent());
-                    Assert.assertEquals((double) found  .get().getArvo(), sensorValue.getValue(), 0.05d);
-                }
+            for (Lam.Anturit.Anturi anturi : anturit) {
+                Optional<SensorValue> found =
+                        sensorValues
+                                .stream()
+                                .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
+                                .filter(sensorValue -> anturi.getLaskennallinenAnturiId().equals(sensorValue.getRoadStationSensor().getLotjuId().toString()))
+                                .findFirst();
+                Assert.assertTrue(found.isPresent());
+                Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
             }
         }
+
+        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 }
