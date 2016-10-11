@@ -35,20 +35,10 @@ import io.swagger.annotations.ApiResponses;
 
 
 /*
- * 2.1 Ajantasaiset sujuvuustiedot (Current fluency data) (EI TOTEUTETTU)
- * 2.2 Ajantasaiset matka-aikatiedot (Current journey times) (EI TOTEUTETTU)
- * 2.3 Edellisen päivän sujuvuuden historiatiedot (History data for previous day) (DONE)
- * 2.4 Edellisen päivän 12 viikon keskimääräiset sujuvuustiedot (Average medians for previous day) (EI TOTEUTETTU)
- * 2.5 Ajantasaiset LAM -mittaustiedot (Current data from LAM stations) (DONE)
- * 2.6 Ajantasaiset vapaat nopeudet (Current free flow speeds) (DONE)
- * 2.7 Tiesääasemien ajantasaiset mittaustiedot (Current road weather station data) (EI TOTEUTETTU)
- * 2.8 Tiesääasemien tilatiedot (Status of road stations) (DONE)
- * 2.9 Tiejaksojen keliennusteet (Road weather forecasts) (EI TOTEUTETTU)
- * 2.10 Kelikameroiden esiasetukset (Camera presets) (EI TOTEUTETTU)
- * 2.11 Tiejaksojen keliennusteet (Road weather forecasts) (EI TOTEUTETTU)
- * 2.12 Liikenteen häiriötiedot (Traffic disorders) (EI TOTEUTETTU)
+ * REST/JSON replacement api for Digitraffic SOAP-api
+ *
+ * TODO: Liikenteen häiriötiedot (Traffic disorders)
  */
-
 @Api(tags = "data", description = "Data of Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
@@ -59,9 +49,13 @@ public class DataController {
     public static final String LAM_DATA_PATH = "/lam-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
 
-    public static final String TRAFFIC_FLUENCY_PATH = "/traffic-fluency";
     public static final String ROAD_STATION_STATUSES_PATH = "/road-station-statuses";
-    public static final String DAY_DATA_PATH = "/previous-day-data";
+
+    // Fluency
+    public static final String FLUENCY_CURRENT_PATH = "/fluency-current";
+    public static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
+    public static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
+
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
@@ -94,51 +88,69 @@ public class DataController {
     }
 
     @ApiOperation("Current fluency data of links including journey times")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficFluencyRootDataObjectDto listLinksTrafficFluency(
+    public TrafficFluencyRootDataObjectDto fluencyCurrent(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
     @ApiOperation("Current fluency data of link including journey times")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_FLUENCY_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficFluencyRootDataObjectDto listLinkTrafficFluency(
+    public TrafficFluencyRootDataObjectDto fluencyCurrent(
             @ApiParam("Link id")
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_FLUENCY_PATH + "/" + id);
+        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "/" + id);
         return trafficFluencyService.listCurrentTrafficFluencyData(id);
     }
 
     @ApiOperation("History data of links for previous day")
-    @RequestMapping(method = RequestMethod.GET, path = DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public HistoryRootDataObjectDto listPreviousDayHistoryData(
+    public HistoryRootDataObjectDto fluencyHistoryPreviousDay(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
     @ApiOperation("History data of link for previous day")
-    @RequestMapping(method = RequestMethod.GET, path = DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public HistoryRootDataObjectDto listLinkPreviousDayHistoryData(
+    public HistoryRootDataObjectDto fluencyHistoryPreviousDayId(
             @ApiParam("Link id")
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + DAY_DATA_PATH + "/" + id);
+        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "/" + id);
         return dayDataService.listPreviousDayHistoryData(id);
+    }
+
+    @ApiOperation("History data of link for given month")
+    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public HistoryRootDataObjectDto fluencyHistory(
+            @ApiParam("Link id")
+            @PathVariable
+            final long id,
+            @ApiParam("Year (>2014)")
+            @RequestParam
+            final int year,
+            @ApiParam("Month (1-12)")
+            @RequestParam
+            final int month) {
+        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DATA_PATH + "/" + id + "?year=" + year + "&month=" + month);
+        return dayDataService.listHistoryData(id, year, month);
     }
 
     @ApiOperation("Current free flow speeds")
