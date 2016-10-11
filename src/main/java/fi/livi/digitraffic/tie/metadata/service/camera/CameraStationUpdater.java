@@ -333,6 +333,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         to.setCameraLotjuId(kameraFrom.getId());
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
 
+        // For legacy
+        to.setRoadStationId(kameraFrom.getVanhaId().longValue());
+
         final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
         if (tsaLotjuId != null) {
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getLotjuId())) {
