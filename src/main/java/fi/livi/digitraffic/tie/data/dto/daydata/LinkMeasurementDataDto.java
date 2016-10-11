@@ -10,6 +10,7 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -100,4 +101,15 @@ public class LinkMeasurementDataDto {
     public void setMeasured(final LocalDateTime measured) {
         this.measured = measured;
     }
+
+    @ApiModelProperty(value = "Value measured " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    public String getMeasuredLocalTime() {
+        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    }
+
+    @ApiModelProperty(value = "Value measured " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
+    public String getMeasuredUtc() {
+        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    }
+
 }

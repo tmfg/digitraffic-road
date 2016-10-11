@@ -18,7 +18,7 @@ public class TrafficFluencyDataControllerRestTest extends RestTest {
     public void testTrafficFluencyDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            DataController.TRAFFIC_FLUENCY_PATH))
+                            DataController.FLUENCY_CURRENT_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
@@ -40,7 +40,7 @@ public class TrafficFluencyDataControllerRestTest extends RestTest {
     public void testTrafficFluencyDataRestApiLinkById() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.TRAFFIC_FLUENCY_PATH + "/4"))
+                DataController.FLUENCY_CURRENT_PATH + "/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
