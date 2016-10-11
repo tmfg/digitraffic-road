@@ -1,8 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import java.math.BigDecimal;
+public final class ForecastSectionNaturalIdHelper {
 
-public class ForecastSectionNaturalIdHelper {
+    private ForecastSectionNaturalIdHelper() {
+    }
 
     public static int getRoadNumber(String naturalId) {
         return Integer.parseInt(naturalId.substring(0, 5));
@@ -12,11 +13,12 @@ public class ForecastSectionNaturalIdHelper {
         return Integer.parseInt(naturalId.substring(6, 9));
     }
 
-    public static BigDecimal getRoadNumAndSectionNum(String naturalId) {
-        return new BigDecimal(getRoadNumber(naturalId) + "." + getRoadSectionNumber(naturalId));
-    }
-
     public static int getRoadSectionVersionNumber(String naturalId) {
         return Integer.parseInt(naturalId.substring(10, 13));
+    }
+
+    public static boolean equalsIgnoreVersion(String naturalId1, String naturalId2) {
+        return getRoadNumber(naturalId1) == getRoadNumber(naturalId2) &&
+               getRoadSectionNumber(naturalId1) == getRoadSectionNumber(naturalId2);
     }
 }

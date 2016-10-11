@@ -7,7 +7,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinates;
 import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinatesPK;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +23,18 @@ public class RoadConditionsUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(RoadConditionsUpdater.class);
 
-    @Autowired
-    private RoadConditionsClient roadConditionsClient;
+    private final RoadConditionsClient roadConditionsClient;
+
+    private final RoadSectionCoordinatesRepository roadSectionCoordinatesRepository;
+
+    private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    private RoadSectionCoordinatesRepository roadSectionCoordinatesRepository;
-
-    @Autowired
-    private ForecastSectionRepository forecastSectionRepository;
+    public RoadConditionsUpdater(RoadConditionsClient roadConditionsClient, RoadSectionCoordinatesRepository roadSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
+        this.roadConditionsClient = roadConditionsClient;
+        this.roadSectionCoordinatesRepository = roadSectionCoordinatesRepository;
+        this.forecastSectionRepository = forecastSectionRepository;
+    }
 
     @Transactional
     public void updateRoadSectionCoordinates() {
@@ -46,19 +49,22 @@ public class RoadConditionsUpdater {
 
         for (ForecastSection forecastSection : forecastSections) {
 
-            BigDecimal roadNumAndSectionNum = ForecastSectionNaturalIdHelper.getRoadNumAndSectionNum(forecastSection.getNaturalId());
-
             Optional<RoadSectionCoordinatesDto> coordinatesDto = roadSectionCoordinates.stream()
-                    .filter(c -> ForecastSectionNaturalIdHelper.getRoadNumAndSectionNum(c.getNaturalId()).equals(roadNumAndSectionNum))
+                    .filter(c -> ForecastSectionNaturalIdHelper.equalsIgnoreVersion(forecastSection.getNaturalId(), c.getNaturalId()))
                     .findFirst();
 
             if (coordinatesDto.isPresent()) {
                 forecastSection.getRoadSectionCoordinates().clear();
                 long orderNumber = 1;
-                for (Pair<BigDecimal, BigDecimal> coordinates : coordinatesDto.get().getCoordinates()) {
+                for (List<BigDecimal> coordinates : coordinatesDto.get().getCoordinates()) {
+                    if (!isValid(coordinates)) {
+                        log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
+                                 StringUtils.join(coordinates, ", ") + ". Skipping coordinates save operation for this forecast section.");
+                        continue;
+                    }
                     forecastSection.getRoadSectionCoordinates().add(
                             new RoadSectionCoordinates(forecastSection, new RoadSectionCoordinatesPK(forecastSection.getId(), orderNumber),
-                                                       coordinates.getLeft(), coordinates.getRight()));
+                                                       coordinates.get(0), coordinates.get(1)));
                     orderNumber++;
                 }
             } else {
@@ -70,11 +76,15 @@ public class RoadConditionsUpdater {
         forecastSectionRepository.flush();
     }
 
+    private boolean isValid(List<BigDecimal> coordinates) {
+        return coordinates.size() == 2 && coordinates.get(0) != null && coordinates.get(1) != null;
+    }
+
     private void printLogInfo(List<RoadSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {
 
         Optional<Long> newCoordinatesCount = roadSectionCoordinates.stream().map(c -> c.getCoordinates().stream().count()).reduce((a, b) -> a + b);
 
-        Long existingCoordinatesCount = roadSectionCoordinatesRepository.getRoadSectionCoordinatesCount();
+        Long existingCoordinatesCount = roadSectionCoordinatesRepository.count();
 
         log.info("Updating road section coordinates. Number of coordinates in database: " + existingCoordinatesCount +
                  ". Number of coordinates received for update: " + newCoordinatesCount.orElse(null));
