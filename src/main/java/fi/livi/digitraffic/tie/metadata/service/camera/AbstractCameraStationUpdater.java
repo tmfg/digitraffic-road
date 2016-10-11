@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -19,6 +22,8 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationUpdater.class);
+
+    private static final Pattern cameraPresetIdPattern = Pattern.compile("^C[0-9]{7}$");
 
     protected RoadStationService roadStationService;
 
@@ -103,4 +108,8 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
         return Long.parseLong(StringUtils.removeStart(cameraId, "C"));
     }
 
+    public static boolean validatePresetId(String presetId) {
+        Matcher m = cameraPresetIdPattern.matcher(presetId);
+        return m.matches();
+    }
 }

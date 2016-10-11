@@ -134,7 +134,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             final EsiasentoVO esiasento = kameraEsiasentoPair.getRight();
             final KameraVO kamera = kameraEsiasentoPair.getLeft();
 
-            if (validate(kamera) ) {
+            if ( validate(kamera) ) {
 
                 final CameraPreset currentSaved = presetsMappedByPresetId.remove(presetIdEntrySet.getKey());
 

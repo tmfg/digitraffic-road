@@ -15,6 +15,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
@@ -55,6 +56,17 @@ public class ToStringHelpper {
         JSON_STYLE.append(sb, LOTJU_ID, kamera.getId());
         JSON_STYLE.append(sb, VANHA_ID, kamera.getVanhaId(), true);
         JSON_STYLE.append(sb, NIMI, kamera.getNimi(), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static String toString(EsiasentoVO esiasento) {
+        final StringBuffer sb = createStartSb(esiasento);
+        JSON_STYLE.append(sb, LOTJU_ID, esiasento.getId());
+        JSON_STYLE.append(sb, "kameraId", esiasento.getKameraId(), true);
+        JSON_STYLE.append(sb, "suunta", esiasento.getSuunta(), true);
+        JSON_STYLE.append(sb, "nimiEsitys", esiasento.getNimiEsitys(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
