@@ -357,7 +357,11 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         int counter = 0;
         for (final CameraPreset cameraPreset : obsolete) {
             if (cameraPreset.obsolete()) {
-                log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                if (cameraPreset.getRoadStation() == null) {
+                    log.error("Obsolete CameraPreset id: " + cameraPreset.getId() + " with null roadStation");
+                } else {
+                    log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                }
                 counter++;
             }
         }

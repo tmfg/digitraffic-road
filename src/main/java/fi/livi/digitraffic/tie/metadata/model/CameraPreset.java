@@ -305,13 +305,12 @@ public class CameraPreset {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
-                .appendField("presetId", getPresetId())
-                .appendField("id", getId())
-                .appendField("cameraId", getCameraId())
-                .appendField("lotjuId", this.getLotjuId())
+                .appendField("presetId", presetId)
+                .appendField("id", id)
+                .appendField("cameraId", cameraId)
+                .appendField("lotjuId", lotjuId)
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();
     }
-
 }

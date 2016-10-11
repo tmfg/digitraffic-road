@@ -361,10 +361,10 @@ public class RoadStation {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
-                .appendField("id", getId())
-                .appendField("naturalId", getNaturalId())
-                .appendField("name", getName())
-                .appendField("type", getType())
+                .appendField("id", id)
+                .appendField("naturalId", naturalId)
+                .appendField("name", name)
+                .appendField("type", type)
                 .toString();
     }
 }
