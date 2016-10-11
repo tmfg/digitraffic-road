@@ -54,17 +54,18 @@ public class RoadConditionsUpdater {
 
             if (coordinatesDto.isPresent()) {
                 forecastSection.getRoadSectionCoordinates().clear();
+
                 long orderNumber = 1;
                 for (Coordinate coordinate : coordinatesDto.get().getCoordinates()) {
                     if (!coordinate.isValid()) {
                         log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
                                  coordinate.toString() + ". Skipping coordinates save operation for this forecast section.");
-                        continue;
+                    } else {
+                        forecastSection.getRoadSectionCoordinates().add(
+                                new RoadSectionCoordinates(forecastSection, new RoadSectionCoordinatesPK(forecastSection.getId(), orderNumber),
+                                                           coordinate.longitude, coordinate.latitude));
+                        orderNumber++;
                     }
-                    forecastSection.getRoadSectionCoordinates().add(
-                            new RoadSectionCoordinates(forecastSection, new RoadSectionCoordinatesPK(forecastSection.getId(), orderNumber),
-                                                       coordinate.longitude, coordinate.latitude));
-                    orderNumber++;
                 }
             } else {
                 log.info("ForecastSection naturalId mismatch while saving road section coordinates. Forecast section coordinates for ForecastSection with naturalId: " +
