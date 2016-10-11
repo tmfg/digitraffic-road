@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,15 +55,15 @@ public class RoadConditionsUpdater {
             if (coordinatesDto.isPresent()) {
                 forecastSection.getRoadSectionCoordinates().clear();
                 long orderNumber = 1;
-                for (List<BigDecimal> coordinates : coordinatesDto.get().getCoordinates()) {
-                    if (!isValid(coordinates)) {
+                for (Coordinate coordinate : coordinatesDto.get().getCoordinates()) {
+                    if (!coordinate.isValid()) {
                         log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
-                                 StringUtils.join(coordinates, ", ") + ". Skipping coordinates save operation for this forecast section.");
+                                 coordinate.toString() + ". Skipping coordinates save operation for this forecast section.");
                         continue;
                     }
                     forecastSection.getRoadSectionCoordinates().add(
                             new RoadSectionCoordinates(forecastSection, new RoadSectionCoordinatesPK(forecastSection.getId(), orderNumber),
-                                                       coordinates.get(0), coordinates.get(1)));
+                                                       coordinate.longitude, coordinate.latitude));
                     orderNumber++;
                 }
             } else {
@@ -74,10 +73,6 @@ public class RoadConditionsUpdater {
         }
         forecastSectionRepository.save(forecastSections);
         forecastSectionRepository.flush();
-    }
-
-    private boolean isValid(List<BigDecimal> coordinates) {
-        return coordinates.size() == 2 && coordinates.get(0) != null && coordinates.get(1) != null;
     }
 
     private void printLogInfo(List<RoadSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {

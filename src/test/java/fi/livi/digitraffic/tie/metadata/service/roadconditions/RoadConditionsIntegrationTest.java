@@ -24,7 +24,7 @@ public class RoadConditionsIntegrationTest extends AbstractMetadataTest {
         assertEquals("00001_001_000_0", roadSectionCoordinates.get(0).getNaturalId());
         assertEquals("Vt 1: Helsinki - Kehä III", roadSectionCoordinates.get(0).getName());
         assertEquals(10, roadSectionCoordinates.get(0).getCoordinates().size());
-        assertEquals(BigDecimal.valueOf(24.944), roadSectionCoordinates.get(0).getCoordinates().get(0).get(0));
-        assertEquals(BigDecimal.valueOf(60.167), roadSectionCoordinates.get(0).getCoordinates().get(0).get(1));
+        assertEquals(BigDecimal.valueOf(24.944), roadSectionCoordinates.get(0).getCoordinates().get(0).longitude);
+        assertEquals(BigDecimal.valueOf(60.167), roadSectionCoordinates.get(0).getCoordinates().get(0).latitude);
     }
 }
