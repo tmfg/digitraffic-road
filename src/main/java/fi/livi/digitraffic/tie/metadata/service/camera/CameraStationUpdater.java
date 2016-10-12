@@ -134,7 +134,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             final EsiasentoVO esiasento = kameraEsiasentoPair.getRight();
             final KameraVO kamera = kameraEsiasentoPair.getLeft();
 
-            if (validate(kamera) ) {
+            if ( validate(kamera) ) {
 
                 final CameraPreset currentSaved = presetsMappedByPresetId.remove(presetIdEntrySet.getKey());
 
@@ -333,6 +333,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         to.setCameraLotjuId(kameraFrom.getId());
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
 
+        // For legacy
+        to.setRoadStationId(kameraFrom.getVanhaId().longValue());
+
         final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
         if (tsaLotjuId != null) {
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getLotjuId())) {
@@ -357,7 +360,11 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         int counter = 0;
         for (final CameraPreset cameraPreset : obsolete) {
             if (cameraPreset.obsolete()) {
-                log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                if (cameraPreset.getRoadStation() == null) {
+                    log.error("Obsolete CameraPreset id: " + cameraPreset.getId() + " with null roadStation");
+                } else {
+                    log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                }
                 counter++;
             }
         }

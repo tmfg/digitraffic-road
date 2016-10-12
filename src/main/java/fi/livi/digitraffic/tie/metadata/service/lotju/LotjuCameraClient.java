@@ -66,8 +66,11 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
                 final String kameraId = AbstractCameraStationUpdater.convertVanhaIdToKameraId(kamera.getVanhaId());
                 for (final EsiasentoVO esiasento : esiasennot) {
                     final String presetId = AbstractCameraStationUpdater.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
-
-                    presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
+                    if (AbstractCameraStationUpdater.validatePresetId(presetId)) {
+                        presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
+                    } else {
+                        log.error("Invalid cameraPresetId for " + ToStringHelpper.toString(kamera) + " and " + ToStringHelpper.toString(esiasento));
+                    }
                 }
             }
         }
