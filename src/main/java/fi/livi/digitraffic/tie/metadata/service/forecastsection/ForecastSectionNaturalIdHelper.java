@@ -16,9 +16,4 @@ public final class ForecastSectionNaturalIdHelper {
     public static int getRoadSectionVersionNumber(String naturalId) {
         return Integer.parseInt(naturalId.substring(10, 13));
     }
-
-    public static boolean equalsIgnoreVersion(String naturalId1, String naturalId2) {
-        return getRoadNumber(naturalId1) == getRoadNumber(naturalId2) &&
-               getRoadSectionNumber(naturalId1) == getRoadSectionNumber(naturalId2);
-    }
 }
