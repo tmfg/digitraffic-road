@@ -303,8 +303,16 @@ public class CameraPreset {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(final LocalDate obsoleteDate) {
+    private void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
+    }
+
+    public void setObsolete(final boolean obsolete) {
+        setObsoleteDate(obsolete && obsoleteDate == null ? LocalDate.now() : null);
+    }
+
+    public boolean isObsolete() {
+        return obsoleteDate != null;
     }
 
     public boolean isPublic() {

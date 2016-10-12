@@ -35,7 +35,7 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public Map<String, CameraPreset> finAllCamerasMappedByPresetId() {
+    public Map<String, CameraPreset> finAllCameraPresetsMappedByPresetId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
         final Map<String, CameraPreset> cameraMap = new HashMap<>();
 
@@ -65,7 +65,7 @@ public class CameraPresetService {
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                     Collections.emptyList() :
-                    cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(),
+                    findAllNonObsoleteCameraPresets(),
                 updated != null ? updated.getUpdated() : null);
     }
 
@@ -77,5 +77,10 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public List<CameraPreset> findCameraPresetByPresetIdIn(final Collection<String> presetIds) {
         return cameraPresetRepository.findCameraPresetByPresetIdIn(presetIds);
+    }
+
+    @Transactional
+    public List<CameraPreset> findAllNonObsoleteCameraPresets() {
+        return cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId();
     }
 }
