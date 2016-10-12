@@ -4,7 +4,8 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- Log message format -->
         <encoder>
-            <pattern>%date{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex</pattern>
+            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern -->
+            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
         </encoder>
     </appender>
 
@@ -16,6 +17,8 @@
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
+            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
+                 Useful if logged only oneliners to one file and full straces to other -->
             <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
         </encoder>
     </appender>
