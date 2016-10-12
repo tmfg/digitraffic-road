@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,12 +78,10 @@ public class RoadConditionsUpdater {
 
     private void printLogInfo(List<RoadSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {
 
-        Optional<Long> newCoordinatesCount = roadSectionCoordinates.stream().map(c -> c.getCoordinates().stream().count()).reduce((a, b) -> a + b);
+        int newCoordinatesCount = roadSectionCoordinates.stream().mapToInt(c -> c.getCoordinates().size()).sum();
 
-        Long existingCoordinatesCount = roadSectionCoordinatesRepository.count();
-
-        log.info("Updating road section coordinates. Number of coordinates in database: " + existingCoordinatesCount +
-                 ". Number of coordinates received for update: " + newCoordinatesCount.orElse(null));
+        log.info("Updating road section coordinates. Number of coordinates in database: " + roadSectionCoordinatesRepository.count() +
+                 ". Number of coordinates received for update: " + newCoordinatesCount);
         List<String> externalNaturalIds = roadSectionCoordinates.stream().map(c -> c.getNaturalId()).collect(Collectors.toList());
         List<String> existingNaturalIds = forecastSections.stream().map(f -> f.getNaturalId()).collect(Collectors.toList());
         List<String> newForecastSectionNaturalIds = externalNaturalIds.stream().filter(n -> !existingNaturalIds.contains(n)).collect(Collectors.toList());
