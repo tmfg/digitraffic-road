@@ -240,7 +240,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
             sw.reset();
             sw.start();
-            Assert.assertTrue(data.size() >= 50);
+            Assert.assertTrue(data.size() >= 25);
             cameraJmsMessageListener.handleData(data);
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");
