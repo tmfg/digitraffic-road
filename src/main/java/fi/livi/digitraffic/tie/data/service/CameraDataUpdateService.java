@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.FileHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
@@ -53,7 +54,7 @@ public class CameraDataUpdateService {
     public void updateCameraData(final List<Kuva> data) throws SQLException {
         HashMap<String, Kuva> presetIdToKuvaMap = new HashMap<>();
         for (Kuva kuva : data) {
-            presetIdToKuvaMap.put(resolvePresetId(kuva), kuva);
+            presetIdToKuvaMap.put(CameraHelper.resolvePresetId(kuva), kuva);
         }
 
         List<CameraPreset> cameraPresets = cameraPresetService.findCameraPresetByPresetIdIn(presetIdToKuvaMap.keySet());
@@ -107,6 +108,4 @@ public class CameraDataUpdateService {
             }
         }
     }
-
-
 }

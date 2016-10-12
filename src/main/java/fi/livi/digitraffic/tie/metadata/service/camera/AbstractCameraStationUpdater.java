@@ -1,9 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
@@ -23,8 +19,6 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationUpdater.class);
 
-    private static final Pattern cameraPresetIdPattern = Pattern.compile("^C[0-9]{7}$");
-
     protected RoadStationService roadStationService;
 
     public AbstractCameraStationUpdater(
@@ -40,7 +34,6 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
             to.obsolete();
         } else {
             to.setObsolete(false);
-            to.setObsoleteDate(null);
         }
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());
@@ -89,27 +82,5 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    public static String convertVanhaIdToKameraId(final Integer vanhaId) {
-        final String vanha = vanhaId.toString();
-        return StringUtils.leftPad(vanha, 6, "C00000");
-    }
 
-    public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
-        return cameraId + StringUtils.leftPad(suunta, 2, "00");
-    }
-
-    public static String convertPresetIdToCameraId(final String presetId) {
-        return presetId.substring(0, 6);
-    }
-
-    public static long convertPresetIdToVanhaId(final String presetId) {
-        String cameraId = convertPresetIdToCameraId(presetId);
-        cameraId = StringUtils.removeStart(cameraId, "C0");
-        return Long.parseLong(StringUtils.removeStart(cameraId, "C"));
-    }
-
-    public static boolean validatePresetId(String presetId) {
-        Matcher m = cameraPresetIdPattern.matcher(presetId);
-        return m.matches();
-    }
 }

@@ -17,7 +17,7 @@ public class CameraPresetServiceTest extends AbstractMetadataTest {
 
     @Test
     public void testFindAll() {
-        final Map<String, CameraPreset> all = cameraPresetService.finAllCamerasMappedByPresetId();
+        final Map<String, CameraPreset> all = cameraPresetService.finAllCameraPresetsMappedByPresetId();
         assertTrue(all.size() > 0);
     }
 }

@@ -84,6 +84,13 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
             stations.add(lam);
         }
 
+        log.info("Commit lotjuId changes");
+        assertTrue(TestTransaction.isActive());
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        assertFalse(TestTransaction.isActive());
+        log.info("Commit lotjuId done");
+
         log.info("Found " + stations.size() + " Weather Stations");
 
         Assert.assertTrue(stations.size() > 100);

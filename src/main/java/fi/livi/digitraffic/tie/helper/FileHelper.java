@@ -16,6 +16,8 @@ public class FileHelper {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
     private static final String OPEN_OS_FAIL_MESSAGE_START = "File '";
 
+    private FileHelper() {}
+
     /**
      * Loads data from given url and writes it to given file.
      * Implementation done based org.apache.commons.io.FileUtils implementation
