@@ -5,7 +5,6 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadSectionCoordinatesRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinates;
 import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinatesPK;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,17 +46,18 @@ public class RoadConditionsUpdater {
 
         roadSectionCoordinatesRepository.deleteAllInBatch();
 
+        Map<String, RoadSectionCoordinatesDto> naturalIdToRoadSectionCoordinates =
+                roadSectionCoordinates.stream().collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+
         for (ForecastSection forecastSection : forecastSections) {
 
-            Optional<RoadSectionCoordinatesDto> coordinatesDto = roadSectionCoordinates.stream()
-                    .filter(c -> ForecastSectionNaturalIdHelper.equalsIgnoreVersion(forecastSection.getNaturalId(), c.getNaturalId()))
-                    .findFirst();
+            RoadSectionCoordinatesDto coordinates = naturalIdToRoadSectionCoordinates.get(forecastSection.getNaturalId());
 
-            if (coordinatesDto.isPresent()) {
+            if (coordinates != null) {
                 forecastSection.getRoadSectionCoordinates().clear();
 
                 long orderNumber = 1;
-                for (Coordinate coordinate : coordinatesDto.get().getCoordinates()) {
+                for (Coordinate coordinate : coordinates.getCoordinates()) {
                     if (!coordinate.isValid()) {
                         log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
                                  coordinate.toString() + ". Skipping coordinates save operation for this forecast section.");
