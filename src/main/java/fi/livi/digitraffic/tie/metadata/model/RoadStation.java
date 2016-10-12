@@ -168,13 +168,14 @@ public class RoadStation {
 
     public void setObsolete(final boolean obsolete) {
         this.obsolete = obsolete;
+        setObsoleteDate(obsolete && obsoleteDate == null ? LocalDate.now() : null);
     }
 
     public LocalDate getObsoleteDate() {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(final LocalDate obsoleteDate) {
+    private void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
 
@@ -361,10 +362,10 @@ public class RoadStation {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
-                .appendField("id", getId())
-                .appendField("naturalId", getNaturalId())
-                .appendField("name", getName())
-                .appendField("type", getType())
+                .appendField("id", id)
+                .appendField("naturalId", naturalId)
+                .appendField("name", name)
+                .appendField("type", type)
                 .toString();
     }
 }

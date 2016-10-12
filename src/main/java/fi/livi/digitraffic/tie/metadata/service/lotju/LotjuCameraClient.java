@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
+import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksella;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksellaResponse;
@@ -63,11 +63,14 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
                 final List<EsiasentoVO> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
                 counter += esiasennot.size();
 
-                final String kameraId = AbstractCameraStationUpdater.convertVanhaIdToKameraId(kamera.getVanhaId());
+                final String kameraId = CameraHelper.convertVanhaIdToKameraId(kamera.getVanhaId());
                 for (final EsiasentoVO esiasento : esiasennot) {
-                    final String presetId = AbstractCameraStationUpdater.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
-
-                    presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
+                    final String presetId = CameraHelper.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
+                    if (CameraHelper.validatePresetId(presetId)) {
+                        presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
+                    } else {
+                        log.error("Invalid cameraPresetId for " + ToStringHelpper.toString(kamera) + " and " + ToStringHelpper.toString(esiasento));
+                    }
                 }
             }
         }

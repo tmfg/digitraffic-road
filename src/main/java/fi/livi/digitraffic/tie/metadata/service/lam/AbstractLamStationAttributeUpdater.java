@@ -33,7 +33,6 @@ public abstract class AbstractLamStationAttributeUpdater extends AbstractRoadSta
             to.obsolete();
         } else {
             to.setObsolete(false);
-            to.setObsoleteDate(null);
         }
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());

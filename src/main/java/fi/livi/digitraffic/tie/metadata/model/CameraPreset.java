@@ -38,7 +38,7 @@ public class CameraPreset {
     private Long lotjuId;
 
 
-    /** Old field, this station id ? */
+    /** Only for legacy soap-api = road station naturalId */
     @Column(name="ROADSTATION_ID")
     private Long roadStationId;
     /** Old field, means weather station? */
@@ -234,6 +234,9 @@ public class CameraPreset {
     }
 
     public void setRoadStation(final RoadStation roadStation) {
+        if (roadStation != null) {
+            setRoadStationId(roadStation.getNaturalId());
+        }
         this.roadStation = roadStation;
     }
 
@@ -270,8 +273,14 @@ public class CameraPreset {
         this.publicInternal = publicInternal;
     }
 
+    /** Only for legacy soap-api */
     public Long getRoadStationId() {
         return roadStation != null ? roadStation.getId() : null;
+    }
+
+    /** Only for legacy soap-api */
+    public void setRoadStationId(Long roadStationId) {
+        this.roadStationId = roadStationId;
     }
 
     public Long getRoadStationNaturalId() {
@@ -294,8 +303,16 @@ public class CameraPreset {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(final LocalDate obsoleteDate) {
+    private void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
+    }
+
+    public void setObsolete(final boolean obsolete) {
+        setObsoleteDate(obsolete && obsoleteDate == null ? LocalDate.now() : null);
+    }
+
+    public boolean isObsolete() {
+        return obsoleteDate != null;
     }
 
     public boolean isPublic() {
@@ -305,13 +322,12 @@ public class CameraPreset {
     @Override
     public String toString() {
         return new ToStringHelpper(this)
-                .appendField("presetId", getPresetId())
-                .appendField("id", getId())
-                .appendField("cameraId", getCameraId())
-                .appendField("lotjuId", this.getLotjuId())
+                .appendField("presetId", presetId)
+                .appendField("id", id)
+                .appendField("cameraId", cameraId)
+                .appendField("lotjuId", lotjuId)
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();
     }
-
 }

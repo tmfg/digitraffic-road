@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
@@ -91,9 +92,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
 
             // Convert presetId to naturalId because using cameraId is not reliable before first run
-            final long naturalId = convertPresetIdToVanhaId(cameraPreset.getPresetId());
+            final long naturalId = CameraHelper.convertPresetIdToVanhaId(cameraPreset.getPresetId());
             // Fix cameraId for all
-            cameraPreset.setCameraId(convertPresetIdToCameraId(cameraPreset.getPresetId()));
+            cameraPreset.setCameraId(CameraHelper.convertPresetIdToCameraId(cameraPreset.getPresetId()));
 
             final RoadStation existingRs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
 
@@ -120,7 +121,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
     private boolean updateCameras(final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraAndEsiasento) {
 
-        final Map<String, CameraPreset> presetsMappedByPresetId = cameraPresetService.finAllCamerasMappedByPresetId();
+        final Map<String, CameraPreset> presetsMappedByPresetId = cameraPresetService.finAllCameraPresetsMappedByPresetId();
 
         final List<CameraPreset> obsolete = new ArrayList<>(); // obsolete presets
         List<RoadStation> obsoleteRoadStations = new ArrayList<>(); // obsolete presets
@@ -134,7 +135,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             final EsiasentoVO esiasento = kameraEsiasentoPair.getRight();
             final KameraVO kamera = kameraEsiasentoPair.getLeft();
 
-            if (validate(kamera) ) {
+            if ( validate(kamera) ) {
 
                 final CameraPreset currentSaved = presetsMappedByPresetId.remove(presetIdEntrySet.getKey());
 
@@ -296,8 +297,8 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
-        final String cameraId = convertVanhaIdToKameraId(kameraFrom.getVanhaId());
-        final String presetId = convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
+        final String cameraId = CameraHelper.convertVanhaIdToKameraId(kameraFrom.getVanhaId());
+        final String presetId = CameraHelper.convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {
             log.warn("Update camera preset (id:" + to.getId() + ", presetId: " + to.getPresetId() + ") cameraId from " + to.getCameraId() + " to " + cameraId);
@@ -316,7 +317,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             to.setPresetId(presetId);
         }
         to.setLotjuId(esiasentoFrom.getId());
-        to.setObsoleteDate(null);
+        to.setObsolete(false);
         to.setPresetOrder(esiasentoFrom.getJarjestys());
         to.setPublicExternal(esiasentoFrom.isJulkinen());
         to.setInCollection(esiasentoFrom.isKeruussa());
@@ -332,6 +333,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         to.setCameraId(cameraId);
         to.setCameraLotjuId(kameraFrom.getId());
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
+
+        // For legacy
+        to.setRoadStationId(kameraFrom.getVanhaId().longValue());
 
         final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
         if (tsaLotjuId != null) {
@@ -357,7 +361,11 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         int counter = 0;
         for (final CameraPreset cameraPreset : obsolete) {
             if (cameraPreset.obsolete()) {
-                log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                if (cameraPreset.getRoadStation() == null) {
+                    log.error("Obsolete CameraPreset id: " + cameraPreset.getId() + " with null roadStation");
+                } else {
+                    log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                }
                 counter++;
             }
         }

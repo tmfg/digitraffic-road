@@ -65,7 +65,8 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
                     triesLeft = 0;
                 } catch (Exception fail) {
                     if (triesLeft <= 0) {
-                        throw new RuntimeException("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 3rd time - giving up");
+                        log.error("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 3rd time - giving up");
+                        throw fail;
                     }
                     try {
                         log.info("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " - " + triesLeft + " tries left");
