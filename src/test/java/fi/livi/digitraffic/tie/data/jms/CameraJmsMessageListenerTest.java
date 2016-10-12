@@ -230,7 +230,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
                 data.add(kuva);
                 xgcal.add(df.newDuration(1000));
-                if (data.size() >= 50) {
+                if (data.size() >= 25) {
                     break;
                 }
             }

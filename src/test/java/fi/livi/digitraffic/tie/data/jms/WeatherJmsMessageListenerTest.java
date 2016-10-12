@@ -233,7 +233,7 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
                 xgcal.add(df.newDuration(1000));
                 arvo = arvo + 0.1f;
 
-                if (data.size() >= 100) {
+                if (data.size() >= 50) {
                     break;
                 }
             }
