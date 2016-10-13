@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 @Service
 public class ForecastSectionService {
     private final ForecastSectionRepository forecastSectionRepository;
-    private StaticDataStatusService staticDataStatusService;
+    private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
     public ForecastSectionService(final ForecastSectionRepository forecastSectionRepository,
