@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaTyyppi;
+import io.swagger.annotations.ApiModel;
 
+@ApiModel(description = "TMS station type", value = "TmsStationType")
 public enum LamStationType {
 
     DSL("DSL"),

@@ -202,7 +202,7 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.5);
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.7);
         final List<Tiesaa> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;

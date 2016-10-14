@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.helper.DataValidyHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
@@ -90,7 +91,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
             }
-            f.setId(cp.getCameraId());
+            f.setId(ToStringHelpper.nullSafeToString(cp.getRoadStationNaturalId().toString()));
 
             final CameraProperties properties = f.getProperties();
 

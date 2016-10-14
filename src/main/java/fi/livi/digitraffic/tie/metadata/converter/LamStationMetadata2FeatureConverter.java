@@ -44,7 +44,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + lam);
         }
-        f.setId(lam.getNaturalId());
+        f.setId(lam.getRoadStationNaturalId());
 
         final LamStationProperties properties = f.getProperties();
 

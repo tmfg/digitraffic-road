@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON LamStationFeature Object
  */
-@ApiModel(description = "GeoJSON Feature Object", value = "LamStationFeature")
+@ApiModel(description = "GeoJSON Feature Object", value = "TmsStationFeature")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class LamStationFeature {
@@ -20,7 +20,7 @@ public class LamStationFeature {
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Same as lamId in LamStationProperties", required = true, position = 2)
+    @ApiModelProperty(value = "Same as TmsStationProperties.roadStationId", required = true, position = 2)
     @JsonPropertyOrder(value = "2")
     private long id;
 
@@ -30,7 +30,7 @@ public class LamStationFeature {
     private Point geometry;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Lam station properties", required = true, position = 4)
+    @ApiModelProperty(value = "TMS station properties", required = true, position = 4)
     @JsonPropertyOrder(value = "4")
     private LamStationProperties properties = new LamStationProperties();
 

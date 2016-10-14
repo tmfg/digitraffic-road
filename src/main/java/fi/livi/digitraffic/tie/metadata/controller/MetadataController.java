@@ -36,8 +36,8 @@ import io.swagger.annotations.ApiResponses;
 public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 
-    public static final String LAM_STATIONS_PATH = "/lam-stations";
-    public static final String LAM_STATIONS_AVAILABLE_SENSORS_PATH = "/lam-sensors";
+    public static final String LAM_STATIONS_PATH = "/tms-stations";
+    public static final String LAM_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
     public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
@@ -64,9 +64,9 @@ public class MetadataController {
         this.forecastSectionService = forecastSectionService;
     }
 
-    @ApiOperation("The static information of automatic Traffic Monitoring System stations (LAM/TMS stations)")
+    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = LAM_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Lam Station Feature Collections"),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public LamStationFeatureCollection listLamStations(
                 @ApiParam(value = "If parameter is given result will only contain update status.")
@@ -74,6 +74,18 @@ public class MetadataController {
                 boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_PATH);
         return lamStationService.findAllNonObsoletePublicLamStationsAsFeatureCollection(lastUpdated);
+    }
+
+    @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = LAM_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public RoadStationsSensorsMetadata listNonObsoleteLamStationSensors(
+            @ApiParam(value = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+                    boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_AVAILABLE_SENSORS_PATH);
+        return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.LAM_STATION, lastUpdated);
     }
 
     @ApiOperation("The static information of weather camera presets")
@@ -88,7 +100,7 @@ public class MetadataController {
         return cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(lastUpdated);
     }
 
-    @ApiOperation("The static information of Weather Stations")
+    @ApiOperation("The static information of weather stations")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Weather Feature Collections"),
                             @ApiResponse(code = 500, message = "Internal server error") })
@@ -110,18 +122,6 @@ public class MetadataController {
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
-    }
-
-    @ApiOperation("The static information of available sensors of lam stations")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Lam Station Sensors"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationsSensorsMetadata listNonObsoleteLamStationSensors(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_AVAILABLE_SENSORS_PATH);
-        return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.LAM_STATION, lastUpdated);
     }
 
     @ApiOperation("The static information of weather forecast sections")

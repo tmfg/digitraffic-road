@@ -19,7 +19,7 @@ public class WeatherStationFeature {
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Weather stationid, same as roadStationId in WeatherStationProperties", required = true, position = 2)
+    @ApiModelProperty(value = "Road station id, same as WeatherStationProperties.roadStationId", required = true, position = 2)
     private long id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)

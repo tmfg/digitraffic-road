@@ -195,7 +195,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000;
+        long maxHandleTime = testBurstsLeft * 2000;
         final List<Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();

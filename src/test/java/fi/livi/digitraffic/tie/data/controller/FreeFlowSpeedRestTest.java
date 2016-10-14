@@ -25,9 +25,9 @@ public class FreeFlowSpeedRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].lamNumber", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].tmsNumber", Matchers.notNullValue()));
     }
 
     @Test
@@ -44,16 +44,16 @@ public class FreeFlowSpeedRestTest extends RestTest {
     }
 
     @Test
-    public void testFreeFlowSpeedDataRestApiByLamId() throws Exception {
+    public void testFreeFlowSpeedDataRestApiByTmsId() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.FREE_FLOW_SPEEDS_PATH + "/lam/23001"))
+                DataController.FREE_FLOW_SPEEDS_PATH + "/tms/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamFreeFlowSpeeds[0].lamNumber", Matchers.notNullValue()));
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].tmsNumber", Matchers.notNullValue()));
     }
 }
