@@ -1,45 +1,25 @@
 package fi.livi.digitraffic.tie.metadata.model.location;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicUpdate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @DynamicUpdate
 public class LocationType {
     @Id
-    private String typeCodeFi;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
-    @JsonIgnore
-    private LocationClass locationClass;
-
-    private int typeCode;
+    private String typeCode;
 
     private String descriptionEn;
 
     private String descriptionFi;
 
-    public String getTypeCodeFi() {
-        return typeCodeFi;
-    }
-
-    public void setTypeCodeFi(String typeCodeFi) {
-        this.typeCodeFi = typeCodeFi;
-    }
-
     public String getDescriptionEn() {
         return descriptionEn;
     }
 
-    public void setDescriptionEn(String descriptionEn) {
+    public void setDescriptionEn(final String descriptionEn) {
         this.descriptionEn = descriptionEn;
     }
 
@@ -47,24 +27,16 @@ public class LocationType {
         return descriptionFi;
     }
 
-    public void setDescriptionFi(String descriptionFi) {
+    public void setDescriptionFi(final String descriptionFi) {
         this.descriptionFi = descriptionFi;
     }
 
-    public int getTypeCode() {
+    public String getTypeCode() {
         return typeCode;
     }
 
-    public void setTypeCode(int typeCode) {
+    public void setTypeCode(final String typeCode) {
         this.typeCode = typeCode;
-    }
-
-    public LocationClass getLocationClass() {
-        return locationClass;
-    }
-
-    public void setLocationClass(LocationClass locationClass) {
-        this.locationClass = locationClass;
     }
 }
 

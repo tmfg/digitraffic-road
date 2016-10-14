@@ -69,7 +69,7 @@ public class LocationService {
     }
 
     private LocationJsonObject convert(final Location l) {
-        return new LocationJsonObject(l.getLocationCode(), l.getLocationSubtype().getSubtypeCodeFi(), l.getRoadName(), l.getFirstName(), l.getSecondName(),
+        return new LocationJsonObject(l.getLocationCode(), l.getLocationSubtype().getSubtypeCode(), l.getRoadName(), l.getFirstName(), l.getSecondName(),
                 l.getAreaRef() == null ? null : l.getAreaRef().getLocationCode(),
                 l.getLinearRef() == null ? null : l.getLinearRef().getLocationCode(),
                 l.getNegOffset(), l.getPosOffset(), l.getUrban(), l.getWsg84Lat(), l.getWsg84Long());

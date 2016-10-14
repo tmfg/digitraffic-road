@@ -20,7 +20,7 @@ public class Location {
     private int locationCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subtype_code_fi", nullable = false)
+    @JoinColumn(name = "subtype_code", nullable = false)
     @JsonIgnore
     private LocationSubtype locationSubtype;
 
