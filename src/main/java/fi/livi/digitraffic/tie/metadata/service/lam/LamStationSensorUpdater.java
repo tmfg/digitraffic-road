@@ -80,7 +80,9 @@ public class LamStationSensorUpdater extends AbstractRoadStationSensorUpdater {
 
         // road station sensors in database, but not in server
         for (final RoadStationSensor obsoleteRoadStationSensor : currentNaturalIdToSensorMap.values()) {
-            obsolete.add(obsoleteRoadStationSensor);
+            if (!obsoleteRoadStationSensor.isStatusSensor()) {
+                obsolete.add(obsoleteRoadStationSensor);
+            }
         }
 
         if (invalid > 0) {
