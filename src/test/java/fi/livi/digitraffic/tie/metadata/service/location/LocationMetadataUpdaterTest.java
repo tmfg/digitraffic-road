@@ -10,29 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractMetadataTest;
 
-public class UpdateAllTest extends AbstractMetadataTest {
+public class LocationMetadataUpdaterTest extends AbstractMetadataTest {
     @Autowired
-    private LocationUpdater locationUpdater;
-
-    @Autowired
-    private LocationTypeUpdater locationTypeUpdater;
-
-    @Autowired
-    private LocationSubtypeUpdater locationSubtypeUpdater;
+    private LocationMetadataUpdater locationMetadataUpdater;
 
     @Test
-    @Rollback(false)
+    @Rollback(true)
     @Transactional
     public void testUpdateAll() {
         final Path locationsPath = new File(getClass().getResource(LocationUpdaterTest.XLSX_FILE_NAME).getFile()).toPath();
         final Path typesPath = new File(getClass().getResource(LocationTypeUpdaterTest.TYPES_FILE_NAME).getFile()).toPath();
         final Path subtypesPath = new File(getClass().getResource(LocationSubtypeUpdaterTest.SUBTYPES_FILE_NAME).getFile()).toPath();
 
-        locationTypeUpdater.updateLocationTypes(typesPath);
-        locationSubtypeUpdater.updateLocationSubtypes(subtypesPath);
-        locationUpdater.updateLocations(locationsPath);
-
-//        throw new IllegalArgumentException("rollback please");
+        locationMetadataUpdater.updateAll(typesPath, subtypesPath, locationsPath);
     }
-
 }

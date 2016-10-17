@@ -66,8 +66,8 @@ public class LocationReader {
         location.setWsg84Lat(parseDecimal(row.getCell(16)));
         location.setWsg84Long(parseDecimal(row.getCell(17)));
 
-        location.setLinearRef(parseReference(row.getCell(10), locationMap));
-        location.setAreaRef(parseReference(row.getCell(11), locationMap));
+        location.setAreaRef(parseReference(row.getCell(10), locationMap));
+        location.setLinearRef(parseReference(row.getCell(11), locationMap));
         location.setLocationSubtype(parseSubtype(row.getCell(3), row.getCell(4), row.getCell(5), subtypeMap));
 
         locationMap.put(location.getLocationCode(), location);
