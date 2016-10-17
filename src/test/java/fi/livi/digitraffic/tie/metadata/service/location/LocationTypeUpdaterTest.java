@@ -13,10 +13,12 @@ public class LocationTypeUpdaterTest extends AbstractMetadataTest {
     @Autowired
     private LocationTypeUpdater locationTypeUpdater;
 
+    public static final String TYPES_FILE_NAME = "/locations/TYPES.DAT";
+
     @Test
     @Transactional(readOnly = true)
     public void testUpdateLocationTypes() {
-        final Path path = new File(getClass().getResource("/locations/TYPES.DAT").getFile()).toPath();
+        final Path path = new File(getClass().getResource(TYPES_FILE_NAME).getFile()).toPath();
 
         locationTypeUpdater.updateLocationTypes(path);
     }

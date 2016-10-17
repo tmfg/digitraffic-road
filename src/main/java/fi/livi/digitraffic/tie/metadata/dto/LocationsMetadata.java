@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.dto;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
@@ -10,6 +12,7 @@ import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Locations, location types and location subtypes")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocationsMetadata extends RootDataObjectDto {
     private final List<LocationType> locationTypes;
     private final List<LocationSubtype> locationSubtypes;
@@ -24,7 +27,11 @@ public class LocationsMetadata extends RootDataObjectDto {
     }
 
     public LocationsMetadata(final LocalDateTime updateTime) {
-        this(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), updateTime);
+        this(null, null, null, updateTime);
+    }
+
+    public LocationsMetadata(final LocationJsonObject location, final LocalDateTime updateTime) {
+        this(null, null, Arrays.asList(location), updateTime);
     }
 
     public List<LocationSubtype> getLocationSubtypes() {

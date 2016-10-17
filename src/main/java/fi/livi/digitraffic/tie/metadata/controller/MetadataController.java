@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,7 +73,7 @@ public class MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Lam Station Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LamStationFeatureCollection listLamStations(
-                @ApiParam(value = "If parameter is given result will only contain update status.")
+                @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                 boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LAM_STATIONS_PATH);
@@ -84,7 +85,7 @@ public class MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public CameraStationFeatureCollection listNonObsoleteCameraPresets(
-                    @ApiParam(value = "If parameter is given result will only contain update status.")
+                    @ApiParam("If parameter is given result will only contain update status.")
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_STATIONS_PATH);
@@ -139,15 +140,25 @@ public class MetadataController {
         return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
     }
 
-    @ApiOperation("The static information locations")
+    @ApiOperation("The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationsMetadata listLocationSubtypes (
+    public LocationsMetadata listLocations (
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
         return locationService.findLocationsMetadata(lastUpdated);
+    }
+
+    @ApiOperation("The static information of one location")
+    @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public LocationsMetadata getLocation (
+            @PathVariable("id") final int id) {
+        log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);
+        return locationService.findLocation(id);
     }
 }

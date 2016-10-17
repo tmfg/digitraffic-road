@@ -97,7 +97,7 @@ public class LocationReader {
     }
 
     private BigDecimal parseDecimal(final Cell cell) {
-        return cell == null ? null : new BigDecimal(cell.getNumericCellValue());
+        return cell == null ? null : new BigDecimal(cell.getNumericCellValue()).setScale(5, BigDecimal.ROUND_HALF_UP);
     }
 
     private Location parseReference(final Cell cell, final Map<Integer, Location> locationMap) {

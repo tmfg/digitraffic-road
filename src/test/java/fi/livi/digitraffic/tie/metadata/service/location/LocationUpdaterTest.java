@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractMetadataTest;
 
@@ -12,12 +13,13 @@ public class LocationUpdaterTest extends AbstractMetadataTest {
     @Autowired
     private LocationUpdater locationUpdater;
 
+    public static final String XLSX_FILE_NAME = "/locations/Fi_Loc_singletable_ver2_4.xlsx";
+
     @Test
+    @Transactional(readOnly = true)
     public void testUpdateLocations() {
-        final Path path = new File(getClass().getResource("/locations/Fi_Loc_singletable_ver2_4.xlsx").getFile()).toPath();
+        final Path path = new File(getClass().getResource(XLSX_FILE_NAME).getFile()).toPath();
 
         locationUpdater.updateLocations(path);
-
     }
-
 }

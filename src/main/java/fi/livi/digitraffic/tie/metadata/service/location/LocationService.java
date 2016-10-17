@@ -64,8 +64,18 @@ public class LocationService {
         return new LocationsMetadata(
                 locationTypeRepository.findAll(),
                 locationSubtypeRepository.findAll(),
-                locationRepository.streamAll().parallel().map(this::convert).collect(Collectors.toList()),
+                locationRepository.findAll().parallelStream().map(this::convert).collect(Collectors.toList()),
                 updateTime);
+    }
+
+    @Transactional(readOnly = true)
+    public LocationsMetadata findLocation(final int id) {
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LOCATIONS);
+        final LocalDateTime updateTime = updated == null ? null : updated.getUpdated();
+
+        final Location location = locationRepository.findOne(id);
+
+        return location == null ? new LocationsMetadata(updateTime) : new LocationsMetadata(convert(location), updateTime);
     }
 
     private LocationJsonObject convert(final Location l) {

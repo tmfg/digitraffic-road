@@ -13,12 +13,13 @@ public class LocationSubtypeUpdaterTest extends AbstractMetadataTest {
     @Autowired
     private LocationSubtypeUpdater locationSubtypeUpdater;
 
+    public static final String SUBTYPES_FILE_NAME = "/locations/SUBTYPES.DAT";
+
     @Test
     @Transactional(readOnly = true)
     public void testUpdateLocationSubtypes() {
-        final Path path = new File(getClass().getResource("/locations/SUBTYPES.DAT").getFile()).toPath();
+        final Path path = new File(getClass().getResource(SUBTYPES_FILE_NAME).getFile()).toPath();
 
         locationSubtypeUpdater.updateLocationSubtypes(path);
     }
-
 }
