@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.conf.exception.JMSInitException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import progress.message.jclient.Connection;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
@@ -83,10 +84,16 @@ public abstract class AbstractJMSConfiguration<T> {
     public QueueConnectionFactory queueConnectionFactory(@Value("${jms.connectionUrls}")
                                                          final String jmsConnectionUrls) throws JMSException {
         QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
+
         connectionFactory.setSequential(true);
         connectionFactory.setFaultTolerant(true);
+        // How often to check idle connection status
         connectionFactory.setPingInterval(10);
+        // How soon to try next broker
         connectionFactory.setFaultTolerantReconnectTimeout(10);
+        // Maximum time to try establish socket connection
+        connectionFactory.setSocketConnectTimeout(10000);
+        // Maximum total time to try connection to different brokers
         connectionFactory.setInitialConnectTimeout(60);
         connectionFactory.setConnectionURLs(jmsConnectionUrls);
         return connectionFactory;
@@ -183,10 +190,9 @@ public abstract class AbstractJMSConfiguration<T> {
                     new JMSExceptionListener(connection,
                                              jmsParameters);
             connection.setExceptionListener(jmsExceptionListener);
-
-            log.info("Connection created for " + jmsParameters.getMessageListenerName() + ": " + connectionFactory.toString());
-            log.info("Is connection fault tolerant: " + ((progress.message.jclient.Connection)connection).isFaultTolerant());
-            log.info("Jms connection urls: " + connectionFactory.getConnectionURLs());
+            Connection sonicCon = (Connection) connection;
+            log.info("Connection created "  + jmsParameters.getMessageListenerName() + ": " + connectionFactory.toString());
+            log.info("Jms connection url " + sonicCon.getBrokerURL() + ", connection fault tolerant: " + sonicCon.isFaultTolerant() + ", broker urls: " + connectionFactory.getConnectionURLs());
             ConnectionMetaData meta = connection.getMetaData();
             log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
             // Reguire at least Sonic 8.6
