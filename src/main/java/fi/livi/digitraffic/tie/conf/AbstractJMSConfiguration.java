@@ -37,7 +37,6 @@ public abstract class AbstractJMSConfiguration<T> {
 
     private AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 10;
-    private static final int JMS_QUEUE_LOCK_EXPIRATION_S = 10;
     private final LockingService lockingService;
 
     private QueueConnection connection;
@@ -83,9 +82,13 @@ public abstract class AbstractJMSConfiguration<T> {
     @Bean
     public QueueConnectionFactory queueConnectionFactory(@Value("${jms.connectionUrls}")
                                                          final String jmsConnectionUrls) throws JMSException {
-        QueueConnectionFactory connectionFactory = new QueueConnectionFactory(jmsConnectionUrls);
+        QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
         connectionFactory.setSequential(true);
         connectionFactory.setFaultTolerant(true);
+        connectionFactory.setPingInterval(10);
+        connectionFactory.setFaultTolerantReconnectTimeout(10);
+        connectionFactory.setInitialConnectTimeout(60);
+        connectionFactory.setConnectionURLs(jmsConnectionUrls);
         return connectionFactory;
     }
 
@@ -139,7 +142,7 @@ public abstract class AbstractJMSConfiguration<T> {
      */
     @Scheduled(fixedRateString = "${jms.queue.pollingIntervalMs}")
     public void callMessageListenerDrainQueue() {
-        jmsParameters.getMessageListener().drainQueue(JMS_QUEUE_LOCK_EXPIRATION_S);
+        jmsParameters.getMessageListener().drainQueue();
     }
 
     @PreDestroy
@@ -182,6 +185,7 @@ public abstract class AbstractJMSConfiguration<T> {
             connection.setExceptionListener(jmsExceptionListener);
 
             log.info("Connection created for " + jmsParameters.getMessageListenerName() + ": " + connectionFactory.toString());
+            log.info("Is connection fault tolerant: " + ((progress.message.jclient.Connection)connection).isFaultTolerant());
             log.info("Jms connection urls: " + connectionFactory.getConnectionURLs());
             ConnectionMetaData meta = connection.getMetaData();
             log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());

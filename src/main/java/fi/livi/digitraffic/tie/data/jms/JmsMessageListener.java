@@ -98,26 +98,19 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     }
 
     /**
-     * Drain queue with fixed interval
-     * @param lockExpirationSeconds how long will this thread hold the lock for jms draining
+     * Drain queue and calls handleData if data available.
      */
-    public void drainQueue(int lockExpirationSeconds) {
+    public void drainQueue() {
         if ( !shutdownCalled.get() ) {
             long start = System.currentTimeMillis();
             // Allocate array with some extra because queue size can change any time
             ArrayList<T> targetList = new ArrayList<>(blockingQueue.size() + 5);
             int drained = blockingQueue.drainTo(targetList);
-            if ( drained > 0 &&
-                // Don't relase lock to keep execution only in this thread. If this thread hangs,
-                // other instance will start excecuting after lock has been expired.
-                lockingService.aquireLock(name, lockInstaceId, lockExpirationSeconds)) {
-
-                log.info("Lock for " + name + " / "+ lockInstaceId);
+            if ( drained > 0 ) {
+                log.info("Handle data for " + name + " / "+ lockInstaceId);
                 handleData(targetList);
                 long took = System.currentTimeMillis() - start;
                 log.info(name + " drainQueue of size " + drained + " took " + took + " ms");
-            } else if (drained > 0) {
-                log.info("No lock for " + name + " / "+ lockInstaceId + " dismissed " + drained + " messages");
             }
         }
     }
