@@ -79,9 +79,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
 
         // road station sensors in database, but not in server
         for (final RoadStationSensor obsoleteRoadStationSensor : currentNaturalIdToSensorMap.values()) {
-            if (!obsoleteRoadStationSensor.isStatusSensor()) {
-                obsolete.add(obsoleteRoadStationSensor);
-            }
+            obsolete.add(obsoleteRoadStationSensor);
         }
 
         if (invalid > 0) {
