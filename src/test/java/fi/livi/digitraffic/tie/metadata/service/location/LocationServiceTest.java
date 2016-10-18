@@ -13,7 +13,7 @@ public class LocationServiceTest extends AbstractMetadataTest {
 
     @Test
     public void testListAllLocationTypes() {
-        Assert.assertThat(locationService.listAllLocationTypes(), IsCollectionWithSize.hasSize(9));
+        Assert.assertThat(locationService.listAllLocationTypes(), IsCollectionWithSize.hasSize(7));
     }
 
     @Test
