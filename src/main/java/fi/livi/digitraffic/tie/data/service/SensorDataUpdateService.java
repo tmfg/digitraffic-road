@@ -31,12 +31,13 @@ public class SensorDataUpdateService {
 
     private static final String INSERT_STATEMENT =
             "INSERT INTO SENSOR_VALUE \n" +
-            "  (id, road_station_id, road_station_sensor_id, value, measured)\n" +
+            "  (id, road_station_id, road_station_sensor_id, value, measured, updated)\n" +
             "       ( SELECT SEQ_SENSOR_VALUE.nextval AS id\n" +
             "              , station.id AS road_station_id\n" +
             "              , sensor.id AS road_station_sensor_id\n" +
             "              , :value AS value\n" +
             "              , :measured AS measured\n" +
+            "              , sysdate AS updated\n" +
             "         FROM ROAD_STATION_SENSOR sensor\n" +
             "            , ROAD_STATION station\n" +
             "         WHERE station.lotju_id = :rsLotjuId\n" +
@@ -60,6 +61,7 @@ public class SensorDataUpdateService {
             "              , dst.road_station_id dst_rs_id\n" +
             "              , dst.value dst_value\n" +
             "              , dst.measured dst_measured\n" +
+            "              , dst.updated dst_updated\n" +
             "         FROM ROAD_STATION_SENSOR sensor\n" +
             "            , ROAD_STATION station\n" +
             "            , SENSOR_VALUE dst\n" +
@@ -70,7 +72,8 @@ public class SensorDataUpdateService {
             "           AND dst.road_station_sensor_id = sensor.id\n" +
             "           AND dst.road_station_id = station.id )\n" +
             "SET dst_value = value\n" +
-            "  , dst_measured = sensorValueMeasured";
+            "  , dst_measured = sensorValueMeasured\n" +
+            "  , dst_updated = sysdate";
 
     @Autowired
     public SensorDataUpdateService(final DataSource dataSource) throws SQLException {
