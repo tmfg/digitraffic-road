@@ -11,8 +11,6 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @DynamicUpdate
 public class Location {
@@ -21,9 +19,9 @@ public class Location {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subtype_code", nullable = false)
-    @JsonIgnore
     private LocationSubtype locationSubtype;
 
+    private String roadJunction;
     private String roadName;
     private String firstName;
     private String secondName;
@@ -46,6 +44,9 @@ public class Location {
 
     @Column(name = "wsg84_long")
     private BigDecimal wsg84Long;
+
+    private String negDirection;
+    private String posDirection;
 
     public int getLocationCode() {
         return locationCode;
@@ -141,5 +142,29 @@ public class Location {
 
     public void setWsg84Long(BigDecimal wsg84Long) {
         this.wsg84Long = wsg84Long;
+    }
+
+    public String getRoadJunction() {
+        return roadJunction;
+    }
+
+    public void setRoadJunction(String roadJunction) {
+        this.roadJunction = roadJunction;
+    }
+
+    public String getNegDirection() {
+        return negDirection;
+    }
+
+    public void setNegDirection(String negDirection) {
+        this.negDirection = negDirection;
+    }
+
+    public String getPosDirection() {
+        return posDirection;
+    }
+
+    public void setPosDirection(String posDirection) {
+        this.posDirection = posDirection;
     }
 }

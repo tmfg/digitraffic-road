@@ -3,10 +3,12 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.metadata.dao.location.LocationJsonConverter;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
@@ -64,7 +66,7 @@ public class LocationService {
         return new LocationsMetadata(
                 locationTypeRepository.findAll(),
                 locationSubtypeRepository.findAll(),
-                locationRepository.findAll().parallelStream().map(this::convert).collect(Collectors.toList()),
+                Stream.of(locationRepository.findAllLocations()).parallel().map(LocationJsonConverter::convert).collect(Collectors.toList()),
                 updateTime);
     }
 
@@ -73,15 +75,8 @@ public class LocationService {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LOCATIONS);
         final LocalDateTime updateTime = updated == null ? null : updated.getUpdated();
 
-        final Location location = locationRepository.findOne(id);
+        final Object[][] location = locationRepository.findLocation(id);
 
-        return location == null ? new LocationsMetadata(updateTime) : new LocationsMetadata(convert(location), updateTime);
-    }
-
-    private LocationJsonObject convert(final Location l) {
-        return new LocationJsonObject(l.getLocationCode(), l.getLocationSubtype().getSubtypeCode(), l.getRoadName(), l.getFirstName(), l.getSecondName(),
-                l.getAreaRef() == null ? null : l.getAreaRef().getLocationCode(),
-                l.getLinearRef() == null ? null : l.getLinearRef().getLocationCode(),
-                l.getNegOffset(), l.getPosOffset(), l.getUrban(), l.getWsg84Lat(), l.getWsg84Long());
+        return location.length > 0 ? new LocationsMetadata(LocationJsonConverter.convert(location[0]), updateTime) : new LocationsMetadata(updateTime);
     }
 }

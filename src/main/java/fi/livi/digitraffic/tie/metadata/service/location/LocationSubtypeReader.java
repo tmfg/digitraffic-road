@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
@@ -7,7 +8,7 @@ import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 @Component
 public class LocationSubtypeReader extends AbstractReader<LocationSubtype> {
     @Override protected LocationSubtype convert(final String line) {
-        final String components[] = line.split(DELIMETER);
+        final String components[] = StringUtils.splitPreserveAllTokens(line, DELIMETER);
 
         final LocationSubtype newType = new LocationSubtype();
 

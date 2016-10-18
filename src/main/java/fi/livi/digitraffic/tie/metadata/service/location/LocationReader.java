@@ -57,6 +57,7 @@ public class LocationReader {
         final Location location = new Location();
 
         location.setLocationCode((int)row.getCell(2).getNumericCellValue());
+        location.setRoadJunction(parseString(row.getCell(6)));
         location.setRoadName(parseString(row.getCell(7)));
         location.setFirstName(parseString(row.getCell(8)));
         location.setSecondName(parseString(row.getCell(9)));
@@ -65,6 +66,8 @@ public class LocationReader {
         location.setUrban(parseBoolean(row.getCell(14)));
         location.setWsg84Lat(parseDecimal(row.getCell(16)));
         location.setWsg84Long(parseDecimal(row.getCell(17)));
+        location.setPosDirection(parseString(row.getCell(21)));
+        location.setNegDirection(parseString(row.getCell(22)));
 
         location.setAreaRef(parseReference(row.getCell(10), locationMap));
         location.setLinearRef(parseReference(row.getCell(11), locationMap));

@@ -54,6 +54,7 @@ public class LocationUpdater {
 
     private void mergeLocation(final Location oldLocation, final Location newLocation) {
         oldLocation.setLocationSubtype(newLocation.getLocationSubtype());
+        oldLocation.setRoadJunction(newLocation.getRoadJunction());
         oldLocation.setRoadName(newLocation.getRoadName());
         oldLocation.setFirstName(newLocation.getFirstName());
         oldLocation.setSecondName(newLocation.getSecondName());
@@ -64,5 +65,7 @@ public class LocationUpdater {
         oldLocation.setUrban(newLocation.getUrban());
         oldLocation.setWsg84Lat(newLocation.getWsg84Lat());
         oldLocation.setWsg84Long(newLocation.getWsg84Long());
+        oldLocation.setNegDirection(newLocation.getNegDirection());
+        oldLocation.setPosDirection(newLocation.getPosDirection());
     }
 }
