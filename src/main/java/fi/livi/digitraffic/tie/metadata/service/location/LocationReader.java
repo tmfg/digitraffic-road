@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,7 +33,7 @@ public class LocationReader {
         this.locationSubtypeRepository = locationSubtypeRepository;
     }
 
-    public List<Location> readLocations(final List<Location> oldLocations, final Path path) {
+    public List<Location> readLocations(final List<Location> oldLocations, final Path path) throws IOException {
         final Map<Integer, Location> locationMap = oldLocations.stream().collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
         final Map<String, LocationSubtype> subtypeMap = locationSubtypeRepository.findAll().stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
 
@@ -44,13 +42,7 @@ public class LocationReader {
             final XSSFSheet s = book.getSheetAt(0);
 
             return StreamSupport.stream(s.spliterator(), false).skip(1).map(r -> convert(r, locationMap, subtypeMap)).collect(Collectors.toList());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-        return Collections.emptyList();
     }
 
     private Location convert(final Row row, final Map<Integer, Location> locationMap, final Map<String, LocationSubtype> subtypeMap) {

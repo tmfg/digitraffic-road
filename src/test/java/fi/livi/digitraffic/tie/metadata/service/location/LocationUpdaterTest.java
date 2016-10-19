@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class LocationUpdaterTest extends AbstractMetadataTest {
 
     @Test
     @Transactional(readOnly = true)
-    public void testUpdateLocations() {
+    public void testUpdateLocations() throws IOException {
         final Path path = new File(getClass().getResource(XLSX_FILE_NAME).getFile()).toPath();
 
         locationUpdater.updateLocations(path);

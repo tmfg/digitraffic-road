@@ -12,7 +12,6 @@ import fi.livi.digitraffic.tie.metadata.dao.location.LocationJsonConverter;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
-import fi.livi.digitraffic.tie.metadata.dto.LocationJsonObject;
 import fi.livi.digitraffic.tie.metadata.dto.LocationsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;

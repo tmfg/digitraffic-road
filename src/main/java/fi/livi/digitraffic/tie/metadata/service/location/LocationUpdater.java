@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class LocationUpdater {
         this.locationReader = locationReader;
     }
 
-    public void updateLocations(final Path path) {
+    public void updateLocations(final Path path) throws IOException {
         final List<Location> oldLocations = locationRepository.findAll();
         final List<Location> newLocations = locationReader.readLocations(oldLocations, path);
 
