@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model.location;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -37,6 +39,10 @@ public class LocationType {
 
     public void setTypeCode(final String typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public boolean validate() {
+        return isNotEmpty(typeCode) && isNotEmpty(descriptionEn) && isNotEmpty(descriptionFi);
     }
 }
 

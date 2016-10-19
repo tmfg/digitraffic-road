@@ -17,7 +17,13 @@ public class LocationSubtypeReader extends AbstractReader<LocationSubtype> {
             newType.setDescriptionEn(components[3]);
             newType.setDescriptionFi(components[5]);
         } catch(final Exception e) {
-            log.info("exception when reading line " + line, e);
+            log.info("Exception when reading line " + line, e);
+
+            return null;
+        }
+
+        if(!newType.validate()) {
+            log.error("Could not validate new LocationSubType:" + line);
 
             return null;
         }
