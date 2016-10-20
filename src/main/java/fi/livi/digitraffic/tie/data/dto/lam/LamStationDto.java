@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "LamStationData", description = "Lam Station with sensor values", parent = AbstractStationWithSensorsDto.class)
-@JsonPropertyOrder( value = {"id", "lamNumber", "measuredLocalTime", "measuredUtc", "sensorValues"})
+@ApiModel(value = "TmsStationData", description = "TMS station with sensor values", parent = AbstractStationWithSensorsDto.class)
+@JsonPropertyOrder( value = {"id", "tmsNumber", "measuredLocalTime", "measuredUtc", "sensorValues"})
 public class LamStationDto extends AbstractStationWithSensorsDto {
 
-    @ApiModelProperty(value = "Lam number", required = true)
-    @JsonProperty(value = "lamNumber")
+    @ApiModelProperty(value = "TMS station number", required = true)
+    @JsonProperty(value = "tmsNumber")
     private long lamStationNaturalId;
 
     public long getLamStationNaturalId() {

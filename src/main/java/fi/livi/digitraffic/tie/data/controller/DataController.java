@@ -46,7 +46,7 @@ public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String LAM_DATA_PATH = "/lam-data";
+    public static final String LAM_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
 
     public static final String ROAD_STATION_STATUSES_PATH = "/road-station-statuses";
@@ -177,15 +177,15 @@ public class DataController {
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(id);
     }
 
-    @ApiOperation("Current free flow speeds of LAM station")
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/lam/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public FreeFlowSpeedRootDataObjectDto listLamFreeFlowSpeeds(
-            @ApiParam("Lam station id")
+    public FreeFlowSpeedRootDataObjectDto listTmsFreeFlowSpeeds(
+            @ApiParam("TMS station id")
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/lam/" + id);
+        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/tms/" + id);
         return freeFlowSpeedService.listLamsPublicFreeFlowSpeeds(id);
     }
 
@@ -213,9 +213,9 @@ public class DataController {
         return cameraDataService.findPublicCameraStationsData(id);
     }
 
-    @ApiOperation("Current data of Lam Stations (TMS)")
+    @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Lam Station data"),
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LamRootDataObjectDto listLamStationData(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -225,12 +225,12 @@ public class DataController {
         return lamDataService.findPublicLamData(lastUpdated);
     }
 
-    @ApiOperation("Current data of Lam Station (TMS)")
+    @ApiOperation("Current data of TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LamRootDataObjectDto listLamStationData(
-            @ApiParam("Lam Station id")
+            @ApiParam("TMS Station id")
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "/" + id);

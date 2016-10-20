@@ -25,6 +25,9 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 public abstract class JmsMessageListener<T> implements MessageListener {
 
     private static final Logger log = LoggerFactory.getLogger(JmsMessageListener.class);
+    private static final int MAX_NORMAL_QUEUE_SIZE = 100;
+    private static final int QUEUE_SIZE_WARNING_LIMIT = 2 * MAX_NORMAL_QUEUE_SIZE;
+    private static final int QUEUE_SIZE_ERROR_LIMIT = 10 * MAX_NORMAL_QUEUE_SIZE;
 
     private final JAXBContext jaxbContext;
     private final String name;
@@ -74,6 +77,11 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             log.info(name + " received " + message.getClass().getSimpleName());
             T data = unmarshalMessage(message);
             blockingQueue.add(data);
+            if (blockingQueue.size() > QUEUE_SIZE_ERROR_LIMIT) {
+                log.error("JMS message queue size " + blockingQueue.size() + " exceeds error limit " + QUEUE_SIZE_ERROR_LIMIT);
+            } else if (blockingQueue.size() > QUEUE_SIZE_WARNING_LIMIT) {
+                log.warn("JMS message queue size " + blockingQueue.size() + " exceeds warning limit " + QUEUE_SIZE_WARNING_LIMIT);
+            }
         } else {
             log.error("Not handling any messages anymore because app is shutting down");
         }
@@ -98,26 +106,19 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     }
 
     /**
-     * Drain queue with fixed interval
-     * @param lockExpirationSeconds how long will this thread hold the lock for jms draining
+     * Drain queue and calls handleData if data available.
      */
-    public void drainQueue(int lockExpirationSeconds) {
+    public void drainQueue() {
         if ( !shutdownCalled.get() ) {
             long start = System.currentTimeMillis();
             // Allocate array with some extra because queue size can change any time
             ArrayList<T> targetList = new ArrayList<>(blockingQueue.size() + 5);
             int drained = blockingQueue.drainTo(targetList);
-            if ( drained > 0 &&
-                // Don't relase lock to keep execution only in this thread. If this thread hangs,
-                // other instance will start excecuting after lock has been expired.
-                lockingService.aquireLock(name, lockInstaceId, lockExpirationSeconds)) {
-
-                log.info("Lock for " + name + " / "+ lockInstaceId);
+            if ( drained > 0 ) {
+                log.info("Handle data for " + name + " / "+ lockInstaceId);
                 handleData(targetList);
                 long took = System.currentTimeMillis() - start;
                 log.info(name + " drainQueue of size " + drained + " took " + took + " ms");
-            } else if (drained > 0) {
-                log.info("No lock for " + name + " / "+ lockInstaceId + " dismissed " + drained + " messages");
             }
         }
     }

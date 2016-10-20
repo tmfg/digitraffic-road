@@ -212,6 +212,10 @@ public class ToStringHelpper {
         return sb.toString();
     }
 
+    public static String nullSafeToString(Object o) {
+        return o != null ? o.toString() : null;
+    }
+
     public enum TimestampFormat {
         ISO_8601_UTC,
         ISO_8601_WITH_ZONE_OFFSET

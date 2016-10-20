@@ -195,7 +195,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000;
+        long maxHandleTime = testBurstsLeft * 2000;
         final List<Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
@@ -230,7 +230,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
                 data.add(kuva);
                 xgcal.add(df.newDuration(1000));
-                if (data.size() >= 50) {
+                if (data.size() >= 25) {
                     break;
                 }
             }
@@ -240,7 +240,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
             sw.reset();
             sw.start();
-            Assert.assertTrue(data.size() >= 50);
+            Assert.assertTrue(data.size() >= 25);
             cameraJmsMessageListener.handleData(data);
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");

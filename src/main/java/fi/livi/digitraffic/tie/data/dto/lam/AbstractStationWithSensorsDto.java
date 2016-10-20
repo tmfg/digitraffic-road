@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "LamStationData", description = "Lam Station with sensor values", parent = AbstractStationWithSensorsDto.class)
+@ApiModel(value = "LamStationData", description = "TMS Station with sensor values", parent = AbstractStationWithSensorsDto.class)
 @JsonPropertyOrder( value = {"id", "lamNumber", "measuredLocalTime", "measuredUtc", "sensorValues"})
 public abstract class AbstractStationWithSensorsDto {
 

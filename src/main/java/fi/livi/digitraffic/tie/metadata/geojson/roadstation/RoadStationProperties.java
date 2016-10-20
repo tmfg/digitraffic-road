@@ -26,7 +26,7 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Road station's lotju id")
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Road station's natural id", required = true)
+    @ApiModelProperty(value = "Road station's id (naturalId)", required = true)
     @JsonProperty("roadStationId")
     private long naturalId;
 

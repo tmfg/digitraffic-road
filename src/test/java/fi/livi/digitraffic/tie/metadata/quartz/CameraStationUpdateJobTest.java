@@ -148,6 +148,6 @@ public class CameraStationUpdateJobTest extends AbstractMetadataTest {
     }
 
     private CameraStationFeature findWithCameraId(final CameraStationFeatureCollection collection, final String cameraId) {
-        return collection.getFeatures().stream().filter(x -> x.getId().endsWith(cameraId)).findFirst().orElseGet(null);
+        return collection.getFeatures().stream().filter(x -> x.getProperties().getCameraId().endsWith(cameraId)).findFirst().orElseGet(null);
     }
 }

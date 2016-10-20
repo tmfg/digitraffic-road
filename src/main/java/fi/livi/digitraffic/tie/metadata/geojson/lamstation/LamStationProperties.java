@@ -9,24 +9,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.LamStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Lam station properties", value = "LamStationProperties", parent = WeatherStationProperties.class)
+@ApiModel(description = "TMS station properties", value = "TmsStationProperties", parent = RoadStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "lamNaturalId", "naturalId", "name" })
+@JsonPropertyOrder({ "roadStationId", "tmsNumber", "name" })
 public class LamStationProperties extends RoadStationProperties {
 
-    @ApiModelProperty(value = "Lam station's unique id")
     @JsonIgnore // Using road station's natural id
     private long id;
 
     // lam aseman naturalId
-    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
-    @JsonProperty(value = "lamId")
+    @ApiModelProperty(value = "TMS station number (naturalId)", required = true)
+    @JsonProperty(value = "tmsNumber")
     private long lamNaturalId;
 
     @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
@@ -41,7 +39,8 @@ public class LamStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Direction 2 municipality code")
     private Integer direction2MunicipalityCode;
 
-    @ApiModelProperty(value = "Type of  lam station")
+    @ApiModelProperty(value = "Type of  TMS station")
+    @JsonProperty(value = "tmsStationType")
     private LamStationType lamStationType;
 
     @ApiModelProperty(value = "Type of calculation device")

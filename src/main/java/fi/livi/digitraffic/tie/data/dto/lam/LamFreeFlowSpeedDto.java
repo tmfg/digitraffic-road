@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "LamFreeFlowSpeedData")
+@ApiModel(value = "TmsFreeFlowSpeedData")
 @Entity
 @Immutable
 public class LamFreeFlowSpeedDto {
 
     @Id
     @JsonProperty("id")
-    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
+    @ApiModelProperty(value = "TMS station identifier (naturalId)", required = true)
     private long roadStationNaturalId;
 
-    @JsonProperty("lamNumber")
-    @ApiModelProperty(value = "LAM station identifier (naturalId)", required = true)
+    @JsonProperty("tmsNumber")
+    @ApiModelProperty(value = "TMS station number", required = true)
     private long lamNaturalId;
 
     @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]", required = true)
@@ -29,8 +29,6 @@ public class LamFreeFlowSpeedDto {
 
     @ApiModelProperty(value = "Free flow speed to direction 2 [km/h]", required = true)
     private double freeFlowSpeed2;
-
-
 
     public double getFreeFlowSpeed1() {
         return freeFlowSpeed1;

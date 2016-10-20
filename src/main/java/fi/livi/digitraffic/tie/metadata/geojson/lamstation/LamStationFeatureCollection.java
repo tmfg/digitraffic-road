@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection of Lam Stations", value = "LamStationFeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of TMS stations", value = "LamStationFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
 public class LamStationFeatureCollection extends RootDataObjectDto implements Iterable<LamStationFeature> {
 

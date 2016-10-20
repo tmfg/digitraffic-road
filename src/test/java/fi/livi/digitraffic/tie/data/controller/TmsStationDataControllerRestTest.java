@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.RestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class LamStationDataControllerRestTest extends RestTest {
+public class TmsStationDataControllerRestTest extends RestTest {
 
     @Test
-    public void testLamDataRestApi() throws Exception {
+    public void testTmsDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.LAM_DATA_PATH))
@@ -24,19 +24,19 @@ public class LamStationDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
 
-                .andExpect(jsonPath("$.lamStations", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamStations[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.lamStations[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tmsStations[0].measuredUtc", Matchers.isA(String.class)))
 
-                .andExpect(jsonPath("$.lamStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].sensorValues[0].name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
         ;
     }
 
     @Test
-    public void testLamDataRestApiById() throws Exception {
+    public void testTmsDataRestApiById() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.LAM_DATA_PATH + "/23001"))
@@ -45,14 +45,14 @@ public class LamStationDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
 
-                .andExpect(jsonPath("$.lamStations", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.lamStations[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.lamStations[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].measuredLocalTime", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.tmsStations[0].measuredUtc", Matchers.isA(String.class)))
 
-                .andExpect(jsonPath("$.lamStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].sensorValues[0].name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.lamStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
         ;
     }
 }

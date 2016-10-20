@@ -22,7 +22,7 @@ public class CameraStationFeature {
     private final String type = "Feature";
 
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @ApiModelProperty(value = "Camera id", required = true, position = 2)
+    @ApiModelProperty(value = "Road station id, same as CameraStationProperties.roadStationId", required = true, position = 2)
     private String id;
 
     @JsonInclude(JsonInclude.Include.ALWAYS)

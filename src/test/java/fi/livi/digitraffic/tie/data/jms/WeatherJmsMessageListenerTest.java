@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,11 +59,11 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
     @Autowired
     LockingService lockingService;
 
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
+
     @Before
     public void setUpTestData() {
-        // Currently slow ass hell
-        // TODO: Generate data with direct sql
-
         // Generate test-data: WeatherStations with sensors
         Map<Long, WeatherStation> lamsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
         Set<Long> usedLotjuIds = new HashSet<>(lamsWithLotjuId.keySet());
@@ -84,13 +85,6 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
             stations.add(lam);
         }
 
-        log.info("Commit lotjuId changes");
-        assertTrue(TestTransaction.isActive());
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        assertFalse(TestTransaction.isActive());
-        log.info("Commit lotjuId done");
-
         log.info("Found " + stations.size() + " Weather Stations");
 
         Assert.assertTrue(stations.size() > 100);
@@ -108,23 +102,33 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
             }
         }
 
-        log.info("Add available sensors for Weather Stations");
-        for (WeatherStation station : stations) {
-            List<RoadStationSensor> currentSensors = station.getRoadStation().getRoadStationSensors();
-            Map<Long, RoadStationSensor> currentStationSensorsMapById = currentSensors.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
-            for (RoadStationSensor availableSensor : availableSensors) {
-                if (!currentStationSensorsMapById.keySet().contains(availableSensor.getId())) {
-                    currentSensors.add(availableSensor);
-                }
-            }
-        }
+        String merge =
+                "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
+                "USING (\n" +
+                "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
+                "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
+                "  WHERE S.OBSOLETE = 0\n" +
+                "    AND S.ROAD_STATION_TYPE = 'WEATHER_STATION'\n" +
+                "    AND EXISTS (\n" +
+                "      SELECT NULL\n" +
+                "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
+                "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
+                "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
+                "   )\n" +
+                "   AND RS.ROAD_STATION_TYPE = 'WEATHER_STATION'\n" +
+                "   AND RS.OBSOLETE_DATE IS NULL\n" +
+                ") SRC\n" +
+                "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
+                "WHEN NOT MATCHED THEN INSERT (TGT.ROAD_STATION_ID, TGT.ROAD_STATION_SENSOR_ID)\n" +
+                "     VALUES (SRC.ROAD_STATION_ID, SRC.ROAD_STATION_SENSOR_ID)";
+        jdbcTemplate.execute(merge);
+
         log.info("Commit changes");
         assertTrue(TestTransaction.isActive());
         TestTransaction.flagForCommit();
         TestTransaction.end();
         assertFalse(TestTransaction.isActive());
         log.info("Commit done");
-        // Now we have stations with sensors and lotjuid:s that we can update
     }
 
     @After
@@ -198,7 +202,7 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.5);
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.7);
         final List<Tiesaa> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
@@ -229,7 +233,7 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
                 xgcal.add(df.newDuration(1000));
                 arvo = arvo + 0.1f;
 
-                if (data.size() >= 100) {
+                if (data.size() >= 50) {
                     break;
                 }
             }

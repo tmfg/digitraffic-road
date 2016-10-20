@@ -33,7 +33,7 @@ public class WeatherStationMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
 //                .andExpect(jsonPath("$.features[0].properties.weatherStationType", is("ROSA")))
                 .andExpect(jsonPath("$.features[0].properties.weatherStationType", isA(String.class)))
-//                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.roadStationId", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))

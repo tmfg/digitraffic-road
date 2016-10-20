@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
 
-public class LamMetadataControllerRestTest extends MetadataRestTest {
+public class TmsMetadataControllerRestTest extends MetadataRestTest {
 
     @Autowired
     private LamMetatiedotLotjuServiceMock lamMetatiedotLotjuServiceMock;
@@ -33,7 +33,7 @@ public class LamMetadataControllerRestTest extends MetadataRestTest {
     private LamStationUpdater lamStationUpdater;
 
     @Test
-    public void testLamMetadataRestApi() throws Exception {
+    public void testTmsMetadataRestApi() throws Exception {
 
 
         // Init data
@@ -59,7 +59,8 @@ public class LamMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties", Matchers.anything()))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.lamId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.roadStationId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.tmsNumber", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.fi", Matchers.isA(String.class)))
