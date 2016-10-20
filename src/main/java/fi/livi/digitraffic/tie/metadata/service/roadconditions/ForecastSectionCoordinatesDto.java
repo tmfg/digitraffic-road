@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RoadSectionCoordinatesDto {
+public class ForecastSectionCoordinatesDto {
 
     private final String naturalId;
 
@@ -12,7 +12,7 @@ public class RoadSectionCoordinatesDto {
 
     private final List<Coordinate> coordinates;
 
-    public RoadSectionCoordinatesDto(String naturalId, String name, List<List<BigDecimal>> coordinates) {
+    public ForecastSectionCoordinatesDto(String naturalId, String name, List<List<BigDecimal>> coordinates) {
         this.naturalId = naturalId;
         this.name = name;
         this.coordinates = coordinates.stream().map(c -> new Coordinate(c)).collect(Collectors.toList());

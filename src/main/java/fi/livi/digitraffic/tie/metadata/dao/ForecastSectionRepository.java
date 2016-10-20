@@ -22,6 +22,8 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
             "     , ers.natural_id as end_section_number\n" +
             "     , fs.end_distance\n" +
             "     , fs.length\n" +
+            "     , fs.start_road_section_id \n" +
+            "     , fs.end_road_section_id \n" +
             "from forecast_section fs\n" +
             "inner join road r on r.id = fs.road_id \n" +
             "inner join road_section srs on srs.id = fs.start_road_section_id\n" +

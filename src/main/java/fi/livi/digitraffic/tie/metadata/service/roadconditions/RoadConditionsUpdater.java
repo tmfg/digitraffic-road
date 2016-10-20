@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadSectionCoordinatesRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinates;
-import fi.livi.digitraffic.tie.metadata.model.RoadSectionCoordinatesPK;
+import fi.livi.digitraffic.tie.metadata.model.ForecastSectionCoordinates;
+import fi.livi.digitraffic.tie.metadata.model.ForecastSectionCoordinatesPK;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +35,9 @@ public class RoadConditionsUpdater {
     }
 
     @Transactional
-    public void updateRoadSectionCoordinates() {
+    public void updateForecastSectionCoordinates() {
 
-        List<RoadSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getRoadSections();
+        List<ForecastSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
 
@@ -45,25 +45,26 @@ public class RoadConditionsUpdater {
 
         roadSectionCoordinatesRepository.deleteAllInBatch();
 
-        Map<String, RoadSectionCoordinatesDto> naturalIdToRoadSectionCoordinates =
+        Map<String, ForecastSectionCoordinatesDto> naturalIdToRoadSectionCoordinates =
                 roadSectionCoordinates.stream().collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
         for (ForecastSection forecastSection : forecastSections) {
 
-            RoadSectionCoordinatesDto coordinates = naturalIdToRoadSectionCoordinates.get(forecastSection.getNaturalId());
+            ForecastSectionCoordinatesDto section = naturalIdToRoadSectionCoordinates.get(forecastSection.getNaturalId());
 
-            if (coordinates != null) {
-                forecastSection.getRoadSectionCoordinates().clear();
+            if (section != null) {
+                forecastSection.setDescription(section.getName());
 
+                forecastSection.getForecastSectionCoordinates().clear();
                 long orderNumber = 1;
-                for (Coordinate coordinate : coordinates.getCoordinates()) {
+                for (Coordinate coordinate : section.getCoordinates()) {
                     if (!coordinate.isValid()) {
                         log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
                                  coordinate.toString() + ". Skipping coordinates save operation for this forecast section.");
                     } else {
-                        forecastSection.getRoadSectionCoordinates().add(
-                                new RoadSectionCoordinates(forecastSection, new RoadSectionCoordinatesPK(forecastSection.getId(), orderNumber),
-                                                           coordinate.longitude, coordinate.latitude));
+                        forecastSection.getForecastSectionCoordinates().add(
+                                new ForecastSectionCoordinates(forecastSection, new ForecastSectionCoordinatesPK(forecastSection.getId(), orderNumber),
+                                                               coordinate.longitude, coordinate.latitude));
                         orderNumber++;
                     }
                 }
@@ -76,7 +77,7 @@ public class RoadConditionsUpdater {
         forecastSectionRepository.flush();
     }
 
-    private void printLogInfo(List<RoadSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {
+    private void printLogInfo(List<ForecastSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {
 
         int newCoordinatesCount = roadSectionCoordinates.stream().mapToInt(c -> c.getCoordinates().size()).sum();
 

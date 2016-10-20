@@ -16,15 +16,15 @@ public class RoadConditionsIntegrationTest extends AbstractMetadataTest {
     private RoadConditionsClient roadConditionsClient;
 
     @Test
-    public void getRoadSectionCoordinatesSucceeds() {
+    public void getForecastSectionCoordinatesSucceeds() {
 
-        List<RoadSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getRoadSections();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
 
-        assertTrue(roadSectionCoordinates.size() > 2);
-        assertEquals("00001_001_000_0", roadSectionCoordinates.get(0).getNaturalId());
-        assertEquals("Vt 1: Helsinki - Kehä III", roadSectionCoordinates.get(0).getName());
-        assertEquals(10, roadSectionCoordinates.get(0).getCoordinates().size());
-        assertEquals(BigDecimal.valueOf(24.944), roadSectionCoordinates.get(0).getCoordinates().get(0).longitude);
-        assertEquals(BigDecimal.valueOf(60.167), roadSectionCoordinates.get(0).getCoordinates().get(0).latitude);
+        assertTrue(forecastSectionCoordinates.size() > 2);
+        assertEquals("00001_001_000_0", forecastSectionCoordinates.get(0).getNaturalId());
+        assertEquals("Vt 1: Helsinki - Kehä III", forecastSectionCoordinates.get(0).getName());
+        assertEquals(10, forecastSectionCoordinates.get(0).getCoordinates().size());
+        assertEquals(BigDecimal.valueOf(24.944), forecastSectionCoordinates.get(0).getCoordinates().get(0).longitude);
+        assertEquals(BigDecimal.valueOf(60.167), forecastSectionCoordinates.get(0).getCoordinates().get(0).latitude);
     }
 }

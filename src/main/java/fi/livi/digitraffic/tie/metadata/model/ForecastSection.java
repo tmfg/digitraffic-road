@@ -1,17 +1,15 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Immutable
+@DynamicUpdate
 public class ForecastSection {
 
     @Id
@@ -31,7 +29,7 @@ public class ForecastSection {
             "1. Road number 5 characters ie. 00004, \n" +
             "2. Road section 3 characters ie. 112, \n" +
             "3. Road section version 3 characters ie. 000, \n" +
-            "4. Reserver for future needs 1 characters default 0")
+            "4. Reserved for future needs 1 characters default 0")
     @JsonProperty("id")
     private String naturalId;
 
@@ -51,19 +49,27 @@ public class ForecastSection {
     private int startDistance;
 
     @ApiModelProperty(value = "Forecast section road number")
+    @Column(insertable = false, updatable = false)
     private int startSectionNumber;
 
     @ApiModelProperty(value = "Forecast section end number")
+    @Column(insertable = false, updatable = false)
     private int endSectionNumber;
 
     @ApiModelProperty(value = "Forecast section end distance")
     private int endDistance;
 
-    @ApiModelProperty(value = "Forecast section leght")
+    @ApiModelProperty(value = "Forecast section length")
     private int length;
 
-    @OneToMany(mappedBy = "roadSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
-    private List<RoadSectionCoordinates> roadSectionCoordinates;
+    @JsonIgnore
+    private long startRoadSectionId;
+
+    @JsonIgnore
+    private long endRoadSectionId;
+
+    @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
+    private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
     public Long getId() {
         return id;
@@ -89,7 +95,7 @@ public class ForecastSection {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -149,8 +155,24 @@ public class ForecastSection {
         this.length = length;
     }
 
-    public List<RoadSectionCoordinates> getRoadSectionCoordinates() {
-        return roadSectionCoordinates;
+    public long getStartRoadSectionId() {
+        return startRoadSectionId;
+    }
+
+    public void setStartRoadSectionId(long startRoadSectionId) {
+        this.startRoadSectionId = startRoadSectionId;
+    }
+
+    public long getEndRoadSectionId() {
+        return endRoadSectionId;
+    }
+
+    public void setEndRoadSectionId(long endRoadSectionId) {
+        this.endRoadSectionId = endRoadSectionId;
+    }
+
+    public List<ForecastSectionCoordinates> getForecastSectionCoordinates() {
+        return forecastSectionCoordinates;
     }
 
     @ApiModelProperty(value = "Road section version number")

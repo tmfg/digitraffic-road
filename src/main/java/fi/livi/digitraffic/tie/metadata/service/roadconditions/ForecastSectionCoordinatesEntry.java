@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.List;
-public class RoadSectionCoordinatesEntry {
+public class ForecastSectionCoordinatesEntry {
 
     private final String name;
 
     private final List<List<BigDecimal>> coordinates;
 
-    public RoadSectionCoordinatesEntry(@JsonProperty("name") String name,
-                                       @JsonProperty("coord") List<List<BigDecimal>> coordinates) {
+    public ForecastSectionCoordinatesEntry(@JsonProperty("name") String name,
+                                           @JsonProperty("coord") List<List<BigDecimal>> coordinates) {
         this.name = name;
         this.coordinates = coordinates;
     }

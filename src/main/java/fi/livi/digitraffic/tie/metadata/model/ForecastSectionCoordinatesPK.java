@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class RoadSectionCoordinatesPK implements Serializable {
+public class ForecastSectionCoordinatesPK implements Serializable {
 
     @Column(name = "forecast_section_id", nullable = false)
     private long forecastSectionId;
@@ -24,10 +24,10 @@ public class RoadSectionCoordinatesPK implements Serializable {
         return orderNumber;
     }
 
-    public RoadSectionCoordinatesPK() {
+    public ForecastSectionCoordinatesPK() {
     }
 
-    public RoadSectionCoordinatesPK(long forecastSectionId, long orderNumber) {
+    public ForecastSectionCoordinatesPK(long forecastSectionId, long orderNumber) {
         this.forecastSectionId = forecastSectionId;
         this.orderNumber = orderNumber;
     }
@@ -38,7 +38,7 @@ public class RoadSectionCoordinatesPK implements Serializable {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        RoadSectionCoordinatesPK that = (RoadSectionCoordinatesPK) o;
+        ForecastSectionCoordinatesPK that = (ForecastSectionCoordinatesPK) o;
 
         return new EqualsBuilder()
                 .append(forecastSectionId, that.forecastSectionId)

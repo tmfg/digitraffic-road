@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
-public class RoadSectionCoordinates {
+public class ForecastSectionCoordinates {
 
     @EmbeddedId
-    private RoadSectionCoordinatesPK roadSectionCoordinatesPK;
+    private ForecastSectionCoordinatesPK forecastSectionCoordinatesPK;
 
     @ManyToOne
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
@@ -27,12 +27,12 @@ public class RoadSectionCoordinates {
     @NotNull
     private BigDecimal latitude;
 
-    public RoadSectionCoordinates() {
+    public ForecastSectionCoordinates() {
     }
 
-    public RoadSectionCoordinates(ForecastSection forecastSection, RoadSectionCoordinatesPK roadSectionCoordinatesPK, BigDecimal longitude, BigDecimal latitude) {
+    public ForecastSectionCoordinates(ForecastSection forecastSection, ForecastSectionCoordinatesPK forecastSectionCoordinatesPK, BigDecimal longitude, BigDecimal latitude) {
         this.forecastSection = forecastSection;
-        this.roadSectionCoordinatesPK = roadSectionCoordinatesPK;
+        this.forecastSectionCoordinatesPK = forecastSectionCoordinatesPK;
         this.longitude = longitude;
         this.latitude = latitude;
     }

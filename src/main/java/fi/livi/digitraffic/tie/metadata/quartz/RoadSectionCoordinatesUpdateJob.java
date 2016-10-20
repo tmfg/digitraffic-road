@@ -20,6 +20,6 @@ public class RoadSectionCoordinatesUpdateJob extends AbstractUpdateJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("Road section coordinates update job start");
 
-        roadConditionsUpdater.updateRoadSectionCoordinates();
+        roadConditionsUpdater.updateForecastSectionCoordinates();
     }
 }

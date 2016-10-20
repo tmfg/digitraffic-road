@@ -22,16 +22,16 @@ public class RoadConditionsClient {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<RoadSectionCoordinatesDto> getRoadSections() {
+    public List<ForecastSectionCoordinatesDto> getForecastSectionMetadata() {
 
         LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
 
-        return response.entrySet().stream().map(this::mapRoadSection).collect(Collectors.toList());
+        return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
-    private RoadSectionCoordinatesDto mapRoadSection(Map.Entry<String, Object> RoadSection) {
-        RoadSectionCoordinatesEntry coordinatesEntry = objectMapper.convertValue(RoadSection.getValue(), RoadSectionCoordinatesEntry.class);
+    private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(Map.Entry<String, Object> forecastSection) {
+        ForecastSectionCoordinatesEntry entry = objectMapper.convertValue(forecastSection.getValue(), ForecastSectionCoordinatesEntry.class);
 
-        return new RoadSectionCoordinatesDto(RoadSection.getKey(), coordinatesEntry.getName(), coordinatesEntry.getCoordinates());
+        return new ForecastSectionCoordinatesDto(forecastSection.getKey(), entry.getName(), entry.getCoordinates());
     }
 }
