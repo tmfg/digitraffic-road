@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -10,11 +9,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,13 +34,12 @@ public class LocationReader {
         this.locationSubtypeRepository = locationSubtypeRepository;
     }
 
-    public List<Location> readLocations(final List<Location> oldLocations, final Path path) throws IOException {
+    public List<Location> readLocations(final List<Location> oldLocations, final Path path) throws IOException, InvalidFormatException {
         final Map<Integer, Location> locationMap = oldLocations.stream().collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
         final Map<String, LocationSubtype> subtypeMap = locationSubtypeRepository.findAll().stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
 
-        try (final FileInputStream fis = new FileInputStream(path.toFile());
-             final XSSFWorkbook book = new XSSFWorkbook(fis)) {
-            final XSSFSheet s = book.getSheetAt(0);
+        try (final Workbook book = WorkbookFactory.create(path.toFile())) {
+            final Sheet s = book.getSheetAt(0);
 
             return StreamSupport.stream(s.spliterator(), false).skip(1).map(r -> convert(r, locationMap, subtypeMap)).collect(Collectors.toList());
         }

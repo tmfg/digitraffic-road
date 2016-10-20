@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ public class LocationUpdaterTest extends AbstractMetadataTest {
 
     @Test
     @Transactional(readOnly = true)
-    public void testUpdateLocations() throws IOException {
+    public void testUpdateLocations() throws IOException, InvalidFormatException {
         final Path path = new File(getClass().getResource(XLSX_FILE_NAME).getFile()).toPath();
 
         locationUpdater.updateLocations(path);

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,8 @@ public class LocationMetadataUpdater {
     }
 
     @Transactional
-    public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath) throws IOException {
+    public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath)
+            throws IOException, InvalidFormatException {
         locationTypeUpdater.updateLocationTypes(locationTypePath);
         locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath);
         locationUpdater.updateLocations(locationPath);

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
@@ -25,7 +26,7 @@ public class LocationUpdater {
         this.locationReader = locationReader;
     }
 
-    public void updateLocations(final Path path) throws IOException {
+    public void updateLocations(final Path path) throws IOException, InvalidFormatException {
         final List<Location> oldLocations = locationRepository.findAll();
         final List<Location> newLocations = locationReader.readLocations(oldLocations, path);
 
