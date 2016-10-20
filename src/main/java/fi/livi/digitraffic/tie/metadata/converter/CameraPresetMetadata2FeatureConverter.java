@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.helper.DataValidyHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
@@ -31,7 +31,9 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
 
     @Autowired
     public CameraPresetMetadata2FeatureConverter(@Value("${weathercam.baseUrl}") final
-                                                 String weathercamBaseurl) {
+                                                 String weathercamBaseurl,
+                                                 final CoordinateConverter coordinateConverter) {
+        super(coordinateConverter);
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
@@ -86,7 +88,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
      * @return
      * @throws NonPublicRoadStationException If road station is non public exception is thrown
      */
-    private static CameraStationFeature convert(final CameraPreset cp) throws NonPublicRoadStationException {
+    private CameraStationFeature convert(final CameraPreset cp) throws NonPublicRoadStationException {
             final CameraStationFeature f = new CameraStationFeature();
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
@@ -107,17 +109,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             final RoadStation rs = cp.getRoadStation();
             setRoadStationProperties(properties, rs);
 
-            if (rs.getLatitude() != null && rs.getLongitude() != null) {
-                if (rs.getAltitude() != null) {
-                    f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                            rs.getLatitude().longValue(),
-                                            rs.getAltitude().longValue()));
-                } else {
-                    f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                            rs.getLatitude().longValue()));
-                }
-                f.getGeometry().setCrs(crs);
-            }
+            setCoordinates(f, rs);
 
             return f;
     }

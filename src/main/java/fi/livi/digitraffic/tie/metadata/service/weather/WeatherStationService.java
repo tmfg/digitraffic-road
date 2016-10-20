@@ -29,15 +29,18 @@ public class WeatherStationService {
     private final WeatherStationRepository weatherStationRepository;
     private final SensorValueRepository sensorValueRepository;
     private final StaticDataStatusService staticDataStatusService;
+    private final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter;
 
     @Autowired
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final SensorValueRepository sensorValueRepository,
-                                 final StaticDataStatusService staticDataStatusService) {
+                                 final StaticDataStatusService staticDataStatusService,
+                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
 
         this.weatherStationRepository = weatherStationRepository;
         this.sensorValueRepository = sensorValueRepository;
         this.staticDataStatusService = staticDataStatusService;
+        this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +85,7 @@ public class WeatherStationService {
 
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
 
-        return WeatherStationMetadata2FeatureConverter.convert(
+        return weatherStationMetadata2FeatureConverter.convert(
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),

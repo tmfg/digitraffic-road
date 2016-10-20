@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -13,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "type", "coordinates", "crs" })
+@JsonPropertyOrder({ "type", "coordinates"})
 public class Point {
 
     private static final int LONGITUDE_IDX = 0;
@@ -23,11 +24,9 @@ public class Point {
     @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
     private final String type = "Point";
 
-    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Altitude is optional [m])", required = true, position = 2, example = "[6669701, 364191, 0]")
+    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters.)",
+                      required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
-
-    @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS", required = true, position = 3)
-    private Crs crs;
 
     public Point() {
         coordinates = new ArrayList<>(3);
@@ -57,6 +56,30 @@ public class Point {
         return coordinates;
     }
 
+    @JsonIgnore
+    public boolean hasAltitude() {
+        return !getCoordinates().get(ALTITUDE_IDX).isNaN();
+    }
+
+    @JsonIgnore
+    public double getAltitude() {
+        return getCoordinates().get(ALTITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public double getLongitude() {
+        return getCoordinates().get(LONGITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public double getLatitude() {
+        return getCoordinates().get(LATITUDE_IDX);
+    }
+
+    public void setAltitude(final double altitude) {
+        coordinates.set(ALTITUDE_IDX, altitude);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -68,7 +91,6 @@ public class Point {
         final Point point = (Point) o;
         final EqualsBuilder eq = new EqualsBuilder();
         eq.append(getCoordinates(), point.getCoordinates())
-                .append(getCrs(), point.getCrs())
                 .append(getType(), point.getType());
         return eq.isEquals();
     }
@@ -83,13 +105,5 @@ public class Point {
     @Override
     public String toString() {
         return "Point{" + "coordinates=" + coordinates + "} " + super.toString();
-    }
-
-    public void setCrs(final Crs crs) {
-        this.crs = crs;
-    }
-
-    public Crs getCrs() {
-        return crs;
     }
 }

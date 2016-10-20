@@ -204,6 +204,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Proj4J is a Java library to transform point coordinates from one geographic coordinate system to another, including datum transformations. -->
+        <dependency>
+            <groupId>org.osgeo</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>0.1.0</version>
+        </dependency>
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.

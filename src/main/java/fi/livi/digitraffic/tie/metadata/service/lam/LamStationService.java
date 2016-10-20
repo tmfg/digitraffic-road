@@ -26,13 +26,16 @@ public class LamStationService {
 
     private static final Logger log = LoggerFactory.getLogger(LamStationService.class);
     private final LamStationRepository lamStationRepository;
-    private StaticDataStatusService staticDataStatusService;
+    private final StaticDataStatusService staticDataStatusService;
+    private final LamStationMetadata2FeatureConverter lamStationMetadata2FeatureConverter;
 
     @Autowired
     public LamStationService(final LamStationRepository lamStationRepository,
-                             final StaticDataStatusService staticDataStatusService) {
+                             final StaticDataStatusService staticDataStatusService,
+                             final LamStationMetadata2FeatureConverter lamStationMetadata2FeatureConverter) {
         this.lamStationRepository = lamStationRepository;
         this.staticDataStatusService = staticDataStatusService;
+        this.lamStationMetadata2FeatureConverter = lamStationMetadata2FeatureConverter;
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +43,7 @@ public class LamStationService {
 
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
 
-        return LamStationMetadata2FeatureConverter.convert(
+        return lamStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                     Collections.emptyList() :
                     lamStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId(),

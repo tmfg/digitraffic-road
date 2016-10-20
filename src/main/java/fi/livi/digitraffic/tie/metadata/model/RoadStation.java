@@ -68,6 +68,7 @@ public class RoadStation {
 
     private String nameFi, nameSv, nameEn;
 
+    /** ETRS89 coordinates */
     private BigDecimal latitude, longitude, altitude;
 
     private Integer collectionInterval;

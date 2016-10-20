@@ -95,7 +95,7 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
         List<RoadStationSensor> availableSensors =
                 roadStationSensorService.findAllRoadStationSensors(RoadStationType.LAM_STATION);
 
-        Assert.assertTrue(availableSensors.size() > 100);
+        Assert.assertTrue(availableSensors.size() > 5);
 
         log.info("Found " + availableSensors.size() + " available sensors for Lam Stations");
 

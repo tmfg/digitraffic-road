@@ -108,14 +108,14 @@ public class WeatherStationUpdateJobTest extends AbstractMetadataTest {
         assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4915);
         assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 5915);
 
-        assertEquals(before.getGeometry().getCoordinates().get(0), (Double) 383971.0);
-        assertEquals(after.getGeometry().getCoordinates().get(0), (Double) 383970.0);
+        assertEquals(before.getProperties().getLongitudeETRS89(), 383971.0, 0.01);
+        assertEquals(after.getProperties().getLongitudeETRS89(), 383970.0, 0.01);
 
-        assertEquals(before.getGeometry().getCoordinates().get(1), (Double) 6678800.0);
-        assertEquals(after.getGeometry().getCoordinates().get(1), (Double) 6678801.0);
+        assertEquals(before.getProperties().getLatitudeETRS89(), 6678800.0, 0.01);
+        assertEquals(after.getProperties().getLatitudeETRS89(), 6678801.0, 0.01);
 
-        assertEquals(before.getGeometry().getCoordinates().get(2), (Double) 0.0);
-        assertEquals(after.getGeometry().getCoordinates().get(2), (Double) 1.0);
+        assertEquals(before.getProperties().getAltitudeETRS89(), 0.0, 0.01);
+        assertEquals(after.getProperties().getAltitudeETRS89(), 1.0, 0.01);
 
         final WeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
         final WeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);

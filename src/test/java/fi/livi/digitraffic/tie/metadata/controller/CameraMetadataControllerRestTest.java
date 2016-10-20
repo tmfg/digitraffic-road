@@ -56,8 +56,6 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.type", is("name")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
 //                .andExpect(jsonPath("$.features[0].properties.cameraType", Matchers.instanceOf(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadStationId", Matchers.isA(Integer.class)))

@@ -7,8 +7,6 @@ import static org.junit.Assert.assertNull;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractMetadataTest;
@@ -22,8 +20,6 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
 
 public class LamStationUpdateJobTest extends AbstractMetadataTest {
-
-    private static final Logger log = LoggerFactory.getLogger(LamStationUpdateJobTest.class);
 
     @Autowired
     private LamStationSensorUpdater lamStationSensorUpdater;
@@ -112,12 +108,23 @@ public class LamStationUpdateJobTest extends AbstractMetadataTest {
         assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
         assertEquals("L_vt5_Idensalmi", after.getProperties().getName());
 
-        assertEquals((Double) 512364.0, before.getGeometry().getCoordinates().get(0));
-        assertEquals((Double) 512365.0, after.getGeometry().getCoordinates().get(0));
-        assertEquals((Double) 7048448.0, before.getGeometry().getCoordinates().get(1));
-        assertEquals((Double) 7048449.0, after.getGeometry().getCoordinates().get(1));
-        assertEquals((Double) 0.0, before.getGeometry().getCoordinates().get(2));
-        assertEquals((Double) 1.0, after.getGeometry().getCoordinates().get(2));
+        assertEquals(512364.0, before.getProperties().getLongitudeETRS89(), 0.001);
+        assertEquals(512365.0, after.getProperties().getLongitudeETRS89(), 0.001);
+        assertEquals(7048448.0, before.getProperties().getLatitudeETRS89(), 0.001);
+        assertEquals(7048449.0, after.getProperties().getLatitudeETRS89(), 0.001);
+        assertEquals(0.0, before.getProperties().getAltitudeETRS89(), 0.001);
+        assertEquals(1.0, after.getProperties().getAltitudeETRS89(), 0.001);
+        assertEquals(0.0, before.getProperties().getAltitudeETRS89(), 0.001);
+        assertEquals(1.0, after.getProperties().getAltitudeETRS89(), 0.001);
+
+        assertEquals(27.24890844195089, before.getGeometry().getLongitude(), 0.00000000000001);
+        assertEquals(27.248928651749267, after.getGeometry().getLongitude(), 0.00000000000001);
+
+        assertEquals(63.56393711859063, before.getGeometry().getLatitude(), 0.00000000000001);
+        assertEquals(63.56394605816233, after.getGeometry().getLatitude(), 0.00000000000001);
+
+        assertEquals(0.0, before.getGeometry().getAltitude(), 0.00000000000001);
+        assertEquals(1.0, after.getGeometry().getAltitude(), 0.00000000000001);
 
         assertEquals((Integer) 4750, before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
         assertEquals((Integer) 3750, after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
