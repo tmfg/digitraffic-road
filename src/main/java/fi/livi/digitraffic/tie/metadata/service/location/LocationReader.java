@@ -1,80 +1,50 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
-@Component
-public class LocationReader {
-    private static final Logger log = LoggerFactory.getLogger(LocationReader.class);
+public class LocationReader extends AbstractReader<Location> {
+    private final Map<Integer, Location> locationMap;
+    private final Map<String, LocationSubtype> subtypeMap;
 
-    private final LocationSubtypeRepository locationSubtypeRepository;
-
-    public LocationReader(final LocationSubtypeRepository locationSubtypeRepository) {
-        this.locationSubtypeRepository = locationSubtypeRepository;
+    public LocationReader(final Map<Integer, Location> locationMap, final Map<String, LocationSubtype> subtypeMap) {
+        this.locationMap = locationMap;
+        this.subtypeMap = subtypeMap;
     }
 
-    public List<Location> readLocations(final List<Location> oldLocations, final Path path) throws IOException, InvalidFormatException {
-        final Map<Integer, Location> locationMap = oldLocations.stream().collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
-        final Map<String, LocationSubtype> subtypeMap = locationSubtypeRepository.findAll().stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
-
-        try (final Workbook book = WorkbookFactory.create(path.toFile())) {
-            final Sheet s = book.getSheetAt(0);
-
-            return StreamSupport.stream(s.spliterator(), false).skip(1).map(r -> convert(r, locationMap, subtypeMap)).collect(Collectors.toList());
-        }
-    }
-
-    private Location convert(final Row row, final Map<Integer, Location> locationMap, final Map<String, LocationSubtype> subtypeMap) {
+    @Override protected Location convert(final String line) {
+        final String components[] = StringUtils.splitPreserveAllTokens(line, DELIMETER);
         final Location location = new Location();
 
-        location.setLocationCode((int)row.getCell(2).getNumericCellValue());
-        location.setRoadJunction(parseString(row.getCell(6)));
-        location.setRoadName(parseString(row.getCell(7)));
-        location.setFirstName(parseString(row.getCell(8)));
-        location.setSecondName(parseString(row.getCell(9)));
-        location.setNegOffset(parseInteger(row.getCell(12)));
-        location.setPosOffset(parseInteger(row.getCell(13)));
-        location.setUrban(parseBoolean(row.getCell(14)));
-        location.setWsg84Lat(parseDecimal(row.getCell(16)));
-        location.setWsg84Long(parseDecimal(row.getCell(17)));
-        location.setPosDirection(parseString(row.getCell(21)));
-        location.setNegDirection(parseString(row.getCell(22)));
+        location.setLocationCode(parseInteger(components[2]));
+        location.setRoadJunction(components[6]);
+        location.setRoadName(components[7]);
+        location.setFirstName(components[8]);
+        location.setSecondName(components[9]);
+        location.setNegOffset(parseInteger(components[12]));
+        location.setPosOffset(parseInteger(components[13]));
+        location.setUrban(parseBoolean(components[14]));
+        location.setWsg84Lat(parseDecimal(components[16]));
+        location.setWsg84Long(parseDecimal(components[17]));
+        location.setPosDirection(components[21]);
+        location.setNegDirection(components[22]);
 
-        location.setAreaRef(parseReference(row.getCell(10), locationMap));
-        location.setLinearRef(parseReference(row.getCell(11), locationMap));
-        location.setLocationSubtype(parseSubtype(row.getCell(3), row.getCell(4), row.getCell(5), subtypeMap));
+        location.setAreaRef(parseReference(components[10], locationMap));
+        location.setLinearRef(parseReference(components[11], locationMap));
+        location.setLocationSubtype(parseSubtype(components[3], components[4], components[5], subtypeMap));
 
         locationMap.put(location.getLocationCode(), location);
 
         return location;
     }
 
-    private LocationSubtype parseSubtype(final Cell classCell, final Cell typeCell, final Cell subtypeCell, final Map<String, LocationSubtype> subtypeMap) {
-        final String classValue = classCell.getStringCellValue();
-        final int typeValue = parseInteger(typeCell);
-        final int subtypeValue = parseInteger(subtypeCell);
-        final String subtypeCode = String.format("%s%d.%d", classValue, typeValue, subtypeValue);
+    private LocationSubtype parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
+        final String subtypeCode = String.format("%s%s.%s", classValue, typeValue, subtypeValue);
 
         final LocationSubtype subtype = subtypeMap.get(subtypeCode);
 
@@ -85,18 +55,18 @@ public class LocationReader {
         return subtype;
     }
 
-    private Boolean parseBoolean(final Cell cell) {
-        final Integer i = parseInteger(cell);
+    private Boolean parseBoolean(final String value) {
+        final Integer i = parseInteger(value);
 
         return i == null ? null : (i == 0 ? false : true);
     }
 
-    private BigDecimal parseDecimal(final Cell cell) {
-        return cell == null ? null : new BigDecimal(cell.getNumericCellValue()).setScale(5, BigDecimal.ROUND_HALF_UP);
+    private BigDecimal parseDecimal(final String value) {
+        return StringUtils.isEmpty(value) ? null : new BigDecimal(value).setScale(5, BigDecimal.ROUND_HALF_UP);
     }
 
-    private Location parseReference(final Cell cell, final Map<Integer, Location> locationMap) {
-        final Integer refValue = parseInteger(cell);
+    private Location parseReference(final String value, final Map<Integer, Location> locationMap) {
+        final Integer refValue = parseInteger(value);
 
         // for some reason, there is no 0 present
         if(refValue == null || refValue == 0) return null;
@@ -110,19 +80,7 @@ public class LocationReader {
         return refLocation;
     }
 
-    private String parseString(final Cell cell) {
-        if(cell == null) {
-            return null;
-        }
-
-        if(cell.getCellType() == CellType.NUMERIC.getCode()) {
-            return Integer.toString((int)cell.getNumericCellValue());
-        }
-
-        return cell.getStringCellValue();
-    }
-
-    private Integer parseInteger(final Cell cell) {
-        return cell == null ? null : (int)cell.getNumericCellValue();
+    private Integer parseInteger(final String value) {
+        return StringUtils.isEmpty(value) ? null : Integer.parseInt(value);
     }
 }

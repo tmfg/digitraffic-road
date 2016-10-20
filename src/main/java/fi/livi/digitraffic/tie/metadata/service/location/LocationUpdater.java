@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
 
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
@@ -18,15 +19,15 @@ import fi.livi.digitraffic.tie.metadata.model.location.Location;
 public class LocationUpdater {
     private final LocationRepository locationRepository;
 
-    private final LocationReader locationReader;
+    private final LocationXSSFReader locationReader;
 
     public LocationUpdater(final LocationRepository locationRepository,
-                           final LocationReader locationReader) {
+                           final LocationXSSFReader locationReader) {
         this.locationRepository = locationRepository;
         this.locationReader = locationReader;
     }
 
-    public void updateLocations(final Path path) throws IOException, InvalidFormatException {
+    public void updateLocations(final Path path) throws IOException, OpenXML4JException, SAXException {
         final List<Location> oldLocations = locationRepository.findAll();
         final List<Location> newLocations = locationReader.readLocations(oldLocations, path);
 
