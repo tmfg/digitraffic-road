@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +86,7 @@ public abstract class RoadStationProperties {
 
     @ApiModelProperty(value = "Road station coordinates (LONGITUDE, LATITUDE, ALTITUDE. Coordinates are in ETRS89 / ETRS-TM35FIN format. Altitude is optional and measured in metres.)" +
                               "Point's coordinates  (Coordinates in WGS84. Altitude is optional [m])", required = true)
-    private final List<Double> coordinatesETRS89 =  Arrays.asList(Double.NaN, Double.NaN, Double.NaN);
+    private List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {
         return naturalId;
@@ -326,10 +326,29 @@ public abstract class RoadStationProperties {
                 .toHashCode();
     }
 
-    public void setCoordinatesETRS89(Point coordinatesETRS89) {
-        this.coordinatesETRS89.set(LONGITUDE_IDX, coordinatesETRS89.getLongitude());
-        this.coordinatesETRS89.set(LATITUDE_IDX, coordinatesETRS89.getLatitude());
-        this.coordinatesETRS89.set(ALTITUDE_IDX, coordinatesETRS89.getAltitude());
+    public void setCoordinatesETRS89(Point coordinatesETRS89Point) {
+        this.coordinatesETRS89.clear();
+        if (coordinatesETRS89Point != null) {
+            setCoordinateETRS89(LONGITUDE_IDX, coordinatesETRS89Point.getLongitude());
+            setCoordinateETRS89(LATITUDE_IDX, coordinatesETRS89Point.getLatitude());
+            setCoordinateETRS89(ALTITUDE_IDX, coordinatesETRS89Point.getAltitude());
+        }
+    }
+
+    private void setCoordinateETRS89(int index, Double coordinate) {
+        if (coordinate != null) {
+            while (coordinatesETRS89.size() <= index) {
+                coordinatesETRS89.add(null);
+            }
+            coordinatesETRS89.set(index, coordinate);
+        }
+    }
+
+    private Double getCoordinateETRS89(int index) {
+        if ( index < coordinatesETRS89.size() ) {
+            return coordinatesETRS89.get(index);
+        }
+        return null;
     }
 
     public List<Double> getCoordinatesETRS89() {
@@ -337,17 +356,17 @@ public abstract class RoadStationProperties {
     }
 
     @JsonIgnore
-    public double getAltitudeETRS89() {
-        return coordinatesETRS89.get(ALTITUDE_IDX);
+    public Double getAltitudeETRS89() {
+        return getCoordinateETRS89(ALTITUDE_IDX);
     }
 
     @JsonIgnore
-    public double getLongitudeETRS89() {
-        return coordinatesETRS89.get(LONGITUDE_IDX);
+    public Double getLongitudeETRS89() {
+        return getCoordinateETRS89(LONGITUDE_IDX);
     }
 
     @JsonIgnore
-    public double getLatitudeETRS89() {
-        return coordinatesETRS89.get(LATITUDE_IDX);
+    public Double getLatitudeETRS89() {
+        return getCoordinateETRS89(LATITUDE_IDX);
     }
 }

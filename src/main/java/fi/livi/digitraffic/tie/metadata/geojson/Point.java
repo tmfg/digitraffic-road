@@ -30,22 +30,19 @@ public class Point {
 
     public Point() {
         coordinates = new ArrayList<>(3);
-        coordinates.add(Double.NaN);
-        coordinates.add(Double.NaN);
-        coordinates.add(Double.NaN);
     }
 
     public Point(final double longitude, final double latitude) {
         this();
-        coordinates.set(LONGITUDE_IDX, longitude);
-        coordinates.set(LATITUDE_IDX, latitude);
+        setLongitude(longitude);
+        setLatitude(latitude);
     }
 
     public Point(final double longitude, final double latitude, final double altitude) {
         this();
-        coordinates.set(LONGITUDE_IDX, longitude);
-        coordinates.set(LATITUDE_IDX, latitude);
-        coordinates.set(ALTITUDE_IDX, altitude);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setAltitude(altitude);
     }
 
     public String getType() {
@@ -58,26 +55,48 @@ public class Point {
 
     @JsonIgnore
     public boolean hasAltitude() {
-        return !getCoordinates().get(ALTITUDE_IDX).isNaN();
+        return getCoordinate(ALTITUDE_IDX) != null;
     }
 
     @JsonIgnore
-    public double getAltitude() {
-        return getCoordinates().get(ALTITUDE_IDX);
+    public Double getAltitude() {
+        return getCoordinate(ALTITUDE_IDX);
     }
 
     @JsonIgnore
-    public double getLongitude() {
-        return getCoordinates().get(LONGITUDE_IDX);
+    public Double getLongitude() {
+        return getCoordinate(LONGITUDE_IDX);
     }
 
     @JsonIgnore
-    public double getLatitude() {
+    public Double getLatitude() {
         return getCoordinates().get(LATITUDE_IDX);
     }
 
+    public void setLongitude(final double longitude) {
+        setCoordinate(LONGITUDE_IDX, longitude);
+    }
+
+    public void setLatitude(final double latitude) {
+        setCoordinate(LATITUDE_IDX, latitude);
+    }
+
     public void setAltitude(final double altitude) {
-        coordinates.set(ALTITUDE_IDX, altitude);
+        setCoordinate(ALTITUDE_IDX, altitude);
+    }
+
+    private Double getCoordinate(int index) {
+        if ( index < coordinates.size() ) {
+            return coordinates.get(index);
+        }
+        return null;
+    }
+
+    private void setCoordinate(int index, double coordinate) {
+        while (coordinates.size() <= index) {
+            coordinates.add(null);
+        }
+        coordinates.set(index, coordinate);
     }
 
     @Override
