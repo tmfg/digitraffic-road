@@ -59,9 +59,14 @@ public class WeatherStationService {
 
     @Transactional
     public WeatherStation save(final WeatherStation weatherStation) {
-        final WeatherStation rws = weatherStationRepository.save(weatherStation);
-        weatherStationRepository.flush();
-        return rws;
+        try {
+            final WeatherStation rws = weatherStationRepository.save(weatherStation);
+            weatherStationRepository.flush();
+            return rws;
+        } catch (Exception e) {
+            log.error("Could not save " + weatherStation);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -104,4 +109,19 @@ public class WeatherStationService {
         return stationMap;
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
+        final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
+        final Map<Long, WeatherStation> stationMap = new HashMap<>();
+
+        for(final WeatherStation weatherStation : allStations) {
+            if (weatherStation.getRoadStationNaturalId() != null) {
+                stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
+            } else {
+                log.warn("Null lotjuId: " + weatherStation);
+            }
+        }
+
+        return stationMap;
+    }
 }

@@ -52,9 +52,14 @@ public class LamStationService {
 
     @Transactional
     public LamStation save(final LamStation lamStation) {
-        final LamStation lam = lamStationRepository.save(lamStation);
-        lamStationRepository.flush();
-        return lam;
+        try {
+            final LamStation lam = lamStationRepository.save(lamStation);
+            lamStationRepository.flush();
+            return lam;
+        } catch (Exception e) {
+            log.error("Could not save " + lamStation);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)

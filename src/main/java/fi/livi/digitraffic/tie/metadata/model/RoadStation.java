@@ -365,6 +365,7 @@ public class RoadStation {
         return new ToStringHelpper(this)
                 .appendField("id", id)
                 .appendField("naturalId", naturalId)
+                .appendField("lotjuId", this.getLotjuId())
                 .appendField("name", name)
                 .appendField("type", type)
                 .toString();

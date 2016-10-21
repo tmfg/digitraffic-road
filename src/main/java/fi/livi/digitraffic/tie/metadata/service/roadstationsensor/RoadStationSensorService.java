@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class RoadStationSensorService {
+
+    private static final Logger log = LoggerFactory.getLogger(RoadStationSensorService.class);
 
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
@@ -169,9 +173,14 @@ public class RoadStationSensorService {
 
     @Transactional
     public RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor) {
-        final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
-        roadStationSensorRepository.flush();
-        return sensor;
+        try {
+            final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
+            roadStationSensorRepository.flush();
+            return sensor;
+        } catch (Exception e) {
+            log.error("Could not save " + roadStationSensor);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)

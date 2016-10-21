@@ -79,7 +79,25 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER, updateStaticDataStatus);
     }
 
+    private void fixNullLotjuIds(final List<TiesaaAsemaVO> tiesaaAsemas) {
+        Map<Long, WeatherStation> naturalIdToWeatherStationMap =
+                weatherStationService.findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId();
+
+        for (TiesaaAsemaVO tiesaaAsema : tiesaaAsemas) {
+            WeatherStation ws = tiesaaAsema.getVanhaId() != null ?
+                                naturalIdToWeatherStationMap.get(tiesaaAsema.getVanhaId().longValue()) : null;
+            if (ws != null) {
+                ws.setLotjuId(tiesaaAsema.getId());
+                if (ws.getRoadStation() != null ) {
+                    ws.getRoadStation().setLotjuId(tiesaaAsema.getId());
+                }
+            }
+        }
+    }
+
     private boolean updateWeatherStations(final List<TiesaaAsemaVO> tiesaaAsemas) {
+
+        fixNullLotjuIds(tiesaaAsemas);
 
         final Map<Long, WeatherStation> currentLotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
