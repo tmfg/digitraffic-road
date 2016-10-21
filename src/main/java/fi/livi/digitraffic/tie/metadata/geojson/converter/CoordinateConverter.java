@@ -38,10 +38,10 @@ public class CoordinateConverter {
         ProjCoordinate from = new ProjCoordinate(fromETRS89.getLongitude(),
                                                  fromETRS89.getLatitude());
         transformerFromETRS89ToWGS84.transform(from, to);
-        Point point = new Point(to.x, to.y);
-        if (fromETRS89.hasAltitude()) {
-            point.setAltitude(fromETRS89.getAltitude());
-        }
+        Point point = fromETRS89.hasAltitude() ?
+                      new Point(to.x, to.y, fromETRS89.getAltitude()) :
+                      new Point(to.x, to.y);
+
         if (log.isDebugEnabled()) {
             log.debug("From: " + fromETRS89 + " to " + point);
         }
