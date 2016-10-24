@@ -66,8 +66,8 @@ public class LocationUpdater {
         oldLocation.setNegOffset(newLocation.getNegOffset());
         oldLocation.setPosOffset(newLocation.getPosOffset());
         oldLocation.setUrban(newLocation.getUrban());
-        oldLocation.setWsg84Lat(newLocation.getWsg84Lat());
-        oldLocation.setWsg84Long(newLocation.getWsg84Long());
+        oldLocation.setWgs84Lat(newLocation.getWgs84Lat());
+        oldLocation.setWgs84Long(newLocation.getWgs84Long());
         oldLocation.setNegDirection(newLocation.getNegDirection());
         oldLocation.setPosDirection(newLocation.getPosDirection());
     }

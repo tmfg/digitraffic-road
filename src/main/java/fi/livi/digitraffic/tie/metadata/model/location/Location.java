@@ -39,11 +39,11 @@ public class Location {
 
     private Boolean urban;
 
-    @Column(name = "wsg84_lat")
-    private BigDecimal wsg84Lat;
+    @Column(name = "wgs84_lat")
+    private BigDecimal wgs84Lat;
 
-    @Column(name = "wsg84_long")
-    private BigDecimal wsg84Long;
+    @Column(name = "wgs84_long")
+    private BigDecimal wgs84Long;
 
     private String negDirection;
     private String posDirection;
@@ -128,20 +128,20 @@ public class Location {
         this.urban = urban;
     }
 
-    public BigDecimal getWsg84Lat() {
-        return wsg84Lat;
+    public BigDecimal getWgs84Lat() {
+        return wgs84Lat;
     }
 
-    public void setWsg84Lat(BigDecimal wsg84Lat) {
-        this.wsg84Lat = wsg84Lat;
+    public void setWgs84Lat(BigDecimal wgs84Lat) {
+        this.wgs84Lat = wgs84Lat;
     }
 
-    public BigDecimal getWsg84Long() {
-        return wsg84Long;
+    public BigDecimal getWgs84Long() {
+        return wgs84Long;
     }
 
-    public void setWsg84Long(BigDecimal wsg84Long) {
-        this.wsg84Long = wsg84Long;
+    public void setWgs84Long(BigDecimal wgs84Long) {
+        this.wgs84Long = wgs84Long;
     }
 
     public String getRoadJunction() {

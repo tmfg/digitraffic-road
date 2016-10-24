@@ -29,8 +29,8 @@ public class LocationReader extends AbstractReader<Location> {
         location.setNegOffset(parseInteger(components[12]));
         location.setPosOffset(parseInteger(components[13]));
         location.setUrban(parseBoolean(components[14]));
-        location.setWsg84Lat(parseDecimal(components[16]));
-        location.setWsg84Long(parseDecimal(components[17]));
+        location.setWgs84Lat(parseDecimal(components[16]));
+        location.setWgs84Long(parseDecimal(components[17]));
         location.setPosDirection(components[21]);
         location.setNegDirection(components[22]);
 

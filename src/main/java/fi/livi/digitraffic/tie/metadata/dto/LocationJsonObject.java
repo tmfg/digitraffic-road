@@ -40,9 +40,9 @@ public class LocationJsonObject {
     public final Boolean urban;
 
     @ApiModelProperty("Coordinate in WGS84, for all points")
-    public final BigDecimal wsg84Lat;
+    public final BigDecimal wgs84Lat;
     @ApiModelProperty("Coordinate in WGS84, for all points")
-    public final BigDecimal wsg84Long;
+    public final BigDecimal wgs84Long;
 
     @ApiModelProperty("For all L5.0 and for some roads. Text to be used when the incident has an effect only on vehicles driving in the negative direction of the road. ( e.g. Ring 1 westbound)")
     public final String negDirection;
@@ -51,7 +51,7 @@ public class LocationJsonObject {
 
     public LocationJsonObject(final int locationCode, final String subtypeCode, final String roadJunction, final String roadName, final String firstName, final String secondName,
                               final Integer areaRef, final Integer linearRef,
-                              final Integer negOffset, final Integer posOffset, final Boolean urban, final BigDecimal wsg84Lat, final BigDecimal wsg84Long,
+                              final Integer negOffset, final Integer posOffset, final Boolean urban, final BigDecimal wgs84Lat, final BigDecimal wgs84Long,
                               final String negDirection, final String posDirection) {
         this.locationCode = locationCode;
         this.subtypeCode = subtypeCode;
@@ -64,8 +64,8 @@ public class LocationJsonObject {
         this.negOffset = negOffset;
         this.posOffset = posOffset;
         this.urban = urban;
-        this.wsg84Lat = wsg84Lat;
-        this.wsg84Long = wsg84Long;
+        this.wgs84Lat = wgs84Lat;
+        this.wgs84Long = wgs84Long;
         this.negDirection = negDirection;
         this.posDirection = posDirection;
     }
