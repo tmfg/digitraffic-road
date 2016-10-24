@@ -2,17 +2,31 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
+import fi.livi.digitraffic.tie.metadata.service.roadconditions.Coordinate;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.CascadeType;
 import javax.persistence.*;
+import javax.persistence.Entity;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @DynamicUpdate
 public class ForecastSection {
 
+    private static final Logger log = LoggerFactory.getLogger(ForecastSection.class);
+
     @Id
+    @GenericGenerator(name = "SEQ_FORECAST_SECTION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_FORECAST_SECTION"))
+    @GeneratedValue(generator = "SEQ_FORECAST_SECTION")
     private Long id;
 
     /**
@@ -46,30 +60,38 @@ public class ForecastSection {
     private int roadSectionVersionNumber;
 
     @ApiModelProperty(value = "Forecast section start distance")
-    private int startDistance;
-
-    @ApiModelProperty(value = "Forecast section road number")
-    @Column(insertable = false, updatable = false)
-    private int startSectionNumber;
-
-    @ApiModelProperty(value = "Forecast section end number")
-    @Column(insertable = false, updatable = false)
-    private int endSectionNumber;
+    private Integer startDistance;
 
     @ApiModelProperty(value = "Forecast section end distance")
-    private int endDistance;
+    private Integer endDistance;
 
     @ApiModelProperty(value = "Forecast section length")
-    private int length;
+    private Integer length;
+
+    @ApiModelProperty(value = "Forecast section obsolete date")
+    private Date obsoleteDate;
 
     @JsonIgnore
-    private long startRoadSectionId;
+    private Long startRoadSectionId;
 
     @JsonIgnore
-    private long endRoadSectionId;
+    private Long endRoadSectionId;
 
     @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
+
+    public ForecastSection() {
+    }
+
+    public ForecastSection(String naturalId, String description) {
+        this.naturalId = naturalId;
+        this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
+        this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
+        this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
+        this.description = description;
+        this.forecastSectionCoordinates = new ArrayList<>();
+        this.obsoleteDate = null;
+    }
 
     public Long getId() {
         return id;
@@ -79,16 +101,8 @@ public class ForecastSection {
         return naturalId;
     }
 
-    public void setNaturalId(final String naturalId) {
+    public void setNaturalId(String naturalId) {
         this.naturalId = naturalId;
-    }
-
-    public int getRoadSectionNumber() {
-        return roadSectionNumber;
-    }
-
-    public void setRoadSectionNumber(final int roadSectionNumber) {
-        this.roadSectionNumber = roadSectionNumber;
     }
 
     public String getDescription() {
@@ -99,11 +113,19 @@ public class ForecastSection {
         this.description = description;
     }
 
+    public int getRoadSectionNumber() {
+        return roadSectionNumber;
+    }
+
+    public void setRoadSectionNumber(int roadSectionNumber) {
+        this.roadSectionNumber = roadSectionNumber;
+    }
+
     public int getRoadNumber() {
         return roadNumber;
     }
 
-    public void setRoadNumber(final int roadNumber) {
+    public void setRoadNumber(int roadNumber) {
         this.roadNumber = roadNumber;
     }
 
@@ -115,59 +137,51 @@ public class ForecastSection {
         this.roadSectionVersionNumber = roadSectionVersionNumber;
     }
 
-    public int getStartSectionNumber() {
-        return startSectionNumber;
-    }
-
-    public void setStartSectionNumber(final int startSectionNumber) {
-        this.startSectionNumber = startSectionNumber;
-    }
-
-    public int getStartDistance() {
+    public Integer getStartDistance() {
         return startDistance;
     }
 
-    public void setStartDistance(final int startDistance) {
+    public void setStartDistance(Integer startDistance) {
         this.startDistance = startDistance;
     }
 
-    public int getEndSectionNumber() {
-        return endSectionNumber;
-    }
-
-    public void setEndSectionNumber(final int endSectionNumber) {
-        this.endSectionNumber = endSectionNumber;
-    }
-
-    public int getEndDistance() {
+    public Integer getEndDistance() {
         return endDistance;
     }
 
-    public void setEndDistance(final int endDistance) {
+    public void setEndDistance(Integer endDistance) {
         this.endDistance = endDistance;
     }
 
-    public int getLength() {
+    public Integer getLength() {
         return length;
     }
 
-    public void setLength(final int length) {
+    public void setLength(Integer length) {
         this.length = length;
     }
 
-    public long getStartRoadSectionId() {
+    public Date getObsoleteDate() {
+        return obsoleteDate;
+    }
+
+    public void setObsoleteDate(Date obsoleteDate) {
+        this.obsoleteDate = obsoleteDate;
+    }
+
+    public Long getStartRoadSectionId() {
         return startRoadSectionId;
     }
 
-    public void setStartRoadSectionId(long startRoadSectionId) {
+    public void setStartRoadSectionId(Long startRoadSectionId) {
         this.startRoadSectionId = startRoadSectionId;
     }
 
-    public long getEndRoadSectionId() {
+    public Long getEndRoadSectionId() {
         return endRoadSectionId;
     }
 
-    public void setEndRoadSectionId(long endRoadSectionId) {
+    public void setEndRoadSectionId(Long endRoadSectionId) {
         this.endRoadSectionId = endRoadSectionId;
     }
 
@@ -175,8 +189,22 @@ public class ForecastSection {
         return forecastSectionCoordinates;
     }
 
-    @ApiModelProperty(value = "Road section version number")
-    public int getRoadSectionVersion() {
-        return Integer.parseInt(naturalId.substring(10, 13));
+    public void setForecastSectionCoordinates(List<ForecastSectionCoordinates> forecastSectionCoordinates) {
+        this.forecastSectionCoordinates = forecastSectionCoordinates;
+    }
+
+    public void addCoordinates(List<Coordinate> coordinates) {
+        this.forecastSectionCoordinates = new ArrayList<>();
+        long orderNumber = 1;
+        for (Coordinate coordinate : coordinates) {
+            if (!coordinate.isValid()) {
+                log.info("Invalid coordinates for forecast section " + getNaturalId() + ". Coordinates were: " + coordinate.toString());
+            } else {
+                getForecastSectionCoordinates().add(
+                        new ForecastSectionCoordinates(this, new ForecastSectionCoordinatesPK(getId(), orderNumber),
+                                                       coordinate.longitude, coordinate.latitude));
+                orderNumber++;
+            }
+        }
     }
 }

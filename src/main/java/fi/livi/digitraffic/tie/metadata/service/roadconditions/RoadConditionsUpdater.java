@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadSectionCoordinatesRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionCoordinates;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionCoordinatesPK;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,44 +38,64 @@ public class RoadConditionsUpdater {
     @Transactional
     public void updateForecastSectionCoordinates() {
 
-        List<ForecastSectionCoordinatesDto> roadSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
+        Set<String> existingForecastSections = forecastSections.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
 
-        printLogInfo(roadSectionCoordinates, forecastSections);
+        printLogInfo(forecastSectionCoordinates, forecastSections);
 
         roadSectionCoordinatesRepository.deleteAllInBatch();
 
-        Map<String, ForecastSectionCoordinatesDto> naturalIdToRoadSectionCoordinates =
-                roadSectionCoordinates.stream().collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+        Map<String, ForecastSection> naturalIdToForecastSections = forecastSections.stream().collect(Collectors.toMap(fs -> fs.getNaturalId(), fs -> fs));
 
-        for (ForecastSection forecastSection : forecastSections) {
+        Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd = forecastSectionCoordinates.stream().filter(
+                fs -> !existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
-            ForecastSectionCoordinatesDto section = naturalIdToRoadSectionCoordinates.get(forecastSection.getNaturalId());
+        Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate = forecastSectionCoordinates.stream().filter(
+                fs -> existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
-            if (section != null) {
-                forecastSection.setDescription(section.getName());
+        Set<String> newForecastSections = forecastSectionCoordinates.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
+        Map<String, ForecastSection> forecastSectionsToDelete = forecastSections.stream().filter(
+                fs -> !newForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
-                forecastSection.getForecastSectionCoordinates().clear();
-                long orderNumber = 1;
-                for (Coordinate coordinate : section.getCoordinates()) {
-                    if (!coordinate.isValid()) {
-                        log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " +
-                                 coordinate.toString() + ". Skipping coordinates save operation for this forecast section.");
-                    } else {
-                        forecastSection.getForecastSectionCoordinates().add(
-                                new ForecastSectionCoordinates(forecastSection, new ForecastSectionCoordinatesPK(forecastSection.getId(), orderNumber),
-                                                               coordinate.longitude, coordinate.latitude));
-                        orderNumber++;
-                    }
-                }
-            } else {
-                log.info("ForecastSection naturalId mismatch while saving road section coordinates. Forecast section coordinates for ForecastSection with naturalId: " +
-                        forecastSection.getNaturalId() + " do not exist in update data.");
-            }
-        }
-        forecastSectionRepository.save(forecastSections);
+        addForecastSections(naturalIdToForecastSections, forecastSectionsToAdd);
+        updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);
+        markForecastSectionsObsolete(naturalIdToForecastSections, forecastSectionsToDelete);
+
+        forecastSectionRepository.save(naturalIdToForecastSections.values());
         forecastSectionRepository.flush();
+    }
+
+    private void addForecastSections(Map<String, ForecastSection> forecastSections, Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd) {
+
+        for (Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToAdd.entrySet()) {
+
+            ForecastSectionCoordinatesDto forecastSection = fs.getValue();
+
+            ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), forecastSection.getName());
+            forecastSectionRepository.saveAndFlush(newForecastSection);
+            newForecastSection.addCoordinates(forecastSection.getCoordinates());
+            forecastSections.put(fs.getValue().getNaturalId(), newForecastSection);
+        }
+    }
+
+    private void updateForecastSections(Map<String, ForecastSection> forecastSections, Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate) {
+
+        for (Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToUpdate.entrySet()) {
+            ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
+            forecastSection.setDescription(fs.getValue().getName());
+            forecastSection.setObsoleteDate(null);
+            forecastSection.addCoordinates(fs.getValue().getCoordinates());
+        }
+    }
+
+    private void markForecastSectionsObsolete(Map<String, ForecastSection> forecastSections, Map<String, ForecastSection> forecastSectionsToDelete) {
+
+        for (Map.Entry<String, ForecastSection> fs : forecastSectionsToDelete.entrySet()) {
+            ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
+            forecastSection.setObsoleteDate(Date.from(Instant.now()));
+        }
     }
 
     private void printLogInfo(List<ForecastSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {

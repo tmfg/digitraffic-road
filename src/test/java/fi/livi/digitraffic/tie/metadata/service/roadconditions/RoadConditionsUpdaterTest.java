@@ -5,6 +5,7 @@ import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -26,7 +27,7 @@ public class RoadConditionsUpdaterTest extends AbstractMetadataTest {
     public void updateForecastSectionCoordinatesSucceeds() {
         roadConditionsUpdater.updateForecastSectionCoordinates();
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
+        List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 
         assertEquals("00001_001_000_0", forecastSections.get(0).getNaturalId());
         assertTrue(forecastSections.get(0).getForecastSectionCoordinates().size() > 3);
