@@ -33,7 +33,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
     private final String name;
     private final String lockInstaceId;
     private LockingService lockingService;
-    private final Unmarshaller jaxbUnmarshaller;
+    protected final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<T> blockingQueue;
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
@@ -87,7 +87,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
         }
     }
 
-    private T unmarshalMessage(Message message) {
+    protected T unmarshalMessage(Message message) {
         log.debug("JMS Message:\n" + ToStringHelpper.toStringFull(message));
         if (message instanceof TextMessage) {
             try {

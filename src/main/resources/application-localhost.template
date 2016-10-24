@@ -34,6 +34,7 @@ jms.password=<password>
 jms.weather.inQueue=<weather-topic>
 jms.lam.inQueue=<lam-topic>
 jms.camera.inQueue=<camera-topic>
+jms.datex2.inQueue=<datex2-topic>
 
 jms.queue.pollingIntervalMs = 100
 
@@ -46,6 +47,7 @@ jms.queue.pollingIntervalMs = 100
 quartz.enabled=true
 
 # JMS queue enabled/disabled (Only daemond should have these enabled)
-jms.weather.enabled=true
-jms.lam.enabled=true
-jms.camera.enabled=true
+jms.weather.enabled=false
+jms.lam.enabled=false
+jms.camera.enabled=false
+jms.datex2.enabled=true
