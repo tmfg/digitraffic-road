@@ -86,8 +86,8 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean roadSectionCoordinatesUpdateJobDetail() {
-        return createJobDetail(RoadSectionCoordinatesUpdateJob.class);
+    public JobDetailFactoryBean forecastSectionCoordinatesUpdateJobDetail() {
+        return createJobDetail(ForecastSectionCoordinatesUpdateJob.class);
     }
 
     @Bean(name = "cameraUpdateJobTrigger")
@@ -108,9 +108,9 @@ public class SchedulerConfig {
         return createTrigger(jobDetail, frequency);
     }
 
-    @Bean(name = "roadSectionCoordinatesUpdateJobTrigger")
-    public SimpleTriggerFactoryBean roadSectionCoordinatesUpdateJobTrigger(@Qualifier("roadSectionCoordinatesUpdateJobDetail") final JobDetail jobDetail,
-                                                                           @Value("${roadSectionCoordinatesUpdateJob.frequency}") final long frequency) {
+    @Bean(name = "forecastSectionCoordinatesUpdateJobTrigger")
+    public SimpleTriggerFactoryBean forecastSectionCoordinatesUpdateJobTrigger(@Qualifier("forecastSectionCoordinatesUpdateJobDetail") final JobDetail jobDetail,
+                                                                               @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
         return createTrigger(jobDetail, frequency);
     }
 

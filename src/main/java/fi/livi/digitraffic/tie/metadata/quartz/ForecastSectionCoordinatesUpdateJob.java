@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisallowConcurrentExecution
-public class RoadSectionCoordinatesUpdateJob extends AbstractUpdateJob {
+public class ForecastSectionCoordinatesUpdateJob extends AbstractUpdateJob {
 
-    private static final Logger log = LoggerFactory.getLogger(RoadSectionCoordinatesUpdateJob.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesUpdateJob.class);
 
     @Autowired
     private RoadConditionsUpdater roadConditionsUpdater;

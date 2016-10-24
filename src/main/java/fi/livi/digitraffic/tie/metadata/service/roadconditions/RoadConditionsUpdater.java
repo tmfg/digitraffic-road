@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dao.RoadSectionCoordinatesRepository;
+import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,14 +24,14 @@ public class RoadConditionsUpdater {
 
     private final RoadConditionsClient roadConditionsClient;
 
-    private final RoadSectionCoordinatesRepository roadSectionCoordinatesRepository;
+    private final ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository;
 
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public RoadConditionsUpdater(RoadConditionsClient roadConditionsClient, RoadSectionCoordinatesRepository roadSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
+    public RoadConditionsUpdater(RoadConditionsClient roadConditionsClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
         this.roadConditionsClient = roadConditionsClient;
-        this.roadSectionCoordinatesRepository = roadSectionCoordinatesRepository;
+        this.forecastSectionCoordinatesRepository = forecastSectionCoordinatesRepository;
         this.forecastSectionRepository = forecastSectionRepository;
     }
 
@@ -45,7 +45,7 @@ public class RoadConditionsUpdater {
 
         printLogInfo(forecastSectionCoordinates, forecastSections);
 
-        roadSectionCoordinatesRepository.deleteAllInBatch();
+        forecastSectionCoordinatesRepository.deleteAllInBatch();
 
         Map<String, ForecastSection> naturalIdToForecastSections = forecastSections.stream().collect(Collectors.toMap(fs -> fs.getNaturalId(), fs -> fs));
 
@@ -102,7 +102,7 @@ public class RoadConditionsUpdater {
 
         int newCoordinatesCount = roadSectionCoordinates.stream().mapToInt(c -> c.getCoordinates().size()).sum();
 
-        log.info("Updating road section coordinates. Number of coordinates in database: " + roadSectionCoordinatesRepository.count() +
+        log.info("Updating forecast section coordinates. Number of coordinates in database: " + forecastSectionCoordinatesRepository.count() +
                  ". Number of coordinates received for update: " + newCoordinatesCount);
         List<String> externalNaturalIds = roadSectionCoordinates.stream().map(c -> c.getNaturalId()).collect(Collectors.toList());
         List<String> existingNaturalIds = forecastSections.stream().map(f -> f.getNaturalId()).collect(Collectors.toList());
