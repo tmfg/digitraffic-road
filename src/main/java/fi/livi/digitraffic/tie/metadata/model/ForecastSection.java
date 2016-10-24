@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.metadata.service.roadconditions.Coordinate;
@@ -11,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,11 +70,20 @@ public class ForecastSection {
     @ApiModelProperty(value = "Forecast section obsolete date")
     private Date obsoleteDate;
 
-    @JsonIgnore
-    private Long startRoadSectionId;
+    @ManyToOne
+    @JoinColumn(name="road_id")
+    @Fetch(FetchMode.JOIN)
+    private Road road;
 
-    @JsonIgnore
-    private Long endRoadSectionId;
+    @ManyToOne
+    @JoinColumn(name="start_road_section_id")
+    @Fetch(FetchMode.JOIN)
+    private RoadSection startRoadSection;
+
+    @ManyToOne
+    @JoinColumn(name="end_road_section_id")
+    @Fetch(FetchMode.JOIN)
+    private RoadSection endRoadSection;
 
     @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
@@ -169,20 +177,28 @@ public class ForecastSection {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public Long getStartRoadSectionId() {
-        return startRoadSectionId;
+    public Road getRoad() {
+        return road;
     }
 
-    public void setStartRoadSectionId(Long startRoadSectionId) {
-        this.startRoadSectionId = startRoadSectionId;
+    public void setRoad(Road road) {
+        this.road = road;
     }
 
-    public Long getEndRoadSectionId() {
-        return endRoadSectionId;
+    public RoadSection getStartRoadSection() {
+        return startRoadSection;
     }
 
-    public void setEndRoadSectionId(Long endRoadSectionId) {
-        this.endRoadSectionId = endRoadSectionId;
+    public void setStartRoadSection(RoadSection startRoadSection) {
+        this.startRoadSection = startRoadSection;
+    }
+
+    public RoadSection getEndRoadSection() {
+        return endRoadSection;
+    }
+
+    public void setEndRoadSection(RoadSection endRoadSection) {
+        this.endRoadSection = endRoadSection;
     }
 
     public List<ForecastSectionCoordinates> getForecastSectionCoordinates() {

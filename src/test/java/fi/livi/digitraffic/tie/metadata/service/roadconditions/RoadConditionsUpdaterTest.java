@@ -29,6 +29,7 @@ public class RoadConditionsUpdaterTest extends AbstractMetadataTest {
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 
+        assertTrue(forecastSections.size() > 250);
         assertEquals("00001_001_000_0", forecastSections.get(0).getNaturalId());
         assertTrue(forecastSections.get(0).getForecastSectionCoordinates().size() > 3);
         assertEquals(new BigDecimal("24.944"), forecastSections.get(0).getForecastSectionCoordinates().get(0).getLongitude());
