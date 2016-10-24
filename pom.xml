@@ -204,6 +204,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Proj4J is a Java library to transform point coordinates from one geographic coordinate system to another, including datum transformations. -->
+        <dependency>
+            <groupId>org.osgeo</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>0.1.0</version>
+        </dependency>
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -389,6 +395,15 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions.xsd</xsd>
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
+                                    <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                              is already in use. Use a class customization to resolve this conflict.-->
+                                    <extensionArgs>
+                                        <extensionArg>-XautoNameResolution</extensionArg>
+                                    </extensionArgs>
                                 </xsdOption>
                             </xsdOptions>
                         </configuration>

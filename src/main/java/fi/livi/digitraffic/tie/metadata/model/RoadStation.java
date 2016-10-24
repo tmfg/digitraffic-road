@@ -68,6 +68,7 @@ public class RoadStation {
 
     private String nameFi, nameSv, nameEn;
 
+    /** ETRS89 coordinates */
     private BigDecimal latitude, longitude, altitude;
 
     private Integer collectionInterval;
@@ -364,6 +365,7 @@ public class RoadStation {
         return new ToStringHelpper(this)
                 .appendField("id", id)
                 .appendField("naturalId", naturalId)
+                .appendField("lotjuId", this.getLotjuId())
                 .appendField("name", name)
                 .appendField("type", type)
                 .toString();

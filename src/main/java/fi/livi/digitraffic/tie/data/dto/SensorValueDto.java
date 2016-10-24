@@ -19,9 +19,9 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "sensorNameFi", "sensorNameOld", "sensorShortNameFi", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonPropertyOrder(value = { "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SensorValueDto /*implements MeasuredDataObjectDto*/ {
+public class SensorValueDto {
 
     @Id
     @JsonIgnore
@@ -49,13 +49,14 @@ public class SensorValueDto /*implements MeasuredDataObjectDto*/ {
     /** @deprecated */
     @Deprecated
     @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future version.", position = 1, notes = "noteja")
+    @JsonProperty("oldName")
     private String sensorNameOld;
 
     @ApiModelProperty(value = "Sensor name", position = 1, required = true)
     @JsonProperty(value = "name")
     private String sensorNameFi;
 
-    @ApiModelProperty(value = "Sensor short name", position = 1, required = true)
+    @ApiModelProperty(value = "Sensor short name", position = 2, required = true)
     @JsonProperty(value = "shortName")
     private String sensorShortNameFi;
 

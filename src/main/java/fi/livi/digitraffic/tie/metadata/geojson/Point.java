@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -13,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "type", "coordinates", "crs" })
+@JsonPropertyOrder({ "type", "coordinates"})
 public class Point {
 
     private static final int LONGITUDE_IDX = 0;
@@ -23,30 +24,25 @@ public class Point {
     @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
     private final String type = "Point";
 
-    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Altitude is optional [m])", required = true, position = 2, example = "[6669701, 364191, 0]")
+    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters.)",
+                      required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
-
-    @ApiModelProperty(value = "Coordinate reference system object. Always Named CRS", required = true, position = 3)
-    private Crs crs;
 
     public Point() {
         coordinates = new ArrayList<>(3);
-        coordinates.add(Double.NaN);
-        coordinates.add(Double.NaN);
-        coordinates.add(Double.NaN);
     }
 
     public Point(final double longitude, final double latitude) {
         this();
-        coordinates.set(LONGITUDE_IDX, longitude);
-        coordinates.set(LATITUDE_IDX, latitude);
+        setLongitude(longitude);
+        setLatitude(latitude);
     }
 
     public Point(final double longitude, final double latitude, final double altitude) {
         this();
-        coordinates.set(LONGITUDE_IDX, longitude);
-        coordinates.set(LATITUDE_IDX, latitude);
-        coordinates.set(ALTITUDE_IDX, altitude);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setAltitude(altitude);
     }
 
     public String getType() {
@@ -55,6 +51,52 @@ public class Point {
 
     public List<Double> getCoordinates() {
         return coordinates;
+    }
+
+    @JsonIgnore
+    public boolean hasAltitude() {
+        return getCoordinate(ALTITUDE_IDX) != null;
+    }
+
+    @JsonIgnore
+    public Double getAltitude() {
+        return getCoordinate(ALTITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public Double getLongitude() {
+        return getCoordinate(LONGITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public Double getLatitude() {
+        return getCoordinates().get(LATITUDE_IDX);
+    }
+
+    public void setLongitude(final double longitude) {
+        setCoordinate(LONGITUDE_IDX, longitude);
+    }
+
+    public void setLatitude(final double latitude) {
+        setCoordinate(LATITUDE_IDX, latitude);
+    }
+
+    public void setAltitude(final double altitude) {
+        setCoordinate(ALTITUDE_IDX, altitude);
+    }
+
+    private Double getCoordinate(int index) {
+        if ( index < coordinates.size() ) {
+            return coordinates.get(index);
+        }
+        return null;
+    }
+
+    private void setCoordinate(int index, double coordinate) {
+        while (coordinates.size() <= index) {
+            coordinates.add(null);
+        }
+        coordinates.set(index, coordinate);
     }
 
     @Override
@@ -68,7 +110,6 @@ public class Point {
         final Point point = (Point) o;
         final EqualsBuilder eq = new EqualsBuilder();
         eq.append(getCoordinates(), point.getCoordinates())
-                .append(getCrs(), point.getCrs())
                 .append(getType(), point.getType());
         return eq.isEquals();
     }
@@ -83,13 +124,5 @@ public class Point {
     @Override
     public String toString() {
         return "Point{" + "coordinates=" + coordinates + "} " + super.toString();
-    }
-
-    public void setCrs(final Crs crs) {
-        this.crs = crs;
-    }
-
-    public Crs getCrs() {
-        return crs;
     }
 }

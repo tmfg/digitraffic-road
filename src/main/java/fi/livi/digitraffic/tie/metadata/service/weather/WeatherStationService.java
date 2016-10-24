@@ -29,15 +29,18 @@ public class WeatherStationService {
     private final WeatherStationRepository weatherStationRepository;
     private final SensorValueRepository sensorValueRepository;
     private final StaticDataStatusService staticDataStatusService;
+    private final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter;
 
     @Autowired
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final SensorValueRepository sensorValueRepository,
-                                 final StaticDataStatusService staticDataStatusService) {
+                                 final StaticDataStatusService staticDataStatusService,
+                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
 
         this.weatherStationRepository = weatherStationRepository;
         this.sensorValueRepository = sensorValueRepository;
         this.staticDataStatusService = staticDataStatusService;
+        this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
     }
 
     @Transactional(readOnly = true)
@@ -56,9 +59,14 @@ public class WeatherStationService {
 
     @Transactional
     public WeatherStation save(final WeatherStation weatherStation) {
-        final WeatherStation rws = weatherStationRepository.save(weatherStation);
-        weatherStationRepository.flush();
-        return rws;
+        try {
+            final WeatherStation rws = weatherStationRepository.save(weatherStation);
+            weatherStationRepository.flush();
+            return rws;
+        } catch (Exception e) {
+            log.error("Could not save " + weatherStation);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +90,7 @@ public class WeatherStationService {
 
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
 
-        return WeatherStationMetadata2FeatureConverter.convert(
+        return weatherStationMetadata2FeatureConverter.convert(
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
@@ -101,4 +109,19 @@ public class WeatherStationService {
         return stationMap;
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
+        final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
+        final Map<Long, WeatherStation> stationMap = new HashMap<>();
+
+        for(final WeatherStation weatherStation : allStations) {
+            if (weatherStation.getRoadStationNaturalId() != null) {
+                stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
+            } else {
+                log.warn("Null lotjuId: " + weatherStation);
+            }
+        }
+
+        return stationMap;
+    }
 }

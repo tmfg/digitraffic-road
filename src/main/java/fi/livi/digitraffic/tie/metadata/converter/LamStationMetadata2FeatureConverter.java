@@ -5,21 +5,27 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
+@Component
 public final class LamStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
 
     private static final Log log = LogFactory.getLog( LamStationMetadata2FeatureConverter.class );
 
-    private LamStationMetadata2FeatureConverter() {}
+    @Autowired
+    private LamStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter) {
+        super(coordinateConverter);
+    }
 
-    public static LamStationFeatureCollection convert(final List<LamStation> stations, final LocalDateTime lastUpdated) {
+    public LamStationFeatureCollection convert(final List<LamStation> stations, final LocalDateTime lastUpdated) {
         final LamStationFeatureCollection collection = new LamStationFeatureCollection(lastUpdated);
 
         for(final LamStation lam : stations) {
@@ -39,7 +45,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
      * @return
      * @throws NonPublicRoadStationException If road station is non public exception is thrown
      */
-    private static LamStationFeature convert(final LamStation lam) throws NonPublicRoadStationException {
+    private LamStationFeature convert(final LamStation lam) throws NonPublicRoadStationException {
         final LamStationFeature f = new LamStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + lam);
@@ -64,19 +70,7 @@ public final class LamStationMetadata2FeatureConverter extends AbstractMetadataT
         final RoadStation rs = lam.getRoadStation();
         setRoadStationProperties(properties, rs);
 
-
-
-        if (rs.getLatitude() != null && rs.getLongitude() != null) {
-            if (rs.getAltitude() != null) {
-                f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                        rs.getLatitude().longValue(),
-                                        rs.getAltitude().longValue()));
-            } else {
-                f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                        rs.getLatitude().longValue()));
-            }
-            f.getGeometry().setCrs(crs);
-        }
+        setCoordinates(f, rs);
 
         return f;
     }

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,9 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
     @Autowired
     LockingService lockingService;
 
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
+
     @Before
     public void setUpTestData() {
         // Currently slow ass hell.
@@ -88,31 +92,44 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
 
         Assert.assertTrue(stations.size() > 100);
 
-        long sensorGeneratedLotjuId = -1;
         List<RoadStationSensor> availableSensors =
                 roadStationSensorService.findAllRoadStationSensors(RoadStationType.LAM_STATION);
 
-        Assert.assertTrue(availableSensors.size() > 1);
+        Assert.assertTrue(availableSensors.size() > 5);
 
         log.info("Found " + availableSensors.size() + " available sensors for Lam Stations");
 
-        for (RoadStationSensor availableSensor : availableSensors) {
-            if ( availableSensor.getLotjuId() == null ) {
-                availableSensor.setLotjuId(sensorGeneratedLotjuId);
-                sensorGeneratedLotjuId--;
-            }
-        }
+        jdbcTemplate.execute(
+                "UPDATE LAM_STATION\n" +
+                "SET LOTJU_ID = -1 * (1+DBMS_ROWID.ROWID_ROW_NUMBER(ROWID))\n" +
+                "WHERE LOTJU_ID IS NULL");
 
+        jdbcTemplate.execute(
+                "UPDATE ROAD_STATION_SENSOR\n" +
+                "SET LOTJU_ID = -1 * (1+DBMS_ROWID.ROWID_ROW_NUMBER(ROWID))\n" +
+                "WHERE LOTJU_ID IS NULL");
         log.info("Add available sensors for Lam Stations");
-        for (LamStation station : stations) {
-            List<RoadStationSensor> currentSensors = station.getRoadStation().getRoadStationSensors();
-            Map<Long, RoadStationSensor> currentStationSensorsMapById = currentSensors.stream().collect(Collectors.toMap(p -> p.getId(), p -> p));
-            for (RoadStationSensor availableSensor : availableSensors) {
-                if (!currentStationSensorsMapById.keySet().contains(availableSensor.getId())) {
-                    currentSensors.add(availableSensor);
-                }
-            }
-        }
+        String merge =
+                "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
+                "USING (\n" +
+                "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
+                "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
+                "  WHERE S.OBSOLETE = 0\n" +
+                "    AND S.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "    AND EXISTS (\n" +
+                "      SELECT NULL\n" +
+                "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
+                "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
+                "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
+                "   )\n" +
+                "   AND RS.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "   AND RS.OBSOLETE_DATE IS NULL\n" +
+                ") SRC\n" +
+                "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
+                "WHEN NOT MATCHED THEN INSERT (TGT.ROAD_STATION_ID, TGT.ROAD_STATION_SENSOR_ID)\n" +
+                "     VALUES (SRC.ROAD_STATION_ID, SRC.ROAD_STATION_SENSOR_ID)";
+        jdbcTemplate.execute(merge);
+
         log.info("Commit changes");
         assertTrue(TestTransaction.isActive());
         TestTransaction.flagForCommit();
@@ -129,22 +146,16 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
             TestTransaction.start();
         }
 
-        Iterator<LamStation> stationsIter =
-                lamStationService.findAllLamStationsByMappedByLotjuId().values().iterator();
-        while (stationsIter.hasNext()) {
-            LamStation lam = stationsIter.next();
-            if (lam.getLotjuId() < 0) {
-                lam.setLotjuId(null);
-                lam.getRoadStation().setLotjuId(null);
-            }
-        }
-        List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.LAM_STATION);
-        for (RoadStationSensor availableSensor : availableSensors) {
-            if (availableSensor.getLotjuId() < 0) {
-                availableSensor.setLotjuId(null);
-            }
-        }
+        jdbcTemplate.execute(
+                "UPDATE LAM_STATION\n" +
+                "SET LOTJU_ID = NULL\n" +
+                "WHERE LOTJU_ID < 0");
+
+        jdbcTemplate.execute(
+                "UPDATE ROAD_STATION_SENSOR\n" +
+                "SET LOTJU_ID = NULL\n" +
+                "WHERE LOTJU_ID < 0");
+
         assertTrue(TestTransaction.isActive());
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -217,7 +228,6 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
                 for (RoadStationSensor availableSensor : availableSensors) {
                     Lam.Anturit.Anturi anturi = new Lam.Anturit.Anturi();
                     anturit.add(anturi);
-
                     anturi.setArvo(arvo);
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
                 }
