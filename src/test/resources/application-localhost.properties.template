@@ -1,3 +1,5 @@
+config.test = true
+
 # Copy this file as application-localhost.properties and configure
 # datasource etc. according to your environment.
 

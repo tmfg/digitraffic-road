@@ -8,5 +8,5 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MetadataApplication.class)
 @WebAppConfiguration
-public abstract class AbstractMetadataTest {
+public abstract class AbstractMetadataWebTest {
 }

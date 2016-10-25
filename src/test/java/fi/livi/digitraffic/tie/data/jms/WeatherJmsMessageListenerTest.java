@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -23,7 +24,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -43,6 +47,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @Transactional
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
     
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
@@ -161,7 +166,7 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
     }
 
     @Test
-    public void testPerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+    public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
@@ -229,11 +234,15 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
 
                     anturi.setArvo(arvo);
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId());
+                    if (anturit.size() >= 30) {
+                        break;
+                    }
                 }
+
                 xgcal.add(df.newDuration(1000));
                 arvo = arvo + 0.1f;
 
-                if (data.size() >= 50) {
+                if (data.size() >= 30) {
                     break;
                 }
             }
@@ -284,5 +293,14 @@ public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTe
         }
 
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+    }
+
+    @Test
+    public void test2LastUpdated() {
+        LocalDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
+        assertTrue(lastUpdated.isAfter(LocalDateTime.now().minusMinutes(2)));
+
+        List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
+        assertFalse(updated.isEmpty());
     }
 }

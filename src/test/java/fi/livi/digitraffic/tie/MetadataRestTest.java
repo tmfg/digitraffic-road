@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-public abstract class MetadataRestTest extends AbstractMetadataTest {
+public abstract class MetadataRestTest extends AbstractMetadataWebTest {
 
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8;
 

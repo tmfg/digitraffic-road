@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -274,7 +273,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(presetId);
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTimeAtZone(kuva.getAika(), ZoneId.systemDefault());
+            LocalDateTime kuvaTaken = DateHelper.toLocalDateTimeAtDefaultZone(kuva.getAika());
             LocalDateTime presetPictureLastModified = preset.getPictureLastModified();
             Assert.assertEquals("Preset not updated with kuva's timestamp", kuvaTaken, presetPictureLastModified);
         }

@@ -36,8 +36,6 @@ jms.lam.inQueue=<lam-topic>
 jms.camera.inQueue=<camera-topic>
 jms.datex2.inQueue=<datex2-topic>
 
-jms.queue.pollingIntervalMs = 100
-
 # Services enabled/disabled
 
 # If set to false web app is not started. Should be false for daemon prosess.
@@ -51,3 +49,6 @@ jms.weather.enabled=false
 jms.lam.enabled=false
 jms.camera.enabled=false
 jms.datex2.enabled=true
+
+# Websocket stream of LAM sensor values
+websocket.lam.enabled=true

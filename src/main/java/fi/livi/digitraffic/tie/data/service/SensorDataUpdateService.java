@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.service;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -196,7 +195,7 @@ public class SensorDataUpdateService {
 
         for (Lam lam : lams) {
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(lam.getAika(), ZoneId.systemDefault());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(lam.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Lam.Anturit.Anturi anturi : anturit) {
                 rows++;
@@ -216,7 +215,7 @@ public class SensorDataUpdateService {
 
         for (Tiesaa tiesaa : tiesaas) {
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(tiesaa.getAika(), ZoneId.systemDefault());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(tiesaa.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
                 rows++;

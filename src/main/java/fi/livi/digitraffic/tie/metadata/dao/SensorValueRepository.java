@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +18,17 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
            "FROM SensorValue sv\n" +
            "WHERE sv.roadStation.naturalId = ?1\n" +
            "  AND sv.roadStationSensor.roadStationType = ?2")
-    List<SensorValue> findSensorvaluesByRoadStationNaturalId(long roadStationNaturalId, RoadStationType roadStationType);
+    List<SensorValue> findSensorvaluesByRoadStationNaturalId(final long roadStationNaturalId, final RoadStationType roadStationType);
 
-    List<SensorValue> findByRoadStationLotjuIdInAndRoadStationType(List<Long> lamLotjuIds, RoadStationType roadStationType);
+    List<SensorValue> findByRoadStationLotjuIdInAndRoadStationType(final List<Long> lamLotjuIds, final RoadStationType roadStationType);
+
+    List<SensorValue> findByUpdatedAfterAndRoadStationRoadStationType(final LocalDateTime after, final RoadStationType roadStationType);
+
+    @Query(value =
+           "SELECT max(sv.updated)\n" +
+           "FROM SensorValue sv\n" +
+           "WHERE sv.roadStation.roadStationType = ?1",
+           nativeQuery = false)
+    LocalDateTime getLastUpdated(final RoadStationType roadStationType);
+
 }

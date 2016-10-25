@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Immutable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,6 +15,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@Immutable
 @ApiModel(value = "LamStationData", description = "TMS Station with sensor values", parent = AbstractStationWithSensorsDto.class)
 @JsonPropertyOrder( value = {"id", "lamNumber", "measuredLocalTime", "measuredUtc", "sensorValues"})
 public abstract class AbstractStationWithSensorsDto {
