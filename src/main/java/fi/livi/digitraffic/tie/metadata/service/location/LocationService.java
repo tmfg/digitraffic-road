@@ -3,15 +3,14 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationJsonConverter;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
+import fi.livi.digitraffic.tie.metadata.dto.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.LocationsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
@@ -63,9 +62,9 @@ public class LocationService {
         }
 
         return new LocationsMetadata(
-                locationTypeRepository.findAll(),
-                locationSubtypeRepository.findAll(),
-                Stream.of(locationRepository.findAllLocations()).parallel().map(LocationJsonConverter::convert).collect(Collectors.toList()),
+                locationTypeRepository.streamAllProjectedBy().collect(Collectors.toList()),
+                locationSubtypeRepository.streamAllProjectedBy().collect(Collectors.toList()),
+                locationRepository.streamAllProjectedBy().collect(Collectors.toList()),
                 updateTime);
     }
 
@@ -74,8 +73,8 @@ public class LocationService {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LOCATIONS);
         final LocalDateTime updateTime = updated == null ? null : updated.getUpdated();
 
-        final Object[][] location = locationRepository.findLocation(id);
+        final LocationJson location = locationRepository.findLocationByLocationCode(id);
 
-        return location.length > 0 ? new LocationsMetadata(LocationJsonConverter.convert(location[0]), updateTime) : new LocationsMetadata(updateTime);
+        return location != null ? new LocationsMetadata(location, updateTime) : new LocationsMetadata(updateTime);
     }
 }
