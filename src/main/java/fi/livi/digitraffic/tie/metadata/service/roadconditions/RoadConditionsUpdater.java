@@ -55,9 +55,9 @@ public class RoadConditionsUpdater {
         Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate = forecastSectionCoordinates.stream().filter(
                 fs -> existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
-        Set<String> newForecastSections = forecastSectionCoordinates.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
+        Set<String> receivedForecastSections = forecastSectionCoordinates.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
         Map<String, ForecastSection> forecastSectionsToDelete = forecastSections.stream().filter(
-                fs -> !newForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+                fs -> !receivedForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
 
         addForecastSections(naturalIdToForecastSections, forecastSectionsToAdd);
         updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);

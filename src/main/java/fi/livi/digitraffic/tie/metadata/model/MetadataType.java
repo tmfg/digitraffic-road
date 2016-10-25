@@ -8,7 +8,7 @@ public enum MetadataType {
     // ROAD_STATION_SENSOR,
     WEATHER_STATION_SENSOR,
     LAM_ROAD_STATION_SENSOR,
-    FORACAST_SECTION,
+    FORECAST_SECTION,
     ;
 
 
