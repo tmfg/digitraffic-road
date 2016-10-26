@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
@@ -48,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WeatherJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
+public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 

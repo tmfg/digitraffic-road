@@ -9,10 +9,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.RestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class CameraStationDataControllerRestTest extends RestTest {
+public class CameraStationDataControllerRestTest extends MetadataRestTest {
 
     @Test
     public void testCameraDataRestApi() throws Exception {

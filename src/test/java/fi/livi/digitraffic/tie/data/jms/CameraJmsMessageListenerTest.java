@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
@@ -56,7 +56,7 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @Transactional
-public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
+public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 

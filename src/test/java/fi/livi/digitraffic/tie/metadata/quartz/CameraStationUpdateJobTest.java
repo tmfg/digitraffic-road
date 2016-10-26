@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataWebTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
 
-public class CameraStationUpdateJobTest extends AbstractMetadataWebTest {
+public class CameraStationUpdateJobTest extends MetadataTestBase {
 
     private static final Logger log = LoggerFactory.getLogger(LamStationUpdateJobTest.class);
 

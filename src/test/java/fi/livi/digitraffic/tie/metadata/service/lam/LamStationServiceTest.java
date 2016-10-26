@@ -6,11 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataWebTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.LamStation;
 
-public class LamStationServiceTest extends AbstractMetadataWebTest {
+public class LamStationServiceTest extends MetadataTestBase {
     @Autowired
     private LamStationService lamStationService;
 

@@ -6,11 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataWebTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
-public class RoadStationServiceTest extends AbstractMetadataWebTest {
+public class RoadStationServiceTest extends MetadataTestBase {
     @Autowired
     private RoadStationService roadStationService;
 

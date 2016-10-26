@@ -11,7 +11,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;

@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
@@ -48,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
+public class LamJmsMessageListenerTest extends MetadataIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(LamJmsMessageListenerTest.class);
 

@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.RestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 /**
@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
  * So we adjust the end_timestamp in database to now - 24 h for this test
  * to find history data for yesterday.
  */
-public class DayDataControllerRestTest extends RestTest {
+public class DayDataControllerRestTest extends MetadataRestTest {
     private long days = 0;
 
     private final LocalDate DATE = LocalDate.of(2015, 8, 25);

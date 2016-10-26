@@ -4,10 +4,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 
-public class FreeFlowSpeedServiceTest extends AbstractIntegrationMetadataTest {
+public class FreeFlowSpeedServiceTest extends MetadataIntegrationTest {
 
     @Autowired
     private FreeFlowSpeedService freeFlowSpeedService;

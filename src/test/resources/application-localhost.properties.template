@@ -1,39 +1,54 @@
-config.test = true
+logging.file=digitraffic-metadata
+logging.level.root=INFO
 
-# Copy this file as application-localhost.properties and configure
-# datasource etc. according to your environment.
+# Http-server port
+server.port = 9000
 
-# http-server port
-server.port = 9090
+# Datasource
+#spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
+#spring.datasource.username=<username>
+#spring.datasource.password=<password>
 
-spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
-spring.datasource.username=<username>
-spring.datasource.password=<password>
-spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
-spring.datasource.validationQuery=SELECT 1 FROM DUAL
-
+# Lotju-test v2 soap api
 metadata.server.address.lam=http://localhost:9011/LOTJU/LAMMetatiedot
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
 
+# Metadata update frequencies in ms, 43200000 ms = 12 h
+cameraStationUpdateJob.frequency=43200000
+lamStationUpdateJob.frequency=43200000
+weatherStationUpdateJob.frequency=43200000
+
+# Weathercam url for public fetch. Append camera preset + .jpg to get image url
+weathercam.baseUrl=http://weathercam.url/
+weathercam.importDir=/tmp/weathercam
+
+# JMS settings
+
+# Sonic JMS 8.6.0
+jms.connectionUrls=tcp://ip:port,tcp://ip:port
+jms.userId=<username>
+jms.password=<password>
+
+# JMS topics
+jms.weather.inQueue=<weather-topic>
+jms.lam.inQueue=<lam-topic>
+jms.camera.inQueue=<camera-topic>
+jms.datex2.inQueue=<datex2-topic>
+
+# Services enabled/disabled
+
 # If set to false web app is not started. Should be false for daemon prosess.
-# spring.main.web_environment=false
+#spring.main.web_environment=false
 
-# Don't run updates for tests
-quartz.enabled=false
+# Is metadata updates on. Should be true only for daemon process.
+#quartz.enabled=true
 
-# Metadata update frequencies in ms, 300000 ms = 5 min
-cameraStationUpdateJob.frequency=300000
-lamStationUpdateJob.frequency=300000
-weatherStationUpdateJob.frequency=300000
+# JMS queue enabled/disabled (Only daemond should have these enabled)
+#jms.weather.enabled=false
+#jms.lam.enabled=false
+#jms.camera.enabled=false
+#jms.datex2.enabled=true
 
-logging.file=digitraffic-metadata
-logging.level.root=INFO
-logging.level.fi.livi.digitraffic.tie=INFO
-
-#logging.level.org.hibernate.SQL=DEBUG
-#logging.level.org.hibernate.type=TRACE
-#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-
-#logging.level.fi.livi.digitraffic.tie.service.camera=DEBUG
-
+# Websocket stream of LAM sensor values
+#websocket.lam.enabled=true
