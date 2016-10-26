@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.metadata.service.roadconditions.Coordinate;
+import fi.livi.digitraffic.tie.metadata.service.roadconditions.ForecastSectionCoordinatesDto;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.Parameter;
@@ -13,8 +14,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @DynamicUpdate
@@ -222,5 +225,59 @@ public class ForecastSection {
                 orderNumber++;
             }
         }
+    }
+
+    public boolean corresponds(ForecastSectionCoordinatesDto value) {
+        if (value.getName().equals(description) && coordinatesCorrespond(value.getCoordinates())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean coordinatesCorrespond(List<Coordinate> coordinates) {
+
+        if (getForecastSectionCoordinates().size() != coordinates.size()) return false;
+
+        List<Coordinate> sorted1 = this.forecastSectionCoordinates.stream().sorted((a, b) -> {
+            if (a.getLongitude().equals(b.getLongitude())) {
+                return a.getLatitude().compareTo(b.getLatitude());
+            }
+            return a.getLongitude().compareTo(b.getLongitude());
+        }).map(c -> new Coordinate(Arrays.asList(c.getLongitude(), c.getLatitude()))).collect(Collectors.toList());
+
+        List<Coordinate> sorted2 = coordinates.stream().sorted((a, b) -> {
+            if (a.longitude.equals(b.longitude)) {
+                return a.latitude.compareTo(b.latitude);
+            }
+            return a.longitude.compareTo(b.longitude);
+        }).collect(Collectors.toList());
+
+        for (int i = 0; i < getForecastSectionCoordinates().size(); ++i) {
+            if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
+                sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ForecastSection{" +
+               "id=" + id +
+               ", naturalId='" + naturalId + '\'' +
+               ", description='" + description + '\'' +
+               ", roadSectionNumber=" + roadSectionNumber +
+               ", roadNumber=" + roadNumber +
+               ", roadSectionVersionNumber=" + roadSectionVersionNumber +
+               ", startDistance=" + startDistance +
+               ", endDistance=" + endDistance +
+               ", length=" + length +
+               ", obsoleteDate=" + obsoleteDate +
+               ", road=" + road +
+               ", startRoadSection=" + startRoadSection +
+               ", endRoadSection=" + endRoadSection +
+               ", forecastSectionCoordinates=" + forecastSectionCoordinates +
+               '}';
     }
 }

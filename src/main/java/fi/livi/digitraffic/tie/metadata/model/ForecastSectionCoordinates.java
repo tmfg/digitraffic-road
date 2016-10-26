@@ -48,4 +48,12 @@ public class ForecastSectionCoordinates {
     public BigDecimal getLatitude() {
         return latitude;
     }
+
+    @Override
+    public String toString() {
+        return "ForecastSectionCoordinates{" +
+               "longitude=" + longitude +
+               ", latitude=" + latitude +
+               '}';
+    }
 }

@@ -29,4 +29,13 @@ public class ForecastSectionCoordinatesDto {
     public List<Coordinate> getCoordinates() {
         return coordinates;
     }
+
+    @Override
+    public String toString() {
+        return "ForecastSectionCoordinatesDto{" +
+               "naturalId='" + naturalId + '\'' +
+               ", name='" + name + '\'' +
+               ", coordinates=" + coordinates +
+               '}';
+    }
 }

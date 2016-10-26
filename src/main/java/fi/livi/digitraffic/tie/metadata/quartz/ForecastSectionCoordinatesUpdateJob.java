@@ -24,10 +24,18 @@ public class ForecastSectionCoordinatesUpdateJob extends AbstractUpdateJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("Road section coordinates update job start");
+        final long startTime = System.currentTimeMillis();
 
-        roadConditionsUpdater.updateForecastSectionCoordinates();
+        boolean updated = roadConditionsUpdater.updateForecastSectionCoordinates();
 
-        // TODO: Logic?
-        staticDataStatusService.updateMetadataUpdated(MetadataType.FORECAST_SECTION);
+        if (updated) {
+            staticDataStatusService.updateMetadataUpdated(MetadataType.FORECAST_SECTION);
+        }
+
+        final long endTime = System.currentTimeMillis();
+        long duration = (endTime - startTime) / 1000;
+
+        String updateStatus = updated ? "Data updates took place." : "No updates took place.";
+        log.info("Road section coordinates update job ended. Update took " + duration + " seconds. " + updateStatus);
     }
 }
