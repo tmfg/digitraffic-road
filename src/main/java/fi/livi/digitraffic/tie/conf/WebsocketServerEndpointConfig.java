@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
-@ConditionalOnExpression("'${config.test}' != 'true'")
+@ConditionalOnExpression("'spring.main.web_environment' != 'false' && '${config.test}' != 'true'")
 @Configuration
 public class WebsocketServerEndpointConfig {
     /* Normal websocket endpoint exporter */
