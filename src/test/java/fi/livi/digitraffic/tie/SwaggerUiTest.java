@@ -18,10 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.BuildVersionService;
 
-public class SwaggerUiTest extends AbstractMetadataTest {
+public class SwaggerUiTest extends MetadataTestBase {
+
     @Autowired
     private WebApplicationContext wac;
 

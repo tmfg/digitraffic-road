@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,7 +85,7 @@ public class CameraDataUpdateService {
 
         String presetId = kuva.getNimi().substring(0, 8);
         String filename = presetId + ".jpg";
-        LocalDateTime pictureTaken = DateHelper.toLocalDateTimeAtZone(kuva.getAika(), ZoneId.systemDefault());
+        LocalDateTime pictureTaken = DateHelper.toLocalDateTimeAtDefaultZone(kuva.getAika());
         log.info("Handling kuva: " +ToStringHelpper.toString(kuva));
 
         // Update CameraPreset

@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.lamstation.LamStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
 
-public class LamStationUpdateJobTest extends AbstractMetadataTest {
+public class LamStationUpdateJobTest extends MetadataTestBase {
 
     @Autowired
     private LamStationSensorUpdater lamStationSensorUpdater;

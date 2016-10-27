@@ -8,12 +8,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class RoadStationSensorServiceTest extends AbstractMetadataTest {
+public class RoadStationSensorServiceTest extends MetadataTestBase {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;

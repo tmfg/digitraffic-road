@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -23,7 +24,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
+import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
@@ -43,7 +47,8 @@ import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Transactional
-public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class LamJmsMessageListenerTest extends MetadataIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(LamJmsMessageListenerTest.class);
 
@@ -64,8 +69,6 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
 
     @Before
     public void setUpTestData() {
-        // Currently slow ass hell.
-        // TOD: Generate data with direct sql
 
         // Generate test-data: Lamstations with sensors
         Map<Long, LamStation> lamsWithLotjuId = lamStationService.findAllLamStationsByMappedByLotjuId();
@@ -163,7 +166,7 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
     }
 
     @Test
-    public void testPerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+    public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
         Map<Long, LamStation> lamsWithLotjuId = lamStationService.findAllLamStationsByMappedByLotjuId();
 
@@ -286,5 +289,14 @@ public class LamJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
         }
 
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+    }
+
+    @Test
+    public void test2LastUpdated() {
+        LocalDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.LAM_STATION);
+        assertTrue(lastUpdated.isAfter(LocalDateTime.now().minusMinutes(2)));
+
+        List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.LAM_STATION);
+        assertFalse(updated.isEmpty());
     }
 }

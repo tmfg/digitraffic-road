@@ -17,6 +17,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 @Entity
@@ -44,6 +46,9 @@ public class SensorValue {
     @JoinColumn(name="ROAD_STATION_SENSOR_ID", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
+
+    @JsonIgnore
+    LocalDateTime updated;
 
     /**
      * Default constructor fo Hibernate
@@ -96,6 +101,14 @@ public class SensorValue {
 
     public void setRoadStationSensor(final RoadStationSensor roadStationSensor) {
         this.roadStationSensor = roadStationSensor;
+    }
+
+    public LocalDateTime getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(LocalDateTime updated) {
+        this.updated = updated;
     }
 
     @Override

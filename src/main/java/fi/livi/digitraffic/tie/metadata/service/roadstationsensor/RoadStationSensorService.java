@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
@@ -198,5 +199,17 @@ public class RoadStationSensorService {
             list.add(sensorValue);
         }
         return sensorValuesListByLamLotjuIdMap;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final LocalDateTime updatedAfter, final RoadStationType roadStationType) {
+        return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
+                roadStationType.getTypeNumber(),
+                DateHelper.toDateAtDefaultZone(updatedAfter));
+    }
+
+    @Transactional(readOnly = true)
+    public LocalDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
+        return sensorValueRepository.getLastUpdated(roadStationType);
     }
 }

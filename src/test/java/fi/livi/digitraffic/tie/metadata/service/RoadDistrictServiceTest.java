@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 
-public class RoadDistrictServiceTest extends AbstractMetadataTest {
+public class RoadDistrictServiceTest extends MetadataTestBase {
 
     @Autowired
     private RoadDistrictService roadDistrictService;

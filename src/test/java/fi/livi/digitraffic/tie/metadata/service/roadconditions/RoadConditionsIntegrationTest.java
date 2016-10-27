@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RoadConditionsIntegrationTest extends AbstractMetadataTest {
+public class RoadConditionsIntegrationTest extends MetadataTestBase {
 
     @Autowired
     private RoadConditionsClient roadConditionsClient;

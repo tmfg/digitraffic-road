@@ -4,10 +4,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
 
-public class LamDataControllerServiceTest extends AbstractIntegrationMetadataTest {
+public class LamDataControllerServiceTest extends MetadataIntegrationTest {
 
     @Autowired
     private LamDataService lamDataService;
