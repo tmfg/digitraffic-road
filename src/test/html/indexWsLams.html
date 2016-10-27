@@ -9,7 +9,8 @@
         var lines = [];
 
         function connect() {
-            var url = "ws://localhost:9010/api/v1/plain-websockets/tmsdata";
+//            var url = "ws://localhost:9010/api/v1/plain-websockets/tmsdata";
+            var url = "ws://tie-test.digitraffic.fi/api/v1/plain-websockets/tmsdata";
             console.log('trying to connect: ' + url);
 
             var socket = new WebSocket(url);

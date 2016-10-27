@@ -12,6 +12,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
@@ -20,6 +21,7 @@ import fi.livi.digitraffic.tie.data.websocket.LAMMessage;
 import fi.livi.digitraffic.tie.data.websocket.StatusEncoder;
 import fi.livi.digitraffic.tie.data.websocket.StatusMessage;
 
+@ConditionalOnProperty(name = "websocket.lam.enabled")
 @ServerEndpoint(value = MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata",
                 encoders = { StatusEncoder.class, LAMEncoder.class})
 @Component
