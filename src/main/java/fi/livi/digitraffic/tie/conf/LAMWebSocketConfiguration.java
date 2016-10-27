@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.data.controller.LamDataWebsocketEndpoint;
-import fi.livi.digitraffic.tie.data.controller.LamsDataWebsocketEndpoint;
+import fi.livi.digitraffic.tie.data.controller.SingleLamDataWebsocketEndpoint;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.websocket.LAMMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -43,16 +43,16 @@ public class LAMWebSocketConfiguration {
                         RoadStationType.LAM_STATION);
 
         // Single LAM Station listeners are notified every time
-        LamDataWebsocketEndpoint.sendStatus();
+        SingleLamDataWebsocketEndpoint.sendStatus();
         if (data.isEmpty()) {
-            LamsDataWebsocketEndpoint.sendStatus();
-        }
-        for (SensorValueDto sensorValue : data) {
-            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValue.getUpdated());
-            final LAMMessage message = new LAMMessage(sensorValue);
-            LamsDataWebsocketEndpoint.sendMessage(message);
-            LamDataWebsocketEndpoint.sendMessage(message);
+            LamDataWebsocketEndpoint.sendStatus();
         }
 
+        data.forEach(sensorValueDto -> {
+            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdated());
+            final LAMMessage message = new LAMMessage(sensorValueDto);
+            LamDataWebsocketEndpoint.sendMessage(message);
+            SingleLamDataWebsocketEndpoint.sendMessage(message);
+        });
     }
 }
