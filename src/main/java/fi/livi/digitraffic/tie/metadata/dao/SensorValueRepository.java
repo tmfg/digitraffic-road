@@ -22,8 +22,6 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
 
     List<SensorValue> findByRoadStationLotjuIdInAndRoadStationType(final List<Long> lamLotjuIds, final RoadStationType roadStationType);
 
-    List<SensorValue> findByUpdatedAfterAndRoadStationRoadStationType(final LocalDateTime after, final RoadStationType roadStationType);
-
     @Query(value =
            "SELECT max(sv.updated)\n" +
            "FROM SensorValue sv\n" +
