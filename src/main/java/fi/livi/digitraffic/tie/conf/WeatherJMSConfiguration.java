@@ -21,8 +21,6 @@ import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 @Configuration
 public class WeatherJMSConfiguration extends AbstractJMSConfiguration<Tiesaa> {
 
-    private static final String WEATHER_JMS_MESSAGE_LISTENER_BEAN = "weatherJMSMessageListener";
-
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
@@ -42,7 +40,7 @@ public class WeatherJMSConfiguration extends AbstractJMSConfiguration<Tiesaa> {
 
     @Override
     public JmsMessageListener<Tiesaa> createJMSMessageListener(LockingService lockingService, final String lockInstaceId) throws JAXBException {
-        return new JmsMessageListener<Tiesaa>(Tiesaa.class, WEATHER_JMS_MESSAGE_LISTENER_BEAN, lockingService, lockInstaceId) {
+        return new JmsMessageListener<Tiesaa>(Tiesaa.class, WeatherJMSConfiguration.class.getSimpleName(), lockInstaceId) {
             @Override
             protected void handleData(List<Tiesaa> data) {
                 sensorDataUpdateService.updateWeatherData(data);

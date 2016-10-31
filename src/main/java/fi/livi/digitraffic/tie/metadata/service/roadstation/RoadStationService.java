@@ -63,8 +63,8 @@ public class RoadStationService {
     @Transactional(readOnly = true)
     public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
         final List<RoadStation> orphans;
-        if (RoadStationType.LAM_STATION == type) {
-            orphans = roadStationRepository.findOrphanLamRoadStations();
+        if (RoadStationType.TMS_STATION == type) {
+            orphans = roadStationRepository.findOrphanTmsRoadStations();
         } else if (RoadStationType.CAMERA_STATION == type) {
             orphans = roadStationRepository.findOrphanCameraRoadStations();
         } else if (RoadStationType.WEATHER_STATION == type) {
@@ -96,8 +96,8 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStation> findOrphanLamStationRoadStations() {
-        return roadStationRepository.findOrphanLamRoadStations();
+    public List<RoadStation> findOrphanTmsStationRoadStations() {
+        return roadStationRepository.findOrphanTmsRoadStations();
     }
 
     @Transactional

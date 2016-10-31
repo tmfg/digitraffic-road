@@ -19,7 +19,6 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 public abstract class JmsMessageListener<T> implements MessageListener {
@@ -38,7 +37,6 @@ public abstract class JmsMessageListener<T> implements MessageListener {
 
     public JmsMessageListener(final Class<T> typeClass,
                               final String name,
-                              LockingService lockingService,
                               final String lockInstaceId) throws JAXBException {
         this.jaxbContext = JAXBContext.newInstance(typeClass);
         this.name = name;
@@ -112,7 +110,7 @@ public abstract class JmsMessageListener<T> implements MessageListener {
             // Allocate array with some extra because queue size can change any time
             ArrayList<T> targetList = new ArrayList<>(blockingQueue.size() + 5);
             int drained = blockingQueue.drainTo(targetList);
-            if ( drained > 0 ) {
+            if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("Handle data for " + name + " / "+ lockInstaceId);
                 handleData(targetList);
                 long took = System.currentTimeMillis() - start;

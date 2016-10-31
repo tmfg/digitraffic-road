@@ -64,8 +64,8 @@ public class WeatherService {
         final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
         final List<SensorValueDto> values =
-                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(roadStationNaturalId,
-                                                                                                          RoadStationType.WEATHER_STATION);
+                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
+                                                                                         RoadStationType.WEATHER_STATION);
 
         final WeatherStationDto dto = new WeatherStationDto();
         dto.setRoadStationNaturalId(roadStationNaturalId);

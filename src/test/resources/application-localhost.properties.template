@@ -5,18 +5,18 @@ logging.level.root=INFO
 server.port = 9000
 
 # Datasource
-#spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
-#spring.datasource.username=<username>
-#spring.datasource.password=<password>
+spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
+spring.datasource.username=<username>
+spring.datasource.password=<password>
 
 # Lotju-test v2 soap api
-metadata.server.address.lam=http://localhost:9011/LOTJU/LAMMetatiedot
+metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
 
 # Metadata update frequencies in ms, 43200000 ms = 12 h
 cameraStationUpdateJob.frequency=43200000
-lamStationUpdateJob.frequency=43200000
+tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
@@ -32,7 +32,7 @@ jms.password=<password>
 
 # JMS topics
 jms.weather.inQueue=<weather-topic>
-jms.lam.inQueue=<lam-topic>
+jms.tms.inQueue=<tms-topic>
 jms.camera.inQueue=<camera-topic>
 jms.datex2.inQueue=<datex2-topic>
 
@@ -46,9 +46,9 @@ jms.datex2.inQueue=<datex2-topic>
 
 # JMS queue enabled/disabled (Only daemond should have these enabled)
 #jms.weather.enabled=false
-#jms.lam.enabled=false
+#jms.tms.enabled=false
 #jms.camera.enabled=false
 #jms.datex2.enabled=true
 
-# Websocket stream of LAM sensor values
-#websocket.lam.enabled=true
+# Websocket stream of TMS sensor values
+#websocket.tms.enabled=true

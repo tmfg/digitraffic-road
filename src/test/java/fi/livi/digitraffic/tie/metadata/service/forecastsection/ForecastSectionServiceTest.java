@@ -6,10 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 
-public class ForecastSectionServiceTest extends MetadataTestBase {
+public class ForecastSectionServiceTest extends MetadataIntegrationTest {
 
     @Autowired
     private ForecastSectionService forecastSectionService;

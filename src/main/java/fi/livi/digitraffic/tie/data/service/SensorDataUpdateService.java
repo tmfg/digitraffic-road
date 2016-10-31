@@ -103,7 +103,7 @@ public class SensorDataUpdateService {
             opsInsert.executeBatch();
             final long endInsert = System.currentTimeMillis();
 
-            log.info(String.format("Update lam sensors data for %1$d " +
+            log.info(String.format("Update tms sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
                                    "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
                                    rows,
@@ -114,7 +114,7 @@ public class SensorDataUpdateService {
                                    endInsert-endUpdateStartInsert)); // insert
             return true;
         } catch (Exception e) {
-            log.error("Error while updating lam data", e);
+            log.error("Error while updating tms data", e);
         }
         return false;
     }
@@ -161,32 +161,32 @@ public class SensorDataUpdateService {
 
     private static Collection<Lam> filterNewestLamValues(List<Lam> data) {
         // Collect newest data per station
-        HashMap<Long, Lam> lamMapByLamStationLotjuId = new HashMap<Long, Lam>();
+        HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
         for (Lam lam : data) {
-            Lam currentLam = lamMapByLamStationLotjuId.get(lam.getAsemaId());
+            Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
             if (currentLam == null || lam.getAika().toGregorianCalendar().before(currentLam.getAika().toGregorianCalendar())) {
                 if (currentLam != null) {
                     log.info("Replace " + currentLam.getAika() + " with " + lam.getAika());
                 }
-                lamMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
+                tmsMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
             }
         }
-        return lamMapByLamStationLotjuId.values();
+        return tmsMapByLamStationLotjuId.values();
     }
 
     private static Collection<Tiesaa> filterNewestTiesaaValues(List<Tiesaa> data) {
         // Collect newest data per station
-        HashMap<Long, Tiesaa> tiesaaMapByLamStationLotjuId = new HashMap<>();
+        HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
         for (Tiesaa tiesaa : data) {
-            Tiesaa currentTiesaa = tiesaaMapByLamStationLotjuId.get(tiesaa.getAsemaId());
+            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
             if (currentTiesaa == null || tiesaa.getAika().toGregorianCalendar().before(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
                     log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaa.getAika());
                 }
-                tiesaaMapByLamStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
+                tiesaaMapByTmsStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
             }
         }
-        return tiesaaMapByLamStationLotjuId.values();
+        return tiesaaMapByTmsStationLotjuId.values();
     }
 
 
@@ -203,7 +203,7 @@ public class SensorDataUpdateService {
                 ops.setTimestampAtName("measured", measured);
                 ops.setLongAtName("rsLotjuId", lam.getAsemaId());
                 ops.setLongAtName("sensorLotjuId", Long.parseLong(anturi.getLaskennallinenAnturiId()));
-                ops.setStringAtName("stationType", RoadStationType.LAM_STATION.name());
+                ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
                 ops.addBatch();
             }
         }

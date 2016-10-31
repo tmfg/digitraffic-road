@@ -27,7 +27,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LamStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
@@ -52,7 +52,6 @@ public class SchedulerConfig {
         final SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
         factory.setOverwriteExistingJobs(true);
-
         factory.setDataSource(dataSource);
         factory.setJobFactory(jobFactory);
 
@@ -81,8 +80,8 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean lamStationUpdateJobDetail() {
-        return createJobDetail(LamStationUpdateJob.class);
+    public JobDetailFactoryBean tmsStationUpdateJobDetail() {
+        return createJobDetail(TmsStationUpdateJob.class);
     }
 
     @Bean
@@ -97,9 +96,9 @@ public class SchedulerConfig {
         return createTrigger(jobDetail, frequency);
     }
 
-    @Bean(name = "lamStationUpdateJobTrigger")
-    public SimpleTriggerFactoryBean lamStationUpdateJobTrigger(@Qualifier("lamStationUpdateJobDetail") final JobDetail jobDetail,
-                                                               @Value("${lamStationUpdateJob.frequency}") final long frequency) {
+    @Bean(name = "tmsStationUpdateJobTrigger")
+    public SimpleTriggerFactoryBean tmsStationUpdateJobTrigger(@Qualifier("tmsStationUpdateJobDetail") final JobDetail jobDetail,
+                                                               @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
         return createTrigger(jobDetail, frequency);
     }
 

@@ -331,7 +331,7 @@
                                     <!--</extraargs>-->
                                 </wsdlOption>
 
-                                <!-- LAM-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
+                                <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/LAMMetatiedot.wsdl</wsdl>
                                     <!--<extraargs>-->

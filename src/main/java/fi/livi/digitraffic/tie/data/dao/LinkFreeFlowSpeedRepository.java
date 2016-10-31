@@ -37,6 +37,7 @@ public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowS
             "WHERE L.OBSOLETE = 0\n" +
             "  AND L.NATURAL_ID = ?1",
            nativeQuery = true)
+
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LinkFreeFlowSpeedDto> listAllLinkFreeFlowSpeeds(final long linkId);
 

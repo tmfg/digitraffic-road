@@ -159,7 +159,7 @@ public abstract class AbstractJMSConfiguration<T> {
         shutdownCalled.set(true);
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             log.debug("Sleep Interrupted", e);
         }

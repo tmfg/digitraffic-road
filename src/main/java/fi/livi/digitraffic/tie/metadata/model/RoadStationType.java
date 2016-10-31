@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum RoadStationType {
-    LAM_STATION(1),
+    TMS_STATION(1),
     WEATHER_STATION(2),
     CAMERA_STATION(3);
 

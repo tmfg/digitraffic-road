@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.lam.LamFreeFlowSpeedDto;
+import fi.livi.digitraffic.tie.data.dto.tms.TmsFreeFlowSpeedDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,14 +25,14 @@ public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
 
     @ApiModelProperty(value = "Free flow speeds for TMS stations")
     @JsonProperty(value = "tmsFreeFlowSpeeds")
-    private final List<LamFreeFlowSpeedDto> lamFreeFlowSpeeds;
+    private final List<TmsFreeFlowSpeedDto> tmsFreeFlowSpeeds;
 
     public FreeFlowSpeedRootDataObjectDto(final List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds,
-                                          final List<LamFreeFlowSpeedDto> lamFreeFlowSpeeds,
+                                          final List<TmsFreeFlowSpeedDto> tmsFreeFlowSpeeds,
                                           final LocalDateTime updated) {
         super(updated);
         this.linkFreeFlowSpeeds = linkFreeFlowSpeeds;
-        this.lamFreeFlowSpeeds = lamFreeFlowSpeeds;
+        this.tmsFreeFlowSpeeds = tmsFreeFlowSpeeds;
     }
 
     public FreeFlowSpeedRootDataObjectDto(final LocalDateTime updated) {
@@ -43,8 +43,8 @@ public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
         return linkFreeFlowSpeeds;
     }
 
-    public List<LamFreeFlowSpeedDto> getLamFreeFlowSpeeds() {
-        return lamFreeFlowSpeeds;
+    public List<TmsFreeFlowSpeedDto> getTmsFreeFlowSpeeds() {
+        return tmsFreeFlowSpeeds;
     }
 
 }
