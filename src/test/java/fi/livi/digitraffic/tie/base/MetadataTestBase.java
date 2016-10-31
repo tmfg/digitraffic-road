@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -19,6 +20,13 @@ public abstract class MetadataTestBase {
     protected JdbcTemplate jdbcTemplate;
 
     protected void generateMissingLotjuIds() {
+
+        SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT * FROM ROAD_STATION");
+
+        for (String s : result.getMetaData().getColumnNames()) {
+            System.out.println(s);
+        }
+
 
         jdbcTemplate.execute(
                 "UPDATE ROAD_STATION\n" +
