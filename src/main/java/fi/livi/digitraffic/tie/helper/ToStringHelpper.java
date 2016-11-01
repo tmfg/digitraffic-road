@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
-import fi.livi.digitraffic.tie.metadata.model.LamStation;
+import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
@@ -122,12 +122,12 @@ public class ToStringHelpper {
         return sb.toString();
     }
 
-    public static String toString(final LamStation lamStation) {
-        final StringBuffer sb = createStartSb(lamStation);
-        JSON_STYLE.append(sb, ID, lamStation.getId());
-        JSON_STYLE.append(sb, LOTJU_ID, lamStation.getLotjuId());
-        JSON_STYLE.append(sb, NATURAL_ID, lamStation.getNaturalId());
-        JSON_STYLE.append(sb, NAME, lamStation.getName(), true);
+    public static String toString(final TmsStation tmsStation) {
+        final StringBuffer sb = createStartSb(tmsStation);
+        JSON_STYLE.append(sb, ID, tmsStation.getId());
+        JSON_STYLE.append(sb, LOTJU_ID, tmsStation.getLotjuId());
+        JSON_STYLE.append(sb, NATURAL_ID, tmsStation.getNaturalId());
+        JSON_STYLE.append(sb, NAME, tmsStation.getName(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();

@@ -97,6 +97,10 @@ public class WeatherStationService {
                 updated != null ? updated.getUpdated() : null);
     }
 
+    public List<WeatherStation> findAllNonObsoletePublicWeatherStations() {
+        return weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
+    }
+
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByByRoadStationNaturalId() {
         final List<WeatherStation> allStations = weatherStationRepository.findAll();

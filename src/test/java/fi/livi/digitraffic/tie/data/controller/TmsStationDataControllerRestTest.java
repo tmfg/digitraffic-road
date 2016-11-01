@@ -18,7 +18,7 @@ public class TmsStationDataControllerRestTest extends MetadataRestTest {
     public void testTmsDataRestApi() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                            DataController.LAM_DATA_PATH))
+                            DataController.TMS_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
@@ -39,7 +39,7 @@ public class TmsStationDataControllerRestTest extends MetadataRestTest {
     public void testTmsDataRestApiById() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.LAM_DATA_PATH + "/23001"))
+                DataController.TMS_DATA_PATH + "/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //

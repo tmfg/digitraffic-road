@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.metadata.service.roadconditions.RoadConditionsUpdater;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -17,9 +16,6 @@ public class ForecastSectionCoordinatesUpdateJob extends AbstractUpdateJob {
 
     @Autowired
     private RoadConditionsUpdater roadConditionsUpdater;
-
-    @Autowired
-    public LamStationsSensorsUpdater lamStationsSensorsUpdater;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

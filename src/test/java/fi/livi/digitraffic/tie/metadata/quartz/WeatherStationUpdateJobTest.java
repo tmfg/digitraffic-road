@@ -12,18 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.service.lotju.TiesaaPerustiedotLotjuServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceMock;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
-public class WeatherStationUpdateJobTest extends MetadataTestBase {
+public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJobTest.class);
 
@@ -40,12 +40,12 @@ public class WeatherStationUpdateJobTest extends MetadataTestBase {
     private WeatherStationService weatherStationService;
 
     @Autowired
-    private TiesaaPerustiedotLotjuServiceMock tiesaaPerustiedotLotjuServiceMock;
+    private LotjuTiesaaPerustiedotServiceMock lotjuTiesaaPerustiedotServiceMock;
 
     @Test
     public void testUpdateWeatherStations() {
 
-        tiesaaPerustiedotLotjuServiceMock.initDataAndService();
+        lotjuTiesaaPerustiedotServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
         weatherStationUpdater.updateWeatherStations();
@@ -55,8 +55,8 @@ public class WeatherStationUpdateJobTest extends MetadataTestBase {
                 weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
 
-        // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
-        tiesaaPerustiedotLotjuServiceMock.setStateAfterChange(true);
+        // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
+        lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
         weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();

@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.lam.LamRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
-import fi.livi.digitraffic.tie.data.service.LamDataService;
+import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
 import io.swagger.annotations.Api;
@@ -44,7 +44,7 @@ public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String LAM_DATA_PATH = "/tms-data";
+    public static final String TMS_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
 
     // Fluency
@@ -60,7 +60,7 @@ public class DataController {
 
     private final TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
-    private final LamDataService lamDataService;
+    private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
     private final CameraDataService cameraDataService;
@@ -68,13 +68,13 @@ public class DataController {
     @Autowired
     public DataController(final TrafficFluencyService trafficFluencyService,
                           final DayDataService dayDataService,
-                          final LamDataService lamDataService,
+                          final TmsDataService tmsDataService,
                           final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
-        this.lamDataService = lamDataService;
+        this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
@@ -179,7 +179,7 @@ public class DataController {
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/tms/" + id);
-        return freeFlowSpeedService.listLamsPublicFreeFlowSpeeds(id);
+        return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
     }
 
     @ApiOperation("Current data of cameras")
@@ -207,27 +207,27 @@ public class DataController {
     }
 
     @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LamRootDataObjectDto listLamStationData(
+    public TmsRootDataObjectDto listTmsStationData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return lamDataService.findPublicLamData(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
+        return tmsDataService.findPublicTmsData(lastUpdated);
     }
 
     @ApiOperation("Current data of TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = LAM_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LamRootDataObjectDto listLamStationData(
+    public TmsRootDataObjectDto listTmsStationData(
             @ApiParam("TMS Station id")
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + LAM_DATA_PATH + "/" + id);
-        return lamDataService.findPublicLamData(id);
+        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "/" + id);
+        return tmsDataService.findPublicTmsData(id);
     }
 
     @ApiOperation("Current data of Weather Stations")

@@ -13,15 +13,15 @@ public class FreeFlowSpeedServiceTest extends MetadataIntegrationTest {
     private FreeFlowSpeedService freeFlowSpeedService;
 
     @Test
-    public void testListAllLamDataFromNonObsoleteStations() {
+    public void testListAllLinkDataFromNonObsoleteStations() {
         final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(false);
 
         Assert.notNull(object);
         Assert.notNull(object.getDataUpdatedLocalTime());
         Assert.notNull(object.getDataUpdatedUtc());
 
-        Assert.notNull(object.getLamFreeFlowSpeeds());
-        Assert.notEmpty(object.getLamFreeFlowSpeeds());
+        Assert.notNull(object.getTmsFreeFlowSpeeds());
+        Assert.notEmpty(object.getTmsFreeFlowSpeeds());
 
         Assert.notNull(object.getLinkFreeFlowSpeeds());
         Assert.notEmpty(object.getLinkFreeFlowSpeeds());

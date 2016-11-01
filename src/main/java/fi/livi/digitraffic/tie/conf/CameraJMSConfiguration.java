@@ -25,8 +25,6 @@ public class CameraJMSConfiguration extends AbstractJMSConfiguration<Kuva> {
 
     private static final Logger log = LoggerFactory.getLogger(CameraJMSConfiguration.class);
 
-    private static final String CAMERA_JMS_MESSAGE_LISTENER_BEAN = "cameraJMSMessageListener";
-
     private final CameraDataUpdateService cameraDataUpdateService;
 
     @Autowired
@@ -45,13 +43,13 @@ public class CameraJMSConfiguration extends AbstractJMSConfiguration<Kuva> {
 
     @Override
     public JmsMessageListener<Kuva> createJMSMessageListener(LockingService lockingService, final String lockInstaceId) throws JAXBException {
-        return new JmsMessageListener<Kuva>(Kuva.class, CAMERA_JMS_MESSAGE_LISTENER_BEAN, lockingService, lockInstaceId) {
+        return new JmsMessageListener<Kuva>(Kuva.class, CameraJMSConfiguration.class.getSimpleName(), lockInstaceId) {
             @Override
             protected void handleData(final List<Kuva> data) {
                 try {
                     cameraDataUpdateService.updateCameraData(data);
                 } catch (SQLException e) {
-                    log.error("Update lam data failed", e);
+                    log.error("Update camera data failed", e);
                 }
             }
         };

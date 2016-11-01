@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.roadconditions.RoadConditionsUpdater;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.*;
 
-public class ForecastSectionServiceTest extends MetadataTestBase {
+public class ForecastSectionServiceTest extends MetadataIntegrationTest {
 
     @Autowired
     private ForecastSectionService forecastSectionService;

@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 
 import fi.livi.digitraffic.tie.data.jms.JMSUnmarshalMessageException;
 import fi.livi.digitraffic.tie.data.jms.JmsMessageListener;
-import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
@@ -29,10 +28,6 @@ public class Datex2JMSConfiguration extends AbstractJMSConfiguration<SituationPu
 
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSConfiguration.class);
 
-    private static final String DATEX2_JMS_MESSAGE_LISTENER_BEAN = "datex2JMSMessageListener";
-
-    private final CameraDataUpdateService cameraDataUpdateService;
-
     @Autowired
     public Datex2JMSConfiguration(final ConfigurableApplicationContext applicationContext,
                                   @Value("${jms.datex2.inQueue}")
@@ -41,15 +36,13 @@ public class Datex2JMSConfiguration extends AbstractJMSConfiguration<SituationPu
                                   final String jmsUserId,
                                   @Value("${jms.password}")
                                   final String jmsPassword,
-                                  final LockingService lockingService,
-                                  final CameraDataUpdateService cameraDataUpdateService) throws JMSException, JAXBException {
+                                  final LockingService lockingService) throws JMSException, JAXBException {
         super(applicationContext, lockingService, jmsInQueue, jmsUserId, jmsPassword);
-        this.cameraDataUpdateService = cameraDataUpdateService;
     }
 
     @Override
     public JmsMessageListener<SituationPublication> createJMSMessageListener(LockingService lockingService, final String lockInstaceId) throws JAXBException {
-        return new JmsMessageListener<SituationPublication>(SituationPublication.class, DATEX2_JMS_MESSAGE_LISTENER_BEAN, lockingService, lockInstaceId) {
+        return new JmsMessageListener<SituationPublication>(SituationPublication.class, Datex2JMSConfiguration.class.getSimpleName(), lockInstaceId) {
             @Override
             protected void handleData(final List<SituationPublication> data) {
 

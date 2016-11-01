@@ -54,6 +54,6 @@ public class SwaggerUiTest extends MetadataTestBase {
                 .andExpect(content().contentType(restContentType))
                 .andExpect(jsonPath("$.swagger", is("2.0")))
                 .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-                .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + MetadataController.LAM_STATIONS_PATH, anything()));
+                .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + MetadataController.TMS_STATIONS_PATH, anything()));
     }
 }

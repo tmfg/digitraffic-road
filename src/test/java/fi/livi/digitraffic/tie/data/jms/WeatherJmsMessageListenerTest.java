@@ -6,13 +6,11 @@ import static org.junit.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,7 +19,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -69,42 +66,10 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
     @Before
     public void setUpTestData() {
-        // Generate test-data: WeatherStations with sensors
-        Map<Long, WeatherStation> lamsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
-        Set<Long> usedLotjuIds = new HashSet<>(lamsWithLotjuId.keySet());
 
-        long stationGeneratedLotjuId = -1;
-        ArrayList<WeatherStation> stations = new ArrayList<>();
-        Map<Long, WeatherStation> weatherStations = weatherStationService.findAllWeatherStationsMappedByByRoadStationNaturalId();
-
-        for (Map.Entry<Long, WeatherStation> longLamStationEntry : weatherStations.entrySet()) {
-            WeatherStation lam = longLamStationEntry.getValue();
-            if (lam.getLotjuId() == null) {
-                while (usedLotjuIds.contains(stationGeneratedLotjuId)) {
-                    stationGeneratedLotjuId--;
-                }
-                usedLotjuIds.add(stationGeneratedLotjuId);
-                lam.setLotjuId(stationGeneratedLotjuId);
-                lam.getRoadStation().setLotjuId(stationGeneratedLotjuId);
-            }
-            stations.add(lam);
-        }
-
-        log.info("Found " + stations.size() + " Weather Stations");
-
-        Assert.assertTrue(stations.size() > 100);
-
-        long sensorGeneratedLotjuId = -1;
-        List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
-
-        log.info("Found " + availableSensors.size() + " available sensors for Weather Stations");
-
-        for (RoadStationSensor availableSensor : availableSensors) {
-            if ( availableSensor.getLotjuId() == null ) {
-                availableSensor.setLotjuId(sensorGeneratedLotjuId);
-                sensorGeneratedLotjuId--;
-            }
+        log.info("Add available sensors for weather stations");
+        if (!TestTransaction.isActive()) {
+            TestTransaction.start();
         }
 
         String merge =
@@ -129,40 +94,10 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
         jdbcTemplate.execute(merge);
 
         log.info("Commit changes");
-        assertTrue(TestTransaction.isActive());
         TestTransaction.flagForCommit();
         TestTransaction.end();
         assertFalse(TestTransaction.isActive());
         log.info("Commit done");
-    }
-
-    @After
-    public void setRollBackLotjuIds() {
-        if (!TestTransaction.isActive()) {
-            TestTransaction.start();
-        }
-
-        Iterator<WeatherStation> stationsIter =
-                weatherStationService.findAllWeatherStationsMappedByLotjuId().values().iterator();
-        while (stationsIter.hasNext()) {
-            WeatherStation lam = stationsIter.next();
-            if (lam.getLotjuId() < 0) {
-                lam.setLotjuId(null);
-                lam.getRoadStation().setLotjuId(null);
-            }
-        }
-
-        List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
-        for (RoadStationSensor availableSensor : availableSensors) {
-            if (availableSensor.getLotjuId() < 0) {
-                availableSensor.setLotjuId(null);
-            }
-        }
-        assertTrue(TestTransaction.isActive());
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        assertFalse(TestTransaction.isActive());
     }
 
     @Test
@@ -171,7 +106,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
         JmsMessageListener<Tiesaa> tiesaaJmsMessageListener =
-                new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener", lockingService, UUID.randomUUID().toString()) {
+                new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener", UUID.randomUUID().toString()) {
             @Override
             protected void handleData(List<Tiesaa> data) {
                 long start = System.currentTimeMillis();
@@ -273,7 +208,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
         // Assert sensor values are updated to db
         List<Long> tiesaaLotjuIds = data.stream().map(Tiesaa::getAsemaId).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
-                    roadStationSensorService.findSensorvaluesListMappedByLamLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
+                    roadStationSensorService.findSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
         for (Tiesaa tiesaa : data) {
             long asemaLotjuId = tiesaa.getAsemaId();

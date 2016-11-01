@@ -161,7 +161,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
         JmsMessageListener<Kuva> cameraJmsMessageListener =
-                new JmsMessageListener<Kuva>(Kuva.class, "cameraJmsMessageListener", lockingService, UUID.randomUUID().toString()) {
+                new JmsMessageListener<Kuva>(Kuva.class, "cameraJmsMessageListener", UUID.randomUUID().toString()) {
             @Override
             protected void handleData(List<Kuva> data) {
                 long start = System.currentTimeMillis();

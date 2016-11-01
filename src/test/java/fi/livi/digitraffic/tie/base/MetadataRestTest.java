@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.base;
 
 import java.util.Arrays;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,14 @@ public abstract class MetadataRestTest extends MetadataTestBase {
     }
 
     @Before
-    public void setup() {
+    public void before() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        generateMissingLotjuIds();
+        fixData();
+    }
+
+    @After
+    public void after() {
+        restoreGeneratedLotjuIds();
     }
 }

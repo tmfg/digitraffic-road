@@ -7,24 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.LamFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dao.LinkFreeFlowSpeedRepository;
+import fi.livi.digitraffic.tie.data.dao.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationService;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 
 @Service
 public class FreeFlowSpeedService {
     private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
-    private final LamFreeFlowSpeedRepository lamFreeFlowSpeedRepository;
-    private final LamStationService lamStationService;
+    private final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository;
+    private final TmsStationService tmsStationService;
 
     @Autowired
     public FreeFlowSpeedService(final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository,
-                                final LamFreeFlowSpeedRepository lamFreeFlowSpeedRepository,
-                                final LamStationService lamStationService) {
+                                final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository,
+                                final TmsStationService tmsStationService) {
         this.linkFreeFlowSpeedRepository = linkFreeFlowSpeedRepository;
-        this.lamFreeFlowSpeedRepository = lamFreeFlowSpeedRepository;
-        this.lamStationService = lamStationService;
+        this.tmsFreeFlowSpeedRepository = tmsFreeFlowSpeedRepository;
+        this.tmsStationService = tmsStationService;
     }
 
 
@@ -38,7 +38,7 @@ public class FreeFlowSpeedService {
         } else {
             return new FreeFlowSpeedRootDataObjectDto(
                     linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(),
-                    lamFreeFlowSpeedRepository.listAllPublicLamFreeFlowSpeeds(),
+                    tmsFreeFlowSpeedRepository.listAllPublicTmsFreeFlowSpeeds(),
                     updated);
         }
     }
@@ -58,16 +58,16 @@ public class FreeFlowSpeedService {
     }
 
     @Transactional(readOnly = true)
-    public FreeFlowSpeedRootDataObjectDto listLamsPublicFreeFlowSpeeds(final long roadStationNaturalId) {
+    public FreeFlowSpeedRootDataObjectDto listTmsPublicFreeFlowSpeeds(final long roadStationNaturalId) {
 
         // TODO: where to read update info?
         final LocalDateTime updated = LocalDateTime.now();
-        if (!lamStationService.lamStationExistsWithRoadStationNaturalId(roadStationNaturalId)) {
-            throw new ObjectNotFoundException("LamStation", roadStationNaturalId);
+        if (!tmsStationService.tmsStationExistsWithRoadStationNaturalId(roadStationNaturalId)) {
+            throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }
         return new FreeFlowSpeedRootDataObjectDto(
                 Collections.emptyList(),
-                lamFreeFlowSpeedRepository.listAllPublicLamFreeFlowSpeeds(roadStationNaturalId),
+                tmsFreeFlowSpeedRepository.listAllPublicTmsFreeFlowSpeeds(roadStationNaturalId),
                 updated);
 
     }

@@ -13,40 +13,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lam.LamStationsSensorsUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LamMetatiedotLotjuServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 public class TmsMetadataControllerRestTest extends MetadataRestTest {
 
     @Autowired
-    private LamMetatiedotLotjuServiceMock lamMetatiedotLotjuServiceMock;
+    private LotjuLAMMetatiedotServiceMock lotjuLAMMetatiedotServiceMock;
 
     @Autowired
-    private LamStationSensorUpdater lamStationSensorUpdater;
+    private TmsStationSensorUpdater tmsStationSensorUpdater;
 
     @Autowired
-    private LamStationsSensorsUpdater lamStationsSensorsUpdater;
+    private TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
 
     @Autowired
-    private LamStationUpdater lamStationUpdater;
+    private TmsStationUpdater tmsStationUpdater;
 
     @Test
     public void testTmsMetadataRestApi() throws Exception {
 
 
         // Init data
-        lamMetatiedotLotjuServiceMock.initDataAndService();
+        lotjuLAMMetatiedotServiceMock.initDataAndService();
 
-        // Update lamstations to initial state (3 non obsolete stations and 1 obsolete)
-        lamStationSensorUpdater.updateRoadStationSensors();
-        lamStationUpdater.updateLamStations();
-        lamStationsSensorsUpdater.updateLamStationsSensors();
+        // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
+        tmsStationSensorUpdater.updateRoadStationSensors();
+        tmsStationUpdater.updateTmsStations();
+        tmsStationsSensorsUpdater.updateTmsStationsSensors();
 
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                             MetadataApplicationConfiguration.API_METADATA_PART_PATH +
-                            MetadataController.LAM_STATIONS_PATH))
+                            MetadataController.TMS_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))

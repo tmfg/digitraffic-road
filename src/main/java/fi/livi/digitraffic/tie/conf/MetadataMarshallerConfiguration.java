@@ -10,7 +10,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLamStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
 
 @Configuration
@@ -39,15 +39,15 @@ public class MetadataMarshallerConfiguration {
     }
 
     @Bean
-    public LotjuLamStationClient lamStationClient(final Jaxb2Marshaller marshaller,
-                                                  @Value("${metadata.server.address.lam}")
-                                                  final String lamMetadataServerAddress) {
-        log.info("metadata.server.address.lam: " + lamMetadataServerAddress);
-        if ( StringUtils.isNotBlank(lamMetadataServerAddress) &&
-             !"${metadata.server.address.lam}".equals(lamMetadataServerAddress) ) {
-            log.info("Creating LotjuLamStationClient");
-            final LotjuLamStationClient client = new LotjuLamStationClient();
-            client.setDefaultUri(lamMetadataServerAddress);
+    public LotjuTmsStationClient tmsStationClient(final Jaxb2Marshaller marshaller,
+                                                  @Value("${metadata.server.address.tms}")
+                                                  final String tmsMetadataServerAddress) {
+        log.info("metadata.server.address.tms: " + tmsMetadataServerAddress);
+        if ( StringUtils.isNotBlank(tmsMetadataServerAddress) &&
+             !"${metadata.server.address.tms}".equals(tmsMetadataServerAddress) ) {
+            log.info("Creating LotjuTmsStationClient");
+            final LotjuTmsStationClient client = new LotjuTmsStationClient();
+            client.setDefaultUri(tmsMetadataServerAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
@@ -58,7 +58,7 @@ public class MetadataMarshallerConfiguration {
 
             return client;
         }
-        log.warn(NOT_CREATING_BEAN + LotjuLamStationClient.class + " because property metadata.server.address.lam was not set.");
+        log.warn(NOT_CREATING_BEAN + LotjuTmsStationClient.class + " because property metadata.server.address.tms was not set.");
         return null;
     }
 
