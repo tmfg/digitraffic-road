@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class RoadConditionsIntegrationTest extends MetadataTestBase {
@@ -26,5 +27,18 @@ public class RoadConditionsIntegrationTest extends MetadataTestBase {
         assertEquals(10, forecastSectionCoordinates.get(0).getCoordinates().size());
         assertEquals(BigDecimal.valueOf(24.944), forecastSectionCoordinates.get(0).getCoordinates().get(0).longitude);
         assertEquals(BigDecimal.valueOf(60.167), forecastSectionCoordinates.get(0).getCoordinates().get(0).latitude);
+    }
+
+    @Test
+    public void getRoadConditionsSucceeds() {
+
+        RoadConditionsDto roadConditions = roadConditionsClient.getRoadConditions();
+
+        assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).time);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).weatherSymbol);
     }
 }

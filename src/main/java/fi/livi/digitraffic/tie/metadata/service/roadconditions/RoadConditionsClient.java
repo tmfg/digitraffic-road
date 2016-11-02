@@ -18,6 +18,8 @@ public class RoadConditionsClient {
 
     private final String roadsUrl = "roads.php";
 
+    private final String roadConditionsUrl = "roadConditionsV1-json.php";
+
     private RestTemplate restTemplate = new RestTemplate();
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -27,6 +29,11 @@ public class RoadConditionsClient {
         LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
 
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
+    }
+
+    public RoadConditionsDto getRoadConditions() {
+
+        return restTemplate.getForObject(baseUrl + roadConditionsUrl, RoadConditionsDto.class);
     }
 
     private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(Map.Entry<String, Object> forecastSection) {
