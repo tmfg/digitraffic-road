@@ -8,9 +8,29 @@ public class ForecastConditionReason {
 
     public final Integer roadCondition;
 
+    public final Integer windCondition;
+
+    public final Boolean freezingRainCondition;
+
+    public final Boolean winterSlipperiness;
+
+    public final Integer visibilityCondition;
+
+    public final Integer frictionCondition;
+
     public ForecastConditionReason(@JsonProperty("precipitationCondition") Integer precipitationCondition,
-                                   @JsonProperty("roadCondition") Integer roadCondition) {
+                                   @JsonProperty("roadCondition") Integer roadCondition,
+                                   @JsonProperty("windCondition") Integer windCondition,
+                                   @JsonProperty("freezingRainCondition") Boolean freezingRainCondition,
+                                   @JsonProperty("winterSlipperiness") Boolean winterSlipperiness,
+                                   @JsonProperty("visibilityCondition") Integer visibilityCondition,
+                                   @JsonProperty("frictionCondition") Integer frictionCondition) {
         this.precipitationCondition = precipitationCondition;
         this.roadCondition = roadCondition;
+        this.windCondition = windCondition;
+        this.freezingRainCondition = freezingRainCondition;
+        this.winterSlipperiness = winterSlipperiness;
+        this.visibilityCondition = visibilityCondition;
+        this.frictionCondition = frictionCondition;
     }
 }
