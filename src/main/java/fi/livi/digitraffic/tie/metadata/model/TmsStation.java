@@ -9,8 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -29,7 +27,6 @@ import fi.livi.digitraffic.tie.metadata.converter.TmsStationTypeConverter;
 @Entity
 @Table(name = "lam_station")
 @DynamicUpdate
-@NamedEntityGraph(name = "tmsStation", attributeNodes = {@NamedAttributeNode("roadStation"), @NamedAttributeNode("roadDistrict")})
 public class TmsStation {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);
 
@@ -37,7 +34,7 @@ public class TmsStation {
     @GenericGenerator(name = "SEQ_LAM_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_LAM_STATION"))
     @GeneratedValue(generator = "SEQ_LAM_STATION")
-    private long id;
+    private Long id;
 
     private long naturalId;
 

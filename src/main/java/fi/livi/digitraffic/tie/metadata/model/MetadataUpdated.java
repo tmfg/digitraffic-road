@@ -6,7 +6,6 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,14 +17,13 @@ import fi.livi.digitraffic.tie.metadata.converter.MetadataTypeConverter;
 @Entity
 @Table(name = "METADATA_UPDATED")
 @DynamicUpdate
-@NamedEntityGraph(name = "metadataUpdated")
 public class MetadataUpdated {
 
     @Id
     @GenericGenerator(name = "SEQ_METAD_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_METAD_UPDATED"))
     @GeneratedValue(generator = "SEQ_METAD_UPDATED")
-    private long id;
+    private Long id;
 
     @Convert(converter = MetadataTypeConverter.class)
     private MetadataType metadataType;

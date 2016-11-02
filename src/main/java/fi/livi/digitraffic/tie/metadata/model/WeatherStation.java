@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
@@ -21,7 +19,6 @@ import fi.livi.digitraffic.tie.metadata.converter.WeatherStationTypeConverter;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "weatherStation", attributeNodes = @NamedAttributeNode("roadStation"))
 public class WeatherStation {
 
     @Id

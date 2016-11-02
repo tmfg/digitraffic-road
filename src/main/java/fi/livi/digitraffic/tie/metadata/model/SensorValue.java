@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -23,14 +21,13 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "sensorValue", attributeNodes = @NamedAttributeNode("roadStation"))
 public class SensorValue {
 
     @Id
     @GenericGenerator(name = "SEQ_SENSOR_VALUE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE"))
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE")
-    private long id;
+    private Long id;
 
     private Double value;
 

@@ -21,7 +21,7 @@ public class FluencyClass {
 
     @JsonIgnore
     @Id
-    private long id;
+    private Long id;
 
     @JsonIgnore
     @NotNull

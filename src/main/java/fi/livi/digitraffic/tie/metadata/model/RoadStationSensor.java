@@ -42,7 +42,7 @@ public class RoadStationSensor {
     @GenericGenerator(name = "SEQ_ROAD_STATION_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION_SENSOR"))
     @GeneratedValue(generator = "SEQ_ROAD_STATION_SENSOR")
-    private long id;
+    private Long id;
 
     @JsonIgnore
     private Long lotjuId;
