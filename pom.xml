@@ -203,6 +203,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.progress.message</groupId>
+            <artifactId>sonic_XMessage</artifactId>
+            <version>8.6.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
             <version>2.2.1</version>
@@ -402,7 +408,7 @@
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
                                     <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
                                               is already in use. Use a class customization to resolve this conflict.-->
