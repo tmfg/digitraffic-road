@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -160,8 +159,8 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         createHttpResponseStubFor(4 + IMAGE_SUFFIX);
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
-        JmsMessageListener<Kuva> cameraJmsMessageListener =
-                new JmsMessageListener<Kuva>(Kuva.class, "cameraJmsMessageListener", UUID.randomUUID().toString()) {
+        AbstractJMSMessageListener<Kuva> cameraJmsMessageListener =
+                new AbstractJMSMessageListener<Kuva>(Kuva.class, log) {
             @Override
             protected void handleData(List<Kuva> data) {
                 long start = System.currentTimeMillis();

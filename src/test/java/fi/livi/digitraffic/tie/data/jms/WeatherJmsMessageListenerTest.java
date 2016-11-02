@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -105,8 +104,8 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
-        JmsMessageListener<Tiesaa> tiesaaJmsMessageListener =
-                new JmsMessageListener<Tiesaa>(Tiesaa.class, "weatherJmsMessageListener", UUID.randomUUID().toString()) {
+        AbstractJMSMessageListener<Tiesaa> tiesaaJmsMessageListener =
+                new AbstractJMSMessageListener<Tiesaa>(Tiesaa.class, log) {
             @Override
             protected void handleData(List<Tiesaa> data) {
                 long start = System.currentTimeMillis();

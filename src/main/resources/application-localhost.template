@@ -30,11 +30,16 @@ jms.connectionUrls=tcp://ip:port,tcp://ip:port
 jms.userId=<username>
 jms.password=<password>
 
-# JMS topics
-jms.weather.inQueue=<weather-topic>
-jms.tms.inQueue=<tms-topic>
-jms.camera.inQueue=<camera-topic>
-jms.datex2.inQueue=<datex2-topic>
+# Old sonic test for datex2
+jms.datex2.connectionUrls=tcp://ip:port,tcp://ip:port
+jms.datex2.userId=<password>
+jms.datex2.password=<password>
+
+# JMS queues
+jms.weather.inQueue=topic://<weather-topic>
+jms.tms.inQueue=topic://<tms-topic>
+jms.camera.inQueue=topic://<camera-topic>
+jms.datex2.inQueue=queue://<datex2-queue>
 
 # Services enabled/disabled
 
