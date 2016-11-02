@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -106,8 +105,8 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
 
         Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllTmsStationsByMappedByLotjuId();
 
-        JmsMessageListener<Lam> lamJmsMessageListener =
-                new JmsMessageListener<Lam>(Lam.class, "TmsJmsMessageListener", UUID.randomUUID().toString()) {
+        AbstractJMSMessageListener<Lam> lamJmsMessageListener =
+                new AbstractJMSMessageListener<Lam>(Lam.class, log) {
             @Override
             protected void handleData(List<Lam> data) {
                 long start = System.currentTimeMillis();

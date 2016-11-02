@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf;
+package fi.livi.digitraffic.tie.conf.jms;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

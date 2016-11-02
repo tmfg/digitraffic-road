@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 

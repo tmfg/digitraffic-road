@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf.exception;
+package fi.livi.digitraffic.tie.conf.jms;
 
 public class JMSInitException extends RuntimeException {
 
