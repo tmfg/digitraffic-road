@@ -2,10 +2,12 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +32,10 @@ public class CameraJMSMessageListener extends AbstractJMSMessageListener<Kuva> {
     }
 
     @Override
-    protected void handleData(List<Kuva> data) {
+    protected void handleData(List<Pair<Kuva, String>> data) {
         try {
-            cameraDataUpdateService.updateCameraData(data);
+            List<Kuva> kuvaData = data.stream().map(o -> o.getLeft()).collect(Collectors.toList());
+            cameraDataUpdateService.updateCameraData(kuvaData);
         } catch (SQLException e) {
             log.error("Error while handling Camera data", e);
         }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
@@ -42,6 +41,7 @@ public class MetadataController {
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
     public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
     public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
+    public static final String TRAFFIC_DISORDERS_PATH = "/traffic-disorders";
 
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 
@@ -124,15 +124,27 @@ public class MetadataController {
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
 
-    @ApiOperation("The static information of weather forecast sections")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public ForecastSectionsMetadata listForecastSections(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
-        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
-    }
+//    @ApiOperation("The static information of weather forecast sections")
+//    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+//    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
+//                            @ApiResponse(code = 500, message = "Internal server error") })
+//    public ForecastSectionsMetadata listForecastSections(
+//            @ApiParam(value = "If parameter is given result will only contain update status.")
+//            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+//            boolean lastUpdated) {
+//        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
+//        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
+//    }
+
+//    @ApiOperation("Traffic disorders")
+//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+//    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+//                            @ApiResponse(code = 500, message = "Internal server error") })
+//    public D2LogicalModel listTrafficDisorders(
+//            @ApiParam(value = "If parameter is given result will only contain update status.")
+//            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+//                    boolean lastUpdated) {
+//        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH);
+//        return null;
+//    }
 }

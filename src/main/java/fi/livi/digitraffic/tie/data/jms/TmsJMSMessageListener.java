@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,8 @@ public class TmsJMSMessageListener extends AbstractJMSMessageListener<Lam> {
     }
 
     @Override
-    protected void handleData(List<Lam> data) {
-        sensorDataUpdateService.updateLamData(data);
+    protected void handleData(List<Pair<Lam, String>> data) {
+        List<Lam> lamData = data.stream().map(o -> o.getLeft()).collect(Collectors.toList());
+        sensorDataUpdateService.updateLamData(lamData);
     }
 }

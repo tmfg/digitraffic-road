@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 import fi.livi.digitraffic.tie.data.jms.Datex2JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @ConditionalOnProperty(name = "jms.datex2.enabled")
 @Configuration
-public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<SituationPublication> {
+public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<D2LogicalModel> {
 
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
@@ -31,10 +31,10 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
                                           final String jmsPassword,
                                           @Value("${jms.datex2.inQueue}")
                                           final String jmsQueueKey,
-                                          Datex2JMSMessageListener weatherJMSMessageListener,
+                                          Datex2JMSMessageListener datex2JMSMessageListener,
                                           LockingService lockingService) throws JMSException {
 
-        super(weatherJMSMessageListener,
+        super(datex2JMSMessageListener,
               JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
               lockingService,
               log);

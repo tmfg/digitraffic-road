@@ -18,6 +18,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -108,14 +109,14 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         AbstractJMSMessageListener<Lam> lamJmsMessageListener =
                 new AbstractJMSMessageListener<Lam>(Lam.class, log) {
             @Override
-            protected void handleData(List<Lam> data) {
+            protected void handleData(List<Pair<Lam, String>> data) {
                 long start = System.currentTimeMillis();
                 if (TestTransaction.isActive()) {
                     TestTransaction.flagForCommit();
                     TestTransaction.end();
                 }
                 TestTransaction.start();
-                Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data));
+                Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
                 long end = System.currentTimeMillis();
@@ -143,7 +144,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000;
-        final List<Lam> data = new ArrayList<>(lamsWithLotjuId.size());
+        final List<Pair<Lam, String>> data = new ArrayList<>(lamsWithLotjuId.size());
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
@@ -156,7 +157,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                 TmsStation currentStation = stationsIter.next();
 
                 Lam lam = new Lam();
-                data.add(lam);
+                data.add(Pair.of(lam, null));
 
                 lam.setAsemaId(currentStation.getLotjuId());
                 lam.setAika(xgcal);
@@ -202,11 +203,12 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
 
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        List<Long> lamLotjuIds = data.stream().map(Lam::getAsemaId).collect(Collectors.toList());
+        List<Long> lamLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
                 roadStationSensorService.findSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
-        for (Lam lam : data) {
+        for (Pair<Lam, String> pair : data) {
+            Lam lam = pair.getLeft();
             long asemaLotjuId = lam.getAsemaId();
             List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();

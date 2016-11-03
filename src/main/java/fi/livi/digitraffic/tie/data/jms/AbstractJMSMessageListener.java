@@ -13,9 +13,11 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -31,7 +33,7 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     private Logger log;
 
     protected final Unmarshaller jaxbUnmarshaller;
-    private final BlockingQueue<T> blockingQueue = new LinkedBlockingQueue<T>();
+    private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
     public AbstractJMSMessageListener(final Class<T> typeClass,
@@ -45,7 +47,7 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     /**
      * Implement to handle received message data
      */
-    protected abstract void handleData(List<T> data);
+    protected abstract void handleData(List<Pair<T,String>> data);
 
     @PreDestroy
     public void onShutdown() {
@@ -57,22 +59,26 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     public void onMessage(Message message) {
         if (!shutdownCalled.get()) {
             log.info("Received " + message.getClass().getSimpleName());
-            T data = unmarshalMessage(message);
+            Pair<T,String> data = unmarshalMessage(message);
             blockingQueue.add(data);
         } else {
             log.error("Not handling any messages anymore because app is shutting down");
         }
     }
 
-    protected T unmarshalMessage(Message message) {
+    protected Pair<T, String> unmarshalMessage(Message message) {
 
         if (message instanceof TextMessage) {
             TextMessage xmlMessage = (TextMessage) message;
             try {
                 String text = xmlMessage.getText();
-//                log.info("unmarshalMessage:\n" + text);
                 StringReader sr = new StringReader(text);
-                return(T) jaxbUnmarshaller.unmarshal(sr);
+                Object object = jaxbUnmarshaller.unmarshal(sr);
+                if (object instanceof JAXBElement) {
+                    log.info("Unmarshal message:\n" + text);
+                    return Pair.of((T)((JAXBElement) object).getValue(), text);
+                }
+                return Pair.of((T)object, text);
             } catch (JMSException jmse) {
                 // getText() failed
                 log.error("Message unmarshalling error for message: " + ToStringHelpper.toStringFull(message));
@@ -107,7 +113,7 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
             }
 
             // Allocate array with some extra because queue size can change any time
-            ArrayList<T> targetList = new ArrayList<>(blockingQueue.size() + 5);
+            ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
             int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("Handle data");

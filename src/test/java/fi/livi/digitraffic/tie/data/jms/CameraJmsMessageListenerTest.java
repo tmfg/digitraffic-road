@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -26,6 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -162,7 +164,8 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         AbstractJMSMessageListener<Kuva> cameraJmsMessageListener =
                 new AbstractJMSMessageListener<Kuva>(Kuva.class, log) {
             @Override
-            protected void handleData(List<Kuva> data) {
+            protected void handleData(List<Pair<Kuva, String>> data) {
+
                 long start = System.currentTimeMillis();
                 if (TestTransaction.isActive()) {
                     TestTransaction.flagForCommit();
@@ -170,7 +173,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
                 }
                 TestTransaction.start();
                 try {
-                    cameraDataUpdateService.updateCameraData(data);
+                    cameraDataUpdateService.updateCameraData(data.stream().map(p -> p.getLeft()).collect(Collectors.toList()));
                 } catch (SQLException e) {
                     Assert.fail("Data updating failed");
                 }
@@ -194,7 +197,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 2000;
-        final List<Kuva> data = new ArrayList<>(presets.size());
+        final List<Pair<Kuva, String>> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
         while(testBurstsLeft > 0) {
@@ -226,7 +229,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
                 kuva.setXKoordinaatti("12345.67");
                 kuva.setYKoordinaatti("23456.78");
 
-                data.add(kuva);
+                data.add(Pair.of(kuva, null));
                 xgcal.add(df.newDuration(1000));
                 if (data.size() >= 25) {
                     break;
@@ -245,7 +248,6 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
             handleDataTotalTime += sw.getTime();
 
             try {
-
                 // send data with 1 s intervall
                 long sleep = 1000 - generation;
                 if (sleep < 0) {
@@ -263,7 +265,8 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
 
         Map<String, CameraPreset> updatedPresets = cameraPresetService.finAllCameraPresetsMappedByPresetId();
 
-        for (Kuva kuva : data) {
+        for (Pair<Kuva, String> pair : data) {
+            Kuva kuva = pair.getLeft();
             String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
             byte[] dst = readCameraDataFromDisk(presetId);
