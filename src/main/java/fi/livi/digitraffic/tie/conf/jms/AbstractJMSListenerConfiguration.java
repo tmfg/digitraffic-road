@@ -128,7 +128,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
             }
 
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
             final MessageConsumer consumer = session.createConsumer(createDestination(jmsParameters.getJmsQueueKey()));
             consumer.setMessageListener(jmsMessageListener);
 
