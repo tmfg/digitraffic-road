@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class RoadConditionsClient {
+public class ForecastSectionClient {
 
     @Value("${roadConditions.baseUrl}")
     private String baseUrl;
@@ -31,9 +31,9 @@ public class RoadConditionsClient {
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
-    public RoadConditionsDto getRoadConditions() {
+    public ForecastSectionDataDto getRoadConditions() {
 
-        return restTemplate.getForObject(baseUrl + roadConditionsUrl, RoadConditionsDto.class);
+        return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
     }
 
     private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(Map.Entry<String, Object> forecastSection) {

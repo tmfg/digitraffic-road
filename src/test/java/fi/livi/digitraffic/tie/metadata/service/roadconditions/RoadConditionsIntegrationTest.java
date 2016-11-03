@@ -14,12 +14,12 @@ import static org.junit.Assert.assertTrue;
 public class RoadConditionsIntegrationTest extends MetadataTestBase {
 
     @Autowired
-    private RoadConditionsClient roadConditionsClient;
+    private ForecastSectionClient forecastSectionClient;
 
     @Test
     public void getForecastSectionCoordinatesSucceeds() {
 
-        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
 
         assertTrue(forecastSectionCoordinates.size() > 2);
         assertEquals("00001_001_000_0", forecastSectionCoordinates.get(0).getNaturalId());
@@ -32,7 +32,7 @@ public class RoadConditionsIntegrationTest extends MetadataTestBase {
     @Test
     public void getRoadConditionsSucceeds() {
 
-        RoadConditionsDto roadConditions = roadConditionsClient.getRoadConditions();
+        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions();
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));

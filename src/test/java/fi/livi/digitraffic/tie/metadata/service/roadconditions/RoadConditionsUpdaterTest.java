@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class RoadConditionsUpdaterTest extends MetadataTestBase {
 
     @Autowired
-    private RoadConditionsUpdater roadConditionsUpdater;
+    private ForecastSectionUpdater forecastSectionUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -25,7 +25,7 @@ public class RoadConditionsUpdaterTest extends MetadataTestBase {
     @Test
     @Transactional
     public void updateForecastSectionCoordinatesSucceeds() {
-        roadConditionsUpdater.updateForecastSectionCoordinates();
+        forecastSectionUpdater.updateForecastSectionCoordinates();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 

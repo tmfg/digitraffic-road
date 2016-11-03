@@ -18,19 +18,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class RoadConditionsUpdater {
+public class ForecastSectionUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(RoadConditionsUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionUpdater.class);
 
-    private final RoadConditionsClient roadConditionsClient;
+    private final ForecastSectionClient forecastSectionClient;
 
     private final ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository;
 
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public RoadConditionsUpdater(RoadConditionsClient roadConditionsClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
-        this.roadConditionsClient = roadConditionsClient;
+    public ForecastSectionUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
+        this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionCoordinatesRepository = forecastSectionCoordinatesRepository;
         this.forecastSectionRepository = forecastSectionRepository;
     }
@@ -41,7 +41,7 @@ public class RoadConditionsUpdater {
     @Transactional
     public boolean updateForecastSectionCoordinates() {
 
-        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = roadConditionsClient.getForecastSectionMetadata();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
         Set<String> existingForecastSections = forecastSections.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());

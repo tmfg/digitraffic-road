@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.service.roadconditions.RoadConditionsUpdater;
+import fi.livi.digitraffic.tie.metadata.service.roadconditions.ForecastSectionUpdater;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,12 +15,12 @@ public class ForecastSectionServiceTest extends MetadataIntegrationTest {
     private ForecastSectionService forecastSectionService;
 
     @Autowired
-    private RoadConditionsUpdater roadConditionsUpdater;
+    private ForecastSectionUpdater forecastSectionUpdater;
 
     @Test
     public void findAllForecastSectionsSucceeds() {
 
-        roadConditionsUpdater.updateForecastSectionCoordinates();
+        forecastSectionUpdater.updateForecastSectionCoordinates();
 
         ForecastSectionFeatureCollection forecastSections = forecastSectionService.findAllForecastSections();
 
