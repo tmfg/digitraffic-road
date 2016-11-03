@@ -42,7 +42,7 @@ public class RoadStationSensor {
     @GenericGenerator(name = "SEQ_ROAD_STATION_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION_SENSOR"))
     @GeneratedValue(generator = "SEQ_ROAD_STATION_SENSOR")
-    private long id;
+    private Long id;
 
     @JsonIgnore
     private Long lotjuId;
@@ -86,11 +86,11 @@ public class RoadStationSensor {
     @Convert(converter = RoadStationTypeEnumConverter.class)
     private RoadStationType roadStationType;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

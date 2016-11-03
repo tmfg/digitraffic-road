@@ -19,7 +19,7 @@ public class BuildVersionService {
 
     public String getAppVersion() {
         if (Manifests.exists("MetadataApplication-Version")) {
-            return Manifests.read("MetadataApplication-Version");
+            return "1.0"; //Manifests.read("MetadataApplication-Version");
         }
         return "DEV-BUILD";
     }

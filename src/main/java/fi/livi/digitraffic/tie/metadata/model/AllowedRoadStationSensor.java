@@ -22,7 +22,7 @@ public class AllowedRoadStationSensor implements Serializable {
     @GenericGenerator(name = "SEQ_ALLOWED_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ALLOWED_SENSOR"))
     @GeneratedValue(generator = "SEQ_ALLOWED_SENSOR")
-    private long id;
+    private Long id;
 
     @Column(name="NATURAL_ID")
     private long naturalId;

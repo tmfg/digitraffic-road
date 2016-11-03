@@ -18,7 +18,7 @@ public class RoadDistrict {
     @GenericGenerator(name = "SEQ_ROAD_DISTRICT", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_DISTRICT"))
     @GeneratedValue(generator = "SEQ_ROAD_DISTRICT")
-    private long id;
+    private Long id;
     private int naturalId;
     private String name;
     private boolean obsolete;
@@ -33,11 +33,11 @@ public class RoadDistrict {
         this.naturalId = naturalId;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
