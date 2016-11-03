@@ -49,11 +49,11 @@ public class FluencyClass {
         this.code = code;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

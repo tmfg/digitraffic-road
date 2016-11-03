@@ -85,11 +85,11 @@ public class TmsStation {
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
