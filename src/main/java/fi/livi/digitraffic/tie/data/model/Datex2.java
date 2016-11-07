@@ -1,93 +1,53 @@
 package fi.livi.digitraffic.tie.data.model;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-@ApiModel(description = "FluencyClass")
 @Entity
-@DynamicUpdate
 @Immutable
 public class Datex2 {
 
     @JsonIgnore
     @Id
+    @GenericGenerator(name = "SEQ_DATEX2", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATEX2"))
+    @GeneratedValue(generator = "SEQ_DATEX2")
     private Long id;
 
-    @JsonIgnore
-    @NotNull
-    private BigDecimal lowerLimit;
+    private LocalDateTime importDate;
 
-    @JsonIgnore
-    private BigDecimal upperLimit;
+    private String message;
 
-    @ApiModelProperty(value = "1 = stationary traffic,\n"
-                            + "2 = queuing traffic,\n"
-                            + "3 = slow traffic,\n"
-                            + "4 = heavy traffic,\n"
-                            + "5 = traffic flowing freely", required = true)
-    private int code;
-
-    @ApiModelProperty(value = "Name for fluency class", required = true)
-    @NotNull
-    private String nameEn;
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(final int code) {
-        this.code = code;
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    @Column(name = "LOWER_LIMIT", nullable = false)
-    public BigDecimal getLowerLimit() {
-        return lowerLimit;
+    public String getMessage() {
+        return message;
     }
 
-    public void setLowerLimit(final BigDecimal lowerLimit) {
-        this.lowerLimit = lowerLimit;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getNameEn() {
-        return nameEn;
+    public LocalDateTime getImportDate() {
+        return importDate;
     }
 
-    public void setNameEn(final String nameEn) {
-        this.nameEn = nameEn;
-    }
-
-    public BigDecimal getUpperLimit() {
-        return upperLimit;
-    }
-
-    /**
-     * Sets the upper limit of the ratio of this fluency class.
-     *
-     * @param   upperLimit  the upper limit of the ratio of this fluency class.
-     *          Use <code>null</code>, if no upper limit is defined and any ratio above lower
-     *          limit fits into this class.
-     */
-    public void setUpperLimit(final BigDecimal upperLimit) {
-        this.upperLimit = upperLimit;
+    public void setImportDate(LocalDateTime importDate) {
+        this.importDate = importDate;
     }
 }

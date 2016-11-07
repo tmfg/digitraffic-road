@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication lang="fi" xsi:type="SituationPublication">
+        <publicationTime>2016-11-02T08:35:52.240+02:00</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50000002" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord id="GUID5000000201" version="1" xsi:type="Accident">
+                <situationRecordCreationTime>2016-11-02T08:35:52.240+02:00</situationRecordCreationTime>
+                <situationRecordVersionTime>2016-11-02T08:35:52.240+02:00</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2016-11-02T08:35:52.240+02:00</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2016-11-02T08:35:52.240+02:00</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Savonlinna. Liikennetiedote onnettomuudesta.
+
+                                Savonlinna.
+
+                                Onnettomuus.
+                                Raskaan ajoneuvon nostotyö.
+
+                                Lisätieto: TESTIVIESTI 2
+
+                                Ajankohta: 02.11.2016 klo 08:35 toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: http://liikennetilanne.liikennevirasto.fi/
+
+                                Liikenneviraston tieliikennekeskus Tampere
+                                Puh: 0206373330
+                                Faksi: 0206373712
+                                Sähköposti: tampere.liikennekeskus@liikennevirasto.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Area">
+                    <alertCArea>
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.01</alertCLocationTableVersion>
+                        <areaLocation>
+                            <specificLocation>740</specificLocation>
+                        </areaLocation>
+                    </alertCArea>
+                </groupOfLocations>
+                <accidentType>accident</accidentType>
+            </situationRecord>
+            <situationRecord id="GUID5000000202" version="1" xsi:type="GeneralObstruction">
+                <situationRecordCreationTime>2016-11-02T08:35:52.240+02:00</situationRecordCreationTime>
+                <situationRecordVersionTime>2016-11-02T08:35:52.240+02:00</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2016-11-02T08:35:52.240+02:00</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2016-11-02T08:35:52.240+02:00</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <obstructionType>craneOperating</obstructionType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
