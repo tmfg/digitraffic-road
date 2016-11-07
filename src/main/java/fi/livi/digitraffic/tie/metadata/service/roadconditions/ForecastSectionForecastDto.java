@@ -8,7 +8,7 @@ public class ForecastSectionForecastDto {
 
     public final String forecastName;
 
-    public final Date time;
+    public final Date time; // TODO: onko Date?
 
     public final Boolean daylight;
 
@@ -26,7 +26,7 @@ public class ForecastSectionForecastDto {
 
     public final Integer windSpeed;
 
-    public final ForecastConditionReason conditionReason;
+    public final ForecastSectionWeatherReasonDto conditionReason;
 
     public ForecastSectionForecastDto(@JsonProperty("forecastName") String forecastName,
                                       @JsonProperty("Time") Date time,
@@ -38,7 +38,7 @@ public class ForecastSectionForecastDto {
                                       @JsonProperty("weatherSymbol") String weatherSymbol,
                                       @JsonProperty("windDirection") Integer windDirection,
                                       @JsonProperty("windSpeed") Integer windSpeed,
-                                      @JsonProperty("conditionReason") ForecastConditionReason conditionReason) {
+                                      @JsonProperty("conditionReason") ForecastSectionWeatherReasonDto conditionReason) {
         this.forecastName = forecastName;
         this.time = time;
         this.daylight = daylight;

@@ -91,6 +91,9 @@ public class ForecastSection {
     @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
+    @OneToMany(mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL)
+    private List<ForecastSectionWeather> forecastSectionWeatherList;
+
     public ForecastSection() {
     }
 
@@ -210,6 +213,14 @@ public class ForecastSection {
 
     public void setForecastSectionCoordinates(List<ForecastSectionCoordinates> forecastSectionCoordinates) {
         this.forecastSectionCoordinates = forecastSectionCoordinates;
+    }
+
+    public List<ForecastSectionWeather> getForecastSectionWeatherList() {
+        return forecastSectionWeatherList;
+    }
+
+    public void setForecastSectionWeatherList(List<ForecastSectionWeather> forecastSectionWeatherList) {
+        this.forecastSectionWeatherList = forecastSectionWeatherList;
     }
 
     public void addCoordinates(List<Coordinate> coordinates) {

@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.roadconditions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ForecastConditionReason {
+public class ForecastSectionWeatherReasonDto {
 
     public final Integer precipitationCondition;
 
@@ -18,13 +18,13 @@ public class ForecastConditionReason {
 
     public final Integer frictionCondition;
 
-    public ForecastConditionReason(@JsonProperty("precipitationCondition") Integer precipitationCondition,
-                                   @JsonProperty("roadCondition") Integer roadCondition,
-                                   @JsonProperty("windCondition") Integer windCondition,
-                                   @JsonProperty("freezingRainCondition") Boolean freezingRainCondition,
-                                   @JsonProperty("winterSlipperiness") Boolean winterSlipperiness,
-                                   @JsonProperty("visibilityCondition") Integer visibilityCondition,
-                                   @JsonProperty("frictionCondition") Integer frictionCondition) {
+    public ForecastSectionWeatherReasonDto(@JsonProperty("precipitationCondition") Integer precipitationCondition,
+                                           @JsonProperty("roadCondition") Integer roadCondition,
+                                           @JsonProperty("windCondition") Integer windCondition,
+                                           @JsonProperty("freezingRainCondition") Boolean freezingRainCondition,
+                                           @JsonProperty("winterSlipperiness") Boolean winterSlipperiness,
+                                           @JsonProperty("visibilityCondition") Integer visibilityCondition,
+                                           @JsonProperty("frictionCondition") Integer frictionCondition) {
         this.precipitationCondition = precipitationCondition;
         this.roadCondition = roadCondition;
         this.windCondition = windCondition;
