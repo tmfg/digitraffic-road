@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.roadconditions;
+package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;

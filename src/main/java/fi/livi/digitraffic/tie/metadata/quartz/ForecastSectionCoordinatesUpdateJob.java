@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.service.roadconditions.ForecastSectionUpdater;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionUpdater;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

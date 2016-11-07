@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.roadconditions;
+package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;

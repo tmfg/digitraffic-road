@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.roadconditions;
+package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

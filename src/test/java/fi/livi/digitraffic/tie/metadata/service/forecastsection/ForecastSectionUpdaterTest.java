@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.roadconditions;
+package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RoadConditionsUpdaterTest extends MetadataTestBase {
+public class ForecastSectionUpdaterTest extends MetadataTestBase {
 
     @Autowired
     private ForecastSectionUpdater forecastSectionUpdater;

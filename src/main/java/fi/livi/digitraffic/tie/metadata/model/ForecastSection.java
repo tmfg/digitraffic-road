@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
-import fi.livi.digitraffic.tie.metadata.service.roadconditions.Coordinate;
-import fi.livi.digitraffic.tie.metadata.service.roadconditions.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionCoordinatesDto;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.Parameter;
