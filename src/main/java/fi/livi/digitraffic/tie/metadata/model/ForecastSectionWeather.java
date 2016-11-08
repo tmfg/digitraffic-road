@@ -16,24 +16,39 @@ public class ForecastSectionWeather {
     @EmbeddedId
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
+    @ApiModelProperty(value = "Observation or forecast time depending on type")
     private Timestamp time;
 
+    @ApiModelProperty(value = "Tells if there is daylight: true/false")
     private Boolean daylight;
 
+    @ApiModelProperty(value = "1 = Normal condition (green)\n" +
+                              "2 = Poor condition (yellow)\n" +
+                              "3 = Extremely poor condition (red)\n" +
+                              "-1 = Condition could not be resolved")
     private Integer overallRoadCondition;
 
+    @ApiModelProperty(value = "0 = Successful\n" +
+                              "1 = No data from roadstation\n" +
+                              "2 = Failed")
     private Integer reliability;
 
+    @ApiModelProperty(value = "Road temperature at given time. If not available value is not set")
     private String roadTemperature;
 
+    @ApiModelProperty(value = "Air temperature")
     private String temperature;
 
+    @ApiModelProperty(value = "Weather symbol code http://corporate.foreca.com/en/products/foreca-symbols")
     private String weatherSymbol;
 
+    @ApiModelProperty(value = "Wind direction in degrees. 0 when there is no wind or the direction is variable. 90 degrees is arrow to the east (count clockwise)")
     private Integer windDirection;
 
+    @ApiModelProperty(value = "Wind speed in m/s")
     private Integer windSpeed;
 
+    @ApiModelProperty(value = "Tells if weather data is an observation or a forecast: OBSERVATION / FORECAST")
     @Column(insertable = false, updatable = false)
     private String type;
 

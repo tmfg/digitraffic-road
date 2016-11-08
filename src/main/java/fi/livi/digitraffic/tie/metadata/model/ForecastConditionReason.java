@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -15,18 +16,47 @@ public class ForecastConditionReason {
     @EmbeddedId
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
+    @ApiModelProperty(value = "The quality of precipitation:\n" +
+                              "1 = No rain, dry weather\n" +
+                              "2 = Light rain\n" +
+                              "3 = Rain\n" +
+                              "4 = Heavy rain\n" +
+                              "5 = Light snowfall\n" +
+                              "6 = Snowfall\n" +
+                              "7 = Heavy snowfall")
     private Integer precipitationCondition;
 
+    @ApiModelProperty(value = "The state of the road:\n" +
+                              "1 = Dry\n" +
+                              "2 = Moist\n" +
+                              "3 = Wet\n" +
+                              "4 = Slush\n" +
+                              "5 = Frost\n" +
+                              "6 = Partly icy\n" +
+                              "7 = Ice\n" +
+                              "8 = Snow")
     private Integer roadCondition;
 
+    @ApiModelProperty(value = "The strength of wind:\n" +
+                              "1 = Weak\n" +
+                              "2 = Medium\n" +
+                              "3 = Strong")
     private Integer windCondition;
 
+    @ApiModelProperty(value = "Tells if there is freezing rain: true/false")
     private Boolean freezingRainCondition;
 
+    @ApiModelProperty(value = "Tells if it is slippery: true/false")
     private Boolean winterSlipperiness;
 
+    @ApiModelProperty(value = "Visibility:\n" +
+                              "1 = fairly poor ( 400 m)\n" +
+                              "2 = poor ( 200 m )")
     private Integer visibilityCondition;
 
+    @ApiModelProperty(value = "The amount of friction on the road:\n" +
+                              "1 = slippery (friction < 0.4)\n" +
+                              "2 = very slippery (friction < 0.2)")
     private Integer frictionCondition;
 
     @OneToOne
