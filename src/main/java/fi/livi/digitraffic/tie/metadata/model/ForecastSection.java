@@ -91,7 +91,7 @@ public class ForecastSection {
     @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
-    @OneToMany(mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ForecastSectionWeather> forecastSectionWeatherList;
 
     public ForecastSection() {

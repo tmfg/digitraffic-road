@@ -14,12 +14,12 @@ public class ForecastSectionServiceTest extends MetadataIntegrationTest {
     private ForecastSectionService forecastSectionService;
 
     @Autowired
-    private ForecastSectionUpdater forecastSectionUpdater;
+    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Test
     public void findAllForecastSectionsSucceeds() {
 
-        forecastSectionUpdater.updateForecastSectionCoordinates();
+        forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         ForecastSectionFeatureCollection forecastSections = forecastSectionService.findAllForecastSections();
 

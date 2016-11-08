@@ -42,16 +42,41 @@ public class ForecastSectionWeather {
     @Fetch(FetchMode.JOIN)
     private ForecastSection forecastSection;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumns({@PrimaryKeyJoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
                             @PrimaryKeyJoinColumn(name="forecast_name", referencedColumnName = "forecast_name")})
+    @Fetch(FetchMode.JOIN)
     private ForecastConditionReason forecastConditionReason;
 
     public ForecastSectionWeather() {
     }
 
+    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, Integer overallRoadCondition,
+                                  Integer reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
+                                  Integer windSpeed, ForecastConditionReason forecastConditionReason) {
+        this.forecastSectionWeatherPK = forecastSectionWeatherPK;
+        this.time = time;
+        this.daylight = daylight;
+        this.overallRoadCondition = overallRoadCondition;
+        this.reliability = reliability;
+        this.roadTemperature = roadTemperature;
+        this.temperature = temperature;
+        this.weatherSymbol = weatherSymbol;
+        this.windDirection = windDirection;
+        this.windSpeed = windSpeed;
+        this.forecastConditionReason = forecastConditionReason;
+    }
+
     public ForecastSectionWeatherPK getForecastSectionWeatherPK() {
         return forecastSectionWeatherPK;
+    }
+
+    public long getForecastSectionId() {
+        return forecastSectionWeatherPK.getForecastSectionId();
+    }
+
+    public String getForecastName() {
+        return new String(forecastSectionWeatherPK.getForecastName());
     }
 
     public void setForecastSectionWeatherPK(ForecastSectionWeatherPK forecastSectionWeatherPK) {

@@ -27,9 +27,9 @@ public class ForecastSectionWeatherPK implements Serializable {
     public ForecastSectionWeatherPK() {
     }
 
-    public ForecastSectionWeatherPK(long forecastSectionId, char[] forecastName) {
+    public ForecastSectionWeatherPK(long forecastSectionId, String forecastName) {
         this.forecastSectionId = forecastSectionId;
-        this.forecastName = forecastName;
+        this.forecastName = forecastName.toCharArray();
     }
 
     @Override

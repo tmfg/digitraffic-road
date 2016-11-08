@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionUpdater;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionMetadataUpdater;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -15,14 +15,14 @@ public class ForecastSectionCoordinatesUpdateJob extends AbstractUpdateJob {
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesUpdateJob.class);
 
     @Autowired
-    private ForecastSectionUpdater forecastSectionUpdater;
+    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("Road section coordinates update job start");
         final long startTime = System.currentTimeMillis();
 
-        boolean updated = forecastSectionUpdater.updateForecastSectionCoordinates();
+        boolean updated = forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         if (updated) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.FORECAST_SECTION);

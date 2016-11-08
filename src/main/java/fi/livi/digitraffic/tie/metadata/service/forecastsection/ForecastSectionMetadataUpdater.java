@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ForecastSectionUpdater {
+public class ForecastSectionMetadataUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionMetadataUpdater.class);
 
     private final ForecastSectionClient forecastSectionClient;
 
@@ -29,7 +29,7 @@ public class ForecastSectionUpdater {
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public ForecastSectionUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
+    public ForecastSectionMetadataUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionCoordinatesRepository = forecastSectionCoordinatesRepository;
         this.forecastSectionRepository = forecastSectionRepository;
@@ -39,7 +39,7 @@ public class ForecastSectionUpdater {
      * @return Returns true if one or more forecast sections were updated
      */
     @Transactional
-    public boolean updateForecastSectionCoordinates() {
+    public boolean updateForecastSectionMetadata() {
 
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
 

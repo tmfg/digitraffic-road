@@ -14,10 +14,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ForecastSectionUpdaterTest extends MetadataTestBase {
+public class ForecastSectionMetadataUpdaterTest extends MetadataTestBase {
 
     @Autowired
-    private ForecastSectionUpdater forecastSectionUpdater;
+    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -25,7 +25,7 @@ public class ForecastSectionUpdaterTest extends MetadataTestBase {
     @Test
     @Transactional
     public void updateForecastSectionCoordinatesSucceeds() {
-        forecastSectionUpdater.updateForecastSectionCoordinates();
+        forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 

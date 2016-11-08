@@ -12,7 +12,7 @@ public class ForecastSectionWeatherDto {
 
     public final List<ForecastSectionForecastDto> forecast;
 
-    public ForecastSectionWeatherDto(@JsonProperty("naturalId") String naturalId,
+    public ForecastSectionWeatherDto(@JsonProperty("roadId") String naturalId,
                                      @JsonProperty("observation") ForecastSectionObservationDto observation,
                                      @JsonProperty("forecast") List<ForecastSectionForecastDto> forecast) {
         this.naturalId = naturalId;

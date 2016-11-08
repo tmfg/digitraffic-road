@@ -40,6 +40,19 @@ public class ForecastConditionReason {
     public ForecastConditionReason() {
     }
 
+    public ForecastConditionReason(ForecastSectionWeatherPK forecastSectionWeatherPK, Integer precipitationCondition, Integer roadCondition,
+                                   Integer windCondition, Boolean freezingRainCondition, Boolean winterSlipperiness, Integer visibilityCondition,
+                                   Integer frictionCondition) {
+        this.forecastSectionWeatherPK = forecastSectionWeatherPK;
+        this.precipitationCondition = precipitationCondition;
+        this.roadCondition = roadCondition;
+        this.windCondition = windCondition;
+        this.freezingRainCondition = freezingRainCondition;
+        this.winterSlipperiness = winterSlipperiness;
+        this.visibilityCondition = visibilityCondition;
+        this.frictionCondition = frictionCondition;
+    }
+
     public ForecastSectionWeatherPK getForecastSectionWeatherPK() {
         return forecastSectionWeatherPK;
     }
