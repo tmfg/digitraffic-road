@@ -52,27 +52,26 @@ public class SensorDataUpdateService {
             "       )";
 
     private static final String UPDATE_STATEMENT =
-            "UPDATE ( SELECT station.id AS stationId\n" +
-            "              , sensor.id AS sensorId\n" +
-            "              , :value AS value\n" +
-            "              , :measured AS sensorValueMeasured\n" +
-            "              , dst.road_station_sensor_id dst_rss_id\n" +
-            "              , dst.road_station_id dst_rs_id\n" +
-            "              , dst.value dst_value\n" +
-            "              , dst.measured dst_measured\n" +
-            "              , dst.updated dst_updated\n" +
-            "         FROM ROAD_STATION_SENSOR sensor\n" +
-            "            , ROAD_STATION station\n" +
-            "            , SENSOR_VALUE dst\n" +
-            "         WHERE station.lotju_id = :rsLotjuId\n" +
-            "           AND station.road_station_type = :stationType\n" +
-            "           AND sensor.lotju_id = :sensorLotjuId\n" +
-            "           AND sensor.road_station_type = :stationType\n" +
-            "           AND dst.road_station_sensor_id = sensor.id\n" +
-            "           AND dst.road_station_id = station.id )\n" +
-            "SET dst_value = value\n" +
-            "  , dst_measured = sensorValueMeasured\n" +
-            "  , dst_updated = sysdate";
+            "UPDATE SENSOR_VALUE dst\n" +
+            "SET dst.value = :value\n" +
+            "  , dst.measured = :measured\n" +
+            "  , dst.updated = sysdate\n" +
+            "WHERE (dst.road_station_sensor_id, dst.road_station_id) \n" +
+            "    IN (SELECT (\n" +
+            "        SELECT sensor.id\n" +
+            "        FROM ROAD_STATION_SENSOR sensor\n" +
+            "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
+            "          AND sensor.road_station_type = :stationType\n" +
+            "          AND sensor.lotju_id is not null\n" +
+            "          AND sensor.obsolete_date is null\n" +
+            "        ),(\n" +
+            "        SELECT station.id\n" +
+            "        FROM ROAD_STATION station\n" +
+            "        WHERE station.lotju_id = :rsLotjuId\n" +
+            "          AND station.road_station_type = :stationType\n" +
+            "          AND station.lotju_id is not null\n" +
+            "          AND station.obsolete_date is null\n" +
+            "       ) FROM DUAL)";
 
     @Autowired
     public SensorDataUpdateService(final DataSource dataSource) throws SQLException {

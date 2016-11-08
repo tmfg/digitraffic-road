@@ -57,6 +57,12 @@ public class WeatherStationService {
         return map;
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, WeatherStation> findAllPublicNonObsoleteWeatherStationsMappedByLotjuId() {
+        final List<WeatherStation> all = findAllNonObsoleteNonNullLotjuIdPublicWeatherStations();
+        return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+    }
+
     @Transactional
     public WeatherStation save(final WeatherStation weatherStation) {
         try {
@@ -97,7 +103,8 @@ public class WeatherStationService {
                 updated != null ? updated.getUpdated() : null);
     }
 
-    public List<WeatherStation> findAllNonObsoletePublicWeatherStations() {
+    @Transactional(readOnly = true)
+    public List<WeatherStation> findAllNonObsoleteNonNullLotjuIdPublicWeatherStations() {
         return weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
     }
 
