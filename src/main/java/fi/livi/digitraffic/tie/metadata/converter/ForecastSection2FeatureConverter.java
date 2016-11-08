@@ -2,9 +2,9 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionProperties;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import org.springframework.stereotype.Component;
 

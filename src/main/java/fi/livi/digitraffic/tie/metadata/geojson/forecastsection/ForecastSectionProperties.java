@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.geojson.roadconditions;
+package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;

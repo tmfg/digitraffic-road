@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dto;
 
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

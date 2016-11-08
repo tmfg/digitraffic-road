@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import fi.livi.digitraffic.tie.metadata.dao.ForecastConditionReasonRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionWeatherRepository;
 import fi.livi.digitraffic.tie.metadata.model.ForecastConditionReason;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSectionWeather;
@@ -26,17 +24,10 @@ public class ForecastSectionDataUpdater {
 
     private final ForecastSectionRepository forecastSectionRepository;
 
-    private final ForecastSectionWeatherRepository forecastSectionWeatherRepository;
-
-    private final ForecastConditionReasonRepository forecastConditionReasonRepository;
-
     @Autowired
-    public ForecastSectionDataUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionRepository forecastSectionRepository,
-                                      ForecastSectionWeatherRepository forecastSectionWeatherRepository, ForecastConditionReasonRepository forecastConditionReasonRepository) {
+    public ForecastSectionDataUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionRepository forecastSectionRepository) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
-        this.forecastSectionWeatherRepository = forecastSectionWeatherRepository;
-        this.forecastConditionReasonRepository = forecastConditionReasonRepository;
     }
 
     @Transactional

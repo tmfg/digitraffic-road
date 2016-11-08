@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 import fi.livi.digitraffic.tie.metadata.converter.ForecastSection2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;

@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.roadconditions.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

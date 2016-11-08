@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.geojson.roadconditions;
+package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
