@@ -1,15 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-import java.time.LocalDateTime;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class StaticDataStatusService {
@@ -56,6 +55,17 @@ public class StaticDataStatusService {
             metadataUpdatedRepository.save(updated);
         } else {
             updated.setUpdated(LocalDateTime.now());
+        }
+    }
+
+    @Transactional
+    public void setMetadataUpdated(final MetadataType metadataType, LocalDateTime updated) {
+        MetadataUpdated metadataUpdated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+        if (metadataUpdated == null) {
+            metadataUpdated = new MetadataUpdated(metadataType, updated);
+            metadataUpdatedRepository.save(metadataUpdated);
+        } else {
+            metadataUpdated.setUpdated(updated);
         }
     }
 

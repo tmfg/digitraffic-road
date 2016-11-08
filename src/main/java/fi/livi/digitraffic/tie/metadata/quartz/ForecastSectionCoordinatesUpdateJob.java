@@ -29,9 +29,8 @@ public class ForecastSectionCoordinatesUpdateJob extends AbstractUpdateJob {
         }
 
         final long endTime = System.currentTimeMillis();
-        long duration = (endTime - startTime) / 1000;
 
         String updateStatus = updated ? "Data updates took place." : "No updates took place.";
-        log.info("Road section coordinates update job ended. Update took " + duration + " seconds. " + updateStatus);
+        log.info("Road section coordinates update job ended. Update took " + (endTime - startTime) + " milliseconds. " + updateStatus);
     }
 }

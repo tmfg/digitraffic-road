@@ -12,13 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ForecastSectionDataUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionMetadataUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionDataUpdater.class);
 
     private final ForecastSectionClient forecastSectionClient;
 
@@ -31,7 +32,7 @@ public class ForecastSectionDataUpdater {
     }
 
     @Transactional
-    public Date updateForecastSectionWeatherData() {
+    public ZonedDateTime updateForecastSectionWeatherData() {
 
         ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
 
