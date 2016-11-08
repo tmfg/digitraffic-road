@@ -31,13 +31,11 @@ public class ForecastSectionDataUpdater {
     }
 
     @Transactional
-    public void updateForecastSectionWeatherData() {
+    public Date updateForecastSectionWeatherData() {
 
         ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
 
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
-
-        Date messageTimestamp = data.messageTimestamp;
 
         Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
                 data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, wd -> wd));
@@ -51,6 +49,8 @@ public class ForecastSectionDataUpdater {
 
         forecastSectionRepository.save(forecastSectionsByNaturalId.values());
         forecastSectionRepository.flush();
+
+        return data.messageTimestamp;
     }
 
     private void updateForecastSectionWeatherData(Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, Map<String, ForecastSection> forecastSectionsByNaturalId) {

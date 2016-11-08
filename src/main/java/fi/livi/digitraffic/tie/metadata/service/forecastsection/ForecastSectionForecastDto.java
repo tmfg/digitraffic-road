@@ -8,7 +8,7 @@ public class ForecastSectionForecastDto {
 
     public final String forecastName;
 
-    public final Date time; // TODO: onko Date?
+    public final Date time;
 
     public final Boolean daylight;
 
