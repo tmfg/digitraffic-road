@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class WeatherStationService {
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findWeatherStationsMappedByLotjuId(List<Long> weatherStationLotjuIds) {
         final List<WeatherStation> all = weatherStationRepository.findByLotjuIdIn(weatherStationLotjuIds);
-        return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        return all.stream().collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
