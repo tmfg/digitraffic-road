@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
@@ -29,6 +30,7 @@ public class ForecastSection {
     @GenericGenerator(name = "SEQ_FORECAST_SECTION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_FORECAST_SECTION"))
     @GeneratedValue(generator = "SEQ_FORECAST_SECTION")
+    @JsonIgnore
     private Long id;
 
     /**
@@ -46,19 +48,22 @@ public class ForecastSection {
             "2. Road section 3 characters ie. 112, \n" +
             "3. Road section version 3 characters ie. 000, \n" +
             "4. Reserved for future needs 1 characters default 0")
-    @JsonProperty("id")
+    @JsonProperty("roadId")
     private String naturalId;
 
     @ApiModelProperty(value = "Forecast section description")
     private String description;
 
     @ApiModelProperty(value = "Road section number")
+    @Column(insertable = false, updatable = false)
     private int roadSectionNumber;
 
     @ApiModelProperty(value = "Forecast section road number")
+    @Column(insertable = false, updatable = false)
     private int roadNumber;
 
     @ApiModelProperty(value = "Road section version number")
+    @Column(insertable = false, updatable = false)
     private int roadSectionVersionNumber;
 
     @ApiModelProperty(value = "Forecast section start distance")

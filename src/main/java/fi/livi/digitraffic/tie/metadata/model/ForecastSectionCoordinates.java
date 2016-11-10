@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -19,6 +20,7 @@ public class ForecastSectionCoordinates {
     @ManyToOne
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private ForecastSection forecastSection;
 
     @NotNull

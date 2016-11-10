@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 
+@JsonPropertyOrder({ "roadId", "description" })
 public class ForecastSectionProperties {
 
     @ApiModelProperty(value =
@@ -11,7 +13,7 @@ public class ForecastSectionProperties {
             "2. Road section 3 characters ie. 112, \n" +
             "3. Road section version 3 characters ie. 000, \n" +
             "4. Reserved for future needs 1 characters default 0")
-    @JsonProperty("id")
+    @JsonProperty("roadId")
     private String naturalId;
 
     @ApiModelProperty(value = "Forecast section description")

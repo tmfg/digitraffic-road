@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 public class ForecastConditionReason {
 
     @EmbeddedId
+    @JsonIgnore
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
     @ApiModelProperty(value = "The quality of precipitation:\n" +
@@ -65,6 +67,7 @@ public class ForecastConditionReason {
             @JoinColumn(name="forecast_name", referencedColumnName="forecast_name")
     })
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private ForecastSectionWeather forecastSectionWeather;
 
     public ForecastConditionReason() {

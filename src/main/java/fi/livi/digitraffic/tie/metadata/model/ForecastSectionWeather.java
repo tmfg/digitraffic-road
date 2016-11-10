@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicUpdate;
@@ -11,9 +14,12 @@ import java.sql.Timestamp;
 
 @Entity
 @DynamicUpdate
+@JsonPropertyOrder({ "timeLocalTime", "timeUtc", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
+                     "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })
 public class ForecastSectionWeather {
 
     @EmbeddedId
+    @JsonIgnore
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
     @ApiModelProperty(value = "Observation or forecast time depending on type")
@@ -55,12 +61,14 @@ public class ForecastSectionWeather {
     @ManyToOne
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
+    @JsonIgnore
     private ForecastSection forecastSection;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumns({@PrimaryKeyJoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
                             @PrimaryKeyJoinColumn(name="forecast_name", referencedColumnName = "forecast_name")})
     @Fetch(FetchMode.JOIN)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ForecastConditionReason forecastConditionReason;
 
     public ForecastSectionWeather() {
@@ -86,6 +94,7 @@ public class ForecastSectionWeather {
         return forecastSectionWeatherPK;
     }
 
+    @JsonIgnore
     public long getForecastSectionId() {
         return forecastSectionWeatherPK.getForecastSectionId();
     }

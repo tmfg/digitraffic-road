@@ -1,35 +1,22 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.service.CameraDataService;
-import fi.livi.digitraffic.tie.data.service.DayDataService;
-import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
-import fi.livi.digitraffic.tie.data.service.TmsDataService;
-import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
-import fi.livi.digitraffic.tie.data.service.WeatherService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import fi.livi.digitraffic.tie.data.service.*;
+import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 
 /*
@@ -54,6 +41,8 @@ public class DataController {
 
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
+    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
@@ -64,6 +53,7 @@ public class DataController {
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
     private final CameraDataService cameraDataService;
+    private final ForecastSectionDataService forecastSectionDataService;
 
     @Autowired
     public DataController(final TrafficFluencyService trafficFluencyService,
@@ -71,13 +61,15 @@ public class DataController {
                           final TmsDataService tmsDataService,
                           final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
-                          final CameraDataService cameraDataService) {
+                          final CameraDataService cameraDataService,
+                          final ForecastSectionDataService forecastSectionDataService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
+        this.forecastSectionDataService = forecastSectionDataService;
     }
 
     @ApiOperation("Current fluency data of links including journey times")
@@ -252,5 +244,14 @@ public class DataController {
             final long id) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
         return weatherService.findPublicWeatherData(id);
+    }
+
+    @ApiOperation("Current data of Weather Forecast Sections")
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData() {
+        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
+        return forecastSectionDataService.getForecastSectionWeatherData();
     }
 }
