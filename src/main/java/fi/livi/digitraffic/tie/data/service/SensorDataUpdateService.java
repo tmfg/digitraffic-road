@@ -28,50 +28,38 @@ public class SensorDataUpdateService {
 
     private final DataSource dataSource;
 
-    private static final String INSERT_STATEMENT =
-            "INSERT INTO SENSOR_VALUE \n" +
-            "  (id, road_station_id, road_station_sensor_id, value, measured, updated)\n" +
-            "       ( SELECT SEQ_SENSOR_VALUE.nextval AS id\n" +
-            "              , station.id AS road_station_id\n" +
-            "              , sensor.id AS road_station_sensor_id\n" +
-            "              , :value AS value\n" +
-            "              , :measured AS measured\n" +
-            "              , sysdate AS updated\n" +
-            "         FROM ROAD_STATION_SENSOR sensor\n" +
-            "            , ROAD_STATION station\n" +
-            "         WHERE station.lotju_id = :rsLotjuId\n" +
-            "           AND station.road_station_type = :stationType\n" +
-            "           AND sensor.lotju_id = :sensorLotjuId\n" +
-            "           AND sensor.road_station_type = :stationType\n" +
-            "           AND NOT EXISTS (\n" +
-            "                   SELECT NULL\n" +
-            "                   FROM SENSOR_VALUE sv\n" +
-            "                   WHERE sv.road_station_sensor_id = sensor.id\n" +
-            "                     AND sv.road_station_id = station.id\n" +
-            "               )\n" +
-            "       )";
-
-    private static final String UPDATE_STATEMENT =
-            "UPDATE SENSOR_VALUE dst\n" +
-            "SET dst.value = :value\n" +
-            "  , dst.measured = :measured\n" +
-            "  , dst.updated = sysdate\n" +
-            "WHERE (dst.road_station_sensor_id, dst.road_station_id) \n" +
-            "    IN (SELECT (\n" +
-            "        SELECT sensor.id\n" +
-            "        FROM ROAD_STATION_SENSOR sensor\n" +
-            "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
-            "          AND sensor.road_station_type = :stationType\n" +
-            "          AND sensor.lotju_id is not null\n" +
-            "          AND sensor.obsolete_date is null\n" +
-            "        ),(\n" +
-            "        SELECT station.id\n" +
-            "        FROM ROAD_STATION station\n" +
-            "        WHERE station.lotju_id = :rsLotjuId\n" +
-            "          AND station.road_station_type = :stationType\n" +
-            "          AND station.lotju_id is not null\n" +
-            "          AND station.obsolete_date is null\n" +
-            "       ) FROM DUAL)";
+    private static final String MERGE_STATEMENT =
+            "MERGE INTO SENSOR_VALUE dst\n" +
+                    "USING (\n" +
+                    "  SELECT (\n" +
+                    "        SELECT sensor.id  \n" +
+                    "        FROM ROAD_STATION_SENSOR sensor\n" +
+                    "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
+                    "          AND sensor.road_station_type = :stationType\n" +
+                    "          AND sensor.lotju_id is not null\n" +
+                    "          AND sensor.obsolete_date is null\n" +
+                    "        ) as road_station_sensor_id ,(\n" +
+                    "        SELECT station.id\n" +
+                    "        FROM ROAD_STATION station\n" +
+                    "        WHERE station.lotju_id = :rsLotjuId\n" +
+                    "          AND station.road_station_type = :stationType\n" +
+                    "          AND station.lotju_id is not null\n" +
+                    "          AND station.obsolete_date is null\n" +
+                    "       ) as road_station_id FROM DUAL\n" +
+                    ") src ON (dst.road_station_sensor_id = src.road_station_sensor_id\n" +
+                    "      AND dst.road_station_id = src.road_station_id)\n" +
+                    "WHEN MATCHED THEN UPDATE SET dst.value = :value\n" +
+                    "                           , dst.measured = :measured\n" +
+                    "                           , dst.updated = sysdate\n" +
+                    "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated)\n" +
+                    "     VALUES (SEQ_SENSOR_VALUE.nextval -- id\n" +
+                    "           , src.road_station_id\n" +
+                    "           , src.road_station_sensor_id\n" +
+                    "           , :value\n" + // value
+                    "           , :measured\n" + // measured
+                    "           , sysdate)\n" + // updated
+                    "     WHERE src.road_station_id IS NOT NULL\n" +
+                    "       AND src.road_station_sensor_id IS NOT NULL";
 
     @Autowired
     public SensorDataUpdateService(final DataSource dataSource) throws SQLException {
@@ -87,30 +75,25 @@ public class SensorDataUpdateService {
     public boolean updateLamData(List<Lam> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
+             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Lam> newestLamData = filterNewestLamValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendLamBatchData(opsUpdate, newestLamData);
-            appendLamBatchData(opsInsert, newestLamData);
+            final int rows = appendLamBatchData(opsMerge, newestLamData);
 
-            final long endAppendStartUpdate = System.currentTimeMillis();
-            opsUpdate.executeBatch();
-            final long endUpdateStartInsert = System.currentTimeMillis();
-            opsInsert.executeBatch();
-            final long endInsert = System.currentTimeMillis();
+            final long endAppendStartMerge = System.currentTimeMillis();
+            opsMerge.executeBatch();
+            final long endMerge = System.currentTimeMillis();
 
             log.info(String.format("Update tms sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
+                                   "append batch: %4$d ms, merge %5$d ms)",
                                    rows,
-                                   endInsert - startFilter, // total
+                                   endMerge - startFilter, // total
                                    endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartUpdate - endFilterStartAppend, // append data
-                                   endUpdateStartInsert - endAppendStartUpdate, // update
-                                   endInsert-endUpdateStartInsert)); // insert
+                                   endAppendStartMerge - endFilterStartAppend, // append data
+                                   endMerge - endAppendStartMerge)); // merge
             return true;
         } catch (Exception e) {
             log.error("Error while updating tms data", e);
@@ -127,30 +110,25 @@ public class SensorDataUpdateService {
     public boolean updateWeatherData(List<Tiesaa> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
+             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendTiesaaBatchData(opsUpdate, newestTiesaaData);
-            appendTiesaaBatchData(opsInsert, newestTiesaaData);
+            final int rows = appendTiesaaBatchData(opsMerge, newestTiesaaData);
 
-            final long endAppendStartUpdate = System.currentTimeMillis();
-            opsUpdate.executeBatch();
-            final long endUpdateStartInsert = System.currentTimeMillis();
-            opsInsert.executeBatch();
-            final long endInsert = System.currentTimeMillis();
+            final long endAppendStartMerge = System.currentTimeMillis();
+            opsMerge.executeBatch();
+            final long endMerge = System.currentTimeMillis();
 
             log.info(String.format("Update weather sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
+                                   "append batch: %4$d ms, merge %5$d ms)",
                                    rows,
-                                   endInsert - startFilter, // total
+                                   endMerge - startFilter, // total
                                    endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartUpdate - endFilterStartAppend, // append data
-                                   endUpdateStartInsert - endAppendStartUpdate, // update
-                                   endInsert-endUpdateStartInsert)); // insert
+                                   endAppendStartMerge - endFilterStartAppend, // append data
+                                   endMerge - endAppendStartMerge)); // merge
             return true;
         } catch (Exception e) {
             log.error("Error while updating weather data", e);

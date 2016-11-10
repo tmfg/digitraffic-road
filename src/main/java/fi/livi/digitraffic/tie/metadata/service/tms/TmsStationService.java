@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -113,7 +114,7 @@ public class TmsStationService {
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllNonObsoletePublicTmsStationsMappedByLotjuId() {
         final List<TmsStation> all = findAllNonObsoletePublicNonNullLotjuIdTmsStations();
-        return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
