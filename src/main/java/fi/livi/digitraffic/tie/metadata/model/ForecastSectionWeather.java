@@ -54,7 +54,7 @@ public class ForecastSectionWeather {
     @ApiModelProperty(value = "Wind speed in m/s")
     private Integer windSpeed;
 
-    @ApiModelProperty(value = "Tells if weather data is an observation or a forecast: OBSERVATION / FORECAST")
+    @ApiModelProperty(value = "Tells if object is an observation or a forecast: OBSERVATION / FORECAST")
     @Column(insertable = false, updatable = false)
     private String type;
 

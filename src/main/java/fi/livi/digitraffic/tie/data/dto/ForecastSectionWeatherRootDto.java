@@ -1,19 +1,20 @@
 package fi.livi.digitraffic.tie.data.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
-public class ForecastSectionWeatherRootDto {
-
-    @ApiModelProperty(value = "When weather data was updated last time")
-    public final LocalDateTime updated;
+public class ForecastSectionWeatherRootDto extends RootDataObjectDto {
 
     public final List<ForecastSectionWeatherDataDto> weatherData;
 
-    public ForecastSectionWeatherRootDto(LocalDateTime updated, List<ForecastSectionWeatherDataDto> weatherData) {
-        this.updated = updated;
+    public ForecastSectionWeatherRootDto(ZonedDateTime timestamp, List<ForecastSectionWeatherDataDto> weatherData) {
+        super(timestamp);
+        this.weatherData = weatherData;
+    }
+
+    public ForecastSectionWeatherRootDto(LocalDateTime localTimestamp, List<ForecastSectionWeatherDataDto> weatherData) {
+        super(localTimestamp);
         this.weatherData = weatherData;
     }
 }
