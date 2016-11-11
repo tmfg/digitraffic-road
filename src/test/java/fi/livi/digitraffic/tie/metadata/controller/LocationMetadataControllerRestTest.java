@@ -21,12 +21,12 @@ public class LocationMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
-                .andExpect(jsonPath("$.locationTypes[0].typeCodeFi", isA(String.class))) //
-                .andExpect(jsonPath("$.locationTypes[0].typeCode", isA(Integer.class))) //
+                .andExpect(jsonPath("$.locationTypes[0].typeCode", isA(String.class))) //
                 .andExpect(jsonPath("$.locationTypes[0].descriptionEn", isA(String.class))) //
-                .andExpect(jsonPath("$.locationSubtypes[0].subtypeCodeFi", isA(String.class))) //
-                .andExpect(jsonPath("$.locationSubtypes[0].typeCode", isA(Integer.class))) //
+                .andExpect(jsonPath("$.locationTypes[0].descriptionFi", isA(String.class))) //
+                .andExpect(jsonPath("$.locationSubtypes[0].subtypeCode", isA(String.class))) //
                 .andExpect(jsonPath("$.locationSubtypes[0].descriptionEn", isA(String.class))) //
+                .andExpect(jsonPath("$.locationSubtypes[0].descriptionFi", isA(String.class))) //
         ;
     }
 
