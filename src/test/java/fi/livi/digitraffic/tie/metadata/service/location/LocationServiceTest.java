@@ -5,9 +5,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.AbstractTestBase;
 
-public class LocationServiceTest extends AbstractMetadataTest {
+public class LocationServiceTest extends AbstractTestBase {
     @Autowired
     private LocationService locationService;
 

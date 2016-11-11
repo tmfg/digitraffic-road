@@ -11,10 +11,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.AbstractTestBase;
 
 @Ignore
-public class LocationMetadataUpdaterTest extends AbstractMetadataTest {
+public class LocationMetadataUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
 

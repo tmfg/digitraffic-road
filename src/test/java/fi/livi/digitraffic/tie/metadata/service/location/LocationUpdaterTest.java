@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.AbstractTestBase;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
 
-public class LocationUpdaterTest extends AbstractMetadataTest {
+public class LocationUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationUpdater locationUpdater;
 

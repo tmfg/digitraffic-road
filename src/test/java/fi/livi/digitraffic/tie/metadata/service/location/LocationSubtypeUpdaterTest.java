@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.AbstractTestBase;
 
-public class LocationSubtypeUpdaterTest extends AbstractMetadataTest {
+public class LocationSubtypeUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationSubtypeUpdater locationSubtypeUpdater;
 
