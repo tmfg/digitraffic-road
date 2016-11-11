@@ -49,7 +49,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                    ")\n" +
                    "AND RS.TYPE = 1",
            nativeQuery = true)
-    List<RoadStation> findOrphanLamRoadStations();
+    List<RoadStation> findOrphanTmsRoadStations();
 
     RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId);
 

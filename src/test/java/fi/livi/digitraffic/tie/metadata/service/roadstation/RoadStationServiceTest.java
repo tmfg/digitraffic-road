@@ -6,17 +6,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
-public class RoadStationServiceTest extends AbstractMetadataTest {
+public class RoadStationServiceTest extends MetadataIntegrationTest {
     @Autowired
     private RoadStationService roadStationService;
 
     @Test
-    public void testFindAllLamStations() {
-        final List<RoadStation> lams = roadStationService.findByType(RoadStationType.LAM_STATION);
+    public void testFindAllTmsStations() {
+        final List<RoadStation> lams = roadStationService.findByType(RoadStationType.TMS_STATION);
         Assert.assertTrue(lams.size() >= 2);
     }
 

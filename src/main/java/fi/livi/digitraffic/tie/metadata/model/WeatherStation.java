@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -20,14 +19,14 @@ import fi.livi.digitraffic.tie.metadata.converter.WeatherStationTypeConverter;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "weatherStation", attributeNodes = @NamedAttributeNode("roadStation"))
 public class WeatherStation {
 
     @Id
-    @GenericGenerator(name = "SEQ_WEATHER_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+    @NotNull
+    @GenericGenerator(name = "SEQ_ROAD_WEATHER_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_WEATHER_STATION"))
-    @GeneratedValue(generator = "SEQ_WEATHER_STATION")
-    private long id;
+    @GeneratedValue(generator = "SEQ_ROAD_WEATHER_STATION")
+    private Long id;
 
     private Long lotjuId;
 
@@ -41,11 +40,11 @@ public class WeatherStation {
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

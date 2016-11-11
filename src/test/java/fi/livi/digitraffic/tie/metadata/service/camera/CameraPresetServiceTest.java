@@ -7,10 +7,10 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
-public class CameraPresetServiceTest extends AbstractMetadataTest {
+public class CameraPresetServiceTest extends MetadataIntegrationTest {
 
     @Autowired
     private CameraPresetService cameraPresetService;

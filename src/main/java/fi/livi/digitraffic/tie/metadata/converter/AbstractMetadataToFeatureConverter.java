@@ -1,35 +1,17 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import fi.livi.digitraffic.tie.metadata.geojson.Crs;
-import fi.livi.digitraffic.tie.metadata.geojson.CrsType;
+import fi.livi.digitraffic.tie.metadata.geojson.Feature;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {
 
-    protected static final Crs crs;
+    protected final CoordinateConverter coordinateConverter;
 
-    protected AbstractMetadataToFeatureConverter() {
-    }
-
-    static {
-        crs = new Crs();
-        crs.setType(CrsType.name);
-        /*
-         * http://docs.jhs-suositukset.fi/jhs-suositukset/JHS180_liite1/JHS180_liite1.html#H2
-         * http://www.opengis.net/def/crs/EPSG/0/[code]
-         * ETRS89 / TM35-FIN / EUREF-FIN (EPSG:3067)
-         * http://www.opengis.net/def/crs/EPSG/0/3067
-         * http://spatialreference.org/ref/epsg/3067/
-         * named: urn:ogc:def:crs:EPSG::3067
-         * Link: href="http://www.opengis.net/def/crs/EPSG/0/3067");
-         *       type="proj4"
-         * WGS84 (EPSG:4326)
-         * http://www.opengis.net/def/crs/EPSG/0/4326
-         * http://spatialreference.org/ref/epsg/wgs-84/
-         * Named CRS: urn:ogc:def:crs:EPSG::4326
-         */
-        crs.getProperties().setName("urn:ogc:def:crs:EPSG::3067");
+    protected AbstractMetadataToFeatureConverter(final CoordinateConverter coordinateConverter) {
+        this.coordinateConverter = coordinateConverter;
     }
 
     /**
@@ -66,7 +48,31 @@ public class AbstractMetadataToFeatureConverter {
         properties.setAnnualMaintenanceDate(roadStation.getAnnualMaintenanceDate());
         properties.setLocation(roadStation.getLocation());
         properties.setState(roadStation.getState());
+        properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));
     }
 
+    private static Point getETRS89CoordinatesPoint(RoadStation rs) {
+        if (rs.getLatitude() != null && rs.getLongitude() != null) {
+            if (rs.getAltitude() != null) {
+                return new Point(
+                        rs.getLongitude().longValue(),
+                        rs.getLatitude().longValue(),
+                        rs.getAltitude().longValue());
+            } else {
+                return new Point(
+                        rs.getLongitude().longValue(),
+                        rs.getLatitude().longValue());
+            }
+        }
+        return null;
+    }
+
+    protected void setCoordinates(Feature feature, RoadStation rs) {
+        Point etrS89 = getETRS89CoordinatesPoint(rs);
+        if (etrS89 != null) {
+                feature.setGeometry(
+                        coordinateConverter.convertFromETRS89ToWGS84(etrS89));
+        }
+    }
 
 }

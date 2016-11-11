@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 
 @Transactional
-public class LockingDaoTest extends AbstractIntegrationMetadataTest {
+public class LockingDaoTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 

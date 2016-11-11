@@ -21,9 +21,9 @@ public class TypesTest {
     }
 
     @Test
-    public void testAllLamStationTypes() {
+    public void testAllTmsStationTypes() {
         for (final LamAsemaTyyppi lat : LamAsemaTyyppi.values()) {
-            Assert.notNull(LamStationType.convertFromLamasemaTyyppi(lat));
+            Assert.notNull(TmsStationType.convertFromLamasemaTyyppi(lat));
         }
     }
 

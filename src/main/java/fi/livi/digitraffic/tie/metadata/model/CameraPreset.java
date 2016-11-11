@@ -10,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -24,14 +22,13 @@ import fi.livi.digitraffic.tie.metadata.converter.CameraTypeConverter;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "camera", attributeNodes = @NamedAttributeNode("roadStation"))
 public class CameraPreset {
 
     @Id
     @GenericGenerator(name = "SEQ_CAMERA_PRESET", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_CAMERA_PRESET"))
     @GeneratedValue(generator = "SEQ_CAMERA_PRESET")
-    private long id;
+    private Long id;
 
     private String presetId;
 
@@ -103,11 +100,11 @@ public class CameraPreset {
     @Fetch(FetchMode.JOIN)
     private WeatherStation nearestWeatherStation;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

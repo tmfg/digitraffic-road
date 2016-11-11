@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.service;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -29,48 +28,38 @@ public class SensorDataUpdateService {
 
     private final DataSource dataSource;
 
-    private static final String INSERT_STATEMENT =
-            "INSERT INTO SENSOR_VALUE \n" +
-            "  (id, road_station_id, road_station_sensor_id, value, measured)\n" +
-            "       ( SELECT SEQ_SENSOR_VALUE.nextval AS id\n" +
-            "              , station.id AS road_station_id\n" +
-            "              , sensor.id AS road_station_sensor_id\n" +
-            "              , :value AS value\n" +
-            "              , :measured AS measured\n" +
-            "         FROM ROAD_STATION_SENSOR sensor\n" +
-            "            , ROAD_STATION station\n" +
-            "         WHERE station.lotju_id = :rsLotjuId\n" +
-            "           AND station.road_station_type = :stationType\n" +
-            "           AND sensor.lotju_id = :sensorLotjuId\n" +
-            "           AND sensor.road_station_type = :stationType\n" +
-            "           AND NOT EXISTS (\n" +
-            "                   SELECT NULL\n" +
-            "                   FROM SENSOR_VALUE sv\n" +
-            "                   WHERE sv.road_station_sensor_id = sensor.id\n" +
-            "                     AND sv.road_station_id = station.id\n" +
-            "               )\n" +
-            "       )";
-
-    private static final String UPDATE_STATEMENT =
-            "UPDATE ( SELECT station.id AS stationId\n" +
-            "              , sensor.id AS sensorId\n" +
-            "              , :value AS value\n" +
-            "              , :measured AS sensorValueMeasured\n" +
-            "              , dst.road_station_sensor_id dst_rss_id\n" +
-            "              , dst.road_station_id dst_rs_id\n" +
-            "              , dst.value dst_value\n" +
-            "              , dst.measured dst_measured\n" +
-            "         FROM ROAD_STATION_SENSOR sensor\n" +
-            "            , ROAD_STATION station\n" +
-            "            , SENSOR_VALUE dst\n" +
-            "         WHERE station.lotju_id = :rsLotjuId\n" +
-            "           AND station.road_station_type = :stationType\n" +
-            "           AND sensor.lotju_id = :sensorLotjuId\n" +
-            "           AND sensor.road_station_type = :stationType\n" +
-            "           AND dst.road_station_sensor_id = sensor.id\n" +
-            "           AND dst.road_station_id = station.id )\n" +
-            "SET dst_value = value\n" +
-            "  , dst_measured = sensorValueMeasured";
+    private static final String MERGE_STATEMENT =
+            "MERGE INTO SENSOR_VALUE dst\n" +
+                    "USING (\n" +
+                    "  SELECT (\n" +
+                    "        SELECT sensor.id  \n" +
+                    "        FROM ROAD_STATION_SENSOR sensor\n" +
+                    "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
+                    "          AND sensor.road_station_type = :stationType\n" +
+                    "          AND sensor.lotju_id is not null\n" +
+                    "          AND sensor.obsolete_date is null\n" +
+                    "        ) as road_station_sensor_id ,(\n" +
+                    "        SELECT station.id\n" +
+                    "        FROM ROAD_STATION station\n" +
+                    "        WHERE station.lotju_id = :rsLotjuId\n" +
+                    "          AND station.road_station_type = :stationType\n" +
+                    "          AND station.lotju_id is not null\n" +
+                    "          AND station.obsolete_date is null\n" +
+                    "       ) as road_station_id FROM DUAL\n" +
+                    ") src ON (dst.road_station_sensor_id = src.road_station_sensor_id\n" +
+                    "      AND dst.road_station_id = src.road_station_id)\n" +
+                    "WHEN MATCHED THEN UPDATE SET dst.value = :value\n" +
+                    "                           , dst.measured = :measured\n" +
+                    "                           , dst.updated = sysdate\n" +
+                    "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated)\n" +
+                    "     VALUES (SEQ_SENSOR_VALUE.nextval -- id\n" +
+                    "           , src.road_station_id\n" +
+                    "           , src.road_station_sensor_id\n" +
+                    "           , :value\n" + // value
+                    "           , :measured\n" + // measured
+                    "           , sysdate)\n" + // updated
+                    "     WHERE src.road_station_id IS NOT NULL\n" +
+                    "       AND src.road_station_sensor_id IS NOT NULL";
 
     @Autowired
     public SensorDataUpdateService(final DataSource dataSource) throws SQLException {
@@ -86,33 +75,28 @@ public class SensorDataUpdateService {
     public boolean updateLamData(List<Lam> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
+             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Lam> newestLamData = filterNewestLamValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendLamBatchData(opsUpdate, newestLamData);
-            appendLamBatchData(opsInsert, newestLamData);
+            final int rows = appendLamBatchData(opsMerge, newestLamData);
 
-            final long endAppendStartUpdate = System.currentTimeMillis();
-            opsUpdate.executeBatch();
-            final long endUpdateStartInsert = System.currentTimeMillis();
-            opsInsert.executeBatch();
-            final long endInsert = System.currentTimeMillis();
+            final long endAppendStartMerge = System.currentTimeMillis();
+            opsMerge.executeBatch();
+            final long endMerge = System.currentTimeMillis();
 
-            log.info(String.format("Update lam sensors data for %1$d " +
+            log.info(String.format("Update tms sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
+                                   "append batch: %4$d ms, merge %5$d ms)",
                                    rows,
-                                   endInsert - startFilter, // total
+                                   endMerge - startFilter, // total
                                    endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartUpdate - endFilterStartAppend, // append data
-                                   endUpdateStartInsert - endAppendStartUpdate, // update
-                                   endInsert-endUpdateStartInsert)); // insert
+                                   endAppendStartMerge - endFilterStartAppend, // append data
+                                   endMerge - endAppendStartMerge)); // merge
             return true;
         } catch (Exception e) {
-            log.error("Error while updating lam data", e);
+            log.error("Error while updating tms data", e);
         }
         return false;
     }
@@ -126,30 +110,25 @@ public class SensorDataUpdateService {
     public boolean updateWeatherData(List<Tiesaa> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsUpdate = (OraclePreparedStatement) connection.prepareStatement(UPDATE_STATEMENT);
-             OraclePreparedStatement opsInsert = (OraclePreparedStatement) connection.prepareStatement(INSERT_STATEMENT)) {
+             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
             final long startFilter = System.currentTimeMillis();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
             final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendTiesaaBatchData(opsUpdate, newestTiesaaData);
-            appendTiesaaBatchData(opsInsert, newestTiesaaData);
+            final int rows = appendTiesaaBatchData(opsMerge, newestTiesaaData);
 
-            final long endAppendStartUpdate = System.currentTimeMillis();
-            opsUpdate.executeBatch();
-            final long endUpdateStartInsert = System.currentTimeMillis();
-            opsInsert.executeBatch();
-            final long endInsert = System.currentTimeMillis();
+            final long endAppendStartMerge = System.currentTimeMillis();
+            opsMerge.executeBatch();
+            final long endMerge = System.currentTimeMillis();
 
             log.info(String.format("Update weather sensors data for %1$d " +
                                    "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, update %5$d ms, insert: %6$d ms)",
+                                   "append batch: %4$d ms, merge %5$d ms)",
                                    rows,
-                                   endInsert - startFilter, // total
+                                   endMerge - startFilter, // total
                                    endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartUpdate - endFilterStartAppend, // append data
-                                   endUpdateStartInsert - endAppendStartUpdate, // update
-                                   endInsert-endUpdateStartInsert)); // insert
+                                   endAppendStartMerge - endFilterStartAppend, // append data
+                                   endMerge - endAppendStartMerge)); // merge
             return true;
         } catch (Exception e) {
             log.error("Error while updating weather data", e);
@@ -159,32 +138,32 @@ public class SensorDataUpdateService {
 
     private static Collection<Lam> filterNewestLamValues(List<Lam> data) {
         // Collect newest data per station
-        HashMap<Long, Lam> lamMapByLamStationLotjuId = new HashMap<Long, Lam>();
+        HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
         for (Lam lam : data) {
-            Lam currentLam = lamMapByLamStationLotjuId.get(lam.getAsemaId());
+            Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
             if (currentLam == null || lam.getAika().toGregorianCalendar().before(currentLam.getAika().toGregorianCalendar())) {
                 if (currentLam != null) {
                     log.info("Replace " + currentLam.getAika() + " with " + lam.getAika());
                 }
-                lamMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
+                tmsMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
             }
         }
-        return lamMapByLamStationLotjuId.values();
+        return tmsMapByLamStationLotjuId.values();
     }
 
     private static Collection<Tiesaa> filterNewestTiesaaValues(List<Tiesaa> data) {
         // Collect newest data per station
-        HashMap<Long, Tiesaa> tiesaaMapByLamStationLotjuId = new HashMap<>();
+        HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
         for (Tiesaa tiesaa : data) {
-            Tiesaa currentTiesaa = tiesaaMapByLamStationLotjuId.get(tiesaa.getAsemaId());
+            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
             if (currentTiesaa == null || tiesaa.getAika().toGregorianCalendar().before(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
                     log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaa.getAika());
                 }
-                tiesaaMapByLamStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
+                tiesaaMapByTmsStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
             }
         }
-        return tiesaaMapByLamStationLotjuId.values();
+        return tiesaaMapByTmsStationLotjuId.values();
     }
 
 
@@ -193,7 +172,7 @@ public class SensorDataUpdateService {
 
         for (Lam lam : lams) {
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(lam.getAika(), ZoneId.systemDefault());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(lam.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Lam.Anturit.Anturi anturi : anturit) {
                 rows++;
@@ -201,7 +180,7 @@ public class SensorDataUpdateService {
                 ops.setTimestampAtName("measured", measured);
                 ops.setLongAtName("rsLotjuId", lam.getAsemaId());
                 ops.setLongAtName("sensorLotjuId", Long.parseLong(anturi.getLaskennallinenAnturiId()));
-                ops.setStringAtName("stationType", RoadStationType.LAM_STATION.name());
+                ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
                 ops.addBatch();
             }
         }
@@ -213,7 +192,7 @@ public class SensorDataUpdateService {
 
         for (Tiesaa tiesaa : tiesaas) {
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtZone(tiesaa.getAika(), ZoneId.systemDefault());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(tiesaa.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
                 rows++;

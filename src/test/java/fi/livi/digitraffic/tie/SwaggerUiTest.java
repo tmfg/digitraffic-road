@@ -18,9 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.BuildVersionService;
 
-public class SwaggerUiTest extends AbstractMetadataTest {
+public class SwaggerUiTest extends MetadataTestBase {
+
     @Autowired
     private WebApplicationContext wac;
 
@@ -51,6 +54,6 @@ public class SwaggerUiTest extends AbstractMetadataTest {
                 .andExpect(content().contentType(restContentType))
                 .andExpect(jsonPath("$.swagger", is("2.0")))
                 .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-                .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + "/lam-stations", anything()));
+                .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + MetadataController.TMS_STATIONS_PATH, anything()));
     }
 }

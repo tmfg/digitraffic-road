@@ -10,8 +10,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 
-public class ForeignKeyIndexTest extends AbstractIntegrationMetadataTest {
+public class ForeignKeyIndexTest extends MetadataIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

@@ -19,9 +19,9 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Weather Station properties", value = "WeatherStationProperties", parent = WeatherStationProperties.class)
+@ApiModel(description = "Weather Station properties", value = "WeatherStationProperties", parent = RoadStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "weatherStationType", "naturalId", "name" })
+@JsonPropertyOrder({ "roadStationId", "weatherStationType", "naturalId", "name" })
 public class WeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id

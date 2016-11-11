@@ -9,4 +9,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
  * Apache License
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
+ *
+ * GeoJSON spesification found in https://tools.ietf.org/html/rfc7946
+ *
  */

@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -17,18 +15,19 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 @Entity
 @DynamicUpdate
-@NamedEntityGraph(name = "sensorValue", attributeNodes = @NamedAttributeNode("roadStation"))
 public class SensorValue {
 
     @Id
     @GenericGenerator(name = "SEQ_SENSOR_VALUE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE"))
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE")
-    private long id;
+    private Long id;
 
     private Double value;
 
@@ -45,6 +44,9 @@ public class SensorValue {
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
 
+    @JsonIgnore
+    LocalDateTime updated;
+
     /**
      * Default constructor fo Hibernate
      */
@@ -58,11 +60,11 @@ public class SensorValue {
         this.sensorValueMeasured = sensorValueMeasured;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -96,6 +98,14 @@ public class SensorValue {
 
     public void setRoadStationSensor(final RoadStationSensor roadStationSensor) {
         this.roadStationSensor = roadStationSensor;
+    }
+
+    public LocalDateTime getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(LocalDateTime updated) {
+        this.updated = updated;
     }
 
     @Override

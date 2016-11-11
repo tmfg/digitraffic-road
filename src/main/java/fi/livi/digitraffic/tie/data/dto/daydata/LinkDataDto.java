@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.data.dto.daydata;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.Immutable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,6 +13,7 @@ import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@Immutable
 @ApiModel(value = "Link", description = "Link data")
 @JsonPropertyOrder(value = { "id", "measuredLocalTime", "measuredUtc", "linkMeasurements"})
 public class LinkDataDto implements MeasuredDataObjectDto {

@@ -62,7 +62,7 @@ public enum CollectionStatus {
         return null;
     }
 
-    // Keruuntila enum is practically same fo all Kamera, TiesaaAsem and Lamasema, but because
+    // Keruuntila enum is practically same fo all Kamera, TiesaaAsema and Lamasema, but because
     // it's not sure which version code generation uses, it's safer to test enum's string values
     public static boolean isUnactiveKeruunTila(final KeruunTILA keruunTila) {
         return UNACTIVE_KERUUN_TILAS.contains(keruunTila.name());

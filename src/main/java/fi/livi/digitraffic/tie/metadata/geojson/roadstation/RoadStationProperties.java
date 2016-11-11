@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
@@ -22,11 +25,15 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class RoadStationProperties {
 
+    private static final int LONGITUDE_IDX = 0;
+    private static final int LATITUDE_IDX = 1;
+    private static final int ALTITUDE_IDX = 2;
+
     @JsonIgnore
     @ApiModelProperty(value = "Road station's lotju id")
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Road station's natural id", required = true)
+    @ApiModelProperty(value = "Road station's id (naturalId)", required = true)
     @JsonProperty("roadStationId")
     private long naturalId;
 
@@ -76,6 +83,10 @@ public abstract class RoadStationProperties {
 
     @ApiModelProperty(value = "Road station state")
     private RoadStationState state;
+
+    @ApiModelProperty(value = "Road station coordinates (LONGITUDE, LATITUDE, ALTITUDE. Coordinates are in ETRS89 / ETRS-TM35FIN format. Altitude is optional and measured in metres.)" +
+                              "Point's coordinates  (Coordinates in WGS84. Altitude is optional [m])", required = true)
+    private List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {
         return naturalId;
@@ -286,6 +297,7 @@ public abstract class RoadStationProperties {
                 .append(state, that.state)
                 .append(repairMaintenanceDate, that.repairMaintenanceDate)
                 .append(annualMaintenanceDate, that.annualMaintenanceDate)
+                .append(coordinatesETRS89, that.coordinatesETRS89)
                 .isEquals();
     }
 
@@ -310,6 +322,51 @@ public abstract class RoadStationProperties {
                 .append(state)
                 .append(repairMaintenanceDate)
                 .append(annualMaintenanceDate)
+                .append(coordinatesETRS89)
                 .toHashCode();
+    }
+
+    public void setCoordinatesETRS89(Point coordinatesETRS89Point) {
+        this.coordinatesETRS89.clear();
+        if (coordinatesETRS89Point != null) {
+            setCoordinateETRS89(LONGITUDE_IDX, coordinatesETRS89Point.getLongitude());
+            setCoordinateETRS89(LATITUDE_IDX, coordinatesETRS89Point.getLatitude());
+            setCoordinateETRS89(ALTITUDE_IDX, coordinatesETRS89Point.getAltitude());
+        }
+    }
+
+    private void setCoordinateETRS89(int index, Double coordinate) {
+        if (coordinate != null) {
+            while (coordinatesETRS89.size() <= index) {
+                coordinatesETRS89.add(null);
+            }
+            coordinatesETRS89.set(index, coordinate);
+        }
+    }
+
+    private Double getCoordinateETRS89(int index) {
+        if ( index < coordinatesETRS89.size() ) {
+            return coordinatesETRS89.get(index);
+        }
+        return null;
+    }
+
+    public List<Double> getCoordinatesETRS89() {
+        return coordinatesETRS89;
+    }
+
+    @JsonIgnore
+    public Double getAltitudeETRS89() {
+        return getCoordinateETRS89(ALTITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public Double getLongitudeETRS89() {
+        return getCoordinateETRS89(LONGITUDE_IDX);
+    }
+
+    @JsonIgnore
+    public Double getLatitudeETRS89() {
+        return getCoordinateETRS89(LATITUDE_IDX);
     }
 }

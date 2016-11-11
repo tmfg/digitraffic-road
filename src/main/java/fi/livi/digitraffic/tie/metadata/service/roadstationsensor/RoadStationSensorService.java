@@ -11,13 +11,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
@@ -33,6 +35,8 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 @Service
 public class RoadStationSensorService {
 
+    private static final Logger log = LoggerFactory.getLogger(RoadStationSensorService.class);
+
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private RoadStationRepository roadStationRepository;
@@ -40,7 +44,6 @@ public class RoadStationSensorService {
     private final SensorValueRepository sensorValueRepository;
 
     private final Map<RoadStationType, Integer> sensorValueTimeLimitInMins;
-    private final EnumMap<RoadStationType, ArrayList<Long>> includedSensorsNaturalIds = new EnumMap<>(RoadStationType.class);
 
     @Autowired
     public RoadStationSensorService(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
@@ -50,37 +53,17 @@ public class RoadStationSensorService {
                                     final SensorValueRepository sensorValueRepository,
                                     @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
                                     final int weatherStationSensorValueTimeLimitInMins,
-                                    @Value("${weatherStation.includedSensorNaturalIds}")
-                                    final String includedWeatherSensorNaturalIdsStr,
-                                    @Value("${lamStation.sensorValueTimeLimitInMinutes}")
-                                    final int lamStationSensorValueTimeLimitInMins,
-                                    @Value("${lamStation.includedSensorNaturalIds}")
-                                    final String includedLamSensorNaturalIdsStr) {
+                                    @Value("${tmsStation.sensorValueTimeLimitInMinutes}")
+                                    final int tmsStationSensorValueTimeLimitInMins) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
         this.sensorValueRepository = sensorValueRepository;
 
-        // Parse included sensors id:s
-        final String[] includedWeatherSensorNaturalIds = StringUtils.splitPreserveAllTokens(includedWeatherSensorNaturalIdsStr, ',');
-        ArrayList<Long> includedWeatherSensors = new ArrayList<>();
-        for (final String id : includedWeatherSensorNaturalIds) {
-            includedWeatherSensors.add(Long.parseLong(id.trim()));
-        }
-        includedSensorsNaturalIds.put(RoadStationType.WEATHER_STATION, includedWeatherSensors);
-
-        final String[] lamSensorNaturalIds = StringUtils.splitPreserveAllTokens(includedLamSensorNaturalIdsStr, ',');
-        ArrayList<Long> includedLamSensors = new ArrayList<>();
-        for (final String id : lamSensorNaturalIds) {
-            includedLamSensors.add(Long.parseLong(id.trim()));
-        }
-
-        includedSensorsNaturalIds.put(RoadStationType.LAM_STATION, includedLamSensors);
-
-        sensorValueTimeLimitInMins = new EnumMap<RoadStationType, Integer>(RoadStationType.class);
+        sensorValueTimeLimitInMins = new EnumMap<>(RoadStationType.class);
         sensorValueTimeLimitInMins.put(RoadStationType.WEATHER_STATION, weatherStationSensorValueTimeLimitInMins);
-        sensorValueTimeLimitInMins.put(RoadStationType.LAM_STATION, lamStationSensorValueTimeLimitInMins);
+        sensorValueTimeLimitInMins.put(RoadStationType.TMS_STATION, tmsStationSensorValueTimeLimitInMins);
     }
 
     @Transactional(readOnly = true)
@@ -152,8 +135,8 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(final long roadStationNaturalId,
-                                                                                                 final RoadStationType roadStationType) {
+    public List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValues(final long roadStationNaturalId,
+                                                                                final RoadStationType roadStationType) {
 
         boolean publicAndNotObsolete = roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, roadStationType);
 
@@ -169,25 +152,42 @@ public class RoadStationSensorService {
 
     @Transactional
     public RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor) {
-        final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
-        roadStationSensorRepository.flush();
-        return sensor;
+        try {
+            final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
+            roadStationSensorRepository.flush();
+            return sensor;
+        } catch (Exception e) {
+            log.error("Could not save " + roadStationSensor);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValue>> findSensorvaluesListMappedByLamLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
-        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
+    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
+        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
 
-        HashMap<Long, List<SensorValue>> sensorValuesListByLamLotjuIdMap = new HashMap<>();
+        HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
         for (SensorValue sensorValue : sensorValues) {
             Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
-            List<SensorValue> list = sensorValuesListByLamLotjuIdMap.get(rsLotjuId);
+            List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.get(rsLotjuId);
             if (list == null) {
                 list = new LinkedList<>();
-                sensorValuesListByLamLotjuIdMap.put(rsLotjuId, list);
+                sensorValuesListByTmsLotjuIdMap.put(rsLotjuId, list);
             }
             list.add(sensorValue);
         }
-        return sensorValuesListByLamLotjuIdMap;
+        return sensorValuesListByTmsLotjuIdMap;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final LocalDateTime updatedAfter, final RoadStationType roadStationType) {
+        return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
+                roadStationType.getTypeNumber(),
+                DateHelper.toDateAtDefaultZone(updatedAfter));
+    }
+
+    @Transactional(readOnly = true)
+    public LocalDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
+        return sensorValueRepository.getLastUpdated(roadStationType);
     }
 }

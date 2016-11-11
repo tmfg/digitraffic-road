@@ -13,17 +13,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMock;
 
-public class CameraStationUpdateJobTest extends AbstractMetadataTest {
+public class CameraStationUpdateJobTest extends MetadataRestTest {
 
-    private static final Logger log = LoggerFactory.getLogger(LamStationUpdateJobTest.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsStationUpdateJobTest.class);
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
@@ -32,12 +32,12 @@ public class CameraStationUpdateJobTest extends AbstractMetadataTest {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    private KameraPerustiedotLotjuServiceMock kameraPerustiedotLotjuServiceMock;
+    private LotjuKameraPerustiedotServiceMock lotjuKameraPerustiedotServiceMock;
 
     @Test
     public void testUpdateKameras() {
 
-        kameraPerustiedotLotjuServiceMock.initDataAndService();
+        lotjuKameraPerustiedotServiceMock.initDataAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
@@ -53,7 +53,7 @@ public class CameraStationUpdateJobTest extends AbstractMetadataTest {
         assertEquals(3, countPresets);
 
         // Update 121 camera to active and 56 removed
-        kameraPerustiedotLotjuServiceMock.setStateAfterChange(true);
+        lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
 
         final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(false);
@@ -148,6 +148,6 @@ public class CameraStationUpdateJobTest extends AbstractMetadataTest {
     }
 
     private CameraStationFeature findWithCameraId(final CameraStationFeatureCollection collection, final String cameraId) {
-        return collection.getFeatures().stream().filter(x -> x.getId().endsWith(cameraId)).findFirst().orElseGet(null);
+        return collection.getFeatures().stream().filter(x -> x.getProperties().getCameraId().endsWith(cameraId)).findFirst().orElseGet(null);
     }
 }
