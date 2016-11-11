@@ -13,9 +13,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,9 +23,12 @@ import org.springframework.stereotype.Component;
 public class MetadataFileFetcher {
     private final String tmsUrl;
 
-    private static final String LOCATIONS_FILENAME = "locations.xlsx";
+    private static final String LOCATIONS_FILENAME = "locations.csv";
     private static final String LOCATION_TYPES_FILENAME = "TYPES.DAT";
     private static final String LOCATION_SUBTYPES_FILENAME = "SUBTYPES.DAT";
+
+    private static final String LOCATIONS_ZIPNAME = "FI_LC_noncertified_simple_1_11_30.zip";
+    private static final String LOCATION_TYPES_ZIPNAME = "FIN_LC_noncertified_1_11_30.zip";
 
     public MetadataFileFetcher(@Value("${metadata.tms.url}") final String tmsUrl) {
         this.tmsUrl = tmsUrl;
@@ -35,7 +38,7 @@ public class MetadataFileFetcher {
         final Path locationsPath = getLocationsFile();
         final Pair<Path, Path> pathPair = getTypefiles();
 
-        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft());
+        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft(), LOCATION_TYPES_ZIPNAME, LOCATIONS_ZIPNAME);
     }
 
     public Path getLocationsFile() throws IOException {
@@ -121,10 +124,10 @@ public class MetadataFileFetcher {
     }
 
     public URL getLocationsZip() throws MalformedURLException {
-        return new URL(tmsUrl + "Fi_Loc_singletable_ver2_4.zip");
+        return new URL(tmsUrl + LOCATIONS_ZIPNAME);
     }
 
     public URL getCcLtnZip() throws MalformedURLException {
-        return new URL(tmsUrl + "FI_CC_LTN_2.4_LTEF.zip");
+        return new URL(tmsUrl + LOCATION_TYPES_ZIPNAME);
     }
 }

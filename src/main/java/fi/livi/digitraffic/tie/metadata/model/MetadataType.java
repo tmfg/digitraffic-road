@@ -9,7 +9,8 @@ public enum MetadataType {
     WEATHER_STATION_SENSOR,
     LAM_ROAD_STATION_SENSOR,
     FORACAST_SECTION,
-    LOCATIONS
+    LOCATIONS,
+    LOCATION_TYPES
     ;
 
 

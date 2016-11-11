@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
@@ -24,14 +25,14 @@ public class LocationTypeUpdater {
         this.locationTypeRepository = locationTypeRepository;
     }
 
-    public void updateLocationTypes(final Path path) {
+    public List<LocationType> updateLocationTypes(final Path path) {
         final List<LocationType> oldTypes = locationTypeRepository.findAll();
-        final List<LocationType> newTypes = locationTypeReader.readLocationTypes(path);
+        final List<LocationType> newTypes = locationTypeReader.read(path);
 
-        mergeLocationTypes(oldTypes, newTypes);
+        return mergeLocationTypes(oldTypes, newTypes);
     }
 
-    private void mergeLocationTypes(final List<LocationType> oldTypes, final List<LocationType> newTypes) {
+    private List<LocationType> mergeLocationTypes(final List<LocationType> oldTypes, final List<LocationType> newTypes) {
         final Map<String, LocationType> oldMap = oldTypes.stream().collect(Collectors.toMap(LocationType::getTypeCode, Function.identity()));
         final List<LocationType> newList = new ArrayList<>();
 
@@ -50,10 +51,11 @@ public class LocationTypeUpdater {
         locationTypeRepository.delete(oldMap.values());
 
         locationTypeRepository.save(newList);
+
+        return newTypes;
     }
 
     private void mergeLocationType(final LocationType oldType, final LocationType newType) {
-        oldType.setDescriptionFi(newType.getDescriptionFi());
-        oldType.setDescriptionEn(newType.getDescriptionEn());
+        BeanUtils.copyProperties(newType, oldType);
     }
 }

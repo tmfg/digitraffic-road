@@ -8,30 +8,37 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
 
 @Service
 public class LocationUpdater {
     private final LocationRepository locationRepository;
 
-    private final LocationXSSFReader locationReader;
-
-    public LocationUpdater(final LocationRepository locationRepository,
-                           final LocationXSSFReader locationReader) {
+    public LocationUpdater(final LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
-        this.locationReader = locationReader;
     }
 
-    public void updateLocations(final Path path) throws IOException, OpenXML4JException, SAXException {
+    public void updateLocations(final Path path, List<LocationType> locationTypes, List<LocationSubtype> locationSubtypes) throws IOException, SAXException {
         final List<Location> oldLocations = locationRepository.findAll();
-        final List<Location> newLocations = locationReader.readLocations(oldLocations, path);
+        final List<Location> newLocations = getLocations(oldLocations, path, locationSubtypes);
 
         mergeLocations(oldLocations, newLocations);
+    }
+
+    public List<Location> getLocations(final List<Location> oldLocations, final Path path, List<LocationSubtype> locationSubtypes) {
+        final Map<Integer, Location> locationMap = oldLocations.stream().collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
+        final Map<String, LocationSubtype> subtypeMap = locationSubtypes.stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
+
+        final LocationReader reader = new LocationReader(locationMap, subtypeMap);
+
+        return reader.read(path);
     }
 
     private void mergeLocations(final List<Location> oldLocations, final List<Location> newLocations) {
@@ -56,19 +63,6 @@ public class LocationUpdater {
     }
 
     private void mergeLocation(final Location oldLocation, final Location newLocation) {
-        oldLocation.setLocationSubtype(newLocation.getLocationSubtype());
-        oldLocation.setRoadJunction(newLocation.getRoadJunction());
-        oldLocation.setRoadName(newLocation.getRoadName());
-        oldLocation.setFirstName(newLocation.getFirstName());
-        oldLocation.setSecondName(newLocation.getSecondName());
-        oldLocation.setAreaRef(newLocation.getAreaRef());
-        oldLocation.setLinearRef(newLocation.getLinearRef());
-        oldLocation.setNegOffset(newLocation.getNegOffset());
-        oldLocation.setPosOffset(newLocation.getPosOffset());
-        oldLocation.setUrban(newLocation.getUrban());
-        oldLocation.setWgs84Lat(newLocation.getWgs84Lat());
-        oldLocation.setWgs84Long(newLocation.getWgs84Long());
-        oldLocation.setNegDirection(newLocation.getNegDirection());
-        oldLocation.setPosDirection(newLocation.getPosDirection());
+        BeanUtils.copyProperties(newLocation, oldLocation);
     }
 }

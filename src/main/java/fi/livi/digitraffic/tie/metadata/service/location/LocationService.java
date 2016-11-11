@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,6 @@ import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
 import fi.livi.digitraffic.tie.metadata.dto.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.LocationsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
@@ -53,28 +53,29 @@ public class LocationService {
     }
 
     @Transactional(readOnly = true)
-    public LocationsMetadata findLocationsMetadata(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LOCATIONS);
-        final LocalDateTime updateTime = updated == null ? null : updated.getUpdated();
+    public LocationsMetadata findLocationsMetadata(final boolean onlyUpdateInfo, final boolean typesOnly) {
+        final ZonedDateTime locationUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
+        final ZonedDateTime typesUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATION_TYPES);
 
         if(onlyUpdateInfo) {
-            return new LocationsMetadata(updateTime);
+            return new LocationsMetadata(locationUpdateTime, typesUpdateTime);
         }
 
-        return new LocationsMetadata(
+        return new LocationsMetadata(locationUpdateTime, typesUpdateTime,
                 locationTypeRepository.streamAllProjectedBy().collect(Collectors.toList()),
                 locationSubtypeRepository.streamAllProjectedBy().collect(Collectors.toList()),
-                locationRepository.streamAllProjectedBy().collect(Collectors.toList()),
-                updateTime);
+                typesOnly ? Collections.emptyList() : locationRepository.streamAllProjectedBy().collect(Collectors.toList())
+        );
     }
 
     @Transactional(readOnly = true)
     public LocationsMetadata findLocation(final int id) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LOCATIONS);
-        final LocalDateTime updateTime = updated == null ? null : updated.getUpdated();
+        final ZonedDateTime locationUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
+        final ZonedDateTime typesUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATION_TYPES);
 
         final LocationJson location = locationRepository.findLocationByLocationCode(id);
 
-        return location != null ? new LocationsMetadata(location, updateTime) : new LocationsMetadata(updateTime);
+        return location != null ? new LocationsMetadata(locationUpdateTime, typesUpdateTime, location)
+                                : new LocationsMetadata(locationUpdateTime, typesUpdateTime);
     }
 }

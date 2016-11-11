@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
@@ -40,19 +42,21 @@ public class LocationMetadataUpdater {
         try {
             final MetadataPathCollection paths = metadataFileFetcher.getFilePaths();
 
-            updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath);
+            updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, paths.typesVersion, paths.locationsVersion);
         } catch(final Exception e) {
             log.error("exception when fetching locations metadata", e);
         }
     }
 
     @Transactional
-    public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath)
-            throws IOException, OpenXML4JException, SAXException {
-        locationTypeUpdater.updateLocationTypes(locationTypePath);
-        locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath);
-        locationUpdater.updateLocations(locationPath);
+    public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
+                          final String typesVersion, final String locationsVersion)
+            throws IOException, SAXException {
+        final List<LocationType> locationTypes = locationTypeUpdater.updateLocationTypes(locationTypePath);
+        final List<LocationSubtype> locationSubtypes = locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath);
+        locationUpdater.updateLocations(locationPath, locationTypes, locationSubtypes);
 
-        staticDataStatusService.updateMetadataUpdated(MetadataType.LOCATIONS);
+        staticDataStatusService.updateMetadataUpdated(MetadataType.LOCATION_TYPES, typesVersion);
+        staticDataStatusService.updateMetadataUpdated(MetadataType.LOCATIONS, locationsVersion);
     }
 }

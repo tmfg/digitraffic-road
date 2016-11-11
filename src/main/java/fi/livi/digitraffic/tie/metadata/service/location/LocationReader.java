@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.base.Charsets;
+
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
@@ -13,12 +15,12 @@ public class LocationReader extends AbstractReader<Location> {
     private final Map<String, LocationSubtype> subtypeMap;
 
     public LocationReader(final Map<Integer, Location> locationMap, final Map<String, LocationSubtype> subtypeMap) {
+        super(Charsets.UTF_8, DELIMETER_SEMICOLON);
         this.locationMap = locationMap;
         this.subtypeMap = subtypeMap;
     }
 
-    @Override protected Location convert(final String line) {
-        final String components[] = StringUtils.splitPreserveAllTokens(line, DELIMETER);
+    @Override protected Location convert(final String[] components) {
         final Location location = new Location();
 
         location.setLocationCode(parseInteger(components[2]));
@@ -33,6 +35,8 @@ public class LocationReader extends AbstractReader<Location> {
         location.setWgs84Long(parseDecimal(components[17]));
         location.setPosDirection(components[21]);
         location.setNegDirection(components[22]);
+        location.setGeocode(parseGeocode(components[23]));
+        location.setOrderOfPoint(parseInteger(components[24]));
 
         location.setAreaRef(parseReference(components[10], locationMap));
         location.setLinearRef(parseReference(components[11], locationMap));
@@ -41,6 +45,14 @@ public class LocationReader extends AbstractReader<Location> {
         locationMap.put(location.getLocationCode(), location);
 
         return location;
+    }
+
+    private String parseGeocode(final String component) {
+        if(StringUtils.isEmpty(component) || !component.startsWith("FinCode:")) {
+            return null;
+        }
+
+        return component.substring(8);
     }
 
     private LocationSubtype parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
@@ -62,7 +74,7 @@ public class LocationReader extends AbstractReader<Location> {
     }
 
     private BigDecimal parseDecimal(final String value) {
-        return StringUtils.isEmpty(value) ? null : new BigDecimal(value).setScale(5, BigDecimal.ROUND_HALF_UP);
+        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(5, BigDecimal.ROUND_HALF_UP);
     }
 
     private Location parseReference(final String value, final Map<Integer, Location> locationMap) {
@@ -81,6 +93,7 @@ public class LocationReader extends AbstractReader<Location> {
     }
 
     private Integer parseInteger(final String value) {
-        return StringUtils.isEmpty(value) ? null : Integer.parseInt(value);
+        return StringUtils.isEmpty(value) ? null :
+               Integer.parseInt(value);
     }
 }

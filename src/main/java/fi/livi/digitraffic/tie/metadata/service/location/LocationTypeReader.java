@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
@@ -8,9 +7,7 @@ import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
 @Component
 public class LocationTypeReader extends AbstractReader<LocationType> {
     @Override
-    protected LocationType convert(final String line) {
-        final String components[] = StringUtils.splitPreserveAllTokens(line, DELIMETER);
-
+    protected LocationType convert(final String[] components) {
         final LocationType newType = new LocationType();
 
         newType.setTypeCode(components[3]);
@@ -18,7 +15,7 @@ public class LocationTypeReader extends AbstractReader<LocationType> {
         newType.setDescriptionFi(components[4]);
 
         if(!newType.validate()) {
-            log.error("Could not validate new LocationType:" + line);
+            log.error("Could not validate new LocationType:" + components);
 
             return null;
         }

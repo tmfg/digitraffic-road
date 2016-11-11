@@ -147,9 +147,12 @@ public class MetadataController {
     public LocationsMetadata listLocations (
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            boolean lastUpdated,
+            @ApiParam("If parameter is given result will only contain location types and location subtypes.")
+            @RequestParam(value = "typesOnly", required = false, defaultValue = "false")
+            boolean typesOnly) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
-        return locationService.findLocationsMetadata(lastUpdated);
+        return locationService.findLocationsMetadata(lastUpdated, typesOnly);
     }
 
     @ApiOperation("The static information of one location")

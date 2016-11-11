@@ -48,6 +48,9 @@ public class Location {
     private String negDirection;
     private String posDirection;
 
+    private String geocode;
+    private Integer orderOfPoint;
+
     public int getLocationCode() {
         return locationCode;
     }
@@ -166,5 +169,21 @@ public class Location {
 
     public void setPosDirection(String posDirection) {
         this.posDirection = posDirection;
+    }
+
+    public String getGeocode() {
+        return geocode;
+    }
+
+    public void setGeocode(String geocode) {
+        this.geocode = geocode;
+    }
+
+    public Integer getOrderOfPoint() {
+        return orderOfPoint;
+    }
+
+    public void setOrderOfPoint(Integer orderOfPoint) {
+        this.orderOfPoint = orderOfPoint;
     }
 }

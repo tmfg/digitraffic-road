@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("locationCode")
+@JsonPropertyOrder({ "locationCode", "subtypeCode", "firstName", "secondName" })
 public interface LocationJson {
     @ApiModelProperty(value = "Unique number for each object in the database", required = true)
     int getLocationCode();
@@ -59,4 +59,10 @@ public interface LocationJson {
 
     @ApiModelProperty("For all L5.0 and for some roads. Text to be used when the incident has an effect only on vehicles driving in the positive direction of the road. ( e.g. Ring 1 eastbound)")
     String getPosDirection();
+
+    @ApiModelProperty("Point location according to Finnish Transport Agency’s official addressing where Locations on road network are addressed as: Road number;Road part number;Carriageway; Distance from the beginning of the road part")
+    String getGeocode();
+
+    @ApiModelProperty("The order of point within line or segment feature")
+    String getOrderOfPoint();
 }

@@ -6,8 +6,6 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -16,9 +14,7 @@ import org.hibernate.annotations.Parameter;
 import fi.livi.digitraffic.tie.metadata.converter.MetadataTypeConverter;
 
 @Entity
-@Table(name = "METADATA_UPDATED")
 @DynamicUpdate
-@NamedEntityGraph(name = "metadataUpdated")
 public class MetadataUpdated {
 
     @Id
@@ -32,13 +28,16 @@ public class MetadataUpdated {
 
     private LocalDateTime updated;
 
+    private String version;
+
     private MetadataUpdated() {
         // Empty for repository
     }
 
-    public MetadataUpdated(MetadataType type, LocalDateTime updated) {
+    public MetadataUpdated(final MetadataType type, final LocalDateTime updated, final String version) {
         setMetadataType(type);
         setUpdated(updated);
+        setVersion(version);
     }
 
     public long getId() {
@@ -63,5 +62,13 @@ public class MetadataUpdated {
 
     public void setUpdated(LocalDateTime updated) {
         this.updated = updated;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
