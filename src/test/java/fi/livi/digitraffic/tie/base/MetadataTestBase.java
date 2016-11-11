@@ -85,13 +85,20 @@ public abstract class MetadataTestBase {
                 "UPDATE ROAD_STATION RS\n" +
                 "SET RS.OBSOLETE_DATE = null,\n" +
                 "    RS.OBSOLETE = 0\n" +
-                "WHERE RS.LOTJU_ID < 0\n" +
-                "AND NOT exists (\n" +
-                "  SELECT NULL\n" +
-                "  FROM ROAD_STATION ORS\n" +
-                "  WHERE ors.natural_id = rs.natural_id\n" +
-                "  AND ors.id <> rs.id\n" +
-                "  AND (ORS.OBSOLETE_DATE = null or ORS.OBSOLETE = 0)\n" +
+                "WHERE RS.LOTJU_ID IS NOT NULL\n" +
+                "  AND NOT exists (\n" +
+                "    SELECT NULL\n" +
+                "    FROM ROAD_STATION ORS\n" +
+                "    WHERE ors.natural_id = rs.natural_id\n" +
+                "    AND ors.id <> rs.id\n" +
+                "    AND (ORS.OBSOLETE_DATE = null or ORS.OBSOLETE = 0)\n" +
+                "  )\n" +
+                "  AND NOT exists (\n" +
+                "    SELECT NULL\n" +
+                "    FROM ROAD_STATION ORS\n" +
+                "    WHERE ors.LOTJU_ID = rs.LOTJU_ID\n" +
+                "    AND ors.id <> rs.id\n" +
+                "    AND (ORS.OBSOLETE_DATE = null or ORS.OBSOLETE = 0)\n" +
                 ")");
     }
 

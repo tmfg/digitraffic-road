@@ -135,9 +135,8 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         float arvo = rand.nextFloat() * (maxX - minX) + minX;
         log.info("Start with arvo " + arvo);
 
-
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.TMS_STATION);
+                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
@@ -168,12 +167,12 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                     Lam.Anturit.Anturi anturi = new Lam.Anturit.Anturi();
                     anturit.add(anturi);
                     anturi.setArvo(arvo);
+                    arvo += 0.5f;
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
                 }
                 xgcal.add(df.newDuration(1000));
-                arvo += 0.1f;
 
-                if (data.size() >= 100) {
+                if (data.size() >= 100 || lamsWithLotjuId.values().size() <= data.size()) {
                     break;
                 }
             }
@@ -205,7 +204,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         // Assert sensor values are updated to db
         List<Long> lamLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
-                roadStationSensorService.findSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
+                roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
         for (Pair<Lam, String> pair : data) {
             Lam lam = pair.getLeft();

@@ -103,7 +103,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllWeatherStationsMappedByLotjuId();
+        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublicNonObsoleteWeatherStationsMappedByLotjuId();
 
         AbstractJMSMessageListener<Tiesaa> tiesaaJmsMessageListener =
                 new AbstractJMSMessageListener<Tiesaa>(Tiesaa.class, log) {
@@ -136,7 +136,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
         log.info("Start with arvo " + arvo);
 
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
+                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
@@ -168,6 +168,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
                     anturit.add(anturi);
 
                     anturi.setArvo(arvo);
+                    arvo = arvo + 0.1f;
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId());
                     if (anturit.size() >= 30) {
                         break;
@@ -175,9 +176,8 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
                 }
 
                 xgcal.add(df.newDuration(1000));
-                arvo = arvo + 0.1f;
 
-                if (data.size() >= 30) {
+                if (data.size() >= 100 || weatherStationsWithLotjuId.size() <= data.size()) {
                     break;
                 }
             }
@@ -208,7 +208,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
         // Assert sensor values are updated to db
         List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
-                    roadStationSensorService.findSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
+                    roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
         for (Pair<Tiesaa, String> pair : data) {
             Tiesaa tiesaa = pair.getLeft();

@@ -42,7 +42,7 @@ public class TmsDataService {
         if (onlyUpdateInfo) {
             return new TmsRootDataObjectDto(updated);
         } else {
-            List<TmsStation> tmsStations = tmsStationService.findAllNonObsoletePublicTmsStations();
+            List<TmsStation> tmsStations = tmsStationService.findAllNonObsoletePublicNonNullLotjuIdTmsStations();
             final Map<Long, List<SensorValueDto>> values =
                     roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(RoadStationType.TMS_STATION);
 

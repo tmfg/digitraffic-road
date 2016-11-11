@@ -20,7 +20,7 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
            "  AND sv.roadStationSensor.roadStationType = ?2")
     List<SensorValue> findSensorvaluesByRoadStationNaturalId(final long roadStationNaturalId, final RoadStationType roadStationType);
 
-    List<SensorValue> findByRoadStationLotjuIdInAndRoadStationType(final List<Long> tmsLotjuIds, final RoadStationType roadStationType);
+    List<SensorValue> findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(final List<Long> tmsLotjuIds, final RoadStationType roadStationType);
 
     @Query(value =
            "SELECT max(sv.updated)\n" +
