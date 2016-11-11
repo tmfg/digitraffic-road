@@ -11,14 +11,12 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -45,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import fi.livi.digitraffic.tie.AbstractIntegrationMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
@@ -57,14 +55,13 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @Transactional
-public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTest {
+public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
     private static final String REQUEST_PATH = "/Kamerakuva/";
     private static final String IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";
-    private static final String IMPORT_DIR_SYS_PROPERTY = "weathercam.importDir";
 
     @Autowired
     private CameraPresetService cameraPresetService;
@@ -92,8 +89,8 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
     public static void beforeClass() throws IOException {
         testFolder = new TemporaryFolder();
         testFolder.create();
-        System.setProperty("weathercam.importDir", testFolder.getRoot().getPath());
-        log.info("Set weathercam.importDir: " + testFolder.getRoot().getPath());
+        String path = testFolder.getRoot().getPath();
+        log.info("Created temporarry weathercam importDir: " + path);
     }
 
     @AfterClass
@@ -106,6 +103,9 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
     @Before
     public void setUpTestData() throws IOException {
+
+        cameraDataUpdateService.setWeathercamImportDir(getImportDir());
+
         int i = 5;
         while (i > 0) {
             String imageName = i + "image.jpg";
@@ -143,13 +143,13 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
         nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoleteCameraPresets();
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
-
     }
 
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
 
-        log.info("Using weathercam.importDir: " + System.getProperty("weathercam.importDir"));
+        log.info("Using weathercam.importDir: " + testFolder.getRoot().getPath());
+
         log.info("Init mock http-server for images");
         int port = wireMockRule.port();
         log.info("Mock server port: " + port);
@@ -159,8 +159,8 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
         createHttpResponseStubFor(4 + IMAGE_SUFFIX);
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
-        JmsMessageListener<Kuva> cameraJmsMessageListener =
-                new JmsMessageListener<Kuva>(Kuva.class, "cameraJmsMessageListener", lockingService, UUID.randomUUID().toString()) {
+        AbstractJMSMessageListener<Kuva> cameraJmsMessageListener =
+                new AbstractJMSMessageListener<Kuva>(Kuva.class, log) {
             @Override
             protected void handleData(List<Kuva> data) {
                 long start = System.currentTimeMillis();
@@ -193,7 +193,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1000;
+        long maxHandleTime = testBurstsLeft * 2000;
         final List<Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
@@ -228,7 +228,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
                 data.add(kuva);
                 xgcal.add(df.newDuration(1000));
-                if (data.size() >= 50) {
+                if (data.size() >= 25) {
                     break;
                 }
             }
@@ -238,7 +238,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
             sw.reset();
             sw.start();
-            Assert.assertTrue(data.size() >= 50);
+            Assert.assertTrue(data.size() >= 25);
             cameraJmsMessageListener.handleData(data);
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");
@@ -272,7 +272,7 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(presetId);
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTimeAtZone(kuva.getAika(), ZoneId.systemDefault());
+            LocalDateTime kuvaTaken = DateHelper.toLocalDateTimeAtDefaultZone(kuva.getAika());
             LocalDateTime presetPictureLastModified = preset.getPictureLastModified();
             Assert.assertEquals("Preset not updated with kuva's timestamp", kuvaTaken, presetPictureLastModified);
         }
@@ -280,9 +280,12 @@ public class CameraJmsMessageListenerTest extends AbstractIntegrationMetadataTes
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 
+    String getImportDir() {
+        return testFolder.getRoot().getPath();
+    }
+
     private byte[] readCameraDataFromDisk(String presetId) throws IOException {
-        String dir = System.getProperty("weathercam.importDir");
-        final File imageFile = new File(dir + "/" + presetId + ".jpg");
+        final File imageFile = new File(getImportDir() + "/" + presetId + ".jpg");
         return FileUtils.readFileToByteArray(imageFile);
     }
 

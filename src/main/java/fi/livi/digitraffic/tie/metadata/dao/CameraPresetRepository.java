@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,10 +12,6 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Repository
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
-
-    @EntityGraph("camera")
-    @Override
-    List<CameraPreset> findAll();
 
     List<CameraPreset> findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId();
 

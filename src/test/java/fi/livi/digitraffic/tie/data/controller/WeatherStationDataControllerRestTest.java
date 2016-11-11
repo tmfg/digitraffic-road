@@ -9,10 +9,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.RestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class WeatherStationDataControllerRestTest extends RestTest {
+public class WeatherStationDataControllerRestTest extends MetadataRestTest {
 
     @Test
     public void testWeatherDataRestApi() throws Exception {
@@ -29,7 +29,7 @@ public class WeatherStationDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.weatherStations[0].measuredLocalTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorNameOld", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].oldName", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorUnit", Matchers.isA(String.class)))
@@ -51,7 +51,7 @@ public class WeatherStationDataControllerRestTest extends RestTest {
                 .andExpect(jsonPath("$.weatherStations[0].measuredLocalTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].measuredUtc", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorNameOld", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].oldName", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorUnit", Matchers.isA(String.class)))

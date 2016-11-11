@@ -16,12 +16,11 @@ import fi.livi.digitraffic.tie.metadata.converter.MetadataTypeConverter;
 @Entity
 @DynamicUpdate
 public class MetadataUpdated {
-
     @Id
     @GenericGenerator(name = "SEQ_METAD_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_METAD_UPDATED"))
     @GeneratedValue(generator = "SEQ_METAD_UPDATED")
-    private long id;
+    private Long id;
 
     @Convert(converter = MetadataTypeConverter.class)
     private MetadataType metadataType;
@@ -40,11 +39,11 @@ public class MetadataUpdated {
         setVersion(version);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

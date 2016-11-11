@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Service
 public class RoadStationService {
+
+    private static final Logger log = LoggerFactory.getLogger(RoadStationService.class);
 
     private final RoadStationRepository roadStationRepository;
 
@@ -30,10 +34,14 @@ public class RoadStationService {
 
     @Transactional
     public RoadStation save(final RoadStation roadStation) {
-        final RoadStation value = roadStationRepository.save(roadStation);
-        roadStationRepository.flush();
-        return value;
-
+        try {
+            final RoadStation value = roadStationRepository.save(roadStation);
+            roadStationRepository.flush();
+            return value;
+        } catch (Exception e) {
+            log.error("Could not save " + roadStation);
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -55,8 +63,8 @@ public class RoadStationService {
     @Transactional(readOnly = true)
     public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
         final List<RoadStation> orphans;
-        if (RoadStationType.LAM_STATION == type) {
-            orphans = roadStationRepository.findOrphanLamRoadStations();
+        if (RoadStationType.TMS_STATION == type) {
+            orphans = roadStationRepository.findOrphanTmsRoadStations();
         } else if (RoadStationType.CAMERA_STATION == type) {
             orphans = roadStationRepository.findOrphanCameraRoadStations();
         } else if (RoadStationType.WEATHER_STATION == type) {
@@ -88,15 +96,20 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStation> findOrphanLamStationRoadStations() {
-        return roadStationRepository.findOrphanLamRoadStations();
+    public List<RoadStation> findOrphanTmsStationRoadStations() {
+        return roadStationRepository.findOrphanTmsRoadStations();
     }
 
     @Transactional
     public RoadAddress save(final RoadAddress roadAddress) {
-        final RoadAddress value = roadAddressRepository.save(roadAddress);
-        roadAddressRepository.flush();
-        return value;
+        try {
+            final RoadAddress value = roadAddressRepository.save(roadAddress);
+            roadAddressRepository.flush();
+            return value;
+        } catch (Exception e) {
+            log.error("Could not save " + roadAddress);
+            throw e;
+        }
     }
 
 }

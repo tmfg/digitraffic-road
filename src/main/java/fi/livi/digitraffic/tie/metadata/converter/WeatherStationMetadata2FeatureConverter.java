@@ -5,21 +5,27 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
+@Component
 public final class WeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
 
     private static final Log log = LogFactory.getLog( WeatherStationMetadata2FeatureConverter.class );
 
-    private WeatherStationMetadata2FeatureConverter() {}
+    @Autowired
+    public WeatherStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter) {
+        super(coordinateConverter);
+    }
 
-    public static WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final LocalDateTime lastUpdated) {
+    public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final LocalDateTime lastUpdated) {
         final WeatherStationFeatureCollection collection = new WeatherStationFeatureCollection(lastUpdated);
 
         for(final WeatherStation rws : stations) {
@@ -40,7 +46,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
      * @return
      * @throws NonPublicRoadStationException If road station is non public exception is thrown
      */
-    private static WeatherStationFeature convert(final WeatherStation rws) throws NonPublicRoadStationException {
+    private WeatherStationFeature convert(final WeatherStation rws) throws NonPublicRoadStationException {
         final WeatherStationFeature f = new WeatherStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + rws);
@@ -65,17 +71,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
         final RoadStation rs = rws.getRoadStation();
         setRoadStationProperties(properties, rs);
 
-        if (rs.getLatitude() != null && rs.getLongitude() != null) {
-            if (rs.getAltitude() != null) {
-                f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                        rs.getLatitude().longValue(),
-                                        rs.getAltitude().longValue()));
-            } else {
-                f.setGeometry(new Point(rs.getLongitude().longValue(),
-                                        rs.getLatitude().longValue()));
-            }
-            f.getGeometry().setCrs(crs);
-        }
+        setCoordinates(f, rs);
 
         return f;
     }

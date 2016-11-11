@@ -20,14 +20,14 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = WeatherStationProperties.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "presetId", "cameraId", "naturalId", "name", "cameraType" })
+@JsonPropertyOrder({ "roadStationId", "presetId", "cameraId", "naturalId", "name", "cameraType" })
 public class CameraProperties extends RoadStationProperties {
 
     @JsonIgnore // Camerapreset id
     private long id;
 
     @ApiModelProperty(value = "Camera id", position = 2)
-    @JsonProperty("id")
+    @JsonProperty(value = "id")
     private String cameraId;
 
     @ApiModelProperty(value = "Type of camera")

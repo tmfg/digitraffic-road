@@ -12,18 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractMetadataTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.service.lotju.TiesaaPerustiedotLotjuServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceMock;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
-public class WeatherStationUpdateJobTest extends AbstractMetadataTest {
+public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJobTest.class);
 
@@ -40,12 +40,12 @@ public class WeatherStationUpdateJobTest extends AbstractMetadataTest {
     private WeatherStationService weatherStationService;
 
     @Autowired
-    private TiesaaPerustiedotLotjuServiceMock tiesaaPerustiedotLotjuServiceMock;
+    private LotjuTiesaaPerustiedotServiceMock lotjuTiesaaPerustiedotServiceMock;
 
     @Test
     public void testUpdateWeatherStations() {
 
-        tiesaaPerustiedotLotjuServiceMock.initDataAndService();
+        lotjuTiesaaPerustiedotServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
         weatherStationUpdater.updateWeatherStations();
@@ -55,8 +55,8 @@ public class WeatherStationUpdateJobTest extends AbstractMetadataTest {
                 weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
 
-        // Now change lotju metadata and update lam stations (3 non obsolete stations and 1 bsolete)
-        tiesaaPerustiedotLotjuServiceMock.setStateAfterChange(true);
+        // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
+        lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
         weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
@@ -108,14 +108,14 @@ public class WeatherStationUpdateJobTest extends AbstractMetadataTest {
         assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4915);
         assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 5915);
 
-        assertEquals(before.getGeometry().getCoordinates().get(0), (Double) 383971.0);
-        assertEquals(after.getGeometry().getCoordinates().get(0), (Double) 383970.0);
+        assertEquals(before.getProperties().getLongitudeETRS89(), 383971.0, 0.01);
+        assertEquals(after.getProperties().getLongitudeETRS89(), 383970.0, 0.01);
 
-        assertEquals(before.getGeometry().getCoordinates().get(1), (Double) 6678800.0);
-        assertEquals(after.getGeometry().getCoordinates().get(1), (Double) 6678801.0);
+        assertEquals(before.getProperties().getLatitudeETRS89(), 6678800.0, 0.01);
+        assertEquals(after.getProperties().getLatitudeETRS89(), 6678801.0, 0.01);
 
-        assertEquals(before.getGeometry().getCoordinates().get(2), (Double) 0.0);
-        assertEquals(after.getGeometry().getCoordinates().get(2), (Double) 1.0);
+        assertEquals(before.getProperties().getAltitudeETRS89(), 0.0, 0.01);
+        assertEquals(after.getProperties().getAltitudeETRS89(), 1.0, 0.01);
 
         final WeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
         final WeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);

@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 @Service
 public class StaticDataStatusService {
     public enum StaticStatusType {
-        LAM("LAM_DATA_LAST_UPDATED"),
+        TMS("LAM_DATA_LAST_UPDATED"),
         ROAD_WEATHER("RWS_DATA_LAST_UPDATED"),
         ROAD_WEATHER_SENSOR("RW_SENSOR_DATA_LAST_UPDATED"),
         CAMERA_PRESET("CAMERAPRESET_DATA_LAST_UPDATED"),

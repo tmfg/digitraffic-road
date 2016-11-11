@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import fi.livi.digitraffic.tie.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 public class WeatherStationMetadataControllerRestTest extends MetadataRestTest {
@@ -28,12 +28,9 @@ public class WeatherStationMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.type", is("name")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
-//                .andExpect(jsonPath("$.features[0].properties.weatherStationType", is("ROSA")))
                 .andExpect(jsonPath("$.features[0].properties.weatherStationType", isA(String.class)))
-//                .andExpect(jsonPath("$.features[0].properties.collectionInterval", isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.roadStationId", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))

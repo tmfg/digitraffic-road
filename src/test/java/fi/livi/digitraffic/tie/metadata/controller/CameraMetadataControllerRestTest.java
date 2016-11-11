@@ -14,17 +14,17 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.KameraPerustiedotLotjuServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMock;
 
 public class CameraMetadataControllerRestTest extends MetadataRestTest {
 
     @Autowired
-    private KameraPerustiedotLotjuServiceMock kameraPerustiedotLotjuServiceMock;
+    private LotjuKameraPerustiedotServiceMock lotjuKameraPerustiedotServiceMock;
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
@@ -33,7 +33,7 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
     public void testCameraPresetMetadataRestApi() throws Exception {
 
         // initialize state
-        kameraPerustiedotLotjuServiceMock.initDataAndService();
+        lotjuKameraPerustiedotServiceMock.initDataAndService();
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraStationUpdater.updateCameras();
 
@@ -55,12 +55,11 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.type", is("name")))
-                .andExpect(jsonPath("$.features[0].geometry.crs.properties.name", is("urn:ogc:def:crs:EPSG::3067")))
                 .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
 //                .andExpect(jsonPath("$.features[0].properties.cameraType", Matchers.instanceOf(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.roadStationId", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.id", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
@@ -74,7 +73,7 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.distanceFromRoadSectionStart", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].id", Matchers.startsWith("C")))
+                .andExpect(jsonPath("$.features[0].properties.presets[0].presetId", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].cameraId", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].presetOrder", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))

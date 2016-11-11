@@ -17,7 +17,7 @@ import org.springframework.core.io.ResourceLoader;
 
 public abstract class LotjuServiceMock {
 
-    private static final Logger log = LoggerFactory.getLogger(LamMetatiedotLotjuServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuServiceMock.class);
     private final String metadataServerAddress;
     private final Class<?> metatiedotClass;
     private final QName serviceName;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,15 +28,19 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
-    private final String weathercamImportDir;
+    private String weathercamImportDir;
     private CameraPresetService cameraPresetService;
 
     @Autowired
     CameraDataUpdateService(@Value("${weathercam.importDir}")
                             final String weathercamImportDir,
                             final CameraPresetService cameraPresetService) {
-        this.weathercamImportDir = weathercamImportDir;
+        setWeathercamImportDir(weathercamImportDir);
         this.cameraPresetService = cameraPresetService;
+    }
+
+    public void setWeathercamImportDir(String weathercamImportDir) {
+        this.weathercamImportDir = weathercamImportDir;
         File dir = new File(weathercamImportDir);
         if (!dir.exists()) {
             log.info("Create weathercam import dir: " + weathercamImportDir);
@@ -47,6 +50,9 @@ public class CameraDataUpdateService {
             }
         } else {
             log.info("Weathercam import dir " + weathercamImportDir + " exists");
+        }
+        if (!dir.canWrite()) {
+            throw new IllegalStateException("Weathercam import dir: " + weathercamImportDir + " is not writeable!");
         }
     }
 
@@ -79,7 +85,7 @@ public class CameraDataUpdateService {
 
         String presetId = kuva.getNimi().substring(0, 8);
         String filename = presetId + ".jpg";
-        LocalDateTime pictureTaken = DateHelper.toLocalDateTimeAtZone(kuva.getAika(), ZoneId.systemDefault());
+        LocalDateTime pictureTaken = DateHelper.toLocalDateTimeAtDefaultZone(kuva.getAika());
         log.info("Handling kuva: " +ToStringHelpper.toString(kuva));
 
         // Update CameraPreset

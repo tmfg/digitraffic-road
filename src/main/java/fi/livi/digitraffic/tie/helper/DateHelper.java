@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -30,8 +31,12 @@ public final class DateHelper {
         return second;
     }
 
-    public static LocalDateTime toLocalDateTimeAtZone(XMLGregorianCalendar aika, ZoneId toLocalDateTimeZoneId) {
+    public static LocalDateTime toLocalDateTimeAtDefaultZone(XMLGregorianCalendar aika) {
         ZonedDateTime zonedDateTime = aika.toGregorianCalendar().toZonedDateTime();
-        return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), toLocalDateTimeZoneId).toLocalDateTime();
+        return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public static Date toDateAtDefaultZone(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

@@ -18,6 +18,7 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
 import fi.livi.digitraffic.tie.helper.DataValidyHelper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Component
@@ -29,7 +30,9 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
 
     @Autowired
     public CameraPreset2CameraDataConverter(@Value("${weathercam.baseUrl}") final
-                                            String weathercamBaseurl) {
+                                            String weathercamBaseurl,
+                                            final CoordinateConverter coordinateConverter) {
+        super(coordinateConverter);
         this.weathercamBaseurl = weathercamBaseurl;
     }
 

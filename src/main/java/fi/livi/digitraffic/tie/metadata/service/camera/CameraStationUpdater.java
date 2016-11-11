@@ -127,7 +127,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         List<RoadStation> obsoleteRoadStations = new ArrayList<>(); // obsolete presets
         final Set<Long> nonObsoleteRoadStations = new HashSet<>(); // obsolete presets
         final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> update = new ArrayList<>(); // camera presets to update
-        final List<Pair<KameraVO, EsiasentoVO>> insert = new ArrayList<>(); // new lam-stations
+        final List<Pair<KameraVO, EsiasentoVO>> insert = new ArrayList<>(); // new tms-stations
 
         int invalid = 0;
         for (final Map.Entry<String, Pair<KameraVO, EsiasentoVO>> presetIdEntrySet : presetIdToKameraAndEsiasento.entrySet()) {

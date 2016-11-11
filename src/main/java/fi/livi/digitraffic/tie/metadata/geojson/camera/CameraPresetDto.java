@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
@@ -63,7 +62,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     private String cameraId;
 
     @ApiModelProperty(value = "Camera preset id", position = 1)
-    @JsonProperty("id")
     private String presetId;
 
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")

@@ -21,7 +21,7 @@ public class FluencyClass {
 
     @JsonIgnore
     @Id
-    private long id;
+    private Long id;
 
     @JsonIgnore
     @NotNull
@@ -49,11 +49,11 @@ public class FluencyClass {
         this.code = code;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
