@@ -33,7 +33,7 @@ public class ForecastSectionDataService {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
 
         return new ForecastSectionWeatherRootDto(
-                updated.getUpdated(),
+                updated == null ? null : updated.getUpdated(),
                 forecastSections.stream().map(fs -> new ForecastSectionWeatherDataDto(fs.getNaturalId(),
                                                                                       fs.getForecastSectionWeatherList())).collect(Collectors.toList()));
     }
