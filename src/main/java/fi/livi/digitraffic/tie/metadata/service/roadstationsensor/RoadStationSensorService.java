@@ -163,8 +163,8 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValue>> findSensorvaluesListMappedByTmsLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
-        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
+    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
+        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
 
         HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
         for (SensorValue sensorValue : sensorValues) {

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -46,12 +47,12 @@ public class TmsStationService {
         return tmsStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
-                findAllNonObsoletePublicTmsStations(),
+                findAllNonObsoletePublicNonNullLotjuIdTmsStations(),
                 updated != null ? updated.getUpdated() : null);
     }
 
     @Transactional
-    public List<TmsStation> findAllNonObsoletePublicTmsStations() {
+    public List<TmsStation> findAllNonObsoletePublicNonNullLotjuIdTmsStations() {
         return tmsStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
     }
 
@@ -108,6 +109,12 @@ public class TmsStationService {
             }
         }
         return map;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, TmsStation> findAllNonObsoletePublicTmsStationsMappedByLotjuId() {
+        final List<TmsStation> all = findAllNonObsoletePublicNonNullLotjuIdTmsStations();
+        return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)

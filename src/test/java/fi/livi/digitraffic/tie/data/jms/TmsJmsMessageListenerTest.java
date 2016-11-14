@@ -103,7 +103,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllTmsStationsByMappedByLotjuId();
+        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllNonObsoletePublicTmsStationsMappedByLotjuId();
 
         AbstractJMSMessageListener<Lam> lamJmsMessageListener =
                 new AbstractJMSMessageListener<Lam>(Lam.class, log) {
@@ -134,16 +134,15 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         float arvo = rand.nextFloat() * (maxX - minX) + minX;
         log.info("Start with arvo " + arvo);
 
-
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllRoadStationSensors(RoadStationType.TMS_STATION);
+                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000;
-        final List<Lam> data = new ArrayList<>(lamsWithLotjuId.size());
+        final List<Lam> data = new ArrayList<>(100);
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
@@ -167,12 +166,12 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                     Lam.Anturit.Anturi anturi = new Lam.Anturit.Anturi();
                     anturit.add(anturi);
                     anturi.setArvo(arvo);
+                    arvo += 0.5f;
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
                 }
                 xgcal.add(df.newDuration(1000));
-                arvo += 0.1f;
 
-                if (data.size() >= 100) {
+                if (data.size() >= 100 || lamsWithLotjuId.values().size() <= data.size()) {
                     break;
                 }
             }
@@ -204,7 +203,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         // Assert sensor values are updated to db
         List<Long> lamLotjuIds = data.stream().map(Lam::getAsemaId).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
-                roadStationSensorService.findSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
+                roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
         for (Lam lam : data) {
             long asemaLotjuId = lam.getAsemaId();
