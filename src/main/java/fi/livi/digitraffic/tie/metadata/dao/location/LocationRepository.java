@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao.location;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.persistence.QueryHint;
@@ -18,4 +19,7 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     Stream<LocationJson> streamAllProjectedBy();
+
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Location> findAll();
 }

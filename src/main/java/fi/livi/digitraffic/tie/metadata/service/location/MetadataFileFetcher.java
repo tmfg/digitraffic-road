@@ -16,6 +16,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,26 +25,40 @@ import org.springframework.stereotype.Component;
 public class MetadataFileFetcher {
     private final String tmsUrl;
 
+    private static final String LATEST_FILENAME = "latest.txt";
     private static final String LOCATIONS_FILENAME = "locations.csv";
     private static final String LOCATION_TYPES_FILENAME = "TYPES.DAT";
     private static final String LOCATION_SUBTYPES_FILENAME = "SUBTYPES.DAT";
 
-    private static final String LOCATIONS_ZIPNAME = "FI_LC_noncertified_simple_1_11_30.zip";
-    private static final String LOCATION_TYPES_ZIPNAME = "FIN_LC_noncertified_1_11_30.zip";
+    private static final Logger log = LoggerFactory.getLogger(MetadataFileFetcher.class);
 
     public MetadataFileFetcher(@Value("${metadata.tms.url}") final String tmsUrl) {
         this.tmsUrl = tmsUrl;
     }
 
-    public MetadataPathCollection getFilePaths() throws IOException {
-        final Path locationsPath = getLocationsFile();
-        final Pair<Path, Path> pathPair = getTypefiles();
+    public MetadataPathCollection getFilePaths(final MetadataVersions latestVersions) throws IOException {
+        final Path locationsPath = getLocationsFile(latestVersions.getLocationsVersion());
+        final Pair<Path, Path> pathPair = getTypefiles(latestVersions.getLocationTypeVersion());
 
-        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft(), LOCATION_TYPES_ZIPNAME, LOCATIONS_ZIPNAME);
+        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft());
     }
 
-    public Path getLocationsFile() throws IOException {
-        final URL url = getLocationsZip();
+    public MetadataVersions getLatestVersions() throws MalformedURLException {
+        final URL url = getLatestUrl();
+        final LatestReader reader = new LatestReader();
+
+        try {
+            reader.read(url);
+        } catch (IOException e) {
+            log.error("error reading latest versions", e);
+        }
+
+        return reader.getLatestMetadataVersions();
+
+    }
+
+    public Path getLocationsFile(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
+        final URL url = getUrl(latestVersion.filename);
         final File destination = getLocationsZipDestination();
 
         try {
@@ -54,8 +70,8 @@ public class MetadataFileFetcher {
         }
     }
 
-    public Pair<Path, Path> getTypefiles() throws IOException {
-        final URL url = getCcLtnZip();
+    public Pair<Path, Path> getTypefiles(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
+        final URL url = getUrl(latestVersion.filename);
         final File destination = getCcLtnZipDestination();
 
         try {
@@ -123,11 +139,11 @@ public class MetadataFileFetcher {
         return File.createTempFile("cc_ltn", "zip");
     }
 
-    public URL getLocationsZip() throws MalformedURLException {
-        return new URL(tmsUrl + LOCATIONS_ZIPNAME);
+    public URL getLatestUrl() throws MalformedURLException {
+        return getUrl(LATEST_FILENAME);
     }
 
-    public URL getCcLtnZip() throws MalformedURLException {
-        return new URL(tmsUrl + LOCATION_TYPES_ZIPNAME);
+    public URL getUrl(final String filename) throws MalformedURLException {
+        return new URL(tmsUrl + filename);
     }
 }

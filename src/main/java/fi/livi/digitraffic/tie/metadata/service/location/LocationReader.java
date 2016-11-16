@@ -24,17 +24,17 @@ public class LocationReader extends AbstractReader<Location> {
         final Location location = new Location();
 
         location.setLocationCode(parseInteger(components[2]));
-        location.setRoadJunction(components[6]);
-        location.setRoadName(components[7]);
-        location.setFirstName(components[8]);
-        location.setSecondName(components[9]);
+        location.setRoadJunction(parseString(components[6]));
+        location.setRoadName(parseString(components[7]));
+        location.setFirstName(parseString(components[8]));
+        location.setSecondName(parseString(components[9]));
         location.setNegOffset(parseInteger(components[12]));
         location.setPosOffset(parseInteger(components[13]));
         location.setUrban(parseBoolean(components[14]));
         location.setWgs84Lat(parseDecimal(components[16]));
         location.setWgs84Long(parseDecimal(components[17]));
-        location.setPosDirection(components[21]);
-        location.setNegDirection(components[22]);
+        location.setPosDirection(parseString(components[21]));
+        location.setNegDirection(parseString(components[22]));
         location.setGeocode(parseGeocode(components[23]));
         location.setOrderOfPoint(parseInteger(components[24]));
 
@@ -42,9 +42,15 @@ public class LocationReader extends AbstractReader<Location> {
         location.setLinearRef(parseReference(components[11], locationMap));
         location.setLocationSubtype(parseSubtype(components[3], components[4], components[5], subtypeMap));
 
-        locationMap.put(location.getLocationCode(), location);
+        if(!locationMap.containsKey(location.getLocationCode())) {
+            locationMap.put(location.getLocationCode(), location);
+        }
 
         return location;
+    }
+
+    private String parseString(final String component) {
+        return StringUtils.defaultIfEmpty(component, null);
     }
 
     private String parseGeocode(final String component) {

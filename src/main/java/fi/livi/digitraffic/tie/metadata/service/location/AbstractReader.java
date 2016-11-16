@@ -1,8 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -39,7 +43,25 @@ public abstract class AbstractReader<T> {
     }
 
     public List<T> read(final Path path) {
-        try (final CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(path.toFile()), charset), delimeter, quote)) {
+        return read(path.toFile());
+    }
+
+    public List<T> read(final URL url) throws IOException {
+        return read(url.openStream());
+    }
+
+    public List<T> read(final File file) {
+        try {
+            return read(new FileInputStream(file));
+        } catch (final FileNotFoundException e) {
+            log.error("error reading file", e);
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<T> read(final InputStream inputStream) {
+        try (final CSVReader reader = new CSVReader(new InputStreamReader(inputStream, charset), delimeter, quote)) {
             return StreamSupport.stream(reader.spliterator(), false).skip(1)
                     .map(this::convert)
                     .filter(Objects::nonNull)

@@ -16,19 +16,11 @@ public class MetadataFileFetcherTest extends AbstractTestBase {
     @Value("${metadata.tms.url}")
     private String tmsUrl;
 
-    @Test
-    public void testLocationOk() throws IOException {
-        final MetadataFileFetcher fetcher = new MetadataFileFetcher(tmsUrl);
-
-        final Path path = fetcher.getLocationsFile();
-        Assert.assertNotNull(path);
-    }
-
     @Test(expected = FileNotFoundException.class)
     public void testLocationNotFound() throws IOException {
         final MetadataFileFetcher fetcher = new MetadataFileFetcher("http://localhost/not_found");
 
-        final Path path = fetcher.getLocationsFile();
+        final Path path = fetcher.getLocationsFile(new MetadataVersions.MetadataVersion("", ""));
         Assert.assertNotNull(path);
     }
 }

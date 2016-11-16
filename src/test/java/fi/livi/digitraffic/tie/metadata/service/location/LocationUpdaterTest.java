@@ -30,6 +30,6 @@ public class LocationUpdaterTest extends AbstractTestBase {
     public void testUpdateLocations() throws IOException, SAXException {
         final Path path = new File(getClass().getResource(CSV_FILE_NAME).getFile()).toPath();
 
-        locationUpdater.updateLocations(path, locationTypeRepository.findAll(), locationSubtypeRepository.findAll());
+        locationUpdater.updateLocations(path, locationSubtypeRepository.findAll());
     }
 }

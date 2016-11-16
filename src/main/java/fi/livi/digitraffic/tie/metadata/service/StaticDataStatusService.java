@@ -12,6 +12,7 @@ import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.location.MetadataVersions;
 
 @Service
 public class StaticDataStatusService {
@@ -74,6 +75,22 @@ public class StaticDataStatusService {
         final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
 
         return updated == null ? null : updated.getUpdated().atZone(ZoneId.systemDefault());
+    }
+
+    @Transactional(readOnly = true)
+    public MetadataVersions getCurrentMetadataVersions() {
+        final MetadataVersions metadataVersions = new MetadataVersions();
+
+        metadataVersions.addVersion(MetadataType.LOCATIONS, null, getMetadataVersion(MetadataType.LOCATIONS));
+        metadataVersions.addVersion(MetadataType.LOCATION_TYPES, null, getMetadataVersion(MetadataType.LOCATION_TYPES));
+
+        return metadataVersions;
+    }
+
+    public String getMetadataVersion(final MetadataType metadataType) {
+        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+
+        return updated == null ? null : updated.getVersion();
     }
 
 }
