@@ -14,6 +14,7 @@ import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
@@ -36,13 +37,14 @@ public class LocationService {
 
     @Transactional(readOnly = true)
     public LocationFeatureCollection findLocationsMetadata(final boolean onlyUpdateInfo) {
-        final ZonedDateTime locationUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
+        final MetadataUpdated locationsUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
+        final ZonedDateTime locationsUpdateTime = locationsUpdated.getUpdateTime();
 
         if(onlyUpdateInfo) {
-            return new LocationFeatureCollection(locationUpdateTime);
+            return new LocationFeatureCollection(locationsUpdateTime, locationsUpdated.getVersion());
         }
 
-        return new LocationFeatureCollection(locationUpdateTime,
+        return new LocationFeatureCollection(locationsUpdateTime, locationsUpdated.getVersion(),
                 locationRepository.findAllProjectedBy().stream().map(LocationFeature::new).collect(Collectors.toList())
         );
     }
@@ -55,13 +57,14 @@ public class LocationService {
     }
 
     public LocationTypesMetadata findLocationSubtypes(final boolean lastUpdated) {
-        final ZonedDateTime typesUpdateTime = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATION_TYPES);
+        final MetadataUpdated typesUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATION_TYPES);
+        final ZonedDateTime typesUpdateTime = typesUpdated.getUpdateTime();
 
         if(lastUpdated) {
-            return new LocationTypesMetadata(typesUpdateTime);
+            return new LocationTypesMetadata(typesUpdateTime, typesUpdated.getVersion());
         }
 
-        return new LocationTypesMetadata(typesUpdateTime,
+        return new LocationTypesMetadata(typesUpdateTime, typesUpdated.getVersion(),
                 locationTypeRepository.findAllProjectedBy(),
                 locationSubtypeRepository.findAllProjectedBy());
     }

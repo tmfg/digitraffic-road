@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -37,6 +39,10 @@ public class MetadataUpdated {
         setMetadataType(type);
         setUpdated(updated);
         setVersion(version);
+    }
+
+    public ZonedDateTime getUpdateTime() {
+        return updated.atZone(ZoneId.systemDefault());
     }
 
     public Long getId() {
