@@ -1,68 +1,76 @@
-package fi.livi.digitraffic.tie.metadata.dto;
+package fi.livi.digitraffic.tie.metadata.dto.location;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Value;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "locationCode", "subtypeCode", "firstName", "secondName" })
-public interface LocationJson {
-    @ApiModelProperty(value = "Unique number for each object in the database", required = true)
-    int getLocationCode();
-
+public class LocationProperties {
     @ApiModelProperty(value = "Code of location subtype", required = true)
-    @Value("#{target.locationSubtype.subtypeCode}")
-    String getSubtypeCode();
+    public final String subtypeCode;
 
     @ApiModelProperty("Roadnumber for roads. Junctionno: the numbering of exits has only just begun on the very limited Finnish motorway network. The exit numbers will be included. NOTE: the roads, segments and points are not sorted in ascending order")
-    String getRoadJunction();
+    public final String roadJunction;
 
     @ApiModelProperty("Roadname if exists, L5.0 always have road name")
-    String getRoadName();
+    public final String roadName;
 
     @ApiModelProperty(value = "For roads and segments this is the name of the starting point. For all other objects (linear (streets), area and point) this is the name of the object", required = true)
-    String getFirstName();
+    public final String firstName;
 
     @ApiModelProperty("For roads and segments this is the name of the ending point. For point locations the number of the intersecting road")
-    String getSecondName();
+    public final String secondName;
 
     @ApiModelProperty("Code of the upper order administrative area")
-    @Value("#{target.areaRef == null ? null : target.areaRef.locationCode}")
-    Integer getAreaRef();
+    public final Integer areaRef;
 
     @ApiModelProperty("For segments and point locations. Describes the code of the segment which these objects belong to. If there are no segments on the road the location code of the road is given instead")
-    @Value("#{target.linearRef == null ? null : target.linearRef.locationCode}")
-    Integer getLinearRef();
+    public final Integer linearRef;
 
     @ApiModelProperty("For segments and point locations. Segments: describes the code of previous segment on that road. For the first segment on the road this code is 0. Points: describes the code of previous point on that road. For the starting point this code is 0")
-    Integer getNegOffset();
+    public final Integer negOffset;
 
     @ApiModelProperty("For segments and point locations. Segments: describes the code of next segment on that road. For the last segment on the road this code is 0. Points: describes the code of next point on that road. For the last point this code is 0")
-    Integer getPosOffset();
+    public final Integer posOffset;
 
     @ApiModelProperty("Indicates whether a point is within the city limits (1) or not (0). NOTE: Not actively entered yet")
-    Boolean getUrban();
+    public final Boolean urban;
 
-    @ApiModelProperty("Coordinate in WGS84, for all points")
-    BigDecimal getWgs84Lat();
-
-    @ApiModelProperty("Coordinate in WGS84, for all points")
-    BigDecimal getWgs84Long();
+    @ApiModelProperty("Point coordinates (LONGITUDE, LATITUDE). Coordinates are in ETRS89 / ETRS-TM35FIN format.")
+    public final List<Double> coordinatesETRS89;
 
     @ApiModelProperty("For all L5.0 and for some roads. Text to be used when the incident has an effect only on vehicles driving in the negative direction of the road. ( e.g. Ring 1 westbound)")
-    String getNegDirection();
+    public final String negDirection;
 
     @ApiModelProperty("For all L5.0 and for some roads. Text to be used when the incident has an effect only on vehicles driving in the positive direction of the road. ( e.g. Ring 1 eastbound)")
-    String getPosDirection();
+    public final String posDirection;
 
     @ApiModelProperty("Point location according to Finnish Transport Agency’s official addressing where Locations on road network are addressed as: Road number;Road part number;Carriageway; Distance from the beginning of the road part")
-    String getGeocode();
+    public final String geocode;
 
     @ApiModelProperty("The order of point within line or segment feature")
-    String getOrderOfPoint();
+    public final String orderOfPoint;
+
+    public LocationProperties(final String subtypeCode, final String roadJunction, final String roadName, final String firstName, final String secondName,
+                              final Integer areaRef, final Integer linearRef, final Integer negOffset, final Integer posOffset, final Boolean urban,
+                              final List<Double> etrsGeometry, final String negDirection, final String posDirection,
+                              final String geocode, final String orderOfPoint) {
+        this.subtypeCode = subtypeCode;
+        this.roadJunction = roadJunction;
+        this.roadName = roadName;
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.areaRef = areaRef;
+        this.linearRef = linearRef;
+        this.negOffset = negOffset;
+        this.posOffset = posOffset;
+        this.urban = urban;
+        this.coordinatesETRS89 = etrsGeometry;
+        this.negDirection = negDirection;
+        this.posDirection = posDirection;
+        this.geocode = geocode;
+        this.orderOfPoint = orderOfPoint;
+    }
 }

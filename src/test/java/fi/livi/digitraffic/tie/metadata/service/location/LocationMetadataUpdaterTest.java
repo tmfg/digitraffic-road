@@ -7,13 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractTestBase;
 
-//@Ignore
 public class LocationMetadataUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
 
     @Test
-    @Rollback(false)
+    @Rollback(true)
     @Transactional
     public void testfindAndUpdate() {
         locationMetadataUpdater.findAndUpdate();

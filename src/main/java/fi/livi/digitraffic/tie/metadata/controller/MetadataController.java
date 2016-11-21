@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
-import fi.livi.digitraffic.tie.metadata.dto.LocationsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
+import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
@@ -45,6 +47,7 @@ public class MetadataController {
 
     public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
     public static final String LOCATIONS_PATH = "/locations";
+    public static final String LOCATION_TYPES_PATH = "/location-types";
 
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 
@@ -145,22 +148,31 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationsMetadata listLocations (
+    public LocationFeatureCollection listLocations (
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated,
-            @ApiParam("If parameter is given result will only contain location types and location subtypes.")
-            @RequestParam(value = "typesOnly", required = false, defaultValue = "false")
-            boolean typesOnly) {
+                    boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
-        return locationService.findLocationsMetadata(lastUpdated, typesOnly);
+        return locationService.findLocationsMetadata(lastUpdated);
+    }
+
+    @ApiOperation("The static information of location types and locationsubtypes")
+    @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public LocationTypesMetadata listaLocationTypes (
+            @ApiParam("If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+                    boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
+        return locationService.findLocationSubtypes(lastUpdated);
     }
 
     @ApiOperation("The static information of one location")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationsMetadata getLocation (
+    public LocationFeature getLocation (
             @PathVariable("id") final int id) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);
         return locationService.findLocation(id);

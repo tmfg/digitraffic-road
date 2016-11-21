@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dto;
+package fi.livi.digitraffic.tie.metadata.dto.location;
 
 public interface LocationSubtypeJson {
     String getSubtypeCode();

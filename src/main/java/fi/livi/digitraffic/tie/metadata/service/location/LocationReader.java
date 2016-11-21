@@ -34,8 +34,10 @@ public class LocationReader extends AbstractReader<Location> {
         location.setNegOffset(parseInteger(components[12]));
         location.setPosOffset(parseInteger(components[13]));
         location.setUrban(parseBoolean(components[14]));
-        location.setWgs84Lat(parseDecimal(components[16]));
-        location.setWgs84Long(parseDecimal(components[17]));
+        location.setWgs84Lat(parseWsg84(components[16]));
+        location.setWgs84Long(parseWsg84(components[17]));
+        location.setEtrsTm35FinX(parseEtrsTm35(components[18]));
+        location.setEtrsTm35FixY(parseEtrsTm35(components[19]));
         location.setPosDirection(parseString(components[21]));
         location.setNegDirection(parseString(components[22]));
         location.setGeocode(parseGeocode(components[23]));
@@ -83,8 +85,16 @@ public class LocationReader extends AbstractReader<Location> {
         return i == null ? null : (i == 0 ? false : true);
     }
 
-    private BigDecimal parseDecimal(final String value) {
-        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(5, BigDecimal.ROUND_HALF_UP);
+    private BigDecimal parseWsg84(final String value) {
+        return parseDecimal(value, 5);
+    }
+
+    private BigDecimal parseEtrsTm35(final String value) {
+        return parseDecimal(value, 9);
+    }
+
+    private BigDecimal parseDecimal(final String value, final int scale) {
+        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
 
     private void addLinearRef(final Location location, final String value) {

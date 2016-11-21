@@ -41,9 +41,13 @@ public class Location {
 
     @Column(name = "wgs84_lat")
     private BigDecimal wgs84Lat;
-
     @Column(name = "wgs84_long")
     private BigDecimal wgs84Long;
+
+    @Column(name = "etrs_tm35fin_x")
+    private BigDecimal etrsTm35FinX;
+    @Column(name = "etrs_tm35fin_y")
+    private BigDecimal etrsTm35FixY;
 
     private String negDirection;
     private String posDirection;
@@ -185,5 +189,21 @@ public class Location {
 
     public void setOrderOfPoint(Integer orderOfPoint) {
         this.orderOfPoint = orderOfPoint;
+    }
+
+    public BigDecimal getEtrsTm35FinX() {
+        return etrsTm35FinX;
+    }
+
+    public void setEtrsTm35FinX(BigDecimal etrsTm35FinX) {
+        this.etrsTm35FinX = etrsTm35FinX;
+    }
+
+    public BigDecimal getEtrsTm35FixY() {
+        return etrsTm35FixY;
+    }
+
+    public void setEtrsTm35FixY(BigDecimal etrsTm35FixY) {
+        this.etrsTm35FixY = etrsTm35FixY;
     }
 }
