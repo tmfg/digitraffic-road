@@ -1,20 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.io.Serializable;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Embeddable
 public class ForecastSectionCoordinatesPK implements Serializable {
 
     @Column(name = "forecast_section_id", nullable = false)
-    private long forecastSectionId;
+    private Long forecastSectionId;
 
     @Column(name = "order_number", nullable = false)
-    private long orderNumber;
+    private Long orderNumber;
 
     public long getForecastSectionId() {
         return forecastSectionId;
