@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
@@ -53,7 +54,11 @@ public class LocationService {
     public LocationFeature findLocation(final int id) {
         final LocationJson location = locationRepository.findLocationByLocationCode(id);
 
-        return location == null ? null : new LocationFeature(location);
+        if(location == null) {
+            throw new ObjectNotFoundException("Location", id);
+        }
+
+        return new LocationFeature(location);
     }
 
     public LocationTypesMetadata findLocationSubtypes(final boolean lastUpdated) {
