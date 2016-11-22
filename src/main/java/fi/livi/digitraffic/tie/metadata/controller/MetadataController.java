@@ -40,7 +40,6 @@ public class MetadataController {
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
     public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
-    public static final String TRAFFIC_DISORDERS_PATH = "/traffic-disorders";
 
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
 

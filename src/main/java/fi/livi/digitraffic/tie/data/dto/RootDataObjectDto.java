@@ -32,8 +32,8 @@ public class RootDataObjectDto {
     }
 
     @ApiModelProperty(value = "Data last updated " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    public String getDataUpdatedLocalTime() {
-        return ToStringHelpper.toString(timestamp, ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+    public ZonedDateTime getDataUpdatedLocalTime() {
+        return timestamp;
     }
 
     @ApiModelProperty(value = "Data last updated " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)

@@ -31,12 +31,25 @@ public final class DateHelper {
         return second;
     }
 
-    public static LocalDateTime toLocalDateTimeAtDefaultZone(XMLGregorianCalendar aika) {
-        ZonedDateTime zonedDateTime = aika.toGregorianCalendar().toZonedDateTime();
+    public static LocalDateTime toLocalDateTimeAtDefaultZone(XMLGregorianCalendar calendar) {
+        if (calendar == null) {
+            return null;
+        }
+        ZonedDateTime zonedDateTime = calendar.toGregorianCalendar().toZonedDateTime();
         return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    public static ZonedDateTime toZonedDateTime(XMLGregorianCalendar calendar) {
+        if (calendar == null) {
+            return null;
+        }
+        return calendar.toGregorianCalendar().toZonedDateTime();
+    }
+
     public static Date toDateAtDefaultZone(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

@@ -13,6 +13,8 @@ import progress.message.jclient.ErrorCodes;
 
 public class JMSErrorResolver {
 
+    private JMSErrorResolver() {}
+
     /**
      * Resolves JMS error code to human readable format
      * IE. code "-5" resolves to "ERR_CONNECTION_DROPPED"

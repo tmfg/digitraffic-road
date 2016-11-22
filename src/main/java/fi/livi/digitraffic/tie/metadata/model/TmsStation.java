@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.metadata.converter.CalculatorDeviceTypeConverter;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationTypeConverter;
 
 @Entity
-@Table(name = "lam_station")
+@Table(name = "LAM_STATION")
 @DynamicUpdate
 public class TmsStation {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);

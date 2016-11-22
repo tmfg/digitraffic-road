@@ -12,11 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
-@ApiModel(value = "TmsStationData", description = "TMS Station with sensor values", parent = AbstractStationWithSensorsDto.class)
 @JsonPropertyOrder( value = {"id", "measuredLocalTime", "measuredUtc", "sensorValues"})
 public abstract class AbstractStationWithSensorsDto {
 

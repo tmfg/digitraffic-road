@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Weather forecast sections")
 public class ForecastSectionsMetadata extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Weather forecast sections", required = true)
+    @ApiModelProperty(value = "Weather forecast sections")
     private final List<ForecastSection> forecastSections;
 
     public ForecastSectionsMetadata(final List<ForecastSection> forecastSections, final LocalDateTime lastUpdated) {

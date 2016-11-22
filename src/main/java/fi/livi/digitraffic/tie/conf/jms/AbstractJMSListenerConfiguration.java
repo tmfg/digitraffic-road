@@ -111,31 +111,35 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         log.info("Create JMS connection with parameters: " + jmsParameters);
 
         try {
-            QueueConnection connection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(),
+            QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(),
                     jmsParameters.getJmsPassword());
             JMSExceptionListener jmsExceptionListener =
-                    new JMSExceptionListener(connection,
+                    new JMSExceptionListener(queueConnection,
                             jmsParameters);
-            connection.setExceptionListener(jmsExceptionListener);
-            Connection sonicCon = (Connection) connection;
+            queueConnection.setExceptionListener(jmsExceptionListener);
+            Connection sonicCon = (Connection) queueConnection;
             log.info("Connection created: " + connectionFactory.toString());
             log.info("Jms connection url " + sonicCon.getBrokerURL() + ", connection fault tolerant: " + sonicCon.isFaultTolerant() +
                     ", broker urls: " + connectionFactory.getConnectionURLs());
-            ConnectionMetaData meta = connection.getMetaData();
+            ConnectionMetaData meta = queueConnection.getMetaData();
             log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
             }
 
-//            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            boolean drainScheduled = isQueueDrainedScheduled(jmsParameters.getJmsQueueKey());
+            jmsMessageListener.setDrainScheduled(drainScheduled);
+            Session session = drainScheduled ?
+                                queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE): // ACKNOWLEDGE automatically when message received
+                                queueConnection.createSession(false, progress.message.jclient.Session.SINGLE_MESSAGE_ACKNOWLEDGE); // ACKNOWLEDGE after successful handling
+
             final MessageConsumer consumer = session.createConsumer(createDestination(jmsParameters.getJmsQueueKey()));
             consumer.setMessageListener(jmsMessageListener);
 
             log.info("Connection initialized");
 
-            return connection;
+            return queueConnection;
         } catch (Exception e) {
             log.error("Connection initialization failed", e);
             closeConnectionQuietly(connection);
@@ -143,18 +147,28 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         }
     }
 
-    private void closeConnectionQuietly(QueueConnection connection) {
-        if (connection != null) {
+    private void closeConnectionQuietly(QueueConnection queueConnection) {
+        if (queueConnection != null) {
             try {
-                connection.close();
+                queueConnection.close();
             } catch (JMSException e) {
                 log.debug("Closing connection failed", e);
             }
         }
     }
 
+    /*
+     * If queue is a TOPIC then handling must be done as quickly as possible because otherwice
+     * topic will jam for all users/listeners.
+     * In case of QUEUE it is private queue and notification of handling should be sent after successful
+     * handling of message ie. after saving to db. After that it will be removed from server.
+     */
+    private boolean isQueueDrainedScheduled(String jmsQueueKey) {
+        return jmsQueueKey.startsWith("topic://");
+    }
+
     protected Destination createDestination(String jmsQueueKey) throws JMSException {
-        boolean topic = jmsQueueKey.startsWith("topic://");
+        boolean topic = isQueueDrainedScheduled(jmsQueueKey);
         String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
         return topic ? new Topic(jmsQueue) : new Queue(jmsQueue);
     }
