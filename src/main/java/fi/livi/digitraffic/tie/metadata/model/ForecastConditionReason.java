@@ -1,13 +1,19 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToOne;
+
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
@@ -52,8 +58,8 @@ public class ForecastConditionReason {
     private Boolean winterSlipperiness;
 
     @ApiModelProperty(value = "Visibility:\n" +
-                              "1 = fairly poor ( 400 m)\n" +
-                              "2 = poor ( 200 m )")
+                              "1 = fairly poor (400 m)\n" +
+                              "2 = poor (200 m)")
     private Integer visibilityCondition;
 
     @ApiModelProperty(value = "The amount of friction on the road:\n" +

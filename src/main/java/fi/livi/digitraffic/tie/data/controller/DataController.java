@@ -1,5 +1,18 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
@@ -7,16 +20,18 @@ import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjec
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.service.*;
-import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import fi.livi.digitraffic.tie.data.service.CameraDataService;
+import fi.livi.digitraffic.tie.data.service.DayDataService;
+import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.data.service.TmsDataService;
+import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
+import fi.livi.digitraffic.tie.data.service.WeatherService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 
 /*
