@@ -3,8 +3,9 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -21,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.converter.CalculatorDeviceTypeConverter;
-import fi.livi.digitraffic.tie.metadata.converter.TmsStationTypeConverter;
 
 @Entity
 @Table(name = "LAM_STATION")
@@ -68,11 +67,11 @@ public class TmsStation {
     @Column(name="DIRECTION_2_MUNICIPALITY_CODE")
     private Integer direction2MunicipalityCode;
 
-    @Convert(converter = TmsStationTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "LAM_STATION_TYPE")
     private TmsStationType tmsStationType;
 
-    @Convert(converter = CalculatorDeviceTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private CalculatorDeviceType calculatorDeviceType;
 
     @ManyToOne

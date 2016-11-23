@@ -4,8 +4,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -21,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.converter.Datex2SituationRecordTypeConverter;
-import fi.livi.digitraffic.tie.metadata.converter.Datex2SituationRecordValidyStatusEnumConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -47,7 +46,7 @@ public class Datex2SituationRecord {
     @JoinColumn(name = "DATEX2_SITUATION_ID", nullable = false)
     private Datex2Situation situation;
 
-    @Convert(converter = Datex2SituationRecordValidyStatusEnumConverter.class)
+    @Enumerated(EnumType.STRING)
     private Datex2SituationRecordValidyStatus validyStatus;
 
     @ApiModelProperty(value = "Record creation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
@@ -65,7 +64,7 @@ public class Datex2SituationRecord {
     @ApiModelProperty(value = "Record overall end " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime overallEndTime;
 
-    @Convert(converter = Datex2SituationRecordTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private Datex2SituationRecordType type;
 
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)

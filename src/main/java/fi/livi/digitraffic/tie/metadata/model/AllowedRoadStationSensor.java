@@ -3,16 +3,15 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
-
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
 
 @Entity
 @Immutable
@@ -27,7 +26,7 @@ public class AllowedRoadStationSensor implements Serializable {
     @Column(name="NATURAL_ID")
     private long naturalId;
 
-    @Convert(converter = RoadStationTypeEnumConverter.class)
+    @Enumerated(EnumType.STRING)
     @Column(name="ROAD_STATION_TYPE")
     private RoadStationType roadStationType;
 

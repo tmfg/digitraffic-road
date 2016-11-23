@@ -64,8 +64,8 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     @Query(value =
             "SELECT d.*\n" +
             "FROM datex2 d\n" +
-            "WHERE EXISTS (" +
-            "  SELECT NULL\n"+
+            "WHERE EXISTS (\n" +
+            "  SELECT NULL\n" +
             "  FROM datex2_situation situation\n" +
             "  INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
             "  WHERE situation.datex2_id = d.id\n" +

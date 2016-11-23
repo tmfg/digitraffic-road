@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -23,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -83,7 +83,7 @@ public class RoadStationSensor {
     private List<SensorValueDescription> sensorValueDescriptions;
 
     @JsonIgnore
-    @Convert(converter = RoadStationTypeEnumConverter.class)
+    @Enumerated(EnumType.STRING)
     private RoadStationType roadStationType;
 
     public Long getId() {

@@ -2,8 +2,9 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -11,8 +12,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-
-import fi.livi.digitraffic.tie.metadata.converter.MetadataTypeConverter;
 
 @Entity
 @Table(name = "METADATA_UPDATED")
@@ -25,7 +24,7 @@ public class MetadataUpdated {
     @GeneratedValue(generator = "SEQ_METAD_UPDATED")
     private Long id;
 
-    @Convert(converter = MetadataTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private MetadataType metadataType;
 
     private LocalDateTime updated;

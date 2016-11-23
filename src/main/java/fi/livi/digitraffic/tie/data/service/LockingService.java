@@ -22,7 +22,7 @@ public class LockingService {
     }
 
     @Transactional
-    public void relaseLock(final String lockName, final String callerInstanceId) {
+    public void releaseLock(final String lockName, final String callerInstanceId) {
         lockingDao.relaseLock(lockName, callerInstanceId);
     }
 

@@ -58,52 +58,59 @@ public class Datex2DataService {
 
             D2LogicalModel datex = pair.getLeft();
 
-            PayloadPublication payloadPublication = datex.getPayloadPublication();
-            datex2.setPublicationTime(DateHelper.toZonedDateTime(payloadPublication.getPublicationTime()));
+            parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
-            if (payloadPublication instanceof SituationPublication) {
-                SituationPublication situationPublication = (SituationPublication) payloadPublication;
-
-                List<Situation> situations = situationPublication.getSituation();
-                for (Situation situation : situations) {
-                    Datex2Situation d2Situation = new Datex2Situation();
-                    datex2.addSituation(d2Situation);
-
-                    d2Situation.setSituationId(situation.getId());
-                    d2Situation.setVersionTime(DateHelper.toZonedDateTime(situation.getSituationVersionTime()));
-
-                    List<SituationRecord> records = situation.getSituationRecord();
-                    for (SituationRecord record : records) {
-                        Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
-                        d2Situation.addSituationRecord(d2SituationRecord);
-
-                        d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
-
-                        // Only 1. comment seems to be valid
-                        List<Comment> pc = record.getGeneralPublicComment();
-                        if (pc != null && !pc.isEmpty()) {
-                            Comment comment = pc.get(0);
-                            MultilingualString.Values values = comment.getComment().getValues();
-                            List<SituationRecordCommentI18n> comments = joinComments(values.getValue());
-                            d2SituationRecord.setPublicComments(comments);
-                        }
-
-                        d2SituationRecord.setSituationRecordId(record.getId());
-                        d2SituationRecord.setCreationTime(DateHelper.toZonedDateTime(record.getSituationRecordCreationTime()));
-                        d2SituationRecord.setVersionTime(DateHelper.toZonedDateTime(record.getSituationRecordVersionTime()));
-                        d2SituationRecord.setObservationTime(DateHelper.toZonedDateTime(record.getSituationRecordObservationTime()));
-
-                        Validity validy = record.getValidity();
-                        d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
-                        OverallPeriod period = validy.getValidityTimeSpecification();
-                        d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTime(period.getOverallStartTime()));
-                        d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTime(period.getOverallEndTime()));
-                    }
-                }
-            } else {
-                log.error("No handling for Datex2 PayloadPublication of type " + payloadPublication.getClass());
-            }
             datex2Repository.save(datex2);
+        }
+    }
+
+    private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
+        datex2.setPublicationTime(DateHelper.toZonedDateTime(payloadPublication.getPublicationTime()));
+        if (payloadPublication instanceof SituationPublication) {
+            parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
+        } else {
+            log.error("Not implemented handling for Datex2 PayloadPublication type " + payloadPublication.getClass());
+        }
+    }
+
+    private void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
+        List<Situation> situations = situationPublication.getSituation();
+        for (Situation situation : situations) {
+            Datex2Situation d2Situation = new Datex2Situation();
+            datex2.addSituation(d2Situation);
+
+            d2Situation.setSituationId(situation.getId());
+            d2Situation.setVersionTime(DateHelper.toZonedDateTime(situation.getSituationVersionTime()));
+
+            parseAndAppendSituationRecordData(situation.getSituationRecord(), d2Situation);
+        }
+    }
+
+    private void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
+        for (SituationRecord record : situationRecords) {
+            Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
+            d2Situation.addSituationRecord(d2SituationRecord);
+            d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
+
+            // Only 1. comment seems to be valid
+            List<Comment> pc = record.getGeneralPublicComment();
+            if (pc != null && !pc.isEmpty()) {
+                Comment comment = pc.get(0);
+                MultilingualString.Values values = comment.getComment().getValues();
+                List<SituationRecordCommentI18n> comments = joinComments(values.getValue());
+                d2SituationRecord.setPublicComments(comments);
+            }
+
+            d2SituationRecord.setSituationRecordId(record.getId());
+            d2SituationRecord.setCreationTime(DateHelper.toZonedDateTime(record.getSituationRecordCreationTime()));
+            d2SituationRecord.setVersionTime(DateHelper.toZonedDateTime(record.getSituationRecordVersionTime()));
+            d2SituationRecord.setObservationTime(DateHelper.toZonedDateTime(record.getSituationRecordObservationTime()));
+
+            Validity validy = record.getValidity();
+            d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
+            OverallPeriod period = validy.getValidityTimeSpecification();
+            d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTime(period.getOverallStartTime()));
+            d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTime(period.getOverallEndTime()));
         }
     }
 
@@ -155,8 +162,13 @@ public class Datex2DataService {
 
     public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
         final LocalDateTime updated = datex2Repository.getLatestMeasurementTime();
+        List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
         return new Datex2RootDataObjectDto(
-                datex2Repository.findBySituationId(situationId),
+                datex2s,
                 updated);
+
     }
 }

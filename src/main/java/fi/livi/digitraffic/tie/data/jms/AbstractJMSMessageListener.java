@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
@@ -19,7 +20,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
@@ -35,14 +35,16 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     protected final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
+    private AtomicInteger minuteMessageCounter = new AtomicInteger(0);
     private boolean drainScheduled = true;
+
 
     public AbstractJMSMessageListener(final Class<T> typeClass,
                                       Logger log) throws JAXBException {
         this.jaxbContext = JAXBContext.newInstance(typeClass);
         this.log = log;
         this.jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        log.info("Initialized JMSMessageListener");
+        log.info(log.getName() + " JMSMessageListener initialized");
     }
 
     /**
@@ -58,8 +60,9 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
+        minuteMessageCounter.incrementAndGet();
         if (!shutdownCalled.get()) {
-            log.info("Received " + message.getClass().getSimpleName());
+//            log.info("Received " + message.getClass().getSimpleName());
             Pair<T,String> data = unmarshalMessage(message);
             if (data != null) {
                 blockingQueue.add(data);
@@ -69,7 +72,10 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
                     log.info("Handle JMS message immediately");
                     drainQueue();
                     try {
-                        message.acknowledge();
+                        if (false) {
+                            message.acknowledge();
+                        }
+                        log.info("No ack");
                     } catch (JMSException e) {
                         log.error("JMS message acknowledge failed", e);
                     }
@@ -119,8 +125,7 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     /**
      * Drain queue and calls handleData if data available.
      */
-    @Scheduled(fixedRateString = "${jms.queue.pollingIntervalMs}")
-    public void drainQueueScheduled() {
+    public void drainIfQueueScheduled() {
         if (drainScheduled) {
             drainQueue();
         }
@@ -155,5 +160,9 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
      */
     public void setDrainScheduled(boolean drainScheluled) {
         this.drainScheduled = drainScheluled;
+    }
+
+    public int getAndResetMessageCounter() {
+        return minuteMessageCounter.getAndSet(0);
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.Converter;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Converter
-public class RoadStationTypeConverter implements AttributeConverter<RoadStationType, Integer> {
+public class RoadStationTypeIntegerConverter implements AttributeConverter<RoadStationType, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(final RoadStationType attribute) {
