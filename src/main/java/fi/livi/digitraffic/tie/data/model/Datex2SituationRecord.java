@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -39,6 +40,8 @@ public class Datex2SituationRecord {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATIONRECORD")
     private Long id;
 
+    @ApiModelProperty(value = "Record id", required = true)
+    @NotNull
     private String situationRecordId;
 
     @JsonIgnore
@@ -46,27 +49,35 @@ public class Datex2SituationRecord {
     @JoinColumn(name = "DATEX2_SITUATION_ID", nullable = false)
     private Datex2Situation situation;
 
+    @ApiModelProperty(value = "Record validy status", required = true)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Datex2SituationRecordValidyStatus validyStatus;
 
-    @ApiModelProperty(value = "Record creation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Record creation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @NotNull
     private ZonedDateTime creationTime;
 
-    @ApiModelProperty(value = "Record version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Record version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @NotNull
     private ZonedDateTime versionTime;
 
     @ApiModelProperty(value = "Record observation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime observationTime;
 
-    @ApiModelProperty(value = "Record overall start " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Record overall start " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @NotNull
     private ZonedDateTime overallStartTime;
 
     @ApiModelProperty(value = "Record overall end " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime overallEndTime;
 
+    @ApiModelProperty(value = "Record type", required = true)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Datex2SituationRecordType type;
 
+    @ApiModelProperty(value = "Record comments", required = true)
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
 

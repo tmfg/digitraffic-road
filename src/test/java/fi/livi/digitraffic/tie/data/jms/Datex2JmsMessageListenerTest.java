@@ -15,7 +15,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +98,7 @@ public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
     }
 
     // Just for data importing for testing
-    @Ignore
+//    @Ignore
     @Test
     public void testImportData() throws JAXBException, DatatypeConfigurationException, IOException {
 

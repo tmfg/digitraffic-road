@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -38,18 +39,21 @@ public class Datex2 {
     @GeneratedValue(generator = "SEQ_DATEX2")
     private Long id;
 
-    @ApiModelProperty(value = "Message import " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Message import " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     @Column(name = "IMPORT_DATE")
+    @NotNull
     private ZonedDateTime importTime;
 
-    @ApiModelProperty(value = "Datex2 message")
+    @ApiModelProperty(value = "Datex2 message", required = true)
     @JsonProperty("datex2")
+    @NotNull
     private String message;
 
-    @ApiModelProperty(value = "Message publication " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Message publication " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @NotNull
     private ZonedDateTime publicationTime;
 
-    @ApiModelProperty(value = "Date2 situations")
+    @ApiModelProperty(value = "Date2 situations", required = true)
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
 

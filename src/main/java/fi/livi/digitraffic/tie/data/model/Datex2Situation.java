@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -38,6 +39,8 @@ public class Datex2Situation {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATION")
     private Long id;
 
+    @ApiModelProperty(value = "Situation id", required = true)
+    @NotNull
     private String situationId;
 
     @JsonIgnore
@@ -45,10 +48,12 @@ public class Datex2Situation {
     @JoinColumn(name = "DATEX2_ID", nullable = false)
     private Datex2 datex2;
 
+    @ApiModelProperty(value = "Situation records", required = true)
+    @NotNull
     @OneToMany(mappedBy = "situation", cascade = CascadeType.ALL)
     private List<Datex2SituationRecord> situationRecords;
 
-    @ApiModelProperty(value = "Message version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Situation version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime versionTime;
 
     public Long getId() {

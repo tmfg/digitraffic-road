@@ -29,8 +29,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 10;
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private final AtomicInteger lockAquiredCounter = new AtomicInteger(0);
-    private final AtomicInteger lockNotAquiredCounter = new AtomicInteger(0);
+    private final AtomicInteger lockAcquiredCounter = new AtomicInteger(0);
+    private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger(0);
 
     private final QueueConnectionFactory connectionFactory;
     private final LockingService lockingService;
@@ -71,10 +71,10 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
         int messagesPerMinute = getJMSMessageListener().getAndResetMessageCounter();
-        int lockedPerMinute = lockAquiredCounter.getAndSet(0);
-        int notLockedPerMinute = lockNotAquiredCounter.getAndSet(0);
+        int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
+        int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
         log.info("Received " + messagesPerMinute + " messages per minute");
-        log.info("MessageListener lock aquired " + lockedPerMinute + " and not aquired " + notLockedPerMinute + " times per minute for " + getJmsParameters().getLockInstanceName() + " (instanceId: " +
+        log.info("MessageListener lock acquired " + lockedPerMinute + " and not acquired " + notLockedPerMinute + " times per minute for " + getJmsParameters().getLockInstanceName() + " (instanceId: " +
                 getJmsParameters().getLockInstanceId() + ")");
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     /**
      * Checks if connection can be created and starts
-     * listening JMS-messages if lock is aquired for this
+     * listening JMS-messages if lock is acquired for this
      * thread
      */
     @Scheduled(fixedRateString = "${jms.connection.intervalMs}")
@@ -107,20 +107,20 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         JMSParameters jmsParameters = getJmsParameters();
         try {
 
-            // If lock can be aqiured then start listening
-            boolean lockAquired = lockingService.aquireLock(getJmsParameters().getLockInstanceName(),
+            // If lock can be acquired then start listening
+            boolean lockAcquired = lockingService.aquireLock(getJmsParameters().getLockInstanceName(),
                     getJmsParameters().getLockInstanceId(),
                     JMS_CONNECTION_LOCK_EXPIRATION_S);
-            // If aquired lock then start listening otherwice stop listening
-            if (lockAquired && !shutdownCalled.get()) {
-                lockAquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock aquired for " + jmsParameters.getLockInstanceName() +
+            // If acquired lock then start listening otherwise stop listening
+            if (lockAcquired && !shutdownCalled.get()) {
+                lockAcquiredCounter.incrementAndGet();
+                log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
                           " (instanceId: " + jmsParameters.getLockInstanceId() + ")");
                 // Calling start multiple times is safe
                 connection.start();
             } else {
-                lockNotAquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock not aquired for " + jmsParameters.getLockInstanceName() +
+                lockNotAcquiredCounter.incrementAndGet();
+                log.debug("MessageListener lock not acquired for " + jmsParameters.getLockInstanceName() +
                           " (instanceId: " + jmsParameters.getLockInstanceId() + "), another instance is holding the lock");
                 // Calling stop multiple times is safe
                 connection.stop();
