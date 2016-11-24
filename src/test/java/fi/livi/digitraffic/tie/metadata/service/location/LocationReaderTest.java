@@ -15,14 +15,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.base.AbstractTestBase;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 public class LocationReaderTest extends AbstractTestBase {
-    @Autowired
-    private LocationRepository locationRepository;
     @Autowired
     private LocationSubtypeRepository locationSubtypeRepository;
 
@@ -39,7 +36,7 @@ public class LocationReaderTest extends AbstractTestBase {
     public void emptyLocationsFile() {
         final LocationReader reader = new LocationReader(subtypeMap);
 
-        final List<Location> locations = reader.read(getPath("locations/locations_empty.csv"));
+        final List<Location> locations = reader.read(getPath("/locations/locations_empty.csv"));
         Assert.assertThat(locations, Matchers.empty());
     }
 
@@ -48,7 +45,7 @@ public class LocationReaderTest extends AbstractTestBase {
         final LocationReader reader = new LocationReader(subtypeMap);
         final LocationReader spyReader = Mockito.spy(reader);
 
-        final List<Location> locations = spyReader.read(getPath("locations/locations_illegal_geocode.csv"));
+        final List<Location> locations = spyReader.read(getPath("/locations/locations_illegal_geocode.csv"));
         Assert.assertThat(locations, Matchers.hasSize(2));
         Assert.assertThat(locations.get(0).getGeocode(), Matchers.equalTo("test"));
         Assert.assertThat(locations.get(1).getGeocode(), Matchers.isEmptyOrNullString());
@@ -60,6 +57,6 @@ public class LocationReaderTest extends AbstractTestBase {
     public void illegalSubtype() {
         final LocationReader reader = new LocationReader(subtypeMap);
 
-        reader.read(getPath("locations/locations_illegal_subtype.csv"));
+        reader.read(getPath("/locations/locations_illegal_subtype.csv"));
     }
 }

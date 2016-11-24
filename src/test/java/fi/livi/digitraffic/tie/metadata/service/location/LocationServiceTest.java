@@ -12,6 +12,6 @@ public class LocationServiceTest extends AbstractTestBase {
 
     @Test
     public void testFindLocation() {
-        Assert.assertNotNull(locationService.findLocation(12316));
+        Assert.assertNotNull(locationService.findLocation(12187));
     }
 }
