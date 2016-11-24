@@ -23,34 +23,54 @@ import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
-public abstract class AbstractJMSMessageListener<T> implements MessageListener {
+public class JMSMessageListener<T> implements MessageListener {
+
+    public interface JMSDataUpdater<T> {
+        void updateData(List<Pair<T, String>> data);
+    }
 
     private static final int MAX_NORMAL_QUEUE_SIZE = 100;
     private static final int QUEUE_SIZE_WARNING_LIMIT = 2 * MAX_NORMAL_QUEUE_SIZE;
     private static final int QUEUE_SIZE_ERROR_LIMIT = 10 * MAX_NORMAL_QUEUE_SIZE;
 
-    private final JAXBContext jaxbContext;
     private Logger log;
 
     protected final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private AtomicInteger minuteMessageCounter = new AtomicInteger(0);
-    private boolean drainScheduled = true;
 
+    private final boolean drainScheduled;
+    private final JMSDataUpdater dataUpdater;
 
-    public AbstractJMSMessageListener(final Class<T> typeClass,
-                                      Logger log) throws JAXBException {
-        this.jaxbContext = JAXBContext.newInstance(typeClass);
+    /**
+     *
+     * @param typeClass
+     * @param dataUpdater Data updater handle
+     * @param drainScheduled If true received messages will be handled only when drainQueueScheduled is called. If set to false
+     *                       messages will be handled immediately when they arrived and message sender is notified of successful receive.
+     * @param log
+     * @throws JAXBException
+     */
+    public JMSMessageListener(final Class<T> typeClass,
+                              JMSDataUpdater dataUpdater,
+                              boolean drainScheduled,
+                              Logger log) throws JAXBException {
+        this.dataUpdater = dataUpdater;
+        this.drainScheduled = drainScheduled;
         this.log = log;
-        this.jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        log.info(log.getName() + " JMSMessageListener initialized");
+        this.jaxbUnmarshaller = JAXBContext.newInstance(typeClass).createUnmarshaller();
+        log.info(log.getName() + " JMSMessageListener initialized with drainScheduled " + drainScheduled);
+    }
+
+    public boolean isDrainScheduled() {
+        return drainScheduled;
     }
 
     /**
      * Implement to handle received message data
      */
-    protected abstract void handleData(List<Pair<T,String>> data);
+//    protected abstract void handleData(List<Pair<T,String>> data);
 
     @PreDestroy
     public void onShutdown() {
@@ -68,13 +88,11 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
                 blockingQueue.add(data);
 
                 // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
-                if (!drainScheduled) {
+                if (!isDrainScheduled()) {
                     log.info("Handle JMS message immediately");
-                    drainQueue();
+                    drainQueueInternal();
                     try {
-                        if (false) {
-                            message.acknowledge();
-                        }
+                        message.acknowledge();
                         log.info("No ack");
                     } catch (JMSException e) {
                         log.error("JMS message acknowledge failed", e);
@@ -125,13 +143,13 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
     /**
      * Drain queue and calls handleData if data available.
      */
-    public void drainIfQueueScheduled() {
-        if (drainScheduled) {
-            drainQueue();
+    public void drainQueueScheduled() {
+        if (isDrainScheduled()) {
+            drainQueueInternal();
         }
     }
 
-    private void drainQueue() {
+    private void drainQueueInternal() {
         if ( !shutdownCalled.get() ) {
             long start = System.currentTimeMillis();
 
@@ -146,20 +164,11 @@ public abstract class AbstractJMSMessageListener<T> implements MessageListener {
             int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("Handle data");
-                handleData(targetList);
+                dataUpdater.updateData(targetList);
                 long took = System.currentTimeMillis() - start;
                 log.info("DrainQueue of size " + drained + " took " + took + " ms");
             }
         }
-    }
-
-    /**
-     * Default is true. If set to false messages will be handled immediately and
-     * message will be notified of successful handling.
-     * @param drainScheluled
-     */
-    public void setDrainScheduled(boolean drainScheluled) {
-        this.drainScheduled = drainScheluled;
     }
 
     public int getAndResetMessageCounter() {

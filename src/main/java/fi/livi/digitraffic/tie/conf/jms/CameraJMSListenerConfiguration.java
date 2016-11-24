@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
-import fi.livi.digitraffic.tie.data.jms.AbstractJMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -57,17 +57,19 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public AbstractJMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
-        return new AbstractJMSMessageListener<Kuva>(Kuva.class, log) {
-            @Override
-            protected void handleData(List<Pair<Kuva, String>> data) {
-                try {
-                    List<Kuva> kuvaData = data.stream().map(o -> o.getLeft()).collect(Collectors.toList());
-                    cameraDataUpdateService.updateCameraData(kuvaData);
-                } catch (SQLException e) {
-                    log.error("Error while handling Camera data", e);
-                }
+    public JMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
+        JMSMessageListener.JMSDataUpdater<Kuva> handleData = (List<Pair<Kuva, String>> data) -> {
+            try {
+                List<Kuva> kuvaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+                cameraDataUpdateService.updateCameraData(kuvaData);
+            } catch (SQLException e) {
+                log.error("Error while handling Camera data", e);
             }
         };
+
+        return new JMSMessageListener<>(Kuva.class,
+                                        handleData,
+                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        log);
     }
 }

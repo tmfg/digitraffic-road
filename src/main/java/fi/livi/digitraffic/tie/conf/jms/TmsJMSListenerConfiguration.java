@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
-import fi.livi.digitraffic.tie.data.jms.AbstractJMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
@@ -57,14 +57,15 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     }
 
     @Override
-    public AbstractJMSMessageListener<Lam> createJMSMessageListener() throws JAXBException {
-        return new AbstractJMSMessageListener<Lam>(Lam.class, log) {
-
-            @Override
-            protected void handleData(List<Pair<Lam, String>> data) {
-                List<Lam> lamData = data.stream().map(o -> o.getLeft()).collect(Collectors.toList());
-                sensorDataUpdateService.updateLamData(lamData);
-            }
+    public JMSMessageListener<Lam> createJMSMessageListener() throws JAXBException {
+        JMSMessageListener.JMSDataUpdater<Lam> handleData = (data) -> {
+            List<Lam> lamData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+            sensorDataUpdateService.updateLamData(lamData);
         };
+
+        return new JMSMessageListener<>(Lam.class,
+                                        handleData,
+                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        log);
     }
 }

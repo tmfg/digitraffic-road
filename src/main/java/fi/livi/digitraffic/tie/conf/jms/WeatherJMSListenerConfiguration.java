@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
-import fi.livi.digitraffic.tie.data.jms.AbstractJMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -57,13 +57,16 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     }
 
     @Override
-    public AbstractJMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
-        return new AbstractJMSMessageListener<Tiesaa>(Tiesaa.class, log) {
-            @Override
-            protected void handleData(List<Pair<Tiesaa, String>> data) {
-                List<Tiesaa> tiesaaData = data.stream().map(o -> o.getLeft()).collect(Collectors.toList());
-                sensorDataUpdateService.updateWeatherData(tiesaaData);
-            }
+    public JMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
+
+        JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = (data) -> {
+            List<Tiesaa> tiesaaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+            sensorDataUpdateService.updateWeatherData(tiesaaData);
         };
+
+        return new JMSMessageListener<>(Tiesaa.class,
+                                        handleData,
+                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        log);
     }
 }

@@ -4,16 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.List;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.Datex2;
@@ -35,7 +29,7 @@ import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @Transactional
-public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
+public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     
     private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerTest.class);
 
@@ -61,15 +55,11 @@ public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
         datex2Repository.deleteAll();
 
         // Create listener
-        AbstractJMSMessageListener<D2LogicalModel> datexJmsMessageListener =
-                new AbstractJMSMessageListener<D2LogicalModel>(D2LogicalModel.class, log) {
-            @Override
-            protected void handleData(List<Pair<D2LogicalModel, String>> data) {
-                datex2DataService.updateDatex2Data(data);
-            }
+        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> {
+            datex2DataService.updateDatex2Data(data);
         };
-        // Drain queue on receive
-        datexJmsMessageListener.setDrainScheduled(false);
+        JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
+                new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
         Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener);
@@ -105,14 +95,12 @@ public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
         log.info("Delete old messages");
         datex2Repository.deleteAll();
 
-        AbstractJMSMessageListener<D2LogicalModel> datexJmsMessageListener =
-                new AbstractJMSMessageListener<D2LogicalModel>(D2LogicalModel.class, log) {
-                    @Override
-                    protected void handleData(List<Pair<D2LogicalModel, String>> data) {
-                        datex2DataService.updateDatex2Data(data);
-                    }
-                };
-        datexJmsMessageListener.setDrainScheduled(false);
+        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> {
+            datex2DataService.updateDatex2Data(data);
+        };
+
+        JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
+                new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
         log.info("Read Datex2 messages from filesystem");
         Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
@@ -129,7 +117,7 @@ public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern);
     }
 
-    private void readAndSendMessages(Resource[] datex2Resources, AbstractJMSMessageListener<D2LogicalModel> lamJmsMessageListener) throws IOException {
+    private void readAndSendMessages(Resource[] datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener) throws IOException {
         log.info("Read and send " + datex2Resources.length + " Datex2 messages...");
         for (Resource datex2Resource : datex2Resources) {
             File f = datex2Resource.getFile();
@@ -141,244 +129,5 @@ public class Datex2JmsMessageListenerTest extends MetadataIntegrationTest {
                 throw e;
             }
         }
-    }
-
-    private TextMessage createTextMessage(final String content, final String filename) {
-        return new TextMessage() {
-            @Override
-            public void setText(String s) throws JMSException {
-
-            }
-
-            @Override
-            public String getText() throws JMSException {
-                return content;
-            }
-
-            @Override
-            public String getJMSMessageID() throws JMSException {
-                return filename;
-            }
-
-            @Override
-            public void setJMSMessageID(String s) throws JMSException {
-
-            }
-
-            @Override
-            public long getJMSTimestamp() throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public void setJMSTimestamp(long l) throws JMSException {
-
-            }
-
-            @Override
-            public byte[] getJMSCorrelationIDAsBytes() throws JMSException {
-                return new byte[0];
-            }
-
-            @Override
-            public void setJMSCorrelationIDAsBytes(byte[] bytes) throws JMSException {
-
-            }
-
-            @Override
-            public void setJMSCorrelationID(String s) throws JMSException {
-
-            }
-
-            @Override
-            public String getJMSCorrelationID() throws JMSException {
-                return null;
-            }
-
-            @Override
-            public Destination getJMSReplyTo() throws JMSException {
-                return null;
-            }
-
-            @Override
-            public void setJMSReplyTo(Destination destination) throws JMSException {
-
-            }
-
-            @Override
-            public Destination getJMSDestination() throws JMSException {
-                return null;
-            }
-
-            @Override
-            public void setJMSDestination(Destination destination) throws JMSException {
-
-            }
-
-            @Override
-            public int getJMSDeliveryMode() throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public void setJMSDeliveryMode(int i) throws JMSException {
-
-            }
-
-            @Override
-            public boolean getJMSRedelivered() throws JMSException {
-                return false;
-            }
-
-            @Override
-            public void setJMSRedelivered(boolean b) throws JMSException {
-
-            }
-
-            @Override
-            public String getJMSType() throws JMSException {
-                return null;
-            }
-
-            @Override
-            public void setJMSType(String s) throws JMSException {
-
-            }
-
-            @Override
-            public long getJMSExpiration() throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public void setJMSExpiration(long l) throws JMSException {
-
-            }
-
-            @Override
-            public int getJMSPriority() throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public void setJMSPriority(int i) throws JMSException {
-
-            }
-
-            @Override
-            public void clearProperties() throws JMSException {
-
-            }
-
-            @Override
-            public boolean propertyExists(String s) throws JMSException {
-                return false;
-            }
-
-            @Override
-            public boolean getBooleanProperty(String s) throws JMSException {
-                return false;
-            }
-
-            @Override
-            public byte getByteProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public short getShortProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public int getIntProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public long getLongProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public float getFloatProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public double getDoubleProperty(String s) throws JMSException {
-                return 0;
-            }
-
-            @Override
-            public String getStringProperty(String s) throws JMSException {
-                return null;
-            }
-
-            @Override
-            public Object getObjectProperty(String s) throws JMSException {
-                return null;
-            }
-
-            @Override
-            public Enumeration getPropertyNames() throws JMSException {
-                return null;
-            }
-
-            @Override
-            public void setBooleanProperty(String s, boolean b) throws JMSException {
-
-            }
-
-            @Override
-            public void setByteProperty(String s, byte b) throws JMSException {
-
-            }
-
-            @Override
-            public void setShortProperty(String s, short i) throws JMSException {
-
-            }
-
-            @Override
-            public void setIntProperty(String s, int i) throws JMSException {
-
-            }
-
-            @Override
-            public void setLongProperty(String s, long l) throws JMSException {
-
-            }
-
-            @Override
-            public void setFloatProperty(String s, float v) throws JMSException {
-
-            }
-
-            @Override
-            public void setDoubleProperty(String s, double v) throws JMSException {
-
-            }
-
-            @Override
-            public void setStringProperty(String s, String s1) throws JMSException {
-
-            }
-
-            @Override
-            public void setObjectProperty(String s, Object o) throws JMSException {
-
-            }
-
-            @Override
-            public void acknowledge() throws JMSException {
-
-            }
-
-            @Override
-            public void clearBody() throws JMSException {
-
-            }
-        };
     }
 }

@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import fi.livi.digitraffic.tie.data.jms.AbstractJMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import progress.message.jclient.Connection;
@@ -36,7 +36,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     private final LockingService lockingService;
     private final Logger log;
     private QueueConnection connection;
-    private AbstractJMSMessageListener<T> messageListener;
+    private JMSMessageListener<T> messageListener;
 
     public AbstractJMSListenerConfiguration(QueueConnectionFactory connectionFactory,
                                             final LockingService lockingService,
@@ -49,9 +49,9 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     public abstract JMSParameters getJmsParameters();
 
-    protected abstract AbstractJMSMessageListener<T> createJMSMessageListener() throws JAXBException;
+    protected abstract JMSMessageListener<T> createJMSMessageListener() throws JAXBException;
 
-    private AbstractJMSMessageListener<T> getJMSMessageListener() throws JAXBException {
+    private JMSMessageListener<T> getJMSMessageListener() throws JAXBException {
         if (messageListener == null) {
             messageListener = createJMSMessageListener();
         }
@@ -83,7 +83,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
      */
     @Scheduled(fixedRateString = "${jms.queue.pollingIntervalMs}")
     public void drainQueueScheduled() throws JAXBException {
-        getJMSMessageListener().drainIfQueueScheduled();
+        getJMSMessageListener().drainQueueScheduled();
     }
 
 
