@@ -70,8 +70,6 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
         dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
-        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
-        dto.setPresetOrder(cp.getPresetOrder());
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());
         dto.setLotjuId(cp.getLotjuId());

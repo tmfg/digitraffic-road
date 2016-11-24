@@ -75,7 +75,6 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.distanceFromRoadSectionStart", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].presetId", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].cameraId", Matchers.startsWith("C")))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].presetOrder", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].resolution", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))

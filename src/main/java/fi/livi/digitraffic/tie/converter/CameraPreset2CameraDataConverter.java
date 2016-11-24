@@ -68,7 +68,6 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
         dto.setMeasured(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());
         dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
-        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
         return dto;
     }

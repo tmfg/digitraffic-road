@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
 @ApiModel(value = "CameraPresetData", description = "Road wather station with sensor values")
-@JsonPropertyOrder( value = {"id", "presentationName", "nameOnDevice", "public", "imageUrl"})
+@JsonPropertyOrder( value = {"id", "presentationName", "public", "imageUrl"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
@@ -23,9 +23,6 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
     private String presentationName;
-
-    @ApiModelProperty(value = "Name on device (Preset name 2)")
-    private String nameOnDevice;
 
     @ApiModelProperty(value = "Image url")
     private String imageUrl;
@@ -39,14 +36,6 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
     public String getId() {
         return id;
-    }
-
-    public void setNameOnDevice(final String nameOnDevice) {
-        this.nameOnDevice = nameOnDevice;
-    }
-
-    public String getNameOnDevice() {
-        return nameOnDevice;
     }
 
     public void setPresentationName(final String presentationName) {

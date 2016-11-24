@@ -67,12 +67,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
     private String presentationName;
 
-    @ApiModelProperty(value = "Name on device (Preset name 2)")
-    private String nameOnDevice;
-
-    @ApiModelProperty(value = "Preset order")
-    private Integer presetOrder;
-
     @ApiModelProperty(value = "Is data in collection")
     private boolean inCollection;
 
@@ -142,22 +136,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return presentationName;
     }
 
-    public void setNameOnDevice(final String nameOnDevice) {
-        this.nameOnDevice = nameOnDevice;
-    }
-
-    public String getNameOnDevice() {
-        return nameOnDevice;
-    }
-
-    public void setPresetOrder(final Integer presetOrder) {
-        this.presetOrder = presetOrder;
-    }
-
-    public Integer getPresetOrder() {
-        return presetOrder;
-    }
-
     public void setInCollection(final boolean inCollection) {
         this.inCollection = inCollection;
     }
@@ -212,8 +190,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
                 .append(cameraId, that.cameraId)
                 .append(presetId, that.presetId)
                 .append(presentationName, that.presentationName)
-                .append(nameOnDevice, that.nameOnDevice)
-                .append(presetOrder, that.presetOrder)
                 .append(resolution, that.resolution)
                 .append(cameraLotjuId, that.cameraLotjuId)
                 .append(directionCode, that.directionCode)
@@ -229,8 +205,6 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
                 .append(cameraId)
                 .append(presetId)
                 .append(presentationName)
-                .append(nameOnDevice)
-                .append(presetOrder)
                 .append(inCollection)
                 .append(resolution)
                 .append(cameraLotjuId)
@@ -242,13 +216,13 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @Override
     public int compareTo(final CameraPresetDto other) {
         if ( other == null ||
-             (this.getPresetOrder() != null && other.getPresetOrder() == null)) {
-            return 1;
-        } else if (this.getPresetOrder() == null && other.getPresetOrder() != null) {
+             (this.getPresetId() != null && other.getPresetId() == null)) {
             return -1;
-        } else if (this.getPresetOrder() == null && other.getPresetOrder() == null) {
+        } else if (this.getPresetId() == null && other.getPresetId() != null) {
+            return 1;
+        } else if (this.getPresetId() == null && other.getPresetId() == null) {
             return 0;
         }
-        return this.getPresetOrder().compareTo(other.getPresetOrder());
+        return this.getPresetId().compareTo(other.getPresetId());
     }
 }

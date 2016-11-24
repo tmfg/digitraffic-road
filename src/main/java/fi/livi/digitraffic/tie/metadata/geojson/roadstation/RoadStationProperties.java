@@ -78,6 +78,8 @@ public abstract class RoadStationProperties {
     @JsonIgnore
     private LocalDateTime annualMaintenanceDate;
 
+    // Removed temporary until LOTJU data is fixed
+    @JsonIgnore
     @ApiModelProperty(value = "Location of the station")
     private String location;
 

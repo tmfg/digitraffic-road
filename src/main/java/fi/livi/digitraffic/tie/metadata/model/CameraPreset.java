@@ -56,6 +56,9 @@ public class CameraPreset {
     @Column(name="PRESET_NAME_2")
     private String presetName2;
 
+    /**
+     * Not for public use
+     */
     private Integer presetOrder;
 
     /**
