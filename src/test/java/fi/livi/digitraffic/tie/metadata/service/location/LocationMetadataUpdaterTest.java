@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -14,7 +16,7 @@ public class LocationMetadataUpdaterTest extends AbstractTestBase {
     @Test
     @Rollback(true)
     @Transactional
-    public void testfindAndUpdate() {
+    public void testfindAndUpdate() throws IOException {
         locationMetadataUpdater.findAndUpdate();
     }
 }

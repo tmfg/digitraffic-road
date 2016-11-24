@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class LocationMetadataUpdater {
         this.metadataFileFetcher = metadataFileFetcher;
     }
 
-    public void findAndUpdate() {
+    public void findAndUpdate() throws IOException {
         try {
             final MetadataVersions latestVersions = metadataFileFetcher.getLatestVersions();
             final MetadataVersions currentVersions = staticDataStatusService.getCurrentMetadataVersions();
@@ -57,6 +58,8 @@ public class LocationMetadataUpdater {
             }
         } catch(final Exception e) {
             log.error("exception when fetching locations metadata", e);
+
+            throw e;
         }
     }
 
