@@ -112,7 +112,7 @@ public class MetadataFileFetcher {
         }
     }
 
-    private ZipEntry findEntry(final ZipFile z, final String name) {
+    private static ZipEntry findEntry(final ZipFile z, final String name) {
         final Enumeration<? extends ZipEntry> entries = z.entries();
 
         // if given name is empty, return first entry
@@ -131,11 +131,11 @@ public class MetadataFileFetcher {
         return null;
     }
 
-    private File getLocationsZipDestination() throws IOException {
+    private static File getLocationsZipDestination() throws IOException {
         return File.createTempFile("locations", "zip");
     }
 
-    private File getCcLtnZipDestination() throws IOException {
+    private static File getCcLtnZipDestination() throws IOException {
         return File.createTempFile("cc_ltn", "zip");
     }
 

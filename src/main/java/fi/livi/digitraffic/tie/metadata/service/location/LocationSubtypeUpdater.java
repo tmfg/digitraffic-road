@@ -55,7 +55,7 @@ public class LocationSubtypeUpdater {
         return newTypes;
     }
 
-    private void mergeLocationSubtype(final LocationSubtype oldType, final LocationSubtype newType) {
+    private static void mergeLocationSubtype(final LocationSubtype oldType, final LocationSubtype newType) {
         BeanUtils.copyProperties(newType, oldType);
     }
 }

@@ -23,7 +23,8 @@ public class LocationReader extends AbstractReader<Location> {
         this.subtypeMap = subtypeMap;
     }
 
-    @Override protected Location convert(final String[] components) {
+    @Override
+    protected Location convert(final String[] components) {
         final Location location = new Location();
 
         location.setLocationCode(parseInteger(components[2]));
@@ -50,7 +51,7 @@ public class LocationReader extends AbstractReader<Location> {
         return location;
     }
 
-    private String parseString(final String component) {
+    private static String parseString(final String component) {
         return StringUtils.defaultIfEmpty(component, null);
     }
 
@@ -67,7 +68,7 @@ public class LocationReader extends AbstractReader<Location> {
         return component.substring(GEOCODE_FIN_CODE.length());
     }
 
-    private LocationSubtype parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
+    private static LocationSubtype parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
         final String subtypeCode = String.format("%s%s.%s", classValue, typeValue, subtypeValue);
 
         final LocationSubtype subtype = subtypeMap.get(subtypeCode);
@@ -79,21 +80,21 @@ public class LocationReader extends AbstractReader<Location> {
         return subtype;
     }
 
-    private Boolean parseBoolean(final String value) {
+    private static Boolean parseBoolean(final String value) {
         final Integer i = parseInteger(value);
 
         return i == null ? null : (i == 0 ? false : true);
     }
 
-    private BigDecimal parseWsg84(final String value) {
+    private static BigDecimal parseWsg84(final String value) {
         return parseDecimal(value, 5);
     }
 
-    private BigDecimal parseEtrsTm35(final String value) {
+    private static BigDecimal parseEtrsTm35(final String value) {
         return parseDecimal(value, 9);
     }
 
-    private BigDecimal parseDecimal(final String value, final int scale) {
+    private static BigDecimal parseDecimal(final String value, final int scale) {
         return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
 
@@ -115,7 +116,7 @@ public class LocationReader extends AbstractReader<Location> {
         }
     }
 
-    private Integer parseInteger(final String value) {
+    private static Integer parseInteger(final String value) {
         return StringUtils.isEmpty(value) ? null :
                Integer.parseInt(value);
     }

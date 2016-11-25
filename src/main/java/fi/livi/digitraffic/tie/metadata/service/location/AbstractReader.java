@@ -29,13 +29,13 @@ public abstract class AbstractReader<T> {
     protected static final char QUOTE = '\"';
 
     private final Charset charset;
-    private final char delimeter;
-    private final char quote;
+    private final char delimeterCharacter;
+    private final char quoteCharacter;
 
-    protected AbstractReader(final Charset charset, final char delimeter) {
+    protected AbstractReader(final Charset charset, final char delimeterCharacter) {
         this.charset = charset;
-        this.delimeter = delimeter;
-        this.quote = QUOTE;
+        this.delimeterCharacter = delimeterCharacter;
+        this.quoteCharacter = QUOTE;
     }
 
     protected AbstractReader() {
@@ -61,7 +61,7 @@ public abstract class AbstractReader<T> {
     }
 
     public List<T> read(final InputStream inputStream) {
-        try (final CSVReader reader = new CSVReader(new InputStreamReader(inputStream, charset), delimeter, quote)) {
+        try (final CSVReader reader = new CSVReader(new InputStreamReader(inputStream, charset), delimeterCharacter, quoteCharacter)) {
             return StreamSupport.stream(reader.spliterator(), false).skip(1)
                     .map(this::convert)
                     .filter(Objects::nonNull)

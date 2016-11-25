@@ -68,7 +68,7 @@ public class LocationMetadataUpdater {
                needUpdate(latestVersions.getLocationTypeVersion(), currentVersions.getLocationTypeVersion());
     }
 
-    private boolean needUpdate(final MetadataVersions.MetadataVersion oldVersion, final MetadataVersions.MetadataVersion newVersion) {
+    private static boolean needUpdate(final MetadataVersions.MetadataVersion oldVersion, final MetadataVersions.MetadataVersion newVersion) {
         if(!StringUtils.equals(oldVersion.version, newVersion.version)) {
             log.info(String.format("Versions differ, old versions %s, new version %s, must be updated", oldVersion, newVersion));
 

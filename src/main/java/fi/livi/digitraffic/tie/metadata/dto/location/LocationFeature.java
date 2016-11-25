@@ -35,11 +35,11 @@ public final class LocationFeature {
                 l.getGeocode(), l.getOrderOfPoint());
     }
 
-    private Point getGeometry(final LocationJson l) {
+    private static Point getGeometry(final LocationJson l) {
         return l.getWgs84Lat() == null ? null : new Point(l.getWgs84Lat().doubleValue(), l.getWgs84Long().doubleValue());
     }
 
-    private List<Double> getEtrsGeometry(final LocationJson l) {
+    private static List<Double> getEtrsGeometry(final LocationJson l) {
         return l.getEtrsTm35FinX() == null ? null : Arrays.asList(l.getEtrsTm35FinX().doubleValue(), l.getEtrsTm35FixY().doubleValue());
     }
 }
