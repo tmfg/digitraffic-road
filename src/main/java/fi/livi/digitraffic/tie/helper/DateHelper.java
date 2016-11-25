@@ -30,7 +30,10 @@ public final class DateHelper {
 
     public static ZonedDateTime toZonedDateTime(XMLGregorianCalendar calendar) {
         if (calendar != null) {
-            return calendar.toGregorianCalendar().toZonedDateTime();
+            // This way Time is formed as 1995-01-01T00:00+02:00[Europe/Helsinki]
+            //                 and not as 1995-01-01T00:00+02:00[GMT+02:00]
+            // HashCodeBuilder handles them differently
+            return ZonedDateTime.of(toLocalDateTime(calendar), ZoneId.systemDefault());
         }
         return null;
     }

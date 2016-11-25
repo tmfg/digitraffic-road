@@ -23,6 +23,9 @@ public class TmsWebSocketConfiguration {
     private ZonedDateTime lastUpdated = null;
     private final RoadStationSensorService roadStationSensorService;
 
+    int singleCounter = 0;
+    int counter = 0;
+
     @Autowired
     public TmsWebSocketConfiguration(final RoadStationSensorService roadStationSensorService) {
         this.roadStationSensorService = roadStationSensorService;
@@ -36,16 +39,25 @@ public class TmsWebSocketConfiguration {
 
     @Scheduled(fixedRateString = "${websocket.tms.pollingIntervalMs}")
     public void pollTmsData() {
+        singleCounter++;
+        counter++;
 
         List<SensorValueDto> data =
                 roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
                         lastUpdated,
                         RoadStationType.TMS_STATION);
 
-        // Single TMS Station listeners are notified every time
-        SingleTmsDataWebsocketEndpoint.sendStatus();
-        if (data.isEmpty()) {
+        // Single TMS Station listeners are notified every 10th time
+        if (singleCounter >= 10) {
+            SingleTmsDataWebsocketEndpoint.sendStatus();
+            singleCounter = 0;
+        }
+        // All TMS Stations listeners are notified every 10th empty interval
+        if (data.isEmpty() && counter >= 10) {
             TmsDataWebsocketEndpoint.sendStatus();
+            counter = 0;
+        } else if (!data.isEmpty()) {
+            counter = 0;
         }
 
         data.forEach(sensorValueDto -> {
