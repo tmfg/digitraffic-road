@@ -4,6 +4,9 @@ import static com.google.common.base.Predicates.or;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -38,6 +41,9 @@ public class SwaggerConfiguration {
     public Docket metadataApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("metadata-api")
+                .directModelSubstitute(ZonedDateTime.class, String.class)
+                .directModelSubstitute(LocalDateTime.class, String.class)
+                .directModelSubstitute(LocalDate.class, String.class)
                 .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
                 .apiInfo(metadataApiInfoService.getApiInfo())
                 .select()

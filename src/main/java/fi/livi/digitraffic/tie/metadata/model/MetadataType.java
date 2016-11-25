@@ -9,10 +9,12 @@ public enum MetadataType {
     WEATHER_STATION_SENSOR,
     LAM_ROAD_STATION_SENSOR,
     FORACAST_SECTION,
+    LOCATIONS,
+    LOCATION_TYPES
     ;
 
 
-    public static MetadataType getForRoadStationType(RoadStationType roadStationType) {
+    public static MetadataType getForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
             return LAM_ROAD_STATION_SENSOR;
         } else if (RoadStationType.WEATHER_STATION == roadStationType) {

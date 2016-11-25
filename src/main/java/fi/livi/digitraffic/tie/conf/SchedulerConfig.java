@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static fi.livi.digitraffic.tie.conf.TriggerFactoryFactory.createRepeatingTrigger;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +9,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.quartz.JobDetail;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
@@ -27,18 +29,17 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
 public class SchedulerConfig {
-
     private static final Logger log = LoggerFactory.getLogger(SchedulerConfig.class);
 
     @Bean
-    public JobFactory jobFactory(final ApplicationContext applicationContext)
-    {
+    public JobFactory jobFactory(final ApplicationContext applicationContext) {
         final AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
         jobFactory.setApplicationContext(applicationContext);
         return jobFactory;
@@ -47,22 +48,22 @@ public class SchedulerConfig {
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
                                                      final JobFactory jobFactory,
-                                                     Optional<List<Trigger>> triggerBeans) throws IOException {
-
+                                                     final Optional<List<Trigger>> triggerBeans) throws IOException {
         final SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
         factory.setOverwriteExistingJobs(true);
         factory.setDataSource(dataSource);
         factory.setJobFactory(jobFactory);
-
         factory.setQuartzProperties(quartzProperties());
 
         if (triggerBeans.isPresent()) {
-            for (Trigger triggerBean : triggerBeans.get()) {
-                log.info("Schedule trigger " + triggerBean.getJobKey());
-            }
-            factory.setTriggers(triggerBeans.get().toArray(new Trigger[0]));
+            final List<Trigger> triggers = triggerBeans.get();
+
+            triggers.stream().forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
+
+            factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
+
         return factory;
     }
 
@@ -89,23 +90,31 @@ public class SchedulerConfig {
         return createJobDetail(WeatherStationUpdateJob.class);
     }
 
+    @Bean
+    public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
-    @Bean(name = "cameraUpdateJobTrigger")
-    public SimpleTriggerFactoryBean cameraUpdateJobTrigger(@Qualifier("cameraUpdateJobDetail") final JobDetail jobDetail,
+    @Bean
+    public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
                                                            @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
-        return createTrigger(jobDetail, frequency);
+        return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
     }
 
-    @Bean(name = "tmsStationUpdateJobTrigger")
-    public SimpleTriggerFactoryBean tmsStationUpdateJobTrigger(@Qualifier("tmsStationUpdateJobDetail") final JobDetail jobDetail,
+    @Bean
+    public SimpleTriggerFactoryBean tmsStationUpdateJobTrigger(final JobDetail tmsStationUpdateJobDetail,
                                                                @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
-        return createTrigger(jobDetail, frequency);
+        return createRepeatingTrigger(tmsStationUpdateJobDetail, frequency);
     }
 
-    @Bean(name = "weatherStationUpdateJobTrigger")
-    public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(@Qualifier("weatherStationUpdateJobDetail") final JobDetail jobDetail,
+    @Bean
+    public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(final JobDetail weatherStationUpdateJobDetail,
                                                                    @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
-        return createTrigger(jobDetail, frequency);
+        return createRepeatingTrigger(weatherStationUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail,
+                                                                      @Value("${locationsMetadataUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
@@ -113,19 +122,6 @@ public class SchedulerConfig {
         factoryBean.setJobClass(jobClass);
         // job has to be durable to be stored in DB:
         factoryBean.setDurability(true);
-        return factoryBean;
-    }
-
-    private static SimpleTriggerFactoryBean createTrigger(final JobDetail jobDetail, final long pollFrequencyMs) {
-        final SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
-        factoryBean.setJobDetail(jobDetail);
-        // Delay first execution 5 seconds
-        factoryBean.setStartDelay(5000L);
-        factoryBean.setRepeatInterval(pollFrequencyMs);
-        factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-        // In case of misfire: The first misfired execution is run immediately, remaining are discarded.
-        // Next execution happens after desired interval. Effectively the first execution time is moved to current time.
-        factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
         return factoryBean;
     }
 }
