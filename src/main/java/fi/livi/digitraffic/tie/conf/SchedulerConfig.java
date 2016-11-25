@@ -49,22 +49,21 @@ public class SchedulerConfig {
     public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
                                                      final JobFactory jobFactory,
                                                      final Optional<List<Trigger>> triggerBeans) throws IOException {
-
         final SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
         factory.setOverwriteExistingJobs(true);
         factory.setDataSource(dataSource);
         factory.setJobFactory(jobFactory);
-
         factory.setQuartzProperties(quartzProperties());
 
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
 
-            triggers.stream().forEach(triggerBean -> log.info("Schedule trigger " + triggerBean.getJobKey()));
+            triggers.stream().forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
 
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
+
         return factory;
     }
 
@@ -113,8 +112,9 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail) {
-        return createRepeatingTrigger(locationMetadataUpdateJobDetail, 24 * 60 * 60 * 1000); // update once a day
+    public SimpleTriggerFactoryBean locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail,
+                                                                      @Value("${locationsMetadataUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
