@@ -93,7 +93,6 @@ public class JMSMessageListener<T> implements MessageListener {
                     drainQueueInternal();
                     try {
                         message.acknowledge();
-                        log.info("No ack");
                     } catch (JMSException e) {
                         log.error("JMS message acknowledge failed", e);
                     }
