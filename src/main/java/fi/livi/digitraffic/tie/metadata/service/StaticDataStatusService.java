@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,10 +52,10 @@ public class StaticDataStatusService {
     public void updateMetadataUpdated(final MetadataType metadataType) {
         MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
         if (updated == null) {
-            updated = new MetadataUpdated(metadataType, LocalDateTime.now());
+            updated = new MetadataUpdated(metadataType, ZonedDateTime.now());
             metadataUpdatedRepository.save(updated);
         } else {
-            updated.setUpdated(LocalDateTime.now());
+            updated.setUpdated(ZonedDateTime.now());
         }
     }
 

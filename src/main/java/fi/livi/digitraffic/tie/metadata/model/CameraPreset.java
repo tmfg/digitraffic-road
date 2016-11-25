@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -78,7 +78,7 @@ public class CameraPreset {
     private String direction;
 
     @Column(name="PIC_LAST_MODIFIED")
-    private LocalDateTime pictureLastModified;
+    private ZonedDateTime pictureLastModified;
 
     private LocalDate obsoleteDate;
 
@@ -291,11 +291,11 @@ public class CameraPreset {
         return nearestWeatherStation != null ? nearestWeatherStation.getRoadStationNaturalId() : null;
     }
 
-    public LocalDateTime getPictureLastModified() {
+    public ZonedDateTime getPictureLastModified() {
         return pictureLastModified;
     }
 
-    public void setPictureLastModified(final LocalDateTime pictureLastModified) {
+    public void setPictureLastModified(final ZonedDateTime pictureLastModified) {
         this.pictureLastModified = pictureLastModified;
     }
 

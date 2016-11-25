@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class FreeFlowSpeedService {
     public FreeFlowSpeedRootDataObjectDto listLinksPublicFreeFlowSpeeds(final boolean onlyUpdateInfo) {
 
         // TODO: where to read update info?
-        final LocalDateTime updated = LocalDateTime.now();
+        final ZonedDateTime updated = ZonedDateTime.now();
         if (onlyUpdateInfo) {
             return new FreeFlowSpeedRootDataObjectDto(updated);
         } else {
@@ -49,7 +49,7 @@ public class FreeFlowSpeedService {
             throw new ObjectNotFoundException("Link", linkId);
         }
         // TODO: where to read update info?
-        final LocalDateTime updated = LocalDateTime.now();
+        final ZonedDateTime updated = ZonedDateTime.now();
         return new FreeFlowSpeedRootDataObjectDto(
                 linkFreeFlowSpeedRepository.listAllLinkFreeFlowSpeeds(linkId),
                 Collections.emptyList(),
@@ -61,7 +61,7 @@ public class FreeFlowSpeedService {
     public FreeFlowSpeedRootDataObjectDto listTmsPublicFreeFlowSpeeds(final long roadStationNaturalId) {
 
         // TODO: where to read update info?
-        final LocalDateTime updated = LocalDateTime.now();
+        final ZonedDateTime updated = ZonedDateTime.now();
         if (!tmsStationService.tmsStationExistsWithRoadStationNaturalId(roadStationNaturalId)) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }

@@ -145,6 +145,12 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
     }
 
+    /**
+     * Send some data bursts to jms handler and test performance of database updates.
+     * @throws IOException
+     * @throws JAXBException
+     * @throws DatatypeConfigurationException
+     */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
 
@@ -272,8 +278,8 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(presetId);
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTimeAtDefaultZone(kuva.getAika());
-            LocalDateTime presetPictureLastModified = preset.getPictureLastModified();
+            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAika());
+            LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
             Assert.assertEquals("Preset not updated with kuva's timestamp", kuvaTaken, presetPictureLastModified);
         }
 

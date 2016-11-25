@@ -46,13 +46,11 @@ public class DayDataControllerRestTest extends MetadataRestTest {
                             DataController.FLUENCY_HISTORY_DAY_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.links[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.links[0].linkMeasurements", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
@@ -73,13 +71,11 @@ public class DayDataControllerRestTest extends MetadataRestTest {
                 DataController.FLUENCY_HISTORY_DAY_DATA_PATH + "/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.links[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.links[0].linkMeasurements", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
@@ -97,22 +93,18 @@ public class DayDataControllerRestTest extends MetadataRestTest {
                 DataController.FLUENCY_HISTORY_DATA_PATH + "/4?year=" + yesterday.getYear() + "&month=" + yesterday.getMonthValue()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0]", Matchers.notNullValue())) //
                 .andExpect(jsonPath("$.links[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.links[0].measuredUtc", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.links[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.links[0].linkMeasurements", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0]", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].fluencyClass", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].minute", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].averageSpeed", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.links[0].linkMeasurements[0].medianTravelTime", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.links[0].linkMeasurements[0].measuredLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.links[0].linkMeasurements[0].measuredUtc", Matchers.notNullValue())) //
-
+                .andExpect(jsonPath("$.links[0].linkMeasurements[0].measuredTime", Matchers.notNullValue())) //
         ;
     }
 

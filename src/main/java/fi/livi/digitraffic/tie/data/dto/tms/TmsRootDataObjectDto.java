@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto.tms;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
 @ApiModel(value = "TmsData", description = "Latest measurement data from TMS Stations", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "tmsStations"})
+@JsonPropertyOrder({ "dataUpdatedTime", "tmsStations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TmsRootDataObjectDto extends RootDataObjectDto {
 
@@ -23,12 +23,12 @@ public class TmsRootDataObjectDto extends RootDataObjectDto {
     @JsonProperty(value = "tmsStations")
     private final List<TmsStationDto> tmsStations;
 
-    public TmsRootDataObjectDto(final List<TmsStationDto> tmsStations, final LocalDateTime updated) {
+    public TmsRootDataObjectDto(final List<TmsStationDto> tmsStations, final ZonedDateTime updated) {
         super(updated);
         this.tmsStations = tmsStations;
     }
 
-    public TmsRootDataObjectDto(final LocalDateTime updated) {
+    public TmsRootDataObjectDto(final ZonedDateTime updated) {
         this(null, updated);
     }
 

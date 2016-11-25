@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.roadstation;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,14 +69,14 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Country where station is located")
     private String country;
 
-    @JsonIgnore
-    private LocalDateTime startDate;
+    @ApiModelProperty(value = "Station established " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    private ZonedDateTime startTime;
 
-    @JsonIgnore
-    private LocalDateTime repairMaintenanceDate;
+    @ApiModelProperty(value = "Repair maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    private ZonedDateTime repairMaintenanceTime;
 
-    @JsonIgnore
-    private LocalDateTime annualMaintenanceDate;
+    @ApiModelProperty(value = "Annual maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    private ZonedDateTime annualMaintenanceTime;
 
     // Removed temporary until LOTJU data is fixed
     @JsonIgnore
@@ -200,12 +200,12 @@ public abstract class RoadStationProperties {
         return country;
     }
 
-    public void setStartDate(final LocalDateTime startDate) {
-        this.startDate = startDate;
+    public void setStartTime(final ZonedDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public ZonedDateTime getStartTime() {
+        return startTime;
     }
 
     public void setLocation(final String location) {
@@ -224,50 +224,20 @@ public abstract class RoadStationProperties {
         return state;
     }
 
-    public void setRepairMaintenanceDate(final LocalDateTime repairMaintenanceDate) {
-        this.repairMaintenanceDate = repairMaintenanceDate;
+    public void setRepairMaintenanceTime(final ZonedDateTime repairMaintenanceTime) {
+        this.repairMaintenanceTime = repairMaintenanceTime;
     }
 
-    public LocalDateTime getRepairMaintenanceDate() {
-        return repairMaintenanceDate;
+    public ZonedDateTime getRepairMaintenanceTime() {
+        return repairMaintenanceTime;
     }
 
-    public void setAnnualMaintenanceDate(final LocalDateTime annualMaintenanceDate) {
-        this.annualMaintenanceDate = annualMaintenanceDate;
+    public void setAnnualMaintenanceTime(final ZonedDateTime annualMaintenanceTime) {
+        this.annualMaintenanceTime = annualMaintenanceTime;
     }
 
-    public LocalDateTime getAnnualMaintenanceDate() {
-        return annualMaintenanceDate;
-    }
-
-    @ApiModelProperty(value = "Station established " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
-    public String getStartLocalTime() {
-        return ToStringHelpper.toString(getStartDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Station established " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
-    public String getStartUtc() {
-        return ToStringHelpper.toString(getStartDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
-    }
-
-    @ApiModelProperty(value = "Repair maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
-    public String getRepairMaintenanceLocalTime() {
-        return ToStringHelpper.toString(getRepairMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Repair maintenance " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
-    public String getRepairMaintenanceUtc() {
-        return ToStringHelpper.toString(getRepairMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
-    }
-
-    @ApiModelProperty(value = "Annual maintenance " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
-    public String getAnnualMaintenanceLocalTime() {
-        return ToStringHelpper.toString(getAnnualMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Annual maintenance " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
-    public String getAnnualMaintenanceUtc() {
-        return ToStringHelpper.toString(getAnnualMaintenanceDate(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    public ZonedDateTime getAnnualMaintenanceTime() {
+        return annualMaintenanceTime;
     }
 
     @Override
@@ -294,11 +264,11 @@ public abstract class RoadStationProperties {
                 .append(roadAddress, that.roadAddress)
                 .append(liviId, that.liviId)
                 .append(country, that.country)
-                .append(startDate, that.startDate)
+                .append(startTime, that.startTime)
                 .append(location, that.location)
                 .append(state, that.state)
-                .append(repairMaintenanceDate, that.repairMaintenanceDate)
-                .append(annualMaintenanceDate, that.annualMaintenanceDate)
+                .append(repairMaintenanceTime, that.repairMaintenanceTime)
+                .append(annualMaintenanceTime, that.annualMaintenanceTime)
                 .append(coordinatesETRS89, that.coordinatesETRS89)
                 .isEquals();
     }
@@ -319,11 +289,11 @@ public abstract class RoadStationProperties {
                 .append(roadAddress)
                 .append(liviId)
                 .append(country)
-                .append(startDate)
+                .append(startTime)
                 .append(location)
                 .append(state)
-                .append(repairMaintenanceDate)
-                .append(annualMaintenanceDate)
+                .append(repairMaintenanceTime)
+                .append(annualMaintenanceTime)
                 .append(coordinatesETRS89)
                 .toHashCode();
     }

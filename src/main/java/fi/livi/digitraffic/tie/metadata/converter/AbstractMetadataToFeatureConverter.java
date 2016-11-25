@@ -43,9 +43,9 @@ public class AbstractMetadataToFeatureConverter {
 
         properties.setLiviId(roadStation.getLiviId());
         properties.setCountry(roadStation.getCountry());
-        properties.setStartDate(roadStation.getStartDate());
-        properties.setRepairMaintenanceDate(roadStation.getRepairMaintenanceDate());
-        properties.setAnnualMaintenanceDate(roadStation.getAnnualMaintenanceDate());
+        properties.setStartTime(roadStation.getStartDate());
+        properties.setRepairMaintenanceTime(roadStation.getRepairMaintenanceDate());
+        properties.setAnnualMaintenanceTime(roadStation.getAnnualMaintenanceDate());
         properties.setLocation(roadStation.getLocation());
         properties.setState(roadStation.getState());
         properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));

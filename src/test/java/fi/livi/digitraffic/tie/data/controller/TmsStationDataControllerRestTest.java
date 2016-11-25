@@ -21,14 +21,10 @@ public class TmsStationDataControllerRestTest extends MetadataRestTest {
                             DataController.TMS_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-
-                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.tmsStations[0].measuredUtc", Matchers.isA(String.class)))
-
+                .andExpect(jsonPath("$.tmsStations[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
@@ -42,14 +38,10 @@ public class TmsStationDataControllerRestTest extends MetadataRestTest {
                 DataController.TMS_DATA_PATH + "/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-
-                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsStations[0].measuredLocalTime", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.tmsStations[0].measuredUtc", Matchers.isA(String.class)))
-
+                .andExpect(jsonPath("$.tmsStations[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))

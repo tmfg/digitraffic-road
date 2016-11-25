@@ -27,42 +27,42 @@ public class LockingDaoTest extends MetadataIntegrationTest {
 
     @Before
     public void beforeTest() {
-        lockingDao.relaseLock(LOCK_NAME_1, INSTANCE_ID_1);
-        lockingDao.relaseLock(LOCK_NAME_2, INSTANCE_ID_1);
-        lockingDao.relaseLock(LOCK_NAME_1, INSTANCE_ID_2);
-        lockingDao.relaseLock(LOCK_NAME_2, INSTANCE_ID_2);
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
+        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_1);
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_2);
+        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_2);
     }
 
     @After
     public void afterTest() {
-        lockingDao.relaseLock(LOCK_NAME_1, INSTANCE_ID_1);
-        lockingDao.relaseLock(LOCK_NAME_2, INSTANCE_ID_1);
-        lockingDao.relaseLock(LOCK_NAME_1, INSTANCE_ID_2);
-        lockingDao.relaseLock(LOCK_NAME_2, INSTANCE_ID_2);
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
+        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_1);
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_2);
+        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_2);
     }
 
     @Test
     public void testLockingAfterExpiration() {
 
-        // Aguire 1. lock
-        boolean locked1 = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
+        // Acquire 1. lock
+        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
         long locked1Time = System.currentTimeMillis();
         Assert.assertTrue(locked1);
 
-        // Another lock can be aquired
-        boolean locked2 = lockingDao.aquireLock(LOCK_NAME_2, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        // Another lock can be acquired
+        boolean locked2 = lockingDao.acquireLock(LOCK_NAME_2, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertTrue(locked2);
 
-        // Try to aguire 1. lock again
-        boolean locked1Second = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        // Try to acquire 1. lock again
+        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertFalse(locked1Second);
 
         while (!locked1Second) {
-            locked1Second = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+            locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
             long now = System.currentTimeMillis();
-            log.info("LOCK_NAME_1 aquired: " + locked1Second + ", time from locking " +  (double)(now-locked1Time)/1000.0 + " seconds" );
+            log.info("LOCK_NAME_1 acquired: " + locked1Second + ", time from locking " +  (double)(now-locked1Time)/1000.0 + " seconds" );
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {
-                Assert.assertFalse("Lock aquired before expiration", locked1Second);
+                Assert.assertFalse("Lock acquired before expiration", locked1Second);
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
                 Assert.assertTrue("Failed to lock after expiration", locked1Second);
             }
@@ -77,19 +77,19 @@ public class LockingDaoTest extends MetadataIntegrationTest {
     @Test
     public void testLockingAndRelasing() {
 
-        // Aguire 1. lock
-        boolean locked1 = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
+        // Acquire 1. lock
+        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
         Assert.assertTrue(locked1);
 
-        // Try to aguire 1. lock again
-        boolean locked1Second = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        // Try to acquire 1. lock again
+        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertFalse(locked1Second);
 
-        // relase lock
-        lockingDao.relaseLock(LOCK_NAME_1, INSTANCE_ID_1);
+        // release lock
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
 
-        // Try to aguire 1. lock again
-        boolean locked1Third = lockingDao.aquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        // Try to acquire 1. lock again
+        boolean locked1Third = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertTrue(locked1Third);
     }
 }

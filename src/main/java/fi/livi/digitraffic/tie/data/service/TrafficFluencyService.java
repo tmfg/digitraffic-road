@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @Service
 public class TrafficFluencyService {
@@ -34,7 +35,7 @@ public class TrafficFluencyService {
     @Transactional(readOnly = true)
     public TrafficFluencyRootDataObjectDto listCurrentTrafficFluencyData(final boolean onlyUpdateInfo) {
 
-        LocalDateTime updated = trafficFluencyRepository.getLatestMeasurementTime();
+        ZonedDateTime updated = DateHelper.toZonedDateTime(trafficFluencyRepository.getLatestMeasurementTime());
 
         if (onlyUpdateInfo) {
             return new TrafficFluencyRootDataObjectDto(updated);
@@ -57,7 +58,7 @@ public class TrafficFluencyService {
             throw new ObjectNotFoundException("Link", linkId);
         }
 
-        LocalDateTime updated = trafficFluencyRepository.getLatestMeasurementTime();
+        ZonedDateTime updated = DateHelper.toZonedDateTime(trafficFluencyRepository.getLatestMeasurementTime());
 
         final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(linkId);
 

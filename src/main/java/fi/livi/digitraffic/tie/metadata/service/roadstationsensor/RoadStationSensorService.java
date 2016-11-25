@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -128,10 +128,11 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public LocalDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
-        return roadStationSensorValueDtoRepository.getLatestMeasurementTime(
-                roadStationType.getTypeNumber(),
-                sensorValueTimeLimitInMins.get(roadStationType));
+    public ZonedDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
+        return DateHelper.toZonedDateTime(
+                roadStationSensorValueDtoRepository.getLatestMeasurementTime(
+                        roadStationType.getTypeNumber(),
+                        sensorValueTimeLimitInMins.get(roadStationType)));
     }
 
     @Transactional(readOnly = true)
@@ -180,14 +181,14 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final LocalDateTime updatedAfter, final RoadStationType roadStationType) {
+    public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
                 roadStationType.getTypeNumber(),
-                DateHelper.toDateAtDefaultZone(updatedAfter));
+                DateHelper.toDate(updatedAfter));
     }
 
     @Transactional(readOnly = true)
-    public LocalDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
-        return sensorValueRepository.getLastUpdated(roadStationType);
+    public ZonedDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
+        return DateHelper.toZonedDateTime(sensorValueRepository.getLastUpdated(roadStationType));
     }
 }

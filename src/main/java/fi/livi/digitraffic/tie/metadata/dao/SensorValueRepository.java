@@ -25,8 +25,6 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
     @Query(value =
            "SELECT max(sv.updated)\n" +
            "FROM SensorValue sv\n" +
-           "WHERE sv.roadStation.roadStationType = ?1",
-           nativeQuery = false)
+           "WHERE sv.roadStation.roadStationType = ?1")
     LocalDateTime getLastUpdated(final RoadStationType roadStationType);
-
 }

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final LocalDateTime lastUpdated) {
+    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final ZonedDateTime lastUpdated) {
         final CameraStationFeatureCollection collection = new CameraStationFeatureCollection(lastUpdated);
 
         // Cameras mapped with cameraId

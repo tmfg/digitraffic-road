@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -28,13 +28,13 @@ public class MetadataUpdated {
     @Convert(converter = MetadataTypeConverter.class)
     private MetadataType metadataType;
 
-    private LocalDateTime updated;
+    private ZonedDateTime updated;
 
     private MetadataUpdated() {
         // Empty for repository
     }
 
-    public MetadataUpdated(MetadataType type, LocalDateTime updated) {
+    public MetadataUpdated(MetadataType type, ZonedDateTime updated) {
         setMetadataType(type);
         setUpdated(updated);
     }
@@ -55,11 +55,11 @@ public class MetadataUpdated {
         this.metadataType = metadataType;
     }
 
-    public LocalDateTime getUpdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(LocalDateTime updated) {
+    public void setUpdated(ZonedDateTime updated) {
         this.updated = updated;
     }
 }

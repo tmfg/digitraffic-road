@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @Configuration
 public class TmsWebSocketConfiguration {
 
-    private LocalDateTime lastUpdated = null;
+    private ZonedDateTime lastUpdated = null;
     private final RoadStationSensorService roadStationSensorService;
 
     @Autowired
@@ -30,7 +30,7 @@ public class TmsWebSocketConfiguration {
         lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
 
         if (lastUpdated == null) {
-            lastUpdated = LocalDateTime.now();
+            lastUpdated = ZonedDateTime.now();
         }
     }
 
@@ -49,7 +49,7 @@ public class TmsWebSocketConfiguration {
         }
 
         data.forEach(sensorValueDto -> {
-            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdated());
+            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdatedTime());
             final TmsMessage message = new TmsMessage(sensorValueDto);
             TmsDataWebsocketEndpoint.sendMessage(message);
             SingleTmsDataWebsocketEndpoint.sendMessage(message);
