@@ -6,12 +6,14 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractTestBase;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 
+@Rollback
 public class LocationUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationUpdater locationUpdater;
@@ -19,10 +21,17 @@ public class LocationUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationSubtypeRepository locationSubtypeRepository;
 
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional(readOnly = true)
+    public void unknownSubtype() {
+        final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_unknown_subtype.csv"), locationSubtypeRepository.findAll());
+        Assert.assertThat(locations, Matchers.not(Matchers.empty()));
+    }
+
     @Test
     @Transactional(readOnly = true)
     public void ok() {
-        final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/FI_LC_noncertified_simple_1_11_30.csv"), locationSubtypeRepository.findAll());
+        final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_ok.csv"), locationSubtypeRepository.findAll());
         Assert.assertThat(locations, Matchers.not(Matchers.empty()));
     }
 
