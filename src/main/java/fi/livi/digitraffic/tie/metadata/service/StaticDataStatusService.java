@@ -58,7 +58,7 @@ public class StaticDataStatusService {
         if (updated == null) {
             metadataUpdatedRepository.save(new MetadataUpdated(metadataType, ZonedDateTime.now(), version));
         } else {
-            updated.setUpdated(ZonedDateTime.now());
+            updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
         }
     }

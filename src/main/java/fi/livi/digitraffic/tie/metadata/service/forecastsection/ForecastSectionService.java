@@ -38,6 +38,6 @@ public class ForecastSectionService {
                 onlyUpdateInfo ?
                     null :
                     findAllForecastSections(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 }

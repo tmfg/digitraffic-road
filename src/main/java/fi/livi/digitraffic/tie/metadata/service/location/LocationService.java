@@ -39,7 +39,7 @@ public class LocationService {
     @Transactional(readOnly = true)
     public LocationFeatureCollection findLocationsMetadata(final boolean onlyUpdateInfo) {
         final MetadataUpdated locationsUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
-        final ZonedDateTime locationsUpdateTime = locationsUpdated.getUpdateTime();
+        final ZonedDateTime locationsUpdateTime = locationsUpdated.getUpdatedTime();
 
         if(onlyUpdateInfo) {
             return new LocationFeatureCollection(locationsUpdateTime, locationsUpdated.getVersion());
@@ -63,7 +63,7 @@ public class LocationService {
 
     public LocationTypesMetadata findLocationSubtypes(final boolean lastUpdated) {
         final MetadataUpdated typesUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATION_TYPES);
-        final ZonedDateTime typesUpdateTime = typesUpdated.getUpdateTime();
+        final ZonedDateTime typesUpdateTime = typesUpdated.getUpdatedTime();
 
         if(lastUpdated) {
             return new LocationTypesMetadata(typesUpdateTime, typesUpdated.getVersion());

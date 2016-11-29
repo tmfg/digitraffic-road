@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.ZonedDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,8 @@ public class MetadataUpdated {
     @Convert(converter = MetadataTypeConverter.class)
     private MetadataType metadataType;
 
-    private ZonedDateTime updated;
+    @Column(name = "UPDATED")
+    private ZonedDateTime updatedTime;
 
     private String version;
 
@@ -33,9 +35,9 @@ public class MetadataUpdated {
         // Empty for repository
     }
 
-    public MetadataUpdated(final MetadataType type, final ZonedDateTime updated, final String version) {
+    public MetadataUpdated(final MetadataType type, final ZonedDateTime updatedTime, final String version) {
         setMetadataType(type);
-        setUpdated(updated);
+        setUpdatedTime(updatedTime);
         setVersion(version);
     }
 
@@ -55,12 +57,12 @@ public class MetadataUpdated {
         this.metadataType = metadataType;
     }
 
-    public ZonedDateTime getUpdated() {
-        return updated;
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdated(ZonedDateTime updated) {
-        this.updated = updated;
+    public void setUpdatedTime(ZonedDateTime updated) {
+        this.updatedTime = updated;
     }
 
     public String getVersion() {
@@ -70,4 +72,5 @@ public class MetadataUpdated {
     public void setVersion(String version) {
         this.version = version;
     }
+
 }

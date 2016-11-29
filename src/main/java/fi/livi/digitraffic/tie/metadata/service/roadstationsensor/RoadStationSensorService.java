@@ -97,7 +97,7 @@ public class RoadStationSensorService {
                 !onlyUpdateInfo ?
                     findAllNonObsoleteRoadStationSensors(roadStationType) :
                     Collections.emptyList(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 
     @Transactional(readOnly = true)
