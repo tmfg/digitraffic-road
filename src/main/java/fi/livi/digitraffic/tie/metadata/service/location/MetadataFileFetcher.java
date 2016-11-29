@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -46,6 +47,8 @@ public class MetadataFileFetcher {
     public MetadataVersions getLatestVersions() throws MalformedURLException {
         final URL url = getLatestUrl();
         final LatestReader reader = new LatestReader();
+
+        log.info("reading latest from {}", url);
 
         try {
             reader.read(url);
@@ -100,7 +103,7 @@ public class MetadataFileFetcher {
 
     private Path getFileFromZip(final File zipfile, final String entryName, final String destinationName) throws IOException {
         try(final ZipFile z = new ZipFile(zipfile)) {
-            final File entryDestination = new File(destinationName);
+            final File entryDestination = Files.createTempFile(destinationName, null).toFile();
             final ZipEntry e = findEntry(z, entryName);
             final InputStream is = z.getInputStream(e);
             final OutputStream os = new FileOutputStream(entryDestination);
@@ -132,11 +135,11 @@ public class MetadataFileFetcher {
     }
 
     private static File getLocationsZipDestination() throws IOException {
-        return File.createTempFile("locations", "zip");
+        return Files.createTempFile("locations", "zip").toFile();
     }
 
     private static File getCcLtnZipDestination() throws IOException {
-        return File.createTempFile("cc_ltn", "zip");
+        return Files.createTempFile("cc_ltn", "zip").toFile();
     }
 
     public URL getLatestUrl() throws MalformedURLException {
