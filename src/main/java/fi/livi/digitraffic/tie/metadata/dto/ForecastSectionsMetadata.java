@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
@@ -13,7 +13,7 @@ public class ForecastSectionsMetadata extends RootDataObjectDto {
     @ApiModelProperty(value = "Weather forecast sections", required = true)
     public final List<ForecastSection> forecastSections;
 
-    public ForecastSectionsMetadata(final List<ForecastSection> forecastSections, final LocalDateTime lastUpdated) {
+    public ForecastSectionsMetadata(final List<ForecastSection> forecastSections, final ZonedDateTime lastUpdated) {
         super(lastUpdated);
         this.forecastSections = forecastSections;
     }

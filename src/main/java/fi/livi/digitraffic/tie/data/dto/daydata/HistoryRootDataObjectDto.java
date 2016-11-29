@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto.daydata;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
 @ApiModel(value = "HistoryData", description = "Average median data calculated for the previous day", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "links"})
+@JsonPropertyOrder({ "dataUpdatedTime", "links"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HistoryRootDataObjectDto extends RootDataObjectDto {
 
@@ -22,12 +22,12 @@ public class HistoryRootDataObjectDto extends RootDataObjectDto {
     private final List<LinkDataDto> links;
 
     public HistoryRootDataObjectDto(final List<LinkDataDto> links,
-                                    final LocalDateTime updated) {
+                                    final ZonedDateTime updated) {
         super(updated);
         this.links = links;
     }
 
-    public HistoryRootDataObjectDto(final LocalDateTime updated) {
+    public HistoryRootDataObjectDto(final ZonedDateTime updated) {
         super(updated);
         this.links = null;
     }

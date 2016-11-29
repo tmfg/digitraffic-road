@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -25,7 +25,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
         super(coordinateConverter);
     }
 
-    public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final LocalDateTime lastUpdated) {
+    public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated) {
         final WeatherStationFeatureCollection collection = new WeatherStationFeatureCollection(lastUpdated);
 
         for(final WeatherStation rws : stations) {

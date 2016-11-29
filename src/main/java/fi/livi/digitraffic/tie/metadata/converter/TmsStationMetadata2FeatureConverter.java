@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -25,7 +25,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         super(coordinateConverter);
     }
 
-    public TmsStationFeatureCollection convert(final List<TmsStation> stations, final LocalDateTime lastUpdated) {
+    public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated) {
         final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated);
 
         for(final TmsStation tms : stations) {

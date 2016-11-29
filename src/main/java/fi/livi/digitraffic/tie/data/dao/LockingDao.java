@@ -12,10 +12,10 @@ public class LockingDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     /**
-     * Aquires lock for given instanceId.
-     * If lock doesn't exist then lock is aquired by inserting new lock-row.
+     * Acquires lock for given instanceId.
+     * If lock doesn't exist then lock is acquired by inserting new lock-row.
      * If instance already have the lock then lock expiration is updated.
-     * If instance doesn's have the lock but lock exists
+     * If instance doesn't have the lock but lock exists
      * then checks if previous lock has expired and updates the lock-row.
      */
     private static final String MERGE =
@@ -37,7 +37,7 @@ public class LockingDao {
             "    INSERT (dst.LOCK_NAME, dst.INSTANCE_ID, dst.LOCK_LOCKED, dst.LOCK_EXPIRES)\n" +
             "    VALUES (src.LOCK_NAME, src.INSTANCE_ID, src.LOCK_LOCKED, src.LOCK_EXPIRES)";
 
-    private static final String RELASE =
+    private static final String RELEASE =
             "DELETE FROM LOCKING_TABLE LT\n" +
             "WHERE LT.LOCK_NAME = :lockName\n" +
             "  AND LT.INSTANCE_ID = :instanceId";
@@ -54,7 +54,7 @@ public class LockingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean aquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
+    public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("lockName", lockName);
@@ -62,14 +62,14 @@ public class LockingDao {
         params.put("expirationSeconds", expirationSeconds);
 
         jdbcTemplate.update(MERGE, params);
-        // If lock was aquired successfull then query should return one row
+        // If lock was acquired successfull then query should return one row
         return jdbcTemplate.queryForList(SELECT, params, String.class).size() == 1;
     }
 
-    public void relaseLock(final String lockName, final String callerInstanceId) {
+    public void releaseLock(final String lockName, final String callerInstanceId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("lockName", lockName);
         params.put("instanceId", callerInstanceId);
-        jdbcTemplate.update(RELASE, params);
+        jdbcTemplate.update(RELEASE, params);
     }
 }

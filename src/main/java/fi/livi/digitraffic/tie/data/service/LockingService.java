@@ -17,13 +17,13 @@ public class LockingService {
     }
 
     @Transactional
-    public boolean aquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
-        return lockingDao.aquireLock(lockName, callerInstanceId, expirationSeconds);
+    public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
+        return lockingDao.acquireLock(lockName, callerInstanceId, expirationSeconds);
     }
 
     @Transactional
-    public void relaseLock(final String lockName, final String callerInstanceId) {
-        lockingDao.relaseLock(lockName, callerInstanceId);
+    public void releaseLock(final String lockName, final String callerInstanceId) {
+        lockingDao.releaseLock(lockName, callerInstanceId);
     }
 
 }

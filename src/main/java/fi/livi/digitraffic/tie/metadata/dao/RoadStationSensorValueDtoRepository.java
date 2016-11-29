@@ -19,15 +19,15 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "     , s.id sensor_id\n" +
             "     , sv.id sensor_value_id\n" +
             "     , sv.value sensor_value\n" +
-            "     , sv.measured\n" +
+            "     , sv.measured as measured_time\n" +
             "     , s.name sensor_name_old\n" +
             "     , s.name_fi sensor_name_fi\n" +
             "     , s.short_name_fi sensor_short_name_fi\n" +
             "     , s.unit sensor_unit\n" +
             "     , svd.description_fi as sensor_value_description_fi\n" +
             "     , svd.description_en as sensor_value_description_en\n" +
-            "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured\n" +
-            "     , sv.updated\n" +
+            "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured_time\n" +
+            "     , sv.updated as updated_time\n" +
             "from road_station rs\n" +
             "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
@@ -63,15 +63,15 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "     , s.id sensor_id\n" +
             "     , sv.id sensor_value_id\n" +
             "     , sv.value sensor_value\n" +
-            "     , sv.measured\n" +
+            "     , sv.measured as measured_time\n" +
             "     , s.name sensor_name_old\n" +
             "     , s.name_fi sensor_name_fi\n" +
             "     , s.short_name_fi sensor_short_name_fi\n" +
             "     , s.unit sensor_unit\n" +
             "     , svd.description_fi as sensor_value_description_fi\n" +
             "     , svd.description_en as sensor_value_description_en\n" +
-            "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured\n" +
-            "     , sv.updated\n" +
+            "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured_time\n" +
+            "     , sv.updated as updated_time\n" +
             "from road_station rs\n" +
             "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
@@ -110,15 +110,15 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "     , s.id sensor_id\n" +
                    "     , sv.id sensor_value_id\n" +
                    "     , sv.value sensor_value\n" +
-                   "     , sv.measured\n" +
+                   "     , sv.measured as measured_time\n" +
                    "     , s.name sensor_name_old\n" +
                    "     , s.name_fi sensor_name_fi\n" +
                    "     , s.short_name_fi sensor_short_name_fi\n" +
                    "     , s.unit sensor_unit\n" +
                    "     , svd.description_fi as sensor_value_description_fi\n" +
                    "     , svd.description_en as sensor_value_description_en\n" +
-                   "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured\n" +
-                   "     , sv.updated\n" +
+                   "     , max(sv.measured) over(partition by sv.road_station_id) station_latest_measured_time\n" +
+                   "     , sv.updated as updated_time\n" +
                    "from road_station rs\n" +
                    "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
                    "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
@@ -143,7 +143,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             final Date afterDate);
 
     @Query(value =
-           "select max(sv.measured) as updated\n" +
+           "select max(sv.measured) as updated_time\n" +
            "from road_station rs\n" +
            "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
            "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
@@ -162,9 +162,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "       and allowed.road_station_type = s.road_station_type\n" +
            "  )",
            nativeQuery = true)
-    LocalDateTime getLatestMeasurementTime(
-            @Param("stationTypeId")
-            final int stationTypeId,
-            @Param("timeLimitInMinutes")
-            final int timeLimitInMinutes);
+    LocalDateTime getLatestMeasurementTime(@Param("stationTypeId")
+                                           final int stationTypeId,
+                                           @Param("timeLimitInMinutes")
+                                           final int timeLimitInMinutes);
 }

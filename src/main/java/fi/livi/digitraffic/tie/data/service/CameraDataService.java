@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.CameraPreset2CameraDataConverter;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
@@ -28,7 +29,7 @@ public class CameraDataService {
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublicCameraStationsData(final boolean onlyUpdateInfo) {
 
-        final LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
         } else {
@@ -41,7 +42,7 @@ public class CameraDataService {
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublicCameraStationsData(final String cameraId) {
 
-        final LocalDateTime updated = cameraPresetRepository.getLatestMeasurementTime();
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
         List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(cameraId);
         if (data.isEmpty()) {

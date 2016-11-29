@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class SwaggerConfiguration {
                 .directModelSubstitute(ZonedDateTime.class, String.class)
                 .directModelSubstitute(LocalDateTime.class, String.class)
                 .directModelSubstitute(LocalDate.class, String.class)
+                .directModelSubstitute(Date.class, String.class)
                 .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
                 .apiInfo(metadataApiInfoService.getApiInfo())
                 .select()

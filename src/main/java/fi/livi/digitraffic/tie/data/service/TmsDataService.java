@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +37,7 @@ public class TmsDataService {
 
     @Transactional(readOnly = true)
     public TmsRootDataObjectDto findPublicTmsData(boolean onlyUpdateInfo) {
-        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
 
         if (onlyUpdateInfo) {
             return new TmsRootDataObjectDto(updated);
@@ -54,7 +54,7 @@ public class TmsDataService {
                 dto.setTmsStationNaturalId(tms.getNaturalId());
                 dto.setSensorValues(values.get(tms.getRoadStationNaturalId()) != null ?
                                     values.get(tms.getRoadStationNaturalId()) : Collections.emptyList());
-                dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
+                dto.setMeasuredTime(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
             });
             return new TmsRootDataObjectDto(stations, updated);
         }
@@ -66,7 +66,7 @@ public class TmsDataService {
         if ( !roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }
-        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
 
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
@@ -76,7 +76,7 @@ public class TmsDataService {
         dto.setTmsStationNaturalId(tms.getNaturalId());
         dto.setRoadStationNaturalId(roadStationNaturalId);
         dto.setSensorValues(values);
-        dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
+        dto.setMeasuredTime(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
 
         return new TmsRootDataObjectDto(Collections.singletonList(dto), updated);
     }

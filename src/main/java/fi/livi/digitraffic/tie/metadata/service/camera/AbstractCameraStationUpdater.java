@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -53,9 +54,9 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
         to.setProvince(from.getMaakunta());
         to.setProvinceCode(from.getMaakuntaKoodi());
         to.setLiviId(from.getLiviId());
-        to.setStartDate(from.getAlkamisPaiva() != null ? from.getAlkamisPaiva().toGregorianCalendar().toZonedDateTime().toLocalDateTime().withNano(0) : null);
-        to.setRepairMaintenanceDate(from.getKorjaushuolto() != null ? from.getKorjaushuolto().toGregorianCalendar().toZonedDateTime().toLocalDateTime().withNano(0) : null);
-        to.setAnnualMaintenanceDate(from.getVuosihuolto() != null ? from.getVuosihuolto().toGregorianCalendar().toZonedDateTime().toLocalDateTime().withNano(0) : null);
+        to.setStartDate(DateHelper.toZonedDateTime(from.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(DateHelper.toZonedDateTime(from.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTime(from.getVuosihuolto()));
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());

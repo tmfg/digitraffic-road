@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto.daydata;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,15 +10,15 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
-@ApiModel(value = "LinkMeasurementData")
+@ApiModel(value = "LinkMeasurementData", parent = MeasuredDataObjectDto.class)
 @JsonPropertyOrder({"fluencyClass", "minute", "averageSpeed", "medianTravelTime", "nobs"})
-public class LinkMeasurementDataDto {
+public class LinkMeasurementDataDto implements MeasuredDataObjectDto {
     @Id
     @JsonIgnore
     private int rownum;
@@ -38,8 +38,7 @@ public class LinkMeasurementDataDto {
     @JsonIgnore
     private int linkId;
 
-    @JsonIgnore
-    private LocalDateTime measured;
+    private ZonedDateTime measuredTime;
 
     public int getMedianTravelTime() {
         return medianTravelTime;
@@ -94,22 +93,11 @@ public class LinkMeasurementDataDto {
         return -1;
     }
 
-    public LocalDateTime getMeasured() {
-        return measured;
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
     }
 
-    public void setMeasured(final LocalDateTime measured) {
-        this.measured = measured;
+    public void setMeasuredTime(final ZonedDateTime measured) {
+        this.measuredTime = measured;
     }
-
-    @ApiModelProperty(value = "Value measured " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
-    public String getMeasuredLocalTime() {
-        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Value measured " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
-    public String getMeasuredUtc() {
-        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
-    }
-
 }
