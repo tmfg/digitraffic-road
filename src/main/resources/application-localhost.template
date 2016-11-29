@@ -18,6 +18,7 @@ metadata.server.address.weather=<https://LOTJU/TiesaaPerustiedot/v2>
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
+locationsMetadataUpdateJob.frequency=86400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam.url/

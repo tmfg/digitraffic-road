@@ -6,7 +6,6 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,10 +14,8 @@ import org.hibernate.annotations.Parameter;
 import fi.livi.digitraffic.tie.metadata.converter.MetadataTypeConverter;
 
 @Entity
-@Table(name = "METADATA_UPDATED")
 @DynamicUpdate
 public class MetadataUpdated {
-
     @Id
     @GenericGenerator(name = "SEQ_METAD_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_METAD_UPDATED"))
@@ -30,13 +27,16 @@ public class MetadataUpdated {
 
     private ZonedDateTime updated;
 
+    private String version;
+
     private MetadataUpdated() {
         // Empty for repository
     }
 
-    public MetadataUpdated(MetadataType type, ZonedDateTime updated) {
+    public MetadataUpdated(final MetadataType type, final ZonedDateTime updated, final String version) {
         setMetadataType(type);
         setUpdated(updated);
+        setVersion(version);
     }
 
     public Long getId() {
@@ -61,5 +61,13 @@ public class MetadataUpdated {
 
     public void setUpdated(ZonedDateTime updated) {
         this.updated = updated;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
