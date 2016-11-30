@@ -41,20 +41,10 @@ public class RoadStationStatusUpdater {
         this.roadStationService = roadStationService;
     }
 
-    public boolean updateStatusses() {
-
-        boolean updated = updateTmsStationsStatuses();
-
-        updated = updateCameraStationsStatuses() || updated;
-
-        updated = updateWeatherStationsStatuses() || updated;
-        log.info("Statuses updated");
-        return updated;
-    }
-
     @Transactional
     public boolean updateTmsStationsStatuses() {
         if (lotjuTmsStationClient == null) {
+            log.info("Not updating TMS stations statuses because LotjuTmsStationClient not defined");
             return false;
         }
         log.info("Update TMS stations statuses");
@@ -62,32 +52,12 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allLams.parallelStream().forEach(from -> {
+        allLams.stream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
                 final int hash = HashCodeBuilder.reflectionHashCode(to);
                 to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen());
-                updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
-            }
-        });
-        return updated.get();
-    }
-
-
-    @Transactional
-    public boolean updateCameraStationsStatuses() {
-        log.info("Update camera stations statuses");
-        final List<KameraVO> allKameras = lotjuCameraClient.getKameras();
-        final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
-        final AtomicBoolean updated = new AtomicBoolean(false);
-
-        allKameras.parallelStream().forEach(from -> {
-            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                final int hash = HashCodeBuilder.reflectionHashCode(to);
-                to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen());
+                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
                 updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
             }
         });
@@ -96,17 +66,44 @@ public class RoadStationStatusUpdater {
 
     @Transactional
     public boolean updateWeatherStationsStatuses() {
+        if (lotjuWeatherStationClient == null) {
+            log.info("Not updating weather stations statuses because LotjuWeatherStationClient not defined");
+            return false;
+        }
         log.info("Update weather stations statuses");
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationClient.getTiesaaAsemmas();
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allTiesaaAsemas.parallelStream().forEach(from -> {
+        allTiesaaAsemas.stream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
                 final int hash = HashCodeBuilder.reflectionHashCode(to);
                 to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen());
+                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
+                updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
+            }
+        });
+        return updated.get();
+    }
+
+    @Transactional
+    public boolean updateCameraStationsStatuses() {
+        if (lotjuWeatherStationClient == null) {
+            log.info("Not updating camera stations statuses because LotjuCameraClient not defined");
+            return false;
+        }
+        log.info("Update camera stations statuses");
+        final List<KameraVO> allKameras = lotjuCameraClient.getKameras();
+        final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
+        final AtomicBoolean updated = new AtomicBoolean(false);
+
+        allKameras.stream().forEach(from -> {
+            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
+            if (to != null) {
+                final int hash = HashCodeBuilder.reflectionHashCode(to);
+                to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
+                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
                 updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
             }
         });
@@ -114,7 +111,7 @@ public class RoadStationStatusUpdater {
     }
 
     private Map<Long, RoadStation> getLotjuIdRoadStationMap(final RoadStationType roadStationType) {
-        List<RoadStation> tmsStations = roadStationService.findByType(RoadStationType.WEATHER_STATION);
-        return tmsStations.stream().collect(Collectors.toMap(RoadStation::getLotjuId, Function.identity()));
+        List<RoadStation> tmsStations = roadStationService.findByType(roadStationType);
+        return tmsStations.parallelStream().filter(rs -> rs.getLotjuId() != null).collect(Collectors.toMap(RoadStation::getLotjuId, Function.identity()));
     }
 }

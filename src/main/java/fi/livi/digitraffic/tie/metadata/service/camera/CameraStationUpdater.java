@@ -60,7 +60,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         log.info("Update Cameras start");
 
         if (lotjuCameraClient == null) {
-            log.warn("Not updating cameraPresets metadatas because no lotjuCameraClient defined");
+            log.warn("Not updating cameraPresets metadatas because lotjuCameraClient not defined");
             return false;
         }
 

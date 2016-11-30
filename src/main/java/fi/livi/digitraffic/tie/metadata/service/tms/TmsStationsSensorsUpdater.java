@@ -54,7 +54,7 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationUpdater {
         log.info("Update TMS Stations Sensors start");
 
         if (lotjuTmsStationClient == null) {
-            log.warn("Not updating TMS Stations Sensors metadatas because no lotjuTmsStationClient defined");
+            log.warn("Not updating TMS Stations Sensors metadata because lotjuTmsStationClient not defined");
             return false;
         }
 

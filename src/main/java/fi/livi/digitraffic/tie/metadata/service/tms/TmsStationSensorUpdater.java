@@ -42,7 +42,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         log.info("Update TMS RoadStationSensors start");
 
         if (lotjuTmsStationClient == null) {
-            log.warn("Not updating TMS stations sensors because no lotjuTmsStationClient defined");
+            log.warn("Not updating TMS stations sensors because lotjuTmsStationClient not defined");
             return false;
         }
 
