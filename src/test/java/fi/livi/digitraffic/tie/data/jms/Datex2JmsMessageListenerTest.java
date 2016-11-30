@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +64,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
         Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-        readAndSendMessages(datex2Resources, datexJmsMessageListener);
+        readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
         Datex2RootDataObjectDto dto = datex2DataService.findActiveDatex2Data(false);
         List<Datex2> datex2s = dto.getDatex2s();
@@ -88,7 +90,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     }
 
     // Just for data importing for testing
-//    @Ignore
+    @Ignore
     @Test
     public void testImportData() throws JAXBException, DatatypeConfigurationException, IOException {
 
@@ -106,7 +108,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
 //        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formated/ftp.tiehallinto.fi/incidents/datex2/InfoXML*.xml");
 
-        readAndSendMessages(datex2Resources, datexJmsMessageListener);
+        readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
 
         log.info("Persist changes");
         TestTransaction.flagForCommit();
@@ -117,13 +119,17 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern);
     }
 
-    private void readAndSendMessages(Resource[] datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener) throws IOException {
+    private void readAndSendMessages(Resource[] datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener, boolean autoFix) throws IOException {
         log.info("Read and send " + datex2Resources.length + " Datex2 messages...");
         for (Resource datex2Resource : datex2Resources) {
             File f = datex2Resource.getFile();
-            String content = new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())));
+            String content = new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())), StandardCharsets.UTF_8);
             try {
-                lamJmsMessageListener.onMessage(createTextMessage(content, f.getName()));
+                lamJmsMessageListener.onMessage(createTextMessage(autoFix ?
+                                                                        content.replace("Both", "both")
+                                                                                .replace("<alertCPoint/>", "") :
+                                                                        content,
+                                                                  f.getName()));
             } catch (Exception e) {
                 log.error("Error with file " + f.getName());
                 throw e;
