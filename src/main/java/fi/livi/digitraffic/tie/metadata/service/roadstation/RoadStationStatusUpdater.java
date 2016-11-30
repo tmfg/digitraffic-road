@@ -52,14 +52,9 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allLams.stream().forEach(from -> {
+        allLams.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                final int hash = HashCodeBuilder.reflectionHashCode(to);
-                to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
-                updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
-            }
+            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
         });
         return updated.get();
     }
@@ -75,14 +70,9 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allTiesaaAsemas.stream().forEach(from -> {
+        allTiesaaAsemas.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                final int hash = HashCodeBuilder.reflectionHashCode(to);
-                to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
-                updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
-            }
+            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
         });
         return updated.get();
     }
@@ -98,16 +88,21 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allKameras.stream().forEach(from -> {
+        allKameras.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                final int hash = HashCodeBuilder.reflectionHashCode(to);
-                to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-                to.setPublic(from.isJulkinen() == null || from.isJulkinen());
-                updated.set(updated.get() || HashCodeBuilder.reflectionHashCode(to) != hash);
-            }
+            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
         });
         return updated.get();
+    }
+
+    private void updateRoadStationStatuses(RoadStation to, CollectionStatus collectionStatus, Boolean julkinen, AtomicBoolean updated) {
+        if (to != null) {
+            final int hash = HashCodeBuilder.reflectionHashCode(to);
+            to.setCollectionStatus(collectionStatus);
+            to.setPublic(julkinen == null || julkinen);
+            updated.compareAndSet(false,
+                                 HashCodeBuilder.reflectionHashCode(to) != hash);
+        }
     }
 
     private Map<Long, RoadStation> getLotjuIdRoadStationMap(final RoadStationType roadStationType) {

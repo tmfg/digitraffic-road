@@ -98,15 +98,15 @@ public class RoadStationStatusesUpdateJobTest extends MetadataIntegrationTest {
 
     }
 
-    private void assertCollectionStatus(List<RoadStation> roadStations, int lotjuId, RoadStationType roadStationType, CollectionStatus collectionStatus) {
+    private void assertCollectionStatus(List<RoadStation> roadStations, long lotjuId, RoadStationType roadStationType, CollectionStatus collectionStatus) {
         RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
         Assert.assertEquals(collectionStatus, found.getCollectionStatus());
     }
 
-    private RoadStation findWithLotjuId(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType) {
+    private RoadStation findWithLotjuId(final List<RoadStation> roadStations, final Long lotjuId, final RoadStationType roadStationType) {
         final Optional<RoadStation> found =
                 roadStations.stream()
-                        .filter(x -> x.getLotjuId() == lotjuId && roadStationType.equals(x.getType()))
+                        .filter(x -> lotjuId.equals(x.getLotjuId()) && roadStationType.equals(x.getType()))
                         .findFirst();
         return found.orElse(null);
     }
