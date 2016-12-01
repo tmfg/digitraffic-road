@@ -3,13 +3,12 @@ package fi.livi.digitraffic.tie.data.jms;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -106,7 +105,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         log.info("Read Datex2 messages from filesystem");
         Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-//        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formated/ftp.tiehallinto.fi/incidents/datex2/InfoXML*.xml");
+//        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto.fi/incidents/datex2/InfoXML*.xml");
 
         readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
 
@@ -122,16 +121,16 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     private void readAndSendMessages(Resource[] datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener, boolean autoFix) throws IOException {
         log.info("Read and send " + datex2Resources.length + " Datex2 messages...");
         for (Resource datex2Resource : datex2Resources) {
-            File f = datex2Resource.getFile();
-            String content = new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())), StandardCharsets.UTF_8);
+            File datex2file = datex2Resource.getFile();
+            String content = FileUtils.readFileToString(datex2file, StandardCharsets.UTF_8);
             try {
                 lamJmsMessageListener.onMessage(createTextMessage(autoFix ?
                                                                         content.replace("Both", "both")
                                                                                 .replace("<alertCPoint/>", "") :
                                                                         content,
-                                                                  f.getName()));
+                                                                  datex2file.getName()));
             } catch (Exception e) {
-                log.error("Error with file " + f.getName());
+                log.error("Error with file " + datex2file.getName());
                 throw e;
             }
         }

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto.datex2;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
@@ -22,12 +22,12 @@ public class Datex2RootDataObjectDto extends RootDataObjectDto {
     @ApiModelProperty(value = "Traffic disorders data")
     private final List<Datex2> datex2s;
 
-    public Datex2RootDataObjectDto(final List<Datex2> datex2s, final LocalDateTime updated) {
+    public Datex2RootDataObjectDto(final List<Datex2> datex2s, final ZonedDateTime updated) {
         super(updated);
         this.datex2s = datex2s;
     }
 
-    public Datex2RootDataObjectDto(final LocalDateTime updated) {
+    public Datex2RootDataObjectDto(final ZonedDateTime updated) {
         this(null, updated);
     }
 

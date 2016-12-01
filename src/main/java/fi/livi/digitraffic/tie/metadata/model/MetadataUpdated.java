@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

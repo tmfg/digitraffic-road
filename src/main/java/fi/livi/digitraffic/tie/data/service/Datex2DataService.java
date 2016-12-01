@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -142,7 +141,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
-        final LocalDateTime updated = datex2Repository.getLatestMeasurementTime();
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
         return new Datex2RootDataObjectDto(
                 situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month),
                 updated);
@@ -150,7 +149,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public Datex2RootDataObjectDto findActiveDatex2Data(boolean onlyUpdateInfo) {
-        final LocalDateTime updated = datex2Repository.getLatestMeasurementTime();
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
         if (onlyUpdateInfo) {
             return new Datex2RootDataObjectDto(updated);
         } else {
@@ -161,7 +160,7 @@ public class Datex2DataService {
     }
 
     public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
-        final LocalDateTime updated = datex2Repository.getLatestMeasurementTime();
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
         List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);

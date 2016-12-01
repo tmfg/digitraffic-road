@@ -61,7 +61,6 @@ public class SchedulerConfig {
 
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
-
         return factory;
     }
 

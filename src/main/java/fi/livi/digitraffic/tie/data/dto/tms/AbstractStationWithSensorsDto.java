@@ -13,7 +13,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
-@JsonPropertyOrder( value = {"id", "measuredLocalTime", "measuredUtc", "sensorValues"})
 public abstract class AbstractStationWithSensorsDto {
 
     @ApiModelProperty(value = "Road station id", required = true)
