@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MetadataFileFetcher {
-    private final String tmsUrl;
+    private final String tmcUrl;
 
     private static final String LATEST_FILENAME = "latest.txt";
     private static final String LOCATIONS_FILENAME = "locations.csv";
@@ -33,8 +33,8 @@ public class MetadataFileFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(MetadataFileFetcher.class);
 
-    public MetadataFileFetcher(@Value("${metadata.tms.url}") final String tmsUrl) {
-        this.tmsUrl = tmsUrl;
+    public MetadataFileFetcher(@Value("${metadata.tmc.url}") final String tmcUrl) {
+        this.tmcUrl = tmcUrl;
     }
 
     public MetadataPathCollection getFilePaths(final MetadataVersions latestVersions) throws IOException {
@@ -147,6 +147,6 @@ public class MetadataFileFetcher {
     }
 
     public URL getUrl(final String filename) throws MalformedURLException {
-        return new URL(tmsUrl + filename);
+        return new URL(tmcUrl + filename);
     }
 }
