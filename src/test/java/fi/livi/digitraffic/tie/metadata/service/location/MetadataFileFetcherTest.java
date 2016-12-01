@@ -13,8 +13,8 @@ import fi.livi.digitraffic.tie.base.AbstractTestBase;
 
 @Ignore
 public class MetadataFileFetcherTest extends AbstractTestBase {
-    @Value("${metadata.tms.url}")
-    private String tmsUrl;
+    @Value("${metadata.tmc.url}")
+    private String tmcUrl;
 
     @Test(expected = FileNotFoundException.class)
     public void testLocationNotFound() throws IOException {

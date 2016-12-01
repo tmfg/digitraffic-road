@@ -15,7 +15,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class Location {
     @Id
-    private int locationCode;
+    private Integer locationCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subtype_code", nullable = false)
@@ -55,11 +55,11 @@ public class Location {
     private String geocode;
     private Integer orderOfPoint;
 
-    public int getLocationCode() {
+    public Integer getLocationCode() {
         return locationCode;
     }
 
-    public void setLocationCode(int locationCode) {
+    public void setLocationCode(Integer locationCode) {
         this.locationCode = locationCode;
     }
 

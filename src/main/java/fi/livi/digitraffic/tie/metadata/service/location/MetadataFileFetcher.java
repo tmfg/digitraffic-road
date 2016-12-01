@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MetadataFileFetcher {
-    private final String tmsUrl;
+    private final String tmcUrl;
 
     private static final String LATEST_FILENAME = "latest.txt";
     private static final String LOCATIONS_FILENAME = "locations.csv";
@@ -32,8 +33,8 @@ public class MetadataFileFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(MetadataFileFetcher.class);
 
-    public MetadataFileFetcher(@Value("${metadata.tms.url}") final String tmsUrl) {
-        this.tmsUrl = tmsUrl;
+    public MetadataFileFetcher(@Value("${metadata.tmc.url}") final String tmcUrl) {
+        this.tmcUrl = tmcUrl;
     }
 
     public MetadataPathCollection getFilePaths(final MetadataVersions latestVersions) throws IOException {
@@ -46,6 +47,8 @@ public class MetadataFileFetcher {
     public MetadataVersions getLatestVersions() throws MalformedURLException {
         final URL url = getLatestUrl();
         final LatestReader reader = new LatestReader();
+
+        log.info("reading latest from {}", url);
 
         try {
             reader.read(url);
@@ -100,7 +103,7 @@ public class MetadataFileFetcher {
 
     private Path getFileFromZip(final File zipfile, final String entryName, final String destinationName) throws IOException {
         try(final ZipFile z = new ZipFile(zipfile)) {
-            final File entryDestination = new File(destinationName);
+            final File entryDestination = Files.createTempFile(destinationName, null).toFile();
             final ZipEntry e = findEntry(z, entryName);
             final InputStream is = z.getInputStream(e);
             final OutputStream os = new FileOutputStream(entryDestination);
@@ -132,11 +135,11 @@ public class MetadataFileFetcher {
     }
 
     private static File getLocationsZipDestination() throws IOException {
-        return File.createTempFile("locations", "zip");
+        return Files.createTempFile("locations", "zip").toFile();
     }
 
     private static File getCcLtnZipDestination() throws IOException {
-        return File.createTempFile("cc_ltn", "zip");
+        return Files.createTempFile("cc_ltn", "zip").toFile();
     }
 
     public URL getLatestUrl() throws MalformedURLException {
@@ -144,6 +147,6 @@ public class MetadataFileFetcher {
     }
 
     public URL getUrl(final String filename) throws MalformedURLException {
-        return new URL(tmsUrl + filename);
+        return new URL(tmcUrl + filename);
     }
 }

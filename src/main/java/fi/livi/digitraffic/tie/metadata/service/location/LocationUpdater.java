@@ -98,6 +98,6 @@ public class LocationUpdater {
     }
 
     private void mergeLocation(final Location oldLocation, final Location newLocation) {
-        BeanUtils.copyProperties(newLocation, oldLocation);
+        BeanUtils.copyProperties(newLocation, oldLocation, "locationCode");
     }
 }
