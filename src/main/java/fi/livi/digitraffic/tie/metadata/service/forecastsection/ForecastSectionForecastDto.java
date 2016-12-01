@@ -1,8 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Date;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.OverallRoadCondition;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.Reliability;
 
 public class ForecastSectionForecastDto {
 
@@ -12,9 +15,9 @@ public class ForecastSectionForecastDto {
 
     public final Boolean daylight;
 
-    public final Integer overallRoadCondition;
+    public final OverallRoadCondition overallRoadCondition;
 
-    public final Integer reliability;
+    public final Reliability reliability;
 
     public final String roadTemperature;
 
@@ -42,8 +45,8 @@ public class ForecastSectionForecastDto {
         this.forecastName = forecastName;
         this.time = time;
         this.daylight = daylight;
-        this.overallRoadCondition = overallRoadCondition;
-        this.reliability = reliability;
+        this.overallRoadCondition = OverallRoadCondition.of(overallRoadCondition);
+        this.reliability = Reliability.of(reliability);
         this.roadTemperature = roadTemperature;
         this.temperature = temperature;
         this.weatherSymbol = weatherSymbol;

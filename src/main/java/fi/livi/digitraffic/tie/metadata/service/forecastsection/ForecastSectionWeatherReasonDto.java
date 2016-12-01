@@ -2,21 +2,27 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.FrictionCondition;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.PrecipitationCondition;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.VisibilityCondition;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
+
 public class ForecastSectionWeatherReasonDto {
 
-    public final Integer precipitationCondition;
+    public final PrecipitationCondition precipitationCondition;
 
-    public final Integer roadCondition;
+    public final RoadCondition roadCondition;
 
-    public final Integer windCondition;
+    public final WindCondition windCondition;
 
     public final Boolean freezingRainCondition;
 
     public final Boolean winterSlipperiness;
 
-    public final Integer visibilityCondition;
+    public final VisibilityCondition visibilityCondition;
 
-    public final Integer frictionCondition;
+    public final FrictionCondition frictionCondition;
 
     public ForecastSectionWeatherReasonDto(@JsonProperty("precipitationCondition") Integer precipitationCondition,
                                            @JsonProperty("roadCondition") Integer roadCondition,
@@ -25,12 +31,12 @@ public class ForecastSectionWeatherReasonDto {
                                            @JsonProperty("winterSlipperiness") Boolean winterSlipperiness,
                                            @JsonProperty("visibilityCondition") Integer visibilityCondition,
                                            @JsonProperty("frictionCondition") Integer frictionCondition) {
-        this.precipitationCondition = precipitationCondition;
-        this.roadCondition = roadCondition;
-        this.windCondition = windCondition;
+        this.precipitationCondition = PrecipitationCondition.of(precipitationCondition);
+        this.roadCondition = RoadCondition.of(roadCondition);
+        this.windCondition = WindCondition.of(windCondition);
         this.freezingRainCondition = freezingRainCondition;
         this.winterSlipperiness = winterSlipperiness;
-        this.visibilityCondition = visibilityCondition;
-        this.frictionCondition = frictionCondition;
+        this.visibilityCondition = VisibilityCondition.of(visibilityCondition);
+        this.frictionCondition = FrictionCondition.of(frictionCondition);
     }
 }

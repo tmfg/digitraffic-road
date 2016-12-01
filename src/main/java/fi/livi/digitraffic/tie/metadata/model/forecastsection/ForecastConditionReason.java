@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.OneToOne;
@@ -24,32 +26,14 @@ public class ForecastConditionReason {
     @JsonIgnore
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
-    @ApiModelProperty(value = "The quality of precipitation:\n" +
-                              "1 = No rain, dry weather\n" +
-                              "2 = Light rain\n" +
-                              "3 = Rain\n" +
-                              "4 = Heavy rain\n" +
-                              "5 = Light snowfall\n" +
-                              "6 = Snowfall\n" +
-                              "7 = Heavy snowfall")
-    private Integer precipitationCondition;
+    @Enumerated(EnumType.STRING)
+    private PrecipitationCondition precipitationCondition;
 
-    @ApiModelProperty(value = "The state of the road:\n" +
-                              "1 = Dry\n" +
-                              "2 = Moist\n" +
-                              "3 = Wet\n" +
-                              "4 = Slush\n" +
-                              "5 = Frost\n" +
-                              "6 = Partly icy\n" +
-                              "7 = Ice\n" +
-                              "8 = Snow")
-    private Integer roadCondition;
+    @Enumerated(EnumType.STRING)
+    private RoadCondition roadCondition;
 
-    @ApiModelProperty(value = "The strength of wind:\n" +
-                              "1 = Weak\n" +
-                              "2 = Medium\n" +
-                              "3 = Strong")
-    private Integer windCondition;
+    @Enumerated(EnumType.STRING)
+    private WindCondition windCondition;
 
     @ApiModelProperty(value = "Tells if there is freezing rain: true/false")
     private Boolean freezingRainCondition;
@@ -57,15 +41,11 @@ public class ForecastConditionReason {
     @ApiModelProperty(value = "Tells if it is slippery: true/false")
     private Boolean winterSlipperiness;
 
-    @ApiModelProperty(value = "Visibility:\n" +
-                              "1 = fairly poor (400 m)\n" +
-                              "2 = poor (200 m)")
-    private Integer visibilityCondition;
+    @Enumerated(EnumType.STRING)
+    private VisibilityCondition visibilityCondition;
 
-    @ApiModelProperty(value = "The amount of friction on the road:\n" +
-                              "1 = slippery (friction < 0.4)\n" +
-                              "2 = very slippery (friction < 0.2)")
-    private Integer frictionCondition;
+    @Enumerated(EnumType.STRING)
+    private FrictionCondition frictionCondition;
 
     @OneToOne
     @JoinColumns({
@@ -79,9 +59,14 @@ public class ForecastConditionReason {
     public ForecastConditionReason() {
     }
 
-    public ForecastConditionReason(ForecastSectionWeatherPK forecastSectionWeatherPK, Integer precipitationCondition, Integer roadCondition,
-                                   Integer windCondition, Boolean freezingRainCondition, Boolean winterSlipperiness, Integer visibilityCondition,
-                                   Integer frictionCondition) {
+    public ForecastConditionReason(ForecastSectionWeatherPK forecastSectionWeatherPK,
+                                   PrecipitationCondition precipitationCondition,
+                                   RoadCondition roadCondition,
+                                   WindCondition windCondition,
+                                   Boolean freezingRainCondition,
+                                   Boolean winterSlipperiness,
+                                   VisibilityCondition visibilityCondition,
+                                   FrictionCondition frictionCondition) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
         this.precipitationCondition = precipitationCondition;
         this.roadCondition = roadCondition;
@@ -100,27 +85,27 @@ public class ForecastConditionReason {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
     }
 
-    public Integer getPrecipitationCondition() {
+    public PrecipitationCondition getPrecipitationCondition() {
         return precipitationCondition;
     }
 
-    public void setPrecipitationCondition(Integer precipitationCondition) {
+    public void setPrecipitationCondition(PrecipitationCondition precipitationCondition) {
         this.precipitationCondition = precipitationCondition;
     }
 
-    public Integer getRoadCondition() {
+    public RoadCondition getRoadCondition() {
         return roadCondition;
     }
 
-    public void setRoadCondition(Integer roadCondition) {
+    public void setRoadCondition(RoadCondition roadCondition) {
         this.roadCondition = roadCondition;
     }
 
-    public Integer getWindCondition() {
+    public WindCondition getWindCondition() {
         return windCondition;
     }
 
-    public void setWindCondition(Integer windCondition) {
+    public void setWindCondition(WindCondition windCondition) {
         this.windCondition = windCondition;
     }
 
@@ -140,19 +125,19 @@ public class ForecastConditionReason {
         this.winterSlipperiness = winterSlipperiness;
     }
 
-    public Integer getVisibilityCondition() {
+    public VisibilityCondition getVisibilityCondition() {
         return visibilityCondition;
     }
 
-    public void setVisibilityCondition(Integer visibilityCondition) {
+    public void setVisibilityCondition(VisibilityCondition visibilityCondition) {
         this.visibilityCondition = visibilityCondition;
     }
 
-    public Integer getFrictionCondition() {
+    public FrictionCondition getFrictionCondition() {
         return frictionCondition;
     }
 
-    public void setFrictionCondition(Integer frictionCondition) {
+    public void setFrictionCondition(FrictionCondition frictionCondition) {
         this.frictionCondition = frictionCondition;
     }
 

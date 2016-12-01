@@ -1,16 +1,29 @@
 package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import io.swagger.annotations.ApiModelProperty;
+import java.sql.Timestamp;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.PrimaryKeyJoinColumns;
+
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
@@ -28,16 +41,11 @@ public class ForecastSectionWeather {
     @ApiModelProperty(value = "Tells if there is daylight: true/false")
     private Boolean daylight;
 
-    @ApiModelProperty(value = "1 = Normal condition (green)\n" +
-                              "2 = Poor condition (yellow)\n" +
-                              "3 = Extremely poor condition (red)\n" +
-                              "-1 = Condition could not be resolved")
-    private Integer overallRoadCondition;
+    @Enumerated(EnumType.STRING)
+    private OverallRoadCondition overallRoadCondition;
 
-    @ApiModelProperty(value = "0 = Successful\n" +
-                              "1 = No data from roadstation\n" +
-                              "2 = Failed")
-    private Integer reliability;
+    @Enumerated(EnumType.STRING)
+    private Reliability reliability;
 
     @ApiModelProperty(value = "Road temperature at given time. If not available value is not set")
     private String roadTemperature;
@@ -74,8 +82,8 @@ public class ForecastSectionWeather {
     public ForecastSectionWeather() {
     }
 
-    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, Integer overallRoadCondition,
-                                  Integer reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
+    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, OverallRoadCondition overallRoadCondition,
+                                  Reliability reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
                                   Integer windSpeed, ForecastConditionReason forecastConditionReason) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
         this.time = time;
@@ -129,19 +137,19 @@ public class ForecastSectionWeather {
         this.daylight = daylight;
     }
 
-    public Integer getOverallRoadCondition() {
+    public OverallRoadCondition getOverallRoadCondition() {
         return overallRoadCondition;
     }
 
-    public void setOverallRoadCondition(Integer overallRoadCondition) {
+    public void setOverallRoadCondition(OverallRoadCondition overallRoadCondition) {
         this.overallRoadCondition = overallRoadCondition;
     }
 
-    public Integer getReliability() {
+    public Reliability getReliability() {
         return reliability;
     }
 
-    public void setReliability(Integer reliability) {
+    public void setReliability(Reliability reliability) {
         this.reliability = reliability;
     }
 
