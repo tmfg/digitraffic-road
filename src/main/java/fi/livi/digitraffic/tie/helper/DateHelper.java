@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.helper;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -11,7 +10,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public final class DateHelper {
     private DateHelper() {}
 
-    public static LocalDateTime getNewest(final LocalDateTime first, final LocalDateTime second) {
+    public static ZonedDateTime getNewest(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
             return second;
         } else if(second == null || first.isAfter(second)) {
@@ -21,22 +20,42 @@ public final class DateHelper {
         return second;
     }
 
-    public static LocalDate getNewest(final LocalDate first, final LocalDate second) {
-        if (first == null) {
-            return second;
-        } else if (second == null || first.isAfter(second)) {
-            return first;
+    public static LocalDateTime toLocalDateTime(XMLGregorianCalendar calendar) {
+        if (calendar != null) {
+            ZonedDateTime zonedDateTime = calendar.toGregorianCalendar().toZonedDateTime();
+            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
         }
-
-        return second;
+        return null;
     }
 
-    public static LocalDateTime toLocalDateTimeAtDefaultZone(XMLGregorianCalendar aika) {
-        ZonedDateTime zonedDateTime = aika.toGregorianCalendar().toZonedDateTime();
-        return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
+    public static ZonedDateTime toZonedDateTime(XMLGregorianCalendar calendar) {
+        if (calendar != null) {
+            // This way Time is formed as 1995-01-01T00:00+02:00[Europe/Helsinki]
+            //                 and not as 1995-01-01T00:00+02:00[GMT+02:00]
+            // HashCodeBuilder handles them differently
+            return ZonedDateTime.of(toLocalDateTime(calendar), ZoneId.systemDefault());
+        }
+        return null;
     }
 
-    public static Date toDateAtDefaultZone(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    public static ZonedDateTime toZonedDateTime(LocalDateTime localDateTime) {
+        if (localDateTime != null) {
+            return localDateTime.atZone(ZoneId.systemDefault());
+        }
+        return null;
+    }
+
+    public static LocalDateTime toLocalDateTime(ZonedDateTime zonedDateTime) {
+        if (zonedDateTime != null) {
+            return zonedDateTime.toLocalDateTime();
+        }
+        return null;
+    }
+
+    public static Date toDate(ZonedDateTime zonedDateTime) {
+        if (zonedDateTime != null) {
+            return Date.from(zonedDateTime.toInstant());
+        }
+        return null;
     }
 }

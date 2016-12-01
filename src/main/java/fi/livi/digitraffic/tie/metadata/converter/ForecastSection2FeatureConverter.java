@@ -1,15 +1,16 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionProperties;
 import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -18,7 +19,7 @@ public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureC
         super(coordinateConverter);
     }
 
-    public ForecastSectionFeatureCollection convert(List<ForecastSection> forecastSections, final LocalDateTime lastUpdated) {
+    public ForecastSectionFeatureCollection convert(List<ForecastSection> forecastSections, final ZonedDateTime lastUpdated) {
 
         final ForecastSectionFeatureCollection forecastSectionFeatures = new ForecastSectionFeatureCollection(lastUpdated);
 

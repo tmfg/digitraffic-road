@@ -172,7 +172,7 @@ public class SensorDataUpdateService {
 
         for (Lam lam : lams) {
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(lam.getAika());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Lam.Anturit.Anturi anturi : anturit) {
                 rows++;
@@ -192,7 +192,7 @@ public class SensorDataUpdateService {
 
         for (Tiesaa tiesaa : tiesaas) {
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTimeAtDefaultZone(tiesaa.getAika());
+            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
                 rows++;

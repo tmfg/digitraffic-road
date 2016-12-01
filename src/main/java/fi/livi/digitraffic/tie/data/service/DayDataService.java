@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,12 +34,12 @@ public class DayDataService {
     @Transactional(readOnly = true)
     public HistoryRootDataObjectDto listPreviousDayHistoryData(final boolean onlyUpdateInfo) {
 
-        LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
+        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
 
         if (onlyUpdateInfo) {
             // If there is no data for previous day, return update time before previousday
             if (updated == null) {
-                updated = LocalDateTime.now().minusDays(2).with(LocalTime.MAX);
+                updated = ZonedDateTime.now().minusDays(2).with(LocalTime.MAX);
             }
             return new HistoryRootDataObjectDto(updated);
 
@@ -57,7 +58,7 @@ public class DayDataService {
         if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
             throw new ObjectNotFoundException("Link", linkId);
         }
-        LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
+        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
         List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLinkPreviousDay(linkId);
         return new HistoryRootDataObjectDto(
                 convertToDayDataData(linkData),
@@ -73,7 +74,7 @@ public class DayDataService {
         } else if (month < 1 || month > 12) {
             throw new IllegalArgumentException("Illegal month value " + month + "! Month must be between 1 and 12.");
         }
-        LocalDateTime updated = dayDataRepository.getLatestMeasurementTime();
+        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
         List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId, year, month);
         return new HistoryRootDataObjectDto(
                 convertToDayDataData(linkData),
@@ -88,11 +89,11 @@ public class DayDataService {
                 linkData = new LinkDataDto(ld.getLinkId(), new ArrayList<>());
                 linkDataMap.put(ld.getLinkId(), linkData);
             }
-            linkData.setMeasured(DateHelper.getNewest(linkData.getMeasured(), ld.getMeasured()));
+            linkData.setMeasuredTime(DateHelper.getNewest(linkData.getMeasuredTime(), ld.getMeasuredTime()));
             linkData.getLinkMeasurements().add(ld);
         }
         final List<LinkDataDto> linkDatas = new ArrayList<>(linkDataMap.values());
-        linkDatas.sort((o1, o2) -> Integer.compare(o1.getLinkNumber(), o2.getLinkNumber()));
+        linkDatas.sort(Comparator.comparingInt(LinkDataDto::getLinkNumber));
         return linkDatas;
     }
 }

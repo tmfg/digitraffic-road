@@ -1,15 +1,16 @@
 package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of road conditions", value = "ForecastSectionFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
@@ -21,7 +22,7 @@ public class ForecastSectionFeatureCollection extends RootDataObjectDto implemen
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<ForecastSectionFeature> features = new ArrayList<ForecastSectionFeature>();
 
-    public ForecastSectionFeatureCollection(final LocalDateTime localTimestamp) {
+    public ForecastSectionFeatureCollection(final ZonedDateTime localTimestamp) {
         super(localTimestamp);
     }
 

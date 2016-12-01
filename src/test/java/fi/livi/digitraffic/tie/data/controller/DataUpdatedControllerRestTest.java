@@ -43,8 +43,7 @@ public class DataUpdatedControllerRestTest extends MetadataRestTest {
                 mockMvc.perform(get(url))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                        .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue()))
-                        .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue()));
+                        .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()));
             }
         }
     }

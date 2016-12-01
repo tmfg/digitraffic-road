@@ -58,7 +58,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     /**
      * Checks if connection can be created and starts
-     * listening JMS-messages if lock is aquired for this
+     * listening JMS-messages if lock is acquired for this
      * thread
      */
     @Scheduled(fixedRateString = "${jms.connection.intervalMs}")
@@ -76,18 +76,18 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         JMSParameters jmsParameters = getJmsParameters();
         try {
 
-            // If lock can be aqiured then start listening
-            boolean lockAquired = lockingService.aquireLock(getJmsParameters().getLockInstanceName(),
+            // If lock can be acquired then start listening
+            boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
                     getJmsParameters().getLockInstanceId(),
                     JMS_CONNECTION_LOCK_EXPIRATION_S);
-            // If aquired lock then start listening otherwice stop listening
-            if (lockAquired && !shutdownCalled.get()) {
-                log.info("MessageListener lock aquired for " + jmsParameters.getLockInstanceName() + " (instanceId: " +
+            // If acquired lock then start listening otherwise stop listening
+            if (lockAcquired && !shutdownCalled.get()) {
+                log.info("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() + " (instanceId: " +
                         jmsParameters.getLockInstanceId() + ")");
                 // Calling start multiple times is safe
                 connection.start();
             } else {
-                log.info("MessageListener lock not aquired for " + jmsParameters.getLockInstanceName() + " (instanceId: " +
+                log.info("MessageListener lock not acquired for " + jmsParameters.getLockInstanceName() + " (instanceId: " +
                         jmsParameters.getLockInstanceId() + "), another instance is holding the lock");
                 // Calling stop multiple times is safe
                 connection.stop();

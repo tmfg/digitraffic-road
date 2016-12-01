@@ -21,11 +21,10 @@ public class FreeFlowSpeedRestTest extends MetadataRestTest {
                             DataController.FREE_FLOW_SPEEDS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].tmsNumber", Matchers.notNullValue()));
     }
@@ -37,9 +36,8 @@ public class FreeFlowSpeedRestTest extends MetadataRestTest {
                 DataController.FREE_FLOW_SPEEDS_PATH + "/link/16"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.linkFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.linkFreeFlowSpeeds[0].id", Matchers.notNullValue()));
     }
 
@@ -50,9 +48,8 @@ public class FreeFlowSpeedRestTest extends MetadataRestTest {
                 DataController.FREE_FLOW_SPEEDS_PATH + "/tms/23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.dataUpdatedLocalTime", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.dataUpdatedUtc", Matchers.notNullValue())) //
-                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue())) //
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].tmsNumber", Matchers.notNullValue()));
     }

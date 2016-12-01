@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto.camera;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
 @ApiModel(value = "CameraData", description = "Latest measurement data from weather stations", parent = RootDataObjectDto.class)
-@JsonPropertyOrder({ "dataUpdatedLocalTime", "dataUpdatedUtc", "cameraStationData"})
+@JsonPropertyOrder({ "dataUpdatedTime", "cameraStationData"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraRootDataObjectDto extends RootDataObjectDto {
 
@@ -22,12 +22,12 @@ public class CameraRootDataObjectDto extends RootDataObjectDto {
     private final List<CameraStationDataDto> cameraStations;
 
     public CameraRootDataObjectDto(final List<CameraStationDataDto> cameraStationData,
-                                   final LocalDateTime updated) {
+                                   final ZonedDateTime updated) {
         super(updated);
         this.cameraStations = cameraStationData;
     }
 
-    public CameraRootDataObjectDto(final LocalDateTime updated) {
+    public CameraRootDataObjectDto(final ZonedDateTime updated) {
         this(null, updated);
     }
 

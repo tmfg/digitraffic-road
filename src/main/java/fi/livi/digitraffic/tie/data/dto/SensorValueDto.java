@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "sensorValueMeasuredLocalTime", "conditionUpdatedUtc"})
+@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
@@ -67,14 +67,14 @@ public class SensorValueDto {
     private String sensorValueDescriptionEn;
 
     @JsonIgnore
-    private LocalDateTime measured;
+    private ZonedDateTime measuredTime;
 
     @JsonIgnore
-    private LocalDateTime stationLatestMeasured;
+    private ZonedDateTime stationLatestMeasuredTime;
 
     /** Db's timestamp */
     @JsonIgnore
-    private LocalDateTime updated;
+    private ZonedDateTime updatedTime;
 
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -172,34 +172,34 @@ public class SensorValueDto {
         this.sensorShortNameFi = sensorShortNameFi;
     }
 
-    public LocalDateTime getMeasured() {
-        return measured;
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
     }
 
-    public void setMeasured(final LocalDateTime measured) {
-        this.measured = measured;
+    public void setMeasuredTime(final ZonedDateTime measuredTime) {
+        this.measuredTime = measuredTime;
     }
 
-    public LocalDateTime getStationLatestMeasured() {
-        return stationLatestMeasured;
+    public ZonedDateTime getStationLatestMeasuredTime() {
+        return stationLatestMeasuredTime;
     }
 
-    public void setStationLatestMeasured(final LocalDateTime stationLatestMeasured) {
-        this.stationLatestMeasured = stationLatestMeasured;
+    public void setStationLatestMeasuredTime(final ZonedDateTime stationLatestMeasured) {
+        this.stationLatestMeasuredTime = stationLatestMeasured;
     }
 
-    public static LocalDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
+    public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
         if (sensorValues != null && !sensorValues.isEmpty()) {
-            return sensorValues.get(0).getStationLatestMeasured();
+            return sensorValues.get(0).getStationLatestMeasuredTime();
         }
         return null;
     }
 
-    public LocalDateTime getUpdated() {
-        return updated;
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
+    public void setUpdatedTime(ZonedDateTime updated) {
+        this.updatedTime = updated;
     }
 }

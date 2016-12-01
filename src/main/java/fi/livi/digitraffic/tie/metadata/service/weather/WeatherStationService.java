@@ -100,7 +100,7 @@ public class WeatherStationService {
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 
     @Transactional(readOnly = true)

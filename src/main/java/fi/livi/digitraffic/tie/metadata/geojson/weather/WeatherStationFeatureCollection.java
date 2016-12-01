@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.weather;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,8 +22,8 @@ public class WeatherStationFeatureCollection extends RootDataObjectDto implement
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<WeatherStationFeature> features = new ArrayList<>();
 
-    public WeatherStationFeatureCollection(final LocalDateTime localTimestamp) {
-        super(localTimestamp);
+    public WeatherStationFeatureCollection(final ZonedDateTime dataUpdatedTime) {
+        super(dataUpdatedTime);
     }
 
     public String getType() {

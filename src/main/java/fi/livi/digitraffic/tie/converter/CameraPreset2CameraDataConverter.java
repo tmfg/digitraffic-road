@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.converter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
-import fi.livi.digitraffic.tie.helper.DataValidyHelper;
+import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
@@ -37,7 +37,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
     }
 
     public CameraRootDataObjectDto convert(final List<CameraPreset> cameraPresets,
-                                           final LocalDateTime updated) {
+                                           final ZonedDateTime updated) {
         final List<CameraStationDataDto> collection = new ArrayList<>();
 
         // Cameras mapped with cameraId
@@ -65,10 +65,9 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
     private CameraPresetDataDto convertPreset(final CameraPreset cp) {
 
         final CameraPresetDataDto dto = new CameraPresetDataDto();
-        dto.setMeasured(cp.getPictureLastModified());
+        dto.setMeasuredTime(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());
-        dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
-        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
+        dto.setPresentationName(DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()));
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
         return dto;
     }

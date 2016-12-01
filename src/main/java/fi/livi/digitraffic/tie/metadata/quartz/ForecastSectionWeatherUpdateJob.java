@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionDataUpdater;
+import java.time.ZonedDateTime;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.ZonedDateTime;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionDataUpdater;
 
 @DisallowConcurrentExecution
 public class ForecastSectionWeatherUpdateJob extends AbstractUpdateJob {
@@ -27,7 +28,7 @@ public class ForecastSectionWeatherUpdateJob extends AbstractUpdateJob {
 
         ZonedDateTime messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        staticDataStatusService.setMetadataUpdated(MetadataType.FORECAST_SECTION_WEATHER, messageTimestamp.toLocalDateTime());
+        staticDataStatusService.setMetadataUpdated(MetadataType.FORECAST_SECTION_WEATHER, messageTimestamp);
 
         long end = System.currentTimeMillis();
         log.info("Ending forecast section weather data update job. Update took " + (end - start) + " milliseconds.");

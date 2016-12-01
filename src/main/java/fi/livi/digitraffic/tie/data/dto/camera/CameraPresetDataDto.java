@@ -1,10 +1,9 @@
 package fi.livi.digitraffic.tie.data.dto.camera;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.Immutable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -13,8 +12,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
-@ApiModel(value = "CameraPresetData", description = "Road wather station with sensor values")
-@JsonPropertyOrder( value = {"id", "presentationName", "nameOnDevice", "public", "imageUrl"})
+@ApiModel(value = "CameraPresetData", description = "Camera's preset data", parent = MeasuredDataObjectDto.class)
+@JsonPropertyOrder( value = {"id", "presentationName", "public", "imageUrl"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
@@ -24,29 +23,24 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
     @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
     private String presentationName;
 
-    @ApiModelProperty(value = "Name on device (Preset name 2)")
-    private String nameOnDevice;
-
     @ApiModelProperty(value = "Image url")
     private String imageUrl;
 
-    @JsonIgnore
-    private LocalDateTime measured;
+    private ZonedDateTime measuredTime;
 
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
+    }
+
+    public void setMeasuredTime(ZonedDateTime measuredTime) {
+        this.measuredTime = measuredTime;
+    }
     public void setId(final String id) {
         this.id = id;
     }
 
     public String getId() {
         return id;
-    }
-
-    public void setNameOnDevice(final String nameOnDevice) {
-        this.nameOnDevice = nameOnDevice;
-    }
-
-    public String getNameOnDevice() {
-        return nameOnDevice;
     }
 
     public void setPresentationName(final String presentationName) {
@@ -65,12 +59,4 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
         return imageUrl;
     }
 
-    @Override
-    public LocalDateTime getMeasured() {
-        return measured;
-    }
-
-    public void setMeasured(final LocalDateTime measured) {
-        this.measured = measured;
-    }
 }

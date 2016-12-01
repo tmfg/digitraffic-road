@@ -24,7 +24,7 @@ public class Point {
     @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
     private final String type = "Point";
 
-    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters.)",
+    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters. Location accuracy is 1-100 metres.)",
                       required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
 

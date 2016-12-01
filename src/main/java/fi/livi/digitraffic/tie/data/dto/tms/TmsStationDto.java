@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
 @ApiModel(value = "TmsStationData", description = "TMS station with sensor values", parent = AbstractStationWithSensorsDto.class)
-@JsonPropertyOrder( value = {"id", "tmsNumber", "measuredLocalTime", "measuredUtc", "sensorValues"})
+@JsonPropertyOrder( value = {"id", "tmsNumber", "measuredTime", "sensorValues"})
 public class TmsStationDto extends AbstractStationWithSensorsDto {
 
     @ApiModelProperty(value = "TMS station number", required = true)

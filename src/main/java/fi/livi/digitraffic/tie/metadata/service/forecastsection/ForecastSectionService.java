@@ -1,5 +1,13 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fi.livi.digitraffic.tie.metadata.converter.ForecastSection2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -8,19 +16,15 @@ import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ForecastSectionService {
+
     private final ForecastSectionRepository forecastSectionRepository;
-    private StaticDataStatusService staticDataStatusService;
+
     private final ForecastSection2FeatureConverter forecastSection2FeatureConverter;
+
+    private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
     public ForecastSectionService(final ForecastSectionRepository forecastSectionRepository,
@@ -37,7 +41,7 @@ public class ForecastSectionService {
 
         staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
 
-        return forecastSection2FeatureConverter.convert(forecastSections, LocalDateTime.now());
+        return forecastSection2FeatureConverter.convert(forecastSections, ZonedDateTime.now());
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
@@ -48,6 +52,6 @@ public class ForecastSectionService {
                 onlyUpdateInfo ?
                     null :
                     findAllForecastSections(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 }

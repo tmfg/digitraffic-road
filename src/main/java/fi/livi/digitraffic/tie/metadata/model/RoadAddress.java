@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera road address", value = "RoadAddress")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "roadSection", "roadNumber", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
+@JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
 @Entity
 @DynamicUpdate
 public class RoadAddress {

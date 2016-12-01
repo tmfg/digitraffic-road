@@ -1,0 +1,109 @@
+CLASS	TCD	STCD	SDESC	SNATCODE	SNATDESC
+P	1	15	Exit	P1.15	Exit
+P	3	6	Carpool point	P3.6	Kimppakyytipiste
+P	3	7	Park and Ride site	P3.7	Liityntäpysäköintipaikka
+P	3	9	Kiosk	P3.9	Kioski
+P	3	10	Kiosk with WC	P3.10	kioski ja WC
+P	3	11	Petrol station	P3.11	Tankkauspiste
+P	3	13	Motel	P3.13	Hotelli/motelli
+P	3	16	Toll plaza	P3.16	Tietulli
+P	3	19	Square	P3.19	Tori
+P	3	20	Fair	P3.20	Aukio
+P	3	21	Garage	P3.21	Pysäköintihalli
+P	3	22	Underground garage	P3.22	Maanalainen pysäköintihalli
+P	3	23	Retail park	P3.23	Kauppakeskus
+P	3	31	Stadium	P3.31	Urheilukenttä
+P	3	34	Town hall	P3.34	Kaupungintalo
+P	3	37	Place name	P3.37	Place name (opasteessa?)
+P	3	38	Dam	P3.38	Pato
+P	3	39	Dike	P3.39	Penger
+P	3	40	Aqueduct	P3.40	Vesijohto
+P	3	41	Lock	P3.41	Sulku (kanava?)
+P	3	42	Mountain crossing/pass	P3.42	Sola
+P	3	44	Wade	P3.44	Pengerrys
+P	3	46	Industrial area	P3.46	Teollisuusalue
+P	3	47	Viadukt	P3.47	Viadukt
+P	3	15	Customs post	P3.15	Tulli
+P	3	29	Hospital	P3.29	Sairaala
+A	3	0	Country	A3.0	Maa
+A	9	0	3rd order area	A9.0	Kunta
+P	3	0	Other landmark	P3.0	Muu piste
+P	3	3	Service area	P3.3	Palvelupiste
+P	3	35	Exhibition/convention centre	P3.35	Exhibition/convention centre
+P	3	5	View point	P3.5	Näköalapaikka
+A	6	1	Tourist area	A6.1	Tourist area
+A	6	2	Metropolitan area	A6.2	Metropolitan area
+A	6	3	Industrial area	A6.3	Industrial area
+A	6	4	Traffic area	A6.4	Traffic area
+A	6	5	Meteorological area	A6.5	Meteorological area
+A	6	6	Carpool area	A6.6	Carpool area
+A	6	7	Park and ride site	A6.7	Park and ride site
+A	6	8	Car park area	A6.8	Car park area
+L	7	0	Link road		
+P	4	0	Link road point		
+A	9	1	3rd order area / rural	A9.1	Maalaiskunta
+A	9	2	3rd order area / urban	A9.2	Kaupunki
+P	3	12	Petrol station with kiosk	P3.12	Huoltoasema
+P	3	45	Ferry	P3.45	Lautta
+P	5	0	Parking POI	P5.0	Parking POI
+P	5	1	Underground parking garage	P5.1	Underground parking garage
+P	5	2	Car Park	P5.2	Car Park
+P	5	3	Parking garage	P5.3	Parking garage
+P	5	4	Carpool point	P5.4	Carpool point
+P	5	5	Park and ride site	P5.5	Park and ride site
+P	5	6	Rest area parking	P5.6	Rest area parking
+P	5	7	Campground	P5.7	Campground
+P	3	43	Railroad crossing	P3.43	Rautatien tasoristeys
+P	1	12	T-junction	P1.12	Kolmihaaraliittymä
+L	1	1	Motorway	L1.1	Moottoritie
+P	2	1	Distance marker	P2.1	Etäisyystaulu
+A	2	0	Country group	A2.0	Maaryhmä
+A	5	0	Water area	A5.0	Vesistöalue
+A	6	0	Fuzzy area	A6.0	Fuzzy area
+A	7	0	1st order area	A7.0	Lääni
+A	8	0	2nd order area	A8.0	Maakunta
+A	10	0	4th order area	A10.0	Kaupunginosa
+A	11	0	5th order area	A11.0	5th order area
+A	12	0	Application region	A12.0	Application region
+L	3	0	1st order segment	L3.0	1. asteen tiejakso
+L	4	0	2nd order segment	L4.0	2. asteen tiejakso
+L	5	0	Urban street	L5.0	Taajamatie
+L	2	1	Ring motorway	L2.1	Kehämoottoritie
+P	1	1	Motorway intersection	P1.1	Eritasoliittymä
+P	3	1	Tunnel	P3.1	Tunneli
+L	1	2	1st class road	L1.2	Valta- tai kantatie
+L	2	2	Other ring-road	L2.2	Muu kehätie
+P	2	2	Traffic monitoring station	P2.2	Liikennelaskentapiste
+P	3	2	Bridge	P3.2	Silta
+L	1	3	2nd class road	L1.3	Seututie
+P	1	3	Motorway junction	P1.3	Moottoritieliittymä
+L	1	4	3rd class road	L1.4	Yhdystie
+P	3	4	Rest area	P3.4	Levähdysalue
+P	1	7	Underpass	P1.7	Alikulku
+P	1	8	Roundabout	P1.8	Kiertoliittymä
+P	3	8	Car park	P3.8	Pysäköintialue
+P	1	11	Cross-roads	P1.11	Tasoliittymä
+P	3	14	Border	P3.14	Raja
+P	3	17	Ferry terminal	P3.17	Lauttaranta
+P	3	18	Harbour	P3.18	Satama
+P	3	24	Theme park	P3.24	Huvipuisto
+P	3	25	Tourist attraction	P3.25	Matkailukohde
+P	3	26	University	P3.26	Oppilaitos
+P	3	27	Airport	P3.27	Lentokenttä
+P	3	28	Station	P3.28	Juna/linja-autoasema
+P	3	30	Church	P3.30	Kirkko
+P	3	33	Castle	P3.33	Linna
+P	3	36	Communities	P3.36	Taajama
+A	1	0	Continent	A1.0	Maanosa
+A	5	1	Sea	A5.1	Meri
+A	5	2	Lake	A5.2	Järvialue
+L	6	0	Vehicular link	L6.0	Vehicular link
+L	6	1	Ferry	L6.1	Lauttayhteys
+L	6	2	Vehicular rail link	L6.2	Raideyhteys
+P	1	2	Motorway triangel	P1.2	Moottoriteiden haarauma
+P	1	4	Motorway exit	P1.4	Erkanemisramppi
+P	1	5	Motorway entrance	P1.5	Liittymisramppi
+P	1	6	Overpass	P1.6	Ylikulku
+P	1	10	Traffic light	P1.10	Liikennevalot
+P	1	13	Intermediate node	P1.13	Jakopiste
+P	1	14	Connection	P1.14	Yhteyskaista?

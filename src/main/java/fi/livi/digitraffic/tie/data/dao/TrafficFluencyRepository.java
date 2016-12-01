@@ -13,16 +13,16 @@ import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 public interface TrafficFluencyRepository extends JpaRepository<LatestMedianDataDto, Long> {
 
     @Query(value =
-                   "SELECT max(M.END_TIMESTAMP) AS MEASURED\n" +
-                           "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
-                           "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-                           "WHERE L.OBSOLETE = 0",
+           "SELECT max(M.END_TIMESTAMP) AS MEASURED_TIME\n" +
+           "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
+           "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
+           "WHERE L.OBSOLETE = 0",
            nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
 
     @Query(value =
             "SELECT M.ID\n" +
-            "     , M.END_TIMESTAMP AS MEASURED\n" +
+            "     , M.END_TIMESTAMP AS MEASURED_TIME\n" +
             "     , M.MEDIAN_TRAVEL_TIME AS MEDIAN_JOURNEY_TIME\n" +
             "     , M.AVERAGE_SPEED AS MEDIAN_SPEED\n" +
             "     , M.RATIO_TO_FREE_FLOW_SPEED\n" +
@@ -37,7 +37,7 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
 
     @Query(value =
             "SELECT M.ID\n" +
-            "     , M.END_TIMESTAMP AS MEASURED\n" +
+            "     , M.END_TIMESTAMP AS MEASURED_TIME\n" +
             "     , M.MEDIAN_TRAVEL_TIME AS MEDIAN_JOURNEY_TIME\n" +
             "     , M.AVERAGE_SPEED AS MEDIAN_SPEED\n" +
             "     , M.RATIO_TO_FREE_FLOW_SPEED\n" +

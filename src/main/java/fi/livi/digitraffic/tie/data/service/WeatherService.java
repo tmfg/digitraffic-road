@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public class WeatherService {
     @Transactional(readOnly = true)
     public WeatherRootDataObjectDto findPublicWeatherData(final boolean onlyUpdateInfo) {
 
-        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
         if (onlyUpdateInfo) {
             return new WeatherRootDataObjectDto(updated);
@@ -47,7 +47,7 @@ public class WeatherService {
                 stations.add(dto);
                 dto.setRoadStationNaturalId(entry.getKey());
                 dto.setSensorValues(entry.getValue());
-                dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
+                dto.setMeasuredTime(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
             }
 
             return new WeatherRootDataObjectDto(stations, updated);
@@ -61,7 +61,7 @@ public class WeatherService {
             throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
         }
 
-        final LocalDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
@@ -70,7 +70,7 @@ public class WeatherService {
         final WeatherStationDto dto = new WeatherStationDto();
         dto.setRoadStationNaturalId(roadStationNaturalId);
         dto.setSensorValues(values);
-        dto.setMeasured(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
+        dto.setMeasuredTime(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
 
         return new WeatherRootDataObjectDto(Collections.singletonList(dto), updated);
     }

@@ -1,18 +1,19 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
+import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.location.MetadataVersions;
 
 @Service
 public class StaticDataStatusService {
-
     public enum StaticStatusType {
         TMS("LAM_DATA_LAST_UPDATED"),
         ROAD_WEATHER("RWS_DATA_LAST_UPDATED"),
@@ -34,7 +35,6 @@ public class StaticDataStatusService {
     private final StaticDataStatusDAO staticDataStatusDAO;
     private final MetadataUpdatedRepository metadataUpdatedRepository;
 
-
     @Autowired
     public StaticDataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
                                    final MetadataUpdatedRepository metadataUpdatedRepository) {
@@ -47,31 +47,56 @@ public class StaticDataStatusService {
         staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 
-    @Transactional
     public void updateMetadataUpdated(final MetadataType metadataType) {
-        MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+        updateMetadataUpdated(metadataType, null);
+    }
+
+    @Transactional
+    public void updateMetadataUpdated(final MetadataType metadataType, final String version) {
+        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+
         if (updated == null) {
-            updated = new MetadataUpdated(metadataType, LocalDateTime.now());
-            metadataUpdatedRepository.save(updated);
+            metadataUpdatedRepository.save(new MetadataUpdated(metadataType, ZonedDateTime.now(), version));
         } else {
-            updated.setUpdated(LocalDateTime.now());
+            updated.setUpdatedTime(ZonedDateTime.now());
+            updated.setVersion(version);
         }
     }
 
     @Transactional
-    public void setMetadataUpdated(final MetadataType metadataType, LocalDateTime updated) {
+    public void setMetadataUpdated(final MetadataType metadataType, ZonedDateTime updated) {
         MetadataUpdated metadataUpdated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
         if (metadataUpdated == null) {
-            metadataUpdated = new MetadataUpdated(metadataType, updated);
-            metadataUpdatedRepository.save(metadataUpdated);
+            metadataUpdatedRepository.save(new MetadataUpdated(metadataType, updated, null));
         } else {
-            metadataUpdated.setUpdated(updated);
+            metadataUpdated.setUpdatedTime(updated);
         }
     }
 
     @Transactional(readOnly = true)
     public MetadataUpdated findMetadataUpdatedByMetadataType(final MetadataType metadataType) {
         return metadataUpdatedRepository.findByMetadataType(metadataType.name());
+    }
+
+    @Transactional(readOnly = true)
+    public MetadataUpdated getMetadataUpdatedTime(final MetadataType metadataType) {
+        return metadataUpdatedRepository.findByMetadataType(metadataType.name());
+    }
+
+    @Transactional(readOnly = true)
+    public MetadataVersions getCurrentMetadataVersions() {
+        final MetadataVersions metadataVersions = new MetadataVersions();
+
+        metadataVersions.addVersion(MetadataType.LOCATIONS, null, getMetadataVersion(MetadataType.LOCATIONS));
+        metadataVersions.addVersion(MetadataType.LOCATION_TYPES, null, getMetadataVersion(MetadataType.LOCATION_TYPES));
+
+        return metadataVersions;
+    }
+
+    public String getMetadataVersion(final MetadataType metadataType) {
+        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+
+        return updated == null ? null : updated.getVersion();
     }
 
 }

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +32,7 @@ public class SensorValue {
     private Double value;
 
     @Column(name = "MEASURED")
-    private LocalDateTime sensorValueMeasured;
+    private ZonedDateTime sensorValueMeasured;
 
     @OneToOne
     @JoinColumn(name="ROAD_STATION_ID", nullable = false)
@@ -45,15 +45,15 @@ public class SensorValue {
     private RoadStationSensor roadStationSensor;
 
     @JsonIgnore
-    LocalDateTime updated;
+    ZonedDateTime updated;
 
     /**
      * Default constructor fo Hibernate
      */
-    private SensorValue() {
+    protected SensorValue() {
     }
 
-    public SensorValue(RoadStation roadStation, RoadStationSensor roadStationSensor, double value, LocalDateTime sensorValueMeasured) {
+    public SensorValue(RoadStation roadStation, RoadStationSensor roadStationSensor, double value, ZonedDateTime sensorValueMeasured) {
         this.roadStation = roadStation;
         this.roadStationSensor = roadStationSensor;
         this.value = value;
@@ -76,11 +76,11 @@ public class SensorValue {
         this.value = value;
     }
 
-    public LocalDateTime getSensorValueMeasured() {
+    public ZonedDateTime getSensorValueMeasured() {
         return sensorValueMeasured;
     }
 
-    public void setSensorValueMeasured(final LocalDateTime sensorValueMeasured) {
+    public void setSensorValueMeasured(final ZonedDateTime sensorValueMeasured) {
         this.sensorValueMeasured = sensorValueMeasured;
     }
 
@@ -100,11 +100,11 @@ public class SensorValue {
         this.roadStationSensor = roadStationSensor;
     }
 
-    public LocalDateTime getUpdated() {
+    public ZonedDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(LocalDateTime updated) {
+    public void setUpdated(ZonedDateTime updated) {
         this.updated = updated;
     }
 
