@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionWeather;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;

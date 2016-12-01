@@ -1,7 +1,10 @@
-package fi.livi.digitraffic.tie.metadata.model;
+package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import fi.livi.digitraffic.tie.metadata.model.Road;
+import fi.livi.digitraffic.tie.metadata.model.RoadSection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionCoordinatesDto;

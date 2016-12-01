@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.model.ForecastConditionReason;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionWeather;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionWeatherPK;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

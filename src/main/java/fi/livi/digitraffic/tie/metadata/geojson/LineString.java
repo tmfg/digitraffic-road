@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSectionCoordinates;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinates;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

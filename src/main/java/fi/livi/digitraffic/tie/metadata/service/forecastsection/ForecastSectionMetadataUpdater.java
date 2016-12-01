@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;
-import fi.livi.digitraffic.tie.metadata.model.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

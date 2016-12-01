@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.model;
+package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
