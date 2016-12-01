@@ -13,12 +13,19 @@ public class TmsDataServiceTest extends MetadataIntegrationTest {
     private TmsDataService tmsDataService;
 
     @Test
-    public void testListAllTmsDataFromNonObsoleteStations()  {
+    public void testFindPublicTmsData()  {
         final TmsRootDataObjectDto object = tmsDataService.findPublicTmsData(false);
-
         Assert.notNull(object);
-        Assert.notNull(object.getDataUpdatedLocalTime());
-        Assert.notNull(object.getDataUpdatedUtc());
+        Assert.notNull(object.getDataUpdatedTime());
+        Assert.notNull(object.getTmsStations());
+        Assert.notEmpty(object.getTmsStations());
+    }
+
+    @Test
+    public void testFindPublicTmsDataById()  {
+        final TmsRootDataObjectDto object = tmsDataService.findPublicTmsData(23001);
+        Assert.notNull(object);
+        Assert.notNull(object.getDataUpdatedTime());
         Assert.notNull(object.getTmsStations());
         Assert.notEmpty(object.getTmsStations());
     }

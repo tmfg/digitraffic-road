@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -107,6 +108,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         // Now we have stations with sensors and lotjuid:s that we can update
     }
 
+    /**
+     * Send some data bursts to jms handler and test performance of database updates.
+     * @throws JAXBException
+     * @throws DatatypeConfigurationException
+     */
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
@@ -237,9 +243,9 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Test
     public void test2LastUpdated() {
-        LocalDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
+        ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
         log.info("lastUpdated " + lastUpdated + " vs " + LocalDateTime.now().minusMinutes(2));
-        assertTrue(lastUpdated.isAfter(LocalDateTime.now().minusMinutes(2)));
+        assertTrue(lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
 
         List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());

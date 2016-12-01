@@ -46,7 +46,10 @@ public class SingleTmsDataWebsocketEndpoint extends WebsocketEndpoint {
     @OnClose
     public void onClose(final Session session, @PathParam("id") final Integer roadStationNaturalId) {
         synchronized (sessions) {
-            sessions.get(roadStationNaturalId).remove(session);
+            Set<Session> set = sessions.get(roadStationNaturalId);
+            if (set != null) {
+                set.remove(session);
+            }
         }
     }
 

@@ -48,7 +48,7 @@ public class TmsStationService {
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 findAllNonObsoletePublicNonNullLotjuIdTmsStations(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 
     @Transactional

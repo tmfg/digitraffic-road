@@ -13,17 +13,16 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
 public class TmsStationUpdateJob extends AbstractUpdateJob {
-
     private static final Logger log =  LoggerFactory.getLogger(TmsStationUpdateJob.class);
 
     @Autowired
-    public TmsStationSensorUpdater tmsStationSensorUpdater;
+    private TmsStationSensorUpdater tmsStationSensorUpdater;
 
     @Autowired
-    public TmsStationUpdater tmsStationUpdater;
+    private TmsStationUpdater tmsStationUpdater;
 
     @Autowired
-    public TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
+    private TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
 
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) {
@@ -50,7 +49,7 @@ public class TmsStationUpdateJob extends AbstractUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("Quartz TmsStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +
-                " s, updateTmsStations took: " + timeStations + " s, updateRoadStationSensors took: " + timeStationsSensors + " s)");
+        log.info("Quartz TmsStationUpdateJob end (updateRoadStationSensors took: {} s, updateTmsStations took: {} s, updateRoadStationSensors took: {} s)",
+                timeSensors, timeStations, timeStationsSensors);
     }
 }

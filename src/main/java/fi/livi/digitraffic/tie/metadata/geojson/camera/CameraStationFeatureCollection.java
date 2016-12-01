@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.camera;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,8 +25,8 @@ public class CameraStationFeatureCollection extends RootDataObjectDto implements
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<CameraStationFeature> features = new ArrayList<CameraStationFeature>();
 
-    public CameraStationFeatureCollection(final LocalDateTime localTimestamp) {
-        super(localTimestamp);
+    public CameraStationFeatureCollection(final ZonedDateTime dataUpdatedTime) {
+        super(dataUpdatedTime);
     }
 
     public String getType() {

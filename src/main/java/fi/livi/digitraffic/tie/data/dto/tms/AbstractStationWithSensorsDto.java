@@ -1,14 +1,12 @@
 package fi.livi.digitraffic.tie.data.dto.tms;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
@@ -25,8 +23,8 @@ public abstract class AbstractStationWithSensorsDto {
     @ApiModelProperty(value = "Measured sensor values of the Weather Station", required = true)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
-    @JsonIgnore
-    private LocalDateTime measured;
+    @ApiModelProperty(value = "Values measured " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    private ZonedDateTime measuredTime;
 
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -48,21 +46,11 @@ public abstract class AbstractStationWithSensorsDto {
         this.sensorValues = sensorValues;
     }
 
-    public LocalDateTime getMeasured() {
-        return measured;
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
     }
 
-    public void setMeasured(final LocalDateTime measured) {
-        this.measured = measured;
-    }
-
-    @ApiModelProperty(value = "Values measured " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
-    public String getMeasuredLocalTime() {
-        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Values measured " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE)
-    public String getMeasuredUtc() {
-        return ToStringHelpper.toString(getMeasured(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    public void setMeasuredTime(final ZonedDateTime measuredTime) {
+        this.measuredTime = measuredTime;
     }
 }

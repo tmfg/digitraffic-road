@@ -16,8 +16,8 @@ public class RoadStationServiceTest extends MetadataIntegrationTest {
 
     @Test
     public void testFindAllTmsStations() {
-        final List<RoadStation> lams = roadStationService.findByType(RoadStationType.TMS_STATION);
-        Assert.assertTrue(lams.size() >= 2);
+        final List<RoadStation> tms = roadStationService.findByType(RoadStationType.TMS_STATION);
+        Assert.assertTrue(tms.size() >= 2);
     }
 
     @Test

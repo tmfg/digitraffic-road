@@ -75,7 +75,7 @@ public class CameraPresetService {
                 onlyUpdateInfo ?
                     Collections.emptyList() :
                     findAllNonObsoleteCameraPresets(),
-                updated != null ? updated.getUpdated() : null);
+                updated != null ? updated.getUpdatedTime() : null);
     }
 
     @Transactional(readOnly = true)

@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -83,11 +83,11 @@ public class RoadStation {
     private String provinceCode;
 
     private String location;
-    private LocalDateTime startDate;
+    private ZonedDateTime startDate;
     private String country;
     private String liviId;
-    private LocalDateTime repairMaintenanceDate;
-    private LocalDateTime annualMaintenanceDate;
+    private ZonedDateTime repairMaintenanceDate;
+    private ZonedDateTime annualMaintenanceDate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
@@ -294,19 +294,19 @@ public class RoadStation {
         this.roadStationSensors = roadStationSensors;
     }
 
-    public void setRepairMaintenanceDate(final LocalDateTime repairMaintenanceDate) {
+    public void setRepairMaintenanceDate(final ZonedDateTime repairMaintenanceDate) {
         this.repairMaintenanceDate = repairMaintenanceDate;
     }
 
-    public LocalDateTime getRepairMaintenanceDate() {
+    public ZonedDateTime getRepairMaintenanceDate() {
         return repairMaintenanceDate;
     }
 
-    public void setAnnualMaintenanceDate(final LocalDateTime annualMaintenanceDate) {
+    public void setAnnualMaintenanceDate(final ZonedDateTime annualMaintenanceDate) {
         this.annualMaintenanceDate = annualMaintenanceDate;
     }
 
-    public LocalDateTime getAnnualMaintenanceDate() {
+    public ZonedDateTime getAnnualMaintenanceDate() {
         return annualMaintenanceDate;
     }
 
@@ -334,11 +334,11 @@ public class RoadStation {
         return location;
     }
 
-    public void setStartDate(final LocalDateTime startDate) {
+    public void setStartDate(final ZonedDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getStartDate() {
+    public ZonedDateTime getStartDate() {
         return startDate;
     }
 

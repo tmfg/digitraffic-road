@@ -51,7 +51,7 @@ public class WeatherStationUpdateJob extends AbstractUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("Quartz WeatherStationUpdateJob end (updateRoadStationSensors took: " + timeSensors +
-                 " s, updateWeatherStations took: " + timeStations + " s, updateWeatherStationsSensors took: " + timeStationsSensors + " s)");
+        log.info("Quartz WeatherStationUpdateJob end (updateRoadStationSensors took: {} s, updateWeatherStations took: {} s, updateWeatherStationsSensors took: {} s)",
+                timeSensors, timeStations, timeStationsSensors);
     }
 }

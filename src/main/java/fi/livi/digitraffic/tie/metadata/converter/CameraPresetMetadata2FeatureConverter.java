@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.helper.DataValidyHelper;
+import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
@@ -37,7 +37,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.weathercamBaseurl = weathercamBaseurl;
     }
 
-    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final LocalDateTime lastUpdated) {
+    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final ZonedDateTime lastUpdated) {
         final CameraStationFeatureCollection collection = new CameraStationFeatureCollection(lastUpdated);
 
         // Cameras mapped with cameraId
@@ -69,9 +69,7 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         final CameraPresetDto dto = new CameraPresetDto();
         dto.setCameraId(cp.getCameraId());
         dto.setPresetId(cp.getPresetId());
-        dto.setPresentationName(DataValidyHelper.nullifyUnknownValue(cp.getPresetName1()));
-        dto.setNameOnDevice(DataValidyHelper.nullifyUnknownValue(cp.getPresetName2()));
-        dto.setPresetOrder(cp.getPresetOrder());
+        dto.setPresentationName(DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()));
         dto.setResolution(cp.getResolution());
         dto.setDirectionCode(cp.getDirection());
         dto.setLotjuId(cp.getLotjuId());

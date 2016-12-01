@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.tms;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,8 +22,8 @@ public class TmsStationFeatureCollection extends RootDataObjectDto implements It
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<TmsStationFeature> features = new ArrayList<TmsStationFeature>();
 
-    public TmsStationFeatureCollection(final LocalDateTime localTimestamp) {
-        super(localTimestamp);
+    public TmsStationFeatureCollection(final ZonedDateTime dataUpdatedTime) {
+        super(dataUpdatedTime);
     }
 
     public String getType() {

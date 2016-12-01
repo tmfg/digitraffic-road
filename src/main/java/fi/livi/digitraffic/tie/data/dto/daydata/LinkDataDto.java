@@ -1,11 +1,10 @@
 package fi.livi.digitraffic.tie.data.dto.daydata;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -14,19 +13,18 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
-@ApiModel(value = "Link", description = "Link data")
-@JsonPropertyOrder(value = { "id", "measuredLocalTime", "measuredUtc", "linkMeasurements"})
+@ApiModel(value = "Link", description = "Link data", parent = MeasuredDataObjectDto.class)
+@JsonPropertyOrder(value = { "id", "dataUpdatedTime", "linkMeasurements"})
 public class LinkDataDto implements MeasuredDataObjectDto {
 
     @ApiModelProperty(value = "Link id", required = true)
     @JsonProperty("id")
     private final int linkNumber;
 
-    @ApiModelProperty(value = "Meadured link data", required = true)
+    @ApiModelProperty(value = "Link measurement data", required = true)
     private final List<LinkMeasurementDataDto> linkMeasurements;
 
-    @JsonIgnore
-    private LocalDateTime measured;
+    private ZonedDateTime measuredTime;
 
     public LinkDataDto(final int linkNumber, final List<LinkMeasurementDataDto> linkMeasurements) {
         this.linkNumber = linkNumber;
@@ -42,11 +40,11 @@ public class LinkDataDto implements MeasuredDataObjectDto {
     }
 
     @Override
-    public LocalDateTime getMeasured() {
-        return measured;
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
     }
 
-    public void setMeasured(final LocalDateTime measured) {
-        this.measured = measured;
+    public void setMeasuredTime(final ZonedDateTime measured) {
+        this.measuredTime = measured;
     }
 }

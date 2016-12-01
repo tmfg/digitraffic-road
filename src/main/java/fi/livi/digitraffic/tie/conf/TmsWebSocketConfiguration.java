@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,11 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @Configuration
 public class TmsWebSocketConfiguration {
 
-    private LocalDateTime lastUpdated = null;
+    private ZonedDateTime lastUpdated = null;
     private final RoadStationSensorService roadStationSensorService;
+
+    int singleCounter = 0;
+    int counter = 0;
 
     @Autowired
     public TmsWebSocketConfiguration(final RoadStationSensorService roadStationSensorService) {
@@ -30,26 +33,35 @@ public class TmsWebSocketConfiguration {
         lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
 
         if (lastUpdated == null) {
-            lastUpdated = LocalDateTime.now();
+            lastUpdated = ZonedDateTime.now();
         }
     }
 
     @Scheduled(fixedRateString = "${websocket.tms.pollingIntervalMs}")
     public void pollTmsData() {
+        singleCounter++;
+        counter++;
 
         List<SensorValueDto> data =
                 roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
                         lastUpdated,
                         RoadStationType.TMS_STATION);
 
-        // Single TMS Station listeners are notified every time
-        SingleTmsDataWebsocketEndpoint.sendStatus();
-        if (data.isEmpty()) {
+        // Single TMS Station listeners are notified every 10th time
+        if (singleCounter >= 10) {
+            SingleTmsDataWebsocketEndpoint.sendStatus();
+            singleCounter = 0;
+        }
+        // All TMS Stations listeners are notified every 10th empty interval
+        if (data.isEmpty() && counter >= 10) {
             TmsDataWebsocketEndpoint.sendStatus();
+            counter = 0;
+        } else if (!data.isEmpty()) {
+            counter = 0;
         }
 
         data.forEach(sensorValueDto -> {
-            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdated());
+            lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdatedTime());
             final TmsMessage message = new TmsMessage(sensorValueDto);
             TmsDataWebsocketEndpoint.sendMessage(message);
             SingleTmsDataWebsocketEndpoint.sendMessage(message);

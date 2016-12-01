@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -105,6 +105,11 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         log.info("Commit done");
     }
 
+    /**
+     * Send some data bursts to jms handler and test performance of database updates.
+     * @throws JAXBException
+     * @throws DatatypeConfigurationException
+     */
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
@@ -171,6 +176,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                     anturit.add(anturi);
 
                     anturi.setArvo(arvo);
+                    // Increase value for every sensor to validate correct updates
                     arvo = arvo + 0.1f;
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId());
                     if (anturit.size() >= 30) {
@@ -240,8 +246,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     @Test
     public void test2LastUpdated() {
-        LocalDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
-        assertTrue(lastUpdated.isAfter(LocalDateTime.now().minusMinutes(2)));
+        ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
+        assertTrue(lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
 
         List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
         assertFalse(updated.isEmpty());

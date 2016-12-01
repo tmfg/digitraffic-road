@@ -14,7 +14,7 @@ public class DateToZonedDateTimeConverter implements AttributeConverter<ZonedDat
 
     @Override
     public Date convertToDatabaseColumn(final ZonedDateTime zonedDateTime) {
-        return zonedDateTime == null ? null :new Date(zonedDateTime.toLocalDateTime().atZone(ZONE_ID).toInstant().toEpochMilli());
+        return zonedDateTime == null ? null : new Date(zonedDateTime.toLocalDateTime().atZone(ZONE_ID).toInstant().toEpochMilli());
     }
 
     @Override

@@ -108,7 +108,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         try {
 
             // If lock can be acquired then start listening
-            boolean lockAcquired = lockingService.aquireLock(getJmsParameters().getLockInstanceName(),
+            boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
                     getJmsParameters().getLockInstanceId(),
                     JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
