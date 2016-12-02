@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -302,5 +304,15 @@ public class DataController {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "/situationId=" + situationId);
         return datex2DataService.findAllDatex2DataBySituationId(situationId);
     }
+
+    @ApiOperation("Current traffic disorders Datex2s messages")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH + "/datex2", produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public TrafficDisordersDatex2Response listActiveTrafficDisordersDatex2() {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "/datex2");
+        return datex2DataService.findActiveDatex2Response();
+    }
+
 
 }

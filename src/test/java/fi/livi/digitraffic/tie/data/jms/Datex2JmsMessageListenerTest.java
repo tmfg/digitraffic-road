@@ -10,7 +10,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +88,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     }
 
     // Just for data importing for testing
-    @Ignore
+//    @Ignore
     @Test
     public void testImportData() throws JAXBException, DatatypeConfigurationException, IOException {
 
@@ -104,8 +103,8 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
         log.info("Read Datex2 messages from filesystem");
-        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-//        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto.fi/incidents/datex2/InfoXML*.xml");
+//        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
+        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto.fi/incidents/datex2/InfoXML_2016-1*.xml");
 
         readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
 

@@ -1,11 +1,18 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.io.StringReader;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,11 +35,14 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.Comment;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualString;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualStringValue;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObservationTimeType;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.OverallPeriod;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.PayloadPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Validity;
 
 @Service
@@ -40,10 +50,12 @@ public class Datex2DataService {
 
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
     private final Datex2Repository datex2Repository;
+    private final Unmarshaller jaxbUnmarshaller;
 
     @Autowired
-    public Datex2DataService(Datex2Repository datex2Repository) {
+    public Datex2DataService(Datex2Repository datex2Repository) throws JAXBException {
         this.datex2Repository = datex2Repository;
+        jaxbUnmarshaller = JAXBContext.newInstance(D2LogicalModel.class).createUnmarshaller();
     }
 
     @Transactional
@@ -169,5 +181,38 @@ public class Datex2DataService {
                 datex2s,
                 updated);
 
+    }
+
+    @Transactional(readOnly = true)
+    public TrafficDisordersDatex2Response findActiveDatex2Response() {
+        List<Datex2> allActive = datex2Repository.findAllActive();
+
+        List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
+        for (Datex2 datex2 : allActive) {
+            String datex2Xml = datex2.getMessage();
+            if (!StringUtils.isBlank(datex2Xml)) {
+                StringReader sr = new StringReader(datex2Xml);
+                try {
+                    Object object = jaxbUnmarshaller.unmarshal(sr);
+                    if (object instanceof JAXBElement) {
+                        object = ((JAXBElement) object).getValue();
+                    }
+                    D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
+                    ObservationTimeType published =
+                            new ObservationTimeType()
+                                .withLocaltime(DateHelper.toXMLGregorianCalendar(datex2.getImportTime()))
+                                .withUtc(DateHelper.toXMLGregorianCalendarUtc(datex2.getImportTime()));
+                    TimestampedTrafficDisorderDatex2 tsDatex2 =
+                            new TimestampedTrafficDisorderDatex2()
+                                    .withD2LogicalModel(d2LogicalModel)
+                                    .withPublished(published);
+                    timestampedTrafficDisorderDatex2s.add(tsDatex2);
+                } catch (JAXBException e) {
+                    log.error("Failed to unmarshal datex2 message " + datex2.getId(), e);
+                }
+            }
+
+        }
+        return new TrafficDisordersDatex2Response().withDisorder(timestampedTrafficDisorderDatex2s);
     }
 }

@@ -2,12 +2,22 @@ package fi.livi.digitraffic.tie.helper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class DateHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(DateHelper.class);
+
     private DateHelper() {}
 
     public static ZonedDateTime getNewest(final ZonedDateTime first, final ZonedDateTime second) {
@@ -55,6 +65,31 @@ public final class DateHelper {
     public static Date toDate(ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
             return Date.from(zonedDateTime.toInstant());
+        }
+        return null;
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendar(ZonedDateTime zonedDateTime) {
+        if (zonedDateTime != null) {
+            GregorianCalendar gregorianCalendar = GregorianCalendar.from(zonedDateTime);
+            try {
+                return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            } catch (DatatypeConfigurationException e) {
+                log.error("Failed to convert ZonedDateTime " + zonedDateTime + " to XMLGregorianCalendar", e);
+            }
+        }
+        return null;
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendarUtc(ZonedDateTime zonedDateTime) {
+        if (zonedDateTime != null) {
+            ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC);
+            GregorianCalendar gregorianCalendar = GregorianCalendar.from(utc);
+            try {
+                return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            } catch (DatatypeConfigurationException e) {
+                log.error("Failed to convert ZonedDateTime " + zonedDateTime + " to XMLGregorianCalendar", e);
+            }
         }
         return null;
     }

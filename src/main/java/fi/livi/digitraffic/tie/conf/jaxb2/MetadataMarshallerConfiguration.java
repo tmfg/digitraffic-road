@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf;
+package fi.livi.digitraffic.tie.conf.jaxb2;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,12 +29,7 @@ public class MetadataMarshallerConfiguration {
                 "fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2014._03._06",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29",
-                "fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29"
-//                "fi.livi.digitraffic.tie.lotju.wsdl.lam",
-//                "fi.livi.digitraffic.tie.lotju.wsdl.kamera",
-//                "fi.livi.digitraffic.tie.lotju.wsdl.tiesaa",
-//                "fi.livi.digitraffic.tie.lotju.wsdl.metadata"
-                 );
+                "fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29");
         return marshaller;
     }
 
