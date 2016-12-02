@@ -112,4 +112,8 @@ public class RoadStationService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<RoadStation> findAll() {
+        return roadStationRepository.findAll();
+    }
 }

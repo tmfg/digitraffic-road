@@ -15,7 +15,7 @@ public enum CollectionStatus {
     REMOVED_TEMPORARILY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
     REMOVED_PERMANENTLY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA.POISTETTU_PYSYVASTI.value());
 
-    private static final Set<String> UNACTIVE_KERUUN_TILAS =
+    private static final Set<String> INACTIVE_KERUUN_TILAS =
             new HashSet<>(Arrays.asList(KeruunTILA.POISTETTU_PYSYVASTI.name(),
                     KeruunTILA.POISTETTU_TILAPAISESTI.name()));
 
@@ -65,7 +65,7 @@ public enum CollectionStatus {
     // Keruuntila enum is practically same fo all Kamera, TiesaaAsema and Lamasema, but because
     // it's not sure which version code generation uses, it's safer to test enum's string values
     public static boolean isUnactiveKeruunTila(final KeruunTILA keruunTila) {
-        return UNACTIVE_KERUUN_TILAS.contains(keruunTila.name());
+        return INACTIVE_KERUUN_TILAS.contains(keruunTila.name());
     }
 
     public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA keruunTila) {

@@ -59,7 +59,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         log.info("Update tms Stations start");
 
         if (lotjuTmsStationClient == null) {
-            log.warn("Not updating tms stations because no lotjuTmsStationClient defined");
+            log.warn("Not updating tms stations because lotjuTmsStationClient not defined");
             return false;
         }
 
