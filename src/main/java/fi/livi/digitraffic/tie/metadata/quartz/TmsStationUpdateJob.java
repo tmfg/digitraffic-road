@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.metadata.quartz;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
@@ -12,8 +10,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class TmsStationUpdateJob extends AbstractUpdateJob {
-    private static final Logger log =  LoggerFactory.getLogger(TmsStationUpdateJob.class);
+public class TmsStationUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -25,8 +22,7 @@ public class TmsStationUpdateJob extends AbstractUpdateJob {
     private TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
 
     @Override
-    public void execute(final JobExecutionContext jobExecutionContext) {
-        log.info("Quartz TmsStationUpdateJob start");
+    protected void doExecute(JobExecutionContext context) throws Exception {
 
         final long startSensors = System.currentTimeMillis();
         final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
@@ -49,7 +45,7 @@ public class TmsStationUpdateJob extends AbstractUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("Quartz TmsStationUpdateJob end (updateRoadStationSensors took: {} s, updateTmsStations took: {} s, updateRoadStationSensors took: {} s)",
+        log.info("UpdateRoadStationSensors took: {} s, updateTmsStations took: {} s, updateRoadStationSensors took: {} s)",
                 timeSensors, timeStations, timeStationsSensors);
     }
 }

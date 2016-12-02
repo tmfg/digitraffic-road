@@ -12,7 +12,8 @@ public class CameraUpdateJob extends SimpleUpdateJob {
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
-    @Override protected void doExecute(JobExecutionContext context) {
+    @Override
+    protected void doExecute(JobExecutionContext context) {
         boolean updated = cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         updated = cameraStationUpdater.updateCameras() || updated;
 
