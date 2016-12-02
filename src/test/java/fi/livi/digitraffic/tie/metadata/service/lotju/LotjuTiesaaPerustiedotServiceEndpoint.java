@@ -9,8 +9,6 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +27,10 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaPerustiedotEndpoint;
 import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaPerustiedotV2;
 
 @Service
-public class LotjuTiesaaPerustiedotServiceMock extends LotjuServiceMock implements TiesaaPerustiedotEndpoint {
+public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements TiesaaPerustiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuTiesaaPerustiedotServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuTiesaaPerustiedotServiceEndpoint.class);
+    private static LotjuTiesaaPerustiedotServiceEndpoint instance;
 
     private List<TiesaaAsemaVO> initialTiesaaAsemas;
     private List<TiesaaAsemaVO> afterChangeTiesaaAsemas;
@@ -40,10 +39,16 @@ public class LotjuTiesaaPerustiedotServiceMock extends LotjuServiceMock implemen
     private List<TiesaaLaskennallinenAnturiVO> initialLaskennallisetAnturis;
     private List<TiesaaLaskennallinenAnturiVO> afterChangeLaskennallisetAnturis;
 
-    @Autowired
-    public LotjuTiesaaPerustiedotServiceMock(@Value("${metadata.server.address.weather}")
-                                             final String metadataServerAddressWeather,
-                                             final ResourceLoader resourceLoader) {
+    public static LotjuTiesaaPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
+                                                                    final ResourceLoader resourceLoader) {
+        if (instance == null) {
+            instance = new LotjuTiesaaPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+        }
+        return instance;
+    }
+
+    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather,
+                                                  final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV2.SERVICE);
     }
 
@@ -67,6 +72,7 @@ public class LotjuTiesaaPerustiedotServiceMock extends LotjuServiceMock implemen
             appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
             appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
         }
+        setStateAfterChange(false);
     }
 
 

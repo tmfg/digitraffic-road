@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 public class TmsMetadataControllerRestTest extends MetadataRestTest {
 
     @Autowired
-    private LotjuLAMMetatiedotServiceMock lotjuLAMMetatiedotServiceMock;
+    private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;

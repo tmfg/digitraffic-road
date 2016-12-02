@@ -9,10 +9,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
 
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
@@ -28,10 +25,11 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaLaskennallinenA
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
 
-@Service
-public class LotjuLAMMetatiedotServiceMock extends LotjuServiceMock implements LAMMetatiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceMock.class);
+public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint implements LAMMetatiedotEndpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceEndpoint.class);
+    private static LotjuLAMMetatiedotServiceEndpoint instance;
 
     private List<LamAsemaVO> initialLamAsemas;
     private List<LamAsemaVO> afterChangeLamAsemas;
@@ -40,10 +38,17 @@ public class LotjuLAMMetatiedotServiceMock extends LotjuServiceMock implements L
     private Map<Long, List<LamLaskennallinenAnturiVO>> initialLamAsemasSensorsMap = new HashMap<>();
     private final Map<Long, List<LamLaskennallinenAnturiVO>> afterChangeLamAsemasAnturisMap = new HashMap<>();
 
-    @Autowired
-    public LotjuLAMMetatiedotServiceMock(@Value("${metadata.server.address.tms}")
-                                         final String metadataServerAddressCamera,
-                                         final ResourceLoader resourceLoader) {
+
+    public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
+                                                                final ResourceLoader resourceLoader) {
+        if (instance == null) {
+            instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+        }
+        return instance;
+    }
+
+    private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera,
+                                              final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV2.SERVICE);
     }
 
@@ -67,6 +72,7 @@ public class LotjuLAMMetatiedotServiceMock extends LotjuServiceMock implements L
                     initialLamAsemasSensorsMap,
                     afterChangeLamAsemasAnturisMap);
         }
+        setStateAfterChange(false);
     }
 
     private List<LamAsemaVO> readLamAsemas(final String filePath) {

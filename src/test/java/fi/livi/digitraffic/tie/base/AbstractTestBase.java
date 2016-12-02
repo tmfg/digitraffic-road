@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.MetadataApplication;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MetadataApplication.class,
-        properties = {"config.test=true"})
+                properties = {"config.test=true"})
 @WebAppConfiguration
 public class AbstractTestBase {
     protected Path getPath(final String filename) {
