@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiModel;
 @ApiModel("Overall road condition")
 public enum OverallRoadCondition {
 
-    NORMAL_CONDITION_GREEN(1),
-    POOR_CONDITION_YELLOW(2),
-    EXTREMELY_POOR_CONDITION_RED(3),
+    NORMAL_CONDITION(1),
+    POOR_CONDITION(2),
+    EXTREMELY_POOR_CONDITION(3),
     CONDITION_COULD_NOT_BE_RESOLVED(-1);
 
     private final int value;
