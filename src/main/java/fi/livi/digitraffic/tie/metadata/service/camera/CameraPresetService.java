@@ -39,7 +39,7 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public Map<String, CameraPreset> finAllCameraPresetsMappedByPresetId() {
+    public Map<String, CameraPreset> findAllCameraPresetsMappedByPresetId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
         final Map<String, CameraPreset> cameraMap = new HashMap<>();
 
@@ -62,8 +62,8 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> finAllCameraPresetsWithoutRoadStation() {
-        return cameraPresetRepository.finAllCameraPresetsWithoutRoadStation();
+    public List<CameraPreset> findAllCameraPresetsWithoutRoadStation() {
+        return cameraPresetRepository.findAllCameraPresetsWithoutRoadStation();
     }
 
     @Transactional(readOnly = true)

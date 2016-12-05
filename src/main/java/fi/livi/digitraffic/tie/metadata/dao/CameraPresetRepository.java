@@ -28,7 +28,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
             "    AND RS.TYPE = 3" +
             ")",
             nativeQuery = true)
-    List<CameraPreset> finAllCameraPresetsWithoutRoadStation();
+    List<CameraPreset> findAllCameraPresetsWithoutRoadStation();
 
 
     @Query(value =

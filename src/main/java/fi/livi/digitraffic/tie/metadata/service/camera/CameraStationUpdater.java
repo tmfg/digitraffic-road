@@ -84,7 +84,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
     public boolean fixCameraPresetsWithMissingRoadStations() {
 
         final List<CameraPreset> currentCameraPresetsWithoutRoadStation =
-                cameraPresetService.finAllCameraPresetsWithoutRoadStation();
+                cameraPresetService.findAllCameraPresetsWithoutRoadStation();
 
         final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
@@ -121,7 +121,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
     private boolean updateCameras(final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraAndEsiasento) {
 
-        final Map<String, CameraPreset> presetsMappedByPresetId = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        final Map<String, CameraPreset> presetsMappedByPresetId = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
         final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> obsolete = new ArrayList<>(); // obsolete presets
         List<RoadStation> obsoleteRoadStations = new ArrayList<>(); // obsolete presets

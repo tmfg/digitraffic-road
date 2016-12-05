@@ -17,7 +17,7 @@ public class CameraPresetServiceTest extends MetadataIntegrationTest {
 
     @Test
     public void testFindAll() {
-        final Map<String, CameraPreset> all = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        final Map<String, CameraPreset> all = cameraPresetService.findAllCameraPresetsMappedByPresetId();
         assertTrue(all.size() > 0);
     }
 }
