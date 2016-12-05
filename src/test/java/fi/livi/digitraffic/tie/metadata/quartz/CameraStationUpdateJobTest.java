@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
 
 public class CameraStationUpdateJobTest extends MetadataRestTest {
 
@@ -32,7 +32,7 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    private LotjuKameraPerustiedotServiceMock lotjuKameraPerustiedotServiceMock;
+    private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
 
     @Test
     public void testUpdateKameras() {
@@ -49,7 +49,7 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
             countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
         }
-        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset -> 3 public
+        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public
         assertEquals(3, countPresets);
 
         // Update 121 camera to active and 56 removed

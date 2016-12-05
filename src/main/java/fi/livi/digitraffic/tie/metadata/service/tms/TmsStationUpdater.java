@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -59,7 +60,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         log.info("Update tms Stations start");
 
         if (lotjuTmsStationClient == null) {
-            log.warn("Not updating tms stations because no lotjuTmsStationClient defined");
+            log.warn("Not updating tms stations because lotjuTmsStationClient not defined");
             return false;
         }
 
@@ -85,7 +86,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
     }
 
     private boolean updateTmsStations(final List<LamAsemaVO> stations, final Map<Long, TmsStation> currentStations) {
-        final List<TmsStation> obsolete = new ArrayList<>(); // naturalIds of obsolete tms-stations
+        final List<Pair<LamAsemaVO, TmsStation>> obsolete = new ArrayList<>(); // tms-stations to obsolete
         final List<Pair<LamAsemaVO, TmsStation>> update = new ArrayList<>(); // tms-stations to update
         final List<LamAsemaVO> insert = new ArrayList<>(); // new tms-stations
 
@@ -97,7 +98,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                 final TmsStation currentSaved = currentStations.remove(tmsNaturalId);
 
                 if ( currentSaved != null && CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
-                    obsolete.add(currentSaved);
+                    obsolete.add(Pair.of(la, currentSaved));
                 } else if ( currentSaved != null ) {
                     update.add(Pair.of(la, currentSaved));
                 } else {
@@ -113,7 +114,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         }
 
         // tms-stations in database, but not in server
-        obsolete.addAll(currentStations.values());
+        currentStations.values().stream().forEach(ws -> obsolete.add(Pair.of(null, ws)));
 
         final int obsoleted = obsoleteTmsStations(obsolete);
         final int updated = updateTmsStations(update);
@@ -297,14 +298,17 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                 hash != HashCodeBuilder.reflectionHashCode(to);
     }
 
-    private static int obsoleteTmsStations(final List<TmsStation> obsolete) {
+    private int obsoleteTmsStations(final List<Pair<LamAsemaVO, TmsStation>> obsolete) {
         int counter = 0;
-        for (final TmsStation station : obsolete) {
-            if (station.obsolete()) {
-                log.debug("Obsolete TmsStation " + station.getId() + ", naturalId" + station.getNaturalId());
+        for (final Pair<LamAsemaVO, TmsStation> tmsPair : obsolete) {
+            if (tmsPair.getValue().obsolete()) {
+                log.debug("Obsolete TmsStation " + tmsPair.getValue());
                 counter++;
             }
         }
+        // Update also obsolete stations attributes
+        updateTmsStations(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()));
+
         return counter;
     }
 }

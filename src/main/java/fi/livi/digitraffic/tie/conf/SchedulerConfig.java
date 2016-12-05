@@ -28,6 +28,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
@@ -88,6 +89,11 @@ public class SchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean roadStationsStatusUpdateJobDetail() {
+        return createJobDetail(RoadStationsStatusUpdateJob.class);
+    }
+
+    @Bean
     public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
@@ -106,6 +112,12 @@ public class SchedulerConfig {
     public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(final JobDetail weatherStationUpdateJobDetail,
                                                                    @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(weatherStationUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean roadStationsStatusUpdateJobTrigger(final JobDetail roadStationsStatusUpdateJobDetail,
+                                                                       @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(roadStationsStatusUpdateJobDetail, frequency);
     }
 
     @Bean

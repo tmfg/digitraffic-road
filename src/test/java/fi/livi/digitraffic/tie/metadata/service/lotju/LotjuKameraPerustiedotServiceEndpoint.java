@@ -9,10 +9,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
 
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksellaResponse;
@@ -25,20 +22,26 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.ObjectFactory;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.VideopalvelinVO;
 
-@Service
-public class LotjuKameraPerustiedotServiceMock extends LotjuServiceMock implements KameraPerustiedotEndpoint {
+public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements KameraPerustiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuKameraPerustiedotServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuKameraPerustiedotServiceEndpoint.class);
+    private static LotjuKameraPerustiedotServiceEndpoint instance;
 
     private List<KameraVO> initialKameras;
     private List<KameraVO> afterChangeKameras;
     private Map<Long, List<EsiasentoVO>> initialEsiasentos = new HashMap<>();
     private Map<Long, List<EsiasentoVO>> afterChangeEsiasentos = new HashMap<>();
 
-    @Autowired
-    public LotjuKameraPerustiedotServiceMock(@Value("${metadata.server.address.camera}")
-                                             final String metadataServerAddressCamera,
-                                             final ResourceLoader resourceLoader) {
+    public static LotjuKameraPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
+                                                                    final ResourceLoader resourceLoader) {
+        if (instance == null) {
+            instance = new LotjuKameraPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+        }
+        return instance;
+    }
+
+    private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera,
+                                                  final ResourceLoader resourceLoader) {
         super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV2.SERVICE);
     }
 
@@ -54,6 +57,7 @@ public class LotjuKameraPerustiedotServiceMock extends LotjuServiceMock implemen
             appendEsiasentos(readEsiasentos("lotju/kamera/HaeEsiasennotKameranTunnuksellaResponse443.xml"), getInitialEsiasentos());
             appendEsiasentos(readEsiasentos("lotju/kamera/HaeEsiasennotKameranTunnuksellaResponse443Changed.xml"), getAfterChangeEsiasentos());
         }
+        setStateAfterChange(false);
     }
 
     private void appendEsiasentos(final List<EsiasentoVO> esiasentos, final Map<Long, List<EsiasentoVO>>...esiasentosMap) {

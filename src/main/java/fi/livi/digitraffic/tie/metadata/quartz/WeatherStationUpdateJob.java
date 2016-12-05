@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.metadata.quartz;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
@@ -12,9 +10,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class WeatherStationUpdateJob extends AbstractUpdateJob {
-
-    private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJob.class);
+public class WeatherStationUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     public WeatherStationSensorUpdater weatherStationSensorUpdater;
@@ -26,9 +22,7 @@ public class WeatherStationUpdateJob extends AbstractUpdateJob {
     public WeatherStationsSensorsUpdater weatherStationsSensorsUpdater;
 
     @Override
-    public void execute(final JobExecutionContext jobExecutionContext) {
-        log.info("Quartz WeatherStationUpdateJob start");
-
+    protected void doExecute(JobExecutionContext context) throws Exception {
         final long startSensors = System.currentTimeMillis();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
 
@@ -51,7 +45,7 @@ public class WeatherStationUpdateJob extends AbstractUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("Quartz WeatherStationUpdateJob end (updateRoadStationSensors took: {} s, updateWeatherStations took: {} s, updateWeatherStationsSensors took: {} s)",
+        log.info("UpdateRoadStationSensors took: {} s, updateWeatherStations took: {} s, updateWeatherStationsSensors took: {} s)",
                 timeSensors, timeStations, timeStationsSensors);
     }
 }

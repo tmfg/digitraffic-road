@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-public abstract class LotjuServiceMock {
+public abstract class LotjuServiceEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuServiceMock.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuServiceEndpoint.class);
     private final String metadataServerAddress;
     private final Class<?> metatiedotClass;
     private final QName serviceName;
@@ -27,10 +27,10 @@ public abstract class LotjuServiceMock {
     protected final ResourceLoader resourceLoader;
     private boolean inited;
 
-    public LotjuServiceMock(final ResourceLoader resourceLoader,
-                            final String metadataServerAddress,
-                            final Class<?> metatiedotClass,
-                            final QName serviceName) {
+    public LotjuServiceEndpoint(final ResourceLoader resourceLoader,
+                                final String metadataServerAddress,
+                                final Class<?> metatiedotClass,
+                                final QName serviceName) {
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
@@ -47,7 +47,7 @@ public abstract class LotjuServiceMock {
      * Must be called before api-operations
      */
     protected void initService() {
-        log.info("Init LotjuServiceMock with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
+        log.info("Init LotjuServiceEndpoint with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
         final JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(metatiedotClass);
         svrFactory.setAddress(metadataServerAddress);

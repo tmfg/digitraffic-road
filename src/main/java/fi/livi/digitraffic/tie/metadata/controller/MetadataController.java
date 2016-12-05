@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
@@ -134,19 +133,7 @@ public class MetadataController {
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
 
-    @ApiOperation("The static information of weather forecast sections")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
-                    @ApiResponse(code = 500, message = "Internal server error") })
-    public ForecastSectionsMetadata listForecastSections(
-            @ApiParam("If parameter is given result will only contain update status.")
-            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
-        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
-    }
-
-    @ApiOperation("The static information of locations")
+    @ApiOperation("BETA The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -158,7 +145,7 @@ public class MetadataController {
         return locationService.findLocationsMetadata(lastUpdated);
     }
 
-    @ApiOperation("The static information of location types and locationsubtypes")
+    @ApiOperation("BETA The static information of location types and locationsubtypes")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -170,7 +157,7 @@ public class MetadataController {
         return locationService.findLocationSubtypes(lastUpdated);
     }
 
-    @ApiOperation("The static information of one location")
+    @ApiOperation("BETA The static information of one location")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })

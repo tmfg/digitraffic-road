@@ -128,9 +128,9 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
 
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<String, CameraPreset> cameraPresets = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
@@ -151,7 +151,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
             }
         }
 
-        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
     }
 
@@ -201,7 +201,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        List<CameraPreset> presets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        List<CameraPreset> presets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         Iterator<CameraPreset> presetIterator = presets.iterator();
 
         int testBurstsLeft = 10;
@@ -290,7 +290,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         log.info("Check data validy");
 
-        Map<String, CameraPreset> updatedPresets = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        Map<String, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
         for (Pair<Kuva, String> pair : data) {
             Kuva kuva = pair.getLeft();

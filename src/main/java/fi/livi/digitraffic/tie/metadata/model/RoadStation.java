@@ -366,6 +366,7 @@ public class RoadStation {
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("name", name)
                 .appendField("type", type)
+                .appendField("collectionStatus", collectionStatus)
                 .toString();
     }
 }
