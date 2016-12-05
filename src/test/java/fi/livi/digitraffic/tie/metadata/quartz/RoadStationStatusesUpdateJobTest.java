@@ -13,11 +13,14 @@ import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
 public class RoadStationStatusesUpdateJobTest extends MetadataIntegrationTest {
 
@@ -38,17 +41,26 @@ public class RoadStationStatusesUpdateJobTest extends MetadataIntegrationTest {
     @Autowired
     private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
 
+    @Autowired
+    private TmsStationUpdater tmsStationUpdater;
+
+    @Autowired
+    private WeatherStationUpdater weatherStationUpdater;
+
+    @Autowired
+    private CameraStationUpdater cameraStationUpdater;
+
     @Test
-    public void testUpdateRoadStationStatuses() {
+    public void testUpdateRoadStationStatuses() throws Exception {
 
         lotjuLAMMetatiedotServiceMock.initDataAndService();
         lotjuTiesaaPerustiedotServiceMock.initDataAndService();
         lotjuKameraPerustiedotServiceMock.initDataAndService();
 
-        // Update road stations to initial state (2 non obsolete stations and 2 obsolete)
-        roadStationStatusUpdater.updateTmsStationsStatuses();
-        roadStationStatusUpdater.updateWeatherStationsStatuses();
-        roadStationStatusUpdater.updateCameraStationsStatuses();
+        // Update/create road stations to initial state (2 non obsolete stations and 2 obsolete)
+        tmsStationUpdater.updateTmsStations();
+        weatherStationUpdater.updateWeatherStations();
+        cameraStationUpdater.updateCameras();
 
         List<RoadStation> allInitial = roadStationService.findAll();
 

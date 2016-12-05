@@ -83,13 +83,13 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
     @Transactional
     public boolean fixCameraPresetsWithMissingRoadStations() {
 
-        final List<CameraPreset> currentCameraPresetsWithOutRoadStation =
-                cameraPresetService.finAllCameraPresetsWithOutRoadStation();
+        final List<CameraPreset> currentCameraPresetsWithoutRoadStation =
+                cameraPresetService.finAllCameraPresetsWithoutRoadStation();
 
         final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
 
-        for (final CameraPreset cameraPreset : currentCameraPresetsWithOutRoadStation) {
+        for (final CameraPreset cameraPreset : currentCameraPresetsWithoutRoadStation) {
 
             // Convert presetId to naturalId because using cameraId is not reliable before first run
             final long naturalId = CameraHelper.convertPresetIdToVanhaId(cameraPreset.getPresetId());
@@ -112,7 +112,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                 log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
             }
         }
-        return !currentCameraPresetsWithOutRoadStation.isEmpty();
+        return !currentCameraPresetsWithoutRoadStation.isEmpty();
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
@@ -123,7 +123,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
         final Map<String, CameraPreset> presetsMappedByPresetId = cameraPresetService.finAllCameraPresetsMappedByPresetId();
 
-        final List<CameraPreset> obsolete = new ArrayList<>(); // obsolete presets
+        final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> obsolete = new ArrayList<>(); // obsolete presets
         List<RoadStation> obsoleteRoadStations = new ArrayList<>(); // obsolete presets
         final Set<Long> nonObsoleteRoadStations = new HashSet<>(); // obsolete presets
         final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> update = new ArrayList<>(); // camera presets to update
@@ -144,7 +144,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                         || Objects.equals(esiasento.isJulkinen(), false) ) ) {
                     // If station is not used or preset is not public -> obsolete preset
                     obsoleteRoadStations.add(currentSaved.getRoadStation());
-                    obsolete.add(currentSaved);
+                    obsolete.add(Pair.of(kameraEsiasentoPair, currentSaved));
                 } else if (currentSaved != null) {
                     // Roadstation can have public and non public presets: gather here all that have one or more public presets
                     nonObsoleteRoadStations.add(currentSaved.getRoadStationId());
@@ -173,9 +173,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
 
         // camera presets in database, but not in server
-        obsolete.addAll(presetsMappedByPresetId.values());
+        presetsMappedByPresetId.values().stream().forEach(cp -> obsolete.add(Pair.of(null, cp)));
 
-        final int obsoleted = obsoleteCameraPresets(obsolete);
+        final int obsoleted = obsoleteCameraPresets(obsolete, lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
         final int obsoletedRs = obsoleteRoadStations(obsoleteRoadStations);
         final int updated = updateCameraPresets(update, lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
         final int inserted = insertCameraPresets(insert, lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
@@ -317,7 +317,8 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
             to.setPresetId(presetId);
         }
         to.setLotjuId(esiasentoFrom.getId());
-        to.setObsolete(false);
+        to.setObsolete(CollectionStatus.isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
+                       Objects.equals(esiasentoFrom.isJulkinen(), false));
         to.setPresetOrder(esiasentoFrom.getJarjestys());
         to.setPublicExternal(esiasentoFrom.isJulkinen());
         to.setInCollection(esiasentoFrom.isKeruussa());
@@ -357,18 +358,22 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
 
 
-    private static int obsoleteCameraPresets(final List<CameraPreset> obsolete) {
+    private int obsoleteCameraPresets(final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> obsolete,
+                                      final Map<Long, WeatherStation> lotjuIdToWeatherStationMap,
+                                      final Map<Long, RoadStation> cameraRoadStationsMappedByNaturalId) {
         int counter = 0;
-        for (final CameraPreset cameraPreset : obsolete) {
-            if (cameraPreset.obsolete()) {
-                if (cameraPreset.getRoadStation() == null) {
-                    log.error("Obsolete CameraPreset id: " + cameraPreset.getId() + " with null roadStation");
+        for (final Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset> cameraPresetPair : obsolete) {
+            if (cameraPresetPair.getValue().obsolete()) {
+                if (cameraPresetPair.getValue().getRoadStation() == null) {
+                    log.error("Obsolete CameraPreset id: " + cameraPresetPair.getValue() + " with null roadStation");
                 } else {
-                    log.debug("Obsolete CameraPreset id: " + cameraPreset.getId() + " naturalId: " + cameraPreset.getRoadStation().getNaturalId());
+                    log.debug("Obsolete CameraPreset id: " + cameraPresetPair.getValue());
                 }
                 counter++;
             }
         }
+        // Update also obsolete stations attributes
+        updateCameraPresets(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()), lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
         return counter;
     }
 }

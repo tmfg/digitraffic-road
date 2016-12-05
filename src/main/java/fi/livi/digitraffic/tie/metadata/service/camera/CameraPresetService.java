@@ -62,8 +62,8 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> finAllCameraPresetsWithOutRoadStation() {
-        return cameraPresetRepository.finAllCameraPresetsWithOutRoadStation();
+    public List<CameraPreset> finAllCameraPresetsWithoutRoadStation() {
+        return cameraPresetRepository.finAllCameraPresetsWithoutRoadStation();
     }
 
     @Transactional(readOnly = true)
@@ -73,8 +73,8 @@ public class CameraPresetService {
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
-                    Collections.emptyList() :
-                    findAllNonObsoleteCameraPresets(),
+                Collections.emptyList() :
+                findAllNonObsoletePublicCameraPresets(),
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
@@ -89,7 +89,7 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public List<CameraPreset> findAllNonObsoleteCameraPresets() {
-        return cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId();
+    public List<CameraPreset> findAllNonObsoletePublicCameraPresets() {
+        return cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndPublicInternalIsTrueAndPublicExternalIsTrueAndRoadStationIsPublicTrueOrderByPresetId();
     }
 }

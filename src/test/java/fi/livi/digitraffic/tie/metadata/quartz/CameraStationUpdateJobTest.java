@@ -49,7 +49,7 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
             countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
         }
-        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset -> 3 public
+        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public
         assertEquals(3, countPresets);
 
         // Update 121 camera to active and 56 removed
