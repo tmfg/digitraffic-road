@@ -28,7 +28,6 @@ public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jax
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        log.info("supports(" + clazz + ") " + clazz.equals(TrafficDisordersDatex2Response.class));
         return clazz.equals(TrafficDisordersDatex2Response.class);
     }
 

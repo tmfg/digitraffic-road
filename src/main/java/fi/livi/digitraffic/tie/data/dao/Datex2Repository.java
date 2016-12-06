@@ -90,4 +90,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="100"))
     List<Datex2> findBySituationId(@Param("situationId") final String situationId);
+
+    List<Datex2> findByPublicationTimeIsNull();
+
 }

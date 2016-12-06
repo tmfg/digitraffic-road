@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
@@ -57,7 +56,8 @@ public class DataController {
 
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    public static final String TRAFFIC_DISORDERS_PATH = "/traffic-disorders";
+    public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
+    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
@@ -262,8 +262,33 @@ public class DataController {
         return weatherService.findPublicWeatherData(id);
     }
 
-    @ApiOperation("Traffic disorders history")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
+/*
+    @ApiOperation("Current traffic disorders in simple format")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public Datex2RootDataObjectDto listActiveTrafficDisorders(
+            @ApiParam(value = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
+        return datex2DataService.findActiveDatex2Data(lastUpdated);
+    }
+
+    @ApiOperation("Traffic disorders by situation id in simple format")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/{situationId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public Datex2RootDataObjectDto listAllTrafficDisordersBySituationId(
+            @ApiParam(value = "Situation id.")
+            @PathVariable
+            String situationId) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "/" + situationId);
+        return datex2DataService.findAllDatex2DataBySituationId(situationId);
+    }
+
+    @ApiOperation("Traffic disorders history in simple format")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public Datex2RootDataObjectDto listTrafficDisorderHistory(
@@ -277,42 +302,48 @@ public class DataController {
             @RequestParam
             final int month
     ) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
         return datex2DataService.findDatex2Data(situationId, year, month);
     }
+*/
 
-    @ApiOperation("Current traffic disorders")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto listActiveTrafficDisorders(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return datex2DataService.findActiveDatex2Data(lastUpdated);
-    }
-
-    @ApiOperation("Current traffic disorders")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH + "/{situationId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto listAllTrafficDisordersBySituationId(
-            @ApiParam(value = "Situation id.")
-            @PathVariable
-            String situationId) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "/situationId=" + situationId);
-        return datex2DataService.findAllDatex2DataBySituationId(situationId);
-    }
-
-    @ApiOperation("Current traffic disorders Datex2s messages")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_PATH + "/datex2", produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiOperation("Current traffic disorders Datex2 messages")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public TrafficDisordersDatex2Response listActiveTrafficDisordersDatex2() {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_PATH + "/datex2");
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH);
         return datex2DataService.findActiveDatex2Response();
     }
 
+    @ApiOperation("Traffic disorder Datex2 messages by situation id")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public TrafficDisordersDatex2Response listAllTrafficDisordersDatex2BySituationId(
+            @ApiParam(value = "Situation id.", required = true)
+            @PathVariable
+            String situationId) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "/" + situationId);
+        return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
+    }
 
+    @ApiOperation("Traffic disorder Datex2 messages disorders history")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 500, message = "Internal server error") })
+    public TrafficDisordersDatex2Response listTrafficDisordersDatex2History(
+            @ApiParam(value = "Situation id", required = false)
+            @RequestParam(required = false)
+            final String situationId,
+            @ApiParam(value = "Year (>2014)", required = true)
+            @RequestParam
+            final int year,
+            @ApiParam(value = "Month (1-12)", required = true)
+            @RequestParam
+            final int month
+    ) {
+        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
+        return datex2DataService.findDatex2Responses(situationId, year, month);
+    }
 }

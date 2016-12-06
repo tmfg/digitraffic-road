@@ -14,7 +14,6 @@ import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -26,11 +25,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -97,6 +92,11 @@ public class SchedulerConfig {
     public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
+    public JobDetailFactoryBean unhandledDatex2MessagesImportJobDetail() {
+        return createJobDetail(UnhandledDatex2MessagesImportJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
                                                            @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
@@ -124,6 +124,11 @@ public class SchedulerConfig {
     public SimpleTriggerFactoryBean locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail,
                                                                       @Value("${locationsMetadataUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail) {
+        return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, 0);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

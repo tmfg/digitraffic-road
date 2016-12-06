@@ -184,35 +184,83 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public TrafficDisordersDatex2Response findDatex2Responses(final String situationId, final int year, final int month) {
+        List<Datex2> datex2s =
+                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month);
+        return convertToTrafficDisordersDatex2Response(datex2s);
+    }
+
+
+    @Transactional(readOnly = true)
+    public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(String situationId) {
+        List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToTrafficDisordersDatex2Response(datex2s);
+    }
+
+    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveDatex2Response() {
         List<Datex2> allActive = datex2Repository.findAllActive();
+        return convertToTrafficDisordersDatex2Response(allActive);
+    }
 
+    private TrafficDisordersDatex2Response convertToTrafficDisordersDatex2Response(final List<Datex2> datex2s) {
         List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
-        for (Datex2 datex2 : allActive) {
+        for (Datex2 datex2 : datex2s) {
             String datex2Xml = datex2.getMessage();
             if (!StringUtils.isBlank(datex2Xml)) {
-                StringReader sr = new StringReader(datex2Xml);
-                try {
-                    Object object = jaxbUnmarshaller.unmarshal(sr);
-                    if (object instanceof JAXBElement) {
-                        object = ((JAXBElement) object).getValue();
-                    }
-                    D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
-                    ObservationTimeType published =
-                            new ObservationTimeType()
-                                .withLocaltime(DateHelper.toXMLGregorianCalendar(datex2.getImportTime()))
-                                .withUtc(DateHelper.toXMLGregorianCalendarUtc(datex2.getImportTime()));
-                    TimestampedTrafficDisorderDatex2 tsDatex2 =
-                            new TimestampedTrafficDisorderDatex2()
-                                    .withD2LogicalModel(d2LogicalModel)
-                                    .withPublished(published);
+                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2Xml, datex2.getImportTime());
+                if (tsDatex2 != null) {
                     timestampedTrafficDisorderDatex2s.add(tsDatex2);
-                } catch (JAXBException e) {
-                    log.error("Failed to unmarshal datex2 message " + datex2.getId(), e);
                 }
             }
-
         }
         return new TrafficDisordersDatex2Response().withDisorder(timestampedTrafficDisorderDatex2s);
+    }
+
+    private TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
+        StringReader sr = new StringReader(datex2Xml);
+        try {
+            Object object = jaxbUnmarshaller.unmarshal(sr);
+            if (object instanceof JAXBElement) {
+                object = ((JAXBElement) object).getValue();
+            }
+            D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
+            ObservationTimeType published =
+                    new ObservationTimeType()
+                            .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
+                            .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
+            TimestampedTrafficDisorderDatex2 tsDatex2 =
+                    new TimestampedTrafficDisorderDatex2()
+                            .withD2LogicalModel(d2LogicalModel)
+                            .withPublished(published);
+            return tsDatex2;
+        } catch (JAXBException e) {
+            log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
+        }
+        return null;
+    }
+
+    @Transactional
+    public void handleUnhandledDatex2Messages() {
+        log.info("Fetch unhandled Datex2 messages");
+        List<Datex2> unhandled = datex2Repository.findByPublicationTimeIsNull();
+
+        log.info("Handle {} unhandled Datex2 Messages", unhandled.size());
+        unhandled.stream().forEach(datex2 -> {
+            try {
+                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2.getMessage(), datex2.getImportTime());
+                if (tsDatex2 != null) {
+                    parseAndAppendPayloadPublicationData(tsDatex2.getD2LogicalModel().getPayloadPublication(), datex2);
+                    datex2Repository.save(datex2);
+                }
+            } catch (Exception e) {
+                log.error("Handling unhandled Datex2 message failed", e);
+            }
+
+        });
+        log.info("Handled {} unhandled Datex2 Messages", unhandled.size());
     }
 }
