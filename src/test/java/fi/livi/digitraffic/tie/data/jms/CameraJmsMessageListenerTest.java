@@ -118,9 +118,9 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
 
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
 
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<String, CameraPreset> cameraPresets = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
@@ -141,7 +141,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
             }
         }
 
-        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
     }
 
@@ -192,7 +192,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        List<CameraPreset> presets = cameraPresetService.findAllNonObsoleteCameraPresets();
+        List<CameraPreset> presets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         Iterator<CameraPreset> presetIterator = presets.iterator();
 
 
@@ -267,7 +267,7 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
 
         log.info("Check data validy");
 
-        Map<String, CameraPreset> updatedPresets = cameraPresetService.finAllCameraPresetsMappedByPresetId();
+        Map<String, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
         for (Kuva kuva : data) {
             String presetId = CameraHelper.resolvePresetId(kuva);

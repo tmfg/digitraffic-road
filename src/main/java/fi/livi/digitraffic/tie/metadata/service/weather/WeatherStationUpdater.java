@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -102,7 +103,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         final Map<Long, WeatherStation> currentLotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
-        final List<WeatherStation> obsolete = new ArrayList<>(); // obsolete WeatherStations
+        final List<Pair<TiesaaAsemaVO, WeatherStation>> obsolete = new ArrayList<>(); // obsolete WeatherStations
         final List<Pair<TiesaaAsemaVO, WeatherStation>> update = new ArrayList<>(); // WeatherStations to update
         final List<TiesaaAsemaVO> insert = new ArrayList<>(); // new WeatherStations
 
@@ -116,7 +117,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
                      (CollectionStatus.isPermanentlyDeletedKeruunTila(tsa.getKeruunTila()) ||
                              Objects.equals(tsa.isJulkinen(), false) ) ) {
                     // if removed permanently or not public -> obsolete
-                    obsolete.add(currentSaved);
+                    obsolete.add(Pair.of(tsa, currentSaved));
                 } else if ( currentSaved != null) {
                     update.add(Pair.of(tsa, currentSaved));
                 } else {
@@ -132,10 +133,10 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         }
 
         // rws in database, but not in server
-        obsolete.addAll(currentLotjuIdToWeatherStationMap.values());
+        currentLotjuIdToWeatherStationMap.values().stream().forEach(ws -> obsolete.add(Pair.of(null, ws)));
 
         final int obsoleted = obsoleteWeatherStations(obsolete);
-        final int updated = updateWeatherStationsRoadStationSensors(update);
+        final int updated = updateWeatherStationsAttributes(update);
         final int inserted = insertWeatherStations(insert);
 
         log.info("Obsoleted " + obsoleted + WEATHER_STATIONS);
@@ -147,7 +148,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
         return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
-    private int updateWeatherStationsRoadStationSensors(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {
+    private int updateWeatherStationsAttributes(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {
 
         final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.WEATHER_STATION);
@@ -260,14 +261,17 @@ public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
                 HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    private static int obsoleteWeatherStations(final List<WeatherStation> obsolete) {
+    private int obsoleteWeatherStations(final List<Pair<TiesaaAsemaVO, WeatherStation>> obsolete) {
         int counter = 0;
-        for (final WeatherStation rws : obsolete) {
-            if (rws.obsolete()) {
-                log.debug("Obsolete " + rws);
+        for (final Pair<TiesaaAsemaVO, WeatherStation> rwsPair : obsolete) {
+            if (rwsPair.getValue().obsolete()) {
+                log.debug("Obsolete " + rwsPair.getValue());
                 counter++;
             }
         }
+        // Update also obsolete stations attributes
+        updateWeatherStationsAttributes(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()));
+
         return counter;
     }
 }
