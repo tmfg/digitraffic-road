@@ -14,6 +14,7 @@ import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +26,12 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
+import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
+import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -127,8 +133,9 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail) {
-        return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, 0);
+    public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail,
+                                                                            @Value("${unhandledDatex2MessagesImportJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
