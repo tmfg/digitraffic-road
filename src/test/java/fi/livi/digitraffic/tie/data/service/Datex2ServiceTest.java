@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
@@ -25,6 +26,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
+@Transactional
 public class Datex2ServiceTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(Datex2ServiceTest.class);
