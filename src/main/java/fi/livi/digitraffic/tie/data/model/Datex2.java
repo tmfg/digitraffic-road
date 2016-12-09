@@ -50,7 +50,6 @@ public class Datex2 {
     private String message;
 
     @ApiModelProperty(value = "Message publication " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    @NotNull
     private ZonedDateTime publicationTime;
 
     @ApiModelProperty(value = "Date2 situations", required = true)

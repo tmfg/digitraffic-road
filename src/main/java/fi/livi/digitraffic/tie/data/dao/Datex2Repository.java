@@ -93,4 +93,9 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
     List<Datex2> findByPublicationTimeIsNull();
 
+
+    @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
+           "FROM Datex2Situation situation\n" +
+           "WHERE situation.situationId = :situationId")
+    boolean existsWithSituationId(@Param("situationId") final String situationId);
 }

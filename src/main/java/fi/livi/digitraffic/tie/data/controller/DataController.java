@@ -57,7 +57,7 @@ public class DataController {
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
-    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
+//    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
@@ -278,6 +278,7 @@ public class DataController {
     @ApiOperation("Traffic disorders by situation id in simple format")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/{situationId}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public Datex2RootDataObjectDto listAllTrafficDisordersBySituationId(
             @ApiParam(value = "Situation id.")
@@ -290,6 +291,7 @@ public class DataController {
     @ApiOperation("Traffic disorders history in simple format")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public Datex2RootDataObjectDto listTrafficDisorderHistory(
             @ApiParam(value = "Situation id", required = false)
@@ -319,6 +321,7 @@ public class DataController {
     @ApiOperation("Traffic disorder Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public TrafficDisordersDatex2Response listAllTrafficDisordersDatex2BySituationId(
             @ApiParam(value = "Situation id.", required = true)
@@ -331,6 +334,7 @@ public class DataController {
     @ApiOperation("Traffic disorder Datex2 messages disorders history")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public TrafficDisordersDatex2Response listTrafficDisordersDatex2History(
             @ApiParam(value = "Situation id", required = false)

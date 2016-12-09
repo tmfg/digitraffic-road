@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
@@ -17,7 +18,6 @@ import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
 public class MetadataMarshallerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(MetadataMarshallerConfiguration.class);
-    public static final String NOT_CREATING_BEAN = "Not creating bean: ";
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -37,24 +37,8 @@ public class MetadataMarshallerConfiguration {
     public LotjuTmsStationClient tmsStationClient(final Jaxb2Marshaller marshaller,
                                                   @Value("${metadata.server.address.tms}")
                                                   final String tmsMetadataServerAddress) {
-        log.info("metadata.server.address.tms: " + tmsMetadataServerAddress);
-        if ( StringUtils.isNotBlank(tmsMetadataServerAddress) &&
-             !"${metadata.server.address.tms}".equals(tmsMetadataServerAddress) ) {
-            log.info("Creating LotjuTmsStationClient");
-            final LotjuTmsStationClient client = new LotjuTmsStationClient();
-            client.setDefaultUri(tmsMetadataServerAddress);
-            client.setMarshaller(marshaller);
-            client.setUnmarshaller(marshaller);
 
-            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-            sender.setConnectionTimeout(30000);
-            sender.setReadTimeout(30000);
-            client.setMessageSender(sender);
-
-            return client;
-        }
-        log.warn(NOT_CREATING_BEAN + LotjuTmsStationClient.class + " because property metadata.server.address.tms was not set.");
-        return null;
+        return initClientPropertiesOrNull(new LotjuTmsStationClient(), tmsMetadataServerAddress, marshaller);
     }
 
     @Bean
@@ -62,24 +46,7 @@ public class MetadataMarshallerConfiguration {
                                           @Value("${metadata.server.address.camera}")
                                           final String cameraMetadataServerAddress) {
 
-        log.info("metadata.server.address.camera: " + cameraMetadataServerAddress);
-        if ( StringUtils.isNotBlank(cameraMetadataServerAddress) &&
-             !"${metadata.server.address.camera}".equals(cameraMetadataServerAddress) ) {
-            log.info("Creating LotjuCameraClient");
-            final LotjuCameraClient client = new LotjuCameraClient();
-            client.setDefaultUri(cameraMetadataServerAddress);
-            client.setMarshaller(marshaller);
-            client.setUnmarshaller(marshaller);
-
-            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-            sender.setConnectionTimeout(30000);
-            sender.setReadTimeout(30000);
-            client.setMessageSender(sender);
-
-            return client;
-        }
-        log.warn(NOT_CREATING_BEAN + LotjuCameraClient.class + " because property metadata.server.address.camera was not set.");
-        return null;
+        return initClientPropertiesOrNull(new LotjuCameraClient(), cameraMetadataServerAddress, marshaller);
     }
 
     @Bean
@@ -87,12 +54,21 @@ public class MetadataMarshallerConfiguration {
                                                           @Value("${metadata.server.address.weather}")
                                                           final String weatherServerAddress) {
 
-        log.info("metadata.server.address.weather: " + weatherServerAddress);
-        if ( StringUtils.isNotBlank(weatherServerAddress) &&
-                !"${metadata.server.address.weather}".equals(weatherServerAddress) ) {
-            log.info("Creating LotjuWeatherStationClient");
-            final LotjuWeatherStationClient client = new LotjuWeatherStationClient();
-            client.setDefaultUri(weatherServerAddress);
+        return initClientPropertiesOrNull(new LotjuWeatherStationClient(), weatherServerAddress, marshaller);
+    }
+
+    /**
+     * Returns client if server address is ok otherwise returns null
+     */
+    private <T extends WebServiceGatewaySupport> T initClientPropertiesOrNull(final T client,
+                                                                              final String serverAddress,
+                                                                              final Jaxb2Marshaller marshaller) {
+        log.info("Init {} with server address {}", client.getClass().getSimpleName(), serverAddress);
+
+        if ( StringUtils.isNotBlank(serverAddress) &&
+             StringUtils.containsNone(serverAddress, '$', '{', '}') ) {
+            log.info("Creating " + client.getClass().getSimpleName());
+            client.setDefaultUri(serverAddress);
             client.setMarshaller(marshaller);
             client.setUnmarshaller(marshaller);
 
@@ -100,10 +76,9 @@ public class MetadataMarshallerConfiguration {
             sender.setConnectionTimeout(30000);
             sender.setReadTimeout(30000);
             client.setMessageSender(sender);
-
             return client;
         }
-        log.warn(NOT_CREATING_BEAN + LotjuWeatherStationClient.class + " because property metadata.server.address.weather was not set.");
+        log.warn("Not creating bean: {} because server property was not set.", client.getClass().getSimpleName());
         return null;
     }
 }

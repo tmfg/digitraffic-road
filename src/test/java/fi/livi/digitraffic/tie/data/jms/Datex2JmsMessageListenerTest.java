@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +43,6 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     @Autowired
     private Datex2Repository datex2Repository;
 
-    @Autowired
-    ResourceLoader resourceLoader;
-
     @Test
     public void testDatex2ReceiveMessages() throws JAXBException, DatatypeConfigurationException, IOException {
 
@@ -61,7 +56,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
                 new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
-        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
+        List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
         Datex2RootDataObjectDto dto = datex2DataService.findActiveDatex2Data(false);
@@ -104,7 +99,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         log.info("Read Datex2 messages from filesystem");
 //        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-        Resource[] datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto.fi/incidents/datex2/InfoXML_2016-1*.xml");
+        List<Resource> datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto.fi/incidents/datex2/InfoXML_2016-1*.xml");
 
         readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
 
@@ -113,12 +108,8 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         TestTransaction.end();
     }
 
-    Resource[] loadResources(String pattern) throws IOException {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern);
-    }
-
-    private void readAndSendMessages(Resource[] datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener, boolean autoFix) throws IOException {
-        log.info("Read and send " + datex2Resources.length + " Datex2 messages...");
+    private void readAndSendMessages(List<Resource> datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener, boolean autoFix) throws IOException {
+        log.info("Read and send " + datex2Resources.size() + " Datex2 messages...");
         for (Resource datex2Resource : datex2Resources) {
             File datex2file = datex2Resource.getFile();
             String content = FileUtils.readFileToString(datex2file, StandardCharsets.UTF_8);
