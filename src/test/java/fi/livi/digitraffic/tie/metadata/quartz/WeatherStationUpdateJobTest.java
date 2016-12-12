@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
@@ -40,7 +40,7 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
     private WeatherStationService weatherStationService;
 
     @Autowired
-    private LotjuTiesaaPerustiedotServiceMock lotjuTiesaaPerustiedotServiceMock;
+    private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
 
     @Test
     public void testUpdateWeatherStations() {

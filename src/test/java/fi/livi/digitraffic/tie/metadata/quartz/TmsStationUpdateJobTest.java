@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.base.MetadataRestTest;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceMock;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
@@ -34,7 +34,7 @@ public class TmsStationUpdateJobTest extends MetadataRestTest {
     private TmsStationService tmsStationService;
 
     @Autowired
-    private LotjuLAMMetatiedotServiceMock lotjuLAMMetatiedotServiceMock;
+    private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
 
     @Test
     public void testUpdateTmsStations() {

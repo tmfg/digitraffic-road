@@ -172,7 +172,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationFeature getLocation (
+    public LocationFeatureCollection getLocation (
             @PathVariable("id") final int id) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);
         return locationService.findLocation(id);
