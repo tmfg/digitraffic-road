@@ -29,23 +29,21 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "WHERE d.id IN (\n" +
             "  SELECT datex2_id\n" +
             "  FROM (\n" +
-            "    SELECT ROW_NUMBER() OVER (PARTITION BY record.situation_record_id ORDER BY d.publication_time DESC) AS rnum\n" +
-            "         , d.publication_time\n" +
-            "         , d.id AS datex2_id\n" +
-            "         , record.validy_status \n" +
-            "         , nvl(record.overall_end_time, TO_DATE('9999', 'yyyy')) overall_end_time\n" +
-            "         , record.id AS record_id\n" +
-            "         , i18n.value\n" +
-            "    FROM DATEX2 d\n" +
-            "    INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
-            "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
-            "    INNER JOIN SITUATION_RECORD_COMMENT_I18N i18n on i18n.DATEX2_SITUATION_RECORD_ID = record.id and i18n.lang = 'fi'\n" +
-            "  ) disorder\n" +
+                      // Latest Datex2-message of situation and it's last record by end time\n" +
+            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY d.PUBLICATION_TIME DESC, record.OVERALL_END_TIME DESC NULLS LAST) AS rnum\n" +
+            "           , d.publication_time\n" +
+            "           , d.id AS datex2_id\n" +
+            "           , record.validy_status\n" +
+            "           , nvl(record.overall_end_time, TO_DATE('9999', 'yyyy')) overall_end_time\n" +
+            "         FROM DATEX2 d\n" +
+            "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
+            "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
+            "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
-            "    AND (disorder.validy_status = 'ACTIVE'\n" +
-            "         AND disorder.overall_end_time > sysdate)\n" +
-            // Skipataan vanhat hätin ilmoitukset
-            "    AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
+            "        AND (disorder.validy_status = 'ACTIVE'\n" +
+            "             AND disorder.overall_end_time > sysdate)\n" +
+            // Skip old Datex2 messages of HÄTI system
+            "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
             "order by d.publication_time",
             nativeQuery = true)
