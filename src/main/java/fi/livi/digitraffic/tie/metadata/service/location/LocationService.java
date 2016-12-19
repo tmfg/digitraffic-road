@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,26 +40,28 @@ public class LocationService {
     @Transactional(readOnly = true)
     public LocationFeatureCollection findLocationsMetadata(final boolean onlyUpdateInfo) {
         final MetadataUpdated locationsUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
-        final ZonedDateTime locationsUpdateTime = locationsUpdated.getUpdatedTime();
 
         if(onlyUpdateInfo) {
-            return new LocationFeatureCollection(locationsUpdateTime, locationsUpdated.getVersion());
+            return new LocationFeatureCollection(locationsUpdated.getUpdatedTime(), locationsUpdated.getVersion());
         }
 
-        return new LocationFeatureCollection(locationsUpdateTime, locationsUpdated.getVersion(),
+        return new LocationFeatureCollection(locationsUpdated.getUpdatedTime(), locationsUpdated.getVersion(),
                 locationRepository.findAllProjectedBy().stream().map(LocationFeature::new).collect(Collectors.toList())
         );
     }
 
     @Transactional(readOnly = true)
-    public LocationFeature findLocation(final int id) {
+    public LocationFeatureCollection findLocation(final int id) {
         final LocationJson location = locationRepository.findLocationByLocationCode(id);
 
         if(location == null) {
             throw new ObjectNotFoundException("Location", id);
         }
 
-        return new LocationFeature(location);
+        final MetadataUpdated locationsUpdated = staticDataStatusService.getMetadataUpdatedTime(MetadataType.LOCATIONS);
+
+        return new LocationFeatureCollection(locationsUpdated.getUpdatedTime(), locationsUpdated.getVersion(),
+                Arrays.asList(new LocationFeature(location)));
     }
 
     public LocationTypesMetadata findLocationSubtypes(final boolean lastUpdated) {
