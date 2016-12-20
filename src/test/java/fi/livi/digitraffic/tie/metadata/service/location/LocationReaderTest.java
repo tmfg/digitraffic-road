@@ -31,7 +31,9 @@ public class LocationReaderTest extends AbstractTestBase {
     public void setUp() {
         final List<LocationSubtype> locationSubtypes = locationSubtypeRepository.findAll();
 
-        subtypeMap = locationSubtypes.stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
+        subtypeMap = locationSubtypes.stream()
+                .filter(s -> s.getId().getVersion().equals("1.1"))
+                .collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
     }
 
     @Test
