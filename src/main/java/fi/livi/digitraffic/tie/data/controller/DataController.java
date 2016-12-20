@@ -309,7 +309,7 @@ public class DataController {
     }
 */
 
-    @ApiOperation("Current traffic disorders Datex2 messages")
+    @ApiOperation("BETA Current traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
@@ -318,7 +318,7 @@ public class DataController {
         return datex2DataService.findActiveDatex2Response();
     }
 
-    @ApiOperation("Traffic disorder Datex2 messages by situation id")
+    @ApiOperation("BETA Traffic disorder Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
@@ -331,8 +331,8 @@ public class DataController {
         return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
     }
 
-    @ApiOperation("Traffic disorder Datex2 messages disorders history")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("BETA Traffic disorder Datex2 messages disorders history")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
