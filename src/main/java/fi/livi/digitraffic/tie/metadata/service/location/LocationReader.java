@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Charsets;
 
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationKey;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 public class LocationReader extends AbstractReader<Location> {
@@ -18,8 +19,8 @@ public class LocationReader extends AbstractReader<Location> {
 
     private static final String GEOCODE_FIN_CODE = "FinCode:";
 
-    public LocationReader(final Map<String, LocationSubtype> subtypeMap) {
-        super(Charsets.UTF_8, DELIMETER_SEMICOLON);
+    public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version) {
+        super(Charsets.UTF_8, DELIMETER_SEMICOLON, version);
         this.subtypeMap = subtypeMap;
     }
 
@@ -27,7 +28,7 @@ public class LocationReader extends AbstractReader<Location> {
     protected Location convert(final String[] components) {
         final Location location = new Location();
 
-        location.setLocationCode(parseInteger(components[2]));
+        location.setId(new LocationKey(version, parseInteger(components[2])));
         location.setRoadJunction(parseString(components[6]));
         location.setRoadName(parseString(components[7]));
         location.setFirstName(parseString(components[8]));
@@ -43,7 +44,7 @@ public class LocationReader extends AbstractReader<Location> {
         location.setNegDirection(parseString(components[22]));
         location.setGeocode(parseGeocode(components[23]));
         location.setOrderOfPoint(parseInteger(components[24]));
-        location.setLocationSubtype(parseSubtype(components[3], components[4], components[5], subtypeMap));
+        location.setSubtypeCode(parseSubtype(components[3], components[4], components[5], subtypeMap));
 
         addAreaRef(location, components[10]);
         addLinearRef(location, components[11]);
@@ -68,7 +69,7 @@ public class LocationReader extends AbstractReader<Location> {
         return component.substring(GEOCODE_FIN_CODE.length());
     }
 
-    private static LocationSubtype parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
+    private static String parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
         final String subtypeCode = String.format("%s%s.%s", classValue, typeValue, subtypeValue);
 
         final LocationSubtype subtype = subtypeMap.get(subtypeCode);
@@ -77,7 +78,7 @@ public class LocationReader extends AbstractReader<Location> {
             throw new IllegalArgumentException("Could not find subtype " + subtypeCode);
         }
 
-        return subtype;
+        return subtype.getSubtypeCode();
     }
 
     private static Boolean parseBoolean(final String value) {
@@ -103,7 +104,7 @@ public class LocationReader extends AbstractReader<Location> {
 
         // for some reason, there is no 0 present
         if(refValue != null && !refValue.equals(0)) {
-            linearRefMap.put(location.getLocationCode(), refValue);
+            linearRefMap.put(location.getId().getLocationCode(), refValue);
         }
     }
 
@@ -112,7 +113,7 @@ public class LocationReader extends AbstractReader<Location> {
 
         // for some reason, there is no 0 present
         if(refValue != null && !refValue.equals(0)) {
-            areaRefMap.put(location.getLocationCode(), refValue);
+            areaRefMap.put(location.getId().getLocationCode(), refValue);
         }
     }
 

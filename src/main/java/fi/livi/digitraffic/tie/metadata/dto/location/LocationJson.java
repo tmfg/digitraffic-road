@@ -5,21 +5,17 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Value;
 
 public interface LocationJson {
+    @Value("#{target.id.locationCode}")
     int getLocationCode();
 
-    @Value("#{target.locationSubtype.subtypeCode}")
     String getSubtypeCode();
-
     String getRoadJunction();
 
     String getRoadName();
     String getFirstName();
     String getSecondName();
 
-    @Value("#{target.areaRef == null ? null : target.areaRef.locationCode}")
     Integer getAreaRef();
-
-    @Value("#{target.linearRef == null ? null : target.linearRef.locationCode}")
     Integer getLinearRef();
 
     Integer getNegOffset();

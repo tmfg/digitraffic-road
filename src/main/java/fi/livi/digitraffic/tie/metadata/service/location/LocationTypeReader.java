@@ -1,16 +1,18 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import org.springframework.stereotype.Component;
-
 import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationTypeKey;
 
-@Component
 public class LocationTypeReader extends AbstractReader<LocationType> {
+    protected LocationTypeReader(final String version) {
+        super(version);
+    }
+
     @Override
     protected LocationType convert(final String[] components) {
         final LocationType newType = new LocationType();
 
-        newType.setTypeCode(components[3]);
+        newType.setId(new LocationTypeKey(version, components[3]));
         newType.setDescriptionEn(components[2]);
         newType.setDescriptionFi(components[4]);
 

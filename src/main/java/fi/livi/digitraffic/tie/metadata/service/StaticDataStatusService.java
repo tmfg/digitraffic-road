@@ -10,7 +10,6 @@ import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.service.location.MetadataVersions;
 
 @Service
 public class StaticDataStatusService {
@@ -60,33 +59,11 @@ public class StaticDataStatusService {
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
-        }
+    }
     }
 
     @Transactional(readOnly = true)
     public MetadataUpdated findMetadataUpdatedByMetadataType(final MetadataType metadataType) {
         return metadataUpdatedRepository.findByMetadataType(metadataType.name());
     }
-
-    @Transactional(readOnly = true)
-    public MetadataUpdated getMetadataUpdatedTime(final MetadataType metadataType) {
-        return metadataUpdatedRepository.findByMetadataType(metadataType.name());
-    }
-
-    @Transactional(readOnly = true)
-    public MetadataVersions getCurrentMetadataVersions() {
-        final MetadataVersions metadataVersions = new MetadataVersions();
-
-        metadataVersions.addVersion(MetadataType.LOCATIONS, null, getMetadataVersion(MetadataType.LOCATIONS));
-        metadataVersions.addVersion(MetadataType.LOCATION_TYPES, null, getMetadataVersion(MetadataType.LOCATION_TYPES));
-
-        return metadataVersions;
-    }
-
-    public String getMetadataVersion(final MetadataType metadataType) {
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
-
-        return updated == null ? null : updated.getVersion();
-    }
-
 }

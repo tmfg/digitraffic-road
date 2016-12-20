@@ -3,36 +3,25 @@ package fi.livi.digitraffic.tie.metadata.model.location;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @DynamicUpdate
 public class Location {
-    @Id
-    private Integer locationCode;
+    @EmbeddedId
+    private LocationKey id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subtype_code", nullable = false)
-    private LocationSubtype locationSubtype;
-
+    private String subtypeCode;
     private String roadJunction;
     private String roadName;
     private String firstName;
     private String secondName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "area_ref")
-    private Location areaRef;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "linear_ref")
-    private Location linearRef;
+    private Integer areaRef;
+    private Integer linearRef;
 
     private Integer negOffset;
     private Integer posOffset;
@@ -54,22 +43,6 @@ public class Location {
 
     private String geocode;
     private Integer orderOfPoint;
-
-    public Integer getLocationCode() {
-        return locationCode;
-    }
-
-    public void setLocationCode(Integer locationCode) {
-        this.locationCode = locationCode;
-    }
-
-    public LocationSubtype getLocationSubtype() {
-        return locationSubtype;
-    }
-
-    public void setLocationSubtype(LocationSubtype locationSubtype) {
-        this.locationSubtype = locationSubtype;
-    }
 
     public String getRoadName() {
         return roadName;
@@ -93,22 +66,6 @@ public class Location {
 
     public void setSecondName(String secondName) {
         this.secondName = secondName;
-    }
-
-    public Location getAreaRef() {
-        return areaRef;
-    }
-
-    public void setAreaRef(Location areaRef) {
-        this.areaRef = areaRef;
-    }
-
-    public Location getLinearRef() {
-        return linearRef;
-    }
-
-    public void setLinearRef(Location linearRef) {
-        this.linearRef = linearRef;
     }
 
     public Integer getNegOffset() {
@@ -205,5 +162,41 @@ public class Location {
 
     public void setEtrsTm35FixY(BigDecimal etrsTm35FixY) {
         this.etrsTm35FixY = etrsTm35FixY;
+    }
+
+    public LocationKey getId() {
+        return id;
+    }
+
+    public void setId(LocationKey id) {
+        this.id = id;
+    }
+
+    public Integer getLocationCode() {
+        return id.getLocationCode();
+    }
+
+    public String getSubtypeCode() {
+        return subtypeCode;
+    }
+
+    public void setSubtypeCode(String subtypeCode) {
+        this.subtypeCode = subtypeCode;
+    }
+
+    public Integer getAreaRef() {
+        return areaRef;
+    }
+
+    public void setAreaRef(Integer areaRef) {
+        this.areaRef = areaRef;
+    }
+
+    public Integer getLinearRef() {
+        return linearRef;
+    }
+
+    public void setLinearRef(Integer linearRef) {
+        this.linearRef = linearRef;
     }
 }
