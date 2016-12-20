@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +17,7 @@ import fi.livi.digitraffic.tie.base.AbstractTestBase;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 
 public class LocationServiceTest extends AbstractTestBase {
     @Autowired
@@ -26,6 +29,11 @@ public class LocationServiceTest extends AbstractTestBase {
     @Test
     public void findLocationOkLatest() {
         assertNotNull(locationService.findLocation(12187, LATEST));
+    }
+
+    @Test
+    public void findLocationOkEmpty() {
+        assertNotNull(locationService.findLocation(12187, ""));
     }
 
     @Test
@@ -108,5 +116,12 @@ public class LocationServiceTest extends AbstractTestBase {
         assertNotNull(metadata.locationsUpdateTime);
         assertNotNull(metadata.locationsVersion);
         assertNull(metadata.features);
+    }
+
+    @Test
+    public void findLocationVersions() {
+        final List<LocationVersion> locationVersions = locationService.findLocationVersions();
+        assertNotNull(locationVersions);
+        assertThat(locationVersions, hasSize(2));
     }
 }
