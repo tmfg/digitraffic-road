@@ -36,7 +36,7 @@ public final class LocationFeature {
     }
 
     private static Point getGeometry(final LocationJson l) {
-        return l.getWgs84Lat() == null ? null : new Point(l.getWgs84Lat().doubleValue(), l.getWgs84Long().doubleValue());
+        return l.getWgs84Lat() == null ? null : new Point(l.getWgs84Long().doubleValue(), l.getWgs84Lat().doubleValue());
     }
 
     private static List<Double> getEtrsGeometry(final LocationJson l) {
