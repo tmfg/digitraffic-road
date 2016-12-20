@@ -7,6 +7,10 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 public class LatestReader extends AbstractReader<Void> {
     private final MetadataVersions latestMetadataVersions = new MetadataVersions();
 
+    protected LatestReader() {
+        super("");
+    }
+
     @Override
     protected Void convert(final String[] line) {
         final MetadataType type = getMetadataType(line[0]);

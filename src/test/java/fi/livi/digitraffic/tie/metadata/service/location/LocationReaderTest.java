@@ -25,6 +25,8 @@ public class LocationReaderTest extends AbstractTestBase {
 
     private Map<String, LocationSubtype> subtypeMap;
 
+    private final static String VERSION = "VERSION";
+
     @Before
     public void setUp() {
         final List<LocationSubtype> locationSubtypes = locationSubtypeRepository.findAll();
@@ -34,7 +36,7 @@ public class LocationReaderTest extends AbstractTestBase {
 
     @Test
     public void emptyLocationsFile() {
-        final LocationReader reader = new LocationReader(subtypeMap);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
 
         final List<Location> locations = reader.read(getPath("/locations/locations_empty.csv"));
         Assert.assertThat(locations, Matchers.empty());
@@ -42,7 +44,7 @@ public class LocationReaderTest extends AbstractTestBase {
 
     @Test
     public void illegalGeocode() {
-        final LocationReader reader = new LocationReader(subtypeMap);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
         final LocationReader spyReader = Mockito.spy(reader);
 
         final List<Location> locations = spyReader.read(getPath("/locations/locations_illegal_geocode.csv"));
@@ -55,7 +57,7 @@ public class LocationReaderTest extends AbstractTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void illegalSubtype() {
-        final LocationReader reader = new LocationReader(subtypeMap);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
 
         reader.read(getPath("/locations/locations_illegal_subtype.csv"));
     }

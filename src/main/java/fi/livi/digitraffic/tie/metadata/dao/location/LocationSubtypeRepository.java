@@ -10,5 +10,5 @@ import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 @Repository
 public interface LocationSubtypeRepository extends JpaRepository<LocationSubtype, String> {
-    List<LocationSubtypeJson> findAllProjectedBy();
+    List<LocationSubtypeJson> findAllByIdVersion(final String version);
 }

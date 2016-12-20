@@ -31,15 +31,17 @@ public abstract class AbstractReader<T> {
     private final Charset charset;
     private final char delimeterCharacter;
     private final char quoteCharacter;
+    protected final String version;
 
-    protected AbstractReader(final Charset charset, final char delimeterCharacter) {
+    protected AbstractReader(final Charset charset, final char delimeterCharacter, final String version) {
         this.charset = charset;
         this.delimeterCharacter = delimeterCharacter;
         this.quoteCharacter = QUOTE;
+        this.version = version;
     }
 
-    protected AbstractReader() {
-        this(StandardCharsets.ISO_8859_1, DELIMETER_TAB);
+    protected AbstractReader(final String version) {
+        this(StandardCharsets.ISO_8859_1, DELIMETER_TAB, version);
     }
 
     public List<T> read(final Path path) {

@@ -2,7 +2,10 @@ package fi.livi.digitraffic.tie.metadata.controller;
 
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -44,8 +46,8 @@ public class MetadataController {
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
     public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
 
-    public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
     public static final String LOCATIONS_PATH = "/locations";
+    public static final String LOCATION_VERSIONS_PATH = "/location-versions";
     public static final String LOCATION_TYPES_PATH = "/location-types";
 
     private static final String REQUEST_LOG_PREFIX = "Metadata REST request path: ";
@@ -54,20 +56,17 @@ public class MetadataController {
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
-    private final ForecastSectionService forecastSectionService;
     private final LocationService locationService;
 
     public MetadataController(final CameraPresetService cameraPresetService,
                               final TmsStationService tmsStationService,
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
-                              final ForecastSectionService forecastSectionService,
                               final LocationService locationService) {
         this.cameraPresetService = cameraPresetService;
         this.tmsStationService = tmsStationService;
         this.weatherStationService = weatherStationService;
         this.roadStationSensorService = roadStationSensorService;
-        this.forecastSectionService = forecastSectionService;
         this.locationService = locationService;
     }
 
@@ -131,16 +130,29 @@ public class MetadataController {
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
 
+    @ApiOperation("BETA List available location versions")
+    @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public List<LocationVersion> listLocationVersions () {
+        log.info(REQUEST_LOG_PREFIX + LOCATION_VERSIONS_PATH);
+        return locationService.findLocationVersions();
+    }
+
     @ApiOperation("BETA The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LocationFeatureCollection listLocations (
+            @ApiParam("If parameter is given use this version.")
+            @RequestParam(value = "version", required = false, defaultValue = LATEST)
+            String version,
+
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
-        return locationService.findLocationsMetadata(lastUpdated);
+        return locationService.findLocationsMetadata(lastUpdated, version);
     }
 
     @ApiOperation("BETA The static information of location types and locationsubtypes")
@@ -148,11 +160,15 @@ public class MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LocationTypesMetadata listaLocationTypes (
+            @ApiParam("If parameter is given use this version.")
+            @RequestParam(value = "version", required = false, defaultValue = LATEST)
+                    String version,
+
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
-        return locationService.findLocationSubtypes(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + LOCATION_TYPES_PATH);
+        return locationService.findLocationSubtypes(lastUpdated, version);
     }
 
     @ApiOperation("BETA The static information of one location")
@@ -160,8 +176,12 @@ public class MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })
     public LocationFeatureCollection getLocation (
+            @ApiParam("If parameter is given use this version.")
+            @RequestParam(value = "version", required = false, defaultValue = LATEST)
+                    String version,
+
             @PathVariable("id") final int id) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);
-        return locationService.findLocation(id);
+        return locationService.findLocation(id, version);
     }
 }

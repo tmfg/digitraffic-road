@@ -20,6 +20,6 @@ public class LocationTypeUpdaterTest extends AbstractTestBase {
     public void testUpdateLocationTypes() {
         final Path path = new File(getClass().getResource(TYPES_FILE_NAME).getFile()).toPath();
 
-        locationTypeUpdater.updateLocationTypes(path);
+        locationTypeUpdater.updateLocationTypes(path, "testVersion");
     }
 }

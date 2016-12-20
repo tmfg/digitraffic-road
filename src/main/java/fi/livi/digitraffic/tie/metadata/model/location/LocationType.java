@@ -2,16 +2,16 @@ package fi.livi.digitraffic.tie.metadata.model.location;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @DynamicUpdate
 public class LocationType {
-    @Id
-    private String typeCode;
+    @EmbeddedId
+    private LocationTypeKey id;
 
     private String descriptionEn;
 
@@ -33,16 +33,16 @@ public class LocationType {
         this.descriptionFi = descriptionFi;
     }
 
-    public String getTypeCode() {
-        return typeCode;
-    }
-
-    public void setTypeCode(final String typeCode) {
-        this.typeCode = typeCode;
-    }
-
     public boolean validate() {
-        return isNotEmpty(typeCode) && isNotEmpty(descriptionEn) && isNotEmpty(descriptionFi);
+        return id != null && id.validate() && isNotEmpty(descriptionEn) && isNotEmpty(descriptionFi);
+    }
+
+    public LocationTypeKey getId() {
+        return id;
+    }
+
+    public void setId(LocationTypeKey id) {
+        this.id = id;
     }
 }
 
