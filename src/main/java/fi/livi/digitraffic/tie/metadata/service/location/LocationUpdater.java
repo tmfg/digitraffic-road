@@ -54,7 +54,7 @@ public class LocationUpdater {
                 throw new IllegalArgumentException("could not find area reference " + areaRefId);
             }
 
-            location.setAreaRef(areaRef.getAreaRef());
+            location.setAreaRef(areaRefId);
         });
 
         linearRefMap.forEach((id, linearRefId) -> {
@@ -69,7 +69,7 @@ public class LocationUpdater {
                 throw new IllegalArgumentException("could not find linear reference " + linearRefId);
             }
 
-            location.setLinearRef(linearRef.getLinearRef());
+            location.setLinearRef(linearRefId);
         });
     }
 }
