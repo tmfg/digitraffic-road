@@ -150,7 +150,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * (long)(1000 * 1.7);
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
         final List<Pair<Tiesaa, String>> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
