@@ -277,6 +277,7 @@
                             <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
                             <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.class</exclude>
+                            <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
