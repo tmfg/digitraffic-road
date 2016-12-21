@@ -72,7 +72,7 @@ public class LocationMetadataUpdater {
     }
 
     private boolean areVersionsSame(final MetadataVersions latestVersions) {
-        return StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+        return latestVersions != null && StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
     }
 
     private void removeTempFiles(final MetadataPathCollection paths) {

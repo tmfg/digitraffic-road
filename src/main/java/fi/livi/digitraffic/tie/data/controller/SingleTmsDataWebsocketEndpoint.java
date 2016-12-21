@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.data.websocket.TmsMessage;
 @ServerEndpoint(value = MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata/{id}",
                 encoders = { TmsEncoder.class, StatusEncoder.class})
 @Component
-public class SingleTmsDataWebsocketEndpoint extends WebsocketEndpoint {
+public class SingleTmsDataWebsocketEndpoint {
     private static final Logger log = LoggerFactory.getLogger(SingleTmsDataWebsocketEndpoint.class);
 
     private static final Map<Long, Set<Session>> sessions = Collections.synchronizedMap(new HashMap<>());
@@ -44,9 +44,9 @@ public class SingleTmsDataWebsocketEndpoint extends WebsocketEndpoint {
     }
 
     @OnClose
-    public void onClose(final Session session, @PathParam("id") final Integer roadStationNaturalId) {
+    public void onClose(final Session session, @PathParam("id") final Long roadStationNaturalId) {
         synchronized (sessions) {
-            Set<Session> set = sessions.get(roadStationNaturalId);
+            final Set<Session> set = sessions.get(roadStationNaturalId);
             if (set != null) {
                 set.remove(session);
             }
@@ -59,7 +59,7 @@ public class SingleTmsDataWebsocketEndpoint extends WebsocketEndpoint {
             final Set<Session> sessionSet = sessions.get(message.sensorValue.getRoadStationNaturalId());
 
             if(sessionSet != null) {
-                log.info("sessions: " + sessionSet.size());
+                log.info("sessions: {}", sessionSet.size());
                 WebsocketEndpoint.sendMessage(log, message, sessionSet);
             }
         }
@@ -71,7 +71,6 @@ public class SingleTmsDataWebsocketEndpoint extends WebsocketEndpoint {
             WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
         }
     }
-
 
     private static void removeClosedSessions() {
         for (Set<Session> sSet : sessions.values()) {

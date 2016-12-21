@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,9 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 
 public class MetadataVersions {
-    private final Map<MetadataType, MetadataVersion> versionMap = new HashMap<>();
+    private final Map<MetadataType, MetadataVersion> versionMap = new EnumMap<MetadataType, MetadataVersion>(MetadataType.class);
 
-    public void addVersion(MetadataType type, final String filename, final String version) {
+    public void addVersion(final MetadataType type, final String filename, final String version) {
         versionMap.put(type, new MetadataVersion(filename, version));
     }
 
