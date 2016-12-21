@@ -26,9 +26,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationStateConverter;
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeConverter;
-import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeEnumConverter;
+import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeIntegerConverter;
 
 @Entity
 @DynamicUpdate
@@ -47,16 +45,16 @@ public class RoadStation {
 
     private String name;
 
-    @Convert(converter = RoadStationTypeConverter.class)
+    @Convert(converter = RoadStationTypeIntegerConverter.class)
     private RoadStationType type;
 
     /**
      * This is used only in db queries
      */
-    @Convert(converter = RoadStationTypeEnumConverter.class)
+    @Enumerated(EnumType.STRING)
     private RoadStationType roadStationType;
 
-    @Convert(converter = RoadStationStateConverter.class)
+    @Enumerated(EnumType.STRING)
     private RoadStationState state;
 
     private boolean obsolete;

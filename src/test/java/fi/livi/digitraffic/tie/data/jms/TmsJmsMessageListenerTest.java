@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -14,11 +15,14 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -31,7 +35,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
@@ -45,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
+public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     
     private static final Logger log = LoggerFactory.getLogger(TmsJmsMessageListenerTest.class);
 
@@ -63,9 +66,13 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
+    private JAXBContext jaxbContext;
+    private Marshaller jaxbMarshaller;
 
     @Before
-    public void setUpTestData() {
+    public void setUpTestData() throws JAXBException {
+
+        jaxbMarshaller = JAXBContext.newInstance(Lam.class).createMarshaller();
 
         if (!TestTransaction.isActive()) {
             TestTransaction.start();
@@ -109,25 +116,23 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllNonObsoletePublicTmsStationsMappedByLotjuId();
+        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllTmsStationsByMappedByLotjuId();
 
-        AbstractJMSMessageListener<Lam> lamJmsMessageListener =
-                new AbstractJMSMessageListener<Lam>(Lam.class, log) {
-            @Override
-            protected void handleData(List<Lam> data) {
-                long start = System.currentTimeMillis();
-                if (TestTransaction.isActive()) {
-                    TestTransaction.flagForCommit();
-                    TestTransaction.end();
-                }
-                TestTransaction.start();
-                Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data));
+        JMSMessageListener.JMSDataUpdater<Lam> dataUpdater = (data) -> {
+            long start = System.currentTimeMillis();
+            if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
-                long end = System.currentTimeMillis();
-                log.info("handleData took " + (end-start) + " ms");
             }
+            TestTransaction.start();
+            Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            long end = System.currentTimeMillis();
+            log.info("handleData took " + (end-start) + " ms");
         };
+        JMSMessageListener<Lam> tmsJmsMessageListener =
+                new JMSMessageListener<Lam>(Lam.class, dataUpdater, true, log);
 
         DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -148,7 +153,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000;
-        final List<Lam> data = new ArrayList<>(100);
+        final List<Pair<Lam, String>> data = new ArrayList<>(lamsWithLotjuId.size());
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
@@ -161,10 +166,10 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                 TmsStation currentStation = stationsIter.next();
 
                 Lam lam = new Lam();
-                data.add(lam);
+                data.add(Pair.of(lam, null));
 
                 lam.setAsemaId(currentStation.getLotjuId());
-                lam.setAika(xgcal);
+                lam.setAika((XMLGregorianCalendar) xgcal.clone());
                 Lam.Anturit lamAnturit = new Lam.Anturit();
                 lam.setAnturit(lamAnturit);
                 List<Lam.Anturit.Anturi> anturit = lamAnturit.getAnturi();
@@ -177,6 +182,10 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                 }
                 xgcal.add(df.newDuration(1000));
 
+                StringWriter xmlSW = new StringWriter();
+                jaxbMarshaller.marshal(lam, xmlSW);
+                tmsJmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Lam: " + currentStation.getLotjuId()));
+
                 if (data.size() >= 100 || lamsWithLotjuId.values().size() <= data.size()) {
                     break;
                 }
@@ -185,7 +194,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
             long duartion = (end - start);
             log.info("Data generation took " + duartion + " ms");
             long startHandle = System.currentTimeMillis();
-            lamJmsMessageListener.handleData(data);
+            tmsJmsMessageListener.drainQueueScheduled();
             long endHandle = System.currentTimeMillis();
             handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
 
@@ -207,11 +216,12 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
 
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        List<Long> lamLotjuIds = data.stream().map(Lam::getAsemaId).collect(Collectors.toList());
+        List<Long> lamLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
                 roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
-        for (Lam lam : data) {
+        for (Pair<Lam, String> pair : data) {
+            Lam lam = pair.getLeft();
             long asemaLotjuId = lam.getAsemaId();
             List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
@@ -227,7 +237,7 @@ public class TmsJmsMessageListenerTest extends MetadataIntegrationTest {
                 Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
             }
         }
-
+        log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 

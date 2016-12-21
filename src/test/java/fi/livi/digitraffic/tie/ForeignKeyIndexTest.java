@@ -76,7 +76,7 @@ public class ForeignKeyIndexTest extends MetadataIntegrationTest {
             sb.append(stringObjectMap.get("TABLE_NAME"));
             sb.append(" (");
             sb.append(StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
-            sb.append("); -- ");
+            sb.append(") TABLESPACE STP_IDX; -- ");
             sb.append(stringObjectMap);
             sb.append("\n");
         }

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -13,11 +14,14 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -30,7 +34,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
@@ -44,7 +47,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
+public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
@@ -62,9 +65,12 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
+    private Marshaller jaxbMarshaller;
 
     @Before
-    public void setUpTestData() {
+    public void setUpTestData() throws JAXBException {
+
+        jaxbMarshaller = JAXBContext.newInstance(Tiesaa.class).createMarshaller();
 
         log.info("Add available sensors for weather stations");
         if (!TestTransaction.isActive()) {
@@ -109,24 +115,22 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublicNonObsoleteWeatherStationsMappedByLotjuId();
 
-        AbstractJMSMessageListener<Tiesaa> tiesaaJmsMessageListener =
-                new AbstractJMSMessageListener<Tiesaa>(Tiesaa.class, log) {
-            @Override
-            protected void handleData(List<Tiesaa> data) {
-                long start = System.currentTimeMillis();
-                if (TestTransaction.isActive()) {
-                    TestTransaction.flagForCommit();
-                    TestTransaction.end();
-                }
-                TestTransaction.start();
-                Assert.assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data));
-
+        JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
+            long start = System.currentTimeMillis();
+            if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
-                long end = System.currentTimeMillis();
-                log.info("handleData took " + (end-start) + " ms");
             }
+            TestTransaction.start();
+            Assert.assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            long end = System.currentTimeMillis();
+            log.info("handleData took " + (end-start) + " ms");
         };
+
+        JMSMessageListener jmsMessageListener = new JMSMessageListener(Tiesaa.class, dataUpdater, true, log);
 
         DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -146,8 +150,8 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * (long)1000;
-        final List<Tiesaa> data = new ArrayList<>();
+        long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
+        final List<Pair<Tiesaa, String>> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
@@ -160,10 +164,10 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
                 WeatherStation currentStation = stationsIter.next();
 
                 Tiesaa tiesaa = new Tiesaa();
-                data.add(tiesaa);
+                data.add(Pair.of(tiesaa, null));
 
                 tiesaa.setAsemaId(currentStation.getLotjuId());
-                tiesaa.setAika(xgcal);
+                tiesaa.setAika((XMLGregorianCalendar) xgcal.clone());
                 Tiesaa.Anturit tiesaaAnturit = new Tiesaa.Anturit();
                 tiesaa.setAnturit(tiesaaAnturit);
                 List<Tiesaa.Anturit.Anturi> anturit = tiesaaAnturit.getAnturi();
@@ -182,21 +186,25 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
                 xgcal.add(df.newDuration(1000));
 
+                StringWriter xmlSW = new StringWriter();
+                jaxbMarshaller.marshal(tiesaa, xmlSW);
+                jmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Tiesaa " + currentStation.getLotjuId()));
+
                 if (data.size() >= 100 || weatherStationsWithLotjuId.size() <= data.size()) {
                     break;
                 }
             }
             long end = System.currentTimeMillis();
-            long duartion = (end - start);
-            log.info("Data generation took " + duartion + " ms");
+            long duration = (end - start);
+            log.info("Data generation took " + duration + " ms");
             long startHandle = System.currentTimeMillis();
-            tiesaaJmsMessageListener.handleData(data);
+            jmsMessageListener.drainQueueScheduled();
             long endHandle = System.currentTimeMillis();
             handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
 
             try {
                 // send data with 1 s intervall
-                long sleep = 1000 - duartion;
+                long sleep = 1000 - duration;
                 if (sleep < 0) {
                     log.error("Data generation took too long");
                 } else {
@@ -211,11 +219,12 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
 
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        List<Long> tiesaaLotjuIds = data.stream().map(Tiesaa::getAsemaId).collect(Collectors.toList());
+        List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
         Map<Long, List<SensorValue>> valuesMap =
                     roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
-        for (Tiesaa tiesaa : data) {
+        for (Pair<Tiesaa, String> pair : data) {
+            Tiesaa tiesaa = pair.getLeft();
             long asemaLotjuId = tiesaa.getAsemaId();
             List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
@@ -231,7 +240,7 @@ public class WeatherJmsMessageListenerTest extends MetadataIntegrationTest {
                 Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
             }
         }
-
+        log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 

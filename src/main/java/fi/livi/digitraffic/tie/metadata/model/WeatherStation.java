@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.converter.WeatherStationTypeConverter;
 
 @Entity
 @DynamicUpdate
@@ -30,7 +30,7 @@ public class WeatherStation {
 
     private Long lotjuId;
 
-    @Convert(converter = WeatherStationTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private WeatherStationType weatherStationType;
 
     private boolean master;

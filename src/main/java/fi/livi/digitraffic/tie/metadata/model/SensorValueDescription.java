@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Immutable;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Additional information of sensor values")
 @Entity
+@DynamicUpdate
 @Immutable
 public class SensorValueDescription {
 

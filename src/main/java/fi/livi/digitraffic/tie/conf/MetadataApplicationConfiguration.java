@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
@@ -11,6 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.LocaleResolver;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
 
@@ -39,6 +42,12 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
         Assert.notNull(applicationContext);
         this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter());
+        super.configureMessageConverters(converters);
     }
 
     /**

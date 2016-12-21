@@ -106,7 +106,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.8.3</version>
+            <version>2.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.8.5</version>
         </dependency>
 
         <!-- Swagger2 JSON API specification generation-->
@@ -161,7 +166,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>20.0</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
@@ -328,7 +333,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>3.1.7</version>
+                <version>3.1.8</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
@@ -399,6 +404,7 @@
                 <configuration>
                     <extensions>
                         <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.0.5</extension>
+                        <extension>net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8</extension>
                     </extensions>
                 </configuration>
                 <executions>
@@ -424,12 +430,14 @@
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_0.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
-                                    <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
-                                              is already in use. Use a class customization to resolve this conflict.-->
                                     <extensionArgs>
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                             is already in use. Use a class customization to resolve this conflict -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
+                                        <!--Generate withProperty methods-->
+                                        <extensionArg>-Xfluent-api</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
                             </xsdOptions>
