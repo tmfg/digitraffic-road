@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.data.websocket.TmsMessage;
 @ServerEndpoint(value = MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata",
                 encoders = { StatusEncoder.class, TmsEncoder.class})
 @Component
-public class TmsDataWebsocketEndpoint extends WebsocketEndpoint {
+public class TmsDataWebsocketEndpoint {
     private static final Logger log = LoggerFactory.getLogger(TmsDataWebsocketEndpoint.class);
 
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
@@ -47,13 +47,13 @@ public class TmsDataWebsocketEndpoint extends WebsocketEndpoint {
 
     public static void sendMessage(final TmsMessage message) {
         synchronized (sessions) {
-            sendMessage(log, message, sessions);
+            WebsocketEndpoint.sendMessage(log, message, sessions);
         }
     }
 
     public static void sendStatus() {
         synchronized (sessions) {
-            sendMessage(log, StatusMessage.OK, sessions);
+            WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions);
         }
     }
 }

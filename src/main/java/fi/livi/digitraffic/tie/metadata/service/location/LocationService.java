@@ -18,7 +18,6 @@ import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class LocationService {
@@ -27,20 +26,16 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final LocationVersionRepository locationVersionRepository;
 
-    private final StaticDataStatusService staticDataStatusService;
-
     public static final String LATEST="latest";
 
     public LocationService(final LocationTypeRepository locationTypeRepository,
                            final LocationSubtypeRepository locationSubtypeRepository,
                            final LocationRepository locationRepository,
-                           final LocationVersionRepository locationVersionRepository,
-                           final StaticDataStatusService staticDataStatusService) {
+                           final LocationVersionRepository locationVersionRepository) {
         this.locationTypeRepository = locationTypeRepository;
         this.locationSubtypeRepository = locationSubtypeRepository;
         this.locationRepository = locationRepository;
         this.locationVersionRepository = locationVersionRepository;
-        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional(readOnly = true)
@@ -58,7 +53,7 @@ public class LocationService {
     }
 
     private static boolean isLatestVersion(final String version) {
-        return StringUtils.isEmpty(version) || version.toLowerCase().equals(LATEST);
+        return StringUtils.isEmpty(version) || version.equalsIgnoreCase(LATEST);
     }
 
     private LocationVersion getLocationVersion(final String version) {

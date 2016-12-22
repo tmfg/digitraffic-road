@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import java.util.Arrays;
+
 import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationTypeKey;
 
@@ -17,7 +19,7 @@ public class LocationTypeReader extends AbstractReader<LocationType> {
         newType.setDescriptionFi(components[4]);
 
         if(!newType.validate()) {
-            log.error("Could not validate new LocationType:" + components);
+            log.error("Could not validate new LocationType:" + Arrays.toString(components));
 
             return null;
         }
