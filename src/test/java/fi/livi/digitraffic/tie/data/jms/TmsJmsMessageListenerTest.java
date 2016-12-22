@@ -191,16 +191,16 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
             }
             long end = System.currentTimeMillis();
-            long duartion = (end - start);
-            log.info("Data generation took " + duartion + " ms");
+            long duration = (end - start);
+            log.info("Data generation took " + duration + " ms");
             long startHandle = System.currentTimeMillis();
             tmsJmsMessageListener.drainQueueScheduled();
             long endHandle = System.currentTimeMillis();
             handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
 
             try {
-                // send data with 1 s intervall
-                long sleep = 1000 - duartion;
+                // send data with 1 s interval
+                long sleep = 1000 - duration;
                 if (sleep < 0) {
                     log.error("Data generation took too long");
                 } else {
