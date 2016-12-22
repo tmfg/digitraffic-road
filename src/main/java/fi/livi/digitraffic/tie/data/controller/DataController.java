@@ -5,9 +5,14 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+
+import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +46,7 @@ import io.swagger.annotations.ApiResponses;
  */
 @Api(tags = "data", description = "Data of Digitraffic services")
 @RestController
+@Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
@@ -334,6 +340,7 @@ public class DataController {
     @ApiOperation("BETA Traffic disorder Datex2 messages disorders history")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+                            @ApiResponse(code = 400, message = "Invalid parameter"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
     public TrafficDisordersDatex2Response listTrafficDisordersDatex2History(
@@ -341,12 +348,11 @@ public class DataController {
             @RequestParam(required = false)
             final String situationId,
             @ApiParam(value = "Year (>2014)", required = true)
-            @RequestParam
+            @RequestParam @Valid @Min(2014)
             final int year,
             @ApiParam(value = "Month (1-12)", required = true)
-            @RequestParam
-            final int month
-    ) {
+            @RequestParam @Valid @Range(min = 1, max = 12)
+            final int month) {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
         return datex2DataService.findDatex2Responses(situationId, year, month);
     }

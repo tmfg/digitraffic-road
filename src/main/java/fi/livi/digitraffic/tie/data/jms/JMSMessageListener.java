@@ -25,6 +25,9 @@ import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 
 public class JMSMessageListener<T> implements MessageListener {
 
+    public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
+    public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
+
     public interface JMSDataUpdater<T> {
         void updateData(List<Pair<T, String>> data);
     }
@@ -67,11 +70,6 @@ public class JMSMessageListener<T> implements MessageListener {
         return drainScheduled;
     }
 
-    /**
-     * Implement to handle received message data
-     */
-//    protected abstract void handleData(List<Pair<T,String>> data);
-
     @PreDestroy
     public void onShutdown() {
         log.info("Shutdown ... ");
@@ -82,7 +80,6 @@ public class JMSMessageListener<T> implements MessageListener {
     public void onMessage(Message message) {
         minuteMessageCounter.incrementAndGet();
         if (!shutdownCalled.get()) {
-//            log.info("Received " + message.getClass().getSimpleName());
             Pair<T,String> data = unmarshalMessage(message);
             if (data != null) {
                 blockingQueue.add(data);
@@ -97,7 +94,6 @@ public class JMSMessageListener<T> implements MessageListener {
                         log.error("JMS message acknowledge failed", e);
                     }
                 }
-
             }
         } else {
             log.error("Not handling any messages anymore because app is shutting down");
@@ -106,36 +102,36 @@ public class JMSMessageListener<T> implements MessageListener {
 
     protected Pair<T, String> unmarshalMessage(Message message) {
 
-        if (message instanceof TextMessage) {
-            TextMessage xmlMessage = (TextMessage) message;
-            try {
-                String text = xmlMessage.getText().trim();
-                if (text.length() <= 0) {
-                    log.warn("Empty JMS message" + ToStringHelpper.toStringFull(message));
-                    return null;
-                }
-
-                StringReader sr = new StringReader(text);
-                Object object = jaxbUnmarshaller.unmarshal(sr);
-                if (object instanceof JAXBElement) {
-                    object = ((JAXBElement) object).getValue();
-                }
-                return Pair.of((T)object, text);
-            } catch (JMSException jmse) {
-                // getText() failed
-                log.error("Message unmarshalling error for message: " + ToStringHelpper.toStringFull(message));
-                throw new JMSUnmarshalMessageException("Message unmarshalling error", jmse);
-            } catch (JAXBException e) {
-                try {
-                    log.error("Message unmarshalling error for message:\n" + xmlMessage.getText());
-                } catch (JMSException e1) {
-                    log.debug("Message unmarshalling error", e);
-                }
-                throw new JMSUnmarshalMessageException("Message unmarshalling error", e);
-            }
-        } else {
-            log.error("Message unmarshalling error for message:" + ToStringHelpper.toStringFull(message));
+        if (!(message instanceof TextMessage)) {
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
             throw new IllegalArgumentException("Unknown message type: " + message.getClass());
+        }
+
+        TextMessage xmlMessage = (TextMessage) message;
+        try {
+            String text = xmlMessage.getText().trim();
+            if (text.length() <= 0) {
+                log.warn("Empty JMS message" + ToStringHelpper.toStringFull(message));
+                return null;
+            }
+
+            StringReader sr = new StringReader(text);
+            Object object = jaxbUnmarshaller.unmarshal(sr);
+            if (object instanceof JAXBElement) {
+                object = ((JAXBElement) object).getValue();
+            }
+            return Pair.of((T)object, text);
+        } catch (JMSException jmse) {
+            // getText() failed
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
+            throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
+        } catch (JAXBException e) {
+            try {
+                log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, xmlMessage.getText());
+            } catch (JMSException e1) {
+                log.debug(MESSAGE_UNMARSHALLING_ERROR, e);
+            }
+            throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
         }
     }
 
