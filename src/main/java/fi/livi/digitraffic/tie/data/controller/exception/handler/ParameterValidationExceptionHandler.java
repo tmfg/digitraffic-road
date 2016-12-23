@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.data.controller.exception.handler;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -33,13 +33,7 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException exception, ServletWebRequest request) {
         log.error(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase(), exception);
-
-        List<String> errors = new ArrayList<>();
-        exception.getConstraintViolations().stream().forEach(violation -> {
-            String paramName = resolveParamName(request, violation);
-            errors.add(paramName + " " + violation.getMessage());
-        });
-
+        List<String> errors = exception.getConstraintViolations().stream().map(v -> resolveErrorMessage(request, v)).collect(Collectors.toList());
         return buildResponseEntity(HttpStatus.BAD_REQUEST, errors, request, exception);
     }
 
@@ -52,6 +46,10 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
         errorAttributes.put("message", errors);
         errorAttributes.put("path", request.getRequest().getRequestURI());
         return new ResponseEntity<>(errorAttributes, httpStatus);
+    }
+
+    private String resolveErrorMessage(ServletWebRequest request, ConstraintViolation<?> constraintViolation) {
+        return String.format("%s %s %s", resolveParamName(request, constraintViolation), constraintViolation.getInvalidValue(), constraintViolation.getMessage());
     }
 
     private String resolveParamName(WebRequest request, ConstraintViolation<?> violation) {
