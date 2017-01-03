@@ -31,7 +31,7 @@ public class ForecastSectionDataService {
 
         MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.FORECAST_SECTION_WEATHER.toString());
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
+        List<ForecastSection> forecastSections = forecastSectionRepository.findAllByOrderByNaturalIdAsc();
 
         return new ForecastSectionWeatherRootDto(
                 updated == null ? null : updated.getUpdatedTime(),
