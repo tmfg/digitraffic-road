@@ -145,13 +145,13 @@ public class SchedulerConfig {
         return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
     }
 
-    @Bean(name = "forecastSectionCoordinatesUpdateJobTrigger")
+    @Bean
     public SimpleTriggerFactoryBean forecastSectionCoordinatesUpdateJobTrigger(final JobDetail forecastSectionCoordinatesUpdateJobDetail,
                                                                                @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(forecastSectionCoordinatesUpdateJobDetail, frequency);
     }
 
-    @Bean(name = "forecastSectionWeatherUpdateJobTrigger")
+    @Bean
     public SimpleTriggerFactoryBean forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail,
                                                                            @Value("${forecastSectionWeatherUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
