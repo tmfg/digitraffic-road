@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.dao.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 
 @Service
 public class LocationMetadataUpdater {
@@ -22,7 +22,7 @@ public class LocationMetadataUpdater {
     private final LocationTypeUpdater locationTypeUpdater;
     private final LocationSubtypeUpdater locationSubtypeUpdater;
 
-    private final StaticDataStatusService staticDataStatusService;
+    private final LocationVersionRepository locationVersionRepository;
 
     private final MetadataFileFetcher metadataFileFetcher;
 
@@ -31,30 +31,36 @@ public class LocationMetadataUpdater {
     public LocationMetadataUpdater(final LocationUpdater locationUpdater,
                                    final LocationTypeUpdater locationTypeUpdater,
                                    final LocationSubtypeUpdater locationSubtypeUpdater,
-                                   final StaticDataStatusService staticDataStatusService,
+                                   final LocationVersionRepository locationVersionRepository,
                                    final MetadataFileFetcher metadataFileFetcher) {
         this.locationUpdater = locationUpdater;
         this.locationTypeUpdater = locationTypeUpdater;
         this.locationSubtypeUpdater = locationSubtypeUpdater;
-        this.staticDataStatusService = staticDataStatusService;
+        this.locationVersionRepository = locationVersionRepository;
         this.metadataFileFetcher = metadataFileFetcher;
     }
 
     public void findAndUpdate() throws IOException {
         try {
             final MetadataVersions latestVersions = metadataFileFetcher.getLatestVersions();
-            final MetadataVersions currentVersions = staticDataStatusService.getCurrentMetadataVersions();
+            final LocationVersion currentVersion = locationVersionRepository.findLatestVersion();
 
-            if(isUpdateNeeded(latestVersions, currentVersions)) {
+            // check that new versions are all same
+            if(!areVersionsSame(latestVersions)) {
+                log.info("Different versions, locations {} and types {}", latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+
+                return;
+            }
+
+            if(isUpdateNeeded(latestVersions, currentVersion)) {
                 final MetadataPathCollection paths = metadataFileFetcher.getFilePaths(latestVersions);
-                final StopWatch stopWatch = new StopWatch();
+                final StopWatch stopWatch = StopWatch.createStarted();
 
-                stopWatch.start();
                 updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, latestVersions);
                 removeTempFiles(paths);
                 stopWatch.stop();
 
-                log.info(String.format("Locations and locationtypes updated, took %d millis", stopWatch.getTime()));
+                log.info("Locations and locationtypes updated, took {} millis", stopWatch.getTime());
             } else {
                 log.info("No need to update locations or locationtypes");
             }
@@ -65,20 +71,25 @@ public class LocationMetadataUpdater {
         }
     }
 
+    private boolean areVersionsSame(final MetadataVersions latestVersions) {
+        return latestVersions != null && StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+    }
+
     private void removeTempFiles(final MetadataPathCollection paths) {
         FileUtils.delete(paths.locationsPath.toFile());
         FileUtils.delete(paths.typesPath.toFile());
         FileUtils.delete(paths.subtypesPath.toFile());
     }
 
-    private boolean isUpdateNeeded(final MetadataVersions latestVersions, final MetadataVersions currentVersions) {
-        return needUpdate(latestVersions.getLocationsVersion(), currentVersions.getLocationsVersion()) ||
-               needUpdate(latestVersions.getLocationTypeVersion(), currentVersions.getLocationTypeVersion());
+    private boolean isUpdateNeeded(final MetadataVersions latestVersions, final LocationVersion currentVersion) {
+        return currentVersion == null ||
+               needUpdate(latestVersions.getLocationsVersion(), currentVersion.getVersion()) ||
+               needUpdate(latestVersions.getLocationTypeVersion(), currentVersion.getVersion());
     }
 
-    private static boolean needUpdate(final MetadataVersions.MetadataVersion oldVersion, final MetadataVersions.MetadataVersion newVersion) {
-        if(!StringUtils.equals(oldVersion.version, newVersion.version)) {
-            log.info(String.format("Versions differ, old versions %s, new version %s, must be updated", oldVersion, newVersion));
+    private static boolean needUpdate(final MetadataVersions.MetadataVersion newVersion, final String currentVersion) {
+        if(!StringUtils.equals(newVersion.version, currentVersion)) {
+            log.info("Versions differ, old versions {}, new version {}, must be updated", currentVersion, newVersion.version);
 
             return true;
         }
@@ -88,11 +99,12 @@ public class LocationMetadataUpdater {
     @Transactional
     public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
                           final MetadataVersions latestVersions) {
-        locationTypeUpdater.updateLocationTypes(locationTypePath);
-        final List<LocationSubtype> locationSubtypes = locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath);
-        locationUpdater.updateLocations(locationPath, locationSubtypes);
+        final String version = latestVersions.getLocationsVersion().version;
 
-        staticDataStatusService.updateMetadataUpdated(MetadataType.LOCATION_TYPES, latestVersions.getLocationTypeVersion().version);
-        staticDataStatusService.updateMetadataUpdated(MetadataType.LOCATIONS, latestVersions.getLocationsVersion().version);
+        locationTypeUpdater.updateLocationTypes(locationTypePath, version);
+        final List<LocationSubtype> locationSubtypes = locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, version);
+        locationUpdater.updateLocations(locationPath, locationSubtypes, version);
+
+        locationVersionRepository.save(new LocationVersion(version));
     }
 }

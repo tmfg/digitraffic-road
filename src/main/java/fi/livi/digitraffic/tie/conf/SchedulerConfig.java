@@ -32,6 +32,7 @@ import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
@@ -64,7 +65,6 @@ public class SchedulerConfig {
 
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
-
         return factory;
     }
 
@@ -111,6 +111,11 @@ public class SchedulerConfig {
 
 
     @Bean
+    public JobDetailFactoryBean unhandledDatex2MessagesImportJobDetail() {
+        return createJobDetail(UnhandledDatex2MessagesImportJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
                                                            @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
@@ -152,6 +157,12 @@ public class SchedulerConfig {
         return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
     }
 
+
+    @Bean
+    public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail,
+                                                                            @Value("${unhandledDatex2MessagesImportJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, frequency);
+    }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
         final JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();

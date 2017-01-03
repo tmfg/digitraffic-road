@@ -8,6 +8,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -17,8 +19,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -26,6 +32,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,7 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
@@ -55,7 +61,7 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @Transactional
-public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
+public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
@@ -84,6 +90,8 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
     private static TemporaryFolder testFolder;
+    private Marshaller jaxbMarshaller;
+    private Unmarshaller jaxbUnmarshaller;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -102,8 +110,10 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
     }
 
     @Before
-    public void setUpTestData() throws IOException {
+    public void setUpTestData() throws IOException, JAXBException {
 
+        jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
+        jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();
         cameraDataUpdateService.setWeathercamImportDir(getImportDir());
 
         int i = 5;
@@ -165,27 +175,26 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         createHttpResponseStubFor(4 + IMAGE_SUFFIX);
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
-        AbstractJMSMessageListener<Kuva> cameraJmsMessageListener =
-                new AbstractJMSMessageListener<Kuva>(Kuva.class, log) {
-            @Override
-            protected void handleData(List<Kuva> data) {
-                long start = System.currentTimeMillis();
-                if (TestTransaction.isActive()) {
-                    TestTransaction.flagForCommit();
-                    TestTransaction.end();
-                }
-                TestTransaction.start();
-                try {
-                    cameraDataUpdateService.updateCameraData(data);
-                } catch (SQLException e) {
-                    Assert.fail("Data updating failed");
-                }
+        JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
+            long start = System.currentTimeMillis();
+            if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
-                long end = System.currentTimeMillis();
-                log.info("handleData took " + (end-start) + " ms");
             }
+            TestTransaction.start();
+            try {
+                cameraDataUpdateService.updateCameraData(data.stream().map(p -> p.getLeft()).collect(Collectors.toList()));
+            } catch (SQLException e) {
+                Assert.fail("Data updating failed");
+            }
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+            long end = System.currentTimeMillis();
+            log.info("handleData took " + (end-start) + " ms");
         };
+
+        JMSMessageListener<Kuva> cameraJmsMessageListener =
+                new JMSMessageListener<Kuva>(Kuva.class, dataUpdater, true, log);
 
         DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -195,36 +204,34 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
         List<CameraPreset> presets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         Iterator<CameraPreset> presetIterator = presets.iterator();
 
-
-
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 2000;
-        final List<Kuva> data = new ArrayList<>(presets.size());
+        final List<Pair<Kuva, String>> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
-        while(testBurstsLeft > 0) {
+        while (testBurstsLeft > 0) {
             testBurstsLeft--;
             sw.reset();
             sw.start();
 
             data.clear();
-            while ( true && presetIterator.hasNext() ) {
+            while (true && presetIterator.hasNext()) {
                 CameraPreset preset = presetIterator.next();
 
                 // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
                 int kuvaIndex = RandomUtils.nextInt(1, 6);
                 Kuva kuva = new Kuva();
-                kuva.setAika(xgcal);
-                kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000,9999));
-                kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000,9999));
-                kuva.setEsiasentoId(RandomUtils.nextLong(1000,9999));
-                kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0,99999)));
+                kuva.setNimi(preset.getPresetId() + "1234.jpg");
+                kuva.setAika((XMLGregorianCalendar) xgcal.clone());
+                kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
+                kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
+                kuva.setEsiasentoId(RandomUtils.nextLong(1000, 9999));
+                kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0, 99999)));
                 kuva.setJulkinen(true);
                 kuva.setKameraId(Long.parseLong(preset.getCameraId().substring(1)));
                 kuva.setLiviId("" + kuvaIndex);
-                kuva.setNimi(preset.getPresetId() + "1234.jpg");
-                if (preset.getRoadStation().getRoadAddress() != null ) {
+                if (preset.getRoadStation().getRoadAddress() != null) {
                     kuva.setTienumero(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadNumber()));
                     kuva.setTieosa(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadSection()));
                 }
@@ -232,8 +239,24 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
                 kuva.setXKoordinaatti("12345.67");
                 kuva.setYKoordinaatti("23456.78");
 
-                data.add(kuva);
+                data.add(Pair.of(kuva, null));
                 xgcal.add(df.newDuration(1000));
+
+                StringWriter xmlSW = new StringWriter();
+                jaxbMarshaller.marshal(kuva, xmlSW);
+                StringReader sr = new StringReader(xmlSW.toString());
+                Kuva object = (Kuva)jaxbUnmarshaller.unmarshal(sr);
+
+                System.out.println(kuva.getAika());
+                System.out.println(object.getAika());
+
+                cameraJmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Kuva " + preset.getPresetId()));
+
+                System.out.println();
+                System.out.println("Kamera preset " + preset.getPresetId());
+                System.out.println(kuva.getAika());
+                System.out.println(xmlSW.toString());
+
                 if (data.size() >= 25) {
                     break;
                 }
@@ -245,13 +268,12 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
             sw.reset();
             sw.start();
             Assert.assertTrue(data.size() >= 25);
-            cameraJmsMessageListener.handleData(data);
+            cameraJmsMessageListener.drainQueueScheduled();
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");
             handleDataTotalTime += sw.getTime();
 
             try {
-
                 // send data with 1 s intervall
                 long sleep = 1000 - generation;
                 if (sleep < 0) {
@@ -263,13 +285,15 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
                 e.printStackTrace();
             }
         }
-        log.info("Handle kuva data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
+        log.info("Handle kuva data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " +
+                (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
 
         log.info("Check data validy");
 
         Map<String, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
 
-        for (Kuva kuva : data) {
+        for (Pair<Kuva, String> pair : data) {
+            Kuva kuva = pair.getLeft();
             String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
             byte[] dst = readCameraDataFromDisk(presetId);
@@ -282,8 +306,9 @@ public class CameraJmsMessageListenerTest extends MetadataIntegrationTest {
             LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
             Assert.assertEquals("Preset not updated with kuva's timestamp", kuvaTaken, presetPictureLastModified);
         }
-
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+        log.info("Data is valid");
+        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms",
+                handleDataTotalTime <= maxHandleTime);
     }
 
     String getImportDir() {

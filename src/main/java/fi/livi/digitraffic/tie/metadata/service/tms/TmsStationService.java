@@ -120,7 +120,7 @@ public class TmsStationService {
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findTmsStationsMappedByLotjuId(List<Long> tmsStationLotjuIds) {
         final List<TmsStation> all = tmsStationRepository.findByLotjuIdIn(tmsStationLotjuIds);
-        return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
