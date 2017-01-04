@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.data.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.List;
-
-@JsonPropertyOrder({ "roadId", "roadConditions" })
+@JsonPropertyOrder({ "naturalId", "roadConditions" })
 public class ForecastSectionWeatherDataDto {
 
     @ApiModelProperty(value =
@@ -16,7 +17,7 @@ public class ForecastSectionWeatherDataDto {
             "2. Road section 3 characters ie. 112, \n" +
             "3. Road section version 3 characters ie. 000, \n" +
             "4. Reserved for future needs 1 characters default 0")
-    @JsonProperty("roadId")
+    @JsonProperty("id")
     public final String naturalId;
 
     @ApiModelProperty(value = "Road conditions data forecast section")
