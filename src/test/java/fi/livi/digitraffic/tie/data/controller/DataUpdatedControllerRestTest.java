@@ -34,7 +34,8 @@ public class DataUpdatedControllerRestTest extends MetadataRestTest {
         for (final Field field : fields) {
             if ( field.getName().endsWith("_PATH")
                  && !field.getName().equals("FLUENCY_HISTORY_DATA_PATH")
-                 && !field.getName().equals("TRAFFIC_DISORDERS_DATEX2_PATH")) {
+                 && !field.getName().equals("TRAFFIC_DISORDERS_DATEX2_PATH")
+                 && !field.getName().equals("FORECAST_SECTION_WEATHER_DATA_PATH")) {
 
                 final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
                              MetadataApplicationConfiguration.API_DATA_PART_PATH +

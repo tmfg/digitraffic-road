@@ -10,19 +10,38 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Immutable
+@JsonPropertyOrder({ "id", "name" })
 public class RoadDistrict {
 
     @Id
     @GenericGenerator(name = "SEQ_ROAD_DISTRICT", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_DISTRICT"))
     @GeneratedValue(generator = "SEQ_ROAD_DISTRICT")
+    @JsonIgnore
     private Long id;
+
+    @ApiModelProperty(value = "Road district id (ELY)")
+    @JsonProperty(value = "id")
     private int naturalId;
+
+    @ApiModelProperty(value = "Road district name")
     private String name;
+
+    @JsonIgnore
     private boolean obsolete;
+
+    @JsonIgnore
     private LocalDate obsoleteDate;
+
+    @JsonIgnore
     private Integer speedLimitSeason;
 
     public int getNaturalId() {

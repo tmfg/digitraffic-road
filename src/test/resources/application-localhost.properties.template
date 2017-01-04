@@ -14,10 +14,14 @@ metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
 
+# Road conditions api
+roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
+
 # Metadata update frequencies in ms, 43200000 ms = 12 h
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
+forecastSectionCoordinatesUpdateJob.frequency=86400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam.url/
