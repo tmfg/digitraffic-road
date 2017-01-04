@@ -38,6 +38,15 @@ public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureC
 
         properties.setNaturalId(fs.getNaturalId());
         properties.setDescription(fs.getDescription());
+        properties.setRoadSectionNumber(fs.getRoadSectionNumber());
+        properties.setRoadNumber(fs.getRoadNumber());
+        properties.setRoadSectionVersionNumber(fs.getRoadSectionVersionNumber());
+        properties.setStartDistance(fs.getStartDistance());
+        properties.setEndDistance(fs.getEndDistance());
+        properties.setLength(fs.getLength());
+        properties.setRoad(fs.getRoad());
+        properties.setStartRoadSection(fs.getStartRoadSection());
+        properties.setEndRoadSection(fs.getEndRoadSection());
         return properties;
     }
 }

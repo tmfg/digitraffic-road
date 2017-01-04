@@ -1,28 +1,42 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Date;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
+@JsonPropertyOrder({ "naturalId", "name" })
 public class Road {
 
     @Id
     @GenericGenerator(name = "SEQ_ROAD", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD"))
     @GeneratedValue(generator = "SEQ_ROAD")
+    @JsonIgnore
     private Long id;
 
+    @ApiModelProperty(value = "Road number")
+    @JsonProperty(value = "id")
     private String naturalId;
 
+    @JsonIgnore
     private boolean obsolete;
 
+    @JsonIgnore
     private Date obsoleteDate;
 
+    @ApiModelProperty(value = "Road name")
     private String name;
 
     public Road() {
