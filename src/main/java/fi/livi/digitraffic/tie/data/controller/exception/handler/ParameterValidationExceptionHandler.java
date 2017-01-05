@@ -37,7 +37,7 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
         return buildResponseEntity(HttpStatus.BAD_REQUEST, errors, request, exception);
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponseEntity(HttpStatus httpStatus, List<String> errors, ServletWebRequest request, Exception exception) {
+    private static ResponseEntity<Map<String, Object>> buildResponseEntity(HttpStatus httpStatus, List<String> errors, ServletWebRequest request, Exception exception) {
         Map<String, Object> errorAttributes = new LinkedHashMap<>();
         errorAttributes.put("timestamp", new Date());
         errorAttributes.put("status", httpStatus.value());
@@ -48,16 +48,17 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
         return new ResponseEntity<>(errorAttributes, httpStatus);
     }
 
-    private String resolveErrorMessage(ServletWebRequest request, ConstraintViolation<?> constraintViolation) {
+    private static String resolveErrorMessage(ServletWebRequest request, ConstraintViolation<?> constraintViolation) {
         return String.format("%s %s %s", resolveParamName(request, constraintViolation), constraintViolation.getInvalidValue(), constraintViolation.getMessage());
     }
 
-    private String resolveParamName(WebRequest request, ConstraintViolation<?> violation) {
+    private static String resolveParamName(WebRequest request, ConstraintViolation<?> violation) {
         try {
             Path.ParameterNode path = (Path.ParameterNode) Iterables.getLast(violation.getPropertyPath());
             int parameterIndex = path.getParameterIndex()-1;
             return Iterators.get(request.getParameterNames(), parameterIndex);
         } catch (Exception e) {
+            log.error("Error while resolving parameter name", e);
             return Iterables.getLast(violation.getPropertyPath()).getName();
         }
     }
