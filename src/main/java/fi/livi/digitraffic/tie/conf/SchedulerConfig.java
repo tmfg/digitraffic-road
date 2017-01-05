@@ -27,6 +27,8 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
@@ -98,6 +100,17 @@ public class SchedulerConfig {
     public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
+    public JobDetailFactoryBean forecastSectionCoordinatesUpdateJobDetail() {
+        return createJobDetail(ForecastSectionCoordinatesUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean forecastSectionWeatherUpdateJobDetail() {
+        return createJobDetail(ForecastSectionWeatherUpdateJob.class);
+    }
+
+
+    @Bean
     public JobDetailFactoryBean unhandledDatex2MessagesImportJobDetail() {
         return createJobDetail(UnhandledDatex2MessagesImportJob.class);
     }
@@ -131,6 +144,19 @@ public class SchedulerConfig {
                                                                       @Value("${locationsMetadataUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
     }
+
+    @Bean
+    public SimpleTriggerFactoryBean forecastSectionCoordinatesUpdateJobTrigger(final JobDetail forecastSectionCoordinatesUpdateJobDetail,
+                                                                               @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(forecastSectionCoordinatesUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail,
+                                                                           @Value("${forecastSectionWeatherUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
+    }
+
 
     @Bean
     public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail,

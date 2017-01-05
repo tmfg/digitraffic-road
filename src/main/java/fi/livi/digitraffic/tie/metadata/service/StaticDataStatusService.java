@@ -59,7 +59,17 @@ public class StaticDataStatusService {
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
+        }
     }
+
+    @Transactional
+    public void setMetadataUpdated(final MetadataType metadataType, ZonedDateTime updated) {
+        MetadataUpdated metadataUpdated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+        if (metadataUpdated == null) {
+            metadataUpdatedRepository.save(new MetadataUpdated(metadataType, updated, null));
+        } else {
+            metadataUpdated.setUpdatedTime(updated);
+        }
     }
 
     @Transactional(readOnly = true)

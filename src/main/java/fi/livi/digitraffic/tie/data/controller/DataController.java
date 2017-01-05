@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
@@ -28,6 +29,7 @@ import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.DayDataService;
+import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
@@ -65,6 +67,8 @@ public class DataController {
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
 //    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
 
+    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
@@ -75,6 +79,7 @@ public class DataController {
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
     private final CameraDataService cameraDataService;
+    private final ForecastSectionDataService forecastSectionDataService;
     private final Datex2DataService datex2DataService;
 
     @Autowired
@@ -84,6 +89,7 @@ public class DataController {
                           final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
+                          final ForecastSectionDataService forecastSectionDataService,
                           final Datex2DataService datex2DataService) {
         this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
@@ -91,6 +97,7 @@ public class DataController {
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
+        this.forecastSectionDataService = forecastSectionDataService;
         this.datex2DataService = datex2DataService;
     }
 
@@ -266,6 +273,15 @@ public class DataController {
             final long id) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
         return weatherService.findPublicWeatherData(id);
+    }
+
+    @ApiOperation("Current data of Weather Forecast Sections")
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section data"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData() {
+        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
+        return forecastSectionDataService.getForecastSectionWeatherData();
     }
 
 /*
