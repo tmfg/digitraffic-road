@@ -39,10 +39,10 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private final Logger log;
 
-    protected final Unmarshaller jaxbUnmarshaller;
+    private final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private AtomicInteger minuteMessageCounter = new AtomicInteger(0);
+    private final AtomicInteger minuteMessageCounter = new AtomicInteger(0);
 
     private final boolean drainScheduled;
     private final JMSDataUpdater dataUpdater;
@@ -57,9 +57,9 @@ public class JMSMessageListener<T> implements MessageListener {
      * @throws JAXBException
      */
     public JMSMessageListener(final Class<T> typeClass,
-                              JMSDataUpdater dataUpdater,
-                              boolean drainScheduled,
-                              Logger log) throws JAXBException {
+                              final JMSDataUpdater dataUpdater,
+                              final boolean drainScheduled,
+                              final Logger log) throws JAXBException {
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
@@ -78,7 +78,7 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(final Message message) {
         minuteMessageCounter.incrementAndGet();
         if (shutdownCalled.get()) {
             log.error("Not handling any messages anymore because app is shutting down");
@@ -102,12 +102,12 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    protected Pair<T, String> unmarshalMessage(Message message) {
+    protected Pair<T, String> unmarshalMessage(final Message message) {
 
         try {
-            String text = parseTextMessageText(message);
+            final String text = parseTextMessageText(message);
 
-            StringReader sr = new StringReader(text);
+            final StringReader sr = new StringReader(text);
             Object object = jaxbUnmarshaller.unmarshal(sr);
             if (object instanceof JAXBElement) {
                 object = ((JAXBElement) object).getValue();
@@ -123,10 +123,10 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    private String parseTextMessageText(Message message) throws JMSException {
+    private String parseTextMessageText(final Message message) throws JMSException {
         assertTextMessage(message);
-        TextMessage xmlMessage = (TextMessage) message;
-        String text = xmlMessage.getText();
+        final TextMessage xmlMessage = (TextMessage) message;
+        final String text = xmlMessage.getText();
         if (StringUtils.isBlank(text)) {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(xmlMessage));
             throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": null text");
@@ -134,7 +134,7 @@ public class JMSMessageListener<T> implements MessageListener {
         return text.trim();
     }
 
-    private void assertTextMessage(Message message) {
+    private void assertTextMessage(final Message message) {
         if (!(message instanceof TextMessage)) {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
             throw new IllegalArgumentException("Unknown message type: " + message.getClass());
@@ -164,7 +164,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
             // Allocate array with some extra because queue size can change any time
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
-            int drained = blockingQueue.drainTo(targetList);
+            final int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("Handle data");
                 dataUpdater.updateData(targetList);

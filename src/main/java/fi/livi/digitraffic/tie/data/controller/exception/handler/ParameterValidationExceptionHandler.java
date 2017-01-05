@@ -31,13 +31,14 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
 
     @ExceptionHandler({ ConstraintViolationException.class })
-    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException exception, ServletWebRequest request) {
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(final ConstraintViolationException exception, final ServletWebRequest request) {
         log.error(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase(), exception);
         List<String> errors = exception.getConstraintViolations().stream().map(v -> resolveErrorMessage(request, v)).collect(Collectors.toList());
         return buildResponseEntity(HttpStatus.BAD_REQUEST, errors, request, exception);
     }
 
-    private static ResponseEntity<Map<String, Object>> buildResponseEntity(HttpStatus httpStatus, List<String> errors, ServletWebRequest request, Exception exception) {
+    private static ResponseEntity<Map<String, Object>> buildResponseEntity(final HttpStatus httpStatus, final List<String> errors,
+                                                                           final ServletWebRequest request, final Exception exception) {
         Map<String, Object> errorAttributes = new LinkedHashMap<>();
         errorAttributes.put("timestamp", new Date());
         errorAttributes.put("status", httpStatus.value());
@@ -48,11 +49,11 @@ public class ParameterValidationExceptionHandler extends ResponseEntityException
         return new ResponseEntity<>(errorAttributes, httpStatus);
     }
 
-    private static String resolveErrorMessage(ServletWebRequest request, ConstraintViolation<?> constraintViolation) {
+    private static String resolveErrorMessage(final ServletWebRequest request, final ConstraintViolation<?> constraintViolation) {
         return String.format("%s %s %s", resolveParamName(request, constraintViolation), constraintViolation.getInvalidValue(), constraintViolation.getMessage());
     }
 
-    private static String resolveParamName(WebRequest request, ConstraintViolation<?> violation) {
+    private static String resolveParamName(final WebRequest request, final ConstraintViolation<?> violation) {
         try {
             Path.ParameterNode path = (Path.ParameterNode) Iterables.getLast(violation.getPropertyPath());
             int parameterIndex = path.getParameterIndex()-1;
