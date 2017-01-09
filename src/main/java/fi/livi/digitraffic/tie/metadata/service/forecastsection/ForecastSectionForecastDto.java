@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,7 +11,7 @@ public class ForecastSectionForecastDto {
 
     public final String forecastName;
 
-    public final Date time;
+    public final ZonedDateTime time;
 
     public final Boolean daylight;
 
@@ -32,7 +32,7 @@ public class ForecastSectionForecastDto {
     public final ForecastSectionWeatherReasonDto conditionReason;
 
     public ForecastSectionForecastDto(@JsonProperty("forecastName") String forecastName,
-                                      @JsonProperty("Time") Date time,
+                                      @JsonProperty("Time") ZonedDateTime time,
                                       @JsonProperty("daylight") Boolean daylight,
                                       @JsonProperty("overallRoadCondition") Integer overallRoadCondition,
                                       @JsonProperty("reliability") Integer reliability,

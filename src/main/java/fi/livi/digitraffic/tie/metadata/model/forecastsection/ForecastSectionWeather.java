@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
-@JsonPropertyOrder({ "timeLocalTime", "timeUtc", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
+@JsonPropertyOrder({ "time", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
                      "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })
 public class ForecastSectionWeather {
 
@@ -115,14 +115,8 @@ public class ForecastSectionWeather {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
     }
 
-    @ApiModelProperty(value = "Timestamp " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
-    public String getTimeLocalTime() {
+    public String getTime() {
         return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
-    }
-
-    @ApiModelProperty(value = "Timestamp " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
-    public String getTimeUtc() {
-        return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
     }
 
     public void setTime(Timestamp time) {

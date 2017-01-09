@@ -1,20 +1,24 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
 
 @Service
 public class ForecastSectionDataUpdater {
@@ -71,7 +75,7 @@ public class ForecastSectionDataUpdater {
                 updateObservation(observation, weatherData.observation);
             } else {
                 forecastsToAdd.add(new ForecastSectionWeather(new ForecastSectionWeatherPK(forecastSection.getId(), "0h"),
-                                                              new Timestamp(weatherData.observation.time.getTime()),
+                                                              Timestamp.from(weatherData.observation.time.toInstant()),
                                                               weatherData.observation.daylight,
                                                               weatherData.observation.overallRoadCondition,
                                                               weatherData.observation.reliability,
@@ -101,7 +105,7 @@ public class ForecastSectionDataUpdater {
                 } else {
                     // add
                     forecastsToAdd.add(new ForecastSectionWeather(new ForecastSectionWeatherPK(forecastSection.getId(), data.forecastName),
-                                                                  new Timestamp(data.time.getTime()),
+                                                                  Timestamp.from(data.time.toInstant()),
                                                                   data.daylight,
                                                                   data.overallRoadCondition,
                                                                   data.reliability,
@@ -141,7 +145,7 @@ public class ForecastSectionDataUpdater {
         forecastSectionWeather.setReliability(update.reliability);
         forecastSectionWeather.setRoadTemperature(update.roadTemperature);
         forecastSectionWeather.setTemperature(update.temperature);
-        forecastSectionWeather.setTime(new Timestamp(update.time.getTime()));
+        forecastSectionWeather.setTime(Timestamp.from(update.time.toInstant()));
         forecastSectionWeather.setWeatherSymbol(update.weatherSymbol);
         forecastSectionWeather.setWindDirection(update.windDirection);
         forecastSectionWeather.setWindSpeed(update.windSpeed);
@@ -167,7 +171,7 @@ public class ForecastSectionDataUpdater {
         observation.setReliability(observationData.reliability);
         observation.setRoadTemperature(observationData.roadTemperature);
         observation.setTemperature(observationData.temperature);
-        observation.setTime(new Timestamp(observationData.time.getTime()));
+        observation.setTime(Timestamp.from(observationData.time.toInstant()));
         observation.setWeatherSymbol(observationData.weatherSymbol);
         observation.setWindDirection(observationData.windDirection);
         observation.setWindSpeed(observationData.windSpeed);
