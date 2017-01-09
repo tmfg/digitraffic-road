@@ -1,14 +1,16 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class ForecastSectionClient {
@@ -20,7 +22,8 @@ public class ForecastSectionClient {
 
     private final String roadConditionsUrl = "roadConditionsV1-json.php";
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
