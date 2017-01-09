@@ -27,7 +27,7 @@ public class ForecastSectionForecastDto {
 
     public final Integer windDirection;
 
-    public final Integer windSpeed;
+    public final Double windSpeed;
 
     public final ForecastSectionWeatherReasonDto conditionReason;
 
@@ -40,7 +40,7 @@ public class ForecastSectionForecastDto {
                                       @JsonProperty("temperature") String temperature,
                                       @JsonProperty("weatherSymbol") String weatherSymbol,
                                       @JsonProperty("windDirection") Integer windDirection,
-                                      @JsonProperty("windSpeed") Integer windSpeed,
+                                      @JsonProperty("windSpeed") Double windSpeed,
                                       @JsonProperty("conditionReason") ForecastSectionWeatherReasonDto conditionReason) {
         this.forecastName = forecastName;
         this.time = time;

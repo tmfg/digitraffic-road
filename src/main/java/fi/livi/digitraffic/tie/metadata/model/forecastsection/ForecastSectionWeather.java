@@ -60,7 +60,7 @@ public class ForecastSectionWeather {
     private Integer windDirection;
 
     @ApiModelProperty(value = "Wind speed in m/s")
-    private Integer windSpeed;
+    private Double windSpeed;
 
     @ApiModelProperty(value = "Tells if object is an observation or a forecast: OBSERVATION / FORECAST")
     @Column(insertable = false, updatable = false)
@@ -84,7 +84,7 @@ public class ForecastSectionWeather {
 
     public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, OverallRoadCondition overallRoadCondition,
                                   Reliability reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
-                                  Integer windSpeed, ForecastConditionReason forecastConditionReason) {
+                                  Double windSpeed, ForecastConditionReason forecastConditionReason) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
         this.time = time;
         this.daylight = daylight;
@@ -179,11 +179,11 @@ public class ForecastSectionWeather {
         this.windDirection = windDirection;
     }
 
-    public Integer getWindSpeed() {
+    public Double getWindSpeed() {
         return windSpeed;
     }
 
-    public void setWindSpeed(Integer windSpeed) {
+    public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
     }
 

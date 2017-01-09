@@ -25,7 +25,7 @@ public class ForecastSectionObservationDto {
 
     public final Integer windDirection;
 
-    public final Integer windSpeed;
+    public final Double windSpeed;
 
     public ForecastSectionObservationDto(@JsonProperty("Time") ZonedDateTime time,
                                          @JsonProperty("daylight") Boolean daylight,
@@ -35,7 +35,7 @@ public class ForecastSectionObservationDto {
                                          @JsonProperty("temperature") String temperature,
                                          @JsonProperty("weatherSymbol") String weatherSymbol,
                                          @JsonProperty("windDirection") Integer windDirection,
-                                         @JsonProperty("windSpeed") Integer windSpeed) {
+                                         @JsonProperty("windSpeed") Double windSpeed) {
         this.time = time;
         this.daylight = daylight;
         this.overallRoadCondition = OverallRoadCondition.of(overallRoadCondition);
