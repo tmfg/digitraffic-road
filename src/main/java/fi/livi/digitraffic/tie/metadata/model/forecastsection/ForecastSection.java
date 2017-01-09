@@ -1,38 +1,27 @@
 package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.Road;
 import fi.livi.digitraffic.tie.metadata.model.RoadSection;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionCoordinatesDto;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @DynamicUpdate
@@ -111,7 +100,6 @@ public class ForecastSection {
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
     @OneToMany(mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("time")
     private List<ForecastSectionWeather> forecastSectionWeatherList;
 
     public ForecastSection() {

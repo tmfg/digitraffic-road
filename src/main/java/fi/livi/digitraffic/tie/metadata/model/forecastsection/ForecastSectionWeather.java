@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
-import java.time.ZonedDateTime;
+import java.sql.Timestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,11 +22,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
-@JsonPropertyOrder({ "time", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
+@JsonPropertyOrder({ "timeLocalTime", "timeUtc", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
                      "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })
 public class ForecastSectionWeather {
 
@@ -35,7 +36,7 @@ public class ForecastSectionWeather {
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
     @ApiModelProperty(value = "Observation or forecast time depending on type")
-    private ZonedDateTime time;
+    private Timestamp time;
 
     @ApiModelProperty(value = "Tells if there is daylight: true/false")
     private Boolean daylight;
@@ -81,7 +82,7 @@ public class ForecastSectionWeather {
     public ForecastSectionWeather() {
     }
 
-    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, ZonedDateTime time, Boolean daylight, OverallRoadCondition overallRoadCondition,
+    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, OverallRoadCondition overallRoadCondition,
                                   Reliability reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
                                   Integer windSpeed, ForecastConditionReason forecastConditionReason) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
@@ -114,11 +115,17 @@ public class ForecastSectionWeather {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
     }
 
-    public ZonedDateTime getTime() {
-        return time;
+    @ApiModelProperty(value = "Timestamp " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    public String getTimeLocalTime() {
+        return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
-    public void setTime(ZonedDateTime time) {
+    @ApiModelProperty(value = "Timestamp " + ToStringHelpper.ISO_8601_UTC_TIMESTAMP_EXAMPLE, required = true)
+    public String getTimeUtc() {
+        return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_UTC);
+    }
+
+    public void setTime(Timestamp time) {
         this.time = time;
     }
 
