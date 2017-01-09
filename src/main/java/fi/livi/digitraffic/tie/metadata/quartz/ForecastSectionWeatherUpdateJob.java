@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
+import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.quartz.DisallowConcurrentExecution;
@@ -17,8 +19,9 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
-        ZonedDateTime messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
+        Timestamp messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        staticDataStatusService.setMetadataUpdated(MetadataType.FORECAST_SECTION_WEATHER, messageTimestamp);
+        staticDataStatusService.setMetadataUpdated(MetadataType.FORECAST_SECTION_WEATHER,
+                                                   ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
     }
 }

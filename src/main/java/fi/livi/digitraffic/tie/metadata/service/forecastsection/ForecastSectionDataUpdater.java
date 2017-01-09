@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class ForecastSectionDataUpdater {
     }
 
     @Transactional
-    public ZonedDateTime updateForecastSectionWeatherData() {
+    public Timestamp updateForecastSectionWeatherData() {
 
         ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
 
@@ -55,7 +54,7 @@ public class ForecastSectionDataUpdater {
         forecastSectionRepository.save(forecastSectionsByNaturalId.values());
         forecastSectionRepository.flush();
 
-        return data.messageTimestamp;
+        return Timestamp.from(data.messageTimestamp.toInstant());
     }
 
     private void updateForecastSectionWeatherData(Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, Map<String, ForecastSection> forecastSectionsByNaturalId) {
