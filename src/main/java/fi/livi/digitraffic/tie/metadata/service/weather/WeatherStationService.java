@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.weather;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
@@ -95,13 +97,16 @@ public class WeatherStationService {
     @Transactional(readOnly = true)
     public WeatherStationFeatureCollection findAllNonObsoletePublicWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
+        final MetadataUpdated sensorsUpdated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION_SENSOR);
+        final MetadataUpdated stationsUpdated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
+        final ZonedDateTime updated = DateHelper.getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
+                                                     stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
 
         return weatherStationMetadata2FeatureConverter.convert(
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
-                updated != null ? updated.getUpdatedTime() : null);
+                updated);
     }
 
     @Transactional(readOnly = true)
