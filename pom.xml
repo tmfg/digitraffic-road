@@ -346,47 +346,17 @@
                                 <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/TiesaaMetatiedot.wsdl</wsdl>
-                                    <!--<extraargs>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.tiesaa</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.tiesaa</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                    <!--</extraargs>-->
+                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/TiesaaMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                                 <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/LAMMetatiedot.wsdl</wsdl>
-                                    <!--<extraargs>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.lam</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.lam.v1</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                    <!--</extraargs>-->
+                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/LAMMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20160527/wsdl/v2/KameraMetatiedot.wsdl</wsdl>
-                                    <!--<extraargs>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.kamera</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2015/09/29=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                        <!--<extraarg>-p</extraarg>-->
-                                        <!--<extraarg>http://ws.livi.fi/wsdl/LOTJU/metatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.metatiedot</extraarg>-->
-                                        <!--&lt;!&ndash;<extraarg>-p</extraarg>&ndash;&gt;-->
-                                        <!--&lt;!&ndash;<extraarg>http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2014/03/06=fi.livi.digitraffic.tie.lotju.wsdl.kamera.v1</extraarg>&ndash;&gt;-->
-                                    <!--</extraargs>-->
+                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                             </wsdlOptions>
@@ -419,15 +389,15 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <xsdOptions>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/tiesaa_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/tiesaa_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.tiesaa</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/lam_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/lam_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.lam</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20160527/xsd/kamera_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
                                 </xsdOption>
                                 <xsdOption>

@@ -1,7 +1,7 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2015/09/29">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2016/10/06">
     <ns2:esiasennot>
         <jarjestys>1</jarjestys>
-        <julkinen>true</julkinen>
+        <julkisuus>JULKINEN</julkisuus>
         <kameraId>121</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
@@ -14,7 +14,7 @@
     </ns2:esiasennot>
     <ns2:esiasennot>
         <jarjestys>2</jarjestys>
-        <julkinen>true</julkinen>
+        <julkisuus>JULKINEN</julkisuus>
         <kameraId>121</kameraId>
         <keruussa>false</keruussa>
         <kompressio>30</kompressio>

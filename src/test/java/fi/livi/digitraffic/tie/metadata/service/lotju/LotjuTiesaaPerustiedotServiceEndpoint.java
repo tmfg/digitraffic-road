@@ -12,19 +12,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.AnturiSanomaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAsemaHakuparametrit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.TiesaaPerustiedotV2;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.AnturiSanomaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ArvoVastaavuusVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaHakuparametrit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotV3;
 
 @Service
 public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements TiesaaPerustiedotEndpoint {
@@ -49,7 +49,7 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather,
                                                   final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV2.SERVICE);
+        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV3.SERVICE);
     }
 
     @Override

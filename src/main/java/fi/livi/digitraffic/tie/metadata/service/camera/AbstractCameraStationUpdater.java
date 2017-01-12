@@ -14,6 +14,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.Julkisuus;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUpdater {
@@ -81,6 +83,10 @@ public abstract class AbstractCameraStationUpdater extends AbstractRoadStationUp
             log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
+    }
+
+    protected static boolean isPublic(EsiasentoVO esiasento) {
+        return Julkisuus.JULKINEN.equals(esiasento.getJulkisuus());
     }
 
 

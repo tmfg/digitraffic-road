@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 
 @Service
 public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {

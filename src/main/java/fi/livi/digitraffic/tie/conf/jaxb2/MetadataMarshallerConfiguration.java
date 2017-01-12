@@ -25,11 +25,13 @@ public class MetadataMarshallerConfiguration {
 
         marshaller.setContextPaths(
                 "fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29",
+                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06",
                 "fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06",
                 "fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29",
+                "fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2014._03._06",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29",
-                "fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29");
+                "fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06");
         return marshaller;
     }
 

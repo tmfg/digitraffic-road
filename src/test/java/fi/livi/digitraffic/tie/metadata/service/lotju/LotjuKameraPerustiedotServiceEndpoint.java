@@ -11,16 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraKokoonpanoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotException;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraPerustiedotV2;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.VideopalvelinVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraKokoonpanoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotException;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotV3;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements KameraPerustiedotEndpoint {
 
@@ -42,7 +42,7 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera,
                                                   final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV2.SERVICE);
+        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV3.SERVICE);
     }
 
     @Override
@@ -179,11 +179,16 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
-    public Map<Long, List<EsiasentoVO>> getAfterChangeEsiasentos() {
-        return afterChangeEsiasentos;
-    }
-
     public void setAfterChangeEsiasentos(final Map<Long, List<EsiasentoVO>> afterChangeEsiasentos) {
         this.afterChangeEsiasentos = afterChangeEsiasentos;
+    }
+
+    @Override
+    public EsiasentoVO muuttaaEsiasennonJulkisuus(Long id, boolean julkinen) throws KameraPerustiedotException {
+        throw new NotImplementedException("muuttaaEsiasennonJulkisuus");
+    }
+
+    public Map<Long, List<EsiasentoVO>> getAfterChangeEsiasentos() {
+        return afterChangeEsiasentos;
     }
 }

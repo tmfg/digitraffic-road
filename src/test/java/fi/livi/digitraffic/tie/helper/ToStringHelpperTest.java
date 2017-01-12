@@ -7,8 +7,8 @@ import org.junit.runners.JUnit4;
 
 import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @RunWith(JUnit4.class)
 public class ToStringHelpperTest extends MetadataTestBase {

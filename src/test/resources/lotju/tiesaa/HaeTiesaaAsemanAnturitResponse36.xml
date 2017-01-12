@@ -1,4 +1,4 @@
-<ns2:HaeTiesaaAsemanLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2015/09/29">
+<ns2:HaeTiesaaAsemanLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2016/10/06">
     <ns2:laskennallinenAnturi>
         <b>255</b>
         <g>180</g>

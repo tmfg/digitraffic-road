@@ -15,15 +15,15 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMAsematResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeKaikkiLAMLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.HaeLAMAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LAMMetatiedotV2;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ArvoVastaavuusVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LAMMetatiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LAMMetatiedotV3;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ObjectFactory;
 
 
 public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint implements LAMMetatiedotEndpoint {
@@ -49,7 +49,7 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
 
     private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera,
                                               final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV2.SERVICE);
+        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV3.SERVICE);
     }
 
     @Override

@@ -30,8 +30,8 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
 public class CameraStationUpdater extends AbstractCameraStationUpdater {
@@ -141,7 +141,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
 
                 if ( currentSaved != null
                      && ( CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())
-                        || Objects.equals(esiasento.isJulkinen(), false) ) ) {
+                        || Objects.equals(isPublic(esiasento), false) ) ) {
                     // If station is not used or preset is not public -> obsolete preset
                     obsoleteRoadStations.add(currentSaved.getRoadStation());
                     obsolete.add(Pair.of(kameraEsiasentoPair, currentSaved));
@@ -156,6 +156,7 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
                 invalid++;
             }
         }
+
 
         // Filter only obsolete stations that doesn't have a single public presets
         obsoleteRoadStations = obsoleteRoadStations.stream()
@@ -318,9 +319,9 @@ public class CameraStationUpdater extends AbstractCameraStationUpdater {
         }
         to.setLotjuId(esiasentoFrom.getId());
         to.setObsolete(CollectionStatus.isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
-                       Objects.equals(esiasentoFrom.isJulkinen(), false));
+                       Objects.equals(isPublic(esiasentoFrom), false));
         to.setPresetOrder(esiasentoFrom.getJarjestys());
-        to.setPublicExternal(esiasentoFrom.isJulkinen());
+        to.setPublicExternal(isPublic(esiasentoFrom));
         to.setInCollection(esiasentoFrom.isKeruussa());
         to.setCompression(esiasentoFrom.getKompressio());
         to.setLotjuId(esiasentoFrom.getId());
