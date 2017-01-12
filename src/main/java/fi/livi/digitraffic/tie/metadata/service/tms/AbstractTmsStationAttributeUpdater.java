@@ -26,7 +26,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         this.roadStationService = roadStationService;
     }
 
-    protected static boolean updateRoadStationAttributes(final LamAsemaVO from, final RoadStation to) {
+    public static boolean updateRoadStationAttributes(final LamAsemaVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations

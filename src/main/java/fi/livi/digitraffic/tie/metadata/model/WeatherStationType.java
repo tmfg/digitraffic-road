@@ -6,9 +6,13 @@ public enum WeatherStationType {
 
     ROSA("ROSA"),
     E_18("E18"),
-    FINAVIA("FINAVIA"),
+    FINAVIA_V("FINAVIA_V"),
+    FINAVIA_B("FINAVIA_B"),
     ISGN("ISGN"),
-    OLD("OLD");
+    OLD("OLD"),
+
+    // Legacy values
+    FINAVIA("FINAVIA");
 
     private final String value;
 

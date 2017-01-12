@@ -34,8 +34,8 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
-public class CameraStationUpdater extends AbstractCameraStationUpdater {
-    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationUpdater.class);
+public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater {
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
     private final CameraPresetService cameraPresetService;
     private final WeatherStationService weatherStationService;

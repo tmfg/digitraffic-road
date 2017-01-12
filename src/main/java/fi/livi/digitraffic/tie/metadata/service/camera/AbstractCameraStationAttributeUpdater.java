@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.weather;
+package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -13,24 +13,27 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.Julkisuus;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
-public abstract class AbstractWeatherStationUpdater extends AbstractRoadStationUpdater {
+public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractWeatherStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
     protected RoadStationService roadStationService;
 
-    public AbstractWeatherStationUpdater(final RoadStationService roadStationService) {
+    public AbstractCameraStationAttributeUpdater(
+            final RoadStationService roadStationService) {
         this.roadStationService = roadStationService;
     }
 
-    public static boolean updateRoadStationAttributes(final TiesaaAsemaVO from, final RoadStation to) {
+    public static boolean updateRoadStationAttributes(final KameraVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila())) {
+        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila()) ) {
             to.obsolete();
         } else {
             to.setObsolete(false);
@@ -38,7 +41,7 @@ public abstract class AbstractWeatherStationUpdater extends AbstractRoadStationU
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
-        to.setType(RoadStationType.WEATHER_STATION);
+        to.setType(RoadStationType.CAMERA_STATION);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());
@@ -81,4 +84,10 @@ public abstract class AbstractWeatherStationUpdater extends AbstractRoadStationU
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
+
+    protected static boolean isPublic(EsiasentoVO esiasento) {
+        return Julkisuus.JULKINEN.equals(esiasento.getJulkisuus());
+    }
+
+
 }

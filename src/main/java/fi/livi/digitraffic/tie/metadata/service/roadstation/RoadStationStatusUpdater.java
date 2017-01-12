@@ -6,18 +6,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
+import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;
+import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
@@ -54,7 +55,7 @@ public class RoadStationStatusUpdater {
 
         allLams.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
+            AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to);
         });
         return updated.get();
     }
@@ -72,7 +73,7 @@ public class RoadStationStatusUpdater {
 
         allTiesaaAsemas.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
+            AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to);
         });
         return updated.get();
     }
@@ -90,19 +91,9 @@ public class RoadStationStatusUpdater {
 
         allKameras.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            updateRoadStationStatuses(to, CollectionStatus.convertKeruunTila(from.getKeruunTila()), from.isJulkinen(), updated);
+            AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to);
         });
         return updated.get();
-    }
-
-    private void updateRoadStationStatuses(RoadStation to, CollectionStatus collectionStatus, Boolean julkinen, AtomicBoolean updated) {
-        if (to != null) {
-            final int hash = HashCodeBuilder.reflectionHashCode(to);
-            to.setCollectionStatus(collectionStatus);
-            to.setPublic(julkinen == null || julkinen);
-            updated.compareAndSet(false,
-                                 HashCodeBuilder.reflectionHashCode(to) != hash);
-        }
     }
 
     private Map<Long, RoadStation> getLotjuIdRoadStationMap(final RoadStationType roadStationType) {

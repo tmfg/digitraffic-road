@@ -21,11 +21,11 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 
 @Service
-public class TmsStationsSensorsUpdater extends AbstractWeatherStationUpdater {
+public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;

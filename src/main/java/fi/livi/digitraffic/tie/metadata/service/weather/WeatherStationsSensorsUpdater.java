@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
-public class WeatherStationsSensorsUpdater extends AbstractWeatherStationUpdater {
+public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
