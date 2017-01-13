@@ -80,7 +80,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setContractArea(from.getUrakkaAlue());
         to.setContractAreaCode(from.getUrakkaAlueKoodi());
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
-            log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
+            log.info("Updated:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(to));
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

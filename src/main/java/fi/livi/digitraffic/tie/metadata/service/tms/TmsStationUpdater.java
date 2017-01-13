@@ -77,7 +77,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         final boolean updateStaticDataStatus = updateTmsStations(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);
-        log.info("updateTmsStations end");
+        log.info("UpdateTmsStations end");
         return updateStaticDataStatus;
     }
 
