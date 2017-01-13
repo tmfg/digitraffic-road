@@ -84,12 +84,13 @@ public class Datex2ServiceTest extends MetadataIntegrationTest {
     }
 
     @Test
-    public void testHandleUnhandledDatex2() throws JAXBException, IOException {
+    public void testHandleUnhandledDatex2() throws JAXBException, IOException, InterruptedException {
 
         datex2Repository.deleteAll();
         Assert.assertTrue(datex2Repository.findAll().isEmpty());
 
         saveDatex2(datex2Content1);
+        Thread.sleep(50); // delay 2nd save a bit
         saveDatex2(datex2Content2);
 
         Assert.assertTrue(datex2Repository.findAll().size() == 2);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
@@ -25,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCol
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -47,6 +49,7 @@ public class MetadataController {
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
     public static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
 
+    public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
     public static final String LOCATIONS_PATH = "/locations";
     public static final String LOCATION_VERSIONS_PATH = "/location-versions";
     public static final String LOCATION_TYPES_PATH = "/location-types";
@@ -57,6 +60,7 @@ public class MetadataController {
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
+    private final ForecastSectionService forecastSectionService;
     private final LocationService locationService;
 
     @Autowired
@@ -64,11 +68,13 @@ public class MetadataController {
                               final TmsStationService tmsStationService,
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
+                              final ForecastSectionService forecastSectionService,
                               final LocationService locationService) {
         this.cameraPresetService = cameraPresetService;
         this.tmsStationService = tmsStationService;
         this.weatherStationService = weatherStationService;
         this.roadStationSensorService = roadStationSensorService;
+        this.forecastSectionService = forecastSectionService;
         this.locationService = locationService;
     }
 
@@ -139,6 +145,18 @@ public class MetadataController {
     public List<LocationVersion> listLocationVersions () {
         log.info(REQUEST_LOG_PREFIX + LOCATION_VERSIONS_PATH);
         return locationService.findLocationVersions();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("The static information of weather forecast sections")
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
+                    @ApiResponse(code = 500, message = "Internal server error") })
+    public ForecastSectionsMetadata listForecastSections(
+            @ApiParam("If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
+        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
     }
 
     @ApiOperation("BETA The static information of locations")

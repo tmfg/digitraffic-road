@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
@@ -36,12 +37,12 @@ public class JMSMessageListener<T> implements MessageListener {
     private static final int QUEUE_SIZE_WARNING_LIMIT = 2 * MAX_NORMAL_QUEUE_SIZE;
     private static final int QUEUE_SIZE_ERROR_LIMIT = 10 * MAX_NORMAL_QUEUE_SIZE;
 
-    private Logger log;
+    private final Logger log;
 
-    protected final Unmarshaller jaxbUnmarshaller;
+    private final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private AtomicInteger minuteMessageCounter = new AtomicInteger(0);
+    private final AtomicInteger minuteMessageCounter = new AtomicInteger(0);
 
     private final boolean drainScheduled;
     private final JMSDataUpdater dataUpdater;
@@ -56,9 +57,9 @@ public class JMSMessageListener<T> implements MessageListener {
      * @throws JAXBException
      */
     public JMSMessageListener(final Class<T> typeClass,
-                              JMSDataUpdater dataUpdater,
-                              boolean drainScheduled,
-                              Logger log) throws JAXBException {
+                              final JMSDataUpdater dataUpdater,
+                              final boolean drainScheduled,
+                              final Logger log) throws JAXBException {
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
@@ -77,45 +78,36 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(final Message message) {
         minuteMessageCounter.incrementAndGet();
-        if (!shutdownCalled.get()) {
-            Pair<T,String> data = unmarshalMessage(message);
-            if (data != null) {
-                blockingQueue.add(data);
+        if (shutdownCalled.get()) {
+            log.error("Not handling any messages anymore because app is shutting down");
+            return;
+        }
 
-                // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
-                if (!isDrainScheduled()) {
-                    log.info("Handle JMS message immediately");
-                    drainQueueInternal();
-                    try {
-                        message.acknowledge();
-                    } catch (JMSException e) {
-                        log.error("JMS message acknowledge failed", e);
-                    }
+        Pair<T,String> data = unmarshalMessage(message);
+        if (data != null) {
+            blockingQueue.add(data);
+
+            // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
+            if (!isDrainScheduled()) {
+                log.info("Handle JMS message immediately");
+                drainQueueInternal();
+                try {
+                    message.acknowledge();
+                } catch (JMSException e) {
+                    log.error("JMS message acknowledge failed", e);
                 }
             }
-        } else {
-            log.error("Not handling any messages anymore because app is shutting down");
         }
     }
 
-    protected Pair<T, String> unmarshalMessage(Message message) {
+    protected Pair<T, String> unmarshalMessage(final Message message) {
 
-        if (!(message instanceof TextMessage)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
-            throw new IllegalArgumentException("Unknown message type: " + message.getClass());
-        }
-
-        TextMessage xmlMessage = (TextMessage) message;
         try {
-            String text = xmlMessage.getText().trim();
-            if (text.length() <= 0) {
-                log.warn("Empty JMS message" + ToStringHelpper.toStringFull(message));
-                return null;
-            }
+            final String text = parseTextMessageText(message);
 
-            StringReader sr = new StringReader(text);
+            final StringReader sr = new StringReader(text);
             Object object = jaxbUnmarshaller.unmarshal(sr);
             if (object instanceof JAXBElement) {
                 object = ((JAXBElement) object).getValue();
@@ -126,14 +118,30 @@ public class JMSMessageListener<T> implements MessageListener {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
         } catch (JAXBException e) {
-            try {
-                log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, xmlMessage.getText());
-            } catch (JMSException e1) {
-                log.debug(MESSAGE_UNMARSHALLING_ERROR, e);
-            }
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
         }
     }
+
+    private String parseTextMessageText(final Message message) throws JMSException {
+        assertTextMessage(message);
+        final TextMessage xmlMessage = (TextMessage) message;
+        final String text = xmlMessage.getText();
+        if (StringUtils.isBlank(text)) {
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(xmlMessage));
+            throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": null text");
+        }
+        return text.trim();
+    }
+
+    private void assertTextMessage(final Message message) {
+        if (!(message instanceof TextMessage)) {
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
+            throw new IllegalArgumentException("Unknown message type: " + message.getClass());
+        }
+    }
+
+
 
     /**
      * Drain queue and calls handleData if data available.
@@ -156,7 +164,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
             // Allocate array with some extra because queue size can change any time
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
-            int drained = blockingQueue.drainTo(targetList);
+            final int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("Handle data");
                 dataUpdater.updateData(targetList);

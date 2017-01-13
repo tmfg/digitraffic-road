@@ -20,6 +20,7 @@ tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
+forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url

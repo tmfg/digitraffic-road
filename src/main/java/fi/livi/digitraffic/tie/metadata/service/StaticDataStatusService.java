@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service;
 
 import java.time.ZonedDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,8 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 
 @Service
 public class StaticDataStatusService {
+    private static final Logger log = LoggerFactory.getLogger(StaticDataStatusService.class);
+
     public enum StaticStatusType {
         TMS("LAM_DATA_LAST_UPDATED"),
         ROAD_WEATHER("RWS_DATA_LAST_UPDATED"),
@@ -46,6 +50,7 @@ public class StaticDataStatusService {
         staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 
+    @Transactional
     public void updateMetadataUpdated(final MetadataType metadataType) {
         updateMetadataUpdated(metadataType, null);
     }
@@ -53,13 +58,23 @@ public class StaticDataStatusService {
     @Transactional
     public void updateMetadataUpdated(final MetadataType metadataType, final String version) {
         final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
-
+        log.info("Update MetadataUpdated, type: " + metadataType + ", version: " + version);
         if (updated == null) {
             metadataUpdatedRepository.save(new MetadataUpdated(metadataType, ZonedDateTime.now(), version));
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
+        }
     }
+
+    @Transactional
+    public void setMetadataUpdated(final MetadataType metadataType, ZonedDateTime updated) {
+        MetadataUpdated metadataUpdated = metadataUpdatedRepository.findByMetadataType(metadataType.name());
+        if (metadataUpdated == null) {
+            metadataUpdatedRepository.save(new MetadataUpdated(metadataType, updated, null));
+        } else {
+            metadataUpdated.setUpdatedTime(updated);
+        }
     }
 
     @Transactional(readOnly = true)

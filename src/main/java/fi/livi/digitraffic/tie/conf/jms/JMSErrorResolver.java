@@ -7,11 +7,15 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import progress.message.jclient.ErrorCodes;
 
 
 public class JMSErrorResolver {
+
+    private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
 
     private JMSErrorResolver() {}
 
@@ -39,6 +43,7 @@ public class JMSErrorResolver {
                 return value != null && StringUtils.equals(errCode, "" + value);
             }
         } catch (Exception e) {
+            log.debug("Error while resolving field value", e);
             return false;
         }
         return false;
