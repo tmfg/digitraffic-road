@@ -1,4 +1,4 @@
-<ns2:HaeLAMAsemanLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2015/09/29">
+<ns2:HaeLAMAsemanLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2016/10/06">
     <ns2:lamlaskennallisetanturit>
         <id>147</id>
         <b>194</b>

@@ -13,16 +13,16 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
-public abstract class AbstractWeatherStationUpdater extends AbstractRoadStationUpdater {
+public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractWeatherStationUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractWeatherStationAttributeUpdater.class);
 
     protected RoadStationService roadStationService;
 
-    public AbstractWeatherStationUpdater(final RoadStationService roadStationService) {
+    public AbstractWeatherStationAttributeUpdater(final RoadStationService roadStationService) {
         this.roadStationService = roadStationService;
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractWeatherStationUpdater extends AbstractRoadStationU
         to.setContractArea(from.getUrakkaAlue());
         to.setContractAreaCode(from.getUrakkaAlueKoodi());
         if (HashCodeBuilder.reflectionHashCode(to) != hash) {
-            log.info("Updated:\n" + before + " ->\n" + ReflectionToStringBuilder.toString(to));
+            log.info("Updated:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(to));
         }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

@@ -27,10 +27,10 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @Service
-public class WeatherStationUpdater extends AbstractWeatherStationUpdater {
+public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdater.class);
     public static final String WEATHER_STATIONS = " WeatherStations";
 

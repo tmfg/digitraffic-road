@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="MuuttuneetAsematService" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+<xs:schema xmlns:tns="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://ws.livi.fi/wsdl/LOTJU/muuttuneet_asemat/2014/07/08" version="1.0">
+
+  <xs:element name="HaeMuuttuneetAsemat" type="tns:HaeMuuttuneetAsemat"/>
+
+  <xs:element name="HaeMuuttuneetAsematResponse" type="tns:HaeMuuttuneetAsematResponse"/>
+
+  <xs:complexType name="HaeMuuttuneetAsemat">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="changeDate" type="xs:dateTime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HaeMuuttuneetAsematResponse">
+    <xs:sequence>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="muuttuneetasemat" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="HaeMuuttuneetAsemat">
+    <wsdl:part name="parameters" element="tns:HaeMuuttuneetAsemat">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="HaeMuuttuneetAsematResponse">
+    <wsdl:part name="parameters" element="tns:HaeMuuttuneetAsematResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="MuuttuneetAsemat">
+<wsdl:documentation>Muuttuneiden tiesääasemien, kamera-asemien ja LAM-aseminen haku</wsdl:documentation>
+    <wsdl:operation name="HaeMuuttuneetAsemat">
+      <wsdl:input name="HaeMuuttuneetAsemat" message="tns:HaeMuuttuneetAsemat">
+    </wsdl:input>
+      <wsdl:output name="HaeMuuttuneetAsematResponse" message="tns:HaeMuuttuneetAsematResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MuuttuneetAsematServiceSoapBinding" type="tns:MuuttuneetAsemat">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="HaeMuuttuneetAsemat">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="HaeMuuttuneetAsemat">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HaeMuuttuneetAsematResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MuuttuneetAsematService">
+    <wsdl:port name="UpdatedStationsPort" binding="tns:MuuttuneetAsematServiceSoapBinding">
+      <soap:address location="MUUTTUNEET_ASEMAT_WS_URL"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

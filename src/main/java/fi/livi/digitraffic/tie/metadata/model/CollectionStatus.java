@@ -7,13 +7,13 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA;
 
 public enum CollectionStatus {
 
-    GATHERING(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA.KERUUSSA.value()),
-    REMOVED_TEMPORARILY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
-    REMOVED_PERMANENTLY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA.POISTETTU_PYSYVASTI.value());
+    GATHERING(fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA.KERUUSSA.value()),
+    REMOVED_TEMPORARILY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA.POISTETTU_TILAPAISESTI.value()),
+    REMOVED_PERMANENTLY(fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA.POISTETTU_PYSYVASTI.value());
 
     private static final Set<String> INACTIVE_KERUUN_TILAS =
             new HashSet<>(Arrays.asList(KeruunTILA.POISTETTU_PYSYVASTI.name(),
@@ -31,21 +31,21 @@ public enum CollectionStatus {
         return fiValue;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
@@ -68,13 +68,13 @@ public enum CollectionStatus {
         return INACTIVE_KERUUN_TILAS.contains(keruunTila.name());
     }
 
-    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KeruunTILA keruunTila) {
+    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KeruunTILA keruunTila) {
         return KeruunTILA.POISTETTU_PYSYVASTI.name().equals(keruunTila.name());
     }
-    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.KeruunTILA keruunTila) {
+    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.KeruunTILA keruunTila) {
         return KeruunTILA.POISTETTU_PYSYVASTI.name().equals(keruunTila.name());
     }
-    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2015._09._29.KeruunTILA keruunTila) {
+    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.KeruunTILA keruunTila) {
         return KeruunTILA.POISTETTU_PYSYVASTI.name().equals(keruunTila.name());
     }
 
