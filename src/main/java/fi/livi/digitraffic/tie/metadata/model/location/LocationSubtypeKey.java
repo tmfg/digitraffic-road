@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 import javax.persistence.Embeddable;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 @Embeddable
 public class LocationSubtypeKey implements Serializable {
     private String subtypeCode;
@@ -38,4 +41,27 @@ public class LocationSubtypeKey implements Serializable {
     public boolean validate() {
         return isNotEmpty(subtypeCode) && isNotEmpty(version);
     }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final LocationSubtypeKey that = (LocationSubtypeKey) o;
+
+        return new EqualsBuilder()
+                .append(subtypeCode, that.subtypeCode)
+                .append(version, that.version)
+                .isEquals();
+    }
+
+    @Override public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(subtypeCode)
+                .append(version)
+                .toHashCode();
+    }
+
 }
