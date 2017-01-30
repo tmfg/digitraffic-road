@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -85,6 +86,18 @@ public class RoadStationSensorService {
             naturalIdToRSS.put(roadStationSensor.getNaturalId(), roadStationSensor);
         }
         return naturalIdToRSS;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
+        final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
+        return all.stream().filter(rss -> rss.getLotjuId() != null).collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType roadStationType) {
+        final List<RoadStationSensor> all = roadStationSensorRepository.findByRoadStationTypeAndLotjuIdIsNull(roadStationType);
+        return all.stream().filter(rss -> rss.getLotjuId() == null).collect(Collectors.toMap(RoadStationSensor::getNaturalId, Function.identity()));
     }
 
 
