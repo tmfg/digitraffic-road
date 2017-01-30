@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -64,70 +64,103 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             return false;
         }
 
-        final List<LamAsemaVO> stations = lotjuTmsStationClient.getLamAsemas();
+        final List<LamAsemaVO> asemas = lotjuTmsStationClient.getLamAsemas();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched LAMs:");
-            for (final LamAsemaVO station : stations) {
-                log.debug(ToStringBuilder.reflectionToString(station));
+            for (final LamAsemaVO asema : asemas) {
+                log.debug(ToStringBuilder.reflectionToString(asema));
             }
         }
 
-        final Map<Long, TmsStation> currentStations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
+        final boolean updatedWithoutLotjuIds = fixTmsStationsWithoutLotjuId(asemas);
 
-        final boolean updateStaticDataStatus = updateTmsStationsMetadata(stations, currentStations);
-        updateStaticDataStatus(updateStaticDataStatus);
+        final Map<Long, TmsStation> currentStationsByLotjuId = tmsStationService.findAllTmsStationsMappedByByLotjuId();
+
+        final boolean updatedTmsStations = updateTmsStationsMetadata(asemas, currentStationsByLotjuId);
+        updateStaticDataStatus(updatedWithoutLotjuIds || updatedTmsStations);
         log.info("UpdateTmsStations end");
-        return updateStaticDataStatus;
+        return updatedTmsStations;
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
     }
 
-    private boolean updateTmsStationsMetadata(final List<LamAsemaVO> stations, final Map<Long, TmsStation> currentStations) {
-        final List<Pair<LamAsemaVO, TmsStation>> obsolete = new ArrayList<>(); // tms-stations to obsolete
+    private boolean fixTmsStationsWithoutLotjuId(final List<LamAsemaVO> asemas) {
+
+        Map<Long, TmsStation> noLotjuIds = tmsStationService.findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
+
+        final AtomicInteger updated = new AtomicInteger(0);
+        asemas.stream().forEach(la -> {
+            if (validate(la)) {
+                final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
+                final TmsStation currentSaved = noLotjuIds.remove(tmsNaturalId);
+
+                if (currentSaved != null) {
+                    currentSaved.setLotjuId(la.getId());
+                    currentSaved.getRoadStation().setLotjuId(la.getId());
+                    updated.addAndGet(1);
+                }
+            }
+        });
+
+        // Obsolete not found stations
+        final AtomicInteger obsoleted = new AtomicInteger(0);
+        noLotjuIds.values().stream().forEach(tms -> {
+            if (tms.obsolete()) {
+                obsoleted.addAndGet(1);
+            }
+        });
+
+        log.info("Obsoleted {} TmsStations", obsoleted);
+        log.info("Fixed {} TmsStations without lotjuId", updated);
+
+        return obsoleted.get() > 0 || updated.get() > 0;
+    }
+
+    private boolean updateTmsStationsMetadata(final List<LamAsemaVO> asemas, final Map<Long, TmsStation> currentStationsByLotjuId) {
         final List<Pair<LamAsemaVO, TmsStation>> update = new ArrayList<>(); // tms-stations to update
         final List<LamAsemaVO> insert = new ArrayList<>(); // new tms-stations
 
-        int invalid = 0;
-        for ( final LamAsemaVO la : stations ) {
-
+        AtomicInteger invalid = new AtomicInteger(0);
+        asemas.stream().forEach(la -> {
             if ( validate(la) ) {
-                final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
-                final TmsStation currentSaved = currentStations.remove(tmsNaturalId);
+                final TmsStation currentSaved = currentStationsByLotjuId.remove(la.getId());
 
-                if ( currentSaved != null && CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
-                    obsolete.add(Pair.of(la, currentSaved));
-                } else if ( currentSaved != null ) {
+                if ( currentSaved != null ) {
                     update.add(Pair.of(la, currentSaved));
                 } else {
                     insert.add(la);
                 }
             } else {
-                invalid++;
+                invalid.addAndGet(1);
             }
+        });
+
+        if (invalid.get() > 0) {
+            log.warn("Found {} LamAsemas from LOTJU", invalid);
         }
 
-        if (invalid > 0) {
-            log.warn("Found " + invalid + " LamAsemas from LOTJU");
-        }
+        // tms-stations in database, but not in server -> obsolete
+        AtomicInteger obsoleted = new AtomicInteger(0);
+        currentStationsByLotjuId.values().stream().forEach(tms -> {
+            if (tms.obsolete()) {
+                obsoleted.addAndGet(1);
+            }
+        });
 
-        // tms-stations in database, but not in server
-        currentStations.values().stream().forEach(ws -> obsolete.add(Pair.of(null, ws)));
-
-        final int obsoleted = obsoleteTmsStations(obsolete);
         final int updated = updateTmsStations(update);
         final int inserted = insertTmsStations(insert);
 
-        log.info("Obsoleted " + obsoleted + " TmsStations");
-        log.info("Updated " + updated + " TmsStations");
+        log.info("Obsoleted {} TmsStations", obsoleted);
+        log.info("Updated {} TmsStations", updated);
         log.info("Inserted " + inserted + " TmsStations");
         if (insert.size() > inserted) {
             log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " TmsStations");
         }
 
-        return obsoleted > 0 || inserted > 0;
+        return obsoleted.get() > 0 || inserted > 0;
     }
 
     /**

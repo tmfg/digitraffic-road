@@ -32,12 +32,12 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         }
 
         final long startStationsEndSensors = System.currentTimeMillis();
-        boolean stationsUpdated = tmsStationUpdater.updateTmsStations();
+        final boolean stationsUpdated = tmsStationUpdater.updateTmsStations();
         final long startStationsSensorsEndStations = System.currentTimeMillis();
-        tmsStationsSensorsUpdater.updateTmsStationsSensors();
+        final boolean updatedTmsStationsSensors = tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final long endStationsSensors = System.currentTimeMillis();
 
-        if (stationsUpdated) {
+        if (stationsUpdated || updatedTmsStationsSensors) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
         }
 
@@ -45,7 +45,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
         final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
 
-        log.info("UpdateRoadStationSensors took: {} s, updateTmsStations took: {} s, updateRoadStationSensors took: {} s)",
+        log.info("Update TmsStations took: {} s, updateTmsStations took: {} s, updateTmsStationsSensors took: {} s)",
                 timeSensors, timeStations, timeStationsSensors);
     }
 }

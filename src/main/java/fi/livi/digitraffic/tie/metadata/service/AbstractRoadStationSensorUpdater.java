@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class AbstractRoadStationSensorUpdater {
         this.roadStationSensorService = roadStationSensorService;
     }
 
-    protected static int obsoleteRoadStationSensors(final List<RoadStationSensor> obsolete) {
+    protected static int obsoleteRoadStationSensors(final Collection<RoadStationSensor> obsolete) {
         int counter = 0;
         for (final RoadStationSensor s : obsolete) {
             if (s.obsolete()) {

@@ -81,20 +81,9 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, TmsStation> findAllTmsStationsMappedByByRoadStationNaturalId() {
+    public Map<Long, TmsStation> findAllTmsStationsMappedByByLotjuId() {
         final List<TmsStation> allStations = tmsStationRepository.findAll();
-        final Map<Long, TmsStation> stationMap = new HashMap<>();
-
-        for(final TmsStation tms : allStations) {
-            stationMap.put(tms.getRoadStationNaturalId(), tms);
-        }
-
-        return stationMap;
-    }
-
-    @Transactional(readOnly = true)
-    public TmsStation findByLotjuId(long tmsStationLotjuId) {
-        return tmsStationRepository.findByLotjuId(tmsStationLotjuId);
+        return allStations.stream().filter(tms -> tms.getLotjuId() != null).collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -118,12 +107,6 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, TmsStation> findTmsStationsMappedByLotjuId(List<Long> tmsStationLotjuIds) {
-        final List<TmsStation> all = tmsStationRepository.findByLotjuIdIn(tmsStationLotjuIds);
-        return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
-    }
-
-    @Transactional(readOnly = true)
     public TmsStation findByRoadStationNaturalId(long roadStationNaturalId) {
         TmsStation entity = tmsStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
         if (entity == null) {
@@ -138,7 +121,8 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public boolean tmsStationExistsWithNaturalId(long lamNaturalId) {
-        return tmsStationRepository.tmsExistsWithLamNaturalId(lamNaturalId);
+    public Map<Long, TmsStation> findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId() {
+        List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
+        return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
     }
 }

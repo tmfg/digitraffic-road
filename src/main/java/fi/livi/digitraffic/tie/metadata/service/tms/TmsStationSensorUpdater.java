@@ -59,9 +59,8 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final Map<Long, RoadStationSensor> currentNaturalIdToSensorMap =
                 roadStationSensorService.findAllRoadStationSensorsMappedByNaturalId(RoadStationType.TMS_STATION);
 
-        final List<RoadStationSensor> obsolete = new ArrayList<>(); // obsolete WeatherStations
-        final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update = new ArrayList<>(); // WeatherStations to update
-        final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // new WeatherStations
+        final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update = new ArrayList<>(); // Sensors to update
+        final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // New sensors
 
         int invalid = 0;
         for (final LamLaskennallinenAnturiVO anturi : allLamLaskennallinenAnturis) {
@@ -78,16 +77,11 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             }
         }
 
-        // road station sensors in database, but not in server
-        for (final RoadStationSensor obsoleteRoadStationSensor : currentNaturalIdToSensorMap.values()) {
-            obsoleteRoadStationSensor.isStatusSensor();
-        }
-
         if (invalid > 0) {
             log.warn("Found " + invalid + " LamLaskennallinenAnturi from LOTJU");
         }
 
-        final int obsoleted = obsoleteRoadStationSensors(obsolete);
+        final int obsoleted = obsoleteRoadStationSensors(currentNaturalIdToSensorMap.values());
         final int updated = updateRoadStationSensors(update);
         final int inserted = insertRoadStationSensors(insert);
 

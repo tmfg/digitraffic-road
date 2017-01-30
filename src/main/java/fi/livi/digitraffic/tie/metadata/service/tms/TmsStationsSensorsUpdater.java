@@ -60,10 +60,10 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
 
         // Update sensors of road stations
         // Get current TmsStations
-        final Map<Long, TmsStation> currentTmsStationMapByLotjuId =
-                tmsStationService.findAllTmsStationsByMappedByLotjuId();
+        final Map<Long, TmsStation> currentTmsStationMappedByByLotjuId =
+                tmsStationService.findAllTmsStationsMappedByByLotjuId();
 
-        final Set<Long> tmsLotjuIds = currentTmsStationMapByLotjuId.keySet();
+        final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByTmsLotjuId = new HashMap<>();
         final Set<Long> tmsStationLotjuIdsWithError = new HashSet<>();
@@ -90,7 +90,7 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
         // Update sensros of road stations
         final boolean updateStaticDataStatus =
                 updateSensorsOfTmsStations(currentLamAnturiMapByTmsLotjuId,
-                                           currentTmsStationMapByLotjuId,
+                                           currentTmsStationMappedByByLotjuId,
                                            tmsStationLotjuIdsWithError);
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 

@@ -138,7 +138,8 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         // CameraPresets in db without lotjuId
         Map<String, List<CameraPreset>> withoutLotjuIdMappedByCameraId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
 
-        final AtomicInteger count = new AtomicInteger(0);
+        final AtomicInteger updated = new AtomicInteger(0);
+        final AtomicInteger obsoleted = new AtomicInteger(0);
 
         withoutLotjuIdMappedByCameraId.entrySet().stream().forEach(entry -> {
 
@@ -161,18 +162,22 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
                         String before = ReflectionToStringBuilder.toString(cameraPreset);
                         cameraPreset.setCameraLotjuId(kameraPair.getKey().getId());
                         cameraPreset.setLotjuId(found.get().getId());
-                        count.addAndGet(1);
+                        updated.addAndGet(1);
                         log.info("Updated CameraPreset lotju id:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(cameraPreset));
                     } else {
                         // if esiasento is not found -> obsolete preset
-                        cameraPreset.obsolete();
+                        if (cameraPreset.obsolete()) {
+                            obsoleted.addAndGet(1);
+                        }
                     }
                 });
             }
         });
 
-        log.info("Fixed {} camera presets without lotjuId", count);
-        return count.get() > 0;
+        log.info("Obsoleted {} camera presets", obsoleted);
+        log.info("Fixed {} camera presets without lotjuId", updated);
+
+        return updated.get() > 0;
     }
 
     private boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {
