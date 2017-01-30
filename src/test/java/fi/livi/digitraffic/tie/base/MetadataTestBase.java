@@ -39,6 +39,11 @@ public abstract class MetadataTestBase extends AbstractTestBase {
                 "WHERE LOTJU_ID IS NULL");
 
         jdbcTemplate.execute(
+                "UPDATE CAMERA_PRESET\n" +
+                "SET CAMERA_LOTJU_ID = -10 * id\n" +
+                "WHERE CAMERA_LOTJU_ID IS NULL");
+
+        jdbcTemplate.execute(
                 "UPDATE ROAD_STATION_SENSOR\n" +
                 "SET LOTJU_ID = -1 * id\n" +
                 "WHERE LOTJU_ID IS NULL");

@@ -130,7 +130,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
+        Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
@@ -183,6 +183,12 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
             }
             TestTransaction.start();
             try {
+                data.stream().forEach(p -> {
+                    if (p.getLeft() == null) {
+                        System.out.println(p.getRight());
+                        System.out.println(p.getLeft());
+                    }
+                });
                 cameraDataUpdateService.updateCameraData(data.stream().map(p -> p.getLeft()).collect(Collectors.toList()));
             } catch (SQLException e) {
                 Assert.fail("Data updating failed");
@@ -222,14 +228,14 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
                 int kuvaIndex = RandomUtils.nextInt(1, 6);
                 Kuva kuva = new Kuva();
+                kuva.setEsiasentoId(preset.getLotjuId());
+                kuva.setKameraId(preset.getCameraLotjuId());
                 kuva.setNimi(preset.getPresetId() + "1234.jpg");
                 kuva.setAika((XMLGregorianCalendar) xgcal.clone());
                 kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
                 kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-                kuva.setEsiasentoId(RandomUtils.nextLong(1000, 9999));
                 kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0, 99999)));
                 kuva.setJulkinen(true);
-                kuva.setKameraId(Long.parseLong(preset.getCameraId().substring(1)));
                 kuva.setLiviId("" + kuvaIndex);
                 if (preset.getRoadStation().getRoadAddress() != null) {
                     kuva.setTienumero(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadNumber()));
@@ -247,20 +253,13 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 StringReader sr = new StringReader(xmlSW.toString());
                 Kuva object = (Kuva)jaxbUnmarshaller.unmarshal(sr);
 
-                System.out.println(kuva.getAika());
-                System.out.println(object.getAika());
-
                 cameraJmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Kuva " + preset.getPresetId()));
-
-                System.out.println();
-                System.out.println("Kamera preset " + preset.getPresetId());
-                System.out.println(kuva.getAika());
-                System.out.println(xmlSW.toString());
 
                 if (data.size() >= 25) {
                     break;
                 }
             }
+
             sw.stop();
             long generation = sw.getTime();
             log.info("Data generation took " + generation + " ms");
@@ -290,7 +289,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         log.info("Check data validy");
 
-        Map<String, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
+        Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
         for (Pair<Kuva, String> pair : data) {
             Kuva kuva = pair.getLeft();
@@ -301,7 +300,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
             Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
             // Check preset updated to db against kuva
-            CameraPreset preset = updatedPresets.get(presetId);
+            CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
             LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAika());
             LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
             Assert.assertEquals("Preset not updated with kuva's timestamp", kuvaTaken, presetPictureLastModified);

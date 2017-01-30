@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -48,16 +47,8 @@ public class WeatherStationService {
 
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByLotjuId() {
-        final Map<Long, WeatherStation> map = new HashMap<>();
         final List<WeatherStation> all = weatherStationRepository.findAll();
-        for (final WeatherStation weatherStation : all) {
-            if (weatherStation.getLotjuId() != null) {
-                map.put(weatherStation.getLotjuId(), weatherStation);
-            } else {
-                log.warn("Null lotjuId: " + weatherStation);
-            }
-        }
-        return map;
+        return all.stream().filter(ws -> ws.getLotjuId() != null).collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -117,28 +108,12 @@ public class WeatherStationService {
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByByRoadStationNaturalId() {
         final List<WeatherStation> allStations = weatherStationRepository.findAll();
-        final Map<Long, WeatherStation> stationMap = new HashMap<>();
-
-        for(final WeatherStation weatherStation : allStations) {
-            stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
-        }
-
-        return stationMap;
+        return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
         final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
-        final Map<Long, WeatherStation> stationMap = new HashMap<>();
-
-        for(final WeatherStation weatherStation : allStations) {
-            if (weatherStation.getRoadStationNaturalId() != null) {
-                stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
-            } else {
-                log.warn("Null lotjuId: " + weatherStation);
-            }
-        }
-
-        return stationMap;
+        return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
     }
 }

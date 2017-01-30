@@ -75,7 +75,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         final Map<Long, TmsStation> currentStations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
 
-        final boolean updateStaticDataStatus = updateTmsStations(stations, currentStations);
+        final boolean updateStaticDataStatus = updateTmsStationsMetadata(stations, currentStations);
         updateStaticDataStatus(updateStaticDataStatus);
         log.info("UpdateTmsStations end");
         return updateStaticDataStatus;
@@ -85,7 +85,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
     }
 
-    private boolean updateTmsStations(final List<LamAsemaVO> stations, final Map<Long, TmsStation> currentStations) {
+    private boolean updateTmsStationsMetadata(final List<LamAsemaVO> stations, final Map<Long, TmsStation> currentStations) {
         final List<Pair<LamAsemaVO, TmsStation>> obsolete = new ArrayList<>(); // tms-stations to obsolete
         final List<Pair<LamAsemaVO, TmsStation>> update = new ArrayList<>(); // tms-stations to update
         final List<LamAsemaVO> insert = new ArrayList<>(); // new tms-stations

@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXBElement;
 
@@ -27,19 +29,9 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
 
     final ObjectFactory objectFactory = new ObjectFactory();
 
-    public List<KameraVO> getKameras() {
-        final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
+    public Map<Long, Pair<KameraVO, List<EsiasentoVO>>> getLotjuIdToKameraAndEsiasentoMap() {
 
-        final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
-
-        return response.getValue().getKamerat();
-    }
-
-
-    public Map<String, Pair<KameraVO, EsiasentoVO>> getPresetIdToKameraAndEsiasentoMap() {
-
-        final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraMap = new HashMap<>();
+        final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentoMap = new HashMap<>();
 
         log.info("Fetch Kameras");
 
@@ -48,36 +40,84 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
         log.info("Fetched " + kamerat.size() + " cameras");
 
         log.info("Fetch Esiasentos for cameras");
-        int counter = 0;
-        for (final KameraVO kamera : kamerat) {
+
+        final AtomicInteger counter = new AtomicInteger();
+
+        kamerat.parallelStream().forEach(kamera -> {
 
             if (kamera.getVanhaId() == null) {
                 log.error("Cannot update " + ToStringHelpper.toString(kamera) + " is invalid: has null vanhaId");
             } else {
-                final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
-                        new HaeEsiasennotKameranTunnuksella();
-                haeEsiasennotKameranTunnuksellaRequest.setId(kamera.getId());
 
-                final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse = (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
-                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
-                final List<EsiasentoVO> esiasennot = haeEsiasennotResponse.getValue().getEsiasennot();
-                counter += esiasennot.size();
+                final List<EsiasentoVO> esiasennot = getEsiasentos(kamera.getId());
+                counter.addAndGet(esiasennot.size());
 
                 final String kameraId = CameraHelper.convertVanhaIdToKameraId(kamera.getVanhaId());
                 for (final EsiasentoVO esiasento : esiasennot) {
+
                     final String presetId = CameraHelper.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
+
                     if (CameraHelper.validatePresetId(presetId)) {
-                        presetIdToKameraMap.put(presetId, Pair.of(kamera, esiasento));
+                        Pair<KameraVO, List<EsiasentoVO>> kameraPair = lotjuIdToKameraAndEsiasentoMap.get(kamera.getId());
+                        if (kameraPair == null) {
+                            kameraPair = Pair.of(kamera, new ArrayList<EsiasentoVO>());
+                            lotjuIdToKameraAndEsiasentoMap.put(kamera.getId(), kameraPair);
+                        }
+                        kameraPair.getRight().add(esiasento);
                     } else {
-                        log.error("Invalid cameraPresetId for " + ToStringHelpper.toString(kamera) + " and " + ToStringHelpper.toString(esiasento));
+                        log.error("Invalid cameraPresetId for {} and {}",
+                                  ToStringHelpper.toString(kamera),
+                                  ToStringHelpper.toString(esiasento));
                     }
+                }
+            }
+        });
+
+        log.info("Fetched {} Esiasentos", counter.get());
+
+        return lotjuIdToKameraAndEsiasentoMap;
+    }
+
+    public List<KameraVO> getKameras() {
+
+        final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
+        int toTry = 5;
+        while (true) {
+            toTry--;
+            try {
+                final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
+                return response.getValue().getKamerat();
+            } catch (Exception fail) {
+                if (toTry < 1) {
+                    log.error("Failed to fetch kameras for 5 times");
+                    throw fail;
+                }
+            }
+        }
+    }
+
+    private List<EsiasentoVO> getEsiasentos(Long kameraId) {
+        final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
+                new HaeEsiasennotKameranTunnuksella();
+        haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);
+
+        int toTry = 5;
+        while (true) {
+            toTry--;
+            try {
+                final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse =
+                        (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
+                                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
+                return haeEsiasennotResponse.getValue().getEsiasennot();
+            } catch (Exception fail) {
+                if (toTry < 1) {
+                    log.error("Failed to fetch kamera lotjuId {} esiasentos for 5 times", kameraId);
+                    throw fail;
                 }
             }
         }
 
-        log.info("Fetched " + counter + " Esiasentos");
-
-        return presetIdToKameraMap;
     }
 
 }

@@ -128,11 +128,6 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         assertEquals("Iisalmi", afterCam.getProperties().getMunicipality());
     }
 
-
-    private void assertEqualPresets(final CameraPresetDto preset1, final CameraPresetDto preset2) {
-        assertTrue(preset1.equals(preset2));
-    }
-
     private CameraPresetDto findWithPresetId(final CameraStationFeatureCollection collection, final String presetId) {
 
         for (final CameraStationFeature cameraStationFeature : collection) {

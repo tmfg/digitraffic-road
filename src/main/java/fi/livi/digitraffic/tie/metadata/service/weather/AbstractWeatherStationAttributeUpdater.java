@@ -53,9 +53,9 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
         to.setProvince(from.getMaakunta());
         to.setProvinceCode(from.getMaakuntaKoodi());
         to.setLiviId(from.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTime(from.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTime(from.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTime(from.getVuosihuolto()));
+        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillis(from.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getVuosihuolto()));
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());

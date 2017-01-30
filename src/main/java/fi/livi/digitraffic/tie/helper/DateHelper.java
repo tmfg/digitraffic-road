@@ -38,6 +38,30 @@ public final class DateHelper {
         return null;
     }
 
+    /**
+     * Needed because some fields in db are Oracle Date type and Date won't have millis.
+     */
+    public static ZonedDateTime toZonedDateTimeWithoutMillis(XMLGregorianCalendar calendar)  {
+        if (calendar != null) {
+            try {
+                XMLGregorianCalendar calSeconds =
+                        DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                                calendar.getYear(),
+                                calendar.getMonth(),
+                                calendar.getDay(),
+                                calendar.getHour(),
+                                calendar.getMinute(),
+                                calendar.getSecond(),
+                                0,
+                                calendar.getTimezone());
+                return toZonedDateTime(calSeconds);
+            } catch (DatatypeConfigurationException e) {
+                throw new RuntimeException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
+            }
+        }
+        return null;
+    }
+
     public static ZonedDateTime toZonedDateTime(XMLGregorianCalendar calendar) {
         if (calendar != null) {
             // This way Time is formed as 1995-01-01T00:00+02:00[Europe/Helsinki]

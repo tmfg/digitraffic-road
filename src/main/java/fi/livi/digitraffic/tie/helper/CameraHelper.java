@@ -18,12 +18,15 @@ public class CameraHelper {
     }
 
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {
-        final String vanha = vanhaId.toString();
-        return StringUtils.leftPad(vanha, 6, "C00000");
+        return StringUtils.leftPad(vanhaId.toString(), 6, "C00000");
     }
 
     public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
-        return cameraId + StringUtils.leftPad(suunta, 2, "00");
+        return cameraId + leftPadDirection(suunta);
+    }
+
+    public static String leftPadDirection(final String direction) {
+        return StringUtils.leftPad(direction, 2, "00");
     }
 
     public static String convertPresetIdToCameraId(final String presetId) {
@@ -36,8 +39,12 @@ public class CameraHelper {
         return Long.parseLong(StringUtils.removeStart(cameraId, "C"));
     }
 
-    public static boolean validatePresetId(String presetId) {
+    public static boolean validatePresetId(final String presetId) {
         Matcher m = cameraPresetIdPattern.matcher(presetId);
         return m.matches();
+    }
+
+    public static String getDirectionFromPresetId(final String presetId) {
+        return StringUtils.substring(presetId, -2);
     }
 }

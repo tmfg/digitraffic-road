@@ -39,5 +39,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     CameraPreset findCameraPresetByPresetId(String presetId);
 
-    List<CameraPreset> findCameraPresetByPresetIdIn(Collection<String> presetIds);
+    List<CameraPreset> findByLotjuIdIn(Collection<Long> presetIds);
+
+    List<CameraPreset> findByCameraLotjuIdIsNullOrLotjuIdIsNull();
 }

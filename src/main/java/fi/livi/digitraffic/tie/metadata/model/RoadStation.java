@@ -167,7 +167,11 @@ public class RoadStation {
 
     public void setObsolete(final boolean obsolete) {
         this.obsolete = obsolete;
-        setObsoleteDate(obsolete && obsoleteDate == null ? LocalDate.now() : null);
+        if (obsolete && obsoleteDate == null) {
+            setObsoleteDate(LocalDate.now());
+        } else if (!obsolete) {
+            setObsoleteDate(null);
+        }
     }
 
     public LocalDate getObsoleteDate() {

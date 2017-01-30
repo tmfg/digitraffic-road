@@ -76,7 +76,7 @@ public class Datex2DataService {
     }
 
     private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
-        datex2.setPublicationTime(DateHelper.toZonedDateTime(payloadPublication.getPublicationTime()));
+        datex2.setPublicationTime(DateHelper.toZonedDateTimeWithoutMillis(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
         } else {
@@ -91,7 +91,7 @@ public class Datex2DataService {
             datex2.addSituation(d2Situation);
 
             d2Situation.setSituationId(situation.getId());
-            d2Situation.setVersionTime(DateHelper.toZonedDateTime(situation.getSituationVersionTime()));
+            d2Situation.setVersionTime(DateHelper.toZonedDateTimeWithoutMillis(situation.getSituationVersionTime()));
 
             parseAndAppendSituationRecordData(situation.getSituationRecord(), d2Situation);
         }
@@ -113,15 +113,15 @@ public class Datex2DataService {
             }
 
             d2SituationRecord.setSituationRecordId(record.getId());
-            d2SituationRecord.setCreationTime(DateHelper.toZonedDateTime(record.getSituationRecordCreationTime()));
-            d2SituationRecord.setVersionTime(DateHelper.toZonedDateTime(record.getSituationRecordVersionTime()));
-            d2SituationRecord.setObservationTime(DateHelper.toZonedDateTime(record.getSituationRecordObservationTime()));
+            d2SituationRecord.setCreationTime(DateHelper.toZonedDateTimeWithoutMillis(record.getSituationRecordCreationTime()));
+            d2SituationRecord.setVersionTime(DateHelper.toZonedDateTimeWithoutMillis(record.getSituationRecordVersionTime()));
+            d2SituationRecord.setObservationTime(DateHelper.toZonedDateTimeWithoutMillis(record.getSituationRecordObservationTime()));
 
             Validity validy = record.getValidity();
             d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
             OverallPeriod period = validy.getValidityTimeSpecification();
-            d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTime(period.getOverallStartTime()));
-            d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTime(period.getOverallEndTime()));
+            d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTimeWithoutMillis(period.getOverallStartTime()));
+            d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTimeWithoutMillis(period.getOverallEndTime()));
         }
     }
 
