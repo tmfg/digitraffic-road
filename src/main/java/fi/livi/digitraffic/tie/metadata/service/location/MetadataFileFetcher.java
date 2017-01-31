@@ -57,7 +57,6 @@ public class MetadataFileFetcher {
         }
 
         return reader.getLatestMetadataVersions();
-
     }
 
     public Path getLocationsFile(final MetadataVersions.MetadataVersion latestVersion) throws IOException {

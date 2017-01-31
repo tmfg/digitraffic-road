@@ -45,14 +45,11 @@ public class LocationMetadataUpdater {
             final MetadataVersions latestVersions = metadataFileFetcher.getLatestVersions();
             final LocationVersion currentVersion = locationVersionRepository.findLatestVersion();
 
-            // check that new versions are all same
-            if(!areVersionsSame(latestVersions)) {
+            if(areVersionsEmpty(latestVersions)) {
+                log.error("empty metadataversions!");
+            } else if(!areVersionsSame(latestVersions)) {
                 log.info("Different versions, locations {} and types {}", latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
-
-                return;
-            }
-
-            if(isUpdateNeeded(latestVersions, currentVersion)) {
+            } else if(isUpdateNeeded(latestVersions, currentVersion)) {
                 final MetadataPathCollection paths = metadataFileFetcher.getFilePaths(latestVersions);
                 final StopWatch stopWatch = StopWatch.createStarted();
 
@@ -71,8 +68,12 @@ public class LocationMetadataUpdater {
         }
     }
 
+    private boolean areVersionsEmpty(final MetadataVersions latestVersions) {
+        return latestVersions == null || latestVersions.getLocationsVersion() == null || latestVersions.getLocationTypeVersion() == null;
+    }
+
     private boolean areVersionsSame(final MetadataVersions latestVersions) {
-        return latestVersions != null && StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+        return StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
     }
 
     private void removeTempFiles(final MetadataPathCollection paths) {
