@@ -48,8 +48,8 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
         lotjuTiesaaPerustiedotServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
-        weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
+        weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allInitial =
                 weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
@@ -57,8 +57,8 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
         lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
-        weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
+        weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allAfterChange =
                 weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);

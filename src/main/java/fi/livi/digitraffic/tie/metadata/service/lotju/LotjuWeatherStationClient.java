@@ -38,7 +38,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         return response.getValue().getTiesaaAsema();
     }
 
-    public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturis(final Set<Long> tiesaaAsemaLotjuIds) {
+    public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
 
         log.info("Fetching TiesaaLaskennallinenAnturis for " + tiesaaAsemaLotjuIds.size() + " TiesaaAsemas");
 
@@ -52,7 +52,7 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         for (final Long tiesaaAsemaLotjuId : tiesaaAsemaLotjuIds) {
             request.setId(tiesaaAsemaLotjuId);
 
-            int triesLeft = 3;
+            int triesLeft = 5;
             while (triesLeft > 0) {
                 triesLeft--;
                 try {
@@ -64,15 +64,9 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
                     counter += anturis.size();
                     triesLeft = 0;
                 } catch (Exception fail) {
+                    log.info("HaeTiesaaAsemanLaskennallisetAnturit failed for tiesaaAsemaLotjuId {}, {} tries left", tiesaaAsemaLotjuId, triesLeft);
                     if (triesLeft <= 0) {
-                        log.error("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " 3rd time - giving up");
                         throw fail;
-                    }
-                    try {
-                        log.info("HaeTiesaaAsemanLaskennallisetAnturit for failed for tiesaaAsemaLotjuId " + tiesaaAsemaLotjuId + " - " + triesLeft + " tries left");
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        log.debug("Sleep interrupted", e);
                     }
                 }
             }
@@ -93,12 +87,22 @@ public class LotjuWeatherStationClient extends WebServiceGatewaySupport {
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
 
-        final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
-        final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
-
-        log.info(FETCHED + anturis.size() + " LaskennallisetAnturits");
-        return anturis;
+        int triesLeft = 5;
+        while (true) {
+            triesLeft--;
+            try {
+                final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+                final List<TiesaaLaskennallinenAnturiVO> anturis = response.getValue().getLaskennallinenAnturi();
+                log.info(FETCHED + anturis.size() + " LaskennallisetAnturits");
+                return anturis;
+            } catch (Exception fail) {
+                log.info("HaeKaikkiLaskennallisetAnturit failed, {} tries left", triesLeft);
+                if (triesLeft <= 0) {
+                    throw fail;
+                }
+            }
+        }
     }
 
 }

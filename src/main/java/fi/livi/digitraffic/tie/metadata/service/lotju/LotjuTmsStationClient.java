@@ -1,6 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXBElement;
 
@@ -29,34 +33,75 @@ public class LotjuTmsStationClient extends WebServiceGatewaySupport {
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
-        final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
 
-        log.info(FETCHED + response.getValue().getAsemat().size() + " LamAsemas");
-        return response.getValue().getAsemat();
+        int triesLeft = 5;
+        while (true) {
+            triesLeft--;
+            try {
+                final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
+                log.info(FETCHED + response.getValue().getAsemat().size() + " LamAsemas");
+                return response.getValue().getAsemat();
+            } catch (Exception fail) {
+                log.info("HaeKaikkiLAMAsemat failed {}, tries left", triesLeft);
+                if (triesLeft < 1) {
+                    throw fail;
+                }
+            }
+        }
     }
 
-    public List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
+    private List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
 
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
-
         request.setId(lamAsemaLotjuId);
-        final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
-                    getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
-        return response.getValue().getLamlaskennallisetanturit();
+        int triesLeft = 5;
+        while (true) {
+            triesLeft--;
+            try {
+                final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
+                return response.getValue().getLamlaskennallisetanturit();
+            } catch (Exception fail) {
+                log.info("HaeLAMAsemanLaskennallisetAnturit failed for lamAsemaLotjuId {}, {} tries left", lamAsemaLotjuId, triesLeft);
+                if (triesLeft <= 0) {
+                    throw fail;
+                }
+            }
+        }
     }
 
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         final ObjectFactory objectFactory = new ObjectFactory();
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
-
         log.info("Fetching LAMLaskennallisetAnturis");
-        final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
 
-        log.info(FETCHED + response.getValue().getLaskennallinenAnturi().size() + " LAMLaskennallisetAnturis");
-        return response.getValue().getLaskennallinenAnturi();
+        int triesLeft = 5;
+        while (true) {
+            triesLeft--;
+            try {
+                final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
+                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
+                log.info(FETCHED + response.getValue().getLaskennallinenAnturi().size() + " LAMLaskennallisetAnturis");
+                return response.getValue().getLaskennallinenAnturi();
+            } catch (Exception fail) {
+                log.info("HaeKaikkiLAMLaskennallisetAnturit failed, {} tries left", triesLeft);
+                if (triesLeft <= 0) {
+                    throw fail;
+                }
+            }
+        }
     }
 
+    public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(Set<Long> tmsLotjuIds) {
+        final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId = new HashMap<>();
+        final AtomicInteger counter = new AtomicInteger();
+        tmsLotjuIds.stream().forEach(tmsStationLotjuId -> {
+            final List<LamLaskennallinenAnturiVO> anturis = getTiesaaLaskennallinenAnturis(tmsStationLotjuId);
+            currentLamAnturisMappedByTmsLotjuId.put(tmsStationLotjuId, anturis);
+            counter.addAndGet(1);
+        });
+        return currentLamAnturisMappedByTmsLotjuId;
+    }
 }

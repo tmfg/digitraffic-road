@@ -81,16 +81,16 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
     public List<KameraVO> getKameras() {
 
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
-        int toTry = 5;
+        int triesLeft = 5;
         while (true) {
-            toTry--;
+            triesLeft--;
             try {
                 final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
                         getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
                 return response.getValue().getKamerat();
             } catch (Exception fail) {
-                if (toTry < 1) {
-                    log.error("Failed to fetch kameras for 5 times");
+                log.error("HaeKaikkiKamerat failed, {} tries left", triesLeft);
+                if (triesLeft <= 0) {
                     throw fail;
                 }
             }
@@ -102,17 +102,17 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
                 new HaeEsiasennotKameranTunnuksella();
         haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);
 
-        int toTry = 5;
+        int triesLeft = 5;
         while (true) {
-            toTry--;
+            triesLeft--;
             try {
                 final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse =
                         (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
                                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
                 return haeEsiasennotResponse.getValue().getEsiasennot();
             } catch (Exception fail) {
-                if (toTry < 1) {
-                    log.error("Failed to fetch kamera lotjuId {} esiasentos for 5 times", kameraId);
+                log.error("HaeEsiasennotKameranTunnuksella failed with kameraId {}, {} tries left", kameraId, triesLeft);
+                if (triesLeft <= 0) {
                     throw fail;
                 }
             }

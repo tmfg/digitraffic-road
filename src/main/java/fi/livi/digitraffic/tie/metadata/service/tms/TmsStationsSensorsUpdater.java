@@ -1,12 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,106 +67,68 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
 
         final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
 
-        final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturiMapByTmsLotjuId = new HashMap<>();
-        final Set<Long> tmsStationLotjuIdsWithError = new HashSet<>();
-
         log.info("Fetching LamLaskennallinenAnturis for " + tmsLotjuIds.size() + " LamAsemas");
 
-        int counter = 0;
-        for (final Long tmsStationLotjuId : tmsLotjuIds) {
-            try {
-                final List<LamLaskennallinenAnturiVO> anturis = lotjuTmsStationClient.getTiesaaLaskennallinenAnturis(tmsStationLotjuId);
-                currentLamAnturiMapByTmsLotjuId.put(tmsStationLotjuId, anturis);
-                counter += anturis.size();
-            } catch (Exception e) {
-                    tmsStationLotjuIdsWithError.add(tmsStationLotjuId);
-                    log.error("Error while fetching LamLaskennallinenAnturi for LamAsema lotjuId: " + tmsStationLotjuId, e);
-            }
-        }
+        final AtomicInteger counter = new AtomicInteger();
+        Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
+                lotjuTmsStationClient.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
-        log.info("Fetched " + counter + " LamLaskennallinenAnturis for " + (tmsLotjuIds.size()-tmsStationLotjuIdsWithError.size()) + " LamAsemas");
-        if (!tmsStationLotjuIdsWithError.isEmpty()) {
-            log.warn("Fetching LamLaskennallinenAnturis failed for " + tmsStationLotjuIdsWithError.size() + " LamAsemas");
-        }
+        log.info("Fetched {} LamLaskennallinenAnturis for {} LamAsemas", counter, tmsLotjuIds.size());
 
-        // Update sensros of road stations
+
+        final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
+        currentTmsStationMappedByByLotjuId.values().stream().forEach(tmsStation -> {
+            final List<LamLaskennallinenAnturiVO> anturis = anturisMappedByAsemaLotjuId.remove(tmsStation.getLotjuId());
+            stationAnturisPairs.add(Pair.of(tmsStation, anturis));
+        });
+
+        // Update sensors of road stations
         final boolean updateStaticDataStatus =
-                updateSensorsOfTmsStations(currentLamAnturiMapByTmsLotjuId,
-                                           currentTmsStationMappedByByLotjuId,
-                                           tmsStationLotjuIdsWithError);
+                updateSensorsOfTmsStations(stationAnturisPairs);
         updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update TMS Stations Sensors end");
         return updateStaticDataStatus;
     }
 
-    private boolean updateSensorsOfTmsStations(
-            final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamLaskennallinenAnturiMapByTmsStationLotjuId,
-            final Map<Long, TmsStation> currentTmsStationMapByLotjuId,
-            Set<Long> skipTmsStationsWithLotjuIds) {
+    private boolean updateSensorsOfTmsStations(final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs) {
 
-        final Map<Long, RoadStationSensor> allSensors =
-                roadStationSensorService.findAllRoadStationSensorsMappedByNaturalId(RoadStationType.TMS_STATION);
+        final Map<Long, RoadStationSensor> allSensorsMappedByLotjuId =
+                roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.TMS_STATION);
 
-        final Iterator<Map.Entry<Long, List<LamLaskennallinenAnturiVO>>> entryIter =
-                currentLamLaskennallinenAnturiMapByTmsStationLotjuId.entrySet().iterator();
+        final AtomicInteger countAdded = new AtomicInteger();
+        final AtomicInteger countRemoved = new AtomicInteger();
 
-        int countAdd = 0;
-        int countRemove = 0;
-        while (entryIter.hasNext()) {
-            final Map.Entry<Long, List<LamLaskennallinenAnturiVO>> entry = entryIter.next();
-            final Long tmsStationLotjuId = entry.getKey();
-            final List<LamLaskennallinenAnturiVO> lamAnturis = entry.getValue();
-            entryIter.remove();
+        stationAnturisPairs.stream().forEach(pair -> {
+            TmsStation station = pair.getKey();
+            List<RoadStationSensor> rsSensors = station.getRoadStation().getRoadStationSensors();
+            List<LamLaskennallinenAnturiVO> anturis = pair.getValue();
 
-            final TmsStation tmsStation = currentTmsStationMapByLotjuId.remove(tmsStationLotjuId);
-
-            if (skipTmsStationsWithLotjuIds.contains(tmsStationLotjuId)) {
-                log.warn("Skip TmsStation with lotjuId " + tmsStationLotjuId);
-            } else if (tmsStation == null) {
-                log.error("No WeatherStation found for lotjuId " + tmsStationLotjuId);
-            } else {
-
-                final RoadStation rs = tmsStation.getRoadStation();
-
-                final List<RoadStationSensor> sensors = rs.getRoadStationSensors();
-                final Map<Long, RoadStationSensor> naturalIdToCurrentSensorMap = new HashMap<>();
-                for (final RoadStationSensor sensor : sensors) {
-                    naturalIdToCurrentSensorMap.put(sensor.getNaturalId(), sensor);
-                }
-
-                for (final LamLaskennallinenAnturiVO anturi : lamAnturis) {
-                    if ( addSensorIfMissing(rs, naturalIdToCurrentSensorMap, anturi, allSensors) ) {
-                        countAdd++;
+            if (anturis != null) {
+                anturis.stream().forEach(anturi -> {
+                    RoadStationSensor sensor = allSensorsMappedByLotjuId.get(anturi.getId());
+                    Optional<RoadStationSensor> existingSensor =
+                            rsSensors.stream().filter(s -> anturi.getId().equals(s.getLotjuId())).findFirst();
+                    if (sensor == null) {
+                        log.error("No Weather RoadStationSensor found with lotjuId {}", anturi.getId());
+                    } else if (!existingSensor.isPresent()) {
+                        rsSensors.add(sensor);
+                        countAdded.addAndGet(1);
+                        log.info("Add sensor {} for {}", sensor, station);
                     }
-                }
-
-                // Remove non existing sensors that are left in map
-                for (final RoadStationSensor remove : naturalIdToCurrentSensorMap.values()) {
-                    rs.getRoadStationSensors().remove(remove);
-                    countRemove++;
-                    log.info("Removed " + remove + " from " + rs);
-                }
+                });
             }
-        }
 
-        // remove non exiting sensors from not found tms stations
-        for (TmsStation tmsStation : currentTmsStationMapByLotjuId.values()) {
-            if (!skipTmsStationsWithLotjuIds.contains(tmsStation.getLotjuId())) {
-                tmsStation.getRoadStation().getRoadStationSensors().clear();
-            }
-        }
+            final List<RoadStationSensor> toRemove = rsSensors.stream().filter(s -> s.getLotjuId() == null || anturis == null ||
+                    !anturis.stream().filter(a -> a.getId().equals(s.getLotjuId())).findFirst().isPresent()).collect(Collectors.toList());
+            countRemoved.addAndGet(toRemove.size());
+            rsSensors.removeAll(toRemove);
+        });
 
+        log.info("Sensor removed from road stations {}", countRemoved);
+        log.info("Sensor added to road stations {}", countAdded);
 
-        int notFound = 0;
-        for (final List<LamLaskennallinenAnturiVO> values : currentLamLaskennallinenAnturiMapByTmsStationLotjuId.values()) {
-            notFound =+ values.size();
-        }
-        log.info("RoadStation not found for " + notFound + " TiesaaLaskennallinenAnturis");
-        log.info("Sensor removed from road stations " + countRemove);
-        log.info("Sensor added to road stations " + countAdd);
-
-        return countAdd > 0 || countRemove > 0;
+        return countRemoved.get() > 0 || countAdded.get() > 0;
     }
 
     private static boolean addSensorIfMissing(RoadStation rs,

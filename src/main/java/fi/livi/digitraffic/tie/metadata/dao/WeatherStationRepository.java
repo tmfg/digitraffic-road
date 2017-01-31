@@ -17,4 +17,6 @@ public interface WeatherStationRepository extends JpaRepository<WeatherStation, 
     List<WeatherStation> findByLotjuIdIn(List<Long> weatherStationLotjuIds);
 
     List<WeatherStation> findByLotjuIdIsNull();
+
+    List<WeatherStation> findByRoadStationIsNull();
 }

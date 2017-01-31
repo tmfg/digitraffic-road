@@ -106,14 +106,13 @@ public class WeatherStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findAllWeatherStationsMappedByByRoadStationNaturalId() {
-        final List<WeatherStation> allStations = weatherStationRepository.findAll();
+    public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
+        final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
         return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
-        final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
-        return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
+    public List<WeatherStation> findAllWeatherStationsWithoutRoadStation() {
+        return weatherStationRepository.findByRoadStationIsNull();
     }
 }

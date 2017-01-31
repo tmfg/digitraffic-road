@@ -138,8 +138,8 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         // CameraPresets in db without lotjuId
         Map<String, List<CameraPreset>> withoutLotjuIdMappedByCameraId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
 
-        final AtomicInteger updated = new AtomicInteger(0);
-        final AtomicInteger obsoleted = new AtomicInteger(0);
+        final AtomicInteger updated = new AtomicInteger();
+        final AtomicInteger obsoleted = new AtomicInteger();
 
         withoutLotjuIdMappedByCameraId.entrySet().stream().forEach(entry -> {
 
@@ -187,7 +187,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         final List<Pair<Pair<KameraVO, EsiasentoVO>, CameraPreset>> update = new ArrayList<>(); // camera presets to update
         final List<Pair<KameraVO, EsiasentoVO>> insert = new ArrayList<>(); // new camera presets
 
-        final AtomicInteger invalid = new AtomicInteger(0);
+        final AtomicInteger invalid = new AtomicInteger();
 
         lotjuIdToKameraAndEsiasentos.values().stream().forEach(kameraEsiasentoPair -> {
 
@@ -214,7 +214,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         }
 
         // camera presets in database, but not in server
-        AtomicInteger countObsoletePresets = new AtomicInteger(0);
+        AtomicInteger countObsoletePresets = new AtomicInteger();
         presetsMappedByLotjuId.values().stream().forEach(cp -> {
             if (cp.obsolete()) {
                 countObsoletePresets.addAndGet(1);
@@ -230,7 +230,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         final int updated = updateCameraPresets(update, lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
         final int inserted = insertCameraPresets(insert, lotjuIdToWeatherStationMap, cameraRoadStationsMappedByNaturalId);
 
-        AtomicInteger countObsoleteRs = new AtomicInteger(0);
+        AtomicInteger countObsoleteRs = new AtomicInteger();
         // Go through all camera presets' road stations and check for non obsolete presets.
         // If just one non obsolete preset exists set road station obsolete false.
         // If not found any non obsolete presets for road station then obsolete it.
@@ -247,7 +247,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
                 });
 
         log.info("Obsoleted {} CameraPresets not existing in LOTJU", countObsoletePresets);
-        log.info("Obsoleted {} RoadStations without non obsolete presets", countObsoleteRs);
+        log.info("Obsoleted {} RoadStations without active presets", countObsoleteRs);
         log.info("Updated {} CameraPresets", updated);
         log.info("Inserted {} CameraPresets", inserted);
 

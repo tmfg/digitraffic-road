@@ -29,8 +29,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 10;
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private final AtomicInteger lockAcquiredCounter = new AtomicInteger(0);
-    private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger(0);
+    private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
+    private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger();
 
     private final QueueConnectionFactory connectionFactory;
     private final LockingService lockingService;

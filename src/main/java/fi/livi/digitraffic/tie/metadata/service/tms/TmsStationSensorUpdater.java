@@ -59,31 +59,23 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     }
 
     private boolean fixRoadStationSensorsWithoutLotjuId(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {
-        final Map<Long, RoadStationSensor> currentNaturalIdToSensorMap =
+        final Map<Long, RoadStationSensor> currentSensorsMappedByNaturalId =
                 roadStationSensorService.findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType.TMS_STATION);
 
-        final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update = new ArrayList<>(); // Sensors to update
-        final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // New sensors
-
-        final AtomicInteger updated = new AtomicInteger(0);
-        allLamLaskennallinenAnturis.stream().filter(anturi -> validate(anturi) ).forEach(anturi -> {
-            final RoadStationSensor currentSaved = currentNaturalIdToSensorMap.remove(Long.valueOf(anturi.getVanhaId()));
+        final AtomicInteger updated = new AtomicInteger();
+        allLamLaskennallinenAnturis.stream().filter(anturi -> validate(anturi)).forEach(anturi -> {
+            final RoadStationSensor currentSaved = currentSensorsMappedByNaturalId.remove(Long.valueOf(anturi.getVanhaId()));
             if ( currentSaved != null ) {
                 currentSaved.setLotjuId(anturi.getId());
             }
         });
 
-        // Obsolete not found stations
-        final AtomicInteger obsoleted = new AtomicInteger(0);
-        currentNaturalIdToSensorMap.values().stream().forEach(sensor -> {
-            if (sensor.obsolete()) {
-                obsoleted.addAndGet(1);
-            }
-        });
+        // Obsolete not found sensors
+        final int obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByNaturalId.values());
 
         log.info("Obsoleted {} RoadStationSensor", obsoleted);
         log.info("Fixed {} RoadStationSensor without lotjuId", updated);
-        return obsoleted.get() > 0 || updated.get() > 0;
+        return obsoleted > 0 || updated.get() > 0;
     }
 
     private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {
@@ -93,7 +85,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update = new ArrayList<>(); // Sensors to update
         final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // New sensors
 
-        final AtomicInteger invalid = new AtomicInteger(0);
+        final AtomicInteger invalid = new AtomicInteger();
         allLamLaskennallinenAnturis.stream().forEach(anturi -> {
             if (validate(anturi)) {
                 final RoadStationSensor currentSaved = sensorsMappedByLotjuId.remove(anturi.getId());
@@ -108,7 +100,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         });
 
         if (invalid.get() > 0) {
-            log.warn("Found {} LamLaskennallinenAnturi from LOTJU", invalid);
+            log.warn("Found {} invalid LamLaskennallinenAnturi from LOTJU", invalid);
         }
 
         final int obsoleted = obsoleteRoadStationSensors(sensorsMappedByLotjuId.values());
@@ -155,7 +147,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             final String before = ReflectionToStringBuilder.toString(sensor);
             if ( updateRoadStationSensorAttributes(anturi, sensor) ) {
                 counter++;
-                log.info("Updated RoadStationSensor:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(sensor));
+                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ReflectionToStringBuilder.toString(sensor));
             }
         }
         return counter;

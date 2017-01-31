@@ -91,7 +91,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         Map<Long, TmsStation> noLotjuIds = tmsStationService.findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
 
-        final AtomicInteger updated = new AtomicInteger(0);
+        final AtomicInteger updated = new AtomicInteger();
         asemas.stream().forEach(la -> {
             if (validate(la)) {
                 final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
@@ -106,7 +106,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         });
 
         // Obsolete not found stations
-        final AtomicInteger obsoleted = new AtomicInteger(0);
+        final AtomicInteger obsoleted = new AtomicInteger();
         noLotjuIds.values().stream().forEach(tms -> {
             if (tms.obsolete()) {
                 obsoleted.addAndGet(1);
@@ -123,7 +123,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         final List<Pair<LamAsemaVO, TmsStation>> update = new ArrayList<>(); // tms-stations to update
         final List<LamAsemaVO> insert = new ArrayList<>(); // new tms-stations
 
-        AtomicInteger invalid = new AtomicInteger(0);
+        AtomicInteger invalid = new AtomicInteger();
         asemas.stream().forEach(la -> {
             if ( validate(la) ) {
                 final TmsStation currentSaved = currentStationsByLotjuId.remove(la.getId());
@@ -143,7 +143,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         }
 
         // tms-stations in database, but not in server -> obsolete
-        AtomicInteger obsoleted = new AtomicInteger(0);
+        AtomicInteger obsoleted = new AtomicInteger();
         currentStationsByLotjuId.values().stream().forEach(tms -> {
             if (tms.obsolete()) {
                 obsoleted.addAndGet(1);
@@ -238,8 +238,8 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
                 roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.TMS_STATION);
 
-        int counter = 0;
-        for (final Pair<LamAsemaVO, TmsStation> pair : update) {
+        final AtomicInteger counter = new AtomicInteger();
+        update.stream().forEach(pair -> {
 
             final LamAsemaVO la = pair.getLeft();
             final TmsStation tms = pair.getRight();
@@ -280,7 +280,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
             if ( updateTmsStationAttributes(la, rd, tms) ||
                  hash != HashCodeBuilder.reflectionHashCode(tms) ) {
-                counter++;
+                counter.addAndGet(1);
                 log.info("Updated TmsStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(tms));
             }
             if (rs.getRoadAddress().getId() == null) {
@@ -291,8 +291,8 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                 roadStationService.save(rs);
                 log.info("Created new RoadStation " + tms.getRoadStation());
             }
-        }
-        return counter;
+        });
+        return counter.get();
     }
 
     private static void setRoadStationIfNotSet(TmsStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
