@@ -6,24 +6,37 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 @Service
 public class LocationUpdater {
-    private final LocationRepository locationRepository;
+    private final EntityManager entityManager;
 
-    public LocationUpdater(final LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
+    private final int batchSize;
+
+    public LocationUpdater(final EntityManager entityManager,
+                           @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}") int batchSize) {
+        this.entityManager = entityManager;
+        this.batchSize = batchSize;
     }
 
     public List<Location> updateLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
         final List<Location> newLocations = getLocations(path, locationSubtypes, version);
 
-        locationRepository.save(newLocations);
+        for(int i= 0;i < newLocations.size();i++) {
+            entityManager.persist(newLocations.get(i));
+
+            if(i % batchSize == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+        }
 
         return newLocations;
     }

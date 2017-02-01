@@ -48,7 +48,7 @@ public class LocationService {
         }
 
         return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion,
-                locationRepository.findAllByIdVersion(lVersion).stream().map(LocationFeature::new).collect(Collectors.toList())
+                locationRepository.findAllByVersion(lVersion).stream().map(LocationFeature::new).collect(Collectors.toList())
         );
     }
 
@@ -73,7 +73,7 @@ public class LocationService {
         final LocationVersion locationVersion = getLocationVersion(version);
         final String lVersion = locationVersion.getVersion();
 
-        final LocationJson location = locationRepository.findByIdVersionAndIdLocationCode(lVersion, id);
+        final LocationJson location = locationRepository.findByVersionAndLocationCode(lVersion, id);
 
         if(location == null) {
             throw new ObjectNotFoundException("Location", id);

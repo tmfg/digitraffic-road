@@ -3,16 +3,20 @@ package fi.livi.digitraffic.tie.metadata.model.location;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @DynamicUpdate
+@IdClass(LocationKey.class)
 public class Location {
-    @EmbeddedId
-    private LocationKey id;
+    @Id
+    private Integer locationCode;
+    @Id
+    private String version;
 
     private String subtypeCode;
     private String roadJunction;
@@ -164,16 +168,8 @@ public class Location {
         this.etrsTm35FixY = etrsTm35FixY;
     }
 
-    public LocationKey getId() {
-        return id;
-    }
-
-    public void setId(LocationKey id) {
-        this.id = id;
-    }
-
     public Integer getLocationCode() {
-        return id.getLocationCode();
+        return locationCode;
     }
 
     public String getSubtypeCode() {
@@ -198,5 +194,17 @@ public class Location {
 
     public void setLinearRef(Integer linearRef) {
         this.linearRef = linearRef;
+    }
+
+    public void setLocationCode(Integer locationCode) {
+        this.locationCode = locationCode;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

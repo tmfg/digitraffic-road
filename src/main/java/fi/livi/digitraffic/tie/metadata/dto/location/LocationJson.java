@@ -2,10 +2,7 @@ package fi.livi.digitraffic.tie.metadata.dto.location;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public interface LocationJson {
-    @Value("#{target.id.locationCode}")
     int getLocationCode();
 
     String getSubtypeCode();

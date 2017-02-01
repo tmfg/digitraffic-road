@@ -13,10 +13,10 @@ import fi.livi.digitraffic.tie.metadata.model.location.Location;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Integer> {
-    LocationJson findByIdVersionAndIdLocationCode(final String version, final int locationCode);
+    LocationJson findByVersionAndLocationCode(final String version, final int locationCode);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LocationJson> findAllByIdVersion(final String version);
+    List<LocationJson> findAllByVersion(final String version);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Location> findAll();

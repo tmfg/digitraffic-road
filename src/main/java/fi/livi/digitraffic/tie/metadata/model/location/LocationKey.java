@@ -2,12 +2,9 @@ package fi.livi.digitraffic.tie.metadata.model.location;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-@Embeddable
 public class LocationKey implements Serializable {
     private Integer locationCode;
 
