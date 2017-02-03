@@ -22,6 +22,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -67,8 +68,16 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     protected JdbcTemplate jdbcTemplate;
     private Marshaller jaxbMarshaller;
 
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Before
-    public void setUpTestData() throws JAXBException {
+    public void initData() throws JAXBException {
+
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Tiesaa.class).createMarshaller();
 

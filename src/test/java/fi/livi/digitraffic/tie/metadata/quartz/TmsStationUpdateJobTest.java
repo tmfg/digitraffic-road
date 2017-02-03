@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -19,7 +21,8 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
-public class TmsStationUpdateJobTest extends MetadataRestTest {
+@Transactional
+public class TmsStationUpdateJobTest extends MetadataIntegrationTest {
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;

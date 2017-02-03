@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -109,8 +110,16 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         Assert.assertFalse(testFolder.getRoot().exists());
     }
 
+    @After
+    public void restoreData() throws IOException, JAXBException {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Before
-    public void setUpTestData() throws IOException, JAXBException {
+    public void initData() throws IOException, JAXBException {
+
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
         jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();
@@ -176,27 +185,20 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
         JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
-            long start = System.currentTimeMillis();
+            StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
             try {
-                data.stream().forEach(p -> {
-                    if (p.getLeft() == null) {
-                        System.out.println(p.getRight());
-                        System.out.println(p.getLeft());
-                    }
-                });
                 cameraDataUpdateService.updateCameraData(data.stream().map(p -> p.getLeft()).collect(Collectors.toList()));
             } catch (SQLException e) {
                 Assert.fail("Data updating failed");
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            long end = System.currentTimeMillis();
-            log.info("handleData took " + (end-start) + " ms");
+            log.info("handleData took {} ms", start.getTime());
         };
 
         JMSMessageListener<Kuva> cameraJmsMessageListener =

@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
@@ -41,32 +41,32 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
     private final CameraPresetService cameraPresetService;
     private final WeatherStationService weatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final LotjuCameraClient lotjuCameraClient;
+    private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
 
     @Autowired
     public CameraStationUpdater(final CameraPresetService cameraPresetService,
                                 final RoadStationService roadStationService,
                                 final WeatherStationService weatherStationService,
                                 final StaticDataStatusService staticDataStatusService,
-                                final LotjuCameraClient lotjuCameraClient) {
+                                final LotjuCameraStationMetadataService lotjuCameraStationMetadataService) {
         super(roadStationService);
         this.cameraPresetService = cameraPresetService;
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuCameraClient = lotjuCameraClient;
+        this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
     }
 
     @Transactional
     public boolean updateCameras() {
         log.info("Update Cameras start");
 
-        if (lotjuCameraClient == null) {
-            log.warn("Not updating cameraPresets metadatas because lotjuCameraClient not defined");
+        if (!lotjuCameraStationMetadataService.isEnabled()) {
+            log.warn("Not updating cameraPresets metadatas because LotjuCameraStationMetadataService not enabled");
             return false;
         }
 
         Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
-                lotjuCameraClient.getLotjuIdToKameraAndEsiasentoMap();
+                lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched Cameras:");

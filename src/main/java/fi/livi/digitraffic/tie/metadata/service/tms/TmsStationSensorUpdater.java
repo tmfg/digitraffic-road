@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 
@@ -26,13 +26,13 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturi
 public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorUpdater.class);
 
-    private final LotjuTmsStationClient lotjuTmsStationClient;
+    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                   final LotjuTmsStationClient lotjuTmsStationClient) {
+                                   final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         super(roadStationSensorService);
-        this.lotjuTmsStationClient = lotjuTmsStationClient;
+        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
     /**
@@ -42,14 +42,14 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     public boolean updateRoadStationSensors() {
         log.info("Update TMS RoadStationSensors start");
 
-        if (lotjuTmsStationClient == null) {
-            log.warn("Not updating TMS stations sensors because lotjuTmsStationClient not defined");
+        if (!lotjuTmsStationMetadataService.isEnabled()) {
+            log.warn("Not updating TMS stations sensors because LotjuTmsStationMetadataService not enabled");
             return false;
         }
 
         // Update available RoadStationSensors types to db
         List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
-                lotjuTmsStationClient.getAllLamLaskennallinenAnturis();
+                lotjuTmsStationMetadataService.getAllLamLaskennallinenAnturis();
 
         boolean fixedLotjuIds = fixRoadStationSensorsWithoutLotjuId(allLamLaskennallinenAnturis);
 

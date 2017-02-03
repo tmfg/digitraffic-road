@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 
@@ -39,32 +39,31 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
     private final TmsStationService tmsStationService;
     private final RoadDistrictService roadDistrictService;
     private final StaticDataStatusService staticDataStatusService;
-
-    private final LotjuTmsStationClient lotjuTmsStationClient;
+    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationUpdater(final RoadStationService roadStationService,
                              final TmsStationService tmsStationService,
                              final RoadDistrictService roadDistrictService,
                              final StaticDataStatusService staticDataStatusService,
-                             final LotjuTmsStationClient lotjuTmsStationClient) {
+                             final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         super(roadStationService);
         this.tmsStationService = tmsStationService;
         this.roadDistrictService = roadDistrictService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuTmsStationClient = lotjuTmsStationClient;
+        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
     @Transactional
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
-        if (lotjuTmsStationClient == null) {
-            log.warn("Not updating tms stations because lotjuTmsStationClient not defined");
+        if (!lotjuTmsStationMetadataService.isEnabled()) {
+            log.warn("Not updating tms stations because LotjuTmsStationMetadataService not enabled");
             return false;
         }
 
-        final List<LamAsemaVO> asemas = lotjuTmsStationClient.getLamAsemas();
+        final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
 
         if (log.isDebugEnabled()) {
             log.debug("Fetched LAMs:");
@@ -155,7 +154,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Updated {} TmsStations", updated);
-        log.info("Inserted " + inserted + " TmsStations");
+        log.info("Inserted {} TmsStations", inserted);
         if (insert.size() > inserted) {
             log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " TmsStations");
         }

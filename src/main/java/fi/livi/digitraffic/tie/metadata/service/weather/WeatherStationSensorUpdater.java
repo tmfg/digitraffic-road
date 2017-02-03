@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
@@ -25,13 +25,13 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationSensorUpdater.class);
 
-    private final LotjuWeatherStationClient lotjuWeatherStationClient;
+    private final LotjuWeatherStationService lotjuWeatherStationService;
 
     @Autowired
     public WeatherStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                       final LotjuWeatherStationClient lotjuWeatherStationClient) {
+                                       final LotjuWeatherStationService lotjuWeatherStationService) {
         super(roadStationSensorService);
-        this.lotjuWeatherStationClient = lotjuWeatherStationClient;
+        this.lotjuWeatherStationService = lotjuWeatherStationService;
     }
 
     /**
@@ -41,14 +41,14 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
     public boolean updateRoadStationSensors() {
         log.info("Update weather RoadStationSensors start");
 
-        if (lotjuWeatherStationClient == null) {
-            log.warn("Not updating RoadStationSensor metadata because lotjuWeatherStationClient not defined");
+        if (!lotjuWeatherStationService.isEnabled()) {
+            log.warn("Not updating RoadStationSensor metadata because LotjuWeatherStationService not enabled");
             return false;
         }
 
         // Update available RoadStationSensors types to db
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
-                lotjuWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
+                lotjuWeatherStationService.getAllTiesaaLaskennallinenAnturis();
 
         boolean fixedLotjuIds = fixRoadStationSensorsWithoutLotjuId(allTiesaaLaskennallinenAnturis);
 
@@ -62,7 +62,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
                 roadStationSensorService.findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType.WEATHER_STATION);
 
         final AtomicInteger updated = new AtomicInteger();
-        allTiesaaLaskennallinenAnturis.stream().filter(anturi -> validate(anturi) ).forEach(anturi -> {
+            allTiesaaLaskennallinenAnturis.stream().filter(anturi -> validate(anturi) ).forEach(anturi -> {
             final RoadStationSensor currentSaved = currentSensorsMappedByNaturalId.remove(Long.valueOf(anturi.getVanhaId()));
             if ( currentSaved != null ) {
                 currentSaved.setLotjuId(anturi.getId());

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -30,6 +31,7 @@ import oracle.ucp.jdbc.PoolDataSourceFactory;
 @Configuration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 @EnableTransactionManagement
+@EnableRetry
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     public static final String API_V1_BASE_PATH = "/api/v1";

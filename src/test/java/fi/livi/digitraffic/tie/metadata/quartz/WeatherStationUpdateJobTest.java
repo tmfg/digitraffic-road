@@ -6,7 +6,11 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +27,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
+@Transactional
 public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJobTest.class);
@@ -41,6 +46,17 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
     @Autowired
     private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
+
+    @Before
+    public void initData() {
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
+    }
+
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
 
     @Test
     public void testUpdateWeatherStations() {

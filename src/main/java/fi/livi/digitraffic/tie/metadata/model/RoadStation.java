@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -99,7 +100,7 @@ public class RoadStation {
     @JoinTable(name = "ROAD_STATION_SENSORS",
                joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
-    List<RoadStationSensor> roadStationSensors;
+    List<RoadStationSensor> roadStationSensors = new ArrayList<>();
 
     protected RoadStation() {
     }

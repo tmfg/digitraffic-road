@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
@@ -33,19 +33,19 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
     private RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final LotjuTmsStationClient lotjuTmsStationClient;
+    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationsSensorsUpdater(final RoadStationService roadStationService,
                                      final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
                                      final StaticDataStatusService staticDataStatusService,
-                                     final LotjuTmsStationClient lotjuTmsStationClient) {
+                                     final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         super(roadStationService);
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuTmsStationClient = lotjuTmsStationClient;
+        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
     /**
@@ -55,8 +55,8 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
     public boolean updateTmsStationsSensors() {
         log.info("Update TMS Stations Sensors start");
 
-        if (lotjuTmsStationClient == null) {
-            log.warn("Not updating TMS Stations Sensors metadata because lotjuTmsStationClient not defined");
+        if (!lotjuTmsStationMetadataService.isEnabled()) {
+            log.warn("Not updating TMS Stations Sensors metadata because LotjuTmsStationMetadataService not enabled");
             return false;
         }
 
@@ -71,7 +71,7 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
 
         final AtomicInteger counter = new AtomicInteger();
         Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
-                lotjuTmsStationClient.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
+                lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
         log.info("Fetched {} LamLaskennallinenAnturis for {} LamAsemas", counter, tmsLotjuIds.size());
 
