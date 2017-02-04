@@ -94,14 +94,14 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
                 "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
                 "  WHERE S.OBSOLETE = 0\n" +
-                "    AND S.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "    AND S.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
                 "    AND EXISTS (\n" +
                 "      SELECT NULL\n" +
                 "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
                 "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
                 "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
                 "   )\n" +
-                "   AND RS.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "   AND RS.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
                 "   AND RS.OBSOLETE_DATE IS NULL\n" +
                 ") SRC\n" +
                 "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
