@@ -71,7 +71,7 @@ public class TmsDataService {
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
                         RoadStationType.TMS_STATION);
-        TmsStation tms = tmsStationService.findByRoadStationNaturalId(roadStationNaturalId);
+        TmsStation tms = tmsStationService.findPublicNonObsoleteTmsStationByRoadStationNaturalId(roadStationNaturalId);
         final TmsStationDto dto = new TmsStationDto();
         dto.setTmsStationNaturalId(tms.getNaturalId());
         dto.setRoadStationNaturalId(roadStationNaturalId);

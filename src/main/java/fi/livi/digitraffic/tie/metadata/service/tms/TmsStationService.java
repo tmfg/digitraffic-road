@@ -107,8 +107,8 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public TmsStation findByRoadStationNaturalId(long roadStationNaturalId) {
-        TmsStation entity = tmsStationRepository.findByRoadStation_NaturalId(roadStationNaturalId);
+    public TmsStation findPublicNonObsoleteTmsStationByRoadStationNaturalId(long roadStationNaturalId) {
+        TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndObsoleteDateIsNullAndLotjuIdIsNotNullAndRoadStationIsPublicTrue(roadStationNaturalId);
         if (entity == null) {
             throw new ObjectNotFoundException(TmsStation.class, roadStationNaturalId);
         }

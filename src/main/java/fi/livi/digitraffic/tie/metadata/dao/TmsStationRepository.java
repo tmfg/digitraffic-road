@@ -13,7 +13,7 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
     List<TmsStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
 
-    TmsStation findByRoadStation_NaturalId(long roadStationNaturalId);
+    TmsStation findByRoadStation_NaturalIdAndObsoleteDateIsNullAndLotjuIdIsNotNullAndRoadStationIsPublicTrue(long roadStationNaturalId);
 
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM TmsStation tms\n" +
