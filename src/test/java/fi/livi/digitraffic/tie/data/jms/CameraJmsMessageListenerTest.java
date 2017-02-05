@@ -122,6 +122,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         // Creates also new road stations so run before generating lotjuIds
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
+        entityManager.clear();
         generateMissingLotjuIdsWithJdbc();
         fixDataWithJdbc();
 
@@ -142,7 +143,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
         Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
-
+        log.info("All camera presets size {}", cameraPresets.size());
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
         while (missingMin > 0 && iter.hasNext()) {
