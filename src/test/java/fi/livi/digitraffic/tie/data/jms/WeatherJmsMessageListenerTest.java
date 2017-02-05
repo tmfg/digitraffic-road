@@ -122,7 +122,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublicNonObsoleteWeatherStationsMappedByLotjuId();
+        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();

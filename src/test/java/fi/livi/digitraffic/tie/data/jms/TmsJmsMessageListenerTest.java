@@ -125,7 +125,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllNonObsoletePublicTmsStationsMappedByLotjuId();
+        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Lam> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();

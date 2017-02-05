@@ -81,23 +81,8 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public RoadStation findByTypeAndNaturalId(final RoadStationType type, final long naturalId) {
-        return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
-    }
-
-    @Transactional(readOnly = true)
     public List<RoadStation> findOrphanWeatherStationRoadStations() {
         return roadStationRepository.findOrphanWeatherRoadStations();
-    }
-
-    @Transactional(readOnly = true)
-    public List<RoadStation> findOrphanCameraStationRoadStations() {
-        return roadStationRepository.findOrphanCameraRoadStations();
-    }
-
-    @Transactional(readOnly = true)
-    public List<RoadStation> findOrphanTmsStationRoadStations() {
-        return roadStationRepository.findOrphanTmsRoadStations();
     }
 
     @Transactional

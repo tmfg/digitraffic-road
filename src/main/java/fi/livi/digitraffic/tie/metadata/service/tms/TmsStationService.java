@@ -40,20 +40,20 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllNonObsoletePublicTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
 
         return tmsStationMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
-                findAllNonObsoletePublicNonNullLotjuIdTmsStations(),
+                findAllPublishableTmsStations(),
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
     @Transactional
-    public List<TmsStation> findAllNonObsoletePublicNonNullLotjuIdTmsStations() {
-        return tmsStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
+    public List<TmsStation> findAllPublishableTmsStations() {
+        return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
     }
 
     @Transactional
@@ -101,14 +101,14 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, TmsStation> findAllNonObsoletePublicTmsStationsMappedByLotjuId() {
-        final List<TmsStation> all = findAllNonObsoletePublicNonNullLotjuIdTmsStations();
+    public Map<Long, TmsStation> findAllPublishableTmsStationsMappedByLotjuId() {
+        final List<TmsStation> all = findAllPublishableTmsStations();
         return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
-    public TmsStation findPublicNonObsoleteTmsStationByRoadStationNaturalId(long roadStationNaturalId) {
-        TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndObsoleteDateIsNullAndLotjuIdIsNotNullAndRoadStationIsPublicTrue(roadStationNaturalId);
+    public TmsStation findPublishableTmsStationByRoadStationNaturalId(long roadStationNaturalId) {
+        TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
         if (entity == null) {
             throw new ObjectNotFoundException(TmsStation.class, roadStationNaturalId);
         }

@@ -13,9 +13,9 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 @Repository
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
 
-    List<CameraPreset> findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndPublicInternalIsTrueAndPublicExternalIsTrueAndRoadStationIsPublicTrueOrderByPresetId();
+    List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
 
-    List<CameraPreset> findByCameraIdAndObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndRoadStationIsPublicTrueOrderByPresetId(final String cameraId);
+    List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(final String cameraId);
 
 
     @Query(value =

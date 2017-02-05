@@ -49,7 +49,7 @@ public class TmsStationUpdateJobTest extends MetadataIntegrationTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allInitial =
-                tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update tms stations (2 non obsolete stations and 2 obsolete)
@@ -58,7 +58,7 @@ public class TmsStationUpdateJobTest extends MetadataIntegrationTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allAfterChange =
-                tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));

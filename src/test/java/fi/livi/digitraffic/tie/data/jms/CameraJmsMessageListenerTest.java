@@ -57,6 +57,7 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
@@ -118,6 +119,9 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
     @Before
     public void initData() throws IOException, JAXBException {
 
+        // Creates also new road stations so run before generating lotjuIds
+        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        entityManager.flush();
         generateMissingLotjuIdsWithJdbc();
         fixDataWithJdbc();
 
@@ -135,9 +139,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
             i--;
         }
 
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
-
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
         Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
@@ -146,21 +148,19 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         while (missingMin > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
-            if (rs.isObsolete() || cp.isObsolete()) {
+            if (!rs.isPublishable() || !cp.isPublishable()) {
                 missingMin--;
             }
-            if (rs.isObsolete()) {
-                rs.setObsolete(false);
-            }
-            if (!rs.isPublic()) {
-                rs.setPublic(true);
-            }
-            if (cp.isObsolete()) {
-                cp.setObsolete(false);
-            }
+            rs.setCollectionStatus(CollectionStatus.GATHERING);
+            rs.setObsolete(false);
+            rs.setPublic(true);
+            cp.setObsolete(false);
+            cp.setPublicExternal(true);
+            cp.setPublicInternal(true);
         }
-
-        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        entityManager.flush();
+        entityManager.clear();
+        nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
     }
 
@@ -209,7 +209,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        List<CameraPreset> presets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
         Iterator<CameraPreset> presetIterator = presets.iterator();
 
         int testBurstsLeft = 10;
@@ -268,7 +268,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
             sw.reset();
             sw.start();
-            Assert.assertTrue(data.size() >= 25);
+            Assert.assertTrue("Data size too small: " + data.size(), data.size() >= 25);
             cameraJmsMessageListener.drainQueueScheduled();
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");

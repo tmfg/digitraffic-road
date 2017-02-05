@@ -11,9 +11,9 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 @Repository
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
-    List<TmsStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
+    List<TmsStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
-    TmsStation findByRoadStation_NaturalIdAndObsoleteDateIsNullAndLotjuIdIsNotNullAndRoadStationIsPublicTrue(long roadStationNaturalId);
+    TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(long roadStationNaturalId);
 
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM TmsStation tms\n" +

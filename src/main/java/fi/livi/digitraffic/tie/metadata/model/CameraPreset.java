@@ -101,6 +101,9 @@ public class CameraPreset {
     @Fetch(FetchMode.JOIN)
     private WeatherStation nearestWeatherStation;
 
+    @Column(updatable = false, insertable = false) // virtual column
+    private boolean publishable;
+
     public Long getId() {
         return id;
     }
@@ -323,6 +326,10 @@ public class CameraPreset {
 
     public boolean isPublic() {
         return isPublicInternal() && isPublicExternal();
+    }
+
+    public boolean isPublishable() {
+        return publishable;
     }
 
     @Override

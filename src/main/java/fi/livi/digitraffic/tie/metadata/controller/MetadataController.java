@@ -87,7 +87,7 @@ public class MetadataController {
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                 boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(lastUpdated);
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated);
     }
 
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
@@ -111,7 +111,7 @@ public class MetadataController {
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_STATIONS_PATH);
-        return cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(lastUpdated);
+        return cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
 
     @ApiOperation("The static information of weather stations")
@@ -123,7 +123,7 @@ public class MetadataController {
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_PATH);
-        return weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(lastUpdated);
+        return weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(lastUpdated);
     }
 
     @ApiOperation("The static information of available sensors of weather stations")

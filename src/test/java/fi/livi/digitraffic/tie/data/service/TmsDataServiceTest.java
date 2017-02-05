@@ -37,7 +37,7 @@ public class TmsDataServiceTest extends MetadataIntegrationTest {
         generateMissingLotjuIdsWithJdbc();
         fixDataWithJdbc();
         Map<Long, TmsStation> stations =
-                tmsStationService.findAllNonObsoletePublicTmsStationsMappedByLotjuId();
+                tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
         List<RoadStationSensor> availableSensors =
                 roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
         stations.values().forEach(station -> {
@@ -58,7 +58,7 @@ public class TmsDataServiceTest extends MetadataIntegrationTest {
 
     @Test
     public void testFindPublicTmsData()  {
-        final TmsRootDataObjectDto object = tmsDataService.findPublicTmsData(false);
+        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(false);
         Assert.notNull(object);
         Assert.notNull(object.getDataUpdatedTime());
         Assert.notNull(object.getTmsStations());
@@ -67,7 +67,7 @@ public class TmsDataServiceTest extends MetadataIntegrationTest {
 
     @Test
     public void testFindPublicTmsDataById()  {
-        final TmsRootDataObjectDto object = tmsDataService.findPublicTmsData(23001);
+        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23001);
         Assert.notNull(object);
         Assert.notNull(object.getDataUpdatedTime());
         Assert.notNull(object.getTmsStations());

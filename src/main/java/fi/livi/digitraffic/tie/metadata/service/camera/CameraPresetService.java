@@ -68,14 +68,14 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
         MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
-                findAllNonObsoletePublicCameraPresets(),
+                findAllPublishableCameraPresets(),
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
@@ -90,8 +90,8 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public List<CameraPreset> findAllNonObsoletePublicCameraPresets() {
-        return cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndPublicInternalIsTrueAndPublicExternalIsTrueAndRoadStationIsPublicTrueOrderByPresetId();
+    public List<CameraPreset> findAllPublishableCameraPresets() {
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
     }
 
     public Map<String, List<CameraPreset>> findWithoutLotjuIdMappedByCameraId() {

@@ -17,7 +17,7 @@ public class TmsStationServiceTest extends MetadataIntegrationTest {
 
     @Test
     public void testFindAllNonObsoleteTmsStationsAsFeatureCollection() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(false);
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 

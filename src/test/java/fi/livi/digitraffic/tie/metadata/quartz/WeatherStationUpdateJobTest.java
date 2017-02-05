@@ -68,7 +68,7 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allInitial =
-                weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
+                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
@@ -77,7 +77,7 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allAfterChange =
-                weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
+                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(3, allAfterChange.getFeatures().size());
 
         /*

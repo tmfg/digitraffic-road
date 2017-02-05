@@ -114,10 +114,10 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValueDto>> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
+    public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
 
         final List<Long> stationsNaturalIds =
-                roadStationRepository.findNonObsoleteAndPublicRoadStationsNaturalIds(roadStationType);
+                roadStationRepository.findPublishableRoadStationsNaturalIds(roadStationType);
         final Set<Long> allowedRoadStationsNaturalIds =
                 stationsNaturalIds.stream().collect(Collectors.toSet());
 
@@ -149,10 +149,10 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValues(final long roadStationNaturalId,
-                                                                                final RoadStationType roadStationType) {
+    public List<SensorValueDto> findAllPublishableRoadStationSensorValues(final long roadStationNaturalId,
+                                                                          final RoadStationType roadStationType) {
 
-        boolean publicAndNotObsolete = roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, roadStationType);
+        boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
 
         if ( !publicAndNotObsolete ) {
             return Collections.emptyList();
