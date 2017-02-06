@@ -69,7 +69,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
             }
         });
 
-        final int obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByNaturalId.values());
+        final long obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByNaturalId.values());
 
         log.info("Obsoleted {} RoadStationSensor", obsoleted);
         log.info("Fixed {} RoadStationSensor without lotjuId", updated);
@@ -103,7 +103,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         }
 
         // tms-stations in database, but not in server -> obsolete
-        final int obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByLotjuId.values());
+        final long obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByLotjuId.values());
         final int updated = updateRoadStationSensors(update);
         final int inserted = insertRoadStationSensors(insert);
 

@@ -71,7 +71,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         });
 
         // Obsolete not found sensors
-        final int obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByNaturalId.values());
+        final long obsoleted = obsoleteRoadStationSensors(currentSensorsMappedByNaturalId.values());
 
         log.info("Obsoleted {} RoadStationSensor", obsoleted);
         log.info("Fixed {} RoadStationSensor without lotjuId", updated);
@@ -103,7 +103,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             log.warn("Found {} invalid LamLaskennallinenAnturi from LOTJU", invalid);
         }
 
-        final int obsoleted = obsoleteRoadStationSensors(sensorsMappedByLotjuId.values());
+        final long obsoleted = obsoleteRoadStationSensors(sensorsMappedByLotjuId.values());
         final int updated = updateRoadStationSensors(update);
         final int inserted = insertRoadStationSensors(insert);
 
