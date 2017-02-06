@@ -67,6 +67,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             final RoadStationSensor currentSaved = currentSensorsMappedByNaturalId.remove(Long.valueOf(anturi.getVanhaId()));
             if ( currentSaved != null ) {
                 currentSaved.setLotjuId(anturi.getId());
+                updated.addAndGet(1);
             }
         });
 
