@@ -91,26 +91,19 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         Map<Long, TmsStation> noLotjuIds = tmsStationService.findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
 
         final AtomicInteger updated = new AtomicInteger();
-        asemas.stream().forEach(la -> {
-            if (validate(la)) {
-                final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
-                final TmsStation currentSaved = noLotjuIds.remove(tmsNaturalId);
-
-                if (currentSaved != null) {
-                    currentSaved.setLotjuId(la.getId());
-                    currentSaved.getRoadStation().setLotjuId(la.getId());
-                    updated.addAndGet(1);
-                }
+        asemas.stream().filter(la -> validate(la)).forEach(la -> {
+            final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
+            final TmsStation currentSaved = noLotjuIds.remove(tmsNaturalId);
+            if (currentSaved != null) {
+                currentSaved.setLotjuId(la.getId());
+                currentSaved.getRoadStation().setLotjuId(la.getId());
+                updated.addAndGet(1);
             }
         });
 
         // Obsolete not found stations
         final AtomicInteger obsoleted = new AtomicInteger();
-        noLotjuIds.values().stream().forEach(tms -> {
-            if (tms.obsolete()) {
-                obsoleted.addAndGet(1);
-            }
-        });
+        noLotjuIds.values().stream().filter(tms -> tms.obsolete()).forEach(tms -> obsoleted.addAndGet(1));
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Fixed {} TmsStations without lotjuId", updated);

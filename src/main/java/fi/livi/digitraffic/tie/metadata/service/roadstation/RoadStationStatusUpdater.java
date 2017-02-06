@@ -53,14 +53,12 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        if (allLams != null) {
-            allLams.parallelStream().forEach(from -> {
-                RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-                if (to != null) {
-                    AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to);
-                }
-            });
-        }
+        allLams.parallelStream().forEach(from -> {
+            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
+            if (to != null) {
+                AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to);
+            }
+        });
         return updated.get();
     }
 
@@ -75,14 +73,12 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        if (allTiesaaAsemas != null) {
-            allTiesaaAsemas.parallelStream().forEach(from -> {
-                RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-                if (to != null) {
-                    AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to);
-                }
-            });
-        }
+        allTiesaaAsemas.parallelStream().forEach(from -> {
+            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
+            if (to != null) {
+                AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to);
+            }
+        });
         return updated.get();
     }
 
@@ -97,14 +93,12 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        if (allKameras != null) {
-            allKameras.parallelStream().forEach(from -> {
-                RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-                if (to != null) {
-                    AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to);
-                }
-            });
-        }
+        allKameras.parallelStream().forEach(from -> {
+            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
+            if (to != null) {
+                AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to);
+            }
+        });
         return updated.get();
     }
 
