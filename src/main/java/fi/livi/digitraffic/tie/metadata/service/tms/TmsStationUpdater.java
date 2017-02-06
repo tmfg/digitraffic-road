@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -102,13 +101,12 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         });
 
         // Obsolete not found stations
-        final AtomicInteger obsoleted = new AtomicInteger();
-        noLotjuIds.values().stream().filter(tms -> tms.obsolete()).forEach(tms -> obsoleted.addAndGet(1));
+        final long obsoleted = noLotjuIds.values().stream().filter(tms -> tms.obsolete()).count();
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Fixed {} TmsStations without lotjuId", updated);
 
-        return obsoleted.get() > 0 || updated.get() > 0;
+        return obsoleted > 0 || updated.get() > 0;
     }
 
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> asemas, final Map<Long, TmsStation> currentStationsByLotjuId) {
@@ -135,15 +133,10 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         }
 
         // tms-stations in database, but not in server -> obsolete
-        AtomicInteger obsoleted = new AtomicInteger();
-        currentStationsByLotjuId.values().stream().forEach(tms -> {
-            if (tms.obsolete()) {
-                obsoleted.addAndGet(1);
-            }
-        });
+        long obsoleted = currentStationsByLotjuId.values().stream().filter(tms -> tms.obsolete()).count();
 
         final int updated = updateTmsStations(update);
-        final int inserted = insertTmsStations(insert);
+        final long inserted = insertTmsStations(insert);
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Updated {} TmsStations", updated);
@@ -152,7 +145,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " TmsStations");
         }
 
-        return obsoleted.get() > 0 || inserted > 0;
+        return obsoleted > 0 || inserted > 0;
     }
 
     /**
@@ -163,15 +156,8 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
     }
 
-    private int insertTmsStations(final List<LamAsemaVO> insert) {
-
-        int counter = 0;
-        for (final LamAsemaVO la : insert) {
-            if (insertTmsStation(la)) {
-                counter++;
-            }
-        }
-        return counter;
+    private long insertTmsStations(final List<LamAsemaVO> insert) {
+        return insert.stream().filter(la -> insertTmsStation(la)).count();
     }
 
     private boolean insertTmsStation(final LamAsemaVO la) {
@@ -321,19 +307,5 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         return  updated ||
                 hash != HashCodeBuilder.reflectionHashCode(to);
-    }
-
-    private int obsoleteTmsStations(final List<Pair<LamAsemaVO, TmsStation>> obsolete) {
-        int counter = 0;
-        for (final Pair<LamAsemaVO, TmsStation> tmsPair : obsolete) {
-            if (tmsPair.getValue().obsolete()) {
-                log.debug("Obsolete TmsStation " + tmsPair.getValue());
-                counter++;
-            }
-        }
-        // Update also obsolete stations attributes
-        updateTmsStations(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()));
-
-        return counter;
     }
 }

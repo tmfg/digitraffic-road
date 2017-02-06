@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -141,12 +140,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         }
 
         // rws in database, but not in server
-        final AtomicInteger obsoleted = new AtomicInteger();
-        currentLotjuIdToWeatherStationMap.values().stream().forEach(ws -> {
-            if (ws.obsolete()) {
-                obsoleted.addAndGet(1);
-            }
-        });
+        final long obsoleted = currentLotjuIdToWeatherStationMap.values().stream().filter(ws -> ws.obsolete()).count();
 
         final int updated = updateWeatherStationsAttributes(update);
         final int inserted = insertWeatherStations(insert);
@@ -157,7 +151,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         if (insert.size() > inserted) {
             log.warn("Insert failed for {} {} ", (insert.size()-inserted), WEATHER_STATIONS);
         }
-        return obsoleted.get() > 0 || inserted > 0 || updated > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private int updateWeatherStationsAttributes(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {
@@ -214,8 +208,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             orphanNaturalIdToRoadStationMap.put(orphanRoadStation.getNaturalId(), orphanRoadStation);
         }
 
-        for (final TiesaaAsemaVO tsa : insert) {
-
+        insert.forEach(tsa -> {
             WeatherStation rws = new WeatherStation();
 
             boolean orphan = false;
@@ -243,7 +236,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             } else {
                 log.info("Created new " + rws + " and " + rws.getRoadStation());
             }
-        }
+        });
         return insert.size();
     }
 
@@ -266,19 +259,5 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         // Update RoadStation
         return updateRoadStationAttributes(from, to.getRoadStation()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;
-    }
-
-    private int obsoleteWeatherStations(final List<Pair<TiesaaAsemaVO, WeatherStation>> obsolete) {
-        int counter = 0;
-        for (final Pair<TiesaaAsemaVO, WeatherStation> rwsPair : obsolete) {
-            if (rwsPair.getValue().obsolete()) {
-                log.debug("Obsolete " + rwsPair.getValue());
-                counter++;
-            }
-        }
-        // Update also obsolete stations attributes
-        updateWeatherStationsAttributes(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()));
-
-        return counter;
     }
 }

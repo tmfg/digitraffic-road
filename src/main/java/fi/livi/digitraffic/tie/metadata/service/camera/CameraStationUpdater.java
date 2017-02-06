@@ -164,11 +164,9 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
                         cameraPreset.setLotjuId(found.get().getId());
                         updated.addAndGet(1);
                         log.info("Updated CameraPreset lotju id:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(cameraPreset));
-                    } else {
-                        // if esiasento is not found -> obsolete preset
-                        if (cameraPreset.obsolete()) {
-                            obsoleted.addAndGet(1);
-                        }
+                    // if esiasento is not found -> obsolete preset
+                    } else if (cameraPreset.obsolete()) {
+                        obsoleted.addAndGet(1);
                     }
                 });
             }
@@ -214,12 +212,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         }
 
         // camera presets in database, but not in server
-        AtomicInteger countObsoletePresets = new AtomicInteger();
-        presetsMappedByLotjuId.values().stream().forEach(cp -> {
-            if (cp.obsolete()) {
-                countObsoletePresets.addAndGet(1);
-            }
-        });
+        long countObsoletePresets = presetsMappedByLotjuId.values().stream().filter(cp -> cp.obsolete()).count();
 
         final Map<Long, WeatherStation> lotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
@@ -239,10 +232,8 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
                     Optional<CameraPreset> nonObsolete = cpList.stream().filter(cameraPreset -> !cameraPreset.isObsolete()).findFirst();
                     if (nonObsolete.isPresent()) {
                         nonObsolete.get().getRoadStation().setObsolete(false);
-                    } else {
-                        if (cpList.get(0).getRoadStation().obsolete()) {
-                            countObsoleteRs.addAndGet(1);
-                        }
+                    } else if (cpList.get(0).getRoadStation().obsolete()) {
+                        countObsoleteRs.addAndGet(1);
                     }
                 });
 
@@ -255,7 +246,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
             log.warn("Insert failed for {} CameraPresets", insert.size()-inserted);
         }
 
-        return countObsoletePresets.get() > 0 || countObsoleteRs.get() > 0 || updated > 0 || inserted > 0;
+        return countObsoletePresets > 0 || countObsoleteRs.get() > 0 || updated > 0 || inserted > 0;
     }
 
     private static boolean validate(final KameraVO kamera) {
