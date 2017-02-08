@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.cxf.helpers.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,9 +77,9 @@ public class LocationMetadataUpdater {
     }
 
     private void removeTempFiles(final MetadataPathCollection paths) {
-        FileUtils.delete(paths.locationsPath.toFile());
-        FileUtils.delete(paths.typesPath.toFile());
-        FileUtils.delete(paths.subtypesPath.toFile());
+        FileUtils.deleteQuietly(paths.locationsPath.toFile());
+        FileUtils.deleteQuietly(paths.typesPath.toFile());
+        FileUtils.deleteQuietly(paths.subtypesPath.toFile());
     }
 
     private boolean isUpdateNeeded(final MetadataVersions latestVersions, final LocationVersion currentVersion) {

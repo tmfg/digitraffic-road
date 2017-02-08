@@ -41,7 +41,7 @@ public class LotjuCameraClient extends WebServiceGatewaySupport {
 
         final Map<String, Pair<KameraVO, EsiasentoVO>> presetIdToKameraMap = new HashMap<>();
 
-        log.info("Fetch Kameras");
+        log.info("Fetch Kameras from {}", getDefaultUri());
 
         final List<KameraVO> kamerat = getKameras();
 
