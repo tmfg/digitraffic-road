@@ -8,6 +8,8 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +33,16 @@ public class CameraDataUpdateService {
     private String weathercamImportDir;
     private CameraPresetService cameraPresetService;
 
+    private final EntityManager entityManager;
+
     @Autowired
     CameraDataUpdateService(@Value("${weathercam.importDir}")
                             final String weathercamImportDir,
-                            final CameraPresetService cameraPresetService) {
+                            final CameraPresetService cameraPresetService,
+                            final EntityManager entityManager) {
         setWeathercamImportDir(weathercamImportDir);
         this.cameraPresetService = cameraPresetService;
+        this.entityManager = entityManager;
     }
 
     public void setWeathercamImportDir(String weathercamImportDir) {
@@ -83,7 +89,7 @@ public class CameraDataUpdateService {
 
     private void handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
 
-        String presetId = kuva.getNimi().substring(0, 8);
+        String presetId = resolvePresetId(kuva);
         String filename = presetId + ".jpg";
         ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
         log.info("Handling kuva: " +ToStringHelpper.toString(kuva));
@@ -92,6 +98,8 @@ public class CameraDataUpdateService {
         if (cameraPreset != null) {
             cameraPreset.setPublicExternal(kuva.isJulkinen());
             cameraPreset.setPictureLastModified(pictureTaken);
+            entityManager.flush();
+            entityManager.clear();
         }
         // Load and save image or delete non public image
         if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
