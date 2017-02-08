@@ -40,6 +40,7 @@ public class LocationMetadataUpdater {
         this.metadataFileFetcher = metadataFileFetcher;
     }
 
+    @Transactional
     public void findAndUpdate() throws IOException {
         try {
             final MetadataVersions latestVersions = metadataFileFetcher.getLatestVersions();
@@ -97,8 +98,7 @@ public class LocationMetadataUpdater {
         return false;
     }
 
-    @Transactional
-    public void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
+    private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
                           final MetadataVersions latestVersions) {
         final String version = latestVersions.getLocationsVersion().version;
 
