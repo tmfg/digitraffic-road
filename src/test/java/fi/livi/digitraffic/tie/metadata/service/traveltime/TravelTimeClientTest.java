@@ -7,13 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -32,16 +30,19 @@ public class TravelTimeClientTest extends MetadataTestBase {
 
     private MockRestServiceServer server;
 
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
+
+    private final static ZonedDateTime requestStartTime = ZonedDateTime.now().minusHours(1);
+    private final static String expectedUri = "travelTimeUri?starttime=" + TravelTimeClient.getDateString(requestStartTime);
 
     @Before
     public void before() {
         ReflectionTestUtils.setField(travelTimeClient, "mediansUrl", "travelTimeUri");
+        ReflectionTestUtils.setField(travelTimeClient, "individualMeasurementUrl", "travelTimeUri");
         ReflectionTestUtils.setField(travelTimeClient, "username", "username");
         ReflectionTestUtils.setField(travelTimeClient, "password", "password");
-        restTemplate = travelTimeClient.getRestTemplate();
+        ReflectionTestUtils.setField(travelTimeClient, "restTemplate", restTemplate);
         server = MockRestServiceServer.createServer(restTemplate);
-        Mockito.when(travelTimeClient.getRestTemplate()).thenReturn(restTemplate);
     }
 
     @Test
@@ -50,11 +51,11 @@ public class TravelTimeClientTest extends MetadataTestBase {
         final File file = new File(getClass().getClassLoader().getResource("traveltime/pks_medians_response.xml").getFile());
         final String response = FileUtils.readFileToString(file, "UTF-8");
 
-        server.expect(MockRestRequestMatchers.requestTo("travelTimeUri"))
-                .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+        server.expect(MockRestRequestMatchers.requestTo(expectedUri))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
                 .andRespond(MockRestResponseCreators.withSuccess(response, MediaType.APPLICATION_XML));
 
-        TravelTimeMediansDto data = travelTimeClient.getMedians(ZonedDateTime.now().minus(1, ChronoUnit.HOURS));
+        TravelTimeMediansDto data = travelTimeClient.getMedians(requestStartTime);
 
         assertEquals(300, data.duration);
         assertEquals(Instant.ofEpochMilli(1486379640000L), data.periodStart.toInstant());
@@ -67,5 +68,20 @@ public class TravelTimeClientTest extends MetadataTestBase {
         assertEquals(1, data.medians.get(5).numberOfObservations);
 
         server.verify();
+    }
+
+    @Test
+    public void getMeasurementsSucceeds() throws IOException {
+
+        final File file = new File(getClass().getClassLoader().getResource("traveltime/pks_measurements_response.xml").getFile());
+        final String response = FileUtils.readFileToString(file, "UTF-8");
+
+        server.expect(MockRestRequestMatchers.requestTo(expectedUri))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+                .andRespond(MockRestResponseCreators.withSuccess(response, MediaType.APPLICATION_XML));
+
+        TravelTimeMeasurementsDto data = travelTimeClient.getMeasurements(requestStartTime);
+
+        assertNotNull(data);
     }
 }

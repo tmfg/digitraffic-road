@@ -27,6 +27,11 @@ forecastSectionCoordinatesUpdateJob.frequency=86400000
 weathercam.baseUrl=http://weathercam.url/
 weathercam.importDir=/tmp/weathercam
 
+traveltime.PKS.medians.url=http://birch.nctr.co.uk/xml/pks_mtp_ss.xml
+traveltime.PKS.individual.url=http://birch.nctr.co.uk/xml/pks_mtp_obs.xml
+traveltime.PKS.username=
+traveltime.PKS.password=
+
 # JMS settings
 
 # Sonic JMS 8.6.0
