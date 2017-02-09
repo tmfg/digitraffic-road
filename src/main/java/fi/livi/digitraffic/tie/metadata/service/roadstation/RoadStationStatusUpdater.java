@@ -56,7 +56,8 @@ public class RoadStationStatusUpdater {
         allLams.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
-                AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to);
+                updated.compareAndSet(false,
+                                      AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to));
             }
         });
         return updated.get();
@@ -76,7 +77,8 @@ public class RoadStationStatusUpdater {
         allTiesaaAsemas.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
-                AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to);
+                updated.compareAndSet(false,
+                                      AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to));
             }
         });
         return updated.get();
@@ -96,7 +98,8 @@ public class RoadStationStatusUpdater {
         allKameras.parallelStream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
-                AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to);
+                updated.compareAndSet(false,
+                                      AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to));
             }
         });
         return updated.get();

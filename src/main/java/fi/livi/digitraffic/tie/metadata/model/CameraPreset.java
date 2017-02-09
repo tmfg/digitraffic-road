@@ -313,10 +313,10 @@ public class CameraPreset {
     }
 
     public void setObsolete(final boolean obsolete) {
-        if (obsolete && obsoleteDate == null) {
-            setObsoleteDate(LocalDate.now());
-        } else if (!obsolete) {
+        if (!obsolete) {
             setObsoleteDate(null);
+        } else if (obsoleteDate == null) {
+            setObsoleteDate(LocalDate.now());
         }
     }
 
