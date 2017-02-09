@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
@@ -34,17 +34,17 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
 
     private final WeatherStationService weatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final LotjuWeatherStationService lotjuWeatherStationService;
+    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
     public WeatherStationUpdater(final RoadStationService roadStationService,
                                  final WeatherStationService weatherStationService,
                                  final StaticDataStatusService staticDataStatusService,
-                                 final LotjuWeatherStationService lotjuWeatherStationService) {
+                                 final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
         super(roadStationService);
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuWeatherStationService = lotjuWeatherStationService;
+        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
     /**
@@ -54,12 +54,12 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
     public boolean updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-        if (!lotjuWeatherStationService.isEnabled()) {
+        if (!lotjuWeatherStationMetadataService.isEnabled()) {
             log.warn("Not updating WeatherStations metadata because LotjuWeatherStationService not enabled");
             return false;
         }
 
-        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationService.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
         if (log.isDebugEnabled()) {
             for (final TiesaaAsemaVO tsa : tiesaaAsemas) {

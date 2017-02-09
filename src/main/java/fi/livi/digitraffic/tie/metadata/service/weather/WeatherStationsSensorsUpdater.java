@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
@@ -31,19 +31,19 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final LotjuWeatherStationService lotjuWeatherStationService;
+    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
     public WeatherStationsSensorsUpdater(final RoadStationService roadStationService,
                                          final RoadStationSensorService roadStationSensorService,
                                          final WeatherStationService weatherStationService,
                                          final StaticDataStatusService staticDataStatusService,
-                                         final LotjuWeatherStationService lotjuWeatherStationService) {
+                                         final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
         super(roadStationService);
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuWeatherStationService = lotjuWeatherStationService;
+        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
     /**
@@ -53,7 +53,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     public boolean updateWeatherStationsSensors() {
         log.info("Update WeatherStations RoadStationSensors start");
 
-        if (!lotjuWeatherStationService.isEnabled()) {
+        if (!lotjuWeatherStationMetadataService.isEnabled()) {
             log.warn("Not updating WeatherStations Sensors metadata because LotjuWeatherStationService not enabled");
             return false;
         }
@@ -66,7 +66,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
 
         // Get sensors for current WeatherStations
         final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap =
-                lotjuWeatherStationService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(rwsLotjuIds);
+                lotjuWeatherStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(rwsLotjuIds);
 
         final List<Pair<WeatherStation,  List<TiesaaLaskennallinenAnturiVO>>> stationAnturisPair = new ArrayList<>();
         currentLotjuIdToWeatherStationsMap.values().stream().forEach(weatherStation -> {

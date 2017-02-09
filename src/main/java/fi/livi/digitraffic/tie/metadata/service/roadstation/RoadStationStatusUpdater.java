@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationService;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
@@ -29,16 +29,16 @@ public class RoadStationStatusUpdater {
 
     private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
-    private final LotjuWeatherStationService lotjuWeatherStationService;
+    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
     private RoadStationService roadStationService;
 
     public RoadStationStatusUpdater(final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
                                     final LotjuTmsStationMetadataService lotjuTmsStationMetadataService,
-                                    final LotjuWeatherStationService lotjuWeatherStationService,
+                                    final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService,
                                     final RoadStationService roadStationService) {
         this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
-        this.lotjuWeatherStationService = lotjuWeatherStationService;
+        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
         this.roadStationService = roadStationService;
     }
 
@@ -65,12 +65,12 @@ public class RoadStationStatusUpdater {
 
     @Transactional
     public boolean updateWeatherStationsStatuses() {
-        if (!lotjuWeatherStationService.isEnabled()) {
+        if (!lotjuWeatherStationMetadataService.isEnabled()) {
             log.info("Not updating weather stations statuses because LotjuWeatherStationMetadataClient not enabled");
             return false;
         }
         log.info("Update weather stations statuses");
-        final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationService.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
