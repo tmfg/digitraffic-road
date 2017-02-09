@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,6 +17,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractTestBase;
+import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
 
 public class LocationMetadataUpdaterTest extends AbstractTestBase {
     @Autowired
@@ -24,7 +27,7 @@ public class LocationMetadataUpdaterTest extends AbstractTestBase {
     private MetadataFileFetcher metadataFileFetcher;
 
     @Test
-    @Rollback(true)
+    @Rollback
     @Transactional
     public void findAndUpdate() throws IOException {
         locationMetadataUpdater.findAndUpdate();
@@ -32,7 +35,7 @@ public class LocationMetadataUpdaterTest extends AbstractTestBase {
     }
 
     @Test
-    @Rollback(true)
+    @Rollback
     @Transactional
     public void findAndUpdateVersionsDiffer() throws IOException {
         final MetadataVersions mv = mock(MetadataVersions.class);
@@ -40,6 +43,49 @@ public class LocationMetadataUpdaterTest extends AbstractTestBase {
         when(mv.getLocationTypeVersion()).thenReturn(new MetadataVersions.MetadataVersion("b", "2"));
 
         when(metadataFileFetcher.getLatestVersions()).thenReturn(mv);
+
+        locationMetadataUpdater.findAndUpdate();
+
+        verify(metadataFileFetcher, never()).getFilePaths(any(MetadataVersions.class));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void findAndUpdateNoUpdateNeeded() throws IOException {
+        final MetadataVersions mv = mock(MetadataVersions.class);
+        when(mv.getLocationsVersion()).thenReturn(new MetadataVersions.MetadataVersion("a", "1.1"));
+        when(mv.getLocationTypeVersion()).thenReturn(new MetadataVersions.MetadataVersion("a", "1.1"));
+
+        when(metadataFileFetcher.getLatestVersions()).thenReturn(mv);
+
+        locationMetadataUpdater.findAndUpdate();
+
+        verify(metadataFileFetcher, never()).getFilePaths(any(MetadataVersions.class));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void findAndUpdateException() throws IOException {
+        try {
+            when(metadataFileFetcher.getLatestVersions()).thenThrow(new IllegalArgumentException("TEST"));
+
+            locationMetadataUpdater.findAndUpdate();
+
+            fail();
+        } catch(final IllegalArgumentException iae) {
+            assertEquals(iae.getMessage(), "TEST");
+        }
+
+        verify(metadataFileFetcher, never()).getFilePaths(any(MetadataVersions.class));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void findAndUpdateVersionsEmpty() throws IOException {
+        when(metadataFileFetcher.getLatestVersions()).thenReturn(null);
 
         locationMetadataUpdater.findAndUpdate();
 

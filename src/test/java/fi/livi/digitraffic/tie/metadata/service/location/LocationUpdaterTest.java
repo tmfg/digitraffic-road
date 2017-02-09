@@ -23,11 +23,11 @@ public class LocationUpdaterTest extends AbstractTestBase {
     @Autowired
     private LocationSubtypeRepository locationSubtypeRepository;
 
-    private final static String VERSION = "VERSION";
+    private final static String VERSION = "1.1";
 
     private List<LocationSubtype> getSubtypes() {
         return locationSubtypeRepository.findAll().stream()
-                .filter(s -> s.getId().getVersion().equals("1.1"))
+                .filter(s -> s.getId().getVersion().equals(VERSION))
                 .collect(Collectors.toList());
     }
 
@@ -56,13 +56,13 @@ public class LocationUpdaterTest extends AbstractTestBase {
     public void correctAreaReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_area_reference.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.hasSize(3));
-        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(1));
-        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(3));
-        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(2));
+        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(21));
+        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(23));
+        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(22));
         Assert.assertThat(locations.get(0).getAreaRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(1).getAreaRef(), Matchers.comparesEqualTo(2));
+        Assert.assertThat(locations.get(1).getAreaRef(), Matchers.comparesEqualTo(22));
         Assert.assertThat(locations.get(1).getLinearRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(2).getAreaRef(), Matchers.comparesEqualTo(1));
+        Assert.assertThat(locations.get(2).getAreaRef(), Matchers.comparesEqualTo(21));
         Assert.assertThat(locations.get(2).getLinearRef(), Matchers.nullValue());
     }
 
@@ -71,13 +71,13 @@ public class LocationUpdaterTest extends AbstractTestBase {
     public void correctLinearReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_linear_reference.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.hasSize(3));
-        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(1));
-        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(3));
-        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(2));
+        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(31));
+        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(33));
+        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(32));
         Assert.assertThat(locations.get(0).getLinearRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(1).getLinearRef(), Matchers.comparesEqualTo(2));
+        Assert.assertThat(locations.get(1).getLinearRef(), Matchers.comparesEqualTo(32));
         Assert.assertThat(locations.get(1).getAreaRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(2).getLinearRef(), Matchers.comparesEqualTo(1));
+        Assert.assertThat(locations.get(2).getLinearRef(), Matchers.comparesEqualTo(31));
         Assert.assertThat(locations.get(2).getAreaRef(), Matchers.nullValue());
     }
 

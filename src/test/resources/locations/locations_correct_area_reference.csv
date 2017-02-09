@@ -1,4 +1,4 @@
 "CountryId";"TableCode";"LocationCode";"Class";"Type";"Subtype";"Road/JunctionNo";"RoadName";"FirstName";"SecondName";"AreaRef";"LinearRef";"NegOffset";"PosOffset";"Urban";"IntersectionRef";"WGS84Lat";"WGS84Long";"Etrs_TM35FinXCoord";"Etrs_TM35FinYCoord";"AlternativeName";"NegativeDirection";"PositiveDirection";"Geocode";"PointOrder"
-15;17;1;"A";1;0;;;"Eurooppa";;0;;;;;;;;;;;;;;
-15;17;3;"A";3;0;;;"Suomi";;2;;;;;;;;;;;;;;
-15;17;2;"A";2;0;;;"Pohjoismaat";;1;;;;;;;;;;;;;;
+15;17;21;"A";1;0;;;"Eurooppa";;0;;;;;;;;;;;;;;
+15;17;23;"A";3;0;;;"Suomi";;22;;;;;;;;;;;;;;
+15;17;22;"A";2;0;;;"Pohjoismaat";;21;;;;;;;;;;;;;;

@@ -18,10 +18,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RequestMapping("/error")
 @ConditionalOnProperty(value = "spring.main.web_environment", matchIfMissing = true)
 public class SimpleErrorController implements ErrorController {
-
     private final ErrorAttributes errorAttributes;
 
-    private final static boolean includeStackTrace = false;
+    private static final boolean INCLUDE_STACK_TRACE = false;
 
     @Autowired
     public SimpleErrorController(final ErrorAttributes errorAttributes) {
@@ -41,6 +40,6 @@ public class SimpleErrorController implements ErrorController {
 
     private Map<String, Object> getErrorAttributes(final HttpServletRequest aRequest) {
         final RequestAttributes requestAttributes = new ServletRequestAttributes(aRequest);
-        return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
+        return errorAttributes.getErrorAttributes(requestAttributes, INCLUDE_STACK_TRACE);
     }
 }

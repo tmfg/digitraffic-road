@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Charsets;
 
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationKey;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 public class LocationReader extends AbstractReader<Location> {
@@ -28,7 +27,8 @@ public class LocationReader extends AbstractReader<Location> {
     protected Location convert(final String[] components) {
         final Location location = new Location();
 
-        location.setId(new LocationKey(version, parseInteger(components[2])));
+        location.setVersion(version);
+        location.setLocationCode(parseInteger(components[2]));
         location.setRoadJunction(parseString(components[6]));
         location.setRoadName(parseString(components[7]));
         location.setFirstName(parseString(components[8]));
@@ -104,7 +104,7 @@ public class LocationReader extends AbstractReader<Location> {
 
         // for some reason, there is no 0 present
         if(refValue != null && !refValue.equals(0)) {
-            linearRefMap.put(location.getId().getLocationCode(), refValue);
+            linearRefMap.put(location.getLocationCode(), refValue);
         }
     }
 
@@ -113,7 +113,7 @@ public class LocationReader extends AbstractReader<Location> {
 
         // for some reason, there is no 0 present
         if(refValue != null && !refValue.equals(0)) {
-            areaRefMap.put(location.getId().getLocationCode(), refValue);
+            areaRefMap.put(location.getLocationCode(), refValue);
         }
     }
 
