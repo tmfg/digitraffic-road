@@ -256,8 +256,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Test
     public void test2LastUpdated() {
         ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
-        assertTrue(lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
-
+        assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
         assertFalse(updated.isEmpty());
     }
