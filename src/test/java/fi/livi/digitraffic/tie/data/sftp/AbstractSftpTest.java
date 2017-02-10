@@ -2,21 +2,21 @@ package fi.livi.digitraffic.tie.data.sftp;
 
 import java.io.IOException;
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
-import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
-import org.apache.sshd.server.Command;
-import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.apache.sshd.server.scp.ScpCommandFactory;
 import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,9 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
     @Value("${camera-image-uploader.sftp.port}")
     protected Integer port;
 
+    @Value("${camera-image-uploader.sftp.uploadFolder}")
+    String sftpUploadFolder;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -42,31 +45,27 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
     private SshServer testSftpServer;
 
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
+
     @Before
     public void initSftpServer() throws IOException {
+
+        log.info("Init Sftp Server with temporary root folder {}", testFolder.getRoot());
 
         testSftpServer = SshServer.setUpDefaultServer();
         testSftpServer.setKeyPairProvider(getKeyPairProvider());
         testSftpServer.setPort(port);
         testSftpServer.setHost(host);
         testSftpServer.setPublickeyAuthenticator(getAuthorizedKeysAuthenticator());
+        VirtualFileSystemFactory fsFactory = new VirtualFileSystemFactory(testFolder.getRoot().toPath());
+        testSftpServer.setFileSystemFactory(fsFactory);
 
-        //        testFolder = new TemporaryFolder();
-        //        testFolder.create();
-        //        String path = testFolder.getRoot().getPath();
-
-        //        new Path()
-        //        testSftpServer.setFileSystemFactory( new VirtualFileSystemFactory(new Path("digitraffic") ) );
-
-        CommandFactory myCommandFactory = command -> {
-            log.info("Command: " + command);
-            return null;
-        };
-        testSftpServer.setCommandFactory(myCommandFactory);
-        List<NamedFactory<Command>> namedFactoryList = new ArrayList<NamedFactory<Command>>();
-        namedFactoryList.add(new SftpSubsystemFactory());
-        testSftpServer.setSubsystemFactories(namedFactoryList);
+        testSftpServer.setCommandFactory(new ScpCommandFactory());
+        testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
         testSftpServer.start();
+
+
     }
 
     @After

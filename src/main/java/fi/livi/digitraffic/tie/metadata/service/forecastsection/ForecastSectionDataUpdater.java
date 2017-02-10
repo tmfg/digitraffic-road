@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class ForecastSectionDataUpdater {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
 
         Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
-                data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, wd -> wd));
+                data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
         log.info("Forecast section weather data contains weather forecasts for " + weatherDataByNaturalId.size() +
                  " forecast sections. Number of forecast sections in database is " + forecastSections.size());

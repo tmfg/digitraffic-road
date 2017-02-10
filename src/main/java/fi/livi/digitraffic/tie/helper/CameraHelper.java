@@ -14,7 +14,9 @@ public class CameraHelper {
     private CameraHelper() {}
 
     public static String resolvePresetId(final Kuva kuva) {
-        return kuva.getNimi().substring(0, 8);
+        String presetId = kuva.getNimi().substring(0, 8);
+        System.out.println(presetId);
+        return presetId;
     }
 
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {

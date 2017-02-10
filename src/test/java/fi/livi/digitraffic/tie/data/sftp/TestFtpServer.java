@@ -29,18 +29,14 @@ public class TestFtpServer extends AbstractSftpTest {
     @Test
     public void testPutAndGetFile() throws Exception {
 
-//        SftpSession session = defaultSftpSessionFactory.getSession();
         Session session = cachingSessionFactory.getSession();
-        final String testFileContents = "some file contents";
 
+        final String testFileContents = "some file contents";
         String uploadedFileName = "uploadFile";
         log.info("Upload file {} with content {}", uploadedFileName, testFileContents);
         session.write(new ByteArrayInputStream(testFileContents.getBytes()), uploadedFileName);
 
-        String downloadedFileName = "downLoadFile";
-
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         log.info("Read file back from server");
         session.read(uploadedFileName, out);
 
@@ -48,7 +44,7 @@ public class TestFtpServer extends AbstractSftpTest {
 
         log.info("Downloaded file {} with content {}", uploadedFileName, fileData);
 
-        assertEquals(testFileContents, fileData);
+        assertEquals("Read file contents not equal with written content", testFileContents, fileData);
 
         session.close();
     }

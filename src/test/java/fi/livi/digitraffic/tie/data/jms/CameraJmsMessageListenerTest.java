@@ -65,8 +65,8 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
     
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
-    private static final String REQUEST_PATH = "/Kamerakuva/";
     private static final String IMAGE_SUFFIX = "image.jpg";
+    private static final String REQUEST_PATH = "/Kamerakuva/";
     private static final String IMAGE_DIR = "lotju/kuva/";
 
     @Autowired
@@ -114,7 +114,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
         jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();
-        cameraDataUpdateService.setWeathercamImportDir(getImportDir());
+//        cameraDataUpdateService.setWeathercamImportDir(getImportDir());
 
         int i = 5;
         while (i > 0) {
