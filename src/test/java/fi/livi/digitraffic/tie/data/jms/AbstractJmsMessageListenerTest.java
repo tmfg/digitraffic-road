@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 
 public abstract class AbstractJmsMessageListenerTest extends MetadataIntegrationTest {
 
-    protected TextMessage createTextMessage(final String content, final String filename) {
+    public static TextMessage createTextMessage(final String content, final String filename) {
         return new TextMessage() {
             @Override
             public void setText(String s) throws JMSException {

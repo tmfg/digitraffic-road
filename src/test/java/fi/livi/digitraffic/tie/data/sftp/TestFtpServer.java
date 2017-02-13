@@ -10,9 +10,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
-import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
+import org.springframework.integration.file.remote.session.SessionFactory;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 
@@ -21,15 +20,12 @@ public class TestFtpServer extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
 
     @Autowired
-    private DefaultSftpSessionFactory defaultSftpSessionFactory;
-
-    @Autowired
-    private CachingSessionFactory cachingSessionFactory;
+    private SessionFactory sftpSessionFactory;
 
     @Test
     public void testPutAndGetFile() throws Exception {
 
-        Session session = cachingSessionFactory.getSession();
+        Session session = sftpSessionFactory.getSession();
 
         final String testFileContents = "some file contents";
         String uploadedFileName = "uploadFile";

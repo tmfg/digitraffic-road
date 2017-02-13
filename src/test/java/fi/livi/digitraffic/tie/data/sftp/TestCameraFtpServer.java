@@ -4,19 +4,22 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,10 +29,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +41,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
-import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.messaging.MessagingException;
+import org.springframework.util.ReflectionUtils;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
@@ -56,14 +58,11 @@ public class TestCameraFtpServer extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
-    private static final String REQUEST_PATH = "/Kamerakuva/";
     private static final String IMAGE_DIR = "lotju/kuva/";
     private static final int TEST_UPLOADS = 10;
-    @Autowired
-    private DefaultSftpSessionFactory defaultSftpSessionFactory;
 
     @Autowired
-    private CachingSessionFactory cachingSessionFactory;
+    private SessionFactory sftpSessionFactory;
 
     @Autowired
     private CameraDataUpdateService cameraDataUpdateService;
@@ -80,12 +79,14 @@ public class TestCameraFtpServer extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
+    @Value("${camera-image-uploader.sftp.poolSize}")
+    Integer poolSize;
+
+    @Value("${camera-image-uploader.sftp.sessionWaitTimeout}")
+    Long sessionWaitTimeout;
+
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
-
-    private Integer httpPort;
 
     private static final String CAMERA_ID = "C01502";
 
@@ -94,10 +95,10 @@ public class TestCameraFtpServer extends AbstractSftpTest {
     @Before
     public void setUpTestData() throws IOException {
 
-        httpPort = wireMockRule.port();
+        log.info("Init test data");
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
 
-        // Init
+        // Init minimum TEST_UPLOADS non obsolete presets
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
         Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
@@ -130,7 +131,7 @@ public class TestCameraFtpServer extends AbstractSftpTest {
             missingCameraPresets.add(generateMissingDummyPreset());
         }
 
-        Session session = cachingSessionFactory.getSession();
+        Session session = this.sftpSessionFactory.getSession();
         if (!session.exists(sftpUploadFolder)) {
             session.mkdir(sftpUploadFolder);
         }
@@ -152,19 +153,12 @@ public class TestCameraFtpServer extends AbstractSftpTest {
             if (cp.getPresetId().startsWith("X")) {
                 log.info("Write image to sftp that should be deleted by update {}", getSftpPath(kuva));
                 session.write(new ByteArrayInputStream(bytes), getSftpPath(kuva));
-                Assert.assertTrue("Image not found on sftp server", cachingSessionFactory.getSession().exists(getSftpPath(kuva)));
+                Session otherSession = this.sftpSessionFactory.getSession();
+                assertTrue("Image not found on sftp server", otherSession.exists(getSftpPath(kuva)));
+                otherSession.close();
             }
         }
-    }
-
-    private CameraPreset generateMissingDummyPreset() {
-        CameraPreset cp = new CameraPreset();
-        String cameraId = "X" + RandomUtils.nextLong(10000, 100000);
-        String direction = String.valueOf(RandomUtils.nextLong(10, 100));
-        cp.setPresetId(cameraId + direction);
-        cp.setCameraId(cameraId);
-        cp.setRoadStation(new RoadStation(RoadStationType.CAMERA_STATION));
-        return cp;
+        session.close();
     }
 
     @Test
@@ -172,13 +166,13 @@ public class TestCameraFtpServer extends AbstractSftpTest {
 
         cameraDataUpdateService.updateCameraData(kuvas);
 
-        Session session = cachingSessionFactory.getSession();
+        Session session = this.sftpSessionFactory.getSession();
 
         kuvas.stream().forEach(kuva -> {
             String filePath = getSftpPath(kuva);
             if (kuva.getNimi().startsWith("X")) {
                 try {
-                    Assert.assertFalse("Image should be deleted from sftp server", session.exists(getSftpPath(kuva)));
+                    Assert.assertFalse("Image should have been deleted from sftp server", session.exists(getSftpPath(kuva)));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -199,8 +193,77 @@ public class TestCameraFtpServer extends AbstractSftpTest {
         session.close();
     }
 
-    private String getSftpPath(final Kuva kuva) {
-        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + kuva.getNimi() + ".jpg";
+    @Test
+    public void testSessionCachingPoolLimit() {
+
+        HashSet<Session> sessions = new HashSet<>();
+        while(sessions.size() < poolSize+1) {
+            log.info("Get session {}", sessions.size()+1);
+            if (sessions.size() < poolSize) {
+                sessions.add(this.sftpSessionFactory.getSession());
+            } else {
+                // getting session out of pool fails
+                log.info("Getting session of full should fail after timeout");
+                StopWatch time = StopWatch.createStarted();
+                boolean fail = false;
+                try {
+                    Session session = this.sftpSessionFactory.getSession();
+                    session.close();
+                } catch (MessagingException e) {
+                    fail = true;
+                    time.stop();
+                    log.info("Timeout took {} ms", time.getTime());
+                    assertTrue(time.getTime() >= sessionWaitTimeout);
+                    assertTrue(time.getTime() <= sessionWaitTimeout+100);
+                }
+                assertTrue("Get session should have failed after timeout " + sessionWaitTimeout, fail);
+                break;
+            }
+        }
+        sessions.stream().forEach(Session::close);
+    }
+
+    @Test
+    public void testSessionCaching() {
+
+        HashSet<Session> newSessions = new HashSet<>();
+        while(newSessions.size() < poolSize) {
+            log.info("Get new session {}", newSessions.size()+1);
+            newSessions.add(this.sftpSessionFactory.getSession());
+        }
+        // relase sessions to pool
+        newSessions.stream().forEach(Session::close);
+
+        Field sessionField = ReflectionUtils.findField(CachingSessionFactory.CachedSession.class, "targetSession");
+        sessionField.setAccessible(true);
+        Set<Session> newRealSessions = new HashSet<>();
+        newSessions.stream().forEach(s -> {
+            newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
+        });
+
+        HashSet<Session> cachedSessions = new HashSet<>();
+        while(cachedSessions.size() < poolSize) {
+            log.info("Get cached session {}", cachedSessions.size()+1);
+            cachedSessions.add(this.sftpSessionFactory.getSession());
+        }
+        Set<Session> cachedRealSessions = new HashSet<>();
+        cachedSessions.stream().forEach(s -> {
+            cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
+        });
+
+        assertTrue("All sessions should be found from cachedSessions", cachedRealSessions.containsAll(newRealSessions));
+        cachedSessions.stream().forEach(Session::close);
+    }
+
+
+    private CameraPreset generateMissingDummyPreset() {
+        CameraPreset cp = new CameraPreset();
+        String cameraId = "X" + RandomUtils.nextLong(10000, 100000);
+        String direction = String.valueOf(RandomUtils.nextLong(10, 100));
+        cp.setPresetId(cameraId + direction);
+        cp.setCameraId(cameraId);
+        cp.setRoadStation(new RoadStation(RoadStationType.CAMERA_STATION));
+        return cp;
     }
 
     private Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data) {
@@ -235,14 +298,6 @@ public class TestCameraFtpServer extends AbstractSftpTest {
             throw new RuntimeException(e);
         }
 
-    }
-
-    private String getImageUrl(final String presetId) {
-        return "http://localhost:" + httpPort + getImagePath(presetId);
-    }
-
-    private String getImagePath(final String presetId) {
-        return REQUEST_PATH + presetId + ".jpg";
     }
 
     private void createHttpResponseStubFor(final String presetId, final byte[] data) {

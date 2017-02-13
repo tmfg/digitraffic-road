@@ -9,15 +9,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
+import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,21 +31,19 @@ public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
     private String sftpUploadFolder;
+
     private CameraPresetService cameraPresetService;
 
-    private final EntityManager entityManager;
-
-    @Autowired
-    private CachingSessionFactory cachingSessionFactory;
+    private final SessionFactory sftpSessionFactory;
 
     @Autowired
     CameraDataUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                             final String sftpUploadFolder,
                             final CameraPresetService cameraPresetService,
-                            final EntityManager entityManager) {
+                            SessionFactory sftpSessionFactory) {
         this.sftpUploadFolder = sftpUploadFolder;
         this.cameraPresetService = cameraPresetService;
-        this.entityManager = entityManager;
+        this.sftpSessionFactory = sftpSessionFactory;
     }
 
     @Transactional
@@ -82,17 +78,16 @@ public class CameraDataUpdateService {
 
         // Update CameraPreset
         if (cameraPreset != null) {
+            log.info("setPictureLastModified {} {} -> {}", cameraPreset.getPresetId(), cameraPreset.getPictureLastModified(), pictureTaken);
             cameraPreset.setPublicExternal(kuva.isJulkinen());
             cameraPreset.setPictureLastModified(pictureTaken);
-            entityManager.flush();
-            entityManager.clear();
         }
         // Load and save image or delete non public image
         if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
             try {
                 uploadImage(kuva.getUrl(), filename);
             } catch (IOException e) {
-                log.error("Error reading or writing picture for presetId {} from {} to {}",
+                log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
                           presetId, kuva.getUrl(), getImageFullPath(filename));
                 log.error("Error", e);
             }
@@ -111,19 +106,22 @@ public class CameraDataUpdateService {
 
     private void deleteImageQuietly(String deleteImageFileName) {
         try {
-            final Session session = cachingSessionFactory.getSession();
-            session.remove(getImageFullPath(deleteImageFileName));
+            final String imageRemotePath = getImageFullPath(deleteImageFileName);
+            final Session session = sftpSessionFactory.getSession();
+            session.remove(imageRemotePath);
+            session.close();
         } catch (IOException e) {
             log.debug("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
         }
     }
 
     private void uploadImage(String downloadImageUrl, String uploadImageFileName) throws IOException {
-        final Session session = cachingSessionFactory.getSession();
+        final Session session = sftpSessionFactory.getSession();
         final URL url = new URL(downloadImageUrl);
         final String uploadPath = StringUtils.appendIfMissing(sftpUploadFolder, "/") + uploadImageFileName;
-        log.info("Download image {} and upload with sftp to {}", downloadImageUrl, uploadPath);
+        log.info("Download image {} and upload to sftp server path {}", downloadImageUrl, uploadPath);
         session.write(url.openStream(), uploadPath);
+        session.close();
     }
 
 }

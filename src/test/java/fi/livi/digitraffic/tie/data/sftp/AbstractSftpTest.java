@@ -1,9 +1,12 @@
 package fi.livi.digitraffic.tie.data.sftp;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.server.SshServer;
@@ -22,13 +25,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.integration.file.remote.session.Session;
+import org.springframework.integration.file.remote.session.SessionFactory;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
-
+import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
 public class AbstractSftpTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSftpTest.class);
+
+    protected static final String REQUEST_PATH = "/kamerakuva/";
 
     @Value("${camera-image-uploader.sftp.port}")
     protected Integer port;
@@ -36,10 +45,19 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     String sftpUploadFolder;
 
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+
+    protected int httpPort;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    protected SessionFactory sftpSessionFactory;
+
     String host = "localhost";
+
 
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
@@ -52,6 +70,7 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
     public void initSftpServer() throws IOException {
 
         log.info("Init Sftp Server with temporary root folder {}", testFolder.getRoot());
+        httpPort = wireMockRule.port();
 
         testSftpServer = SshServer.setUpDefaultServer();
         testSftpServer.setKeyPairProvider(getKeyPairProvider());
@@ -65,7 +84,11 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
         testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
         testSftpServer.start();
 
-
+        Session session = sftpSessionFactory.getSession();
+        if (!session.exists(sftpUploadFolder)) {
+            session.mkdir(sftpUploadFolder);
+        }
+        session.close();
     }
 
     @After
@@ -90,4 +113,19 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
         return kp;
     }
 
+    protected String getSftpPath(final Kuva kuva) {
+        return getSftpPath(kuva.getNimi());
+    }
+
+    protected String getSftpPath(final String presetId) {
+        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + presetId + ".jpg";
+    }
+
+    protected String getImageUrl(final String presetId) {
+        return "http://localhost:" + httpPort + getImagePath(presetId);
+    }
+
+    protected String getImagePath(final String presetId) {
+        return REQUEST_PATH + presetId + ".jpg";
+    }
 }
