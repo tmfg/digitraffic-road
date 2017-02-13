@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
 
 public class TravelTimeIntegrationTest extends MetadataTestBase {
 

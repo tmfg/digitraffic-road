@@ -16,6 +16,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementsDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
+
 @Service
 public class TravelTimeClient {
 

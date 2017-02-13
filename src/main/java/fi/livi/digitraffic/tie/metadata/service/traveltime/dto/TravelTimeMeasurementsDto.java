@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.metadata.service.traveltime.dto;
 
 import java.util.Date;
 import java.util.List;

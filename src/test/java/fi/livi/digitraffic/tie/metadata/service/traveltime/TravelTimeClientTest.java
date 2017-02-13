@@ -22,6 +22,8 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.base.MetadataTestBase;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementsDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
 
 public class TravelTimeClientTest extends MetadataTestBase {
 
