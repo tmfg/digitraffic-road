@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime.dto;
+package fi.livi.digitraffic.tie.data.service.traveltime.dto;
 
 public class LinkFastLaneDto {
 

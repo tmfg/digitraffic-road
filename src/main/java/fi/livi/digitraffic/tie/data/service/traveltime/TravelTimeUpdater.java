@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkFastLaneDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMeasurementDataDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMedianDataDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementLinkDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementsDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMedianDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMeasurementDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMedianDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementLinkDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMedianDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
 
 @Service
 public class TravelTimeUpdater {

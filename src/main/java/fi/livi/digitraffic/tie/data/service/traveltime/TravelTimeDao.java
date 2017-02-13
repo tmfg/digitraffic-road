@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -14,8 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMeasurementDataDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMedianDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMeasurementDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMedianDataDto;
 
 @Repository
 public class TravelTimeDao {

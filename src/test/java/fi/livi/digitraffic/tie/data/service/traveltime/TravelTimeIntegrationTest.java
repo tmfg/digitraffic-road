@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.base.MetadataTestBase;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
 
 public class TravelTimeIntegrationTest extends MetadataTestBase {
 

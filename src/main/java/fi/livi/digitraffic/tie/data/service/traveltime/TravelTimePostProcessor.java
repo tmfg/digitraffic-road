@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkFastLaneDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMeasurementDataDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.ProcessedMedianDataDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementLinkDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementsDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMedianDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMeasurementDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMedianDataDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementLinkDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMedianDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
 
 @Component
 public class TravelTimePostProcessor {

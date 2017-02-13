@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.traveltime;
+package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,8 +16,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMeasurementsDto;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
+import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
 
 @Service
 public class TravelTimeClient {
