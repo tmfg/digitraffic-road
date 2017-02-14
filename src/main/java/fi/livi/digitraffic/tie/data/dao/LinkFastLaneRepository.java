@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service.traveltime;
+package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
 
 @Repository
-public class LinkFastLaneDao {
+public class LinkFastLaneRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

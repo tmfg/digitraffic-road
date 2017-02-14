@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.dao.LinkFastLaneRepository;
+import fi.livi.digitraffic.tie.data.dao.TravelTimeRepository;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMeasurementDataDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMedianDataDto;
@@ -26,19 +28,19 @@ public class TravelTimeUpdater {
     private final static Logger log = LoggerFactory.getLogger(TravelTimeUpdater.class);
 
     private final TravelTimeClient travelTimeClient;
-    private final LinkFastLaneDao linkFastLaneDao;
+    private final LinkFastLaneRepository linkFastLaneRepository;
     private final TravelTimePostProcessor travelTimePostProcessor;
-    private final TravelTimeDao travelTimeDao;
+    private final TravelTimeRepository travelTimeRepository;
 
     @Autowired
     public TravelTimeUpdater(final TravelTimeClient travelTimeClient,
-                             final LinkFastLaneDao linkFastLaneDao,
+                             final LinkFastLaneRepository linkFastLaneRepository,
                              final TravelTimePostProcessor travelTimePostProcessor,
-                             final TravelTimeDao travelTimeDao) {
+                             final TravelTimeRepository travelTimeRepository) {
         this.travelTimeClient = travelTimeClient;
-        this.linkFastLaneDao = linkFastLaneDao;
+        this.linkFastLaneRepository = linkFastLaneRepository;
         this.travelTimePostProcessor = travelTimePostProcessor;
-        this.travelTimeDao = travelTimeDao;
+        this.travelTimeRepository = travelTimeRepository;
     }
 
     @Transactional
@@ -54,7 +56,7 @@ public class TravelTimeUpdater {
         }
 
         // determine currently valid links
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneDao.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
         log.info("Valid PKS links in database {}", validLinks);
 
@@ -77,7 +79,7 @@ public class TravelTimeUpdater {
                                                                                           measurementsForValidLinks), validLinks);
         log.info("Processed PKS measurements: {}" + processed);
 
-        travelTimeDao.insertMeasurementData(processed);
+        travelTimeRepository.insertMeasurementData(processed);
     }
 
     @Transactional
@@ -91,7 +93,7 @@ public class TravelTimeUpdater {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
         }
 
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneDao.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
         final Set<Long> validLinkNaturalIds = validLinks.keySet();
 
@@ -114,7 +116,7 @@ public class TravelTimeUpdater {
                                                                                                                         mediansForValidLinks), validLinks);
         log.debug("Processed PKS medians: {}", processedMedians);
 
-        travelTimeDao.insertMedianData(processedMedians);
-        travelTimeDao.updateLatestMedianData(processedMedians);
+        travelTimeRepository.insertMedianData(processedMedians);
+        travelTimeRepository.updateLatestMedianData(processedMedians);
     }
 }

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service.traveltime;
+package fi.livi.digitraffic.tie.data.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMeasurementD
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.ProcessedMedianDataDto;
 
 @Repository
-public class TravelTimeDao {
+public class TravelTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -27,7 +27,7 @@ public class TravelTimeDao {
     private final static int nobsFilteringLimit = 5;
 
     @Autowired
-    public TravelTimeDao(final JdbcTemplate jdbcTemplate, final TrafficFluencyService trafficFluencyService) {
+    public TravelTimeRepository(final JdbcTemplate jdbcTemplate, final TrafficFluencyService trafficFluencyService) {
         this.jdbcTemplate = jdbcTemplate;
         this.trafficFluencyService = trafficFluencyService;
     }
