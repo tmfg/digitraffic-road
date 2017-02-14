@@ -2,10 +2,12 @@ package fi.livi.digitraffic.tie.conf;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,10 +79,10 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         defaultSftpSessionFactory.setPrivateKey(getPrivateKey());
         defaultSftpSessionFactory.setPrivateKeyPassphrase(privateKeyPassphrase);
         defaultSftpSessionFactory.setUser(user);
-        defaultSftpSessionFactory.setKnownHosts(resolveResourcePath(knownHostsPath));
+        defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(knownHostsPath));
         defaultSftpSessionFactory.setAllowUnknownKeys(allowUnknownKeys);
         log.info("Initialized DefaultSftpSessionFactory host:{}, port:{}, privateKey:{}, user:{}, knownHostsPath:{}, allowUnknownKeys;{}",
-                 host, port, resolveResourcePath(privateKeyPath), user, resolveResourcePath(knownHostsPath), allowUnknownKeys);
+                 host, port, resolveResourceAbsolutePath(privateKeyPath), user, resolveResourceAbsolutePath(knownHostsPath), allowUnknownKeys);
         return defaultSftpSessionFactory;
     }
 
@@ -110,14 +112,13 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         }
     }
 
-    private String resolveResourcePath(final String resourcePath) {
-        if (resourcePath.contains("classpath:")) {
-            log.info("Classpath resource path {}", resourcePath);
-            return  resourcePath;
-        } else {
-            String absolutePath = new FileSystemResource(resourcePath.replace("file:_", "")).getFile().getAbsolutePath();
-            log.info("File system resource path {}", absolutePath);
-            return absolutePath;
-        }
+    public String resolveResourceAbsolutePath(String resource) throws IOException {
+        final String folderLocation = StringUtils.substringBeforeLast(resource, "/");
+        final String fileName = StringUtils.substringAfterLast(resource, "/");
+        final Resource rootResource = resourceLoader.getResource(folderLocation);
+        final String rootPath = rootResource.getFile().getAbsolutePath();
+        final String absolutePath = rootPath + File.separator + fileName;
+        log.info("Resolved resource {} to {}", resource, absolutePath);
+        return absolutePath;
     }
 }

@@ -120,7 +120,8 @@ public class TestCameraFtpServer extends AbstractSftpTest {
         }
 
         // Active presets
-        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets().subList(0, TEST_UPLOADS);
+        List<CameraPreset> activePresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        nonObsoleteCameraPresets = activePresets.subList(0, Math.min(TEST_UPLOADS, activePresets.size()));
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
 
         // Missing presets in db, images should get deleted
