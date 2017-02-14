@@ -2,9 +2,10 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +40,14 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public Map<String, CameraPreset> findAllCameraPresetsMappedByPresetId() {
+    public Map<Long, CameraPreset> findAllCameraPresetsMappedByLotjuId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
-        final Map<String, CameraPreset> cameraMap = new HashMap<>();
+        return allStations.stream().filter(cp -> cp.getLotjuId() != null).collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
+    }
 
-        for(final CameraPreset cameraPreset : allStations) {
-            cameraMap.put(cameraPreset.getPresetId(), cameraPreset);
-        }
-        return cameraMap;
+    @Transactional(readOnly = true)
+    public List<CameraPreset> findAll() {
+        return cameraPresetRepository.findAll();
     }
 
     @Transactional
@@ -67,14 +68,14 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public CameraStationFeatureCollection findAllNonObsoleteCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
 
         MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
-                findAllNonObsoletePublicCameraPresets(),
+                findAllPublishableCameraPresets(),
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
@@ -84,12 +85,17 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> findCameraPresetByPresetIdIn(final Collection<String> presetIds) {
-        return cameraPresetRepository.findCameraPresetByPresetIdIn(presetIds);
+    public List<CameraPreset> findCameraPresetByLotjuIdIn(final Collection<Long> lotjuIds) {
+        return cameraPresetRepository.findByLotjuIdIn(lotjuIds);
     }
 
     @Transactional
-    public List<CameraPreset> findAllNonObsoletePublicCameraPresets() {
-        return cameraPresetRepository.findByObsoleteDateIsNullAndRoadStationObsoleteDateIsNullAndPublicInternalIsTrueAndPublicExternalIsTrueAndRoadStationIsPublicTrueOrderByPresetId();
+    public List<CameraPreset> findAllPublishableCameraPresets() {
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
+    }
+
+    public Map<String, List<CameraPreset>> findWithoutLotjuIdMappedByCameraId() {
+        List<CameraPreset> all = cameraPresetRepository.findByCameraLotjuIdIsNullOrLotjuIdIsNull();
+        return all.stream().collect(Collectors.groupingBy(CameraPreset::getCameraId));
     }
 }

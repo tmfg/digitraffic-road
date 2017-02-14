@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
 @Entity
 @DynamicUpdate
-public class RoadAddress {
+public class RoadAddress implements Cloneable {
 
     public enum Side {
 
@@ -276,5 +276,9 @@ public class RoadAddress {
                 .append(contractAreaCode)
                 .append(roadStation)
                 .toHashCode();
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -13,6 +13,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
 @Component
@@ -62,9 +63,13 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
         properties.setMaster(rws.isMaster());
 
         if (rws.getRoadStation() != null) {
-            for (final fi.livi.digitraffic.tie.metadata.model.RoadStationSensor rSSensor : rws.getRoadStation().getRoadStationSensors()) {
-                properties.addSensor(rSSensor);
-            }
+            rws.getRoadStation().getRoadStationSensors().forEach(s -> {
+                try {
+                    properties.addSensor((RoadStationSensor) s.clone());
+                } catch (CloneNotSupportedException e) {
+                    log.error("Failed to clone RoadStationSensor", e);
+                }
+            });
         }
 
         // RoadStation properties

@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,7 +20,6 @@ import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
@@ -48,21 +46,13 @@ public class WeatherStationService {
 
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByLotjuId() {
-        final Map<Long, WeatherStation> map = new HashMap<>();
         final List<WeatherStation> all = weatherStationRepository.findAll();
-        for (final WeatherStation weatherStation : all) {
-            if (weatherStation.getLotjuId() != null) {
-                map.put(weatherStation.getLotjuId(), weatherStation);
-            } else {
-                log.warn("Null lotjuId: " + weatherStation);
-            }
-        }
-        return map;
+        return all.stream().filter(ws -> ws.getLotjuId() != null).collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findAllPublicNonObsoleteWeatherStationsMappedByLotjuId() {
-        final List<WeatherStation> all = findAllNonObsoleteNonNullLotjuIdPublicWeatherStations();
+    public Map<Long, WeatherStation> findAllPublishableWeatherStationsMappedByLotjuId() {
+        final List<WeatherStation> all = findAllPublishableWeatherStations();
         return all.stream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
     }
 
@@ -79,23 +69,7 @@ public class WeatherStationService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValue> findAllSensorValues() {
-        return sensorValueRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public WeatherStation findByLotjuId(long lotjuId) {
-        return weatherStationRepository.findByLotjuId(lotjuId);
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findWeatherStationsMappedByLotjuId(List<Long> weatherStationLotjuIds) {
-        final List<WeatherStation> all = weatherStationRepository.findByLotjuIdIn(weatherStationLotjuIds);
-        return all.stream().collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
-    }
-
-    @Transactional(readOnly = true)
-    public WeatherStationFeatureCollection findAllNonObsoletePublicWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public WeatherStationFeatureCollection findAllPublishableWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
 
         final MetadataUpdated sensorsUpdated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION_SENSOR);
         final MetadataUpdated stationsUpdated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.WEATHER_STATION);
@@ -104,41 +78,24 @@ public class WeatherStationService {
 
         return weatherStationMetadata2FeatureConverter.convert(
                 !onlyUpdateInfo ?
-                    weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId() :
+                    weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
                 updated);
     }
 
     @Transactional(readOnly = true)
-    public List<WeatherStation> findAllNonObsoleteNonNullLotjuIdPublicWeatherStations() {
-        return weatherStationRepository.findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findAllWeatherStationsMappedByByRoadStationNaturalId() {
-        final List<WeatherStation> allStations = weatherStationRepository.findAll();
-        final Map<Long, WeatherStation> stationMap = new HashMap<>();
-
-        for(final WeatherStation weatherStation : allStations) {
-            stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
-        }
-
-        return stationMap;
+    public List<WeatherStation> findAllPublishableWeatherStations() {
+        return weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
     }
 
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
         final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
-        final Map<Long, WeatherStation> stationMap = new HashMap<>();
+        return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
+    }
 
-        for(final WeatherStation weatherStation : allStations) {
-            if (weatherStation.getRoadStationNaturalId() != null) {
-                stationMap.put(weatherStation.getRoadStationNaturalId(), weatherStation);
-            } else {
-                log.warn("Null lotjuId: " + weatherStation);
-            }
-        }
-
-        return stationMap;
+    @Transactional(readOnly = true)
+    public List<WeatherStation> findAllWeatherStationsWithoutRoadStation() {
+        return weatherStationRepository.findByRoadStationIsNull();
     }
 }
