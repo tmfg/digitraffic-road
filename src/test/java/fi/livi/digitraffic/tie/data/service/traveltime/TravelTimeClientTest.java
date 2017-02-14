@@ -5,7 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
+import java.sql.Date;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.apache.commons.io.FileUtils;
@@ -60,7 +61,7 @@ public class TravelTimeClientTest extends MetadataTestBase {
         TravelTimeMediansDto data = travelTimeClient.getMedians(requestStartTime);
 
         assertEquals(300, data.duration);
-        assertEquals(Instant.ofEpochMilli(1486379640000L), data.periodStart.toInstant());
+        assertEquals(Date.from(ZonedDateTime.of(1975, 2, 6, 10, 0, 0, 0, ZoneId.of("UTC")).toInstant()), data.periodStart);
         assertEquals("FI_FINNRA", data.supplier);
         assertEquals("Helsinki_Traveltimes", data.service);
         assertNotNull(data.lastStaticDataUpdate);
