@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -46,6 +47,7 @@ public class TravelTimeClient {
         this.restTemplate = restTemplate;
     }
 
+    @Retryable
     public TravelTimeMediansDto getMedians(final ZonedDateTime from) {
 
         final String fromUtc = getDateString(from);
@@ -54,6 +56,7 @@ public class TravelTimeClient {
         return (TravelTimeMediansDto) getTravelTimeData(mediansUrl, fromUtc, TravelTimeMediansDto.class);
     }
 
+    @Retryable
     public TravelTimeMeasurementsDto getMeasurements(final ZonedDateTime from) {
 
         final String fromUtc = getDateString(from);
@@ -61,7 +64,6 @@ public class TravelTimeClient {
 
         return (TravelTimeMeasurementsDto) getTravelTimeData(individualMeasurementUrl, fromUtc, TravelTimeMeasurementsDto.class);
     }
-
 
     public Object getTravelTimeData(final String url, final String startTime, final Class clazz) {
 
