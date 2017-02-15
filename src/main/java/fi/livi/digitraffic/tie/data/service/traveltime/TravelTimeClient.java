@@ -39,7 +39,7 @@ public class TravelTimeClient {
                             @Value("${traveltime.PKS.individual.url}") final String individualMeasurementUrl,
                             @Value("${traveltime.PKS.username}") final String username,
                             @Value("${traveltime.PKS.password}") final String password,
-                            RestTemplate restTemplate) {
+                            final RestTemplate restTemplate) {
         this.mediansUrl = mediansUrl;
         this.individualMeasurementUrl = individualMeasurementUrl;
         this.username = username;
@@ -65,20 +65,20 @@ public class TravelTimeClient {
         return (TravelTimeMeasurementsDto) getTravelTimeData(individualMeasurementUrl, fromUtc, TravelTimeMeasurementsDto.class);
     }
 
-    public Object getTravelTimeData(final String url, final String startTime, final Class clazz) {
+    private Object getTravelTimeData(final String url, final String startTime, final Class clazz) {
 
-        HttpEntity<String> request = createRequest();
+        final HttpEntity<String> request = createRequest();
 
         return restTemplate.exchange(url + "?starttime=" + startTime, HttpMethod.GET, request, clazz).getBody();
     }
 
     private HttpEntity<String> createRequest() {
         final String plainCreds = StringUtils.join(username, ":", password);
-        byte[] plainCredsBytes = plainCreds.getBytes();
-        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-        String base64Creds = new String(base64CredsBytes);
+        final byte[] plainCredsBytes = plainCreds.getBytes();
+        final byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+        final String base64Creds = new String(base64CredsBytes);
 
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + base64Creds);
 
         return new HttpEntity<>(headers);
