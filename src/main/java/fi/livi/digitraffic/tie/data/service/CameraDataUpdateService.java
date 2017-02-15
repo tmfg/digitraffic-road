@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -19,7 +20,6 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -48,19 +48,28 @@ public class CameraDataUpdateService {
 
     @Transactional
     public void updateCameraData(final List<Kuva> data) throws SQLException {
-        final Map<String, Kuva> presetIdToKuvaMap =
-                data.stream().collect(Collectors.toMap(kuva -> CameraHelper.resolvePresetId(kuva), Function.identity()));
+        // Collect newest data per station
+        HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
+        data.stream().forEach(k -> {
+            Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
+            if (currentKamera == null || currentKamera.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
+                if (currentKamera != null) {
+                    log.info("Replace " + currentKamera.getAika() + " with " + currentKamera.getAika());
+                }
+                kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
+            }
+        });
 
-        List<CameraPreset> cameraPresets = cameraPresetService.findCameraPresetByPresetIdIn(presetIdToKuvaMap.keySet());
+        List<CameraPreset> cameraPresets = cameraPresetService.findCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
 
         // Handle present presets
         for (CameraPreset cameraPreset : cameraPresets) {
-            Kuva kuva = presetIdToKuvaMap.remove(cameraPreset.getPresetId());
+            Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
             handleKuva(kuva, cameraPreset);
         }
 
         // Handle missing presets to delete possible images from disk
-        for (Kuva notFoundPresetForKuva : presetIdToKuvaMap.values()) {
+        for (Kuva notFoundPresetForKuva : kuvaMappedByPresetLotjuId.values()) {
             handleKuva(notFoundPresetForKuva, null);
         }
     }
@@ -74,7 +83,7 @@ public class CameraDataUpdateService {
         String presetId = resolvePresetId(kuva);
         String filename = presetId + ".jpg";
         ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
-        log.info("Handling kuva: " +ToStringHelpper.toString(kuva));
+        log.info("Handling kuva: " + ToStringHelpper.toString(kuva));
 
         // Update CameraPreset
         if (cameraPreset != null) {

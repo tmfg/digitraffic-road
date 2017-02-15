@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,29 +24,26 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
-        final long startSensors = System.currentTimeMillis();
+        final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
-
         if (sensorsUpdated) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION_SENSOR);
         }
+        sensorsWatch.stop();
 
-        final long startStationsEndSensors = System.currentTimeMillis();
+        final StopWatch stationsWatch = StopWatch.createStarted();
         boolean stationsUpdated = weatherStationUpdater.updateWeatherStations();
+        stationsWatch.stop();
 
-        final long startStationsSensorsEndStations = System.currentTimeMillis();
+        final StopWatch stationsSensors = StopWatch.createStarted();
         stationsUpdated = weatherStationsSensorsUpdater.updateWeatherStationsSensors() || stationsUpdated;
-        final long endStationsSensors = System.currentTimeMillis();
+        stationsSensors.stop();
 
         if (stationsUpdated) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
         }
 
-        final long timeSensors = (startStationsEndSensors - startSensors)/1000;
-        final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
-        final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
-
-        log.info("UpdateRoadStationSensors took: {} s, updateWeatherStations took: {} s, updateWeatherStationsSensors took: {} s)",
-                timeSensors, timeStations, timeStationsSensors);
+        log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",
+                sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensors.getTime());
     }
 }

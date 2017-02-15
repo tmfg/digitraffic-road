@@ -70,6 +70,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-sftp</artifactId>
         </dependency>
@@ -92,6 +97,13 @@
                  http://stackoverflow.com/questions/35761746/quartz-scheduler-unlimited-attempts-to-connect-with-database
                  https://jira.terracotta.org/jira/browse/QTZ-470 -->
             <version>2.2.0</version>
+        </dependency>
+
+        <!-- Spring Retry -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+            <version>1.2.0.RELEASE</version>
         </dependency>
 
         <!-- Helpers and others -->

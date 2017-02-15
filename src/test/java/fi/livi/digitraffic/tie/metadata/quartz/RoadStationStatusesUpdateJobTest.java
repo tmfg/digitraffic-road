@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.metadata.quartz;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpd
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
+@Transactional
 public class RoadStationStatusesUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
@@ -63,6 +66,8 @@ public class RoadStationStatusesUpdateJobTest extends MetadataIntegrationTest {
         cameraStationUpdater.updateCameras();
 
         List<RoadStation> allInitial = roadStationService.findAll();
+        // Detatch entitys so updates wont affect them
+        allInitial.forEach(rs -> entityManager.detach(rs));
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
         lotjuLAMMetatiedotServiceMock.setStateAfterChange(true);

@@ -22,6 +22,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -67,8 +68,16 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     protected JdbcTemplate jdbcTemplate;
     private Marshaller jaxbMarshaller;
 
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Before
-    public void setUpTestData() throws JAXBException {
+    public void initData() throws JAXBException {
+
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Tiesaa.class).createMarshaller();
 
@@ -113,7 +122,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublicNonObsoleteWeatherStationsMappedByLotjuId();
+        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();
@@ -247,8 +256,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Test
     public void test2LastUpdated() {
         ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
-        assertTrue(lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
-
+        assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
         assertFalse(updated.isEmpty());
     }

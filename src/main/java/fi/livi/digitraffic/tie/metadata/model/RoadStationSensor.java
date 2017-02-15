@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder(value = {"id", "name", "shortName", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
-public class RoadStationSensor {
+public class RoadStationSensor implements Cloneable {
 
     /** These id:s are for station status sensors */
     protected static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
@@ -219,5 +219,10 @@ public class RoadStationSensor {
                     this.roadStationType + " to " + roadStationType + ". (" + this.toString() + ")");
         }
         this.roadStationType = roadStationType;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

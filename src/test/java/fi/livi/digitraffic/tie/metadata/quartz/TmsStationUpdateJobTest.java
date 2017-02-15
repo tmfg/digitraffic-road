@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -19,7 +21,8 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
-public class TmsStationUpdateJobTest extends MetadataRestTest {
+@Transactional
+public class TmsStationUpdateJobTest extends MetadataIntegrationTest {
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -46,7 +49,7 @@ public class TmsStationUpdateJobTest extends MetadataRestTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allInitial =
-                tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update tms stations (2 non obsolete stations and 2 obsolete)
@@ -55,7 +58,7 @@ public class TmsStationUpdateJobTest extends MetadataRestTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allAfterChange =
-                tmsStationService.findAllNonObsoletePublicTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));

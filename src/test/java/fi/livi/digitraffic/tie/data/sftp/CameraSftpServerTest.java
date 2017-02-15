@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.transaction.Transactional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -30,6 +31,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +56,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
+@Transactional
 public class TestCameraFtpServer extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
 
@@ -96,12 +99,19 @@ public class TestCameraFtpServer extends AbstractSftpTest {
     public void setUpTestData() throws IOException {
 
         log.info("Init test data");
+        // Creates also new road stations so run before generating lotjuIds
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        entityManager.flush();
+        entityManager.clear();
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
+        entityManager.flush();
+        entityManager.clear();
 
         // Init minimum TEST_UPLOADS non obsolete presets
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
+        Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
         int missingCount = TEST_UPLOADS - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
@@ -120,7 +130,7 @@ public class TestCameraFtpServer extends AbstractSftpTest {
         }
 
         // Active presets
-        List<CameraPreset> activePresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> activePresets = cameraPresetService.findAllPublishableCameraPresets();
         nonObsoleteCameraPresets = activePresets.subList(0, Math.min(TEST_UPLOADS, activePresets.size()));
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
 
@@ -162,8 +172,13 @@ public class TestCameraFtpServer extends AbstractSftpTest {
         session.close();
     }
 
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Test
-    public void testPutAndGetFile() throws Exception {
+    public void testUpdateCameraDataToSftp() throws Exception {
 
         cameraDataUpdateService.updateCameraData(kuvas);
 
@@ -276,9 +291,9 @@ public class TestCameraFtpServer extends AbstractSftpTest {
             Kuva kuva = new Kuva();
             kuva.setNimi(cp.getPresetId());
             kuva.setAika((XMLGregorianCalendar) xgcal.clone());
-            kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
-            kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-            kuva.setEsiasentoId(RandomUtils.nextLong(1000, 9999));
+            kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 10000));
+            kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 10000));
+            kuva.setEsiasentoId(cp.getLotjuId() != null ? cp.getLotjuId() : RandomUtils.nextLong(10000, 100000));
             kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0, 99999)));
             kuva.setJulkinen(true);
             kuva.setKameraId(Long.parseLong(cp.getCameraId().substring(1)));

@@ -23,6 +23,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -69,8 +70,16 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
 
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Before
-    public void setUpTestData() throws JAXBException {
+    public void initData() throws JAXBException {
+
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Lam.class).createMarshaller();
 
@@ -85,14 +94,14 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
                 "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
                 "  WHERE S.OBSOLETE = 0\n" +
-                "    AND S.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "    AND S.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
                 "    AND EXISTS (\n" +
                 "      SELECT NULL\n" +
                 "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
                 "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
                 "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
                 "   )\n" +
-                "   AND RS.ROAD_STATION_TYPE = 'LAM_STATION'\n" +
+                "   AND RS.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
                 "   AND RS.OBSOLETE_DATE IS NULL\n" +
                 ") SRC\n" +
                 "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
@@ -116,7 +125,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
 
-        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllNonObsoletePublicTmsStationsMappedByLotjuId();
+        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Lam> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();
@@ -245,8 +254,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     public void test2LastUpdated() {
         ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
         log.info("lastUpdated " + lastUpdated + " vs " + LocalDateTime.now().minusMinutes(2));
-        assertTrue(lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
-
+        assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());
     }

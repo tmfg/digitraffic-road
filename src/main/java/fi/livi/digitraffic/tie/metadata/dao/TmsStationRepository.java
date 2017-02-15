@@ -11,20 +11,9 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 @Repository
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
-    List<TmsStation> findByRoadStationObsoleteFalseAndRoadStationIsPublicTrueAndLotjuIdIsNotNullOrderByRoadStation_NaturalId();
+    List<TmsStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
-    TmsStation findByLotjuId(long tmsStationLotjuId);
-
-    TmsStation findByRoadStation_NaturalId(long roadStationNaturalId);
-
-    List<TmsStation> findByLotjuIdIn(List<Long> tmsLotjuIds);
-
-    @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
-           "FROM TmsStation tms\n" +
-           "WHERE tms.naturalId = ?1\n" +
-           "  AND tms.roadStation.obsolete = false\n" +
-           "  AND tms.roadStation.isPublic = true")
-    boolean tmsExistsWithLamNaturalId(long tmsNaturalId);
+    TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(long roadStationNaturalId);
 
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM TmsStation tms\n" +
@@ -32,4 +21,6 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
            "  AND tms.roadStation.obsolete = false\n" +
            "  AND tms.roadStation.isPublic = true")
     boolean tmsExistsWithRoadStationNaturalId(long roadStationNaturalId);
+
+    List<TmsStation> findByLotjuIdIsNull();
 }

@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.base;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -8,7 +11,10 @@ public abstract class MetadataTestBase extends AbstractTestBase {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    protected void generateMissingLotjuIds() {
+    @PersistenceContext
+    protected EntityManager entityManager;
+
+    protected void generateMissingLotjuIdsWithJdbc() {
 
         jdbcTemplate.execute(
                 "UPDATE ROAD_STATION\n" +
@@ -39,12 +45,17 @@ public abstract class MetadataTestBase extends AbstractTestBase {
                 "WHERE LOTJU_ID IS NULL");
 
         jdbcTemplate.execute(
+                "UPDATE CAMERA_PRESET\n" +
+                "SET CAMERA_LOTJU_ID = -10 * id\n" +
+                "WHERE CAMERA_LOTJU_ID IS NULL");
+
+        jdbcTemplate.execute(
                 "UPDATE ROAD_STATION_SENSOR\n" +
                 "SET LOTJU_ID = -1 * id\n" +
                 "WHERE LOTJU_ID IS NULL");
     }
 
-    protected void fixData() {
+    protected void fixDataWithJdbc() {
 
         jdbcTemplate.execute(
                 "UPDATE ROAD_STATION\n" +
@@ -92,7 +103,7 @@ public abstract class MetadataTestBase extends AbstractTestBase {
                 ")");
     }
 
-    protected void restoreGeneratedLotjuIds() {
+    protected void restoreGeneratedLotjuIdsWithJdbc() {
 
         jdbcTemplate.execute(
                 "UPDATE ROAD_STATION\n" +
@@ -112,6 +123,7 @@ public abstract class MetadataTestBase extends AbstractTestBase {
         jdbcTemplate.execute(
                 "UPDATE CAMERA_PRESET\n" +
                 "SET LOTJU_ID = NULL\n" +
+                "  , CAMERA_LOTJU_ID = NULL\n" +
                 "WHERE LOTJU_ID < 0");
 
         jdbcTemplate.execute(

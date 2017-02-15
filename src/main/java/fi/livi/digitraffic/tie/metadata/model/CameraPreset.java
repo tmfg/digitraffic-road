@@ -34,14 +34,12 @@ public class CameraPreset {
 
     private Long lotjuId;
 
-
     /** Only for legacy soap-api = road station naturalId */
     @Column(name="ROADSTATION_ID")
     private Long roadStationId;
     /** Old field, means weather station? */
     @Column(name="NEAREST_ROADSTATION_ID")
     private Long nearestRoadstationIid;
-
 
     /**
      * presetName1 == presentationName == nimiEsitys
@@ -102,6 +100,9 @@ public class CameraPreset {
     @JoinColumn(name="NEAREST_RD_WEATHER_STATION_ID")
     @Fetch(FetchMode.JOIN)
     private WeatherStation nearestWeatherStation;
+
+    @Column(updatable = false, insertable = false) // virtual column
+    private boolean publishable;
 
     public Long getId() {
         return id;
@@ -287,6 +288,10 @@ public class CameraPreset {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
+    public Long getRoadStationLotjuId() {
+        return roadStation != null ? roadStation.getLotjuId() : null;
+    }
+
     public Long getNearestWeatherStationNaturalId() {
         return nearestWeatherStation != null ? nearestWeatherStation.getRoadStationNaturalId() : null;
     }
@@ -308,7 +313,11 @@ public class CameraPreset {
     }
 
     public void setObsolete(final boolean obsolete) {
-        setObsoleteDate(obsolete && obsoleteDate == null ? LocalDate.now() : null);
+        if (!obsolete) {
+            setObsoleteDate(null);
+        } else if (obsoleteDate == null) {
+            setObsoleteDate(LocalDate.now());
+        }
     }
 
     public boolean isObsolete() {
@@ -319,6 +328,10 @@ public class CameraPreset {
         return isPublicInternal() && isPublicExternal();
     }
 
+    public boolean isPublishable() {
+        return publishable;
+    }
+
     @Override
     public String toString() {
         return new ToStringHelpper(this)
@@ -326,6 +339,7 @@ public class CameraPreset {
                 .appendField("id", id)
                 .appendField("cameraId", cameraId)
                 .appendField("lotjuId", lotjuId)
+                .appendField("roadStationLotjuId", getRoadStationLotjuId())
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();

@@ -7,13 +7,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.MetadataRestTest;
+import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
@@ -21,7 +23,8 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
 
-public class CameraStationUpdateJobTest extends MetadataRestTest {
+@Transactional
+public class CameraStationUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(TmsStationUpdateJobTest.class);
 
@@ -42,7 +45,7 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraStationUpdater.updateCameras();
-        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(false);
+        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
         // cameras with lotjuId 443 and 56 are in collection
         assertEquals(2, allInitial.getFeatures().size());
         int countPresets = 0;
@@ -56,7 +59,7 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
 
-        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllNonObsoleteCameraStationsAsFeatureCollection(false);
+        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
 
         // 443 has 3 presets, 121 has 2
         assertEquals(2, allAfterChange.getFeatures().size());
@@ -126,11 +129,6 @@ public class CameraStationUpdateJobTest extends MetadataRestTest {
         final CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
         assertEquals("Iidensalmi", beforeCam.getProperties().getMunicipality());
         assertEquals("Iisalmi", afterCam.getProperties().getMunicipality());
-    }
-
-
-    private void assertEqualPresets(final CameraPresetDto preset1, final CameraPresetDto preset2) {
-        assertTrue(preset1.equals(preset2));
     }
 
     private CameraPresetDto findWithPresetId(final CameraStationFeatureCollection collection, final String presetId) {

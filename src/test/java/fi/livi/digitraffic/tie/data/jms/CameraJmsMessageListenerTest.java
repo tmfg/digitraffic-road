@@ -33,6 +33,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +54,7 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
@@ -84,8 +87,36 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     private Marshaller jaxbMarshaller;
     private Unmarshaller jaxbUnmarshaller;
 
+    @BeforeClass
+    public static void beforeClass() throws IOException {
+        testFolder = new TemporaryFolder();
+        testFolder.create();
+        String path = testFolder.getRoot().getPath();
+        log.info("Created temporarry weathercam importDir: " + path);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        if (testFolder.getRoot().exists()) {
+            testFolder.delete();
+        }
+        Assert.assertFalse(testFolder.getRoot().exists());
+    }
+
+    @After
+    public void restoreData() throws IOException, JAXBException {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Before
-    public void setUpTestData() throws IOException, JAXBException {
+    public void initData() throws IOException, JAXBException {
+
+        // Creates also new road stations so run before generating lotjuIds
+        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        entityManager.flush();
+        entityManager.clear();
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
         jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();
@@ -100,32 +131,28 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             i--;
         }
 
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
-
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<String, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
-
+        Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
+        log.info("All camera presets size {}", cameraPresets.size());
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         Iterator<CameraPreset> iter = cameraPresets.values().iterator();
         while (missingMin > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
-            if (rs.isObsolete() || cp.isObsolete()) {
+            if (!rs.isPublishable() || !cp.isPublishable()) {
                 missingMin--;
             }
-            if (rs.isObsolete()) {
-                rs.setObsolete(false);
-            }
-            if (!rs.isPublic()) {
-                rs.setPublic(true);
-            }
-            if (cp.isObsolete()) {
-                cp.setObsolete(false);
-            }
+            rs.setCollectionStatus(CollectionStatus.GATHERING);
+            rs.setObsolete(false);
+            rs.setPublic(true);
+            cp.setObsolete(false);
+            cp.setPublicExternal(true);
+            cp.setPublicInternal(true);
         }
-
-        nonObsoleteCameraPresets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        entityManager.flush();
+        entityManager.clear();
+        nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
     }
 
@@ -149,7 +176,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
         JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
-            long start = System.currentTimeMillis();
+            StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
@@ -162,8 +189,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            long end = System.currentTimeMillis();
-            log.info("handleData took " + (end-start) + " ms");
+            log.info("handleData took {} ms", start.getTime());
         };
 
         JMSMessageListener<Kuva> cameraJmsMessageListener =
@@ -174,7 +200,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        List<CameraPreset> presets = cameraPresetService.findAllNonObsoletePublicCameraPresets();
+        List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
         Iterator<CameraPreset> presetIterator = presets.iterator();
 
         int testBurstsLeft = 10;
@@ -195,14 +221,14 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
                 int kuvaIndex = RandomUtils.nextInt(1, 6);
                 Kuva kuva = new Kuva();
+                kuva.setEsiasentoId(preset.getLotjuId());
+                kuva.setKameraId(preset.getCameraLotjuId());
                 kuva.setNimi(preset.getPresetId() + "1234.jpg");
                 kuva.setAika((XMLGregorianCalendar) xgcal.clone());
                 kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
                 kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-                kuva.setEsiasentoId(RandomUtils.nextLong(1000, 9999));
                 kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0, 99999)));
                 kuva.setJulkinen(true);
-                kuva.setKameraId(Long.parseLong(preset.getCameraId().substring(1)));
                 kuva.setLiviId("" + kuvaIndex);
                 if (preset.getRoadStation().getRoadAddress() != null) {
                     kuva.setTienumero(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadNumber()));
@@ -226,13 +252,14 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                     break;
                 }
             }
+
             sw.stop();
             long generation = sw.getTime();
             log.info("Data generation took " + generation + " ms");
 
             sw.reset();
             sw.start();
-            Assert.assertTrue(data.size() >= 25);
+            Assert.assertTrue("Data size too small: " + data.size(), data.size() >= 25);
             cameraJmsMessageListener.drainQueueScheduled();
             sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");
@@ -255,7 +282,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
         log.info("Check data validy");
 
-        Map<String, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByPresetId();
+        Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
         for (Pair<Kuva, String> pair : data) {
             Kuva kuva = pair.getLeft();
@@ -266,7 +293,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
             // Check preset updated to db against kuva
-            CameraPreset preset = updatedPresets.get(presetId);
+            CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
             LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAika());
             LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
             Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);

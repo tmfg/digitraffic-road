@@ -42,7 +42,7 @@ public class JMSMessageListener<T> implements MessageListener {
     private final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private final AtomicInteger minuteMessageCounter = new AtomicInteger(0);
+    private final AtomicInteger minuteMessageCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
     private final JMSDataUpdater dataUpdater;

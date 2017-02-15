@@ -23,7 +23,41 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <!-- JMS message logging in separate file -->
+    <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
+        <file>metadata-daily-jms.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>metadata-daily-jms.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>92</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
+                 Useful if logged only oneliners to one file and full straces to other -->
+            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
+        <appender-ref ref="FILE_JMS" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
+        <appender-ref ref="FILE_JMS" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
+        <appender-ref ref="FILE_JMS" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+
+    <root level="INFO" additivity="false">
         <appender-ref ref="FILE" />
 
         <springProfile name="localhost">

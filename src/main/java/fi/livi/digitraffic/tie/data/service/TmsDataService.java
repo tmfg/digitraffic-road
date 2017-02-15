@@ -36,15 +36,15 @@ public class TmsDataService {
     }
 
     @Transactional(readOnly = true)
-    public TmsRootDataObjectDto findPublicTmsData(boolean onlyUpdateInfo) {
+    public TmsRootDataObjectDto findPublishableTmsData(boolean onlyUpdateInfo) {
         final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
 
         if (onlyUpdateInfo) {
             return new TmsRootDataObjectDto(updated);
         } else {
-            List<TmsStation> tmsStations = tmsStationService.findAllNonObsoletePublicNonNullLotjuIdTmsStations();
+            List<TmsStation> tmsStations = tmsStationService.findAllPublishableTmsStations();
             final Map<Long, List<SensorValueDto>> values =
-                    roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(RoadStationType.TMS_STATION);
+                    roadStationSensorService.findAllPublishableRoadStationSensorValuesMappedByNaturalId(RoadStationType.TMS_STATION);
 
             final List<TmsStationDto> stations = new ArrayList<>();
             tmsStations.forEach(tms -> {
@@ -62,16 +62,16 @@ public class TmsDataService {
     }
 
     @Transactional(readOnly = true)
-    public TmsRootDataObjectDto findPublicTmsData(long roadStationNaturalId) {
-        if ( !roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
+    public TmsRootDataObjectDto findPublishableTmsData(long roadStationNaturalId) {
+        if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }
         final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
 
         final List<SensorValueDto> values =
-                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
+                roadStationSensorService.findAllPublishableRoadStationSensorValues(roadStationNaturalId,
                         RoadStationType.TMS_STATION);
-        TmsStation tms = tmsStationService.findByRoadStationNaturalId(roadStationNaturalId);
+        TmsStation tms = tmsStationService.findPublishableTmsStationByRoadStationNaturalId(roadStationNaturalId);
         final TmsStationDto dto = new TmsStationDto();
         dto.setTmsStationNaturalId(tms.getNaturalId());
         dto.setRoadStationNaturalId(roadStationNaturalId);

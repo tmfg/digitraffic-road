@@ -51,25 +51,21 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
            nativeQuery = true)
     List<RoadStation> findOrphanTmsRoadStations();
 
-    RoadStation findByTypeAndNaturalId(RoadStationType type, long naturalId);
-
     @Query(value =
            "SELECT rs.naturalId\n" +
            "FROM RoadStation rs\n" +
            "WHERE rs.type = ?1\n" +
-           "  AND rs.obsolete = false\n" +
-           "  AND rs.isPublic = true")
-    List<Long> findNonObsoleteAndPublicRoadStationsNaturalIds(final RoadStationType roadStationType);
+           "  AND rs.publishable = true")
+    List<Long> findPublishableRoadStationsNaturalIds(final RoadStationType roadStationType);
 
 
     @Query("SELECT CASE WHEN count(rs) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM RoadStation rs\n" +
-           "WHERE rs.isPublic = 1\n" +
-           "  AND rs.obsolete = 0\n" +
+           "WHERE rs.publishable = 1\n" +
            "  AND rs.type = :roadStationType\n" +
            "  AND rs.naturalId = :roadStationNaturalId")
-    boolean isPublicAndNotObsoleteRoadStation(@Param("roadStationNaturalId")
-                                              final long roadStationNaturalId,
-                                              @Param("roadStationType")
-                                              final RoadStationType roadStationType);
+    boolean isPublishableRoadStation(@Param("roadStationNaturalId")
+                                     final long roadStationNaturalId,
+                                     @Param("roadStationType")
+                                     final RoadStationType roadStationType);
 }

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -87,6 +88,18 @@ public class RoadStationSensorService {
         return naturalIdToRSS;
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
+        final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
+        return all.stream().filter(rss -> rss.getLotjuId() != null).collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType roadStationType) {
+        final List<RoadStationSensor> all = roadStationSensorRepository.findByRoadStationTypeAndLotjuIdIsNull(roadStationType);
+        return all.stream().filter(rss -> rss.getLotjuId() == null).collect(Collectors.toMap(RoadStationSensor::getNaturalId, Function.identity()));
+    }
+
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
@@ -101,10 +114,10 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValueDto>> findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
+    public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
 
         final List<Long> stationsNaturalIds =
-                roadStationRepository.findNonObsoleteAndPublicRoadStationsNaturalIds(roadStationType);
+                roadStationRepository.findPublishableRoadStationsNaturalIds(roadStationType);
         final Set<Long> allowedRoadStationsNaturalIds =
                 stationsNaturalIds.stream().collect(Collectors.toSet());
 
@@ -136,10 +149,10 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllNonObsoletePublicRoadStationSensorValues(final long roadStationNaturalId,
-                                                                                final RoadStationType roadStationType) {
+    public List<SensorValueDto> findAllPublishableRoadStationSensorValues(final long roadStationNaturalId,
+                                                                          final RoadStationType roadStationType) {
 
-        boolean publicAndNotObsolete = roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, roadStationType);
+        boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
 
         if ( !publicAndNotObsolete ) {
             return Collections.emptyList();

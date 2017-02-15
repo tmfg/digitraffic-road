@@ -24,4 +24,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(RoadStationType roadStationType);
 
     List<RoadStationSensor> findByRoadStationType(RoadStationType roadStationType);
+
+    List<RoadStationSensor> findByRoadStationTypeAndLotjuIdIsNull(RoadStationType roadStationType);
 }
