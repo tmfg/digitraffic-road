@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ import fi.livi.digitraffic.tie.base.MetadataTestBase;
 import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
 import fi.livi.digitraffic.tie.data.dao.TrafficFluencyRepository;
 import fi.livi.digitraffic.tie.data.dto.daydata.LinkMeasurementDataDto;
+import fi.livi.digitraffic.tie.data.dto.trafficfluency.LatestMedianDataDto;
 
 public class TravelTimeUpdaterTest extends MetadataTestBase {
 
@@ -84,6 +86,28 @@ public class TravelTimeUpdaterTest extends MetadataTestBase {
         assertEquals(3, medianTravelTimes.get(0).getFluencyClass());
         assertEquals(26.767, medianTravelTimes.get(0).getAverageSpeed(), 0.001);
         assertEquals(ZonedDateTime.of(1975, 2, 6, 10, 5, 0, 0, ZoneId.of("UTC")), medianTravelTimes.get(0).getMeasuredTime().withZoneSameInstant(ZoneId.of("UTC")));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void updateLatestMediansSucceeds() throws IOException {
+
+        List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(6);
+        assertEquals(0, latestMedians.size());
+
+        server.expect(MockRestRequestMatchers.requestTo(expectedUri))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+                .andRespond(MockRestResponseCreators.withSuccess(getMediansResponse(), MediaType.APPLICATION_XML));
+
+        travelTimeUpdater.updateMedians(requestStartTime);
+        server.verify();
+
+        latestMedians = trafficFluencyRepository.findLatestMediansForLink(6); // linkId? naturalId?
+        assertEquals(1, latestMedians.size());
+        assertEquals(1167L, latestMedians.get(0).getMedianJourneyTime().longValue());
+        assertEquals(new BigDecimal("26.767"), latestMedians.get(0).getMedianSpeed());
+        assertEquals(2, latestMedians.get(0).getNobs().intValue());
     }
 
     private String getMediansResponse() throws IOException {
