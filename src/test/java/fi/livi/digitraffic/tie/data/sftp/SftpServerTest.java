@@ -16,7 +16,7 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 
 
-public class TestFtpServer extends AbstractSftpTest {
+public class SftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
 
     @Autowired

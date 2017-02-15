@@ -34,7 +34,6 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,22 +85,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
     private Marshaller jaxbMarshaller;
     private Unmarshaller jaxbUnmarshaller;
-
-    @BeforeClass
-    public static void beforeClass() throws IOException {
-        testFolder = new TemporaryFolder();
-        testFolder.create();
-        String path = testFolder.getRoot().getPath();
-        log.info("Created temporarry weathercam importDir: " + path);
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        if (testFolder.getRoot().exists()) {
-            testFolder.delete();
-        }
-        Assert.assertFalse(testFolder.getRoot().exists());
-    }
 
     @After
     public void restoreData() throws IOException, JAXBException {

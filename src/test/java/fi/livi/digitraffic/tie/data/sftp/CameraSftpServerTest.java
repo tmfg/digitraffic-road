@@ -57,7 +57,7 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @Transactional
-public class TestCameraFtpServer extends AbstractSftpTest {
+public class CameraSftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";

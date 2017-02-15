@@ -102,6 +102,10 @@ public class RoadStation {
                inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
     List<RoadStationSensor> roadStationSensors = new ArrayList<>();
 
+    /**
+     * This value is calculated by db so it's value is not
+     * reliable if entity is modified after fetch from db.
+     */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
 
@@ -369,6 +373,7 @@ public class RoadStation {
     public boolean isPublishable() {
         return publishable;
     }
+
     @Override
     public String toString() {
         return new ToStringHelpper(this)
