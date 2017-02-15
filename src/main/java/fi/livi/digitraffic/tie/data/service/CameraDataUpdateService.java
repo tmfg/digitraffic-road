@@ -48,21 +48,29 @@ public class CameraDataUpdateService {
         // Collect newest data per station
         HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.stream().forEach(k -> {
-            Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
-            if (currentKamera == null || currentKamera.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
-                if (currentKamera != null) {
-                    log.info("Replace " + currentKamera.getAika() + " with " + currentKamera.getAika());
+            if (k.getEsiasentoId() != null) {
+                Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
+                if (currentKamera == null || currentKamera.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
+                    if (currentKamera != null) {
+                        log.info("Replace " + currentKamera.getAika() + " with " + currentKamera.getAika());
+                    }
+                    kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
                 }
-                kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
+            } else {
+                log.warn("Kuva esiasentoId is null: {}", ToStringHelpper.toString(k));
             }
         });
 
-        List<CameraPreset> cameraPresets = cameraPresetService.findCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
+        List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
 
         // Handle present presets
         for (CameraPreset cameraPreset : cameraPresets) {
             Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
-            handleKuva(kuva, cameraPreset);
+            if (kuva == null) {
+                log.error("No kuva for preset {}", cameraPreset.toString());
+            } else {
+                handleKuva(kuva, cameraPreset);
+            }
         }
 
         // Handle missing presets to delete possible images from disk
@@ -76,15 +84,13 @@ public class CameraDataUpdateService {
     }
 
     private void handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
-
-        String presetId = resolvePresetId(kuva);
+        String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
         String filename = presetId + ".jpg";
-        ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
         log.info("Handling kuva: " + ToStringHelpper.toString(kuva));
 
         // Update CameraPreset
         if (cameraPreset != null) {
-            log.info("setPictureLastModified {} {} -> {}", cameraPreset.getPresetId(), cameraPreset.getPictureLastModified(), pictureTaken);
+            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
             cameraPreset.setPublicExternal(kuva.isJulkinen());
             cameraPreset.setPictureLastModified(pictureTaken);
         }
@@ -99,7 +105,7 @@ public class CameraDataUpdateService {
             }
         } else {
             if (cameraPreset == null) {
-                log.error("Could not update non existing camera preset {}", presetId);
+                log.info("Could not update non existing camera preset {}", presetId);
             }
             log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
             deleteImageQuietly(filename);
@@ -111,23 +117,26 @@ public class CameraDataUpdateService {
     }
 
     private void deleteImageQuietly(String deleteImageFileName) {
-        try {
+        try (Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
-            final Session session = sftpSessionFactory.getSession();
-            session.remove(imageRemotePath);
-            session.close();
+            if (session.exists(imageRemotePath) ) {
+                session.remove(imageRemotePath);
+            }
         } catch (IOException e) {
-            log.debug("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
+            log.error("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
         }
     }
 
     private void uploadImage(String downloadImageUrl, String uploadImageFileName) throws IOException {
-        final Session session = sftpSessionFactory.getSession();
-        final URL url = new URL(downloadImageUrl);
-        final String uploadPath = StringUtils.appendIfMissing(sftpUploadFolder, "/") + uploadImageFileName;
-        log.info("Download image {} and upload to sftp server path {}", downloadImageUrl, uploadPath);
-        session.write(url.openStream(), uploadPath);
-        session.close();
+        try (final Session session = sftpSessionFactory.getSession()) {
+            final URL url = new URL(downloadImageUrl);
+            final String uploadPath = getImageFullPath(uploadImageFileName);
+            log.info("Download image {} and upload to sftp server path {}", downloadImageUrl, uploadPath);
+            session.write(url.openStream(), uploadPath);
+        } catch (Exception e) {
+            log.error("Error while trying to upload image from {} to file {}", downloadImageUrl, getImageFullPath(uploadImageFileName));
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -85,8 +85,8 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> findCameraPresetByLotjuIdIn(final Collection<Long> lotjuIds) {
-        return cameraPresetRepository.findByLotjuIdIn(lotjuIds);
+    public List<CameraPreset> findPublishableCameraPresetByLotjuIdIn(final Collection<Long> lotjuIds) {
+        return cameraPresetRepository.findByPublishableIsTrueAndLotjuIdIn(lotjuIds);
     }
 
     @Transactional

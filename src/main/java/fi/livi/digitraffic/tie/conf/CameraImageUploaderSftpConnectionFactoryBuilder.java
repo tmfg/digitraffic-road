@@ -1,12 +1,9 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,9 +93,8 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
 
     public Resource getPrivateKey() throws IOException {
         log.info("Load private key {}", privateKeyPath);
-        Resource resource = loadResource(privateKeyPath);
-        log.debug(FileUtils.readFileToString(resource.getFile(), UTF_8));
-        return resource;
+        String absolutePath = resolveResourceAbsolutePath(privateKeyPath);
+        return loadResource(absolutePath);
     }
 
     private Resource loadResource(String resourcePath) {

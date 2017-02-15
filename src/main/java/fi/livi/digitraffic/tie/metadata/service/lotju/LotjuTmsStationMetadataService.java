@@ -63,7 +63,7 @@ public class LotjuTmsStationMetadataService extends AbstractLotjuMetadataService
             try {
                 Future<Integer> f = completionService.take();
                 countAnturis.addAndGet(f.get());
-                log.info("Got {} anturis", f.get());
+                log.debug("Got {} anturis", f.get());
             } catch (InterruptedException e) {
                 log.error("Error while fetching LamLaskennallinenAnturis", e);
                 executor.shutdownNow();
