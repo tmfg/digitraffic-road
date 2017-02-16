@@ -93,9 +93,6 @@ public class TravelTimeUpdaterTest extends MetadataTestBase {
     @Rollback
     public void updateLatestMediansSucceeds() throws IOException {
 
-        List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(6);
-        assertEquals(0, latestMedians.size());
-
         server.expect(MockRestRequestMatchers.requestTo(expectedUri))
                 .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
                 .andRespond(MockRestResponseCreators.withSuccess(getMediansResponse(), MediaType.APPLICATION_XML));
@@ -103,7 +100,7 @@ public class TravelTimeUpdaterTest extends MetadataTestBase {
         travelTimeUpdater.updateMedians(requestStartTime);
         server.verify();
 
-        latestMedians = trafficFluencyRepository.findLatestMediansForLink(6); // linkId? naturalId?
+        List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(6); // linkId? naturalId?
         assertEquals(1, latestMedians.size());
         assertEquals(1167L, latestMedians.get(0).getMedianJourneyTime().longValue());
         assertEquals(new BigDecimal("26.767"), latestMedians.get(0).getMedianSpeed());
