@@ -91,7 +91,7 @@ public class TravelTimeRepository {
                                                  + "m.ratio_to_free_flow_speed = static_values.ratio_to_free_flow_speed, "
                                                  + "m.nobs = static_values.nobs";
 
-        jdbcTemplate.batchUpdate(UPDATE_LATEST_MEDIANS_SQL, new LatestMedianBatchSetter(medians));
+        jdbcTemplate.batchUpdate(UPDATE_LATEST_MEDIANS_SQL, new MedianBatchSetter(medians));
 
         /*
          * Updates all latest medians that are not in an alert state (sets alert
@@ -176,32 +176,4 @@ public class TravelTimeRepository {
             ps.setInt(6, data.nobs);
         }
     }
-
-    /**
-     * Batch setter for LATEST_JOURNEYTIME_MEDIAN table sql
-     */
-    private class LatestMedianBatchSetter implements BatchPreparedStatementSetter {
-
-        private List<ProcessedMedianDataDto> medianDatas;
-
-        public LatestMedianBatchSetter(List<ProcessedMedianDataDto> medianDatas) {
-            this.medianDatas = medianDatas;
-        }
-
-        public int getBatchSize() {
-            return medianDatas.size();
-        }
-
-        public void setValues(PreparedStatement ps, int i) throws SQLException {
-            ProcessedMedianDataDto data = medianDatas.get(i);
-
-            ps.setTimestamp(1, new Timestamp(data.periodEnd.getTime()));
-            ps.setLong(2, data.medianTravelTime);
-            ps.setBigDecimal(3, data.averageSpeed);
-            ps.setBigDecimal(4, data.ratioToFreeFlowSpeed);
-            ps.setLong(5, data.linkId);
-            ps.setInt(6, data.nobs);
-        }
-    }
-
 }
