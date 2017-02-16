@@ -21,6 +21,8 @@ import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurement
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMedianDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class TravelTimeUpdater {
@@ -31,16 +33,19 @@ public class TravelTimeUpdater {
     private final LinkFastLaneRepository linkFastLaneRepository;
     private final TravelTimePostProcessor travelTimePostProcessor;
     private final TravelTimeRepository travelTimeRepository;
+    private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
     public TravelTimeUpdater(final TravelTimeClient travelTimeClient,
                              final LinkFastLaneRepository linkFastLaneRepository,
                              final TravelTimePostProcessor travelTimePostProcessor,
-                             final TravelTimeRepository travelTimeRepository) {
+                             final TravelTimeRepository travelTimeRepository,
+                             final StaticDataStatusService staticDataStatusService) {
         this.travelTimeClient = travelTimeClient;
         this.linkFastLaneRepository = linkFastLaneRepository;
         this.travelTimePostProcessor = travelTimePostProcessor;
         this.travelTimeRepository = travelTimeRepository;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional
@@ -114,9 +119,11 @@ public class TravelTimeUpdater {
                                                                                                                         data.creationTime,
                                                                                                                         data.lastStaticDataUpdate,
                                                                                                                         mediansForValidLinks), validLinks);
-        log.debug("Processed PKS medians: {}", processedMedians);
 
         travelTimeRepository.insertMedianData(processedMedians);
         travelTimeRepository.updateLatestMedianData(processedMedians);
+        staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
+
+        log.info("Processed and saved PKS medians for {} links", processedMedians.size());
     }
 }
