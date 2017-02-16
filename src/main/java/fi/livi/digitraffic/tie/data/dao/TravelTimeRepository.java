@@ -46,9 +46,23 @@ public class TravelTimeRepository {
      */
     public void insertMedianData(final List<ProcessedMedianDataDto> medians) {
 
-        jdbcTemplate.batchUpdate("INSERT INTO JOURNEYTIME_MEDIAN "
-                                 + "(ID, END_TIMESTAMP, MEDIAN_TRAVEL_TIME, AVERAGE_SPEED, RATIO_TO_FREE_FLOW_SPEED, LINK_ID, NOBS)"
-                                 + "VALUES (seq_journeytime_median.nextval, ?, ?, ?, ?, ?, ?)", new MedianBatchSetter(medians));
+        jdbcTemplate.batchUpdate("MERGE INTO JOURNEYTIME_MEDIAN m "
+                                     + "USING ("
+                                     + "SELECT ? end_timestamp, "
+                                     + "? median_travel_time, "
+                                     + "? average_speed, "
+                                     + "? ratio_to_free_flow_speed, "
+                                     + "? link_id, "
+                                     + "? nobs "
+                                     + "FROM dual) static_values "
+                                     + "ON (m.link_id = static_values.link_id AND m.end_timestamp = static_values.end_timestamp) "
+                                     + "WHEN NOT MATCHED THEN "
+                                     + "INSERT (m.id, m.end_timestamp, m.median_travel_time, "
+                                     + "m.average_speed, m.ratio_to_free_flow_speed, m.link_id, m.nobs) "
+                                     + "VALUES (seq_journeytime_median.nextval, "
+                                     + "static_values.end_timestamp, static_values.median_travel_time, "
+                                     + "static_values.average_speed, static_values.ratio_to_free_flow_speed, "
+                                     + "static_values.link_id, static_values.nobs)", new MedianBatchSetter(medians));
     }
 
     public void updateLatestMedianData(final List<ProcessedMedianDataDto> medians) {
