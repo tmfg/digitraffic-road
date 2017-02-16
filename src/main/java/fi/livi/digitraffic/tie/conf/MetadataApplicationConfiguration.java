@@ -6,6 +6,8 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,7 +15,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.listener.RetryListenerSupport;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -38,6 +46,8 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_PLAIN_WEBSOCKETS_PART_PATH = "/plain-websockets";
+
+    public static final String RETRY_OPERATION = "operation";
 
     private final ConfigurableApplicationContext applicationContext;
 
@@ -114,5 +124,31 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:swagger-ui.html");
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        final Logger retryLog = LoggerFactory.getLogger(RetryTemplate.class);
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        retryPolicy.setMaxAttempts(5);
+
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(200); // 0.5 seconds
+
+        RetryTemplate template = new RetryTemplate();
+        template.setRetryPolicy(retryPolicy);
+        template.setBackOffPolicy(backOffPolicy);
+
+        RetryListenerSupport retryListener = new RetryListenerSupport() {
+            @Override
+            public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+                super.close(context, callback, throwable);
+                if (context.getRetryCount() > 0) {
+                    retryLog.warn("Retry failed {} times for: {}", context.getRetryCount(), context.getAttribute(RETRY_OPERATION));
+                }
+            }
+        };
+        template.setListeners(new RetryListenerSupport[] { retryListener });
+        return template;
     }
 }

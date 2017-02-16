@@ -14,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sun.javafx.binding.StringFormatter;
+
+import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -32,15 +36,20 @@ public class CameraDataUpdateService {
     private CameraPresetService cameraPresetService;
 
     private final SessionFactory sftpSessionFactory;
+    private final RetryTemplate retryTemplate;
+
+    private final HashMap<String, Integer> countMap = new HashMap<>();
 
     @Autowired
     CameraDataUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                             final String sftpUploadFolder,
                             final CameraPresetService cameraPresetService,
-                            SessionFactory sftpSessionFactory) {
+                            SessionFactory sftpSessionFactory,
+                            RetryTemplate retryTemplate) {
         this.sftpUploadFolder = sftpUploadFolder;
         this.cameraPresetService = cameraPresetService;
         this.sftpSessionFactory = sftpSessionFactory;
+        this.retryTemplate = retryTemplate;
     }
 
     @Transactional
@@ -96,13 +105,18 @@ public class CameraDataUpdateService {
         }
         // Load and save image or delete non public image
         if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
-            try {
-                uploadImage(kuva.getUrl(), filename);
-            } catch (IOException e) {
-                log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
-                          presetId, kuva.getUrl(), getImageFullPath(filename));
-                log.error("Error", e);
-            }
+            retryTemplate.execute(context -> {
+                try {
+                    context.setAttribute(MetadataApplicationConfiguration.RETRY_OPERATION, StringFormatter.format("UploadImage from %s to %s", kuva.getUrl(), getImageFullPath(filename)));
+                    uploadImage(kuva.getUrl(), filename);
+                    return true;
+                } catch (IOException e) {
+                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                            presetId, kuva.getUrl(), getImageFullPath(filename));
+                    log.error("Error", e);
+                    return false;
+                }
+            });
         } else {
             if (cameraPreset == null) {
                 log.info("Could not update non existing camera preset {}", presetId);
