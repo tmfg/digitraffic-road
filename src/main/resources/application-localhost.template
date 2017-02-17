@@ -1,6 +1,3 @@
-logging.file=digitraffic-metadata
-logging.level.root=INFO
-
 # Http-server port
 server.port = 9010
 
@@ -24,14 +21,11 @@ forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam.url/
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
 camera-image-uploader.sftp.port = 2232
-camera-image-uploader.sftp.poolSize = 5
-camera-image-uploader.sftp.sessionWaitTimeout = 5000
-camera-image-uploader.sftp.allowUnknownKeys = false
 camera-image-uploader.sftp.user = digitraffic
 camera-image-uploader.sftp.knownHostsPath = classpath:sftp/client_known_hosts
 camera-image-uploader.sftp.privateKeyPath = classpath:sftp/client_id_rsa
@@ -40,7 +34,7 @@ camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 
 # JMS settings
 
-# Sonic JMS 8.6.0
+# JMS Sonic 2013 8.6.0
 jms.connectionUrls=tcp://ip:port,tcp://ip:port
 jms.userId=<username>
 jms.password=<password>
@@ -51,10 +45,10 @@ jms.datex2.userId=<password>
 jms.datex2.password=<password>
 
 # JMS queues
-jms.weather.inQueue=topic://<weather-topic>
-jms.tms.inQueue=topic://<tms-topic>
-jms.camera.inQueue=topic://<camera-topic>
-jms.datex2.inQueue=queue://<datex2-queue>
+jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.OutTopic
+jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
+jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 

@@ -108,12 +108,17 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     }
 
     public String resolveResourceAbsolutePath(String resource) throws IOException {
-        final String folderLocation = StringUtils.substringBeforeLast(resource, "/");
-        final String fileName = StringUtils.substringAfterLast(resource, "/");
-        final Resource rootResource = resourceLoader.getResource(folderLocation);
-        final String rootPath = rootResource.getFile().getAbsolutePath();
-        final String absolutePath = rootPath + File.separator + fileName;
-        log.info("Resolved resource {} to {}", resource, absolutePath);
-        return absolutePath;
+        try {
+            final String folderLocation = StringUtils.substringBeforeLast(resource, "/");
+            final String fileName = StringUtils.substringAfterLast(resource, "/");
+            final Resource rootResource = resourceLoader.getResource(folderLocation);
+            final String rootPath = rootResource.getFile().getAbsolutePath();
+            final String absolutePath = rootPath + File.separator + fileName;
+            log.info("Resolved resource {} to {}", resource, absolutePath);
+            return absolutePath;
+        } catch (Exception e) {
+            log.error("Could not resolve resource " + resource +" absolute path");
+            throw e;
+        }
     }
 }
