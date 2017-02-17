@@ -31,7 +31,7 @@ public class TravelTimeMeasurementsUpdateJob extends SimpleUpdateJob {
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime from = TravelTimeMediansUpdateJob.getStartTime(updated, now);
 
-        final long between = ChronoUnit.MINUTES.between(from, now.minusMinutes(5));  // Median period duration is 5 minutes
+        final long between = ChronoUnit.MINUTES.between(from, now.minusMinutes(1));  // Measurement period duration is 5 minutes
 
         LongStream.range(1, between).forEachOrdered(minute -> {
             try {
