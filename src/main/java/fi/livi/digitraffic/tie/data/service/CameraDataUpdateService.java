@@ -6,8 +6,17 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +49,8 @@ public class CameraDataUpdateService {
 
     private final HashMap<String, Integer> countMap = new HashMap<>();
 
+    private static final Long MAX_EXECUTION_TIME_PER_IMAGE = 5000L;
+
     @Autowired
     CameraDataUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                             final String sftpUploadFolder,
@@ -70,29 +81,60 @@ public class CameraDataUpdateService {
             }
         });
 
-        List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
+        final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
 
-        // Handle present presets
-        for (CameraPreset cameraPreset : cameraPresets) {
-            Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
+        final CompletionService<Boolean> completionService = new ExecutorCompletionService<>(executor);
+
+        final HashMap<String, ImageFetcherAndUploader> fetchers = new HashMap<>();
+
+        for (final CameraPreset cameraPreset : cameraPresets) {
+            final Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
             if (kuva == null) {
                 log.error("No kuva for preset {}", cameraPreset.toString());
             } else {
-                handleKuva(kuva, cameraPreset);
+                fetchers.put(
+                        cameraPreset.getPresetId(),
+                        createImageFetcherAndSubmit(kuva, cameraPreset, completionService));
             }
         }
 
         // Handle missing presets to delete possible images from disk
         for (Kuva notFoundPresetForKuva : kuvaMappedByPresetLotjuId.values()) {
-            handleKuva(notFoundPresetForKuva, null);
+            fetchers.put(
+                    resolvePresetId(notFoundPresetForKuva),
+                    createImageFetcherAndSubmit(notFoundPresetForKuva, null, completionService));
         }
+
+        while (!fetchers.isEmpty()) {
+            // Remove completed fetchers
+            Set<String> completed =
+                    fetchers.entrySet().stream().filter(es -> es.getValue().isDone()).map(es -> es.getKey()).collect(Collectors.toSet());
+            completed.forEach(presetId -> fetchers.remove(presetId));
+            // Collect fetchers that has started
+            Set<String> toCancel = fetchers.entrySet().stream().filter(f -> f.getValue().getDuration() >= MAX_EXECUTION_TIME_PER_IMAGE)
+                    .map(es -> es.getKey()).collect(Collectors.toSet());
+            toCancel.forEach(presetId -> fetchers.remove(presetId).cancel());
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                log.debug(e.getMessage(), e);
+            }
+        }
+        executor.shutdown();
+    }
+
+    private ImageFetcherAndUploader createImageFetcherAndSubmit(final Kuva kuva, final CameraPreset preset, final CompletionService<Boolean> completionService) {
+        ImageFetcherAndUploader fetcher = new ImageFetcherAndUploader(kuva, preset);
+        fetcher.setFuture(completionService.submit(fetcher));
+        return fetcher;
     }
 
     private String resolvePresetId(final Kuva kuva) {
         return kuva.getNimi().substring(0, 8);
     }
 
-    private void handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
+    private boolean handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
         String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
         String filename = presetId + ".jpg";
         log.info("Handling kuva: " + ToStringHelpper.toString(kuva));
@@ -105,7 +147,7 @@ public class CameraDataUpdateService {
         }
         // Load and save image or delete non public image
         if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
-            retryTemplate.execute(context -> {
+            return retryTemplate.execute(context -> {
                 try {
                     context.setAttribute(MetadataApplicationConfiguration.RETRY_OPERATION, StringFormatter.format("UploadImage from %s to %s", kuva.getUrl(), getImageFullPath(filename)));
                     uploadImage(kuva.getUrl(), filename);
@@ -122,7 +164,7 @@ public class CameraDataUpdateService {
                 log.info("Could not update non existing camera preset {}", presetId);
             }
             log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
-            deleteImageQuietly(filename);
+            return deleteImageQuietly(filename);
         }
     }
 
@@ -130,18 +172,20 @@ public class CameraDataUpdateService {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
 
-    private void deleteImageQuietly(String deleteImageFileName) {
+    private boolean deleteImageQuietly(String deleteImageFileName) {
         try (Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath) ) {
                 session.remove(imageRemotePath);
             }
+            return true;
         } catch (IOException e) {
             log.error("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
+            return false;
         }
     }
 
-    private void uploadImage(String downloadImageUrl, String uploadImageFileName) throws IOException {
+    private void uploadImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         try (final Session session = sftpSessionFactory.getSession()) {
             final URL url = new URL(downloadImageUrl);
             final String uploadPath = getImageFullPath(uploadImageFileName);
@@ -150,6 +194,45 @@ public class CameraDataUpdateService {
         } catch (Exception e) {
             log.error("Error while trying to upload image from {} to file {}", downloadImageUrl, getImageFullPath(uploadImageFileName));
             throw new RuntimeException(e);
+        }
+    }
+
+    private class ImageFetcherAndUploader implements Callable<Boolean> {
+
+        private final Kuva kuva;
+        private final CameraPreset cameraPreset;
+        private Future<Boolean> future;
+        private StopWatch stopWatch = new StopWatch();
+
+        public ImageFetcherAndUploader(final Kuva kuva, final CameraPreset cameraPreset) {
+            this.kuva = kuva;
+            this.cameraPreset = cameraPreset;
+        }
+
+        @Override
+        public Boolean call() throws Exception {
+            stopWatch.start();
+            return handleKuva(kuva, cameraPreset);
+        }
+
+        public Future<Boolean> getFuture() {
+            return future;
+        }
+
+        public void setFuture(Future<Boolean> future) {
+            this.future = future;
+        }
+
+        public Long getDuration() {
+            return stopWatch.getTime();
+        }
+
+        public boolean isDone() {
+            return future.isDone();
+        }
+
+        public void cancel() {
+            future.cancel(true);
         }
     }
 

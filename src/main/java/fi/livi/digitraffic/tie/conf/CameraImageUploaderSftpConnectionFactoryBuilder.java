@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -87,7 +86,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     public CachingSessionFactory<ChannelSftp.LsEntry> getCachingSessionFactory() throws IOException {
         log.info("Init CachingSessionFactory for sftp with poolSize {} and sessionWaitTimeout {}", poolSize, sessionWaitTimeout);
         CachingSessionFactory<ChannelSftp.LsEntry> cachingSessionFactory = new CachingSessionFactory<>(getDefaultSftpSessionFactory(), poolSize);
-        Optional.ofNullable(sessionWaitTimeout).ifPresent(value -> cachingSessionFactory.setSessionWaitTimeout(value));
+        cachingSessionFactory.setSessionWaitTimeout(sessionWaitTimeout);
         return cachingSessionFactory;
     }
 

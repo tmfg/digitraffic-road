@@ -182,31 +182,30 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
         cameraDataUpdateService.updateCameraData(kuvas);
 
-        Session session = this.sftpSessionFactory.getSession();
+        try (final Session session = this.sftpSessionFactory.getSession()) {
 
-        kuvas.stream().forEach(kuva -> {
-            String filePath = getSftpPath(kuva);
-            if (kuva.getNimi().startsWith("X")) {
-                try {
-                    Assert.assertFalse("Image should have been deleted from sftp server", session.exists(getSftpPath(kuva)));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            kuvas.stream().forEach(kuva -> {
+                String filePath = getSftpPath(kuva);
+                if (kuva.getNimi().startsWith("X")) {
+                    try {
+                        Assert.assertFalse("Image should have been deleted from sftp server", session.exists(getSftpPath(kuva)));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    log.info("Read preset {} image back from server from path {}", kuva.getEsiasentoId(), filePath);
+                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                        session.read(filePath, out);
+                        byte[] initialData = imageFilesMap.get(kuva.getNimi());
+                        byte[] readData = out.toByteArray();
+                        Assert.assertArrayEquals("Preset " + kuva.getNimi() + " image data read from sever is not equal with initial content",
+                                initialData, readData);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            } else {
-                log.info("Read preset {} image back from server from path {}", kuva.getEsiasentoId(), filePath);
-                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                    session.read(filePath, out);
-                    byte[] initialData = imageFilesMap.get(kuva.getNimi());
-                    byte[] readData = out.toByteArray();
-                    Assert.assertArrayEquals("Preset " + kuva.getNimi() + " image data read from sever is not equal with initial content",
-                            initialData, readData);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        session.close();
+            });
+        }
     }
 
     @Test

@@ -79,11 +79,6 @@
             <artifactId>spring-integration-sftp</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.integration</groupId>
-            <artifactId>spring-integration-java-dsl</artifactId>
-        </dependency>
-
         <!-- Includes spring's support classes for quartz -->
         <dependency>
             <groupId>org.springframework</groupId>
