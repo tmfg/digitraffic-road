@@ -10,16 +10,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +27,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,11 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
-import org.springframework.messaging.MessagingException;
-import org.springframework.util.ReflectionUtils;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
@@ -82,14 +75,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
-    @Value("${camera-image-uploader.sftp.poolSize}")
-    Integer poolSize;
-
-    @Value("${camera-image-uploader.sftp.sessionWaitTimeout}")
-    Long sessionWaitTimeout;
-
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
-
 
     private static final String CAMERA_ID = "C01502";
 
@@ -208,67 +194,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         }
     }
 
-    @Test
-    public void testSessionCachingPoolLimit() {
-
-        HashSet<Session> sessions = new HashSet<>();
-        while(sessions.size() < poolSize+1) {
-            log.info("Get session {}", sessions.size()+1);
-            if (sessions.size() < poolSize) {
-                sessions.add(this.sftpSessionFactory.getSession());
-            } else {
-                // getting session out of pool fails
-                log.info("Getting session of full should fail after timeout");
-                StopWatch time = StopWatch.createStarted();
-                boolean fail = false;
-                try {
-                    Session session = this.sftpSessionFactory.getSession();
-                    session.close();
-                } catch (MessagingException e) {
-                    fail = true;
-                    time.stop();
-                    log.info("Timeout took {} ms", time.getTime());
-                    assertTrue(time.getTime() >= sessionWaitTimeout);
-                    assertTrue(time.getTime() <= sessionWaitTimeout+100);
-                }
-                assertTrue("Get session should have failed after timeout " + sessionWaitTimeout, fail);
-                break;
-            }
-        }
-        sessions.stream().forEach(Session::close);
-    }
-
-    @Test
-    public void testSessionCaching() {
-
-        HashSet<Session> newSessions = new HashSet<>();
-        while(newSessions.size() < poolSize) {
-            log.info("Get new session {}", newSessions.size()+1);
-            newSessions.add(this.sftpSessionFactory.getSession());
-        }
-        // relase sessions to pool
-        newSessions.stream().forEach(Session::close);
-
-        Field sessionField = ReflectionUtils.findField(CachingSessionFactory.CachedSession.class, "targetSession");
-        sessionField.setAccessible(true);
-        Set<Session> newRealSessions = new HashSet<>();
-        newSessions.stream().forEach(s -> {
-            newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
-
-        HashSet<Session> cachedSessions = new HashSet<>();
-        while(cachedSessions.size() < poolSize) {
-            log.info("Get cached session {}", cachedSessions.size()+1);
-            cachedSessions.add(this.sftpSessionFactory.getSession());
-        }
-        Set<Session> cachedRealSessions = new HashSet<>();
-        cachedSessions.stream().forEach(s -> {
-            cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
-
-        assertTrue("All sessions should be found from cachedSessions", cachedRealSessions.containsAll(newRealSessions));
-        cachedSessions.stream().forEach(Session::close);
-    }
 
 
     private CameraPreset generateMissingDummyPreset() {
