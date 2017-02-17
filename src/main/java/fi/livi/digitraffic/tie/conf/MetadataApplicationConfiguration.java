@@ -143,8 +143,8 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
             @Override
             public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
                 super.close(context, callback, throwable);
-                if (context.getRetryCount() > 0) {
-                    retryLog.warn("Retry failed {} times for: {}", context.getRetryCount(), context.getAttribute(RETRY_OPERATION));
+                if (context.getRetryCount() > 0 && context.getAttribute(RETRY_OPERATION) != null) {
+                     retryLog.warn("Retry failed {} times for: {}", context.getRetryCount(), context.getAttribute(RETRY_OPERATION));
                 }
             }
         };

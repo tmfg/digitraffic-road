@@ -27,9 +27,6 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.javafx.binding.StringFormatter;
-
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -134,40 +131,6 @@ public class CameraDataUpdateService {
         return kuva.getNimi().substring(0, 8);
     }
 
-    private boolean handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
-        String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
-        String filename = presetId + ".jpg";
-        log.info("Handling kuva: " + ToStringHelpper.toString(kuva));
-
-        // Update CameraPreset
-        if (cameraPreset != null) {
-            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
-            cameraPreset.setPublicExternal(kuva.isJulkinen());
-            cameraPreset.setPictureLastModified(pictureTaken);
-        }
-        // Load and save image or delete non public image
-        if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
-            return retryTemplate.execute(context -> {
-                try {
-                    context.setAttribute(MetadataApplicationConfiguration.RETRY_OPERATION, StringFormatter.format("UploadImage from %s to %s", kuva.getUrl(), getImageFullPath(filename)));
-                    uploadImage(kuva.getUrl(), filename);
-                    return true;
-                } catch (IOException e) {
-                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
-                            presetId, kuva.getUrl(), getImageFullPath(filename));
-                    log.error("Error", e);
-                    return false;
-                }
-            });
-        } else {
-            if (cameraPreset == null) {
-                log.info("Could not update non existing camera preset {}", presetId);
-            }
-            log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
-            return deleteImageQuietly(filename);
-        }
-    }
-
     private String getImageFullPath(String imageFileName) {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
@@ -202,7 +165,7 @@ public class CameraDataUpdateService {
         private final Kuva kuva;
         private final CameraPreset cameraPreset;
         private Future<Boolean> future;
-        private StopWatch stopWatch = new StopWatch();
+        private final StopWatch stopWatch = new StopWatch();
 
         public ImageFetcherAndUploader(final Kuva kuva, final CameraPreset cameraPreset) {
             this.kuva = kuva;
@@ -213,6 +176,42 @@ public class CameraDataUpdateService {
         public Boolean call() throws Exception {
             stopWatch.start();
             return handleKuva(kuva, cameraPreset);
+        }
+
+        private boolean handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
+            String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
+            String filename = presetId + ".jpg";
+            log.info("Handling " + ToStringHelpper.toString(kuva));
+
+            // Update CameraPreset
+            if (cameraPreset != null) {
+                ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
+                cameraPreset.setPublicExternal(kuva.isJulkinen());
+                cameraPreset.setPictureLastModified(pictureTaken);
+            }
+            // Load and save image or delete non public image
+            if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
+                return retryTemplate.execute(context -> {
+                    try {
+// This hangs the app for some reason
+//                        log.info("retryTemplate setAttribute {} to {}", kuva.getUrl(), filename);
+//                        context.setAttribute(MetadataApplicationConfiguration.RETRY_OPERATION, StringFormatter.format("UploadImage from %s to %s", kuva.getUrl(), getImageFullPath(filename)));
+                        uploadImage(kuva.getUrl(), filename);
+                        return true;
+                    } catch (IOException e) {
+                        log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                                presetId, kuva.getUrl(), getImageFullPath(filename));
+                        log.error("Error", e);
+                        return false;
+                    }
+                });
+            } else {
+                if (cameraPreset == null) {
+                    log.info("Could not update non existing camera preset {}", presetId);
+                }
+                log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
+                return deleteImageQuietly(filename);
+            }
         }
 
         public Future<Boolean> getFuture() {
