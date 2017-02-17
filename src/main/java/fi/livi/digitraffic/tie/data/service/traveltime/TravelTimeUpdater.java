@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service.traveltime;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,19 +52,19 @@ public class TravelTimeUpdater {
     @Transactional
     public void updateIndividualMeasurements(final ZonedDateTime from) {
 
-        log.info("Importing individual PKS travel time measurements");
-
         TravelTimeMeasurementsDto data = travelTimeClient.getMeasurements(from);
 
         if (data != null && data.measurements != null) {
             log.info("Fetched PKS individual measurements for {} links. Period start {} and duration {}",
                      data.measurements.size(), data.periodStart, data.duration);
+        } else {
+            log.info("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            return;
         }
 
-        // determine currently valid links
         final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        log.info("Valid PKS links in database {}", validLinks);
+        log.info("Valid PKS links in database {}", validLinks.size());
 
         final Set<Long> validLinkNaturalIds = validLinks.keySet();
 
@@ -77,25 +78,27 @@ public class TravelTimeUpdater {
                                                     data.measurements.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
                                                                               .collect(Collectors.toList());
 
-        // post-process, calculate dates based on offset values
         List<ProcessedMeasurementDataDto> processed =
                 TravelTimePostProcessor.processMeasurements(new TravelTimeMeasurementsDto(data.periodStart,
                                                                                           data.duration,
                                                                                           measurementsForValidLinks), validLinks);
-        log.info("Processed PKS measurements: {}" + processed);
 
         travelTimeRepository.insertMeasurementData(processed);
+        staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
+
+        log.info("Processed and saved PKS measurements for {} links", processed.size());
     }
 
     @Transactional
     public void updateMedians(final ZonedDateTime from) {
 
-        log.info("Importing PKS travel time medians");
-
         final TravelTimeMediansDto data = travelTimeClient.getMedians(from);
 
         if (data != null && data.medians != null) {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
+        } else {
+            log.info("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            return;
         }
 
         final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
