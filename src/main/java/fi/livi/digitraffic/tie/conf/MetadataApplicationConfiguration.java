@@ -15,11 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.retry.RetryCallback;
-import org.springframework.retry.RetryContext;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.listener.RetryListenerSupport;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -138,17 +135,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         RetryTemplate template = new RetryTemplate();
         template.setRetryPolicy(retryPolicy);
         template.setBackOffPolicy(backOffPolicy);
-
-        RetryListenerSupport retryListener = new RetryListenerSupport() {
-            @Override
-            public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
-                super.close(context, callback, throwable);
-                if (context.getRetryCount() > 0 && context.getAttribute(RETRY_OPERATION) != null) {
-                     retryLog.warn("Retry failed {} times for: {}", context.getRetryCount(), context.getAttribute(RETRY_OPERATION));
-                }
-            }
-        };
-        template.setListeners(new RetryListenerSupport[] { retryListener });
         return template;
     }
 }

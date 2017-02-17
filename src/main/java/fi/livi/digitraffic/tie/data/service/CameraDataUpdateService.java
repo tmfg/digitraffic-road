@@ -193,9 +193,6 @@ public class CameraDataUpdateService {
             if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
                 return retryTemplate.execute(context -> {
                     try {
-// This hangs the app for some reason
-//                        log.info("retryTemplate setAttribute {} to {}", kuva.getUrl(), filename);
-//                        context.setAttribute(MetadataApplicationConfiguration.RETRY_OPERATION, StringFormatter.format("UploadImage from %s to %s", kuva.getUrl(), getImageFullPath(filename)));
                         uploadImage(kuva.getUrl(), filename);
                         return true;
                     } catch (IOException e) {
