@@ -22,6 +22,8 @@ cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
+travelTimeMediansUpdateJob.frequency=60000
+travelTimeMeasurementsUpdateJob.frequency=60000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam.url/
