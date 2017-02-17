@@ -51,26 +51,28 @@ public class TravelTimeClient {
     @Retryable(backoff = @Backoff)
     public TravelTimeMediansDto getMedians(final ZonedDateTime from) {
 
-        final String fromUtc = getDateString(from);
-        log.info("Fetching travel time medians from: {}", fromUtc);
+        final String startTimeUtc = getDateString(from);
+        final String url = mediansUrl + "?starttime=" + startTimeUtc;
+        log.info("Fetching travel time medians from: {}", url);
 
-        return (TravelTimeMediansDto) getTravelTimeData(mediansUrl, fromUtc, TravelTimeMediansDto.class);
+        return (TravelTimeMediansDto) getTravelTimeData(url, TravelTimeMediansDto.class);
     }
 
     @Retryable(backoff = @Backoff)
     public TravelTimeMeasurementsDto getMeasurements(final ZonedDateTime from) {
 
-        final String fromUtc = getDateString(from);
-        log.info("Fetching travel time individual measurements from: {}", fromUtc);
+        final String startTimeUtc = getDateString(from);
+        final String url = individualMeasurementUrl + "?starttime=" + startTimeUtc;
+        log.info("Fetching travel time individual measurements from: {}", url);
 
-        return (TravelTimeMeasurementsDto) getTravelTimeData(individualMeasurementUrl, fromUtc, TravelTimeMeasurementsDto.class);
+        return (TravelTimeMeasurementsDto) getTravelTimeData(url, TravelTimeMeasurementsDto.class);
     }
 
-    private Object getTravelTimeData(final String url, final String startTime, final Class clazz) {
+    private Object getTravelTimeData(final String url, final Class clazz) {
 
         final HttpEntity<String> request = createRequest();
 
-        return restTemplate.exchange(url + "?starttime=" + startTime, HttpMethod.GET, request, clazz).getBody();
+        return restTemplate.exchange(url, HttpMethod.GET, request, clazz).getBody();
     }
 
     private HttpEntity<String> createRequest() {
