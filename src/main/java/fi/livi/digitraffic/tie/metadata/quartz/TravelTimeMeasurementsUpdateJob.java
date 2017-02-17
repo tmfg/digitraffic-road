@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 
 @DisallowConcurrentExecution
-public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
+public class TravelTimeMeasurementsUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private TravelTimeUpdater travelTimeUpdater;
@@ -26,29 +26,19 @@ public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(final JobExecutionContext context) throws Exception {
 
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.TRAVEL_TIME_MEDIANS.name());
+        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.TRAVEL_TIME_MEASUREMENTS.name());
 
         final ZonedDateTime now = ZonedDateTime.now();
-        final ZonedDateTime from = getStartTime(updated, now);
+        final ZonedDateTime from = TravelTimeMediansUpdateJob.getStartTime(updated, now);
 
-        final long between = ChronoUnit.MINUTES.between(from, now.minusMinutes(5)); // Median period duration is 5 minutes
+        final long between = ChronoUnit.MINUTES.between(from, now.minusMinutes(5));  // Median period duration is 5 minutes
 
         LongStream.range(1, between).forEachOrdered(minute -> {
             try {
-                travelTimeUpdater.updateMedians(from.plusMinutes(minute));
+                travelTimeUpdater.updateIndividualMeasurements(from.plusMinutes(minute));
             } catch (HttpServerErrorException e) {
                 // Request failed after retries. Skip this minute.
             }
         });
-    }
-
-    public static ZonedDateTime getStartTime(final MetadataUpdated updated, final ZonedDateTime now) {
-
-        if (updated == null || updated.getUpdatedTime().isBefore(now.minusDays(1))) {
-            // Data source stores data from last 24h hours
-            return now.minusDays(1);
-        } else {
-            return updated.getUpdatedTime();
-        }
     }
 }
