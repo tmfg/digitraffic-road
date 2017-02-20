@@ -2,18 +2,13 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -24,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,51 +82,32 @@ public class CameraDataUpdateService {
 
         final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
 
-        final ExecutorService executor = Executors.newFixedThreadPool(5);
-        final CompletionService<Boolean> completionService = new ExecutorCompletionService<>(executor);
-
-        final HashMap<String, ImageFetcherAndUploader> fetchers = new HashMap<>();
+        final List<Future<Boolean>> futures = new ArrayList<>();
+        StopWatch start = StopWatch.createStarted();
 
         for (final CameraPreset cameraPreset : cameraPresets) {
             final Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
             if (kuva == null) {
                 log.error("No kuva for preset {}", cameraPreset.toString());
             } else {
-                fetchers.put(
-                        cameraPreset.getPresetId(),
-                        createImageFetcherAndSubmit(kuva, cameraPreset, completionService));
+                futures.add(handleKuva(kuva, cameraPreset));
             }
         }
 
         // Handle missing presets to delete possible images from disk
-        for (Kuva notFoundPresetForKuva : kuvaMappedByPresetLotjuId.values()) {
-            fetchers.put(
-                    resolvePresetId(notFoundPresetForKuva),
-                    createImageFetcherAndSubmit(notFoundPresetForKuva, null, completionService));
+        for (Kuva notFoundPresetsKuva : kuvaMappedByPresetLotjuId.values()) {
+            futures.add(handleKuva(notFoundPresetsKuva, null));
         }
 
-        while (!fetchers.isEmpty()) {
-            // Remove completed fetchers
-            Set<String> completed =
-                    fetchers.entrySet().stream().filter(es -> es.getValue().isDone()).map(es -> es.getKey()).collect(Collectors.toSet());
-            completed.forEach(presetId -> fetchers.remove(presetId));
-            // Collect fetchers that has started
-            Set<String> toCancel = fetchers.entrySet().stream().filter(f -> f.getValue().getDuration() >= MAX_EXECUTION_TIME_PER_IMAGE)
-                    .map(es -> es.getKey()).collect(Collectors.toSet());
-            toCancel.forEach(presetId -> fetchers.remove(presetId).cancel());
+        while ( futures.parallelStream().filter(f -> !f.isDone()).findFirst().isPresent() ) {
             try {
-                Thread.sleep(200);
+                Thread.sleep(100L);
             } catch (InterruptedException e) {
-                log.debug(e.getMessage(), e);
+                log.debug("InterruptedException", e);
             }
         }
-        executor.shutdown();
-    }
 
-    private ImageFetcherAndUploader createImageFetcherAndSubmit(final Kuva kuva, final CameraPreset preset, final CompletionService<Boolean> completionService) {
-        ImageFetcherAndUploader fetcher = new ImageFetcherAndUploader(kuva, preset);
-        fetcher.setFuture(completionService.submit(fetcher));
-        return fetcher;
+        log.info("Updating {} weather camera images too {} ms", futures.size(), start.getTime());
     }
 
     private String resolvePresetId(final Kuva kuva) {
@@ -143,6 +120,40 @@ public class CameraDataUpdateService {
 
     private String getImageFullPath(String imageFileName) {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
+    }
+
+    private AsyncResult<Boolean> handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
+        String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
+        String filename = getPresetImageName(presetId);
+        log.info("Handling " + ToStringHelpper.toString(kuva));
+
+        // Update CameraPreset
+        if (cameraPreset != null) {
+            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
+            cameraPreset.setPublicExternal(kuva.isJulkinen());
+            cameraPreset.setPictureLastModified(pictureTaken);
+        }
+
+        return retryTemplate.execute(context -> {
+            // Load and save image or delete non public image
+            if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
+                try {
+                    uploadImage(kuva.getUrl(), filename);
+                    return new AsyncResult<>(true);
+                } catch (IOException e) {
+                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                            presetId, kuva.getUrl(), getImageFullPath(filename));
+                    log.error("Error", e);
+                    return new AsyncResult<>(false);
+                }
+            } else {
+                if (cameraPreset == null) {
+                    log.info("Could not update non existing camera preset {}", presetId);
+                }
+                log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
+                return new AsyncResult<>(deleteImageQuietly(filename));
+            }
+        });
     }
 
     private boolean deleteImageQuietly(String deleteImageFileName) {
@@ -162,85 +173,15 @@ public class CameraDataUpdateService {
     private void uploadImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         try (final Session session = sftpSessionFactory.getSession()) {
             final URL url = new URL(downloadImageUrl);
+            URLConnection con = url.openConnection();
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
             final String uploadPath = getImageFullPath(uploadImageFileName);
             log.info("Download image {} and upload to sftp server path {}", downloadImageUrl, uploadPath);
-            session.write(url.openStream(), uploadPath);
+            session.write(con.getInputStream(), uploadPath);
         } catch (Exception e) {
             log.error("Error while trying to upload image from {} to file {}", downloadImageUrl, getImageFullPath(uploadImageFileName));
             throw new RuntimeException(e);
         }
     }
-
-    private class ImageFetcherAndUploader implements Callable<Boolean> {
-
-        private final Kuva kuva;
-        private final CameraPreset cameraPreset;
-        private Future<Boolean> future;
-        private final StopWatch stopWatch = new StopWatch();
-
-        public ImageFetcherAndUploader(final Kuva kuva, final CameraPreset cameraPreset) {
-            this.kuva = kuva;
-            this.cameraPreset = cameraPreset;
-        }
-
-        @Override
-        public Boolean call() throws Exception {
-            stopWatch.start();
-            return handleKuva(kuva, cameraPreset);
-        }
-
-        private boolean handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
-            String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
-            String filename = getPresetImageName(presetId);
-            log.info("Handling " + ToStringHelpper.toString(kuva));
-
-            // Update CameraPreset
-            if (cameraPreset != null) {
-                ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
-                cameraPreset.setPublicExternal(kuva.isJulkinen());
-                cameraPreset.setPictureLastModified(pictureTaken);
-            }
-            // Load and save image or delete non public image
-            if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
-                return retryTemplate.execute(context -> {
-                    try {
-                        uploadImage(kuva.getUrl(), filename);
-                        return true;
-                    } catch (IOException e) {
-                        log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
-                                presetId, kuva.getUrl(), getImageFullPath(filename));
-                        log.error("Error", e);
-                        return false;
-                    }
-                });
-            } else {
-                if (cameraPreset == null) {
-                    log.info("Could not update non existing camera preset {}", presetId);
-                }
-                log.info("Delete hidden or missing preset's {} remote image {}", presetId, getImageFullPath(filename));
-                return deleteImageQuietly(filename);
-            }
-        }
-
-        public Future<Boolean> getFuture() {
-            return future;
-        }
-
-        public void setFuture(Future<Boolean> future) {
-            this.future = future;
-        }
-
-        public Long getDuration() {
-            return stopWatch.getTime();
-        }
-
-        public boolean isDone() {
-            return future.isDone();
-        }
-
-        public void cancel() {
-            future.cancel(true);
-        }
-    }
-
 }

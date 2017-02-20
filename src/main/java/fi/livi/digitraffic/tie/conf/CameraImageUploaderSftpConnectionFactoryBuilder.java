@@ -31,8 +31,9 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     private final String user;
     private final Integer poolSize;
     private final Long sessionWaitTimeout;
-
+    private final Integer connectionTimeout;
     private final ResourceLoader resourceLoader;
+    
     @Autowired
     public CameraImageUploaderSftpConnectionFactoryBuilder(
             @Value("${camera-image-uploader.sftp.host}")
@@ -53,6 +54,8 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
             final Integer poolSize,
             @Value("${camera-image-uploader.sftp.sessionWaitTimeout}")
             final Long sessionWaitTimeout,
+            @Value("${camera-image-uploader.sftp.connectionTimeout}")
+            final Integer connectionTimeout,
             final ResourceLoader resourceLoader) {
 
         this.host = host;
@@ -64,6 +67,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         this.user = user;
         this.poolSize = poolSize;
         this.sessionWaitTimeout = sessionWaitTimeout;
+        this.connectionTimeout = connectionTimeout;
         this.resourceLoader = resourceLoader;
     }
 
@@ -77,6 +81,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         defaultSftpSessionFactory.setUser(user);
         defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(knownHostsPath));
         defaultSftpSessionFactory.setAllowUnknownKeys(allowUnknownKeys);
+        defaultSftpSessionFactory.setTimeout(connectionTimeout);
         log.info("Initialized DefaultSftpSessionFactory host:{}, port:{}, privateKey:{}, user:{}, knownHostsPath:{}, allowUnknownKeys;{}",
                  host, port, resolveResourceAbsolutePath(privateKeyPath), user, resolveResourceAbsolutePath(knownHostsPath), allowUnknownKeys);
         return defaultSftpSessionFactory;
