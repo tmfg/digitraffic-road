@@ -24,37 +24,23 @@ public class LinkFastLaneRepository {
      * @return Map (link natural id -> link data)
      */
     public Map<Long, LinkFastLaneDto> findNonObsoleteLinks() {
-        return findLinks("AND l.obsolete = 0");
-    }
-
-    /**
-     * Return link id, length, free flow speeds, and which (summer/winter)
-     * season it is.
-     *
-     * @return Map (link natural id -> link data)
-     */
-    public Map<Long, LinkFastLaneDto> findLinks() {
-        return findLinks("");
-    }
-
-    private Map<Long, LinkFastLaneDto> findLinks(final String obsoleteCriteria) {
         List<LinkFastLaneDto> links = jdbcTemplate
                 .query("SELECT l.id, l.natural_id, l.summer_free_flow_speed, l.winter_free_flow_speed, l.length, d.speed_limit_season " +
                        "FROM link l, road_district d " +
                        "WHERE l.road_district_id = d.id " +
-                       obsoleteCriteria,
+                       "AND l.obsolete = 0",
                        (rs, rowNum) -> new LinkFastLaneDto(rs.getLong("natural_id"),
                                                            rs.getLong("id"),
                                                            rs.getLong("length"),
                                                            rs.getDouble("summer_free_flow_speed"),
                                                            rs.getDouble("winter_free_flow_speed"),
-                                                           getSpeedLimitSeason(rs.getInt("speed_limit_season"))));
+                                                           isSpeedLimitSeason(rs.getInt("speed_limit_season"))));
 
         Map<Long, LinkFastLaneDto> map = links.stream().collect(Collectors.toMap(LinkFastLaneDto::getNaturalId, Function.identity()));
         return map;
     }
 
-    private static boolean getSpeedLimitSeason(final int season) {
-        return season == 1 ? false : true;
+    private static boolean isSpeedLimitSeason(final int season) {
+        return season != 1;
     }
 }

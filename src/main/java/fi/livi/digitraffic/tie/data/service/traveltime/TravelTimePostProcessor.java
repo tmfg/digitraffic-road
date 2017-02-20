@@ -124,9 +124,9 @@ public class TravelTimePostProcessor {
     }
 
     private static BigDecimal getRatioToFreeFlowSpeed(LinkFastLaneDto linkData, BigDecimal avgSpeed) {
-        final BigDecimal ratioToFreeFlowSpeed = avgSpeed.divide(new BigDecimal(linkData.getFreeFlowSpeed()), MATH_CONTEXT);
+        final BigDecimal ratioToFreeFlowSpeed = avgSpeed.divide(new BigDecimal(linkData.getCurrentFreeFlowSpeed()), MATH_CONTEXT);
 
-        log.debug("link avg speed=" + avgSpeed + ", free speed=" + linkData.getFreeFlowSpeed() +
+        log.debug("link avg speed=" + avgSpeed + ", free speed=" + linkData.getCurrentFreeFlowSpeed() +
                   " => ratio to free flow speed = " + ratioToFreeFlowSpeed);
         return ratioToFreeFlowSpeed;
     }

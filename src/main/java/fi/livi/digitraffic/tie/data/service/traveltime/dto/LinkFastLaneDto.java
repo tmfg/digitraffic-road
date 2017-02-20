@@ -27,7 +27,7 @@ public class LinkFastLaneDto {
         return naturalId;
     }
 
-    public Double getFreeFlowSpeed() {
+    public Double getCurrentFreeFlowSpeed() {
         if (winterSpeeds) {
             return winterFreeFlowSpeed;
         } else {
@@ -37,8 +37,8 @@ public class LinkFastLaneDto {
 
     public String toString() {
         return this.getClass().getSimpleName() + ", linkId=" + linkId
-                + ", summer=" + summerFreeFlowSpeed + ", winter="
-                + winterFreeFlowSpeed + ", freespeed=" + getFreeFlowSpeed()
-                + ", length=" + length + ", winterSpeeds=" + winterSpeeds;
+               + ", summer=" + summerFreeFlowSpeed + ", winter="
+               + winterFreeFlowSpeed + ", freespeed=" + getCurrentFreeFlowSpeed()
+               + ", length=" + length + ", winterSpeeds=" + winterSpeeds;
     }
 }

@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.dao;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -24,7 +23,7 @@ public class TravelTimeRepository {
 
     private final TrafficFluencyService trafficFluencyService;
 
-    private final static int nobsFilteringLimit = 5;
+    private final static int NOBS_FILTERING_LIMIT = 5;
 
     @Autowired
     public TravelTimeRepository(final JdbcTemplate jdbcTemplate, final TrafficFluencyService trafficFluencyService) {
@@ -110,17 +109,8 @@ public class TravelTimeRepository {
                                          + "AND m.RATIO_TO_FREE_FLOW_SPEED <= ? "
                                          + "AND m.NOBS > ?";
 
-        // execute updates
-        Object[] args = new Object[2];
-        args[0] = trafficFluencyService.getAlertThreshold();
-        args[1] = this.nobsFilteringLimit;
-
-        int[] argTypes = new int[2];
-        argTypes[0] = Types.DECIMAL;
-        argTypes[1] = Types.INTEGER;
-
-        jdbcTemplate.update(UPDATE_FINISHED_ALERTS, args, argTypes);
-        jdbcTemplate.update(UPDATE_NEW_ALERTS, args, argTypes);
+        jdbcTemplate.update(UPDATE_FINISHED_ALERTS, trafficFluencyService.getAlertThreshold(), NOBS_FILTERING_LIMIT);
+        jdbcTemplate.update(UPDATE_NEW_ALERTS, trafficFluencyService.getAlertThreshold(), NOBS_FILTERING_LIMIT);
     }
 
     /**
