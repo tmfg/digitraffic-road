@@ -38,6 +38,7 @@ public class TravelTimeClientTest extends MetadataTestBase {
     private final static ZonedDateTime requestStartTime = ZonedDateTime.now().minusHours(1);
     private final static String expectedUri = "travelTimeUri?starttime=" + TravelTimeClient.getDateString(requestStartTime);
 
+    @SuppressWarnings("Duplicates")
     @Before
     public void before() {
         ReflectionTestUtils.setField(travelTimeClient, "mediansUrl", "travelTimeUri");
@@ -86,5 +87,10 @@ public class TravelTimeClientTest extends MetadataTestBase {
         TravelTimeMeasurementsDto data = travelTimeClient.getMeasurements(requestStartTime);
 
         assertNotNull(data);
+        assertEquals(60, data.duration);
+        assertEquals(14, data.measurements.size());
+        assertEquals(27, data.measurements.get(0).linkNaturalId);
+        assertEquals(145, data.measurements.get(0).measurements.get(0).travelTime);
+        assertEquals(2, data.measurements.get(0).measurements.get(0).offset);
     }
 }
