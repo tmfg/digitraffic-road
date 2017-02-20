@@ -229,10 +229,10 @@ public class AbstractSftpTest extends MetadataIntegrationTest {
     }
 
     protected String getImageUrl(final String presetId) {
-        return "http://localhost:" + httpPort + getImagePath(presetId);
+        return "http://localhost:" + httpPort + getImageUrlPath(presetId);
     }
 
-    protected String getImagePath(final String presetId) {
+    protected String getImageUrlPath(final String presetId) {
         return REQUEST_PATH + presetId + ".jpg";
     }
 }

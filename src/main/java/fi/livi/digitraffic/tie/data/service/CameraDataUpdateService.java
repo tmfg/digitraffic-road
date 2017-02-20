@@ -61,6 +61,12 @@ public class CameraDataUpdateService {
     }
 
     @Transactional
+    public void deleteAllImagesForNonPublishablePresets() {
+        List<String> presetIdsToDelete = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
+        presetIdsToDelete.forEach(presetId -> deleteImageQuietly(getPresetImageName(presetId)));
+    }
+
+    @Transactional
     public void updateCameraData(final List<Kuva> data) throws SQLException {
         // Collect newest data per station
         HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
@@ -131,6 +137,10 @@ public class CameraDataUpdateService {
         return kuva.getNimi().substring(0, 8);
     }
 
+    private String getPresetImageName(final String presetId) {
+        return  presetId + ".jpg";
+    }
+
     private String getImageFullPath(String imageFileName) {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
@@ -139,6 +149,7 @@ public class CameraDataUpdateService {
         try (Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath) ) {
+                log.info("Delete image {}", imageRemotePath);
                 session.remove(imageRemotePath);
             }
             return true;
@@ -180,7 +191,7 @@ public class CameraDataUpdateService {
 
         private boolean handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
             String presetId = cameraPreset != null ? cameraPreset.getPresetId() : resolvePresetId(kuva);
-            String filename = presetId + ".jpg";
+            String filename = getPresetImageName(presetId);
             log.info("Handling " + ToStringHelpper.toString(kuva));
 
             // Update CameraPreset

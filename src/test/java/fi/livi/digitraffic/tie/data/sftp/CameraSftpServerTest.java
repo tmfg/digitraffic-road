@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -85,6 +86,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     public void setUpTestData() throws IOException {
 
         log.info("Init test data");
+        kuvas.clear();
         // Creates also new road stations so run before generating lotjuIds
         cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
@@ -194,7 +196,29 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         }
     }
 
+    @Test
+    public void testDeleteNotPublishableCameraImages() throws Exception {
 
+        cameraDataUpdateService.updateCameraData(kuvas);
+
+        Kuva kuvaToDelete = kuvas.stream().filter(k -> k.getNimi().startsWith("C")).findFirst().get();
+        CameraPreset presetToDelete =
+                cameraPresetService.findAllPublishableCameraPresets().stream().filter(cp -> cp.getPresetId().equals(kuvaToDelete.getNimi()))
+                        .findFirst().get();
+
+        try (final Session session = this.sftpSessionFactory.getSession()) {
+            assertTrue("Publishable preset image should exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
+        }
+
+        presetToDelete.setPublicExternal(false);
+        entityManager.flush();
+
+        cameraDataUpdateService.deleteAllImagesForNonPublishablePresets();
+
+        try (final Session session = this.sftpSessionFactory.getSession()) {
+            assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
+        }
+    }
 
     private CameraPreset generateMissingDummyPreset() {
         CameraPreset cp = new CameraPreset();
@@ -242,9 +266,9 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
     private void createHttpResponseStubFor(final String presetId, final byte[] data) {
         imageFilesMap.put(presetId, data);
-        final String url = getImagePath(presetId);
+        final String url = getImageUrlPath(presetId);
         log.info("Create mock with url {}", url);
-        stubFor(get(urlEqualTo(getImagePath(presetId)))
+        stubFor(get(urlEqualTo(getImageUrlPath(presetId)))
                 .willReturn(aResponse().withBody(data)
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)));
