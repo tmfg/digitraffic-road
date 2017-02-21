@@ -43,6 +43,7 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 
 import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
+import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -65,13 +66,16 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     private CameraDataUpdateService cameraDataUpdateService;
 
     @Autowired
-    ResourceLoader resourceLoader;
+    private CameraImageUpdateService cameraImageUpdateService;
 
     @Autowired
-    CameraStationUpdater cameraStationUpdater;
+    private ResourceLoader resourceLoader;
 
     @Autowired
-    CameraPresetService cameraPresetService;
+    private CameraStationUpdater cameraStationUpdater;
+
+    @Autowired
+    private CameraPresetService cameraPresetService;
 
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
@@ -213,7 +217,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         presetToDelete.setPublicExternal(false);
         entityManager.flush();
 
-        cameraDataUpdateService.deleteAllImagesForNonPublishablePresets();
+        cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
 
         try (final Session session = this.sftpSessionFactory.getSession()) {
             assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
