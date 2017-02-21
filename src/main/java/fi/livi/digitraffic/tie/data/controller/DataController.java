@@ -212,7 +212,7 @@ public class DataController {
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return cameraDataService.findPublicCameraStationsData(lastUpdated);
+        return cameraDataService.findPublishableCameraStationsData(lastUpdated);
     }
 
     @ApiOperation("Current data of camera")
@@ -224,7 +224,7 @@ public class DataController {
             @PathVariable
             final String id) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "/" + id);
-        return cameraDataService.findPublicCameraStationsData(id);
+        return cameraDataService.findPublishableCameraStationsData(id);
     }
 
     @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
@@ -236,7 +236,7 @@ public class DataController {
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return tmsDataService.findPublicTmsData(lastUpdated);
+        return tmsDataService.findPublishableTmsData(lastUpdated);
     }
 
     @ApiOperation("Current data of TMS station (Traffic Measurement System / LAM)")
@@ -248,7 +248,7 @@ public class DataController {
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "/" + id);
-        return tmsDataService.findPublicTmsData(id);
+        return tmsDataService.findPublishableTmsData(id);
     }
 
     @ApiOperation("Current data of Weather Stations")
@@ -260,7 +260,7 @@ public class DataController {
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return weatherService.findPublicWeatherData(lastUpdated);
+        return weatherService.findPublishableWeatherData(lastUpdated);
     }
 
     @ApiOperation("Current data of Weather Station")
@@ -272,7 +272,7 @@ public class DataController {
             @PathVariable
             final long id) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
-        return weatherService.findPublicWeatherData(id);
+        return weatherService.findPublishableWeatherData(id);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections")

@@ -32,12 +32,6 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
     public static boolean updateRoadStationAttributes(final KameraVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
-        // Can insert obsolete stations
-        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila()) ) {
-            to.obsolete();
-        } else {
-            to.setObsolete(false);
-        }
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
@@ -56,9 +50,9 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setProvince(from.getMaakunta());
         to.setProvinceCode(from.getMaakuntaKoodi());
         to.setLiviId(from.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTime(from.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTime(from.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTime(from.getVuosihuolto()));
+        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillis(from.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getVuosihuolto()));
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());

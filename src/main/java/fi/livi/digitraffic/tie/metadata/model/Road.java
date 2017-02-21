@@ -62,7 +62,7 @@ public class Road {
         return obsolete;
     }
 
-    public void setObsolete(boolean obsolete) {
+    public void setObsolete(final boolean obsolete) {
         this.obsolete = obsolete;
     }
 

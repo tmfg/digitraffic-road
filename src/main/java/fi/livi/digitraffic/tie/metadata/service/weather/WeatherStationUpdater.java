@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -19,13 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationClient;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
@@ -36,17 +34,17 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
 
     private final WeatherStationService weatherStationService;
     private final StaticDataStatusService staticDataStatusService;
-    private final LotjuWeatherStationClient lotjuWeatherStationClient;
+    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
     public WeatherStationUpdater(final RoadStationService roadStationService,
                                  final WeatherStationService weatherStationService,
                                  final StaticDataStatusService staticDataStatusService,
-                                 final LotjuWeatherStationClient lotjuWeatherStationClient) {
+                                 final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
         super(roadStationService);
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
-        this.lotjuWeatherStationClient = lotjuWeatherStationClient;
+        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
     /**
@@ -56,12 +54,12 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
     public boolean updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-        if (lotjuWeatherStationClient == null) {
-            log.warn("Not updating WeatherStations metadata because lotjuWeatherStationClient not defined");
+        if (!lotjuWeatherStationMetadataService.isEnabled()) {
+            log.warn("Not updating WeatherStations metadata because LotjuWeatherStationService not enabled");
             return false;
         }
 
-        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationClient.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
         if (log.isDebugEnabled()) {
             for (final TiesaaAsemaVO tsa : tiesaaAsemas) {
@@ -84,77 +82,82 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         Map<Long, WeatherStation> naturalIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId();
 
-        for (TiesaaAsemaVO tiesaaAsema : tiesaaAsemas) {
+        tiesaaAsemas.stream().forEach(tiesaaAsema -> {
+
             WeatherStation ws = tiesaaAsema.getVanhaId() != null ?
                                 naturalIdToWeatherStationMap.get(tiesaaAsema.getVanhaId().longValue()) : null;
             if (ws != null) {
                 ws.setLotjuId(tiesaaAsema.getId());
-                if (ws.getRoadStation() != null ) {
-                    ws.getRoadStation().setLotjuId(tiesaaAsema.getId());
-                }
+                ws.getRoadStation().setLotjuId(tiesaaAsema.getId());
             }
-        }
+        });
     }
 
+    private void fixOrphanRoadStations() {
+        List<WeatherStation> weatherStations =
+                weatherStationService.findAllWeatherStationsWithoutRoadStation();
+
+        final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
+                roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.WEATHER_STATION);
+
+        weatherStations.stream().forEach(ws -> {
+            setRoadStationIfNotSet(ws, ws.getRoadStationNaturalId(), orphansNaturalIdToRoadStationMap);
+            if (ws.getRoadStation().getId() == null) {
+                roadStationService.save(ws.getRoadStation());
+                log.info("Created new RoadStation " + ws.getRoadStation());
+            }
+        });
+    }
     private boolean updateWeatherStations(final List<TiesaaAsemaVO> tiesaaAsemas) {
 
+        fixOrphanRoadStations();
         fixNullLotjuIds(tiesaaAsemas);
 
         final Map<Long, WeatherStation> currentLotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
 
-        final List<Pair<TiesaaAsemaVO, WeatherStation>> obsolete = new ArrayList<>(); // obsolete WeatherStations
         final List<Pair<TiesaaAsemaVO, WeatherStation>> update = new ArrayList<>(); // WeatherStations to update
         final List<TiesaaAsemaVO> insert = new ArrayList<>(); // new WeatherStations
 
-        int invalid = 0;
-        for (final TiesaaAsemaVO tsa : tiesaaAsemas) {
+        final AtomicInteger invalid = new AtomicInteger();
+        tiesaaAsemas.stream().forEach(tsa -> {
 
             if (validate(tsa)) {
                 final WeatherStation currentSaved = currentLotjuIdToWeatherStationMap.remove(tsa.getId());
 
-                if ( currentSaved != null &&
-                     (CollectionStatus.isPermanentlyDeletedKeruunTila(tsa.getKeruunTila()) ||
-                             Objects.equals(tsa.isJulkinen(), false) ) ) {
-                    // if removed permanently or not public -> obsolete
-                    obsolete.add(Pair.of(tsa, currentSaved));
-                } else if ( currentSaved != null) {
+                if (currentSaved != null) {
                     update.add(Pair.of(tsa, currentSaved));
                 } else {
                     insert.add(tsa);
                 }
             } else {
-                invalid++;
+                invalid.addAndGet(1);
             }
-        }
+        });
 
-        if (invalid > 0) {
-            log.warn("Found " + invalid + " invalid TiesaaAsema from LOTJU");
+        if (invalid.get() > 0) {
+            log.warn("Found {} invalid TiesaaAsema from LOTJU", invalid);
         }
 
         // rws in database, but not in server
-        currentLotjuIdToWeatherStationMap.values().stream().forEach(ws -> obsolete.add(Pair.of(null, ws)));
+        final long obsoleted = currentLotjuIdToWeatherStationMap.values().stream().filter(ws -> ws.obsolete()).count();
 
-        final int obsoleted = obsoleteWeatherStations(obsolete);
         final int updated = updateWeatherStationsAttributes(update);
         final int inserted = insertWeatherStations(insert);
 
-        log.info("Obsoleted " + obsoleted + WEATHER_STATIONS);
-        log.info("Updated " + updated + WEATHER_STATIONS);
-        log.info("Inserted " + inserted + WEATHER_STATIONS);
+        log.info("Obsoleted {} {}", obsoleted,  WEATHER_STATIONS);
+        log.info("Updated {} {}", updated, WEATHER_STATIONS);
+        log.info("Inserted {} {}", inserted, WEATHER_STATIONS);
         if (insert.size() > inserted) {
-            log.warn("Insert failed for " + (insert.size()-inserted) + WEATHER_STATIONS);
+            log.warn("Insert failed for {} {} ", (insert.size()-inserted), WEATHER_STATIONS);
         }
         return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private int updateWeatherStationsAttributes(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {
 
-        final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
-                roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.WEATHER_STATION);
-
-        int counter = 0;
-        for (final Pair<TiesaaAsemaVO, WeatherStation> pair : update) {
+        final AtomicInteger counter = new AtomicInteger();
+        update.stream().forEach(pair -> {
 
             final TiesaaAsemaVO tsa = pair.getLeft();
             final WeatherStation rws = pair.getRight();
@@ -162,14 +165,12 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             final int hash = HashCodeBuilder.reflectionHashCode(rws);
             final String before = ReflectionToStringBuilder.toString(rws);
 
-            setRoadStationIfNotSet(rws, (long)tsa.getVanhaId(), orphansNaturalIdToRoadStationMap);
-
             RoadStation rs = rws.getRoadStation();
             setRoadAddressIfNotSet(rs);
 
             if ( updateWeatherStationAttributes(tsa, rws) ||
                  hash != HashCodeBuilder.reflectionHashCode(rws) ) {
-                counter++;
+                counter.addAndGet(1);
                 log.info("Updated WeatherStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(rws));
             }
 
@@ -181,8 +182,8 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
                 roadStationService.save(rws.getRoadStation());
                 log.info("Created new RoadStation " + rws.getRoadStation());
             }
-         }
-        return counter;
+        });
+        return counter.get();
     }
 
     private static void setRoadStationIfNotSet(WeatherStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
@@ -207,8 +208,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             orphanNaturalIdToRoadStationMap.put(orphanRoadStation.getNaturalId(), orphanRoadStation);
         }
 
-        for (final TiesaaAsemaVO tsa : insert) {
-
+        insert.forEach(tsa -> {
             WeatherStation rws = new WeatherStation();
 
             boolean orphan = false;
@@ -236,7 +236,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             } else {
                 log.info("Created new " + rws + " and " + rws.getRoadStation());
             }
-        }
+        });
         return insert.size();
     }
 
@@ -259,19 +259,5 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         // Update RoadStation
         return updateRoadStationAttributes(from, to.getRoadStation()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;
-    }
-
-    private int obsoleteWeatherStations(final List<Pair<TiesaaAsemaVO, WeatherStation>> obsolete) {
-        int counter = 0;
-        for (final Pair<TiesaaAsemaVO, WeatherStation> rwsPair : obsolete) {
-            if (rwsPair.getValue().obsolete()) {
-                log.debug("Obsolete " + rwsPair.getValue());
-                counter++;
-            }
-        }
-        // Update also obsolete stations attributes
-        updateWeatherStationsAttributes(obsolete.stream().filter(o -> o.getLeft() != null).collect(Collectors.toList()));
-
-        return counter;
     }
 }

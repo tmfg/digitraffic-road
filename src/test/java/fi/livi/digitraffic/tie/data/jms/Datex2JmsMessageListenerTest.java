@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
@@ -86,6 +86,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     // Just for data importing for testing
     @Ignore
     @Test
+    @Rollback(value = false)
     public void testImportData() throws JAXBException, DatatypeConfigurationException, IOException {
 
         log.info("Delete old messages");
@@ -105,8 +106,6 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
 
         log.info("Persist changes");
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
     }
 
     private void readAndSendMessages(List<Resource> datex2Resources, JMSMessageListener<D2LogicalModel> lamJmsMessageListener, boolean autoFix) throws IOException {

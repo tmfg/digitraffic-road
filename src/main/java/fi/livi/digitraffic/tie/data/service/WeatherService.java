@@ -31,7 +31,7 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public WeatherRootDataObjectDto findPublicWeatherData(final boolean onlyUpdateInfo) {
+    public WeatherRootDataObjectDto findPublishableWeatherData(final boolean onlyUpdateInfo) {
 
         final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
@@ -40,7 +40,7 @@ public class WeatherService {
         } else {
 
             final Map<Long, List<SensorValueDto>> values =
-                    roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValuesMappedByNaturalId(RoadStationType.WEATHER_STATION);
+                    roadStationSensorService.findAllPublishableRoadStationSensorValuesMappedByNaturalId(RoadStationType.WEATHER_STATION);
             final List<WeatherStationDto> stations = new ArrayList<>();
             for (final Map.Entry<Long, List<SensorValueDto>> entry : values.entrySet()) {
                 final WeatherStationDto dto = new WeatherStationDto();
@@ -55,16 +55,16 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public WeatherRootDataObjectDto findPublicWeatherData(final long roadStationNaturalId) {
+    public WeatherRootDataObjectDto findPublishableWeatherData(final long roadStationNaturalId) {
 
-        if ( !roadStationRepository.isPublicAndNotObsoleteRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
+        if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
             throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
         }
 
         final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
 
         final List<SensorValueDto> values =
-                roadStationSensorService.findAllNonObsoletePublicRoadStationSensorValues(roadStationNaturalId,
+                roadStationSensorService.findAllPublishableRoadStationSensorValues(roadStationNaturalId,
                                                                                          RoadStationType.WEATHER_STATION);
 
         final WeatherStationDto dto = new WeatherStationDto();

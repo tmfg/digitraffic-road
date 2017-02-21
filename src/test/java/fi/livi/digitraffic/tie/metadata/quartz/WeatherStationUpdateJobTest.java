@@ -6,7 +6,11 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +27,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
+@Transactional
 public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJobTest.class);
@@ -42,26 +47,37 @@ public class WeatherStationUpdateJobTest extends MetadataIntegrationTest {
     @Autowired
     private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
 
+    @Before
+    public void initData() {
+        generateMissingLotjuIdsWithJdbc();
+        fixDataWithJdbc();
+    }
+
+    @After
+    public void restoreData() {
+        restoreGeneratedLotjuIdsWithJdbc();
+    }
+
     @Test
     public void testUpdateWeatherStations() {
 
         lotjuTiesaaPerustiedotServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
-        weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
+        weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allInitial =
-                weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
+                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
         lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
-        weatherStationUpdater.updateWeatherStations();
         weatherStationSensorUpdater.updateRoadStationSensors();
+        weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         final WeatherStationFeatureCollection allAfterChange =
-                weatherStationService.findAllNonObsoletePublicWeatherStationAsFeatureCollection(false);
+                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(3, allAfterChange.getFeatures().size());
 
         /*

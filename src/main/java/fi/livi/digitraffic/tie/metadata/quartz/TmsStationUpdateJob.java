@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,28 +25,26 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
 
-        final long startSensors = System.currentTimeMillis();
+        final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
-
         if (sensorsUpdated) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_ROAD_STATION_SENSOR);
         }
+        sensorsWatch.stop();
 
-        final long startStationsEndSensors = System.currentTimeMillis();
-        boolean stationsUpdated = tmsStationUpdater.updateTmsStations();
-        final long startStationsSensorsEndStations = System.currentTimeMillis();
-        tmsStationsSensorsUpdater.updateTmsStationsSensors();
-        final long endStationsSensors = System.currentTimeMillis();
+        final StopWatch stationsWatch = StopWatch.createStarted();
+        final boolean stationsUpdated = tmsStationUpdater.updateTmsStations();
+        stationsWatch.stop();
 
-        if (stationsUpdated) {
+        final StopWatch stationsSensorsWatch = StopWatch.createStarted();
+        final boolean updatedTmsStationsSensors = tmsStationsSensorsUpdater.updateTmsStationsSensors();
+        stationsSensorsWatch.stop();
+
+        if (stationsUpdated || updatedTmsStationsSensors) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
         }
 
-        final long timeSensors = (startStationsEndSensors - startSensors)/1000;
-        final long timeStations = (startStationsSensorsEndStations - startStationsEndSensors)/1000;
-        final long timeStationsSensors = (endStationsSensors - startStationsSensorsEndStations)/1000;
-
-        log.info("UpdateRoadStationSensors took: {} s, updateTmsStations took: {} s, updateRoadStationSensors took: {} s)",
-                timeSensors, timeStations, timeStationsSensors);
+        log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",
+                sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
     }
 }
