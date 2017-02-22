@@ -48,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
 @Transactional
 public class CameraSftpServerTest extends AbstractSftpTest {
@@ -71,7 +71,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     private ResourceLoader resourceLoader;
 
     @Autowired
-    private CameraStationUpdater cameraStationUpdater;
+    private CameraStationUpdateService cameraStationUpdateService;
 
     @Autowired
     private CameraPresetService cameraPresetService;
@@ -91,7 +91,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         log.info("Init test data");
         kuvas.clear();
         // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
         entityManager.clear();
         generateMissingLotjuIdsWithJdbc();
