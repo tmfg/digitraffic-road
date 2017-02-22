@@ -14,10 +14,7 @@ public class CameraUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) {
-        boolean updated = cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
-        updated = cameraStationUpdater.updateCameras() || updated;
-
-        if (updated) {
+        if (cameraStationUpdater.updateCameras()) {
             staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
         }
     }

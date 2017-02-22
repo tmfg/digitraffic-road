@@ -60,7 +60,7 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
 @Transactional
 public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -81,7 +81,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
     LockingService lockingService;
 
     @Autowired
-    private CameraStationUpdater cameraStationUpdater;
+    private CameraStationUpdateService cameraStationUpdateService;
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -120,7 +120,7 @@ public class CameraJmsMessageListenerTest extends AbstractJmsMessageListenerTest
     public void initData() throws IOException, JAXBException {
 
         // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
+        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
         entityManager.clear();
         generateMissingLotjuIdsWithJdbc();

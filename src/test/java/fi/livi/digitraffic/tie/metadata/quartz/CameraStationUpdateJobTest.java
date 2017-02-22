@@ -43,7 +43,6 @@ public class CameraStationUpdateJobTest extends MetadataIntegrationTest {
         lotjuKameraPerustiedotServiceMock.initDataAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraStationUpdater.updateCameras();
         final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
         // cameras with lotjuId 443 and 56 are in collection
