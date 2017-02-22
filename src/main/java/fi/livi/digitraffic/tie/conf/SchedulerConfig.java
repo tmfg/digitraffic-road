@@ -32,6 +32,8 @@ import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
@@ -116,6 +118,16 @@ public class SchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean travelTimeMediansUpdateJobDetail() {
+        return createJobDetail(TravelTimeMediansUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean travelTimeMeasurementsUpdateJobDetail() {
+        return createJobDetail(TravelTimeMeasurementsUpdateJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
                                                            @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
@@ -162,6 +174,18 @@ public class SchedulerConfig {
     public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail,
                                                                             @Value("${unhandledDatex2MessagesImportJob.frequency}") final long frequency) {
         return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean travelTimeMediansUpdateJobTrigger(final JobDetail travelTimeMediansUpdateJobDetail,
+                                                                      @Value("${travelTimeMediansUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(travelTimeMediansUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean travelTimeMeasurementsUpdateJobTrigger(final JobDetail travelTimeMeasurementsUpdateJobDetail,
+                                                                           @Value("${travelTimeMeasurementsUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(travelTimeMeasurementsUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
