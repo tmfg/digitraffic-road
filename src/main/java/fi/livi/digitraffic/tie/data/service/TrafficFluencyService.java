@@ -85,7 +85,8 @@ public class TrafficFluencyService {
      * @param ratioToFreeFlowSpeed
      * @return
      */
-    private FluencyClass getMatchingFluencyClass(final BigDecimal ratioToFreeFlowSpeed) {
+    @Transactional(readOnly = true)
+    public FluencyClass getMatchingFluencyClass(final BigDecimal ratioToFreeFlowSpeed) {
         if (ratioToFreeFlowSpeed == null) {
             throw new NullPointerException();
         }
@@ -100,5 +101,13 @@ public class TrafficFluencyService {
             }
         }
         return null;
+    }
+
+    /**
+     * @return the threshold of alerts (min freeflowspeed ratio to result in an alert)
+     */
+    @Transactional(readOnly = true)
+    public BigDecimal getAlertThreshold() {
+        return fluencyClassRepository.getFluencyClassThreshold();
     }
 }
