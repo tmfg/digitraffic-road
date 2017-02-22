@@ -34,7 +34,6 @@ public class CameraMetadataControllerRestTest extends MetadataRestTest {
 
         // initialize state
         lotjuKameraPerustiedotServiceMock.initDataAndService();
-        cameraStationUpdater.fixCameraPresetsWithMissingRoadStations();
         cameraStationUpdater.updateCameras();
 
         final ArrayList<String> cameraTypes = new ArrayList<>();

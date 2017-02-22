@@ -20,6 +20,8 @@ tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
+travelTimeMediansUpdateJob.frequency=60000
+travelTimeMeasurementsUpdateJob.frequency=60000
 forecastSectionWeatherUpdateJob.frequency=900000
 locationsMetadataUpdateJob.frequency=86400000
 
@@ -37,6 +39,11 @@ camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_
 camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
 camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
 camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
+
+traveltime.PKS.medians.url=https://birch.nctr.co.uk/xml/pks_mtp_ss.xml
+traveltime.PKS.individual.url=https://birch.nctr.co.uk/xml/pks_mtp_obs.xml
+traveltime.PKS.username=
+traveltime.PKS.password=
 
 # JMS settings
 
