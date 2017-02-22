@@ -227,7 +227,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
         // Go through all camera presets' road stations and check for non obsolete presets.
         // If just one non obsolete preset exists set road station obsolete false.
         // If not found any non obsolete presets for road station then obsolete it.
-        cameraPresetService.findAll().stream().collect(Collectors.groupingBy(CameraPreset::getRoadStationId)).values().stream()
+        cameraPresetService.findAll().stream().filter(cp -> cp.getRoadStationId() != null).collect(Collectors.groupingBy(CameraPreset::getRoadStationId)).values().stream()
                 .forEach(cpList -> {
                     Optional<CameraPreset> nonObsolete = cpList.stream().filter(cameraPreset -> !cameraPreset.isObsolete()).findFirst();
                     if (nonObsolete.isPresent()) {
