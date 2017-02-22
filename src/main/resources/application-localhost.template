@@ -11,6 +11,9 @@ metadata.server.address.tms=<https://LOTJU/LAMMetatiedot/v2>
 metadata.server.address.camera=<https://LOTJU/KameraPerustiedot/v2>
 metadata.server.address.weather=<https://LOTJU/TiesaaPerustiedot/v2>
 
+# Road conditions api
+roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
+
 # Metadata update frequencies in ms, 43200000 ms = 12 h
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
