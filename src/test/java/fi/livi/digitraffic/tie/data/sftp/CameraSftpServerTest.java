@@ -41,7 +41,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 
-import fi.livi.digitraffic.tie.base.MetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -53,7 +52,7 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @Transactional
 public class CameraSftpServerTest extends AbstractSftpTest {
-    private static final Logger log = LoggerFactory.getLogger(MetadataIntegrationTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";

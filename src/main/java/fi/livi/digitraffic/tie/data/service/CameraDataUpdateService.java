@@ -39,9 +39,9 @@ public class CameraDataUpdateService {
         data.stream().forEach(k -> {
             if (k.getEsiasentoId() != null) {
                 Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
-                if (currentKamera == null || currentKamera.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
+                if (currentKamera == null || k.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
                     if (currentKamera != null) {
-                        log.info("Replace " + currentKamera.getAika() + " with " + currentKamera.getAika());
+                        log.info("Replace " + currentKamera.getAika() + " with " + k.getAika());
                     }
                     kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
                 }
