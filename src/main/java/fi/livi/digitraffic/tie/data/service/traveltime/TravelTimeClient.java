@@ -1,11 +1,18 @@
 package fi.livi.digitraffic.tie.data.service.traveltime;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -33,19 +41,29 @@ public class TravelTimeClient {
     private final String username;
     private final String password;
 
-    private final RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     @Autowired
     public TravelTimeClient(@Value("${traveltime.PKS.medians.url}") final String mediansUrl,
                             @Value("${traveltime.PKS.individual.url}") final String individualMeasurementUrl,
                             @Value("${traveltime.PKS.username}") final String username,
-                            @Value("${traveltime.PKS.password}") final String password,
-                            final RestTemplate restTemplate) {
+                            @Value("${traveltime.PKS.password}") final String password) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         this.mediansUrl = mediansUrl;
         this.individualMeasurementUrl = individualMeasurementUrl;
         this.username = username;
         this.password = password;
-        this.restTemplate = restTemplate;
+
+        final SSLConnectionSocketFactory socketFactory =
+                new SSLConnectionSocketFactory(new SSLContextBuilder().loadTrustMaterial(null, (chain, authType) -> true).build());
+
+        final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+        final HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+
+        requestFactory.setHttpClient(httpClient);
+        requestFactory.setConnectTimeout(60 * 1000);
+        requestFactory.setReadTimeout(60 * 1000);
+        restTemplate = new RestTemplate(requestFactory);
     }
 
     @Retryable(backoff = @Backoff)
