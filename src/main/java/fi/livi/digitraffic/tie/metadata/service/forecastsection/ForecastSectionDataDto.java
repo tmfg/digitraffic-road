@@ -11,8 +11,8 @@ public class ForecastSectionDataDto {
 
     public final List<ForecastSectionWeatherDto> forecastSectionWeatherList;
 
-    public ForecastSectionDataDto(@JsonProperty("messageTimestamp") Timestamp messageTimestamp,
-                                  @JsonProperty("roadConditions") List<ForecastSectionWeatherDto> forecastSectionWeatherList) {
+    public ForecastSectionDataDto(@JsonProperty("messageTimestamp") final Timestamp messageTimestamp,
+                                  @JsonProperty("roadConditions") final List<ForecastSectionWeatherDto> forecastSectionWeatherList) {
         this.messageTimestamp = messageTimestamp;
         this.forecastSectionWeatherList = forecastSectionWeatherList;
     }

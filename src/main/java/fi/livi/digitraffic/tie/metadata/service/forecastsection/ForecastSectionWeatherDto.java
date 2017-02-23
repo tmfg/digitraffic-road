@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ForecastSectionWeatherDto {
 
@@ -12,9 +12,9 @@ public class ForecastSectionWeatherDto {
 
     public final List<ForecastSectionForecastDto> forecast;
 
-    public ForecastSectionWeatherDto(@JsonProperty("roadId") String naturalId,
-                                     @JsonProperty("observation") ForecastSectionObservationDto observation,
-                                     @JsonProperty("forecast") List<ForecastSectionForecastDto> forecast) {
+    public ForecastSectionWeatherDto(@JsonProperty("roadId") final String naturalId,
+                                     @JsonProperty("observation") final ForecastSectionObservationDto observation,
+                                     @JsonProperty("forecast") final List<ForecastSectionForecastDto> forecast) {
         this.naturalId = naturalId;
         this.observation = observation;
         this.forecast = forecast;

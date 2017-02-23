@@ -31,17 +31,17 @@ public class ForecastSectionForecastDto {
 
     public final ForecastSectionWeatherReasonDto conditionReason;
 
-    public ForecastSectionForecastDto(@JsonProperty("forecastName") String forecastName,
-                                      @JsonProperty("Time") ZonedDateTime time,
-                                      @JsonProperty("daylight") Boolean daylight,
-                                      @JsonProperty("overallRoadCondition") Integer overallRoadCondition,
-                                      @JsonProperty("reliability") Integer reliability,
-                                      @JsonProperty("roadTemperature") String roadTemperature,
-                                      @JsonProperty("temperature") String temperature,
-                                      @JsonProperty("weatherSymbol") String weatherSymbol,
-                                      @JsonProperty("windDirection") Integer windDirection,
-                                      @JsonProperty("windSpeed") Double windSpeed,
-                                      @JsonProperty("conditionReason") ForecastSectionWeatherReasonDto conditionReason) {
+    public ForecastSectionForecastDto(@JsonProperty("forecastName") final String forecastName,
+                                      @JsonProperty("Time") final ZonedDateTime time,
+                                      @JsonProperty("daylight") final Boolean daylight,
+                                      @JsonProperty("overallRoadCondition") final Integer overallRoadCondition,
+                                      @JsonProperty("reliability") final Integer reliability,
+                                      @JsonProperty("roadTemperature") final String roadTemperature,
+                                      @JsonProperty("temperature") final String temperature,
+                                      @JsonProperty("weatherSymbol") final String weatherSymbol,
+                                      @JsonProperty("windDirection") final Integer windDirection,
+                                      @JsonProperty("windSpeed") final Double windSpeed,
+                                      @JsonProperty("conditionReason") final ForecastSectionWeatherReasonDto conditionReason) {
         this.forecastName = forecastName;
         this.time = time;
         this.daylight = daylight;

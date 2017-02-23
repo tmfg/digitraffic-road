@@ -24,13 +24,13 @@ public class ForecastSectionWeatherReasonDto {
 
     public final FrictionCondition frictionCondition;
 
-    public ForecastSectionWeatherReasonDto(@JsonProperty("precipitationCondition") Integer precipitationCondition,
-                                           @JsonProperty("roadCondition") Integer roadCondition,
-                                           @JsonProperty("windCondition") Integer windCondition,
-                                           @JsonProperty("freezingRainCondition") Boolean freezingRainCondition,
-                                           @JsonProperty("winterSlipperiness") Boolean winterSlipperiness,
-                                           @JsonProperty("visibilityCondition") Integer visibilityCondition,
-                                           @JsonProperty("frictionCondition") Integer frictionCondition) {
+    public ForecastSectionWeatherReasonDto(@JsonProperty("precipitationCondition") final Integer precipitationCondition,
+                                           @JsonProperty("roadCondition") final Integer roadCondition,
+                                           @JsonProperty("windCondition") final Integer windCondition,
+                                           @JsonProperty("freezingRainCondition") final Boolean freezingRainCondition,
+                                           @JsonProperty("winterSlipperiness") final Boolean winterSlipperiness,
+                                           @JsonProperty("visibilityCondition") final Integer visibilityCondition,
+                                           @JsonProperty("frictionCondition") final Integer frictionCondition) {
         this.precipitationCondition = PrecipitationCondition.of(precipitationCondition);
         this.roadCondition = RoadCondition.of(roadCondition);
         this.windCondition = WindCondition.of(windCondition);
