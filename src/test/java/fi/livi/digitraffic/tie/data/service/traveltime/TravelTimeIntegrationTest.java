@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.time.ZonedDateTime;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ public class TravelTimeIntegrationTest extends MetadataTestBase {
     private TravelTimeClient travelTimeClient;
 
     @Test
+    @Ignore("Needs username and password")
     public void getMediansSucceeds() {
 
         TravelTimeMediansDto medians = travelTimeClient.getMedians(ZonedDateTime.now().minusHours(2));
