@@ -138,7 +138,7 @@ public class MetadataController {
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
 
-    @ApiOperation("BETA List available location versions")
+    @ApiOperation("List available location versions")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -159,7 +159,7 @@ public class MetadataController {
         return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
     }
 
-    @ApiOperation("BETA The static information of locations")
+    @ApiOperation("The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -175,7 +175,7 @@ public class MetadataController {
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
 
-    @ApiOperation("BETA The static information of location types and locationsubtypes")
+    @ApiOperation("The static information of location types and locationsubtypes")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
                     @ApiResponse(code = 500, message = "Internal server error") })
@@ -191,7 +191,7 @@ public class MetadataController {
         return locationService.findLocationSubtypes(lastUpdated, version);
     }
 
-    @ApiOperation("BETA The static information of one location")
+    @ApiOperation("The static information of one location")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })

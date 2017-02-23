@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.dto.location;
 
-import java.math.BigDecimal;
-
 public interface LocationJson {
     int getLocationCode();
 
@@ -21,11 +19,11 @@ public interface LocationJson {
 
     Boolean getUrban();
 
-    BigDecimal getWgs84Lat();
-    BigDecimal getWgs84Long();
+    Double getWgs84Lat();
+    Double getWgs84Long();
 
-    BigDecimal getEtrsTm35FinX();
-    BigDecimal getEtrsTm35FixY();
+    Double getEtrsTm35FinX();
+    Double getEtrsTm35FixY();
 
     String getNegDirection();
     String getPosDirection();
