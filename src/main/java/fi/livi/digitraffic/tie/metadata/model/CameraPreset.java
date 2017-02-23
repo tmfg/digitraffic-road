@@ -101,6 +101,10 @@ public class CameraPreset {
     @Fetch(FetchMode.JOIN)
     private WeatherStation nearestWeatherStation;
 
+    /**
+     * This value is calculated by db so it's value is not
+     * reliable if entity is modified after fetch from db.
+     */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
 

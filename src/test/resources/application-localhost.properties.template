@@ -1,6 +1,3 @@
-logging.file=digitraffic-metadata
-logging.level.root=INFO
-
 # Http-server port
 server.port = 9000
 
@@ -21,11 +18,32 @@ roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
+roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
+travelTimeMediansUpdateJob.frequency=60000
+travelTimeMeasurementsUpdateJob.frequency=60000
+forecastSectionWeatherUpdateJob.frequency=900000
+locationsMetadataUpdateJob.frequency=86400000
+
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam.url/
-weathercam.importDir=/tmp/weathercam
+
+# SFTP settings for camera image upload
+camera-image-uploader.sftp.host = localhost
+camera-image-uploader.sftp.port = 2232
+camera-image-uploader.sftp.poolSize = 5
+camera-image-uploader.sftp.sessionWaitTimeout = 5000
+camera-image-uploader.sftp.user = digitraffic
+camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_known_hosts
+camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
+camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
+camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
+
+traveltime.PKS.medians.url=https://birch.nctr.co.uk/xml/pks_mtp_ss.xml
+traveltime.PKS.individual.url=https://birch.nctr.co.uk/xml/pks_mtp_obs.xml
+traveltime.PKS.username=
+traveltime.PKS.password=
 
 # JMS settings
 

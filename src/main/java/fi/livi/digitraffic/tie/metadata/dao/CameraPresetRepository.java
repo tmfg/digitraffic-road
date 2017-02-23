@@ -39,7 +39,14 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     CameraPreset findCameraPresetByPresetId(String presetId);
 
-    List<CameraPreset> findByLotjuIdIn(Collection<Long> presetIds);
+    List<CameraPreset> findByPublishableIsTrueAndLotjuIdIn(Collection<Long> presetIds);
 
     List<CameraPreset> findByCameraLotjuIdIsNullOrLotjuIdIsNull();
+
+    @Query(value =
+           "SELECT CP.PRESET_ID\n" +
+           "FROM CAMERA_PRESET CP\n" +
+           "WHERE PUBLISHABLE = 0",
+           nativeQuery = true)
+    List<String> findAllNotPublishableCameraPresetsPresetIds();
 }

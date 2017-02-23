@@ -1,23 +1,18 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Future;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.FileHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
@@ -27,32 +22,14 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
-    private String weathercamImportDir;
-    private CameraPresetService cameraPresetService;
+    private final CameraPresetService cameraPresetService;
+    private final CameraImageUpdateService cameraImageUpdateService;
 
     @Autowired
-    CameraDataUpdateService(@Value("${weathercam.importDir}")
-                            final String weathercamImportDir,
-                            final CameraPresetService cameraPresetService) {
-        setWeathercamImportDir(weathercamImportDir);
+    CameraDataUpdateService(final CameraPresetService cameraPresetService,
+                            final CameraImageUpdateService cameraImageUpdateService) {
         this.cameraPresetService = cameraPresetService;
-    }
-
-    public void setWeathercamImportDir(String weathercamImportDir) {
-        this.weathercamImportDir = weathercamImportDir;
-        File dir = new File(weathercamImportDir);
-        if (!dir.exists()) {
-            log.info("Create weathercam import dir: " + weathercamImportDir);
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new IllegalStateException("Failed to create weathercam import dir: " + weathercamImportDir);
-            }
-        } else {
-            log.info("Weathercam import dir " + weathercamImportDir + " exists");
-        }
-        if (!dir.canWrite()) {
-            throw new IllegalStateException("Weathercam import dir: " + weathercamImportDir + " is not writeable!");
-        }
+        this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
     @Transactional
@@ -60,64 +37,46 @@ public class CameraDataUpdateService {
         // Collect newest data per station
         HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.stream().forEach(k -> {
-            Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
-            if (currentKamera == null || currentKamera.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
-                if (currentKamera != null) {
-                    log.info("Replace " + currentKamera.getAika() + " with " + currentKamera.getAika());
+            if (k.getEsiasentoId() != null) {
+                Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
+                if (currentKamera == null || k.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
+                    if (currentKamera != null) {
+                        log.info("Replace " + currentKamera.getAika() + " with " + k.getAika());
+                    }
+                    kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
                 }
-                kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
+            } else {
+                log.warn("Kuva esiasentoId is null: {}", ToStringHelpper.toString(k));
             }
         });
 
-        List<CameraPreset> cameraPresets = cameraPresetService.findCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
+        final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
 
-        // Handle present presets
-        for (CameraPreset cameraPreset : cameraPresets) {
-            Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
-            handleKuva(kuva, cameraPreset);
+        final List<Future<Boolean>> futures = new ArrayList<>();
+        StopWatch start = StopWatch.createStarted();
+
+        for (final CameraPreset cameraPreset : cameraPresets) {
+            final Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
+            if (kuva == null) {
+                log.error("No kuva for preset {}", cameraPreset.toString());
+            } else {
+                futures.add(cameraImageUpdateService.handleKuva(kuva, cameraPreset));
+            }
         }
 
         // Handle missing presets to delete possible images from disk
-        for (Kuva notFoundPresetForKuva : kuvaMappedByPresetLotjuId.values()) {
-            handleKuva(notFoundPresetForKuva, null);
+        for (Kuva notFoundPresetsKuva : kuvaMappedByPresetLotjuId.values()) {
+            futures.add(cameraImageUpdateService.handleKuva(notFoundPresetsKuva, null));
         }
-    }
 
-    private String resolvePresetId(final Kuva kuva) {
-        return kuva.getNimi().substring(0, 8);
-    }
-
-    private void handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
-
-        String presetId = kuva.getNimi().substring(0, 8);
-        String filename = presetId + ".jpg";
-        ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
-        log.info("Handling kuva: " + ToStringHelpper.toString(kuva));
-
-        // Update CameraPreset
-        if (cameraPreset != null) {
-            cameraPreset.setPublicExternal(kuva.isJulkinen());
-            cameraPreset.setPictureLastModified(pictureTaken);
-        }
-        // Load and save image or delete non public image
-        if (cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal()) {
+        while ( futures.parallelStream().filter(f -> !f.isDone()).findFirst().isPresent() ) {
             try {
-                File targetFile = new File(weathercamImportDir, filename);
-                URL srcUrl = new URL(kuva.getUrl());
-                FileHelper.copyURLToFile(srcUrl, targetFile);
-            } catch (IOException ex) {
-                log.error("Error reading/writing picture for presetId: " + presetId, ex);
-            }
-        } else {
-            if (cameraPreset == null) {
-                log.error("Could not update camera preset for " + presetId + ": doesn't exist");
-            }
-            // Delete possible image that should be hidden
-            File targetFile = new File(weathercamImportDir, filename);
-            if (targetFile.exists()) {
-                log.info("Delete hidden or missing preset's image " + targetFile.getPath() + " for presetId " + presetId);
-                FileUtils.deleteQuietly(targetFile);
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                log.debug("InterruptedException", e);
             }
         }
+
+        log.info("Updating {} weather camera images took {} ms", futures.size(), start.getTime());
     }
 }

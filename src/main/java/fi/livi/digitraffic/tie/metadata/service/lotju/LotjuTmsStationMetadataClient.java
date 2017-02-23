@@ -40,7 +40,6 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
-
         final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
         log.info("Fetched {} LamAsemas", response.getValue().getAsemat().size());

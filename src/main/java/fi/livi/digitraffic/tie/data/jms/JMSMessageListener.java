@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
@@ -141,8 +142,6 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-
-
     /**
      * Drain queue and calls handleData if data available.
      */
@@ -154,7 +153,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private void drainQueueInternal() {
         if ( !shutdownCalled.get() ) {
-            long start = System.currentTimeMillis();
+            StopWatch start = StopWatch.createStarted();
 
             if (blockingQueue.size() > QUEUE_SIZE_ERROR_LIMIT) {
                 log.error("JMS message queue size " + blockingQueue.size() + " exceeds error limit " + QUEUE_SIZE_ERROR_LIMIT);
@@ -166,10 +165,9 @@ public class JMSMessageListener<T> implements MessageListener {
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
             final int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
-                log.info("Handle data");
+                log.debug("Handle data");
                 dataUpdater.updateData(targetList);
-                long took = System.currentTimeMillis() - start;
-                log.info("DrainQueue of size " + drained + " took " + took + " ms");
+                log.info("DrainQueue of size {} took {} ms", drained, start.getTime());
             }
         }
     }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivjtdata periodstart="1975-02-06T10:00:00Z" duration="60">
+  <SUP>FI_FINNRA</SUP>
+  <service>Helsinki_Traveltimes</service>
+  <creationtime>2017-02-06T12:40:53Z</creationtime>
+  <LastStaticDataUpdate>2016-04-13T03:20:19Z</LastStaticDataUpdate>
+  <irs>
+    <link id="27" ds="2">
+      <ir os="2" tt="145"/>
+      <ir os="39" tt="182"/>
+      <ir os="43" tt="190"/>
+    </link>
+    <link id="33" ds="2">
+      <ir os="2" tt="326"/>
+    </link>
+    <link id="41" ds="2">
+      <ir os="2" tt="220"/>
+      <ir os="52" tt="813"/>
+    </link>
+    <link id="62" ds="2">
+      <ir os="58" tt="407"/>
+    </link>
+    <link id="63" ds="2">
+      <ir os="47" tt="399"/>
+    </link>
+    <link id="77" ds="2">
+      <ir os="50" tt="176"/>
+    </link>
+    <link id="80" ds="2">
+      <ir os="8" tt="111"/>
+      <ir os="9" tt="111"/>
+      <ir os="37" tt="125"/>
+    </link>
+    <link id="81" ds="2">
+      <ir os="13" tt="129"/>
+      <ir os="16" tt="136"/>
+      <ir os="37" tt="128"/>
+    </link>
+    <link id="82" ds="2">
+      <ir os="58" tt="209"/>
+    </link>
+    <link id="83" ds="2">
+      <ir os="0" tt="209"/>
+      <ir os="39" tt="210"/>
+    </link>
+    <link id="126" ds="2">
+      <ir os="9" tt="236"/>
+    </link>
+    <link id="127" ds="2">
+      <ir os="50" tt="332"/>
+    </link>
+    <link id="198" ds="2">
+      <ir os="39" tt="440"/>
+    </link>
+    <link id="226" ds="2">
+      <ir os="9" tt="515"/>
+    </link>
+  </irs>
+</ivjtdata>

@@ -26,9 +26,9 @@
     <!-- JMS message logging in separate file -->
     <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-daily-jms.log</file>
+        <file>metadata-jms-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-daily-jms.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>metadata-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -37,19 +37,28 @@
             <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
         </encoder>
     </appender>
-
+    <!-- TMS and weather sensors data -->
     <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
         </springProfile>
     </logger>
+    <!-- Camera presets data -->
+    <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="false">
+        <appender-ref ref="FILE_JMS" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+    <!-- JMS message listener -->
     <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
         </springProfile>
     </logger>
+    <!-- JMS message configuration -->
     <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
         <springProfile name="localhost">
