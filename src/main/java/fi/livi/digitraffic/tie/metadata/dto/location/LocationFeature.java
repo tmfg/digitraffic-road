@@ -36,10 +36,10 @@ public final class LocationFeature {
     }
 
     private static Point getGeometry(final LocationJson l) {
-        return l.getWgs84Lat() == null ? null : new Point(l.getWgs84Long().doubleValue(), l.getWgs84Lat().doubleValue());
+        return l.getWgs84Lat() == null ? null : new Point(l.getWgs84Long(), l.getWgs84Lat());
     }
 
     private static List<Double> getEtrsGeometry(final LocationJson l) {
-        return l.getEtrsTm35FinX() == null ? null : Arrays.asList(l.getEtrsTm35FinX().doubleValue(), l.getEtrsTm35FixY().doubleValue());
+        return l.getEtrsTm35FinX() == null ? null : Arrays.asList(l.getEtrsTm35FinX(), l.getEtrsTm35FixY());
     }
 }

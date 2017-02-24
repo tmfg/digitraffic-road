@@ -14,6 +14,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,13 +27,11 @@ import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
-    @ExceptionHandler({ TypeMismatchException.class })
+    @ExceptionHandler(TypeMismatchException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(final TypeMismatchException exception, final ServletWebRequest request) {
-
         final String parameterValue = exception.getValue().toString();
         final String requiredType = exception.getRequiredType().getSimpleName();
 
@@ -48,7 +47,25 @@ public class DefaultExceptionHandler {
                                     HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ ConstraintViolationException.class })
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(final MissingServletRequestParameterException exception, final ServletWebRequest request) {
+        final String parameterName = exception.getParameterName();
+        final String requiredType = exception.getParameterType();
+
+        log.info("Query parameter missing. Uri: {}, query string: {}, required name: {], required type: {}",
+                request.getRequest().getRequestURI(), request.getRequest().getQueryString(), parameterName, requiredType);
+
+        return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                String.format("Missing parameter. Target type: %s, parameter: %s",
+                        requiredType, parameterName),
+                request.getRequest().getRequestURI()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolation(final ConstraintViolationException exception, final ServletWebRequest request) {
 
         String message = exception.getConstraintViolations().stream().map(v -> getViolationMessage(v)).collect(Collectors.joining(", "));
