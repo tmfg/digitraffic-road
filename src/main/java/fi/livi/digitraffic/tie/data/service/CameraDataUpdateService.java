@@ -32,20 +32,15 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    public CameraDataUpdateService() {
-        cameraPresetService = null;
-        cameraImageUpdateService = null;
-    }
-
     @Transactional
     public void updateCameraData(final List<Kuva> data) throws SQLException {
 
-        HashMap<Long, Kuva> latestKuvasMappedByPresetLotjuId = filterLatestKuvasAndMapByPresetId(data);
+        final HashMap<Long, Kuva> latestKuvasMappedByPresetLotjuId = filterLatestKuvasAndMapByPresetId(data);
 
         final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(latestKuvasMappedByPresetLotjuId.keySet());
 
         final List<Future<Boolean>> futures = new ArrayList<>();
-        StopWatch start = StopWatch.createStarted();
+        final StopWatch start = StopWatch.createStarted();
 
         for (final CameraPreset cameraPreset : cameraPresets) {
             final Kuva kuva = latestKuvasMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
