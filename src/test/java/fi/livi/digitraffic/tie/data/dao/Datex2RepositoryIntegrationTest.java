@@ -5,12 +5,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 
-@Transactional
 public class Datex2RepositoryIntegrationTest extends AbstractMetadataIntegrationTest {
 
     @Autowired

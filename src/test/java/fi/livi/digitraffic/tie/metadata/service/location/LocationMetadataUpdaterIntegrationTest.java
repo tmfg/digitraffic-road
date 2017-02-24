@@ -13,8 +13,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
 import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
@@ -27,16 +25,12 @@ public class LocationMetadataUpdaterIntegrationTest extends AbstractMetadataInte
     private MetadataFileFetcher metadataFileFetcher;
 
     @Test
-    @Rollback
-    @Transactional
     public void findAndUpdate() throws IOException {
         locationMetadataUpdater.findAndUpdate();
         verify(metadataFileFetcher).getFilePaths(any(MetadataVersions.class));
     }
 
     @Test
-    @Rollback
-    @Transactional
     public void findAndUpdateVersionsDiffer() throws IOException {
         final MetadataVersions mv = mock(MetadataVersions.class);
         when(mv.getLocationsVersion()).thenReturn(new MetadataVersions.MetadataVersion("a", "1"));
@@ -50,8 +44,6 @@ public class LocationMetadataUpdaterIntegrationTest extends AbstractMetadataInte
     }
 
     @Test
-    @Rollback
-    @Transactional
     public void findAndUpdateNoUpdateNeeded() throws IOException {
         final MetadataVersions mv = mock(MetadataVersions.class);
         when(mv.getLocationsVersion()).thenReturn(new MetadataVersions.MetadataVersion("a", "1.1"));
@@ -65,8 +57,6 @@ public class LocationMetadataUpdaterIntegrationTest extends AbstractMetadataInte
     }
 
     @Test
-    @Rollback
-    @Transactional
     public void findAndUpdateException() throws IOException {
         try {
             when(metadataFileFetcher.getLatestVersions()).thenThrow(new IllegalArgumentException("TEST"));
@@ -82,8 +72,6 @@ public class LocationMetadataUpdaterIntegrationTest extends AbstractMetadataInte
     }
 
     @Test
-    @Rollback
-    @Transactional
     public void findAndUpdateVersionsEmpty() throws IOException {
         when(metadataFileFetcher.getLatestVersions()).thenReturn(null);
 

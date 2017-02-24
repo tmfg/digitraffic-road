@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
@@ -25,7 +24,6 @@ public class ForecastSectionDataUpdaterIntegrationTest extends AbstractMetadataI
     private ForecastSectionRepository forecastSectionRepository;
 
     @Test
-    @Transactional
     public void updateForecastSectionWeatherDataSucceeds() {
         forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 

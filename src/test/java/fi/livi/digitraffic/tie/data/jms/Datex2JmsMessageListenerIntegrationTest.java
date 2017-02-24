@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
@@ -27,7 +26,6 @@ import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
-@Transactional
 public class Datex2JmsMessageListenerIntegrationTest extends AbstractJmsMessageListenerIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerIntegrationTest.class);

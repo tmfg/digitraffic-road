@@ -35,8 +35,8 @@ public class TravelTimeClientIntegrationTest extends AbstractMetadataIntegration
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    private final static ZonedDateTime requestStartTime = ZonedDateTime.now().minusHours(1);
-    private final static String expectedUri = "travelTimeUri?starttime=" + TravelTimeClient.getDateString(requestStartTime);
+    private static final ZonedDateTime requestStartTime = ZonedDateTime.now().minusHours(1);
+    private static final String expectedUri = "travelTimeUri?starttime=" + TravelTimeClient.getDateString(requestStartTime);
 
     @SuppressWarnings("Duplicates")
     @Before
