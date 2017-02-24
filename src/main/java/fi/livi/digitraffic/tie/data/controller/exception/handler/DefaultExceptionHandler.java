@@ -113,18 +113,19 @@ public class DefaultExceptionHandler {
                 HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(ClientAbortException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleClientAbortException(final Exception exception, final ServletWebRequest request) {
+        log.warn(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() + " ({})", exception.getClass().getName());
+        // Return null because connection is closed and it's impossible to return anything to client.
+        // If something is returned it will cause another exception and that we don't want that to happen.
+        return null;
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleException(final Exception exception, final ServletWebRequest request) {
-        if (exception instanceof ClientAbortException) {
-            log.warn(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() + " ({})", exception.getClass().getName());
-            // Return null because connection is closed and it's impossible to return anything to client.
-            // If something is returned it will cause another exception and that we don't want that to happen.
-            return null;
-        } else {
-            log.error(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), exception);
-        }
-
+        log.error(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), exception);
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
                                                       HttpStatus.INTERNAL_SERVER_ERROR.value(),
                                                       HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
