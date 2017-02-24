@@ -116,7 +116,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(ClientAbortException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleClientAbortException(final Exception exception, final ServletWebRequest request) {
-        log.warn(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() + " ({})", exception.getClass().getName());
+        log.warn("{} {} ({})",HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), exception.getClass().getName());
         // Return null because connection is closed and it's impossible to return anything to client.
         // If something is returned it will cause another exception and that we don't want that to happen.
         return null;
