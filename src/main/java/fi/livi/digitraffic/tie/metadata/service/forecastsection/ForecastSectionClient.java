@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,6 +28,7 @@ public class ForecastSectionClient {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Retryable
     public List<ForecastSectionCoordinatesDto> getForecastSectionMetadata() {
 
         final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
@@ -34,6 +36,7 @@ public class ForecastSectionClient {
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
+    @Retryable
     public ForecastSectionDataDto getRoadConditions() {
 
         return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
