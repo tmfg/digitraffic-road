@@ -32,31 +32,23 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
+    public CameraDataUpdateService() {
+        cameraPresetService = null;
+        cameraImageUpdateService = null;
+    }
+
     @Transactional
     public void updateCameraData(final List<Kuva> data) throws SQLException {
-        // Collect newest data per station
-        HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
-        data.stream().forEach(k -> {
-            if (k.getEsiasentoId() != null) {
-                Kuva currentKamera = kuvaMappedByPresetLotjuId.get(k.getEsiasentoId());
-                if (currentKamera == null || k.getAika().toGregorianCalendar().before(currentKamera.getAika().toGregorianCalendar())) {
-                    if (currentKamera != null) {
-                        log.info("Replace " + currentKamera.getAika() + " with " + k.getAika());
-                    }
-                    kuvaMappedByPresetLotjuId.put(k.getEsiasentoId(), k);
-                }
-            } else {
-                log.warn("Kuva esiasentoId is null: {}", ToStringHelpper.toString(k));
-            }
-        });
 
-        final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(kuvaMappedByPresetLotjuId.keySet());
+        HashMap<Long, Kuva> latestKuvasMappedByPresetLotjuId = filterLatestKuvasAndMapByPresetId(data);
+
+        final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(latestKuvasMappedByPresetLotjuId.keySet());
 
         final List<Future<Boolean>> futures = new ArrayList<>();
         StopWatch start = StopWatch.createStarted();
 
         for (final CameraPreset cameraPreset : cameraPresets) {
-            final Kuva kuva = kuvaMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
+            final Kuva kuva = latestKuvasMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
             if (kuva == null) {
                 log.error("No kuva for preset {}", cameraPreset.toString());
             } else {
@@ -65,7 +57,7 @@ public class CameraDataUpdateService {
         }
 
         // Handle missing presets to delete possible images from disk
-        for (Kuva notFoundPresetsKuva : kuvaMappedByPresetLotjuId.values()) {
+        for (Kuva notFoundPresetsKuva : latestKuvasMappedByPresetLotjuId.values()) {
             futures.add(cameraImageUpdateService.handleKuva(notFoundPresetsKuva, null));
         }
 
@@ -78,5 +70,24 @@ public class CameraDataUpdateService {
         }
 
         log.info("Updating {} weather camera images took {} ms", futures.size(), start.getTime());
+    }
+
+    private HashMap<Long, Kuva> filterLatestKuvasAndMapByPresetId(final List<Kuva> data) {
+        // Collect newest kuva per preset
+        final HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
+        data.forEach(kuva -> {
+            if (kuva.getEsiasentoId() != null) {
+                Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
+                if ( currentKamera == null || kuva.getAika().compare(currentKamera.getAika()) > 0 ) {
+                    if (currentKamera != null) {
+                        log.info("Replace " + currentKamera.getAika() + " with " + kuva.getAika());
+                    }
+                    kuvaMappedByPresetLotjuId.put(kuva.getEsiasentoId(), kuva);
+                }
+            } else {
+                log.warn("Kuva esiasentoId is null: {}", ToStringHelpper.toString(kuva));
+            }
+        });
+        return kuvaMappedByPresetLotjuId;
     }
 }

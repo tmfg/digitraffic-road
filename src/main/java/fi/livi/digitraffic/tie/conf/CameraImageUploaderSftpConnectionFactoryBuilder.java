@@ -95,7 +95,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         return cachingSessionFactory;
     }
 
-    public Resource getPrivateKey() throws IOException {
+    private Resource getPrivateKey() throws IOException {
         log.info("Load private key {}", privateKeyPath);
         String absolutePath = resolveResourceAbsolutePath(privateKeyPath);
         return loadResource(absolutePath);
@@ -112,7 +112,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         }
     }
 
-    public String resolveResourceAbsolutePath(String resource) throws IOException {
+    private String resolveResourceAbsolutePath(String resource) throws IOException {
         try {
             final String folderLocation = StringUtils.substringBeforeLast(resource, "/");
             final String fileName = StringUtils.substringAfterLast(resource, "/");
