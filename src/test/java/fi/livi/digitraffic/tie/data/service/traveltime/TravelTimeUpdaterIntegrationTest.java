@@ -20,12 +20,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
@@ -70,8 +68,6 @@ public class TravelTimeUpdaterIntegrationTest extends AbstractMetadataIntegratio
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void updateMediansSucceeds() throws IOException {
 
         List<LinkMeasurementDataDto> medianTravelTimes =
@@ -96,8 +92,6 @@ public class TravelTimeUpdaterIntegrationTest extends AbstractMetadataIntegratio
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void updateLatestMediansSucceeds() throws IOException {
 
         server.expect(MockRestRequestMatchers.requestTo(expectedUri))
@@ -115,8 +109,6 @@ public class TravelTimeUpdaterIntegrationTest extends AbstractMetadataIntegratio
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void updateIndividualMeasurementsSucceeds() throws IOException {
         final File file = new File(getClass().getClassLoader().getResource("traveltime/pks_measurements_response.xml").getFile());
         final String response = FileUtils.readFileToString(file, "UTF-8");

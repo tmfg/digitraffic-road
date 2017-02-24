@@ -22,7 +22,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
@@ -46,7 +44,6 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
-@Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerIntegrationTest extends AbstractJmsMessageListenerIntegrationTest {
     
@@ -68,16 +65,8 @@ public class WeatherJmsMessageListenerIntegrationTest extends AbstractJmsMessage
     protected JdbcTemplate jdbcTemplate;
     private Marshaller jaxbMarshaller;
 
-    @After
-    public void restoreData() {
-        restoreGeneratedLotjuIdsWithJdbc();
-    }
-
     @Before
     public void initData() throws JAXBException {
-
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Tiesaa.class).createMarshaller();
 

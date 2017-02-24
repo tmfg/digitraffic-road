@@ -7,15 +7,12 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
-@Rollback
 public class LocationUpdaterIntegrationTest extends AbstractMetadataIntegrationTest {
 
     @Autowired
@@ -33,27 +30,23 @@ public class LocationUpdaterIntegrationTest extends AbstractMetadataIntegrationT
     }
 
     @Test(expected = IllegalArgumentException.class)
-    @Transactional(readOnly = true)
     public void unknownSubtype() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_unknown_subtype.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.not(Matchers.empty()));
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void ok() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_ok.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.not(Matchers.empty()));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    @Transactional(readOnly = true)
     public void illegalReference() {
         locationUpdater.updateLocations(getPath("/locations/locations_illegal_geocode.csv"), getSubtypes(), VERSION);
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void correctAreaReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_area_reference.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.hasSize(3));
@@ -68,7 +61,6 @@ public class LocationUpdaterIntegrationTest extends AbstractMetadataIntegrationT
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void correctLinearReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_linear_reference.csv"), getSubtypes(), VERSION);
         Assert.assertThat(locations, Matchers.hasSize(3));

@@ -6,8 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
@@ -15,17 +13,6 @@ import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 public class TmsStationDataControllerRestWebTest extends AbstractMetadataRestWebTest {
-
-    @Before
-    public void initData() {
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
-    }
-
-    @After
-    public void restoreData() {
-        restoreGeneratedLotjuIdsWithJdbc();
-    }
 
     @Test
     public void testTmsDataRestApi() throws Exception {

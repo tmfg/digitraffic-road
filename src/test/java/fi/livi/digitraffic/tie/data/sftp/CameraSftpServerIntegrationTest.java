@@ -21,14 +21,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.transaction.Transactional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +48,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-@Transactional
 public class CameraSftpServerIntegrationTest extends AbstractSftpIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerIntegrationTest.class);
 
@@ -94,8 +91,6 @@ public class CameraSftpServerIntegrationTest extends AbstractSftpIntegrationTest
         cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
         entityManager.clear();
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
         entityManager.flush();
         entityManager.clear();
 
@@ -161,11 +156,6 @@ public class CameraSftpServerIntegrationTest extends AbstractSftpIntegrationTest
             }
         }
         session.close();
-    }
-
-    @After
-    public void restoreData() {
-        restoreGeneratedLotjuIdsWithJdbc();
     }
 
     @Test

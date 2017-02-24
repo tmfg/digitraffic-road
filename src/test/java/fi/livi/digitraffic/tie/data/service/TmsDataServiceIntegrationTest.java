@@ -3,9 +3,6 @@ package fi.livi.digitraffic.tie.data.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transactional;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 
-@Transactional
 public class TmsDataServiceIntegrationTest extends AbstractMetadataIntegrationTest {
 
     @Autowired
@@ -34,8 +30,6 @@ public class TmsDataServiceIntegrationTest extends AbstractMetadataIntegrationTe
 
     @Before
     public void initData() {
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
         Map<Long, TmsStation> stations =
                 tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
         List<RoadStationSensor> availableSensors =
@@ -49,12 +43,6 @@ public class TmsDataServiceIntegrationTest extends AbstractMetadataIntegrationTe
             });
         });
     }
-
-    @After
-    public void restoreData() {
-        restoreGeneratedLotjuIdsWithJdbc();
-    }
-
 
     @Test
     public void testFindPublicTmsData()  {

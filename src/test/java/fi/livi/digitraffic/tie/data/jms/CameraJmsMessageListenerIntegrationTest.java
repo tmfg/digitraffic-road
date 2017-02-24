@@ -33,7 +33,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +43,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
@@ -58,7 +56,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-@Transactional
 public class CameraJmsMessageListenerIntegrationTest extends AbstractSftpIntegrationTest {
     
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerIntegrationTest.class);
@@ -86,11 +83,6 @@ public class CameraJmsMessageListenerIntegrationTest extends AbstractSftpIntegra
     private Marshaller jaxbMarshaller;
     private Unmarshaller jaxbUnmarshaller;
 
-    @After
-    public void restoreData() throws IOException, JAXBException {
-        restoreGeneratedLotjuIdsWithJdbc();
-    }
-
     @Before
     public void initData() throws IOException, JAXBException {
 
@@ -98,8 +90,6 @@ public class CameraJmsMessageListenerIntegrationTest extends AbstractSftpIntegra
         cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
         entityManager.clear();
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
 
         jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
         jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();

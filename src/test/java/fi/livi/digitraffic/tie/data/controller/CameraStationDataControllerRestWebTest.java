@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +23,9 @@ public class CameraStationDataControllerRestWebTest extends AbstractMetadataRest
     private String cameraId = null;
     @Before
     public  void initData() {
-        generateMissingLotjuIdsWithJdbc();
-        fixDataWithJdbc();
         cameraId =
                 cameraDataService.findPublishableCameraStationsData(false).getCameraStations().stream()
                         .filter(s -> s.getCameraPresets().size() > 0).findFirst().get().getId();
-    }
-
-    @After
-    public  void restoreData() {
-        restoreGeneratedLotjuIdsWithJdbc();
     }
 
     @Test

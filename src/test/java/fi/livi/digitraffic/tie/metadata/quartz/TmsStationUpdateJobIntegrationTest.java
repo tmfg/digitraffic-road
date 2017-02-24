@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +19,6 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
-@Transactional
 public class TmsStationUpdateJobIntegrationTest extends AbstractMetadataIntegrationTest {
 
     @Autowired

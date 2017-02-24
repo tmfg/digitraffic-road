@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,7 +21,6 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
 
-@Transactional
 public class CameraStationUpdateJobIntegrationTest extends AbstractMetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(TmsStationUpdateJobIntegrationTest.class);
