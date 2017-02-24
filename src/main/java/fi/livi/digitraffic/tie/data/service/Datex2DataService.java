@@ -176,7 +176,7 @@ public class Datex2DataService {
 
     public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
         final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
-        List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+        final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -191,7 +191,7 @@ public class Datex2DataService {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        List<Datex2> datex2s =
+        final List<Datex2> datex2s =
                 situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month);
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
@@ -199,7 +199,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(String situationId) {
-        List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+        final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
