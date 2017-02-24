@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Coordinate {
 
@@ -12,7 +12,7 @@ public class Coordinate {
 
     public final BigDecimal latitude;
 
-    public Coordinate(List<BigDecimal> coordinate) {
+    public Coordinate(final List<BigDecimal> coordinate) {
         if (coordinate.size() >= 2) {
             this.longitude = coordinate.get(0);
             this.latitude = coordinate.get(1);
@@ -25,7 +25,7 @@ public class Coordinate {
         }
     }
 
-    public Coordinate(BigDecimal longitude, BigDecimal latitude) {
+    public Coordinate(final BigDecimal longitude, final BigDecimal latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }

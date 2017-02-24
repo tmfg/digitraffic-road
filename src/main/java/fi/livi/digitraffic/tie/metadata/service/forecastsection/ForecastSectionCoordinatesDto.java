@@ -12,7 +12,7 @@ public class ForecastSectionCoordinatesDto {
 
     private final List<Coordinate> coordinates;
 
-    public ForecastSectionCoordinatesDto(String naturalId, String name, List<List<BigDecimal>> coordinates) {
+    public ForecastSectionCoordinatesDto(final String naturalId, final String name, final List<List<BigDecimal>> coordinates) {
         this.naturalId = naturalId;
         this.name = name;
         this.coordinates = coordinates.stream().map(c -> new Coordinate(c)).collect(Collectors.toList());

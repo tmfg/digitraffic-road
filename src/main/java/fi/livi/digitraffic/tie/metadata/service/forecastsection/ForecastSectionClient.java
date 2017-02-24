@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,22 +26,24 @@ public class ForecastSectionClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Retryable
     public List<ForecastSectionCoordinatesDto> getForecastSectionMetadata() {
 
-        LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
+        final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
 
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
+    @Retryable
     public ForecastSectionDataDto getRoadConditions() {
 
         return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
     }
 
-    private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(Map.Entry<String, Object> forecastSection) {
-        ForecastSectionCoordinatesEntry entry = objectMapper.convertValue(forecastSection.getValue(), ForecastSectionCoordinatesEntry.class);
+    private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(final Map.Entry<String, Object> forecastSection) {
+        final ForecastSectionCoordinatesEntry entry = objectMapper.convertValue(forecastSection.getValue(), ForecastSectionCoordinatesEntry.class);
 
         return new ForecastSectionCoordinatesDto(forecastSection.getKey(), entry.getName(), entry.getCoordinates());
     }
