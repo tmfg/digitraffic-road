@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +11,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,10 +32,6 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 @Service
 public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractTmsStationAttributeUpdater.class);
-
-    public static final String INSERT_FAILED = "Insert failed ";
-
     private final TmsStationService tmsStationService;
     private final RoadDistrictService roadDistrictService;
     private final StaticDataStatusService staticDataStatusService;
@@ -46,7 +43,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                              final RoadDistrictService roadDistrictService,
                              final StaticDataStatusService staticDataStatusService,
                              final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
-        super(roadStationService);
+        super(roadStationService, LoggerFactory.getLogger(AbstractTmsStationAttributeUpdater.class));
         this.tmsStationService = tmsStationService;
         this.roadDistrictService = roadDistrictService;
         this.staticDataStatusService = staticDataStatusService;
@@ -142,7 +139,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         log.info("Updated {} TmsStations", updated);
         log.info("Inserted {} TmsStations", inserted);
         if (insert.size() > inserted) {
-            log.warn(INSERT_FAILED + "for " + (insert.size()-inserted) + " TmsStations");
+            log.warn("Insert failed for {} TmsStations", (insert.size()-inserted));
         }
 
         return obsoleted > 0 || inserted > 0;
@@ -165,12 +162,16 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         final Integer roadNaturalId = la.getTieosoite().getTienumero();
         final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
 
-        if (roadNaturalId == null ) {
-            log.error(INSERT_FAILED + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTienumero() is null");
+        if (roadNaturalId == null) {
+            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                      "Insert failed {}: LamAsema.getTieosoite().getTienumero() is null",
+                      ToStringHelpper.toString(la));
             return false;
         }
         if (roadSectionNaturalId == null ) {
-            log.error(INSERT_FAILED + ToStringHelpper.toString(la) + ": LamAsema.getTieosoite().getTieosa() is null");
+            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                       "Insert failed {}: LamAsema.getTieosoite().getTieosa() is null",
+                       ToStringHelpper.toString(la));
             return false;
         }
 
@@ -197,17 +198,18 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             log.info("Created new " + newTmsStation);
             return true;
         } else {
-            log.error(
-                    INSERT_FAILED + ToStringHelpper.toString(la) + ": Could not find RoadDistrict with roadSectionNaturalId " + roadSectionNaturalId + ", roadNaturalId: " + roadNaturalId);
+            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                       "Insert failed {}: Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {}",
+                       ToStringHelpper.toString(la), roadSectionNaturalId, roadNaturalId);
             return false;
         }
     }
 
-    private static boolean validate(final LamAsemaVO la) {
+    private boolean validate(final LamAsemaVO la) {
         final boolean valid = la.getVanhaId() != null;
-        if (!valid) {
-            log.error(ToStringHelpper.toString(la) + " is invalid: has null vanhaId");
-        }
+        logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                   "{} is invalid: has null vanhaId",
+                   ToStringHelpper.toString(la));
         return valid;
     }
 

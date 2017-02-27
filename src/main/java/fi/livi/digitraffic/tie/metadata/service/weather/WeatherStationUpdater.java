@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.weather;
 
+import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +13,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @Service
 public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdater {
-    private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdater.class);
     public static final String WEATHER_STATIONS = " WeatherStations";
 
     private final WeatherStationService weatherStationService;
@@ -41,7 +41,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
                                  final WeatherStationService weatherStationService,
                                  final StaticDataStatusService staticDataStatusService,
                                  final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
-        super(roadStationService);
+        super(roadStationService, LoggerFactory.getLogger(WeatherStationUpdater.class));
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
         this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
@@ -240,12 +240,12 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         return insert.size();
     }
 
-    private static boolean validate(final TiesaaAsemaVO tsa) {
-        if (tsa.getVanhaId() == null) {
-            log.error(ToStringHelpper.toString(tsa) + " is invalid: has null vanhaId");
-            return false;
-        }
-        return true;
+    private boolean validate(final TiesaaAsemaVO tsa) {
+        final boolean valid = tsa.getVanhaId() != null;
+        logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(tsa.getKeruunTila()),
+                   "{} is invalid: has null vanhaId",
+                   ToStringHelpper.toString(tsa));
+        return valid;
     }
 
     private static boolean updateWeatherStationAttributes(final TiesaaAsemaVO from,
