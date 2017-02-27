@@ -245,9 +245,10 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
-                log.error(ToStringHelpper.toString(la) + " update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() " +
-                          roadSectionNaturalId + " vs old: " + tms.getRoadStation().getRoadAddress().getRoadSection() + ", LamAsema.getTieosoite().getTienumero(): " +
-                          roadNaturalId + " vs old: " + tms.getRoadStation().getRoadAddress().getRoadNumber());
+                log.error("{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
+                          ToStringHelpper.toString(la),
+                          roadSectionNaturalId,
+                          roadNaturalId);
                 rd = tms.getRoadDistrict();
             } else {
                 if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
