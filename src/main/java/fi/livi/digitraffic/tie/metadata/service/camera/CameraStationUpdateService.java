@@ -320,7 +320,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         final String presetId = CameraHelper.convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {
-            log.warn("Update camera preset (id:" + to.getId() + ", presetId: " + to.getPresetId() + ") cameraId from " + to.getCameraId() + " to " + cameraId);
+            log.warn("Update camera preset (id: {}, presetId: {}) cameraId from {} to {}",
+                     to.getId(), to.getPresetId(), to.getCameraId(), cameraId);
             log.debug("Old preset: {}", ToStringBuilder.reflectionToString(to));
             log.debug("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
             log.debug("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
