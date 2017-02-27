@@ -171,7 +171,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
             if ( updateWeatherStationAttributes(tsa, rws) ||
                  hash != HashCodeBuilder.reflectionHashCode(rws) ) {
                 counter.addAndGet(1);
-                log.info("Updated WeatherStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(rws));
+                log.info("Updated WeatherStation:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(rws));
             }
 
             if (rs.getRoadAddress().getId() == null) {

@@ -259,7 +259,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             if ( updateTmsStationAttributes(la, rd, tms) ||
                  hash != HashCodeBuilder.reflectionHashCode(tms) ) {
                 counter.addAndGet(1);
-                log.info("Updated TmsStation:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(tms));
+                log.info("Updated TmsStation:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(tms));
             }
             if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());

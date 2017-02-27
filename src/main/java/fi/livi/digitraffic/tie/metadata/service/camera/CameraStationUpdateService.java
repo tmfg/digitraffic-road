@@ -125,7 +125,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                         cameraPreset.setCameraLotjuId(kameraPair.getKey().getId());
                         cameraPreset.setLotjuId(found.get().getId());
                         updated.addAndGet(1);
-                        log.info("Updated CameraPreset lotju id:\n" + before + " -> \n" + ReflectionToStringBuilder.toString(cameraPreset));
+                        log.info("Updated CameraPreset lotju id:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(cameraPreset));
                     // if esiasento is not found -> obsolete preset
                     } else if (cameraPreset.obsolete()) {
                         obsoleted.addAndGet(1);
@@ -321,22 +321,16 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {
             log.warn("Update camera preset (id:" + to.getId() + ", presetId: " + to.getPresetId() + ") cameraId from " + to.getCameraId() + " to " + cameraId);
-            log.debug("\nOld preset: {}" +
-                      "\nnew kamera: {}" +
-                      "\nnew ea:     {}",
-                    ToStringBuilder.reflectionToString(to),
-                    ToStringBuilder.reflectionToString(kameraFrom),
-                    ToStringBuilder.reflectionToString(esiasentoFrom));
+            log.debug("Old preset: {}", ToStringBuilder.reflectionToString(to));
+            log.debug("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
+            log.debug("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
         }
 
         // Preset properties
         if ( to.getPresetId() != null && !to.getPresetId().equals(presetId) ) {
-            log.info("\nOld preset: {}" +
-                     "\nnew kamera: {}" +
-                     "\nnew ea:     {}",
-                    ToStringBuilder.reflectionToString(to),
-                    ToStringBuilder.reflectionToString(kameraFrom),
-                    ToStringBuilder.reflectionToString(esiasentoFrom));
+            log.info("Old preset: {}", ToStringBuilder.reflectionToString(to));
+            log.info("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
+            log.info("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
             log.error("Update: CameraPresetId doesn't match old: {} vs new {}", to.getPresetId(), presetId);
         } else {
             to.setPresetId(presetId);
