@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelpper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -238,19 +239,24 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             final Integer roadSectionNaturalId = la.getTieosoite() != null ? la.getTieosoite().getTieosa() : null;
 
             if ( roadNaturalId == null ) {
-                log.error(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTienumero() is null");
+                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                           "{} update failed: LamAsema.getTieosoite().getTienumero() is null",
+                            ToStringHelpper.toString(la));
             }
             if ( roadSectionNaturalId == null ) {
-                log.error(ToStringHelpper.toString(la) + " update failed: LamAsema.getTieosoite().getTieosa() is null");
+                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                           "{} update failed: LamAsema.getTieosoite().getTieosa() is null",
+                           ToStringHelpper.toString(la));
             }
 
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
-                log.error("{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
-                          ToStringHelpper.toString(la),
-                          roadSectionNaturalId,
-                          roadNaturalId);
+                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                          "{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
+                           ToStringHelpper.toString(la),
+                           roadSectionNaturalId,
+                           roadNaturalId);
                 rd = tms.getRoadDistrict();
             } else {
                 if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
