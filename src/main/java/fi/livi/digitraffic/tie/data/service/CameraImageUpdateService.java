@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -7,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +77,8 @@ public class CameraImageUpdateService {
                     downloadAndUploadImage(kuva.getUrl(), filename);
                     return new AsyncResult<>(true);
                 } catch (IOException e) {
-                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                    log.warn("Reading or writing picture for presetId {} from {} to sftp server path {} failed",
                               presetId, kuva.getUrl(), getImageFullPath(filename));
-                    log.error("Error", e);
                     return new AsyncResult<>(false);
                 }
             } else {
@@ -124,11 +125,21 @@ public class CameraImageUpdateService {
             con.setConnectTimeout(5000);
             con.setReadTimeout(5000);
             final String uploadPath = getImageFullPath(uploadImageFileName);
-            log.info("Download image {} and upload it to sftp server path {}", downloadImageUrl, uploadPath);
-            session.write(con.getInputStream(), uploadPath);
-        } catch (Exception e) {
-            log.error("Error while trying to upload image from {} to file {}", downloadImageUrl, getImageFullPath(uploadImageFileName));
-            throw new RuntimeException(e);
+            log.info("Download image {}", downloadImageUrl);
+            byte[] bytes = null;
+            try {
+                bytes = IOUtils.toByteArray(con.getInputStream());
+            } catch (IOException e) {
+                log.warn("Download image {} failed", downloadImageUrl);
+                throw e;
+            }
+            log.info("Upload image to sftp server {}", uploadPath);
+            try {
+                session.write(new ByteArrayInputStream(bytes), uploadPath);
+            } catch (IOException e) {
+                log.warn("Upload image to sftp server {} failed", uploadPath);
+                throw e;
+            }
         }
     }
 
