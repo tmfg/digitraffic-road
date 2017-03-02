@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.DayDataRepository;
@@ -31,7 +32,7 @@ public class DayDataService {
         this.linkFreeFlowSpeedRepository = linkFreeFlowSpeedRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.DEFAULT)
     public HistoryRootDataObjectDto listPreviousDayHistoryData(final boolean onlyUpdateInfo) {
 
         ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());

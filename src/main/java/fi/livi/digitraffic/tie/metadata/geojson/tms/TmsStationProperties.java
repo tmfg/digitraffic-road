@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -15,7 +14,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "TMS station properties", value = "TmsStationProperties", parent = RoadStationProperties.class)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "roadStationId", "tmsNumber", "name" })
 public class TmsStationProperties extends RoadStationProperties {
 

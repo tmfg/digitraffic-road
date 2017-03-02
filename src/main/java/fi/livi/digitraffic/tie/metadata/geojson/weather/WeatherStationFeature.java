@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.geojson.weather;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
@@ -12,22 +11,18 @@ import io.swagger.annotations.ApiModelProperty;
  * GeoJSON WeatherStation Feature Object
  */
 @ApiModel(description = "GeoJSON Feature Object of Weather Station", value = "Feature")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class WeatherStationFeature implements Feature {
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     private final String type = "Feature";
 
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Road station id, same as WeatherStationProperties.roadStationId", required = true, position = 2)
     private long id;
 
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true, position = 3)
     private Point geometry;
 
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "Weather station properties", required = true, position = 4)
     private WeatherStationProperties properties = new WeatherStationProperties();
 

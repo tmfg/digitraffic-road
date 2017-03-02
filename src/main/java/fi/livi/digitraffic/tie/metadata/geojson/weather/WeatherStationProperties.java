@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
@@ -20,7 +19,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Weather Station properties", value = "WeatherStationProperties", parent = RoadStationProperties.class)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "roadStationId", "weatherStationType", "naturalId", "name" })
 public class WeatherStationProperties extends RoadStationProperties {
 
