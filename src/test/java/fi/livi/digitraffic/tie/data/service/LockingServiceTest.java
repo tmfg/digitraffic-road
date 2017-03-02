@@ -1,11 +1,11 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -25,25 +25,30 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
     private LockingService lockingService;
 
     private static final String LOCK = "lock";
-    private static final int LOCK_EXPIRATION_MS = 2000;
-    private static final int LOCK_EXPIRATION_S = LOCK_EXPIRATION_MS/1000;
+    private static final int LOCK_EXPIRATION_S = 2;
+    private static final int LOCK_EXPIRATION_DELTA = 2;
+    private static final int LOCK_COUNT = 3;
+    private static final int THREAD_COUNT = 2;
+
 
     @Test()
     public void testMultipleInstancesLocking() {
 
-        ExecutorService pool = Executors.newFixedThreadPool(3);
-        Future<?> future1 = pool.submit(new Locker(LOCK, "1"));
-        Future<?> future2 = pool.submit(new Locker(LOCK, "2"));
-        Future<?> future3 = pool.submit(new Locker(LOCK, "3"));
+        ExecutorService pool = Executors.newFixedThreadPool(THREAD_COUNT);
 
-        while (!future1.isDone() || !future2.isDone() || !future3.isDone()) {
-            sleep(1000);
+        Collection<Future<?>> futures = new ArrayList<>();
+        for (int i = 1; i <= THREAD_COUNT; i++) {
+            futures.add(pool.submit(new Locker(LOCK, String.valueOf(i))));
         }
-        Assert.assertTrue(lockStarts.size() == 3*5);
+
+        while ( futures.stream().filter(f -> !f.isDone()).count() > 0 ) {
+            sleep(100);
+        }
+
+        Assert.assertTrue(lockStarts.size() == THREAD_COUNT * LOCK_COUNT);
 
         Long prev = null;
         for (Long start: lockStarts) {
-
             if (prev != null) {
                 log.info("START: {} DIFF {} s", start, (double)(start-prev)/1000.0);
             } else {
@@ -65,8 +70,9 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
         Long prevStart = null;
         for (Long start: lockStarts) {
             if (prevStart != null) {
-                Assert.assertTrue("", start >= prevStart + LOCK_EXPIRATION_MS);
-                Assert.assertTrue(start <= prevStart + LOCK_EXPIRATION_MS + 2000);
+                // Check that locks won't overlap
+                Assert.assertTrue("", start >= prevStart + LOCK_EXPIRATION_S * 1000);
+                Assert.assertTrue(start <= prevStart + LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA);
             }
             prevStart = start;
         }
@@ -85,8 +91,7 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
         @Override
         public void run() {
             int counter = 0;
-            while (counter < 5) {
-                StopWatch start = StopWatch.createStarted();
+            while (counter < LOCK_COUNT) {
                 boolean locked = lockingService.acquireLock(lock, instanceId, LOCK_EXPIRATION_S);
                 if (locked) {
                     log.info("Acquired Lock [{}] for: [{}]", lock, instanceId);
