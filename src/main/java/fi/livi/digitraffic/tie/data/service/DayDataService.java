@@ -32,7 +32,7 @@ public class DayDataService {
         this.linkFreeFlowSpeedRepository = linkFreeFlowSpeedRepository;
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.DEFAULT)
+    @Transactional(readOnly = true)
     public HistoryRootDataObjectDto listPreviousDayHistoryData(final boolean onlyUpdateInfo) {
 
         ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
