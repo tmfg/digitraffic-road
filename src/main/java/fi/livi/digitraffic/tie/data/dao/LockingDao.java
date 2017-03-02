@@ -71,7 +71,7 @@ public class LockingDao {
         } catch (Exception e) {
             // May happen when lock-row doesn't exist in db and different instances try to insert it at the same time
             if (e instanceof org.springframework.dao.DuplicateKeyException) {
-                log.error("Error locking (lockName=" + lockName + ", callerInstanceId=" + callerInstanceId + ", expirationSeconds=" + expirationSeconds +")", e);
+                log.info("Locking failed (lockName={}, callerInstanceId={}, expirationSeconds={})", lockName, callerInstanceId, expirationSeconds);
                 return false;
             }
             throw e;
