@@ -26,7 +26,7 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
 
     private static final String LOCK = "lock";
     private static final int LOCK_EXPIRATION_S = 2;
-    private static final int LOCK_EXPIRATION_DELTA = 2;
+    private static final int LOCK_EXPIRATION_DELTA_S = 2;
     private static final int LOCK_COUNT = 3;
     private static final int THREAD_COUNT = 2;
 
@@ -72,7 +72,7 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
             if (prevStart != null) {
                 // Check that locks won't overlap
                 Assert.assertTrue("", start >= prevStart + LOCK_EXPIRATION_S * 1000);
-                Assert.assertTrue(start <= prevStart + LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA);
+                Assert.assertTrue(start <= prevStart + (LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000);
             }
             prevStart = start;
         }
@@ -99,7 +99,7 @@ public class LockingServiceTest extends AbstractMetadataIntegrationTest {
                     lockerInstanceIds.add(instanceId);
                     counter++;
                     // Sleep little more than exipration so another thread should get lock
-                    sleep(LOCK_EXPIRATION_MS + 2000);
+                    sleep((LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000);
                 }
             }
         }
