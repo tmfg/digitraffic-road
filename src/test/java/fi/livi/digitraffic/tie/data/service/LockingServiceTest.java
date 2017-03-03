@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 
-public class LockingServiceTest extends AbstractMetadataIntegrationTest {
+public class LockingServiceTest extends AbstractTest {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractMetadataIntegrationTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
 
     private ArrayList<Long> lockStarts = new ArrayList<>();
     private ArrayList<String> lockerInstanceIds  = new ArrayList<>();

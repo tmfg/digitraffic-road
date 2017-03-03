@@ -11,11 +11,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 
-public class CameraStationDataControllerRestWebTest extends AbstractMetadataRestWebTest {
+public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private CameraDataService cameraDataService;

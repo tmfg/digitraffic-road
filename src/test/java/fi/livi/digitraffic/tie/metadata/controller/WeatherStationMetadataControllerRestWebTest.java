@@ -11,10 +11,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class WeatherStationMetadataControllerRestWebTest extends AbstractMetadataRestWebTest {
+public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
 
     @Test

@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class ForecastSectionCoordinatesEntry {
 
     private final String name;

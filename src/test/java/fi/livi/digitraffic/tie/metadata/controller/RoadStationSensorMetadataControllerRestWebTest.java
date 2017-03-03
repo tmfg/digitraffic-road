@@ -9,10 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.Test;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class RoadStationSensorMetadataControllerRestWebTest extends AbstractMetadataRestWebTest {
+public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testRoadStationSensorMetadataApi() throws Exception {
