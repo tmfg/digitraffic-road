@@ -6,6 +6,9 @@ spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
 
+# Format : user:password, one by line or separated by comma
+javamelody.authorized-users = username:password
+
 # Lotju-test v2 soap api
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot

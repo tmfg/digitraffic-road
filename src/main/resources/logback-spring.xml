@@ -78,6 +78,14 @@
         </springProfile>
     </logger>
 
+    <!-- debugging log -->
+    <logger name="net.bull.javamelody" additivity="false">
+        <level value="ERROR" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+
     <root level="INFO" additivity="false">
         <appender-ref ref="FILE" />
 
