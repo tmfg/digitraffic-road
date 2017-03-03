@@ -31,6 +31,8 @@ public class CameraImageUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateService.class);
 
     private final String sftpUploadFolder;
+    private final int connectTimeout;
+    private final int readTimeout;
     private final CameraPresetService cameraPresetService;
     private final SessionFactory sftpSessionFactory;
     private final RetryTemplate retryTemplate;
@@ -38,10 +40,16 @@ public class CameraImageUpdateService {
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                              final String sftpUploadFolder,
+                             @Value("${camera-image-uploader.http.connectTimeout}")
+                             final int connectTimeout,
+                             @Value("${camera-image-uploader.http.readTimeout}")
+                             final int readTimeout,
                              final CameraPresetService cameraPresetService,
                              final SessionFactory sftpSessionFactory,
                              final RetryTemplate retryTemplate) {
         this.sftpUploadFolder = sftpUploadFolder;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
         this.cameraPresetService = cameraPresetService;
         this.sftpSessionFactory = sftpSessionFactory;
         this.retryTemplate = retryTemplate;
@@ -121,8 +129,8 @@ public class CameraImageUpdateService {
         try (final Session session = sftpSessionFactory.getSession()) {
             final URL url = new URL(downloadImageUrl);
             URLConnection con = url.openConnection();
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(5000);
+            con.setConnectTimeout(connectTimeout);
+            con.setReadTimeout(readTimeout);
             final String uploadPath = getImageFullPath(uploadImageFileName);
             log.info("Download image {} and upload it to sftp server path {}", downloadImageUrl, uploadPath);
             session.write(con.getInputStream(), uploadPath);
