@@ -58,7 +58,7 @@ public class TravelTimeUpdater {
             log.info("Fetched PKS individual measurements for {} links. Period start {} and duration {}",
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
-            log.info("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
             return;
         }
@@ -98,7 +98,7 @@ public class TravelTimeUpdater {
         if (data != null && data.medians != null) {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
         } else {
-            log.info("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
             return;
         }
