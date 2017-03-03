@@ -42,7 +42,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
-public class AbstractSftpIntegrationTest extends AbstractMetadataIntegrationTest {
+public abstract class AbstractSftpIntegrationTest extends AbstractMetadataIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSftpIntegrationTest.class);
 
