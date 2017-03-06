@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -23,11 +22,10 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 
 @Service
-public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
+public class TmsStationsSensorsUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
@@ -41,7 +39,6 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
                                      final TmsStationService tmsStationService,
                                      final StaticDataStatusService staticDataStatusService,
                                      final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
-        super(roadStationService);
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
         this.staticDataStatusService = staticDataStatusService;
@@ -129,26 +126,6 @@ public class TmsStationsSensorsUpdater extends AbstractWeatherStationAttributeUp
         log.info("Sensor added to road stations {}", countAdded);
 
         return countRemoved.get() > 0 || countAdded.get() > 0;
-    }
-
-    private static boolean addSensorIfMissing(RoadStation rs,
-                                              Map<Long, RoadStationSensor> naturalIdToCurrentSensorMap,
-                                              LamLaskennallinenAnturiVO anturi,
-                                              Map<Long, RoadStationSensor> allSensors) {
-        final Long sensorNaturalId = Long.valueOf(anturi.getVanhaId());
-        final RoadStationSensor sensor = naturalIdToCurrentSensorMap.remove(sensorNaturalId);
-        // road station doesn't have mapping for sensor -> add it
-        if (sensor == null) {
-            final RoadStationSensor add = allSensors.get(sensorNaturalId);
-            if (add == null) {
-                log.error("No RoadStationSensor found with naturalId " + sensorNaturalId);
-            } else {
-                rs.getRoadStationSensors().add(add);
-                log.info("Add sensor " + add + " for " + rs);
-                return true;
-            }
-        }
-        return false;
     }
 
     private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {

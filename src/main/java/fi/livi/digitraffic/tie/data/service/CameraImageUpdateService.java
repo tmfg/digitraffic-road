@@ -85,9 +85,8 @@ public class CameraImageUpdateService {
                     downloadAndUploadImage(kuva.getUrl(), filename);
                     return new AsyncResult<>(true);
                 } catch (IOException e) {
-                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                    log.warn("Reading or writing picture for presetId {} from {} to sftp server path {} failed",
                               presetId, kuva.getUrl(), getImageFullPath(filename));
-                    log.error("Error", e);
                     return new AsyncResult<>(false);
                 }
             } else {

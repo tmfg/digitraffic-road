@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
-    private static final Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
@@ -39,7 +37,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
                                          final WeatherStationService weatherStationService,
                                          final StaticDataStatusService staticDataStatusService,
                                          final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
-        super(roadStationService);
+        super(roadStationService, LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class));
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
