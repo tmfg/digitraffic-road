@@ -10,9 +10,9 @@ import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 
 @Service
 public class ForecastSectionDataService {

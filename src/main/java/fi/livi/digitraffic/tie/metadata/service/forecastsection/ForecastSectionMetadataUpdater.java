@@ -1,8 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;
+import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 
 @Service
 public class ForecastSectionMetadataUpdater {

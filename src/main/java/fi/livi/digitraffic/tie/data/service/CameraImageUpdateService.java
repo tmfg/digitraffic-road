@@ -33,6 +33,8 @@ public class CameraImageUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateService.class);
 
     private final String sftpUploadFolder;
+    private final int connectTimeout;
+    private final int readTimeout;
     private final CameraPresetService cameraPresetService;
     private final SessionFactory sftpSessionFactory;
     private final RetryTemplate retryTemplate;
@@ -40,10 +42,16 @@ public class CameraImageUpdateService {
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                              final String sftpUploadFolder,
+                             @Value("${camera-image-uploader.http.connectTimeout}")
+                             final int connectTimeout,
+                             @Value("${camera-image-uploader.http.readTimeout}")
+                             final int readTimeout,
                              final CameraPresetService cameraPresetService,
                              final SessionFactory sftpSessionFactory,
                              final RetryTemplate retryTemplate) {
         this.sftpUploadFolder = sftpUploadFolder;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
         this.cameraPresetService = cameraPresetService;
         this.sftpSessionFactory = sftpSessionFactory;
         this.retryTemplate = retryTemplate;
@@ -119,27 +127,28 @@ public class CameraImageUpdateService {
     }
 
     private void downloadAndUploadImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
+        log.info("Download image {} ({})", downloadImageUrl, uploadImageFileName);
+        final byte[] data = downloadImage(downloadImageUrl);
         try (final Session session = sftpSessionFactory.getSession()) {
+            final String uploadPath = getImageFullPath(uploadImageFileName);
+            log.info("Upload image to sftp server path {}", uploadPath);
+            session.write(new ByteArrayInputStream(data), uploadPath);
+        } catch (Exception e) {
+            log.error("Error while trying to upload image to sftp server path {}", getImageFullPath(uploadImageFileName));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] downloadImage(final String downloadImageUrl) {
+        try {
             final URL url = new URL(downloadImageUrl);
             URLConnection con = url.openConnection();
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(5000);
-            final String uploadPath = getImageFullPath(uploadImageFileName);
-            log.info("Download image {}", downloadImageUrl);
-            byte[] bytes = null;
-            try {
-                bytes = IOUtils.toByteArray(con.getInputStream());
-            } catch (IOException e) {
-                log.warn("Download image {} failed", downloadImageUrl);
-                throw e;
-            }
-            log.info("Upload image to sftp server {}", uploadPath);
-            try {
-                session.write(new ByteArrayInputStream(bytes), uploadPath);
-            } catch (IOException e) {
-                log.warn("Upload image to sftp server {} failed", uploadPath);
-                throw e;
-            }
+            con.setConnectTimeout(connectTimeout);
+            con.setReadTimeout(readTimeout);
+            return  IOUtils.toByteArray(con.getInputStream());
+        } catch (Exception e) {
+            log.error("Error while trying to download image from {}", downloadImageUrl);
+            throw new RuntimeException(e);
         }
     }
 
