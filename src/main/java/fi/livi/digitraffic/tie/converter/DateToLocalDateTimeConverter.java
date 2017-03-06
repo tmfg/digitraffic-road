@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.converter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
