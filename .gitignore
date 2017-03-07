@@ -11,8 +11,7 @@
 /target
 /buildNumber.properties
 
-# Ignoroidaan erilaisia lokitiedostoja, kaikkien nimessä ei ole .log jostain syystä.
-/digitraffic-metadata
+# Lokitiedostot
 **/*.log
 **/*.log.gz
 
