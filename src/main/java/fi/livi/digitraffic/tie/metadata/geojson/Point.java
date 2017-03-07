@@ -6,14 +6,12 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "coordinates"})
 public class Point {
 
