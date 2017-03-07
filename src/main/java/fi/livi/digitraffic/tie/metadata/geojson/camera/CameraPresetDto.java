@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Camera preset", value = "CameraPreset")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "presetId", "cameraId", "name" })
 public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
