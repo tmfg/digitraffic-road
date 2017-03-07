@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.traveltime.dto;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +9,7 @@ public class LinkMetadataDto {
 
     public final Timestamp timestamp;
 
-    public final String lastUpdate;
+    public final ZonedDateTime lastUpdate;
 
     public final String service;
 
@@ -23,7 +24,7 @@ public class LinkMetadataDto {
     public final Version version;
 
     public LinkMetadataDto(@JsonProperty("timestamp") final Timestamp timestamp,
-                           @JsonProperty("LastUpdate") final String lastUpdate,
+                           @JsonProperty("LastUpdate") final ZonedDateTime lastUpdate,
                            @JsonProperty("service") final String service,
                            @JsonProperty("linklist") final List<Link> links,
                            @JsonProperty("directionlist") final List<Directiontext> directions,

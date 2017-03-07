@@ -10,12 +10,12 @@ public class Directiontext {
     @JacksonXmlElementWrapper(useWrapping = false)
     public final List<Text> text;
 
-    public final String dirindex;
+    public final int dirindex;
 
     public final String RDI;
 
     public Directiontext(@JsonProperty("text") final List<Text> text,
-                         @JsonProperty("dirindex") final String dirindex,
+                         @JsonProperty("dirindex") final int dirindex,
                          @JsonProperty("RDI") final String RDI) {
         this.text = text;
         this.dirindex = dirindex;
