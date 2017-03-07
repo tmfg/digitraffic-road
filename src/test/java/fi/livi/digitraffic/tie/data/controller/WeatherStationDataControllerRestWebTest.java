@@ -9,10 +9,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class WeatherStationDataControllerRestWebTest extends AbstractMetadataRestWebTest {
+public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testWeatherDataRestApi() throws Exception {

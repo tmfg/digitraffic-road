@@ -29,7 +29,7 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
                                 final StaticDataStatusService staticDataStatusService,
                                 final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
                                 final CameraStationUpdateService cameraStationUpdateService) {
-        super(roadStationService);
+        super(roadStationService, LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
         this.staticDataStatusService = staticDataStatusService;
         this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
         this.cameraStationUpdateService = cameraStationUpdateService;

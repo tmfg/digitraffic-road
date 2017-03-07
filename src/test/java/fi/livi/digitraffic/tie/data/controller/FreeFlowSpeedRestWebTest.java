@@ -9,10 +9,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
-public class FreeFlowSpeedRestWebTest extends AbstractMetadataRestWebTest {
+public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testFreeFlowSpeedDataRestApi() throws Exception {

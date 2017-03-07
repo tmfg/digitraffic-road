@@ -58,3 +58,4 @@ crashlytics-build.properties
 /target
 /buildNumber.properties
 /metadata-daily.*
+/javamelody

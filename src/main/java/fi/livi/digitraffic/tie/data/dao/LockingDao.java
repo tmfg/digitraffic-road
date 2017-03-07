@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LockingDao {
 
+    private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     /**
@@ -61,9 +64,18 @@ public class LockingDao {
         params.put("instanceId", callerInstanceId);
         params.put("expirationSeconds", expirationSeconds);
 
-        jdbcTemplate.update(MERGE, params);
-        // If lock was acquired successfull then query should return one row
-        return jdbcTemplate.queryForList(SELECT, params, String.class).size() == 1;
+        try {
+            // If lock was acquired successfull then query should return one row
+            jdbcTemplate.update(MERGE, params);
+            return jdbcTemplate.queryForList(SELECT, params, String.class).size() == 1;
+        } catch (Exception e) {
+            // May happen when lock-row doesn't exist in db and different instances try to insert it at the same time
+            if (e instanceof org.springframework.dao.DuplicateKeyException) {
+                log.info("Locking failed (lockName={}, callerInstanceId={}, expirationSeconds={})", lockName, callerInstanceId, expirationSeconds);
+                return false;
+            }
+            throw e;
+        }
     }
 
     public void releaseLock(final String lockName, final String callerInstanceId) {

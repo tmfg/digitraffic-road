@@ -23,13 +23,22 @@
             socket.onmessage = function(message) {
                 console.info("data JSON: " + convert(message));
                 addMessage(message);
+                updateList();
             };
         }
 
         function addMessage(message) {
             var text = convert(message);
-            $(".messages").append(text);
-            $(".messages").append('\n');
+
+            if (lines.length > 50) {
+                lines.shift();
+            }
+
+            lines.push(text);
+        }
+
+        function updateList() {
+            $(".messages").html(lines.join('<br/>'));
         }
 
         function convert(message) {

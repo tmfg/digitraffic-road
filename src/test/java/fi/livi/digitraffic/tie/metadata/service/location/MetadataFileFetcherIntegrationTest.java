@@ -9,10 +9,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataIntegrationTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 
 @Ignore
-public class MetadataFileFetcherIntegrationTest extends AbstractMetadataIntegrationTest {
+public class MetadataFileFetcherIntegrationTest extends AbstractTest {
     @Value("${metadata.tmc.url}")
     private String tmcUrl;
 
