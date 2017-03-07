@@ -15,7 +15,7 @@ public class LinkMetadataDto {
 
     public final List<Link> links;
 
-    public final List<Directiontext> directions;
+    public final List<DirectionText> directions;
 
     public final List<Site> sites;
 
@@ -27,7 +27,7 @@ public class LinkMetadataDto {
                            @JsonProperty("LastUpdate") final ZonedDateTime lastUpdate,
                            @JsonProperty("service") final String service,
                            @JsonProperty("linklist") final List<Link> links,
-                           @JsonProperty("directionlist") final List<Directiontext> directions,
+                           @JsonProperty("directionlist") final List<DirectionText> directions,
                            @JsonProperty("sitelist") final List<Site> sites,
                            @JsonProperty("SUP") final String SUP,
                            @JsonProperty("version") final Version version) {

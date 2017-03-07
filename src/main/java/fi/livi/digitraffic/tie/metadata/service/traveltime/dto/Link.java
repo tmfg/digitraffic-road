@@ -22,7 +22,7 @@ public class Link {
 
     public final List<IntermediateSite> intermediates;
 
-    public final Freeflowspeed freeflowspeed;
+    public final FreeFlowSpeed freeFlowSpeed;
 
     public Link(@JsonProperty("linkno") final int linkno,
                 @JsonProperty("startsite") final int startsite,
@@ -31,13 +31,13 @@ public class Link {
                 @JsonProperty("distance") final Distance distance,
                 @JsonProperty("dirindex") final int dirindex,
                 @JsonProperty("intermediates") final List<IntermediateSite> intermediates,
-                @JsonProperty("freeflowspeed") final Freeflowspeed freeflowspeed) {
+                @JsonProperty("freeflowspeed") final FreeFlowSpeed freeFlowSpeed) {
         this.distance = distance;
         this.dirindex = dirindex;
         this.intermediates = intermediates;
         this.name = name;
         this.startsite = startsite;
-        this.freeflowspeed = freeflowspeed;
+        this.freeFlowSpeed = freeFlowSpeed;
         this.endsite = endsite;
         this.linkno = linkno;
     }

@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
-public class Directiontext {
+public class DirectionText {
 
     @JacksonXmlElementWrapper(useWrapping = false)
     public final List<Text> text;
@@ -14,7 +14,7 @@ public class Directiontext {
 
     public final String RDI;
 
-    public Directiontext(@JsonProperty("text") final List<Text> text,
+    public DirectionText(@JsonProperty("text") final List<Text> text,
                          @JsonProperty("dirindex") final int dirindex,
                          @JsonProperty("RDI") final String RDI) {
         this.text = text;
