@@ -24,4 +24,10 @@ public class AbstractRoadStationUpdater {
             log.error(format, arguments);
         }
     }
+
+    protected void logWarnIf(boolean doLog, String format, Object... arguments) {
+        if (doLog) {
+            log.warn(format, arguments);
+        }
+    }
 }
