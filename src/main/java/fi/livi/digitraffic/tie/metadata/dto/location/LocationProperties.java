@@ -2,11 +2,8 @@ package fi.livi.digitraffic.tie.metadata.dto.location;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocationProperties {
     @ApiModelProperty(value = "Code of location subtype", required = true)
     public final String subtypeCode;

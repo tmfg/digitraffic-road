@@ -14,7 +14,6 @@ import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -27,7 +26,6 @@ import org.apache.sshd.server.scp.ScpCommandFactory;
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -75,7 +73,6 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     String host = "localhost";
 
-
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
     private SshServer testSftpServer;
@@ -83,16 +80,8 @@ public abstract class AbstractSftpTest extends AbstractTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
 
-    @BeforeClass
-    public static void beforeClass() {
-        final int randomPort = RandomUtils.nextInt(11000, 12000);
-        log.info("Random port for sftp server {}", randomPort);
-        System.setProperty("camera-image-uploader.sftp.port", String.valueOf(randomPort));
-    }
-
     @Before
     public void initSftpServer() throws IOException {
-
         log.info("Init Sftp Server with temporary root folder {}", testFolder.getRoot());
         httpPort = wireMockRule.port();
 
