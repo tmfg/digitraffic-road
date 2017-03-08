@@ -17,19 +17,44 @@ public class CoordinateConverter {
     private static final Logger log = LoggerFactory.getLogger(CoordinateConverter.class);
 
     private final CoordinateTransform transformerFromETRS89ToWGS84;
+    private final CoordinateTransform transformerFromKKJ3ToWGS84;
 
     public CoordinateConverter() {
         CRSFactory crsFactory = new CRSFactory();
 
+        // WGS84: http://spatialreference.org/ref/epsg/4326/ -> Proj4
+        CoordinateReferenceSystem coordinateTransformToWGS84 = crsFactory.createFromParameters("EPSG:4326",
+                "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+
         // ETRS89 to WGS84 transformer
         // ETRS89: http://spatialreference.org/ref/epsg/etrs89-etrs-tm35fin/ -> Proj4
-        CoordinateReferenceSystem coordinateTransformFrom = crsFactory.createFromParameters("EPSG:3067",
+        CoordinateReferenceSystem coordinateTransformFromETRS89 = crsFactory.createFromParameters("EPSG:3067",
                 "+proj=utm +zone=35 ellps=GRS80 +units=m +no_defs");
-        // WGS84: http://spatialreference.org/ref/epsg/4326/ -> Proj4
-        CoordinateReferenceSystem coordinateTransformTo = crsFactory.createFromParameters("EPSG:4326",
-                "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+
         CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-        transformerFromETRS89ToWGS84 = coordinateTransformFactory.createTransform(coordinateTransformFrom, coordinateTransformTo);
+        transformerFromETRS89ToWGS84 = coordinateTransformFactory.createTransform(coordinateTransformFromETRS89, coordinateTransformToWGS84);
+
+        // KKJ3 to WGS84 transformer
+        /*
+         *  http://latuviitta.org/documents/YKJ-TM35FIN_muunnos_ogr2ogr_cs2cs.txt
+         *  Onneksi PROJ.4-käyttäjä voi kuitenkin ottaa tilanteen helposti omaan hallintaansa. Tämä onnistuu käyttämällä koordinaattijärjestelmän määrittelyyn EPSG-koodien sijasta proj-merkkijonoa.
+         *  Alla esitetään määrittelyt KKJ-kaistoille 1-4
+         *
+         *  # KKJ / Finland zone 1 EPSG:2391
+         *  proj="tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=1500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs"
+         *
+         *  # KKJ / Finland zone 2 EPSG:2392
+         *  +proj="tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs"
+         *
+         *  # KKJ / Finland Uniform Coordinate System EPSG:2393
+         *  +proj="tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=3500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs"
+         *
+         *  # KKJ / Finland zone 4 EPSG:2394
+         *  +proj="tmerc +lat_0=0 +lon_0=30 +k=1 +x_0=4500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs"
+         */
+        CoordinateReferenceSystem coordinateTransformFromKKJ3 = crsFactory.createFromParameters("EPSG:2393",
+                "+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=3500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs");
+        transformerFromKKJ3ToWGS84 = coordinateTransformFactory.createTransform(coordinateTransformFromKKJ3, coordinateTransformToWGS84);
     }
 
     public Point convertFromETRS89ToWGS84(Point fromETRS89) {
@@ -44,6 +69,21 @@ public class CoordinateConverter {
 
         if (log.isDebugEnabled()) {
             log.debug("From: " + fromETRS89 + " to " + point);
+        }
+        return point;
+    }
+
+    public Point convertFromKKJ3ToWGS84(Point fromKkj3) {
+        ProjCoordinate to = new ProjCoordinate();
+        ProjCoordinate from = new ProjCoordinate(fromKkj3.getLongitude(),
+                fromKkj3.getLatitude());
+        transformerFromKKJ3ToWGS84.transform(from, to);
+        Point point = fromKkj3.hasAltitude() ?
+                      new Point(to.x, to.y, fromKkj3.getAltitude()) :
+                      new Point(to.x, to.y);
+
+        if (log.isDebugEnabled()) {
+            log.debug("From: " + fromKkj3 + " to " + point);
         }
         return point;
     }
