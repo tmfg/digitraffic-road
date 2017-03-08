@@ -18,21 +18,21 @@ public class Site {
 
     public final String roadRegisterAddress;
 
-    public final CO1 coordinates_kkj3;
+    public final CO1 coordinatesKkj3;
 
-    public final WGS84 coordinates;
+    public final WGS84 coordinatesWgs84;
 
     public Site(@JsonProperty("number") final int number,
                 @JsonProperty("names") final List<Name> names,
                 @JsonProperty("RNO") final int roadNumber,
                 @JsonProperty("TRO") final String roadRegisterAddress,
-                @JsonProperty("CO1") final CO1 coordinates_kkj3,
-                @JsonProperty("WGS84") final WGS84 coordinates) {
+                @JsonProperty("CO1") final CO1 coordinatesKkj3,
+                @JsonProperty("WGS84") final WGS84 coordinatesWgs84) {
         this.number = number;
         this.names = names;
         this.roadNumber = roadNumber;
         this.roadRegisterAddress = roadRegisterAddress;
-        this.coordinates_kkj3 = coordinates_kkj3;
-        this.coordinates = coordinates;
+        this.coordinatesKkj3 = coordinatesKkj3;
+        this.coordinatesWgs84 = coordinatesWgs84;
     }
 }

@@ -8,11 +8,11 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class Link {
 
-    public final int linkno;
+    public final int linkNumber;
 
-    public final int startsite;
+    public final int startSite;
 
-    public final int endsite;
+    public final int endSite;
 
     @JacksonXmlElementWrapper(useWrapping = false, localName = "names")
     @JacksonXmlProperty(localName = "name")
@@ -20,27 +20,27 @@ public class Link {
 
     public final Distance distance;
 
-    public final int dirindex;
+    public final int directionIndex;
 
     public final List<IntermediateSite> intermediates;
 
     public final FreeFlowSpeed freeFlowSpeed;
 
-    public Link(@JsonProperty("linkno") final int linkno,
-                @JsonProperty("startsite") final int startsite,
-                @JsonProperty("endsite") final int endsite,
+    public Link(@JsonProperty("linkno") final int linkNumber,
+                @JsonProperty("startsite") final int startSite,
+                @JsonProperty("endsite") final int endSite,
                 @JsonProperty("names") final List<Name> names,
                 @JsonProperty("distance") final Distance distance,
-                @JsonProperty("dirindex") final int dirindex,
+                @JsonProperty("dirindex") final int directionIndex,
                 @JsonProperty("intermediates") final List<IntermediateSite> intermediates,
                 @JsonProperty("freeflowspeed") final FreeFlowSpeed freeFlowSpeed) {
         this.distance = distance;
-        this.dirindex = dirindex;
+        this.directionIndex = directionIndex;
         this.intermediates = intermediates;
         this.names = names;
-        this.startsite = startsite;
+        this.startSite = startSite;
         this.freeFlowSpeed = freeFlowSpeed;
-        this.endsite = endsite;
-        this.linkno = linkno;
+        this.endSite = endSite;
+        this.linkNumber = linkNumber;
     }
 }
