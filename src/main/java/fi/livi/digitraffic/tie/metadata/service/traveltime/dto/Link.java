@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class Link {
 
@@ -13,8 +14,9 @@ public class Link {
 
     public final int endsite;
 
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public final List<Name> name;
+    @JacksonXmlElementWrapper(useWrapping = false, localName = "names")
+    @JacksonXmlProperty(localName = "name")
+    public final List<Name> names;
 
     public final Distance distance;
 
@@ -27,7 +29,7 @@ public class Link {
     public Link(@JsonProperty("linkno") final int linkno,
                 @JsonProperty("startsite") final int startsite,
                 @JsonProperty("endsite") final int endsite,
-                @JsonProperty("name") final List<Name> name,
+                @JsonProperty("names") final List<Name> names,
                 @JsonProperty("distance") final Distance distance,
                 @JsonProperty("dirindex") final int dirindex,
                 @JsonProperty("intermediates") final List<IntermediateSite> intermediates,
@@ -35,7 +37,7 @@ public class Link {
         this.distance = distance;
         this.dirindex = dirindex;
         this.intermediates = intermediates;
-        this.name = name;
+        this.names = names;
         this.startsite = startsite;
         this.freeFlowSpeed = freeFlowSpeed;
         this.endsite = endsite;
