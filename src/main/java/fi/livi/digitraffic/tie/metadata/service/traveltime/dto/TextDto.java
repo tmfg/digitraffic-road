@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-public class Text {
+public class TextDto {
 
     @JacksonXmlText
     public final String text;
@@ -13,8 +13,8 @@ public class Text {
     public final String lang;
 
     @JsonCreator
-    public Text(@JacksonInject final String text,
-                @JsonProperty("lang") final String lang) {
+    public TextDto(@JacksonInject final String text,
+                   @JsonProperty("lang") final String lang) {
         this.text = text;
         this.lang = lang;
     }

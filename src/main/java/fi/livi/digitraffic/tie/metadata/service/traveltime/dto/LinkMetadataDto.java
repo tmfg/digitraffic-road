@@ -7,30 +7,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LinkMetadataDto {
 
-    public final Timestamp timestamp;
+    public final TimestampDto timestamp;
 
     public final ZonedDateTime lastUpdate;
 
     public final String service;
 
-    public final List<Link> links;
+    public final List<LinkDto> links;
 
-    public final List<DirectionText> directions;
+    public final List<DirectionTextDto> directions;
 
-    public final List<Site> sites;
+    public final List<SiteDto> sites;
 
     public final String SUP;
 
-    public final Version version;
+    public final VersionDto version;
 
-    public LinkMetadataDto(@JsonProperty("timestamp") final Timestamp timestamp,
+    public LinkMetadataDto(@JsonProperty("timestamp") final TimestampDto timestamp,
                            @JsonProperty("LastUpdate") final ZonedDateTime lastUpdate,
                            @JsonProperty("service") final String service,
-                           @JsonProperty("linklist") final List<Link> links,
-                           @JsonProperty("directionlist") final List<DirectionText> directions,
-                           @JsonProperty("sitelist") final List<Site> sites,
+                           @JsonProperty("linklist") final List<LinkDto> links,
+                           @JsonProperty("directionlist") final List<DirectionTextDto> directions,
+                           @JsonProperty("sitelist") final List<SiteDto> sites,
                            @JsonProperty("SUP") final String SUP,
-                           @JsonProperty("version") final Version version) {
+                           @JsonProperty("version") final VersionDto version) {
         this.timestamp = timestamp;
         this.lastUpdate = lastUpdate;
         this.service = service;

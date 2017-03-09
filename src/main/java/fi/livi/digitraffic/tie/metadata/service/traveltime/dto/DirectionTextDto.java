@@ -6,19 +6,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-public class DirectionText {
+public class DirectionTextDto {
 
     @JacksonXmlElementWrapper(useWrapping = false, localName = "texts")
     @JacksonXmlProperty(localName = "text")
-    public final List<Text> texts;
+    public final List<TextDto> texts;
 
     public final int directionIndex;
 
     public final String roadDirection;
 
-    public DirectionText(@JsonProperty("texts") final List<Text> texts,
-                         @JsonProperty("dirindex") final int directionIndex,
-                         @JsonProperty("RDI") final String roadDirection) {
+    public DirectionTextDto(@JsonProperty("texts") final List<TextDto> texts,
+                            @JsonProperty("dirindex") final int directionIndex,
+                            @JsonProperty("RDI") final String roadDirection) {
         this.texts = texts;
         this.directionIndex = directionIndex;
         this.roadDirection = roadDirection;

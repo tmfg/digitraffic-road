@@ -4,14 +4,14 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FreeFlowSpeed {
+public class FreeFlowSpeedDto {
 
     public final String unit;
 
     public final BigDecimal value;
 
-    public FreeFlowSpeed(@JsonProperty("unit") final String unit,
-                         @JsonProperty("value") final BigDecimal value) {
+    public FreeFlowSpeedDto(@JsonProperty("unit") final String unit,
+                            @JsonProperty("value") final BigDecimal value) {
         this.unit = unit;
         this.value = value;
     }
