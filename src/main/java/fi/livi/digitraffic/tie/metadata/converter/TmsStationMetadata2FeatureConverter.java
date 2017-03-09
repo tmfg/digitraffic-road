@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,6 +14,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Component
@@ -66,6 +68,10 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         properties.setCalculatorDeviceType(tms.getCalculatorDeviceType());
         properties.setName(tms.getName());
 
+        if (tms.getRoadStation() != null) {
+            properties.setStationSensors(tms.getRoadStation().getRoadStationSensors()
+                .stream().map(RoadStationSensor::getNaturalId).collect(Collectors.toList()));
+        }
         // RoadStation properties
         final RoadStation rs = tms.getRoadStation();
         setRoadStationProperties(properties, rs);
