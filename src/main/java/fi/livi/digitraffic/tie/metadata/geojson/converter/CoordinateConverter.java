@@ -16,10 +16,10 @@ public class CoordinateConverter {
 
     private static final Logger log = LoggerFactory.getLogger(CoordinateConverter.class);
 
-    private final CoordinateTransform transformerFromETRS89ToWGS84;
-    private final CoordinateTransform transformerFromKKJ3ToWGS84;
+    private static final CoordinateTransform transformerFromETRS89ToWGS84;
+    private static final CoordinateTransform transformerFromKKJ3ToWGS84;
 
-    public CoordinateConverter() {
+    static {
         CRSFactory crsFactory = new CRSFactory();
 
         // WGS84: http://spatialreference.org/ref/epsg/4326/ -> Proj4
@@ -57,33 +57,25 @@ public class CoordinateConverter {
         transformerFromKKJ3ToWGS84 = coordinateTransformFactory.createTransform(coordinateTransformFromKKJ3, coordinateTransformToWGS84);
     }
 
-    public Point convertFromETRS89ToWGS84(Point fromETRS89) {
-        ProjCoordinate to = new ProjCoordinate();
-
-        ProjCoordinate from = new ProjCoordinate(fromETRS89.getLongitude(),
-                                                 fromETRS89.getLatitude());
-        transformerFromETRS89ToWGS84.transform(from, to);
-        Point point = fromETRS89.hasAltitude() ?
-                      new Point(to.x, to.y, fromETRS89.getAltitude()) :
-                      new Point(to.x, to.y);
-
-        if (log.isDebugEnabled()) {
-            log.debug("From: " + fromETRS89 + " to " + point);
-        }
-        return point;
+    public static Point convertFromETRS89ToWGS84(Point fromETRS89) {
+        return convert(fromETRS89, transformerFromETRS89ToWGS84);
     }
 
-    public Point convertFromKKJ3ToWGS84(Point fromKkj3) {
+    public static Point convertFromKKJ3ToWGS84(Point fromKkj3) {
+        return convert(fromKkj3, transformerFromKKJ3ToWGS84);
+    }
+
+    private static Point convert(final Point fromPoint, final CoordinateTransform transformer) {
         ProjCoordinate to = new ProjCoordinate();
-        ProjCoordinate from = new ProjCoordinate(fromKkj3.getLongitude(),
-                fromKkj3.getLatitude());
-        transformerFromKKJ3ToWGS84.transform(from, to);
-        Point point = fromKkj3.hasAltitude() ?
-                      new Point(to.x, to.y, fromKkj3.getAltitude()) :
+        ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
+                                                 fromPoint.getLatitude());
+        transformer.transform(from, to);
+        Point point = fromPoint.hasAltitude() ?
+                      new Point(to.x, to.y, fromPoint.getAltitude()) :
                       new Point(to.x, to.y);
 
         if (log.isDebugEnabled()) {
-            log.debug("From: " + fromKkj3 + " to " + point);
+            log.debug("From: " + fromPoint + " to " + point);
         }
         return point;
     }
