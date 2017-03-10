@@ -73,7 +73,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
             56:  C0155600
             After:
             443: C0852001
-            443: C0852002 resoluutio 704x576 -> 1200x900, viive 10 -> 20
+            443: C0852002/C0852003 resoluutio 704x576 -> 1200x900, viive 10 -> 20, Suunta 2 -> 3
             121: C0162801
             121: C0162802
 
@@ -97,7 +97,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // 443: C0852001, C0852002 C0852009
         assertNotNull(findWithPresetId(allAfterChange, "C0852001"));
-        assertNotNull(findWithPresetId(allAfterChange, "C0852002"));
+        assertNotNull(findWithPresetId(allAfterChange, "C0852003"));
         assertNotNull(findWithPresetId(allAfterChange, "C0852009"));
         // 121: C0162801, C0162802
         assertNotNull(findWithPresetId(allAfterChange, "C0162801"));
@@ -110,13 +110,13 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         // 56
         assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
 
-        // Test C0852002 changes
+        // Test C0852002/C0852003 changes
         final CameraPresetDto before = findWithPresetId(allInitial, "C0852002");
-        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
+        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852003");
 
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
-                                                  "compression", "resolution"));
+             "resolution", "presetId", "directionCode", "imageUrl"));
         assertEquals("704x576", before.getResolution());
         assertEquals("1200x900", after.getResolution());
 
