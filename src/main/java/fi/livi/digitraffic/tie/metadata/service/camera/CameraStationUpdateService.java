@@ -331,11 +331,11 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             log.info("Old preset: {}", ToStringBuilder.reflectionToString(to));
             log.info("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
             log.info("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
-            logErrorIf(!isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()),
+            logWarnIf(!isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()),
                        "Update: CameraPresetId doesn't match old: {} vs new {}", to.getPresetId(), presetId);
-        } else {
-            to.setPresetId(presetId);
         }
+        to.setPresetId(presetId);
+
         to.setLotjuId(esiasentoFrom.getId());
         to.setObsolete(isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
                        Objects.equals(isPublic(esiasentoFrom), false));

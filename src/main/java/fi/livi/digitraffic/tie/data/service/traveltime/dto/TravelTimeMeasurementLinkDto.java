@@ -1,26 +1,22 @@
 package fi.livi.digitraffic.tie.data.service.traveltime.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class TravelTimeMeasurementLinkDto {
 
-    @JsonProperty("id")
-    public long linkNaturalId;
+    public final long linkNaturalId;
 
-    @JsonProperty("ir")
-    public List<TravelTimeMeasurementDto> measurements = new ArrayList<>();
+    @JacksonXmlElementWrapper(useWrapping = false, localName = "measurements")
+    @JacksonXmlProperty(localName = "ir")
+    public final List<TravelTimeMeasurementDto> measurements;
 
-    @JsonSetter("id")
-    public void setLinkNaturalId(long linkNaturalId) {
+    public TravelTimeMeasurementLinkDto(@JsonProperty("id") final long linkNaturalId,
+                                        @JsonProperty("measurements") List<TravelTimeMeasurementDto> measurements) {
         this.linkNaturalId = linkNaturalId;
-    }
-
-    @JsonSetter("ir")
-    public void setMeasurement(TravelTimeMeasurementDto measurement) {
-        this.measurements.add(measurement);
+        this.measurements = measurements;
     }
 }

@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.weather;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -13,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,13 +26,12 @@ public class WeatherStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Type of Weather Station")
     private WeatherStationType weatherStationType;
 
-    @ApiModelProperty(value = "Weather Station Sensors")
-    private List<RoadStationSensor> sensors = new ArrayList<>();
-
     @ApiModelProperty(value = "Is station master or slave station")
     private Boolean master;
 
-    private static final RSComparator rsComparator = new RSComparator();
+    /** Sensors natural ids */
+    @ApiModelProperty(value = "Weather Station Sensors ids")
+    private List<Long> stationSensors = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -53,28 +49,13 @@ public class WeatherStationProperties extends RoadStationProperties {
         return weatherStationType;
     }
 
-    @JsonIgnore
-    public List<RoadStationSensor> getSensors() {
-        return sensors;
-    }
-
-    @ApiModelProperty(value = "Sensors ids of road station")
     public List<Long> getStationSensors() {
-        final List<Long> ids = new ArrayList<>();
-        for (final RoadStationSensor sensor : sensors) {
-            ids.add(sensor.getNaturalId());
-        }
-        return ids;
+        return stationSensors;
     }
 
-    public void setSensors(final List<RoadStationSensor> sensors) {
-        this.sensors = sensors;
-        Collections.sort(sensors, rsComparator);
-    }
-
-    public void addSensor(final RoadStationSensor roadStationSensor) {
-        sensors.add(roadStationSensor);
-        Collections.sort(sensors, rsComparator);
+    public void setStationSensors(List<Long> stationSensors) {
+        this.stationSensors = stationSensors;
+        Collections.sort(this.stationSensors);
     }
 
     @Override
@@ -93,7 +74,7 @@ public class WeatherStationProperties extends RoadStationProperties {
                 .appendSuper(super.equals(obj))
                 .append(this.id, rhs.id)
                 .append(this.weatherStationType, rhs.weatherStationType)
-                .append(this.sensors, rhs.sensors)
+                .append(this.stationSensors, rhs.stationSensors)
                 .isEquals();
     }
 
@@ -103,7 +84,7 @@ public class WeatherStationProperties extends RoadStationProperties {
                 .appendSuper(super.hashCode())
                 .append(id)
                 .append(weatherStationType)
-                .append(sensors)
+                .append(stationSensors)
                 .toHashCode();
     }
 
@@ -114,12 +95,4 @@ public class WeatherStationProperties extends RoadStationProperties {
     public Boolean isMaster() {
         return master;
     }
-
-    private static class RSComparator implements Comparator<RoadStationSensor>, Serializable {
-        @Override
-        public int compare(final RoadStationSensor o1, final RoadStationSensor o2) {
-            return Long.compare(o1.getNaturalId(), o2.getNaturalId());
-        }
-    }
-
 }
