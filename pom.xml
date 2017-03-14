@@ -217,8 +217,7 @@
         <dependency>
             <groupId>net.bull.javamelody</groupId>
             <artifactId>javamelody-core</artifactId>
-            <version>1.63.0</version>
-            <!-- http://central.maven.org/maven2/net/bull/javamelody/javamelody-core/-->
+            <version>1.65.0</version>
         </dependency>
         <!-- iText dependency for PDF exports in JavaMelody (optional) -->
         <dependency>

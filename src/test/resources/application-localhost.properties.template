@@ -63,8 +63,8 @@ jms.datex2.inQueue=<datex2-topic>
 
 # Services enabled/disabled
 
-# If set to false web app is not started. Should be false for daemon prosess.
-#spring.main.web_environment=false
+# If set to false web web controllers are not activated. Should be false for daemon processes.
+#controllers.enabled=false
 
 # Is metadata updates on. Should be true only for daemon process.
 #quartz.enabled=true
