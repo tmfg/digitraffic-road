@@ -21,17 +21,15 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MetadataApplication.class,
-                properties = {"config.test=true"})
-@WebAppConfiguration
+                properties = "config.test=true",
+                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 public abstract class AbstractTest {
-
     @Autowired
-    ResourceLoader resourceLoader;
+    protected ResourceLoader resourceLoader;
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
@@ -43,25 +41,27 @@ public abstract class AbstractTest {
         return new File(getClass().getResource(filename).getFile()).toPath();
     }
 
-    protected List<Resource> loadResources(String pattern) throws IOException {
+    protected List<Resource> loadResources(final String pattern) throws IOException {
         return Arrays.asList(ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern));
     }
 
-    protected Resource loadResource(String pattern) throws IOException {
+    protected Resource loadResource(final String pattern) throws IOException {
         return resourceLoader.getResource(pattern);
     }
 
-    protected ArrayList<String> readResourceContents(String resourcePattern) throws IOException {
-        List<Resource> datex2Resources = loadResources(resourcePattern);
-        ArrayList<String> contents = new ArrayList<>();
+    protected ArrayList<String> readResourceContents(final String resourcePattern) throws IOException {
+        final List<Resource> datex2Resources = loadResources(resourcePattern);
+        final ArrayList<String> contents = new ArrayList<>();
+
         for (Resource datex2Resource : datex2Resources) {
             contents.add(FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8));
         }
         return contents;
     }
 
-    protected String readResourceContent(String resourcePattern) throws IOException {
-        Resource datex2Resource = loadResource(resourcePattern);
+    protected String readResourceContent(final String resourcePattern) throws IOException {
+        final Resource datex2Resource = loadResource(resourcePattern);
+
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 }

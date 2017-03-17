@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,13 +64,8 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
         properties.setMaster(rws.isMaster());
 
         if (rws.getRoadStation() != null) {
-            rws.getRoadStation().getRoadStationSensors().forEach(s -> {
-                try {
-                    properties.addSensor((RoadStationSensor) s.clone());
-                } catch (CloneNotSupportedException e) {
-                    log.error("Failed to clone RoadStationSensor", e);
-                }
-            });
+            properties.setStationSensors(rws.getRoadStation().getRoadStationSensors()
+                .stream().map(RoadStationSensor::getNaturalId).collect(Collectors.toList()));
         }
 
         // RoadStation properties

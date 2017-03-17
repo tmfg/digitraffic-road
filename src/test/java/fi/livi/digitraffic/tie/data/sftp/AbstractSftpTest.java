@@ -73,7 +73,6 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     String host = "localhost";
 
-
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
     private SshServer testSftpServer;
@@ -83,7 +82,6 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     @Before
     public void initSftpServer() throws IOException {
-
         log.info("Init Sftp Server with temporary root folder {}", testFolder.getRoot());
         httpPort = wireMockRule.port();
 

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -7,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +85,8 @@ public class CameraImageUpdateService {
                     downloadAndUploadImage(kuva.getUrl(), filename);
                     return new AsyncResult<>(true);
                 } catch (IOException e) {
-                    log.error("Error reading or writing picture for presetId {} from {} to sftp server path {}",
+                    log.warn("Reading or writing picture for presetId {} from {} to sftp server path {} failed",
                               presetId, kuva.getUrl(), getImageFullPath(filename));
-                    log.error("Error", e);
                     return new AsyncResult<>(false);
                 }
             } else {
@@ -126,16 +127,27 @@ public class CameraImageUpdateService {
     }
 
     private void downloadAndUploadImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
+        log.info("Download image {} ({})", downloadImageUrl, uploadImageFileName);
+        final byte[] data = downloadImage(downloadImageUrl);
         try (final Session session = sftpSessionFactory.getSession()) {
+            final String uploadPath = getImageFullPath(uploadImageFileName);
+            log.info("Upload image to sftp server path {}", uploadPath);
+            session.write(new ByteArrayInputStream(data), uploadPath);
+        } catch (Exception e) {
+            log.error("Error while trying to upload image to sftp server path {}", getImageFullPath(uploadImageFileName));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] downloadImage(final String downloadImageUrl) {
+        try {
             final URL url = new URL(downloadImageUrl);
             URLConnection con = url.openConnection();
             con.setConnectTimeout(connectTimeout);
             con.setReadTimeout(readTimeout);
-            final String uploadPath = getImageFullPath(uploadImageFileName);
-            log.info("Download image {} and upload it to sftp server path {}", downloadImageUrl, uploadPath);
-            session.write(con.getInputStream(), uploadPath);
+            return  IOUtils.toByteArray(con.getInputStream());
         } catch (Exception e) {
-            log.error("Error while trying to upload image from {} to file {}", downloadImageUrl, getImageFullPath(uploadImageFileName));
+            log.error("Error while trying to download image from {}", downloadImageUrl);
             throw new RuntimeException(e);
         }
     }

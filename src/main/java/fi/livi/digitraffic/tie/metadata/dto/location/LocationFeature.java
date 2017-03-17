@@ -3,19 +3,15 @@ package fi.livi.digitraffic.tie.metadata.dto.location;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class LocationFeature {
     public final String type = "Feature";
 
     @ApiModelProperty(value = "Unique locationCode for this location", required = true)
     public final int id;
 
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true)
     public final Point geometry;
 
