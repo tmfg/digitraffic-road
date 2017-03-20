@@ -54,19 +54,19 @@ public class JavaMelodyConfiguration implements ServletContextInitializer {
         final MonitoringFilter filter = new MonitoringFilter();
         javaMelody.setFilter(filter);
         javaMelody.setAsyncSupported(true);
-        javaMelody.setName("javamelody");
+        javaMelody.setName("JavaMelody");
         javaMelody.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 
         // see the list of parameters:
         // https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
         javaMelody.addInitParameter(Parameter.LOG.getCode(), Boolean.toString(true));
+
         // to exclude images, css, fonts and js urls from the monitoring:
         // javaMelody.addInitParameter(Parameter.URL_EXCLUDE_PATTERN.getCode(), "(/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)");
         // to add basic auth:
+        javaMelody.addInitParameter(Parameter.AUTHORIZED_USERS.getCode(), javamelodyAuthorizedUsers);
 
-         javaMelody.addInitParameter(Parameter.AUTHORIZED_USERS.getCode(), javamelodyAuthorizedUsers);
         // to change the default storage directory:
-
         String storageDirectory = null;
         if (javamelodyStorageDirectory.startsWith("/")) {
             storageDirectory = javamelodyStorageDirectory;
