@@ -10,13 +10,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = "metadata", description = "Metadata for Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
-@ConditionalOnProperty(name = "controllers.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnControllersEnabled
 public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 

@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -20,12 +19,13 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Predicate;
 
+import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@ConditionalOnProperty(name = "controllers.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnControllersEnabled
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
 
     @Autowired
     public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService) {
-        Assert.notNull(metadataApiInfoService);
+        Assert.notNull(metadataApiInfoService, "MetadataApiInfoService can't be null");
         this.metadataApiInfoService = metadataApiInfoService;
     }
 
