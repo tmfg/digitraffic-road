@@ -34,7 +34,7 @@ import net.bull.javamelody.SpringDataSourceBeanPostProcessor;
  *
  * @See https://github.com/javamelody/javamelody/wiki/UserGuide
  */
-@ConditionalOnProperty(name = "javamelody.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "javamelody.enabled")
 @Configuration
 public class JavaMelodyConfiguration implements ServletContextInitializer {
 
