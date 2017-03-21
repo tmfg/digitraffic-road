@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit"})
+@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
@@ -76,116 +76,78 @@ public class SensorValueDto {
     @JsonIgnore
     private ZonedDateTime updatedTime;
 
+    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowStart;
+
+    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowEnd;
+
     public long getRoadStationNaturalId() {
         return roadStationNaturalId;
-    }
-
-    public void setRoadStationNaturalId(final long roadStationNaturalId) {
-        this.roadStationNaturalId = roadStationNaturalId;
     }
 
     public long getRoadStationId() {
         return roadStationId;
     }
 
-    public void setRoadStationId(final long roadStationId) {
-        this.roadStationId = roadStationId;
-    }
-
     public long getSensorNaturalId() {
         return sensorNaturalId;
-    }
-
-    public void setSensorNaturalId(final long sensorNaturalId) {
-        this.sensorNaturalId = sensorNaturalId;
     }
 
     public long getSensorId() {
         return sensorId;
     }
 
-    public void setSensorId(final long sensorId) {
-        this.sensorId = sensorId;
-    }
-
     public long getSensorValueId() {
         return sensorValueId;
-    }
-
-    public void setSensorValueId(final long sensorValueId) {
-        this.sensorValueId = sensorValueId;
     }
 
     public double getSensorValue() {
         return sensorValue;
     }
 
-    public void setSensorValue(final double sensorValue) {
-        this.sensorValue = sensorValue;
-    }
-
     public String getSensorNameOld() {
         return sensorNameOld;
-    }
-
-    public void setSensorNameOld(final String sensorNameOld) {
-        this.sensorNameOld = sensorNameOld;
     }
 
     public String getSensorUnit() {
         return sensorUnit;
     }
 
-    public void setSensorUnit(final String sensorUnit) {
-        this.sensorUnit = sensorUnit;
-    }
-
     public String getSensorValueDescriptionFi() {
         return sensorValueDescriptionFi;
-    }
-
-    public void setSensorValueDescriptionFi(final String sensorValueDescriptionFi) {
-        this.sensorValueDescriptionFi = sensorValueDescriptionFi;
     }
 
     public String getSensorValueDescriptionEn() {
         return sensorValueDescriptionEn;
     }
 
-    public void setSensorValueDescriptionEn(final String sensorValueDescriptionEn) {
-        this.sensorValueDescriptionEn = sensorValueDescriptionEn;
-    }
-
     public String getSensorNameFi() {
         return sensorNameFi;
-    }
-
-    public void setSensorNameFi(final String sensorNameFi) {
-        this.sensorNameFi = sensorNameFi;
     }
 
     public String getSensorShortNameFi() {
         return sensorShortNameFi;
     }
 
-    public void setSensorShortNameFi(final String sensorShortNameFi) {
-        this.sensorShortNameFi = sensorShortNameFi;
-    }
-
     public ZonedDateTime getMeasuredTime() {
         return measuredTime;
-    }
-
-    public void setMeasuredTime(final ZonedDateTime measuredTime) {
-        this.measuredTime = measuredTime;
     }
 
     public ZonedDateTime getStationLatestMeasuredTime() {
         return stationLatestMeasuredTime;
     }
 
-    public void setStationLatestMeasuredTime(final ZonedDateTime stationLatestMeasured) {
-        this.stationLatestMeasuredTime = stationLatestMeasured;
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public ZonedDateTime getTimeWindowStart() {
+        return timeWindowStart;
+    }
+
+    public ZonedDateTime getTimeWindowEnd() {
+        return timeWindowEnd;
     }
 
     public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
@@ -193,13 +155,5 @@ public class SensorValueDto {
             return sensorValues.get(0).getStationLatestMeasuredTime();
         }
         return null;
-    }
-
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(ZonedDateTime updated) {
-        this.updatedTime = updated;
     }
 }
