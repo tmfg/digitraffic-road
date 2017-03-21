@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.annotation.CoverageIgnore;
 
-//@Controller
-//@Profile("localhost")
 @CoverageIgnore
+@ConditionalOnControllersEnabled
 public class HomeController {
 //    @RequestMapping("/")
     public String home() {

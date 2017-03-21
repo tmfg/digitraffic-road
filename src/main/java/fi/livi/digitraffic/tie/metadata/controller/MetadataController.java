@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
@@ -40,6 +41,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = "metadata", description = "Metadata for Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
+@ConditionalOnControllersEnabled
 public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 
