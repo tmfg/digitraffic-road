@@ -8,7 +8,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class LinkDto {
 
-    public final int linkNumber;
+    public final long linkNumber;
 
     public final int startSite;
 
@@ -26,7 +26,7 @@ public class LinkDto {
 
     public final FreeFlowSpeedDto freeFlowSpeed;
 
-    public LinkDto(@JsonProperty("linkno") final int linkNumber,
+    public LinkDto(@JsonProperty("linkno") final long linkNumber,
                    @JsonProperty("startsite") final int startSite,
                    @JsonProperty("endsite") final int endSite,
                    @JsonProperty("names") final List<NameDto> names,
