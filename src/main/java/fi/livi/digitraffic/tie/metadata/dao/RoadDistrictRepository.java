@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 
 public interface RoadDistrictRepository extends JpaRepository<RoadDistrict, Long> {
 

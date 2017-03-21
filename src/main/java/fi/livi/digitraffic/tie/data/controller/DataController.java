@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
@@ -50,6 +51,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
+@ConditionalOnControllersEnabled
 public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
 

@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -18,11 +16,10 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractTmsStationAttributeUpdater.class);
-
     protected RoadStationService roadStationService;
 
-    public AbstractTmsStationAttributeUpdater(final RoadStationService roadStationService) {
+    public AbstractTmsStationAttributeUpdater(final RoadStationService roadStationService, final Logger logger) {
+        super(logger);
         this.roadStationService = roadStationService;
     }
 
@@ -66,8 +63,6 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
-        final String before = ReflectionToStringBuilder.toString(to);
-
         to.setRoadNumber(from.getTienumero());
         to.setRoadSection(from.getTieosa());
         to.setDistanceFromRoadSectionStart(from.getEtaisyysTieosanAlusta());
@@ -76,9 +71,6 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setRoadMaintenanceClass(from.getTienHoitoluokka());
         to.setContractArea(from.getUrakkaAlue());
         to.setContractAreaCode(from.getUrakkaAlueKoodi());
-        if (HashCodeBuilder.reflectionHashCode(to) != hash) {
-            log.info("Updated:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(to));
-        }
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 }

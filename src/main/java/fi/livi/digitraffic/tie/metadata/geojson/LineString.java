@@ -1,18 +1,17 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinates;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinates;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @ApiModel(description = "GeoJson LineString Geometry Object", value = "Geometry")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "type", "coordinates", "crs" })
 public class LineString {
 

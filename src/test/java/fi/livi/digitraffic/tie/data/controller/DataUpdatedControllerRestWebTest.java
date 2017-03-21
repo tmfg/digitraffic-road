@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.base.AbstractMetadataRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 
 /**
  * Test that every data-api has working last update query
  */
-public class DataUpdatedControllerRestWebTest extends AbstractMetadataRestWebTest {
+public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(DataUpdatedControllerRestWebTest.class);
 
     @Autowired

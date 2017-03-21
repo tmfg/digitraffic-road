@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -17,11 +16,10 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractWeatherStationAttributeUpdater.class);
-
     protected RoadStationService roadStationService;
 
-    public AbstractWeatherStationAttributeUpdater(final RoadStationService roadStationService) {
+    public AbstractWeatherStationAttributeUpdater(final RoadStationService roadStationService, final Logger logger) {
+        super(logger);
         this.roadStationService = roadStationService;
     }
 

@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
 
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.AnturiSanomaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ArvoVastaavuusVO;
@@ -26,7 +25,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotEndpoint;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotV3;
 
-@Service
 public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements TiesaaPerustiedotEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuTiesaaPerustiedotServiceEndpoint.class);
