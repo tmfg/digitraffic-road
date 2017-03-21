@@ -36,14 +36,12 @@ public class SensorDataUpdateService {
                     "        FROM ROAD_STATION_SENSOR sensor\n" +
                     "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
                     "          AND sensor.road_station_type = :stationType\n" +
-                    "          AND sensor.lotju_id is not null\n" +
                     "          AND sensor.obsolete_date is null\n" +
                     "        ) as road_station_sensor_id ,(\n" +
                     "        SELECT station.id\n" +
                     "        FROM ROAD_STATION station\n" +
                     "        WHERE station.lotju_id = :rsLotjuId\n" +
                     "          AND station.road_station_type = :stationType\n" +
-                    "          AND station.lotju_id is not null\n" +
                     "          AND station.obsolete_date is null\n" +
                     "       ) as road_station_id FROM DUAL\n" +
                     ") src ON (dst.road_station_sensor_id = src.road_station_sensor_id\n" +
@@ -51,13 +49,17 @@ public class SensorDataUpdateService {
                     "WHEN MATCHED THEN UPDATE SET dst.value = :value\n" +
                     "                           , dst.measured = :measured\n" +
                     "                           , dst.updated = sysdate\n" +
-                    "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated)\n" +
-                    "     VALUES (SEQ_SENSOR_VALUE.nextval -- id\n" +
+                    "                           , dst.time_window_start = :timeWindowStart\n" +
+                    "                           , dst.time_window_end = :timeWindowEnd\n" +
+                "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
+                    "     VALUES (SEQ_SENSOR_VALUE.nextval\n" +
                     "           , src.road_station_id\n" +
                     "           , src.road_station_sensor_id\n" +
-                    "           , :value\n" + // value
-                    "           , :measured\n" + // measured
-                    "           , sysdate)\n" + // updated
+                    "           , :value\n" +
+                    "           , :measured\n" +
+                    "           , sysdate\n" + // updated
+                    "           , :timeWindowStart\n" +
+                    "           , :timeWindowEnd)\n" +
                     "     WHERE src.road_station_id IS NOT NULL\n" +
                     "       AND src.road_station_sensor_id IS NOT NULL";
 
@@ -181,6 +183,10 @@ public class SensorDataUpdateService {
                 ops.setLongAtName("rsLotjuId", lam.getAsemaId());
                 ops.setLongAtName("sensorLotjuId", Long.parseLong(anturi.getLaskennallinenAnturiId()));
                 ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
+                final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
+                final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
+                ops.setTimestampAtName("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
+                ops.setTimestampAtName("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
                 ops.addBatch();
             }
         }
@@ -201,6 +207,8 @@ public class SensorDataUpdateService {
                 ops.setLongAtName("rsLotjuId", tiesaa.getAsemaId());
                 ops.setLongAtName("sensorLotjuId", anturi.getLaskennallinenAnturiId());
                 ops.setStringAtName("stationType", RoadStationType.WEATHER_STATION.name());
+                ops.setTimestampAtName("timeWindowStart", null);
+                ops.setTimestampAtName("timeWindowEnd", null);
                 ops.addBatch();
             }
         }

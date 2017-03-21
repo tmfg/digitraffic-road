@@ -47,6 +47,12 @@ public class SensorValue {
     @JsonIgnore
     ZonedDateTime updated;
 
+    @Column(name = "TIME_WINDOW_START")
+    private ZonedDateTime timeWindowStart;
+
+    @Column(name = "TIME_WINDOW_END")
+    private ZonedDateTime timeWindowEnd;
+
     /**
      * Default constructor fo Hibernate
      */
@@ -106,6 +112,14 @@ public class SensorValue {
 
     public void setUpdated(ZonedDateTime updated) {
         this.updated = updated;
+    }
+
+    public ZonedDateTime getTimeWindowStart() {
+        return timeWindowStart;
+    }
+
+    public ZonedDateTime getTimeWindowEnd() {
+        return timeWindowEnd;
     }
 
     @Override
