@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.traveltime;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -130,6 +132,15 @@ public class TravelTimeLinkMetadataUpdater {
                                            getName(linkData.names, "sv", LinkDto.class, linkData.linkNumber),
                                            getName(linkData.names, "en", LinkDto.class, linkData.linkNumber),
                                            length, direction, startRoadAddressDistance, endRoadAddressDistance, special, linkData.linkNumber);
+
+                final List<Integer> siteNaturalIds = new ArrayList<>();
+                siteNaturalIds.add(linkData.startSite);
+                if (linkData.intermediates != null) {
+                    siteNaturalIds.addAll(linkData.intermediates.stream().sorted(Comparator.comparingInt(s -> s.index)).map(s -> s.number).collect(Collectors.toList()));
+                }
+                siteNaturalIds.add(linkData.endSite);
+
+                linkDao.createOrUpdateLinkSites(linkData.linkNumber, siteNaturalIds);
             } else {
                 log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
                           linkData.linkNumber, startSite.toString(), endSite.toString());

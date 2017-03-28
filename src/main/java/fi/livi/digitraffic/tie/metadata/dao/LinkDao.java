@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -58,5 +59,24 @@ public class LinkDao {
                     "(select road_district_id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber)," +
                     ":special, 0, null, 0, 0)",
             args);
+    }
+
+    public void createOrUpdateLinkSites(final long linkNaturalId, final List<Integer> siteNaturalIds) {
+
+        HashMap<String, Object> args = new HashMap<>();
+        args.put("linkNaturalId", linkNaturalId);
+        jdbcTemplate.update("DELETE FROM LINK_SITE WHERE LINK_ID = (SELECT id FROM LINK WHERE natural_id = :linkNaturalId)", args);
+
+        int orderNumber = 1;
+        for (final Integer siteNaturalId : siteNaturalIds) {
+            args.clear();
+            args.put("linkNaturalId", linkNaturalId);
+            args.put("siteId", siteNaturalId);
+            args.put("orderNumber", orderNumber);
+
+            jdbcTemplate.update("INSERT INTO LINK_SITE (LINK_ID, SITE_ID, ORDER_NUMBER) " +
+                                "VALUES ((SELECT id FROM LINK WHERE natural_id = :linkNaturalId), :siteId, :orderNumber)", args);
+            orderNumber++;
+        }
     }
 }
