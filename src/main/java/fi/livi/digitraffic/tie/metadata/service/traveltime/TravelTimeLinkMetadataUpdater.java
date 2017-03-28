@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
+import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.Link;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
@@ -29,12 +34,22 @@ public class TravelTimeLinkMetadataUpdater {
 
     private final LinkRepository linkRepository;
 
+    private final SiteDao siteRepository;
+
+    private final SiteDao siteDao;
+
     private final TravelTimeClient travelTimeClient;
+
+    private final static Pattern roadAddressPattern = Pattern.compile("^(\\d+)\\/(\\d+)-(\\d+)$");
 
     @Autowired
     public TravelTimeLinkMetadataUpdater(final LinkRepository linkRepository,
+                                         final SiteDao siteRepository,
+                                         final SiteDao siteDao,
                                          final TravelTimeClient travelTimeClient) {
         this.linkRepository = linkRepository;
+        this.siteRepository = siteRepository;
+        this.siteDao = siteDao;
         this.travelTimeClient = travelTimeClient;
     }
 
@@ -42,6 +57,8 @@ public class TravelTimeLinkMetadataUpdater {
     public void updateLinkMetadata() {
 
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
+
+        createOrUpdateSites(linkMetadata.sites);
 
         final Map<Long, Link> linksByNaturalId = linkRepository.findAll().stream().collect(Collectors.toMap(Link::getNaturalId, Function.identity()));
 
@@ -57,6 +74,23 @@ public class TravelTimeLinkMetadataUpdater {
         final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
 
         updateLinks(linksByNaturalId, linksToUpdate, sitesBySiteNumber);
+    }
+
+    protected void createOrUpdateSites(final List<SiteDto> sites) {
+
+        for (final SiteDto site : sites) {
+
+            final Pair<Double, Double> coordinatesWgs84 = getCoordinatesWgs84(site.coordinatesKkj3.x, site.coordinatesKkj3.y);
+            final Integer roadSectionNumber = getRoadSectionNumber(site.roadRegisterAddress);
+
+            if (roadSectionNumber != null) {
+                siteDao.createOrUpdateSite(site.number, getName(site, "fi"), getName(site, "sv"), getName(site, "en"),
+                                           site.roadNumber, roadSectionNumber, site.coordinatesKkj3.x, site.coordinatesKkj3.y,
+                                           coordinatesWgs84.getLeft(), coordinatesWgs84.getRight());
+            } else {
+                log.error("Skipping Site with natural id {}. Could not parse roadSectionNumber from roadRegisterAddress {}", site.number, site.roadRegisterAddress);
+            }
+        }
     }
 
     private void updateLinks(final Map<Long, Link> linksByNaturalId, final List<LinkDto> linksToUpdate, final Map<Integer, SiteDto> sitesBySiteNumber) {
@@ -77,9 +111,8 @@ public class TravelTimeLinkMetadataUpdater {
             final SiteDto startSite = sitesBySiteNumber.get(linkData.startSite);
             final SiteDto endSite = sitesBySiteNumber.get(linkData.endSite);
 
-            final Pattern p = Pattern.compile("(\\d+)/(\\d+)-(\\d+)");
-            final Matcher m1 = p.matcher(startSite.roadRegisterAddress);
-            final Matcher m2 = p.matcher(endSite.roadRegisterAddress);
+            final Matcher m1 = roadAddressPattern.matcher(startSite.roadRegisterAddress);
+            final Matcher m2 = roadAddressPattern.matcher(endSite.roadRegisterAddress);
 
             if (m1.matches() && m2.matches()) {
 
@@ -106,10 +139,35 @@ public class TravelTimeLinkMetadataUpdater {
                                           direction, startRoadAddressDistance, endRoadAddressDistance, special, link.getNaturalId());
             } else {
                 log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
-                         link.getNaturalId(), startSite.toString(), endSite.toString());
+                          link.getNaturalId(), startSite.toString(), endSite.toString());
             }
 
         }
 
+    }
+
+    private static String getName(final SiteDto site, final String language) {
+        final Optional<String> name = site.names.stream().filter(n -> n.language.equals(language)).map(n -> n.text).findFirst();
+        if (!name.isPresent()) {
+            log.warn("Link site number {} is missing name in {} language", site.number, language);
+            return "";
+        }
+        return name.get();
+    }
+
+    private static Integer getRoadSectionNumber(final String roadRegisterAddress) {
+        final Matcher m = roadAddressPattern.matcher(roadRegisterAddress);
+        if (m.matches()) {
+            return Integer.parseInt(m.group(2));
+        }
+        return null;
+    }
+
+    private static Pair<Double, Double> getCoordinatesWgs84(final Long x, final Long y) {
+        if (x != null && y != null) {
+            final Point point = CoordinateConverter.convertFromKKJ3ToWGS84(new Point(x, y));
+            return Pair.of(point.getLongitude(), point.getLatitude());
+        }
+        return Pair.of(null, null);
     }
 }

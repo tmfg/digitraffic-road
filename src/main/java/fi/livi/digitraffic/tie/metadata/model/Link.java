@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -63,6 +64,9 @@ public class Link implements Serializable {
     @ManyToOne
     @JoinColumn(name = "ROAD_DISTRICT_ID", referencedColumnName = "ID")
     private RoadDistrict roadDistrict;
+
+    @OneToMany(mappedBy = "primaryKey.link", cascade = CascadeType.ALL)
+    private List<LinkSite> linkSites;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "area_link", joinColumns = { @JoinColumn(name = "link_id") }, inverseJoinColumns = @JoinColumn(name = "area_id"))
@@ -201,6 +205,10 @@ public class Link implements Serializable {
 
     public void setRoadDistrict(RoadDistrict roadDistrict) {
         this.roadDistrict = roadDistrict;
+    }
+
+    public List<LinkSite> getLinkSites() {
+        return linkSites;
     }
 
     public List<Area> getAreas() {

@@ -1,6 +1,7 @@
-package fi.livi.digitraffic.tie.data.service.traveltime;
+package fi.livi.digitraffic.tie.metadata.service.traveltime;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,14 +24,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
+import fi.livi.digitraffic.tie.metadata.dao.SiteRepository;
 import fi.livi.digitraffic.tie.metadata.model.Link;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.TravelTimeLinkMetadataUpdater;
+import fi.livi.digitraffic.tie.metadata.model.Site;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 
 public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
 
     @Autowired
     private LinkRepository linkRepository;
+
+    @Autowired
+    private SiteRepository siteRepository;
 
     @Autowired
     private TravelTimeLinkMetadataUpdater travelTimeLinkMetadataUpdater;
@@ -68,6 +75,24 @@ public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
         final List<Link> linksAfter = linkRepository.findByOrderByNaturalId();
 
         assertEquals("Otaniemi → Konala", linksAfter.get(0).getName());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void updateSitesSucceeds() throws IOException {
+
+        server.expect(MockRestRequestMatchers.requestTo("metadataUrl"))
+              .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+              .andRespond(MockRestResponseCreators.withSuccess(getResponse(), MediaType.APPLICATION_XML));
+
+        final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
+
+        travelTimeLinkMetadataUpdater.createOrUpdateSites(linkMetadata.sites);
+
+        List<Site> sites = siteRepository.findAll();
+
+        assertNotNull(sites);
     }
 
     private String getResponse() throws IOException {
