@@ -9,7 +9,7 @@ import javax.persistence.Transient;
 
 @Entity
 @AssociationOverrides({ @AssociationOverride(name = "primaryKey.link", joinColumns = @JoinColumn(name = "LINK_ID")),
-                        @AssociationOverride(name = "primaryKey.Site", joinColumns = @JoinColumn(name = "SITE_ID")) })
+                        @AssociationOverride(name = "primaryKey.site", joinColumns = @JoinColumn(name = "SITE_ID")) })
 public class LinkSite {
 
     @EmbeddedId
