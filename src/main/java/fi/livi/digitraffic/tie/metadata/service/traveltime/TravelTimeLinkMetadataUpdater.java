@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.Link;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.NameDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.SiteDto;
 
 @Service
@@ -34,8 +35,6 @@ public class TravelTimeLinkMetadataUpdater {
 
     private final LinkRepository linkRepository;
 
-    private final SiteDao siteRepository;
-
     private final SiteDao siteDao;
 
     private final TravelTimeClient travelTimeClient;
@@ -44,11 +43,9 @@ public class TravelTimeLinkMetadataUpdater {
 
     @Autowired
     public TravelTimeLinkMetadataUpdater(final LinkRepository linkRepository,
-                                         final SiteDao siteRepository,
                                          final SiteDao siteDao,
                                          final TravelTimeClient travelTimeClient) {
         this.linkRepository = linkRepository;
-        this.siteRepository = siteRepository;
         this.siteDao = siteDao;
         this.travelTimeClient = travelTimeClient;
     }
@@ -84,7 +81,10 @@ public class TravelTimeLinkMetadataUpdater {
             final Integer roadSectionNumber = getRoadSectionNumber(site.roadRegisterAddress);
 
             if (roadSectionNumber != null) {
-                siteDao.createOrUpdateSite(site.number, getName(site, "fi"), getName(site, "sv"), getName(site, "en"),
+                siteDao.createOrUpdateSite(site.number,
+                                           getName(site.names, "fi", SiteDto.class, site.number),
+                                           getName(site.names, "sv", SiteDto.class, site.number),
+                                           getName(site.names, "en", SiteDto.class, site.number),
                                            site.roadNumber, roadSectionNumber, site.coordinatesKkj3.x, site.coordinatesKkj3.y,
                                            coordinatesWgs84.getLeft(), coordinatesWgs84.getRight());
             } else {
@@ -102,11 +102,6 @@ public class TravelTimeLinkMetadataUpdater {
             final long length = linkData.distance.unit.equals("km") ? linkData.distance.value.multiply(new BigDecimal(1000))
                                                                                              .round(MathContext.DECIMAL32).longValue()
                                                                     : linkData.distance.value.round(MathContext.DECIMAL32).longValue();
-
-            final String name = linkData.names.stream().filter(n -> n.language.equals("fi")).map(n -> n.text).findFirst().orElse(link.getName());
-            // TODO: setNameSv, setNameEn
-            // TODO: link.setSummerFreeFlowSpeed();
-            // TODO: link.setWinterFreeFlowSpeed();
 
             final SiteDto startSite = sitesBySiteNumber.get(linkData.startSite);
             final SiteDto endSite = sitesBySiteNumber.get(linkData.endSite);
@@ -132,11 +127,16 @@ public class TravelTimeLinkMetadataUpdater {
                 log.info("Updating link (naturalId): {} with values: startSite.roadNumber: {}, startRoadSectionNumber: {}, endSite.roadNumber: {}, " +
                          "endRoadSectionNumber: {}, name: {}, length: {}, direction: {}, startRoadAddressDistance: {}, endRoadAddressDistance: {}, " +
                          "special: {}, obsolete: false, obsoleteDate: null",
-                         link.getNaturalId(), startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber, name, length,
-                         direction, startRoadAddressDistance, endRoadAddressDistance, special);
+                         link.getNaturalId(), startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
+                         getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber), length, direction,
+                         startRoadAddressDistance, endRoadAddressDistance, special);
 
-                linkRepository.updateLink(startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber, name, length,
-                                          direction, startRoadAddressDistance, endRoadAddressDistance, special, link.getNaturalId());
+                // TODO: summerFreeFlowSpeed, winterFreeFlowSpeed
+                linkRepository.updateLink(startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
+                                          getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber),
+                                          getName(linkData.names, "sv", LinkDto.class, linkData.linkNumber),
+                                          getName(linkData.names, "en", LinkDto.class, linkData.linkNumber),
+                                          length, direction, startRoadAddressDistance, endRoadAddressDistance, special, link.getNaturalId());
             } else {
                 log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
                           link.getNaturalId(), startSite.toString(), endSite.toString());
@@ -146,10 +146,10 @@ public class TravelTimeLinkMetadataUpdater {
 
     }
 
-    private static String getName(final SiteDto site, final String language) {
-        final Optional<String> name = site.names.stream().filter(n -> n.language.equals(language)).map(n -> n.text).findFirst();
+    private static String getName(final List<NameDto> names, final String language, final Class clazz, final Number id) {
+        final Optional<String> name = names.stream().filter(n -> n.language.equals(language)).map(n -> n.text).findFirst();
         if (!name.isPresent()) {
-            log.warn("Link site number {} is missing name in {} language", site.number, language);
+            log.warn("{} with naturalId {} is missing name in {} language", clazz.getSimpleName(), id, language);
             return "";
         }
         return name.get();

@@ -39,6 +39,10 @@ public class Link implements Serializable {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
+    private String nameSv;
+    @Column(nullable = false)
+    private String nameEn;
+    @Column(nullable = false)
     private Long length;
     @Column(nullable = false)
     private Boolean obsolete;
@@ -125,6 +129,22 @@ public class Link implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNameSv() {
+        return nameSv;
+    }
+
+    public void setNameSv(String nameSv) {
+        this.nameSv = nameSv;
+    }
+
+    public String getNameEn() {
+        return nameEn;
+    }
+
+    public void setNameEn(String nameEn) {
+        this.nameEn = nameEn;
     }
 
     public Long getLength() {
