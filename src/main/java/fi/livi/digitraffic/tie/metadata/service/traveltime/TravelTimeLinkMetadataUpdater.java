@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
+import fi.livi.digitraffic.tie.metadata.dao.LinkDao;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.metadata.model.Link;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.NameDto;
@@ -35,6 +35,8 @@ public class TravelTimeLinkMetadataUpdater {
 
     private final LinkRepository linkRepository;
 
+    private final LinkDao linkDao;
+
     private final SiteDao siteDao;
 
     private final TravelTimeClient travelTimeClient;
@@ -43,9 +45,11 @@ public class TravelTimeLinkMetadataUpdater {
 
     @Autowired
     public TravelTimeLinkMetadataUpdater(final LinkRepository linkRepository,
+                                         final LinkDao linkDao,
                                          final SiteDao siteDao,
                                          final TravelTimeClient travelTimeClient) {
         this.linkRepository = linkRepository;
+        this.linkDao = linkDao;
         this.siteDao = siteDao;
         this.travelTimeClient = travelTimeClient;
     }
@@ -55,22 +59,13 @@ public class TravelTimeLinkMetadataUpdater {
 
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
-        createOrUpdateSites(linkMetadata.sites);
+        final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
 
-        final Map<Long, Link> linksByNaturalId = linkRepository.findAll().stream().collect(Collectors.toMap(Link::getNaturalId, Function.identity()));
+        createOrUpdateSites(linkMetadata.sites);
 
         linkRepository.makeNonObsoleteLinksObsolete();
 
-        final List<LinkDto> linksToUpdate = linkMetadata.links.stream().filter(l -> linksByNaturalId.containsKey(l.linkNumber))
-                                                                       .collect(Collectors.toList());
-
-        // TODO: add missing links
-        final List<LinkDto> linksToAdd = linkMetadata.links.stream().filter(l -> !linksByNaturalId.containsKey(l.linkNumber))
-                                                                    .collect(Collectors.toList());
-
-        final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
-
-        updateLinks(linksByNaturalId, linksToUpdate, sitesBySiteNumber);
+        createOrUpdateLinks(linkMetadata.links, sitesBySiteNumber);
     }
 
     protected void createOrUpdateSites(final List<SiteDto> sites) {
@@ -93,11 +88,9 @@ public class TravelTimeLinkMetadataUpdater {
         }
     }
 
-    private void updateLinks(final Map<Long, Link> linksByNaturalId, final List<LinkDto> linksToUpdate, final Map<Integer, SiteDto> sitesBySiteNumber) {
+    private void createOrUpdateLinks(final List<LinkDto> links, final Map<Integer, SiteDto> sitesBySiteNumber) {
 
-        for (LinkDto linkData : linksToUpdate) {
-
-            final Link link = linksByNaturalId.get(linkData.linkNumber);
+        for (final LinkDto linkData : links) {
 
             final long length = linkData.distance.unit.equals("km") ? linkData.distance.value.multiply(new BigDecimal(1000))
                                                                                              .round(MathContext.DECIMAL32).longValue()
@@ -124,26 +117,24 @@ public class TravelTimeLinkMetadataUpdater {
                     direction = 2;
                 }
 
-                log.info("Updating link (naturalId): {} with values: startSite.roadNumber: {}, startRoadSectionNumber: {}, endSite.roadNumber: {}, " +
+                log.info("Creating or updating link (naturalId): {} with values: startSite.roadNumber: {}, startRoadSectionNumber: {}, endSite.roadNumber: {}, " +
                          "endRoadSectionNumber: {}, name: {}, length: {}, direction: {}, startRoadAddressDistance: {}, endRoadAddressDistance: {}, " +
                          "special: {}, obsolete: false, obsoleteDate: null",
-                         link.getNaturalId(), startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
+                         linkData.linkNumber, startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
                          getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber), length, direction,
                          startRoadAddressDistance, endRoadAddressDistance, special);
 
                 // TODO: summerFreeFlowSpeed, winterFreeFlowSpeed
-                linkRepository.updateLink(startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
-                                          getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber),
-                                          getName(linkData.names, "sv", LinkDto.class, linkData.linkNumber),
-                                          getName(linkData.names, "en", LinkDto.class, linkData.linkNumber),
-                                          length, direction, startRoadAddressDistance, endRoadAddressDistance, special, link.getNaturalId());
+                linkDao.createOrUpdateLink(startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
+                                           getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber),
+                                           getName(linkData.names, "sv", LinkDto.class, linkData.linkNumber),
+                                           getName(linkData.names, "en", LinkDto.class, linkData.linkNumber),
+                                           length, direction, startRoadAddressDistance, endRoadAddressDistance, special, linkData.linkNumber);
             } else {
                 log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
-                          link.getNaturalId(), startSite.toString(), endSite.toString());
+                          linkData.linkNumber, startSite.toString(), endSite.toString());
             }
-
         }
-
     }
 
     private static String getName(final List<NameDto> names, final String language, final Class clazz, final Number id) {
