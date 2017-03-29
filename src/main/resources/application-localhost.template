@@ -42,6 +42,7 @@ camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 
 traveltime.PKS.medians.url=https://birch.nctr.co.uk/xml/pks_mtp_ss.xml
 traveltime.PKS.individual.url=https://birch.nctr.co.uk/xml/pks_mtp_obs.xml
+traveltime.PKS.metadata.url=https://birch.nctr.co.uk/xml/pks_static12.xml
 traveltime.PKS.username=
 traveltime.PKS.password=
 
