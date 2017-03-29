@@ -63,7 +63,7 @@ public class LinkDao {
 
     public void createOrUpdateLinkSites(final long linkNaturalId, final List<Integer> siteNaturalIds) {
 
-        HashMap<String, Object> args = new HashMap<>();
+        final HashMap<String, Object> args = new HashMap<>();
         args.put("linkNaturalId", linkNaturalId);
         jdbcTemplate.update("DELETE FROM LINK_SITE WHERE LINK_ID = (SELECT id FROM LINK WHERE natural_id = :linkNaturalId)", args);
 
@@ -78,5 +78,16 @@ public class LinkDao {
                                 "VALUES ((SELECT id FROM LINK WHERE natural_id = :linkNaturalId), :siteId, :orderNumber)", args);
             orderNumber++;
         }
+    }
+
+    public void createOrUpdateLinkDirection(final long linkNaturalId, final int directionNaturalId) {
+
+        final HashMap<String, Object> args = new HashMap<>();
+        args.put("linkNaturalId", linkNaturalId);
+        jdbcTemplate.update("DELETE FROM LINK_DIRECTION WHERE LINK_ID = (SELECT id FROM LINK WHERE natural_id = :linkNaturalId)", args);
+
+        args.put("directionNaturalId", directionNaturalId);
+        jdbcTemplate.update("INSERT INTO LINK_DIRECTION (LINK_ID, DIRECTION_ID) " +
+                            "VALUES ((SELECT id FROM LINK WHERE natural_id = :linkNaturalId), :directionNaturalId)", args);
     }
 }

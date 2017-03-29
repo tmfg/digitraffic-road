@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -20,15 +21,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
+import fi.livi.digitraffic.tie.metadata.dao.DirectionDao;
 import fi.livi.digitraffic.tie.metadata.dao.LinkDao;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.DirectionTextDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.NameDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.SiteDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.TextDto;
 
 @Service
 public class TravelTimeLinkMetadataUpdater {
@@ -41,6 +45,8 @@ public class TravelTimeLinkMetadataUpdater {
 
     private final SiteDao siteDao;
 
+    private final DirectionDao directionDao;
+
     private final TravelTimeClient travelTimeClient;
 
     private final static Pattern roadAddressPattern = Pattern.compile("^(\\d+)\\/(\\d+)-(\\d+)$");
@@ -49,10 +55,12 @@ public class TravelTimeLinkMetadataUpdater {
     public TravelTimeLinkMetadataUpdater(final LinkRepository linkRepository,
                                          final LinkDao linkDao,
                                          final SiteDao siteDao,
+                                         final DirectionDao directionDao,
                                          final TravelTimeClient travelTimeClient) {
         this.linkRepository = linkRepository;
         this.linkDao = linkDao;
         this.siteDao = siteDao;
+        this.directionDao = directionDao;
         this.travelTimeClient = travelTimeClient;
     }
 
@@ -63,7 +71,10 @@ public class TravelTimeLinkMetadataUpdater {
 
         final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
 
+        // TODO: obsolete sites and directions
         createOrUpdateSites(linkMetadata.sites);
+
+        createOrUpdateDirections(linkMetadata.directions);
 
         linkRepository.makeNonObsoleteLinksObsolete();
 
@@ -87,6 +98,19 @@ public class TravelTimeLinkMetadataUpdater {
             } else {
                 log.error("Skipping Site with natural id {}. Could not parse roadSectionNumber from roadRegisterAddress {}", site.number, site.roadRegisterAddress);
             }
+        }
+    }
+
+    protected void createOrUpdateDirections(final List<DirectionTextDto> directions) {
+
+        for (final DirectionTextDto direction : directions) {
+
+            List<TextDto> directionNames = Stream.of("fi", "sv", "en")
+                .map(lang -> direction.texts.stream().filter(d -> d.lang.equals(lang)).findFirst().orElse(new TextDto("", "")))
+                .collect(Collectors.toList());
+
+            directionDao.createOrUpdateDirection(direction.directionIndex, directionNames.get(0).text, directionNames.get(1).text,
+                                                 directionNames.get(2).text, direction.roadDirection);
         }
     }
 
@@ -141,6 +165,8 @@ public class TravelTimeLinkMetadataUpdater {
                 siteNaturalIds.add(linkData.endSite);
 
                 linkDao.createOrUpdateLinkSites(linkData.linkNumber, siteNaturalIds);
+
+                linkDao.createOrUpdateLinkDirection(linkData.linkNumber, linkData.directionIndex);
             } else {
                 log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
                           linkData.linkNumber, startSite.toString(), endSite.toString());

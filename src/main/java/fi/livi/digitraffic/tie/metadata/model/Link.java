@@ -72,6 +72,10 @@ public class Link implements Serializable {
     @OneToMany(mappedBy = "primaryKey.link", cascade = CascadeType.ALL)
     private List<LinkSite> linkSites;
 
+    @ManyToOne
+    @JoinTable(name = "LINK_DIRECTION", joinColumns = { @JoinColumn(name = "LINK_ID") }, inverseJoinColumns = @JoinColumn(name = "DIRECTION_ID"))
+    private Direction linkDirection;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "area_link", joinColumns = { @JoinColumn(name = "link_id") }, inverseJoinColumns = @JoinColumn(name = "area_id"))
     private List<Area> areas;
@@ -285,5 +289,9 @@ public class Link implements Serializable {
 
     public void setSpecial(Boolean special) {
         this.special = special;
+    }
+
+    public Direction getLinkDirection() {
+        return linkDirection;
     }
 }

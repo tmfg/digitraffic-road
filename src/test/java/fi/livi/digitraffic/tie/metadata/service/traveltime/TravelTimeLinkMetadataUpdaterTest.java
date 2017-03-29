@@ -26,18 +26,12 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
-import fi.livi.digitraffic.tie.metadata.dao.SiteRepository;
 import fi.livi.digitraffic.tie.metadata.model.Link;
-import fi.livi.digitraffic.tie.metadata.model.Site;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 
 public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
 
     @Autowired
     private LinkRepository linkRepository;
-
-    @Autowired
-    private SiteRepository siteRepository;
 
     @Autowired
     private TravelTimeLinkMetadataUpdater travelTimeLinkMetadataUpdater;
@@ -72,27 +66,14 @@ public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
 
         travelTimeLinkMetadataUpdater.updateLinkMetadata();
 
-        final List<Link> linksAfter = linkRepository.findByOrderByNaturalId();
+        final List<Link> links = linkRepository.findByOrderByNaturalId();
 
-        assertEquals("Otaniemi → Konala", linksAfter.get(0).getName());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void updateSitesSucceeds() throws IOException {
-
-        server.expect(MockRestRequestMatchers.requestTo("metadataUrl"))
-              .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-              .andRespond(MockRestResponseCreators.withSuccess(getResponse(), MediaType.APPLICATION_XML));
-
-        final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
-
-        travelTimeLinkMetadataUpdater.createOrUpdateSites(linkMetadata.sites);
-
-        List<Site> sites = siteRepository.findAll();
-
-        assertNotNull(sites);
+        assertEquals(238, links.size());
+        assertEquals("Otaniemi → Konala", links.get(0).getName());
+        assertEquals(3, links.get(0).getLinkSites().size());
+        assertNotNull(links.get(0).getLinkSites().get(0).getSite().getLongitudeWgs84());
+        assertEquals(14L, links.get(0).getLinkDirection().getNaturalId().longValue());
+        assertEquals("Itäkeskukseen", links.get(0).getLinkDirection().getNameFi());
     }
 
     private String getResponse() throws IOException {
