@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +19,9 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
@@ -42,27 +46,42 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
     @Autowired
     private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
 
-    @Test
-    public void testUpdateWeatherStations() {
+    @Autowired
+    private RoadStationSensorService roadStationSensorService;
 
+    private WeatherStationFeatureCollection allInitial;
+    private WeatherStationFeatureCollection allAfterChange;
+    private Map<Long, RoadStationSensor> sensorsInitial;
+    private Map<Long, RoadStationSensor> sensorsAfterChange;
+
+    @Before
+    public void initData() {
         lotjuTiesaaPerustiedotServiceMock.initDataAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
-        final WeatherStationFeatureCollection allInitial =
-                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
+        sensorsInitial = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+        allInitial =
+            weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
+        sensorsInitial.values().forEach(s -> entityManager.detach(s));
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
         lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
-        final WeatherStationFeatureCollection allAfterChange =
-                weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
+        sensorsAfterChange = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+        allAfterChange =
+            weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(3, allAfterChange.getFeatures().size());
+    }
+
+    @Test
+    public void testUpdateWeatherStations() {
+
 
         /*
         <id>34</id>
@@ -120,8 +139,8 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         final WeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
         final WeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
 
-        final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1);
-        final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1);
+        final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1, true);
+        final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1, false);
 
         assertEquals("Ilman nopeus", sensorInitial.getDescription());
         assertEquals("Ilman lampotila", sensorAfter.getDescription());
@@ -132,14 +151,14 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         assertEquals(10, sensorInitial.getAccuracy().intValue());
         assertEquals(1, sensorAfter.getAccuracy().intValue());
 
-        final RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2);
-        final RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2);
+        final RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2, true);
+        final RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2, false);
 
         assertNull(sensor2Initial);
         assertNotNull(sensor2After);
 
-        final RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3);
-        final RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3);
+        final RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3, true);
+        final RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3, false);
 
         assertNotNull(sensor3Initial);
         assertNull(sensor3After);
@@ -156,11 +175,15 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         return initial.orElse(null);
     }
 
-    private RoadStationSensor findSensorWithLotjuId(final WeatherStationFeature feature, final long lotjuId) {
-        final Optional<RoadStationSensor> initial =
-                feature.getProperties().getSensors().stream()
-                        .filter(x -> x.getLotjuId() == lotjuId)
-                        .findFirst();
-        return initial.orElse(null);
+    private RoadStationSensor findSensorWithLotjuId(final WeatherStationFeature feature, final long lotjuId, final boolean initial) {
+        final RoadStationSensor sensor = initial ? sensorsInitial.get(lotjuId) : sensorsAfterChange.get(lotjuId);
+        if (sensor != null) {
+            final Optional<Long> optional =
+                feature.getProperties().getStationSensors().stream()
+                    .filter(naturalId -> naturalId == sensor.getNaturalId())
+                    .findFirst();
+            return optional.isPresent() ? sensor : null;
+        }
+        return null;
     }
 }

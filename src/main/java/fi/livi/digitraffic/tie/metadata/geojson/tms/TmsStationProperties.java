@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.geojson.tms;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -43,6 +47,10 @@ public class TmsStationProperties extends RoadStationProperties {
 
     @ApiModelProperty(value = "Type of calculation device")
     private CalculatorDeviceType calculatorDeviceType;
+
+    /** Sensors natural ids */
+    @ApiModelProperty(value = "Tms Station Sensors ids")
+    private List<Long> stationSensors = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -108,6 +116,15 @@ public class TmsStationProperties extends RoadStationProperties {
         return calculatorDeviceType;
     }
 
+    public List<Long> getStationSensors() {
+        return stationSensors;
+    }
+
+    public void setStationSensors(List<Long> stationSensors) {
+        this.stationSensors = stationSensors;
+        Collections.sort(this.stationSensors);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o)
@@ -128,6 +145,7 @@ public class TmsStationProperties extends RoadStationProperties {
                 .append(direction2MunicipalityCode, that.direction2MunicipalityCode)
                 .append(tmsStationType, that.tmsStationType)
                 .append(calculatorDeviceType, that.calculatorDeviceType)
+                .append(stationSensors, that.stationSensors)
                 .isEquals();
     }
 
@@ -143,6 +161,7 @@ public class TmsStationProperties extends RoadStationProperties {
                 .append(direction2MunicipalityCode)
                 .append(tmsStationType)
                 .append(calculatorDeviceType)
+                .append(stationSensors)
                 .toHashCode();
     }
 }

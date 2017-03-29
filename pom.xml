@@ -212,6 +212,13 @@
             <version>0.1.0</version>
         </dependency>
 
+        <!-- JavaMelody -->
+        <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-core</artifactId>
+            <version>1.65.0</version>
+        </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
