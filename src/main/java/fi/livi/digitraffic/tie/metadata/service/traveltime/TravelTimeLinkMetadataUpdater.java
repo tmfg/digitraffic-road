@@ -71,13 +71,13 @@ public class TravelTimeLinkMetadataUpdater {
 
         final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
 
-        // TODO: obsolete sites and directions
+        siteDao.makeNonObsoleteSitesObsolete();
         createOrUpdateSites(linkMetadata.sites);
 
+        directionDao.makeNonObsoleteDirectionsObsolete();
         createOrUpdateDirections(linkMetadata.directions);
 
         linkRepository.makeNonObsoleteLinksObsolete();
-
         createOrUpdateLinks(linkMetadata.links, sitesBySiteNumber);
     }
 

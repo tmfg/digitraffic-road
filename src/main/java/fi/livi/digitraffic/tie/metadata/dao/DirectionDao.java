@@ -31,9 +31,13 @@ public class DirectionDao {
             "USING (SELECT :naturalId natural_id FROM DUAL) src " +
             "ON (d.natural_id = src.natural_id) " +
             "WHEN MATCHED THEN " +
-                "UPDATE SET name_fi = :nameFi, name_sv = :nameSv, name_en = :nameEn, rdi = :roadDirection " +
+                "UPDATE SET name_fi = :nameFi, name_sv = :nameSv, name_en = :nameEn, rdi = :roadDirection, obsolete_date = null " +
             "WHEN NOT MATCHED THEN " +
-                "INSERT (natural_id, name_fi, name_sv, name_en, rdi) " +
-                "VALUES (:naturalId, :nameFi, :nameSv, :nameEn, :roadDirection)", args);
+                "INSERT (natural_id, name_fi, name_sv, name_en, rdi, obsolete_date) " +
+                "VALUES (:naturalId, :nameFi, :nameSv, :nameEn, :roadDirection, null)", args);
+    }
+
+    public void makeNonObsoleteDirectionsObsolete() {
+        jdbcTemplate.update("UPDATE DIRECTION SET obsolete_date = sysdate WHERE obsolete_date IS NULL", new HashMap<>());
     }
 }

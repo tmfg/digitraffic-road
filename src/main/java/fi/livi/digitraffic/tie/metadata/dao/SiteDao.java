@@ -37,14 +37,19 @@ public class SiteDao {
                 "USING (SELECT :naturalId natural_id FROM DUAL) src " +
                 "ON (s.natural_id = src.natural_id) " +
                 "WHEN NOT MATCHED THEN " +
-                "INSERT (natural_id, name_fi, name_sv, name_en, road_section_id, x_coord_kkj3, y_coord_kkj3, longitude_wgs84, latitude_wgs84) " +
+                "INSERT (natural_id, name_fi, name_sv, name_en, road_section_id, x_coord_kkj3, y_coord_kkj3, longitude_wgs84, latitude_wgs84, obsolete_date) " +
                 "VALUES (:naturalId, :nameFi, :nameSv, :nameEn, " +
                 "          (SELECT id FROM ROAD_SECTION WHERE natural_id = :roadSectionNumber and road_id = (SELECT id FROM ROAD WHERE natural_id = :roadNumber)), " +
-                "          :xCoord, :yCoord, :longitude, :latitude) " +
+                "          :xCoord, :yCoord, :longitude, :latitude, null) " +
                 "WHEN MATCHED THEN " +
                 "UPDATE SET s.name_fi = :nameFi, s.name_sv = :nameSv, s.name_en = :nameEn, " +
                 "           s.road_section_id = (SELECT id FROM ROAD_SECTION WHERE natural_id = :roadSectionNumber and road_id = (SELECT id FROM ROAD WHERE natural_id = :roadNumber)), " +
-                "           s.x_coord_kkj3 = :xCoord, s.y_coord_kkj3 = :yCoord, s.longitude_wgs84 = :longitude, s.latitude_wgs84 = :latitude",
+                "           s.x_coord_kkj3 = :xCoord, s.y_coord_kkj3 = :yCoord, s.longitude_wgs84 = :longitude, s.latitude_wgs84 = :latitude, " +
+                "           s.obsolete_date = null",
                 args);
+    }
+
+    public void makeNonObsoleteSitesObsolete() {
+        jdbcTemplate.update("UPDATE SITE SET obsolete_date = sysdate WHERE obsolete_date IS NULL", new HashMap<>());
     }
 }

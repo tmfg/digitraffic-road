@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -19,6 +21,8 @@ public class Direction {
     private String nameEn;
 
     private String rdi;
+
+    private Timestamp obsoleteDate;
 
     public Long getNaturalId() {
         return naturalId;
@@ -58,5 +62,13 @@ public class Direction {
 
     public void setRdi(String rdi) {
         this.rdi = rdi;
+    }
+
+    public Timestamp getObsoleteDate() {
+        return obsoleteDate;
+    }
+
+    public void setObsoleteDate(Timestamp obsoleteDate) {
+        this.obsoleteDate = obsoleteDate;
     }
 }

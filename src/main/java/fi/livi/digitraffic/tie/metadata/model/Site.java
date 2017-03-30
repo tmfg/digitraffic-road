@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -34,6 +35,8 @@ public class Site {
 
     private Double longitudeWgs84;
     private Double latitudeWgs84;
+
+    private Timestamp obsoleteDate;
 
     public Long getNaturalId() {
         return naturalId;
@@ -109,5 +112,13 @@ public class Site {
 
     public void setLatitudeWgs84(Double latitudeWgs84) {
         this.latitudeWgs84 = latitudeWgs84;
+    }
+
+    public Timestamp getObsoleteDate() {
+        return obsoleteDate;
+    }
+
+    public void setObsoleteDate(Timestamp obsoleteDate) {
+        this.obsoleteDate = obsoleteDate;
     }
 }
