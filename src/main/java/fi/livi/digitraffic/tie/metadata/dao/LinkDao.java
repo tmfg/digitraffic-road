@@ -57,7 +57,7 @@ public class LinkDao {
                     "(select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber)," +
                     "(select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :endRoadNumber) and natural_id = :endRoadSectionNumber)," +
                     "(select road_district_id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber)," +
-                    ":special, 0, null, 0, 0)",
+                    ":special, 0, null, null, null)",
             args);
     }
 
