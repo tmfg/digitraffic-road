@@ -27,6 +27,9 @@ import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
+import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.DirectionTextDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
@@ -40,14 +43,11 @@ public class TravelTimeLinkMetadataUpdater {
     private static final Logger log = LoggerFactory.getLogger(TravelTimeLinkMetadataUpdater.class);
 
     private final LinkRepository linkRepository;
-
     private final LinkDao linkDao;
-
     private final SiteDao siteDao;
-
     private final DirectionDao directionDao;
-
     private final TravelTimeClient travelTimeClient;
+    private final StaticDataStatusService staticDataStatusService;
 
     private final static Pattern roadAddressPattern = Pattern.compile("^(\\d+)\\/(\\d+)-(\\d+)$");
 
@@ -56,18 +56,30 @@ public class TravelTimeLinkMetadataUpdater {
                                          final LinkDao linkDao,
                                          final SiteDao siteDao,
                                          final DirectionDao directionDao,
-                                         final TravelTimeClient travelTimeClient) {
+                                         final TravelTimeClient travelTimeClient,
+                                         final StaticDataStatusService staticDataStatusService) {
         this.linkRepository = linkRepository;
         this.linkDao = linkDao;
         this.siteDao = siteDao;
         this.directionDao = directionDao;
         this.travelTimeClient = travelTimeClient;
+        this.staticDataStatusService = staticDataStatusService;
     }
 
     @Transactional
-    public void updateLinkMetadata() {
+    public void updateLinkMetadataIfUpdateAvailable() {
 
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.TRAVEL_TIME_LINKS);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
+
+        if (updated == null || updated.getUpdatedTime().isBefore(linkMetadata.lastUpdate)) {
+            updateLinkMetadata(linkMetadata);
+            staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
+        }
+    }
+
+    @Transactional
+    protected void updateLinkMetadata(final LinkMetadataDto linkMetadata) {
 
         final Map<Integer, SiteDto> sitesBySiteNumber = linkMetadata.sites.stream().collect(Collectors.toMap(s -> s.number, Function.identity()));
 
@@ -81,7 +93,7 @@ public class TravelTimeLinkMetadataUpdater {
         createOrUpdateLinks(linkMetadata.links, sitesBySiteNumber);
     }
 
-    protected void createOrUpdateSites(final List<SiteDto> sites) {
+    private void createOrUpdateSites(final List<SiteDto> sites) {
 
         for (final SiteDto site : sites) {
 
@@ -101,7 +113,7 @@ public class TravelTimeLinkMetadataUpdater {
         }
     }
 
-    protected void createOrUpdateDirections(final List<DirectionTextDto> directions) {
+    private void createOrUpdateDirections(final List<DirectionTextDto> directions) {
 
         for (final DirectionTextDto direction : directions) {
 

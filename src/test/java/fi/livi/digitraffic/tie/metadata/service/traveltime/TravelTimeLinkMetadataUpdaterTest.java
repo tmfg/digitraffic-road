@@ -64,7 +64,7 @@ public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
               .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
               .andRespond(MockRestResponseCreators.withSuccess(getResponse(), MediaType.APPLICATION_XML));
 
-        travelTimeLinkMetadataUpdater.updateLinkMetadata();
+        travelTimeLinkMetadataUpdater.updateLinkMetadata(travelTimeClient.getLinkMetadata());
 
         final List<Link> links = linkRepository.findByOrderByNaturalId();
 
