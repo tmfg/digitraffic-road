@@ -104,7 +104,7 @@ public class Link implements Serializable {
      */
     @Transient
     public BigDecimal getFreeFlowSpeed() {
-        if (roadDistrict.getSpeedLimitSeason().equals(SpeedLimitSeason.SUMMER.getCode())) {
+        if (roadDistrict.getSpeedLimitSeasonCode().equals(SpeedLimitSeason.SUMMER.getCode())) {
             return summerFreeFlowSpeed;
         } else {
             return winterFreeFlowSpeed;

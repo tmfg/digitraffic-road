@@ -39,4 +39,8 @@ public class LineString {
     public List<List<Double>> getCoordinates() {
         return coordinates;
     }
+
+    public void addCoordinate(final double longitude, final double latitude) {
+        coordinates.add(Arrays.asList(longitude, latitude));
+    }
 }

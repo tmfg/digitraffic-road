@@ -12,30 +12,48 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @DynamicUpdate
+@JsonPropertyOrder({ "naturalId", "nameFi", "nameSv", "nameEn", "roadSection", "xCoordKkj3", "yCoordKkj3", "longitudeWgs84", "latitudeWgs84" })
 public class Site {
 
     @Id
+    @JsonProperty(value = "id")
+    @ApiModelProperty("Site id")
     private Long naturalId;
 
+    @ApiModelProperty("Site name in Finnish")
     private String nameFi;
+    @ApiModelProperty("Site name in Swedish")
     private String nameSv;
+    @ApiModelProperty("Site name in English")
     private String nameEn;
 
     @OneToMany(mappedBy = "primaryKey.site", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<LinkSite> linkSites;
 
     @ManyToOne
     @JoinColumn(name = "ROAD_SECTION_ID", referencedColumnName = "ID")
     private RoadSection roadSection;
 
+    @ApiModelProperty("Site X coordinate in Finnish National Coordinate System (KKJ3)")
     private Integer xCoordKkj3;
+    @ApiModelProperty("Site Y coordinate in Finnish National Coordinate System (KKJ3)")
     private Integer yCoordKkj3;
 
+    @ApiModelProperty("Site longitude in WGS84")
     private Double longitudeWgs84;
+    @ApiModelProperty("Site latitude in WGS84")
     private Double latitudeWgs84;
 
+    @JsonIgnore
     private Timestamp obsoleteDate;
 
     public Long getNaturalId() {
