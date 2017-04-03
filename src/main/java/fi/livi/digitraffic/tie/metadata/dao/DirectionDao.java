@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,6 @@ public class DirectionDao {
     }
 
     public void makeNonObsoleteDirectionsObsolete() {
-        jdbcTemplate.update("UPDATE DIRECTION SET obsolete_date = sysdate WHERE obsolete_date IS NULL", new HashMap<>());
+        jdbcTemplate.update("UPDATE DIRECTION SET obsolete_date = sysdate WHERE obsolete_date IS NULL", Collections.emptyMap());
     }
 }

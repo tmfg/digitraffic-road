@@ -89,7 +89,7 @@ public class TravelTimeLinkMetadataUpdater {
         directionDao.makeNonObsoleteDirectionsObsolete();
         createOrUpdateDirections(linkMetadata.directions);
 
-        linkRepository.makeNonObsoleteLinksObsolete();
+        linkDao.makeNonObsoleteLinksObsolete();
         createOrUpdateLinks(linkMetadata.links, sitesBySiteNumber);
     }
 

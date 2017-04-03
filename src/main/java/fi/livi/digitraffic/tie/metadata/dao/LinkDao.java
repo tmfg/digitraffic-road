@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,5 +90,9 @@ public class LinkDao {
         args.put("directionNaturalId", directionNaturalId);
         jdbcTemplate.update("INSERT INTO LINK_DIRECTION (LINK_ID, DIRECTION_ID) " +
                             "VALUES ((SELECT id FROM LINK WHERE natural_id = :linkNaturalId), :directionNaturalId)", args);
+    }
+
+    public void makeNonObsoleteLinksObsolete() {
+        jdbcTemplate.update("UPDATE LINK SET obsolete_date = sysdate WHERE obsolete_date IS NULL", Collections.emptyMap());
     }
 }
