@@ -20,7 +20,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @DynamicUpdate
-@JsonPropertyOrder({ "naturalId", "nameFi", "nameSv", "nameEn", "roadSection", "xCoordKkj3", "yCoordKkj3", "longitudeWgs84", "latitudeWgs84" })
+@JsonPropertyOrder({ "naturalId", "nameFi", "nameSv", "nameEn", "roadSection", "roadSectionBeginDistance",
+                     "xCoordKkj3", "yCoordKkj3", "longitudeWgs84", "latitudeWgs84" })
 public class Site {
 
     @Id
@@ -42,6 +43,9 @@ public class Site {
     @ManyToOne
     @JoinColumn(name = "ROAD_SECTION_ID", referencedColumnName = "ID")
     private RoadSection roadSection;
+
+    @ApiModelProperty("Distance in meters from the beginning of the road section")
+    private Long roadSectionBeginDistance;
 
     @ApiModelProperty("Site X coordinate in Finnish National Coordinate System (KKJ3)")
     private Integer xCoordKkj3;
@@ -98,6 +102,14 @@ public class Site {
 
     public void setRoadSection(RoadSection roadSection) {
         this.roadSection = roadSection;
+    }
+
+    public Long getRoadSectionBeginDistance() {
+        return roadSectionBeginDistance;
+    }
+
+    public void setRoadSectionBeginDistance(Long roadSectionBeginDistance) {
+        this.roadSectionBeginDistance = roadSectionBeginDistance;
     }
 
     public Integer getxCoordKkj3() {

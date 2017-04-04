@@ -99,16 +99,19 @@ public class TravelTimeLinkMetadataUpdater {
 
             final Pair<Double, Double> coordinatesWgs84 = getCoordinatesWgs84(site.coordinatesKkj3.x, site.coordinatesKkj3.y);
             final Integer roadSectionNumber = getRoadSectionNumber(site.roadRegisterAddress);
+            final Integer roadSectionBeginDistance = getRoadSectionBeginDistance(site.roadRegisterAddress);
 
-            if (roadSectionNumber != null) {
+            if (roadSectionNumber != null && roadSectionBeginDistance != null) {
                 siteDao.createOrUpdateSite(site.number,
                                            getName(site.names, "fi", SiteDto.class, site.number),
                                            getName(site.names, "sv", SiteDto.class, site.number),
                                            getName(site.names, "en", SiteDto.class, site.number),
-                                           site.roadNumber, roadSectionNumber, site.coordinatesKkj3.x, site.coordinatesKkj3.y,
+                                           site.roadNumber, roadSectionNumber, roadSectionBeginDistance,
+                                           site.coordinatesKkj3.x, site.coordinatesKkj3.y,
                                            coordinatesWgs84.getLeft(), coordinatesWgs84.getRight());
             } else {
-                log.error("Skipping Site with natural id {}. Could not parse roadSectionNumber from roadRegisterAddress {}", site.number, site.roadRegisterAddress);
+                log.error("Skipping Site with natural id {}. Could not parse roadSectionNumber or roadSectionBeginDistance from roadRegisterAddress {}",
+                          site.number, site.roadRegisterAddress);
             }
         }
     }
@@ -196,9 +199,17 @@ public class TravelTimeLinkMetadataUpdater {
     }
 
     private static Integer getRoadSectionNumber(final String roadRegisterAddress) {
+        return matcher(roadRegisterAddress, 2);
+    }
+
+    private static Integer getRoadSectionBeginDistance(final String roadRegisterAddress) {
+        return matcher(roadRegisterAddress, 3);
+    }
+
+    private static Integer matcher(final String roadRegisterAddress, final int group) {
         final Matcher m = roadAddressPattern.matcher(roadRegisterAddress);
         if (m.matches()) {
-            return Integer.parseInt(m.group(2));
+            return Integer.parseInt(m.group(group));
         }
         return null;
     }

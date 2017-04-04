@@ -42,7 +42,6 @@ public class Link2FeatureConverter extends AbstractMetadataToFeatureConverter {
         linkFeature.setGeometry(getGeometry(sites));
 
         linkFeature.setProperties(new LinkProperties(link.getNaturalId(), sites, link.getName(), link.getNameSv(), link.getNameEn(), link.getLength(),
-                                                     link.getStartRoadAddressDistance(), link.getEndRoadAddressDistance(),
                                                      link.getSummerFreeFlowSpeed(), link.getWinterFreeFlowSpeed(), link.getRoadDistrict(),
                                                      link.getLinkDirection()));
         return linkFeature;

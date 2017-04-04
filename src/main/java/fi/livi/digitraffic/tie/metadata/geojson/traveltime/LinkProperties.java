@@ -10,8 +10,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 import fi.livi.digitraffic.tie.metadata.model.Site;
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonPropertyOrder({ "id", "nameFi", "nameSv", "nameEn", "sites", "startRoadAddressDistance", "endRoadAddressDistance",
-                     "summerFreeFlowSpeed", "winterFreeFlowSpeed", "roadDistrict", "linkDirection" })
+@JsonPropertyOrder({ "id", "nameFi", "nameSv", "nameEn", "sites", "summerFreeFlowSpeed", "winterFreeFlowSpeed",
+                     "length", "roadDistrict", "linkDirection" })
 public class LinkProperties {
 
     @ApiModelProperty("Link id")
@@ -32,10 +32,6 @@ public class LinkProperties {
     @ApiModelProperty("Link length in meters (m)")
     public final Long length;
 
-    public final Long startRoadAddressDistance;
-
-    public final Long endRoadAddressDistance;
-
     public final BigDecimal summerFreeFlowSpeed;
 
     public final BigDecimal winterFreeFlowSpeed;
@@ -44,17 +40,15 @@ public class LinkProperties {
 
     public final Direction linkDirection;
 
-    public LinkProperties(final Long id, final List<Site> sites, final String name, final String nameSv, final String nameEn, final Long length,
-                          final Long startRoadAddressDistance, final Long endRoadAddressDistance, final BigDecimal summerFreeFlowSpeed,
-                          final BigDecimal winterFreeFlowSpeed, final RoadDistrict roadDistrict, final Direction linkDirection) {
+    public LinkProperties(final Long id, final List<Site> sites, final String name, final String nameSv, final String nameEn,
+                          final Long length, final BigDecimal summerFreeFlowSpeed, final BigDecimal winterFreeFlowSpeed,
+                          final RoadDistrict roadDistrict, final Direction linkDirection) {
         this.id = id;
         this.sites = sites;
         this.nameFi = name;
         this.nameSv = nameSv;
         this.nameEn = nameEn;
         this.length = length;
-        this.startRoadAddressDistance = startRoadAddressDistance;
-        this.endRoadAddressDistance = endRoadAddressDistance;
         this.summerFreeFlowSpeed = summerFreeFlowSpeed;
         this.winterFreeFlowSpeed = winterFreeFlowSpeed;
         this.roadDistrict = roadDistrict;
