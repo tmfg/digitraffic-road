@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,17 +137,14 @@ public class TravelTimeLinkMetadataUpdater {
             final SiteDto startSite = sitesBySiteNumber.get(linkData.startSite);
             final SiteDto endSite = sitesBySiteNumber.get(linkData.endSite);
 
-            final Matcher m1 = roadAddressPattern.matcher(startSite.roadRegisterAddress);
-            final Matcher m2 = roadAddressPattern.matcher(endSite.roadRegisterAddress);
+            final Integer startRoadSectionNumber = getRoadSectionNumber(startSite.roadRegisterAddress);
+            final Integer startRoadAddressDistance = getRoadSectionBeginDistance(startSite.roadRegisterAddress);
+            final Integer endRoadSectionNumber = getRoadSectionNumber(endSite.roadRegisterAddress);
+            final Integer endRoadAddressDistance = getRoadSectionBeginDistance(endSite.roadRegisterAddress);
 
-            if (m1.matches() && m2.matches()) {
+            if (ObjectUtils.allNotNull(startRoadSectionNumber, startRoadAddressDistance, endRoadSectionNumber, endRoadAddressDistance)) {
 
                 final int special = startSite.roadNumber == endSite.roadNumber ? 0 : 1; // 1 if the link takes a turn
-
-                final int startRoadSectionNumber = Integer.parseInt(m1.group(2));
-                final int startRoadAddressDistance = Integer.parseInt(m1.group(3));
-                final int endRoadSectionNumber = Integer.parseInt(m2.group(2));
-                final int endRoadAddressDistance = Integer.parseInt(m2.group(3));
 
                 int direction = 1;
                 if (startRoadSectionNumber > endRoadSectionNumber ||
