@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeClient;
 import fi.livi.digitraffic.tie.metadata.dao.DirectionDao;
 import fi.livi.digitraffic.tie.metadata.dao.LinkDao;
-import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
@@ -42,7 +41,6 @@ public class TravelTimeLinkMetadataUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(TravelTimeLinkMetadataUpdater.class);
 
-    private final LinkRepository linkRepository;
     private final LinkDao linkDao;
     private final SiteDao siteDao;
     private final DirectionDao directionDao;
@@ -52,13 +50,11 @@ public class TravelTimeLinkMetadataUpdater {
     private final static Pattern roadAddressPattern = Pattern.compile("^(\\d+)\\/(\\d+)-(\\d+)$");
 
     @Autowired
-    public TravelTimeLinkMetadataUpdater(final LinkRepository linkRepository,
-                                         final LinkDao linkDao,
+    public TravelTimeLinkMetadataUpdater(final LinkDao linkDao,
                                          final SiteDao siteDao,
                                          final DirectionDao directionDao,
                                          final TravelTimeClient travelTimeClient,
                                          final StaticDataStatusService staticDataStatusService) {
-        this.linkRepository = linkRepository;
         this.linkDao = linkDao;
         this.siteDao = siteDao;
         this.directionDao = directionDao;
