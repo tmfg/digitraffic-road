@@ -23,6 +23,8 @@ public class TrafficFluencyService {
     private final FluencyClassRepository fluencyClassRepository;
     private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
 
+    private final int alertThresholdCode = 2;
+
     @Autowired
     TrafficFluencyService(final TrafficFluencyRepository trafficFluencyRepository,
                           final FluencyClassRepository fluencyClassRepository,
@@ -108,6 +110,6 @@ public class TrafficFluencyService {
      */
     @Transactional(readOnly = true)
     public BigDecimal getAlertThreshold() {
-        return fluencyClassRepository.getFluencyClassThreshold();
+        return fluencyClassRepository.getFluencyClassThreshold(alertThresholdCode);
     }
 }
