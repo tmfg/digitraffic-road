@@ -68,7 +68,7 @@ public class TravelTimeLinkMetadataUpdater {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.TRAVEL_TIME_LINKS);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
-        if (updated == null || updated.getUpdatedTime().isBefore(linkMetadata.lastUpdate)) {
+        if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
             updateLinkMetadata(linkMetadata);
             staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
         }

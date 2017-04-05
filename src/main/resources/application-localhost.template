@@ -27,6 +27,7 @@ forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 travelTimeMediansUpdateJob.frequency=60000
 travelTimeMeasurementsUpdateJob.frequency=60000
+travelTimeLinkMetadataUpdateJob.frequency=86400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
