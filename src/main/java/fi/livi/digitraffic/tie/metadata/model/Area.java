@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,28 +12,31 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 @Entity
-@NamedQueries({ @NamedQuery(name = "Area.findNonObsoleteAreasWithTypeCode",
-                            query = "SELECT o FROM Area o WHERE obsolete = false and type = :typeCode ORDER BY name"),
-                @NamedQuery(name = "Area.findByIdList",
-                            query = "SELECT o FROM Area o WHERE id IN (:idList) ORDER BY name"),
-                @NamedQuery(name = "Area.calculateAreaLength",
-                            query = "SELECT SUM(l.length) FROM Link l INNER JOIN l.areas a WHERE a.id = :areaId and l.obsolete = 0") })
 public class Area implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AREA_SEQ")
+    @SequenceGenerator(name = "AREA_SEQ", sequenceName = "seq_area")
     private Long id;
+
     private Long naturalId;
+
     private String name;
-    private Integer typeCode;
-    private boolean obsolete; // required
+
+    private Integer type;
+
+    private Boolean obsolete;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date obsoleteDate;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "area_link", joinColumns = { @JoinColumn(name = "area_id") }, inverseJoinColumns = @JoinColumn(name = "link_id"))
     private List<Link> links;
 
     public enum Type {
@@ -71,11 +73,6 @@ public class Area implements Serializable {
     public Area() {
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-                    generator = "AREA_SEQ")
-    @SequenceGenerator(name = "AREA_SEQ",
-                       sequenceName = "seq_area")
     public Long getId() {
         return id;
     }
@@ -84,7 +81,6 @@ public class Area implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "NATURAL_ID")
     public Long getNaturalId() {
         return naturalId;
     }
@@ -101,23 +97,12 @@ public class Area implements Serializable {
         this.name = name;
     }
 
-    @Column(name = "TYPE")
-    public Integer getTypeCode() {
-        return typeCode;
-    }
-
-    public void setTypeCode(Integer typeCode) {
-        this.typeCode = typeCode;
-    }
-
-    @Transient
     public Type getType() {
-        return Type.getType(typeCode);
+        return Type.getType(type);
     }
 
-    @Transient
     public void setType(Type type) {
-        this.typeCode = type.getCode();
+        this.type = type.getCode();
     }
 
     public boolean isObsolete() {
@@ -128,8 +113,6 @@ public class Area implements Serializable {
         this.obsolete = obsolete;
     }
 
-    @Column(name = "OBSOLETE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
     public Date getObsoleteDate() {
         return obsoleteDate;
     }
@@ -138,10 +121,6 @@ public class Area implements Serializable {
         this.obsoleteDate = obsoleteDate;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "area_link",
-               joinColumns = { @JoinColumn(name = "area_id") },
-               inverseJoinColumns = @JoinColumn(name = "link_id"))
     public List<Link> getLinks() {
         return links;
     }

@@ -16,7 +16,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -76,6 +75,7 @@ public class Link implements Serializable {
     @JoinTable(name = "LINK_DIRECTION", joinColumns = { @JoinColumn(name = "LINK_ID") }, inverseJoinColumns = @JoinColumn(name = "DIRECTION_ID"))
     private Direction linkDirection;
 
+    // TODO: remove if not needed
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "area_link", joinColumns = { @JoinColumn(name = "link_id") }, inverseJoinColumns = @JoinColumn(name = "area_id"))
     private List<Area> areas;
@@ -85,8 +85,6 @@ public class Link implements Serializable {
     private Long direction;
     @OneToMany(targetEntity = LatestJourneytimeMedian.class, mappedBy = "link", fetch = FetchType.LAZY)
     private List<LatestJourneytimeMedian> latestJourneyTimeMedians;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="link")
-    private FluencyAlertBlacklist fluencyAlertBlacklist;
 
     // TODO: remove if not needed
     @Column(nullable = false)
@@ -96,12 +94,6 @@ public class Link implements Serializable {
     @Column(nullable = false)
     private Boolean special;
 
-    /**
-     * Helper -method, returns the correct free flow speed based on whether it
-     * is summer or winter. Accesses RoadDistrict
-     * 
-     * @return
-     */
     @Transient
     public BigDecimal getFreeFlowSpeed() {
         if (roadDistrict.getSpeedLimitSeasonCode().equals(SpeedLimitSeason.SUMMER.getCode())) {
@@ -257,14 +249,6 @@ public class Link implements Serializable {
 
     public void setLatestJourneyTimeMedians(List<LatestJourneytimeMedian> latestJourneyTimeMedians) {
         this.latestJourneyTimeMedians = latestJourneyTimeMedians;
-    }
-
-    public FluencyAlertBlacklist getFluencyAlertBlacklist() {
-        return fluencyAlertBlacklist;
-    }
-
-    public void setFluencyAlertBlacklist(FluencyAlertBlacklist fluencyAlertBlacklist) {
-        this.fluencyAlertBlacklist = fluencyAlertBlacklist;
     }
 
     public Boolean getReplacement() {
