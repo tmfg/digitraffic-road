@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,34 +27,28 @@ public class Link2FeatureConverter extends AbstractMetadataToFeatureConverter {
 
     public LinkFeatureCollection convert(final List<Link> links, final ZonedDateTime lastUpdated) {
 
-        final LinkFeatureCollection linkFeatureCollection = new LinkFeatureCollection(lastUpdated);
+        final ArrayList<LinkFeature> linkFeatures = new ArrayList<>();
 
         for (final Link link : links) {
-            linkFeatureCollection.add(convert(link));
+            linkFeatures.add(convert(link));
         }
-        return linkFeatureCollection;
+
+        return new LinkFeatureCollection(lastUpdated, linkFeatures);
     }
 
     private LinkFeature convert(final Link link) {
 
-        LinkFeature linkFeature = new LinkFeature();
-        linkFeature.setId(link.getNaturalId());
         final List<Site> sites = link.getLinkSites().stream().sorted(Comparator.comparing(LinkSite::getOrderNumber))
                                                              .map(LinkSite::getSite).collect(Collectors.toList());
-        linkFeature.setGeometry(getGeometry(sites));
 
-        linkFeature.setProperties(new LinkProperties(link.getNaturalId(), sites, link.getName(), link.getNameSv(), link.getNameEn(), link.getLength(),
-                                                     link.getSummerFreeFlowSpeed(), link.getWinterFreeFlowSpeed(), link.getRoadDistrict(),
-                                                     link.getLinkDirection()));
-        return linkFeature;
+        return new LinkFeature(link.getNaturalId(), getGeometry(sites),
+                               new LinkProperties(link.getNaturalId(), sites, link.getName(), link.getNameSv(), link.getNameEn(), link.getLength(),
+                                                  link.getSummerFreeFlowSpeed(), link.getWinterFreeFlowSpeed(), link.getRoadDistrict(),
+                                                  link.getLinkDirection()));
     }
 
     private LineString getGeometry(final List<Site> linkSites) {
 
-        final LineString geometry = new LineString();
-        for (final Site site : linkSites) {
-            geometry.addCoordinate(site.getLongitudeWgs84(), site.getLatitudeWgs84());
-        }
-        return geometry;
+        return new LineString(linkSites.stream().map(s -> Arrays.asList(s.getLongitudeWgs84(), s.getLatitudeWgs84())).collect(Collectors.toList()));
     }
 }

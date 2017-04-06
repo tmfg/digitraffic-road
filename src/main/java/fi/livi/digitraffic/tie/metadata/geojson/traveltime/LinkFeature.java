@@ -12,45 +12,23 @@ public class LinkFeature {
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
     @JsonPropertyOrder(value = "1")
-    private final String type = "Feature";
+    public final String type = "Feature";
 
     @ApiModelProperty(value = "Link id", required = true, position = 2)
     @JsonPropertyOrder(value = "2")
-    private long id;
+    public final long id;
 
     @ApiModelProperty(value = "GeoJSON LineString Geometry Object. Points represent the link.", required = true, position = 3)
     @JsonPropertyOrder(value = "3")
-    private LineString geometry;
+    public final LineString geometry;
 
     @ApiModelProperty(value = "Link properties", required = true, position = 4)
     @JsonPropertyOrder(value = "4")
-    private LinkProperties properties;
+    public final LinkProperties properties;
 
-    public String getType() {
-        return type;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
+    public LinkFeature(long id, LineString geometry, LinkProperties properties) {
         this.id = id;
-    }
-
-    public LineString getGeometry() {
-        return geometry;
-    }
-
-    public void setGeometry(LineString geometry) {
         this.geometry = geometry;
-    }
-
-    public LinkProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(LinkProperties properties) {
         this.properties = properties;
     }
 }

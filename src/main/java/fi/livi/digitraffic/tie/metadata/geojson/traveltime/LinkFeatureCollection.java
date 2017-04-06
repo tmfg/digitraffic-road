@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson.traveltime;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -17,30 +16,14 @@ import io.swagger.annotations.ApiModelProperty;
 public class LinkFeatureCollection extends RootDataObjectDto implements Iterable<LinkFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
-    private final String type = "FeatureCollection";
+    public final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
-    private List<LinkFeature> features = new ArrayList<>();
+    public final List<LinkFeature> features;
 
-    public LinkFeatureCollection(final ZonedDateTime localTimestamp) {
+    public LinkFeatureCollection(final ZonedDateTime localTimestamp, final List<LinkFeature> linkFeatures) {
         super(localTimestamp);
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public List<LinkFeature> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(final List<LinkFeature> features) {
-        this.features = features;
-    }
-
-    public LinkFeatureCollection add(final LinkFeature feature) {
-        features.add(feature);
-        return this;
+        this.features = linkFeatures;
     }
 
     public void addAll(final Collection<LinkFeature> features) {

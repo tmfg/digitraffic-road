@@ -31,8 +31,8 @@ public class ForecastSectionServiceTest extends AbstractTest {
 
         assertEquals("00001_001_000_0", firstFeature.getProperties().getNaturalId());
         assertEquals("Vt 1: Helsinki - Kehä III", firstFeature.getProperties().getDescription());
-        assertTrue(firstFeature.getGeometry().getCoordinates().size() >= 8);
-        assertTrue(firstFeature.getGeometry().getCoordinates().stream().allMatch(c -> c.size() == 2));
+        assertTrue(firstFeature.getGeometry().coordinates.size() >= 8);
+        assertTrue(firstFeature.getGeometry().coordinates.stream().allMatch(c -> c.size() == 2));
         assertNotNull(forecastSections);
     }
 }
