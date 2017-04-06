@@ -72,6 +72,8 @@ public class TravelTimeLinkMetadataUpdater {
         if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
             updateLinkMetadata(linkMetadata);
             staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
+        } else {
+            log.info("Travel time PKS link metadata up-to-date");
         }
     }
 
