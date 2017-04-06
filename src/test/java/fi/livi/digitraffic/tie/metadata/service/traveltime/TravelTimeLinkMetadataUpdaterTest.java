@@ -66,7 +66,7 @@ public class TravelTimeLinkMetadataUpdaterTest extends AbstractTest {
 
         travelTimeLinkMetadataUpdater.updateLinkMetadata(travelTimeClient.getLinkMetadata());
 
-        final List<Link> links = linkRepository.findByObsoleteDateOrderByNaturalId(null);
+        final List<Link> links = linkRepository.findByObsoleteDateIsNullOrderByNaturalId();
 
         assertEquals(238, links.size());
         assertEquals("Otaniemi → Konala", links.get(0).getName());
