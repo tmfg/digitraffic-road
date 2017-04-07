@@ -8,12 +8,10 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -41,11 +39,13 @@ public class Link implements Serializable {
     private String nameSv;
     @Column(nullable = false)
     private String nameEn;
+
     @Column(nullable = false)
     private Long length;
+
     @Column(nullable = false)
     private Boolean obsolete;
-    @Column(name = "OBSOLETE_DATE")
+
     private Timestamp obsoleteDate;
 
     @Column(name = "START_ROAD_ADDRESS_DISTANCE", nullable = false)
@@ -74,25 +74,6 @@ public class Link implements Serializable {
     @ManyToOne
     @JoinTable(name = "LINK_DIRECTION", joinColumns = { @JoinColumn(name = "LINK_ID") }, inverseJoinColumns = @JoinColumn(name = "DIRECTION_ID"))
     private Direction linkDirection;
-
-    // TODO: remove if not needed
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "area_link", joinColumns = { @JoinColumn(name = "link_id") }, inverseJoinColumns = @JoinColumn(name = "area_id"))
-    private List<Area> areas;
-
-    // TODO: remove if not needed
-    @Column(nullable = false)
-    private Long direction;
-    @OneToMany(targetEntity = LatestJourneytimeMedian.class, mappedBy = "link", fetch = FetchType.LAZY)
-    private List<LatestJourneytimeMedian> latestJourneyTimeMedians;
-
-    // TODO: remove if not needed
-    @Column(nullable = false)
-    private Boolean replacement;
-    @Column(name = "MAP_TURNING_LAYER")
-    private Boolean onTurningLinksLayer;
-    @Column(nullable = false)
-    private Boolean special;
 
     @Transient
     public BigDecimal getFreeFlowSpeed() {
@@ -225,54 +206,6 @@ public class Link implements Serializable {
 
     public List<LinkSite> getLinkSites() {
         return linkSites;
-    }
-
-    public List<Area> getAreas() {
-        return areas;
-    }
-
-    public void setAreas(List<Area> areas) {
-        this.areas = areas;
-    }
-
-    public Long getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Long direction) {
-        this.direction = direction;
-    }
-
-    public List<LatestJourneytimeMedian> getLatestJourneyTimeMedians() {
-        return latestJourneyTimeMedians;
-    }
-
-    public void setLatestJourneyTimeMedians(List<LatestJourneytimeMedian> latestJourneyTimeMedians) {
-        this.latestJourneyTimeMedians = latestJourneyTimeMedians;
-    }
-
-    public Boolean getReplacement() {
-        return replacement;
-    }
-
-    public void setReplacement(Boolean replacement) {
-        this.replacement = replacement;
-    }
-
-    public Boolean getOnTurningLinksLayer() {
-        return onTurningLinksLayer;
-    }
-
-    public void setOnTurningLinksLayer(Boolean onTurningLinksLayer) {
-        this.onTurningLinksLayer = onTurningLinksLayer;
-    }
-
-    public Boolean getSpecial() {
-        return special;
-    }
-
-    public void setSpecial(Boolean special) {
-        this.special = special;
     }
 
     public Direction getLinkDirection() {
