@@ -29,15 +29,19 @@ public class LinkProperties {
     @ApiModelProperty("List of sites (i.e. camera locations) along the link in order. First site is the starting point of a link.")
     public final List<Site> sites;
 
-    @ApiModelProperty("Link length in meters (m)")
+    @ApiModelProperty("Length of the link in meters (m)")
     public final Long length;
 
+    @ApiModelProperty("Typical speed at which vehicles travel along the link when there is no congestion")
     public final BigDecimal summerFreeFlowSpeed;
 
+    @ApiModelProperty("Typical speed at which vehicles travel along the link when there is no congestion")
     public final BigDecimal winterFreeFlowSpeed;
 
+    @ApiModelProperty("Road district where the link is located")
     public final RoadDistrict roadDistrict;
 
+    @ApiModelProperty("Direction of the link")
     public final Direction linkDirection;
 
     public LinkProperties(final Long id, final List<Site> sites, final String name, final String nameSv, final String nameEn,
