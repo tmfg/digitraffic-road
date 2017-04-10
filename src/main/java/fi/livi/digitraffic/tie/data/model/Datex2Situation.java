@@ -21,7 +21,7 @@ import org.hibernate.annotations.Parameter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -53,7 +53,7 @@ public class Datex2Situation {
     @OneToMany(mappedBy = "situation", cascade = CascadeType.ALL)
     private List<Datex2SituationRecord> situationRecords;
 
-    @ApiModelProperty(value = "Situation version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Situation version " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime versionTime;
 
     public Long getId() {

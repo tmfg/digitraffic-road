@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.websocket;
 
 import org.hibernate.annotations.Immutable;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Immutable
 public class StatusMessage {
@@ -17,6 +17,6 @@ public class StatusMessage {
 
     @Override
     public String toString() {
-        return ToStringHelpper.toStringFull(this);
+        return ToStringHelper.toStringFull(this);
     }
 }

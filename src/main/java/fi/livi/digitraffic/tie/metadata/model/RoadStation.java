@@ -26,7 +26,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeIntegerConverter;
 
 @Entity
@@ -376,7 +376,7 @@ public class RoadStation {
 
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("id", id)
                 .appendField("naturalId", naturalId)
                 .appendField("lotjuId", this.getLotjuId())
