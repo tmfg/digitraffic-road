@@ -22,7 +22,7 @@ import org.hibernate.annotations.Parameter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -54,22 +54,22 @@ public class Datex2SituationRecord {
     @Enumerated(EnumType.STRING)
     private Datex2SituationRecordValidyStatus validyStatus;
 
-    @ApiModelProperty(value = "Record creation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Record creation " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     @NotNull
     private ZonedDateTime creationTime;
 
-    @ApiModelProperty(value = "Record version " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Record version " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     @NotNull
     private ZonedDateTime versionTime;
 
-    @ApiModelProperty(value = "Record observation " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Record observation " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime observationTime;
 
-    @ApiModelProperty(value = "Record overall start " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Record overall start " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     @NotNull
     private ZonedDateTime overallStartTime;
 
-    @ApiModelProperty(value = "Record overall end " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Record overall end " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime overallEndTime;
 
     @ApiModelProperty(value = "Record type", required = true)

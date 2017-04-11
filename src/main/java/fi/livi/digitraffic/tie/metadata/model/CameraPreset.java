@@ -18,7 +18,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @DynamicUpdate
@@ -338,7 +338,7 @@ public class CameraPreset {
 
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("presetId", presetId)
                 .appendField("id", id)
                 .appendField("cameraId", cameraId)

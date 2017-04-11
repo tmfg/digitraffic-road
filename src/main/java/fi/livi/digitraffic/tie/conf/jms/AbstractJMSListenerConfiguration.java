@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import progress.message.jclient.Connection;
 import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
@@ -264,7 +264,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
         @Override
         public String toString() {
-            return ToStringHelpper.toStringFull(this, "jmsPassword");
+            return ToStringHelper.toStringFull(this, "jmsPassword");
         }
 
         public String getJmsQueueKey() {

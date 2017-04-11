@@ -17,7 +17,7 @@ import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @DynamicUpdate
@@ -46,6 +46,12 @@ public class SensorValue {
 
     @JsonIgnore
     ZonedDateTime updated;
+
+    @Column(name = "TIME_WINDOW_START")
+    private ZonedDateTime timeWindowStart;
+
+    @Column(name = "TIME_WINDOW_END")
+    private ZonedDateTime timeWindowEnd;
 
     /**
      * Default constructor fo Hibernate
@@ -108,9 +114,17 @@ public class SensorValue {
         this.updated = updated;
     }
 
+    public ZonedDateTime getTimeWindowStart() {
+        return timeWindowStart;
+    }
+
+    public ZonedDateTime getTimeWindowEnd() {
+        return timeWindowEnd;
+    }
+
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("id", getId())
                 .appendField("value", this.getValue())
                 .appendField("measured", getSensorValueMeasured())

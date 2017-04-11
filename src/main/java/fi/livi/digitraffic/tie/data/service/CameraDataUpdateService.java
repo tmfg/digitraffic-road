@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
@@ -80,7 +80,7 @@ public class CameraDataUpdateService {
                     kuvaMappedByPresetLotjuId.put(kuva.getEsiasentoId(), kuva);
                 }
             } else {
-                log.warn("Kuva esiasentoId is null: {}", ToStringHelpper.toString(kuva));
+                log.warn("Kuva esiasentoId is null: {}", ToStringHelper.toString(kuva));
             }
         });
         return kuvaMappedByPresetLotjuId;

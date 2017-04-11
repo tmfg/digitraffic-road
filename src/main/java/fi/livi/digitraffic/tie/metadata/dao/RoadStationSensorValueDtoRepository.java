@@ -19,6 +19,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "     , s.id sensor_id\n" +
             "     , sv.id sensor_value_id\n" +
             "     , sv.value sensor_value\n" +
+            "     , sv.time_window_start\n" +
+            "     , sv.time_window_end\n" +
             "     , sv.measured as measured_time\n" +
             "     , s.name sensor_name_old\n" +
             "     , s.name_fi sensor_name_fi\n" +
@@ -63,6 +65,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "     , s.id sensor_id\n" +
             "     , sv.id sensor_value_id\n" +
             "     , sv.value sensor_value\n" +
+            "     , sv.time_window_start\n" +
+            "     , sv.time_window_end\n" +
             "     , sv.measured as measured_time\n" +
             "     , s.name sensor_name_old\n" +
             "     , s.name_fi sensor_name_fi\n" +
@@ -110,6 +114,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "     , s.id sensor_id\n" +
                    "     , sv.id sensor_value_id\n" +
                    "     , sv.value sensor_value\n" +
+                   "     , sv.time_window_start\n" +
+                   "     , sv.time_window_end\n" +
                    "     , sv.measured as measured_time\n" +
                    "     , s.name sensor_name_old\n" +
                    "     , s.name_fi sensor_name_fi\n" +
