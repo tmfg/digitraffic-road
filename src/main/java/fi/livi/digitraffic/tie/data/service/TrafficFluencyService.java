@@ -45,7 +45,7 @@ public class TrafficFluencyService {
             final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
 
             for (final LatestMedianDataDto lmd : latestMedians) {
-                lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+                lmd.setFluencyClass(lmd.getRatioToFreeFlowSpeed() == null ? null : getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
             }
 
             return new TrafficFluencyRootDataObjectDto(
@@ -65,7 +65,7 @@ public class TrafficFluencyService {
         final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(linkId);
 
         for (final LatestMedianDataDto lmd : latestMedians) {
-            lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+            lmd.setFluencyClass(lmd.getRatioToFreeFlowSpeed() == null ? null : getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
         }
 
         return new TrafficFluencyRootDataObjectDto(
