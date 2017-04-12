@@ -45,7 +45,7 @@ public class TrafficFluencyService {
             final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForNonObsoleteLinks();
 
             for (final LatestMedianDataDto lmd : latestMedians) {
-                lmd.setFluencyClass(lmd.getRatioToFreeFlowSpeed() == null ? null : getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+                lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
             }
 
             return new TrafficFluencyRootDataObjectDto(
@@ -65,7 +65,7 @@ public class TrafficFluencyService {
         final List<LatestMedianDataDto> latestMedians = trafficFluencyRepository.findLatestMediansForLink(linkId);
 
         for (final LatestMedianDataDto lmd : latestMedians) {
-            lmd.setFluencyClass(lmd.getRatioToFreeFlowSpeed() == null ? null : getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
+            lmd.setFluencyClass(getMatchingFluencyClass(lmd.getRatioToFreeFlowSpeed()));
         }
 
         return new TrafficFluencyRootDataObjectDto(
@@ -90,7 +90,7 @@ public class TrafficFluencyService {
     @Transactional(readOnly = true)
     public FluencyClass getMatchingFluencyClass(final BigDecimal ratioToFreeFlowSpeed) {
         if (ratioToFreeFlowSpeed == null) {
-            throw new NullPointerException();
+            return null;
         }
         // findAllFluencyClassesOrderByLowerLimitDesc() returns classes sorted largest first
         // this way, if ratio belongs to two classes (such as 0.1 matches A (0 - 0.1), B (0.1 - 0.25),

@@ -64,9 +64,9 @@ public class TravelTimePostProcessor {
 
             final BigDecimal avgSpeed = getAverageSpeed(linkData, median);
             final BigDecimal ratioToFreeFlowSpeed = getRatioToFreeFlowSpeed(linkData, avgSpeed);
-            final FluencyClass fluency = ratioToFreeFlowSpeed == null ? null : trafficFluencyService.getMatchingFluencyClass(ratioToFreeFlowSpeed);
+            final FluencyClass fluency = trafficFluencyService.getMatchingFluencyClass(ratioToFreeFlowSpeed);
             log.debug("fluency class = {}", fluency);
-            final Long fluencyClassNumber = fluency != null ? new Long(fluency.getCode()) : null;
+            final Long fluencyClassNumber = fluency == null ? null : new Long(fluency.getCode());
 
             ProcessedMedianDataDto p = new ProcessedMedianDataDto(linkData.linkId, linkData.naturalId, periodEnd, median.median,
                                                                   median.numberOfObservations, avgSpeed, ratioToFreeFlowSpeed, fluencyClassNumber);
