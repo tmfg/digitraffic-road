@@ -22,9 +22,6 @@ public interface FluencyClassRepository extends JpaRepository<FluencyClass, Long
            nativeQuery = true)
     List<FluencyClass> findAllOrderByLowerLimitDesc();
 
-    // Configures the amount of fluency classes below alert threshold
-    // example: value is 2 -> classes 0.00-0.15 and 0.15-0.25 are below
-    // => treshold = 0.25
     @Query(value = "SELECT upper_limit FROM FLUENCY_CLASS WHERE code = :code", nativeQuery = true)
-    BigDecimal getFluencyClassThreshold(@Param("code") final int code);
+    BigDecimal getFluencyClassUpperLimit(@Param("code") final int code);
 }

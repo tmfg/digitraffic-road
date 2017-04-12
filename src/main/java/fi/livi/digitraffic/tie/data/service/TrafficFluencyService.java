@@ -23,6 +23,9 @@ public class TrafficFluencyService {
     private final FluencyClassRepository fluencyClassRepository;
     private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
 
+    // Configures the amount of fluency classes below alert threshold
+    // example: value is 2 -> classes 0.00-0.15 and 0.15-0.25 are below
+    // => treshold = 0.25
     private final int alertThresholdCode = 2;
 
     @Autowired
@@ -110,6 +113,6 @@ public class TrafficFluencyService {
      */
     @Transactional(readOnly = true)
     public BigDecimal getAlertThreshold() {
-        return fluencyClassRepository.getFluencyClassThreshold(alertThresholdCode);
+        return fluencyClassRepository.getFluencyClassUpperLimit(alertThresholdCode);
     }
 }
