@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.data.dto;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -12,20 +11,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit"})
+@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
     @Id
     @JsonIgnore
-    private long sensorValueId;
+    private Long sensorValueId;
 
     @ApiModelProperty(value = "Measured sensor value", required = true, position = 3)
     private double sensorValue;
@@ -34,17 +32,11 @@ public class SensorValueDto {
     private String sensorUnit;
 
     @JsonProperty("roadStationId")
-    private long roadStationNaturalId;
-
-    @JsonIgnore
-    private long roadStationId;
+    private Long roadStationNaturalId;
 
     @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 2)
     @JsonProperty(value = "id")
-    private long sensorNaturalId;
-
-    @JsonIgnore
-    private long sensorId;
+    private Long sensorNaturalId;
 
     /** @deprecated */
     @Deprecated
@@ -67,16 +59,13 @@ public class SensorValueDto {
     private String sensorValueDescriptionEn;
 
     @JsonIgnore
-    private ZonedDateTime measuredTime;
-
-    @JsonIgnore
     private ZonedDateTime stationLatestMeasuredTime;
 
     /** Db's timestamp */
     @JsonIgnore
     private ZonedDateTime updatedTime;
 
-    public long getRoadStationNaturalId() {
+    public Long getRoadStationNaturalId() {
         return roadStationNaturalId;
     }
 
@@ -84,35 +73,19 @@ public class SensorValueDto {
         this.roadStationNaturalId = roadStationNaturalId;
     }
 
-    public long getRoadStationId() {
-        return roadStationId;
-    }
-
-    public void setRoadStationId(final long roadStationId) {
-        this.roadStationId = roadStationId;
-    }
-
-    public long getSensorNaturalId() {
+    public Long getSensorNaturalId() {
         return sensorNaturalId;
     }
 
-    public void setSensorNaturalId(final long sensorNaturalId) {
+    public void setSensorNaturalId(final Long sensorNaturalId) {
         this.sensorNaturalId = sensorNaturalId;
     }
 
-    public long getSensorId() {
-        return sensorId;
-    }
-
-    public void setSensorId(final long sensorId) {
-        this.sensorId = sensorId;
-    }
-
-    public long getSensorValueId() {
+    public Long getSensorValueId() {
         return sensorValueId;
     }
 
-    public void setSensorValueId(final long sensorValueId) {
+    public void setSensorValueId(final Long sensorValueId) {
         this.sensorValueId = sensorValueId;
     }
 
@@ -172,14 +145,6 @@ public class SensorValueDto {
         this.sensorShortNameFi = sensorShortNameFi;
     }
 
-    public ZonedDateTime getMeasuredTime() {
-        return measuredTime;
-    }
-
-    public void setMeasuredTime(final ZonedDateTime measuredTime) {
-        this.measuredTime = measuredTime;
-    }
-
     public ZonedDateTime getStationLatestMeasuredTime() {
         return stationLatestMeasuredTime;
     }
@@ -188,18 +153,18 @@ public class SensorValueDto {
         this.stationLatestMeasuredTime = stationLatestMeasured;
     }
 
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(final ZonedDateTime updated) {
+        this.updatedTime = updated;
+    }
+
     public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
         if (sensorValues != null && !sensorValues.isEmpty()) {
             return sensorValues.get(0).getStationLatestMeasuredTime();
         }
         return null;
-    }
-
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(ZonedDateTime updated) {
-        this.updatedTime = updated;
     }
 }
