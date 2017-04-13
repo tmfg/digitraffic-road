@@ -47,7 +47,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
      * @return
      * @throws NonPublicRoadStationException If road station is non public exception is thrown
      */
-    private TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
+    public TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
         final TmsStationFeature f = new TmsStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + tms);

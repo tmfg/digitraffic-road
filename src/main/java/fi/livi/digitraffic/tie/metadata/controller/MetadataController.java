@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
+import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -82,20 +84,43 @@ public class MetadataController {
 
     @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+                        @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeatureCollection listTmsStations(
-                @ApiParam(value = "If parameter is given result will only contain update status.")
+                @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                 boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated);
     }
 
+    @ApiOperation("The static information of obsolete TMS stations (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/obsolete", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+                        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeatureCollection listObsoleteTmsStations(
+        @ApiParam("If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+            boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        return tmsStationService.findAllPublicObsoleteTmsStationsAsFeatureCollection(lastUpdated);
+    }
+
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+                        @ApiResponse(code = 404, message = "Vessel metadata not found"),
+                        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeature listTmsStation(
+        @PathVariable("id") final Long id) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        return tmsStationService.findTmsStationById(id);
+    }
+
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
+                        @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationsSensorsMetadata listNonObsoleteTmsStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")

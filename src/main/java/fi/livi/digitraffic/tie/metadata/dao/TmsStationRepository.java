@@ -2,15 +2,22 @@ package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.util.List;
 
+import javax.persistence.QueryHint;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Repository
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationObsoleteIsTrueOrderByRoadStation_NaturalId();
 
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     List<TmsStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
     TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(long roadStationNaturalId);
@@ -22,5 +29,8 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
            "  AND tms.roadStation.isPublic = true")
     boolean tmsExistsWithRoadStationNaturalId(long roadStationNaturalId);
 
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     List<TmsStation> findByLotjuIdIsNull();
+
+    TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long id);
 }

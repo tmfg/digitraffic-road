@@ -16,19 +16,25 @@ public class TmsStationServiceTest extends AbstractTest {
     private TmsStationService tmsStationService;
 
     @Test
-    public void testFindAllNonObsoleteTmsStationsAsFeatureCollection() {
+    public void findAllPublishableTmsStationsAsFeatureCollection() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsMappedByByNaturalId() {
+    public void findAllPublishableTmsStationsAsFeatureCollectionObsolete() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublicObsoleteTmsStationsAsFeatureCollection(false);
+        Assert.assertTrue(stations.getFeatures().size() > 0);
+    }
+
+    @Test
+    public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
         Assert.assertTrue(stations.size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsByMappedByLotjuId() {
+    public void findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsByMappedByLotjuId();
         Assert.assertTrue(stations.size() > 0);
     }
