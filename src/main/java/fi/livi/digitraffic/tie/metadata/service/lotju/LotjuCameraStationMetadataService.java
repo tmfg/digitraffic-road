@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
@@ -116,14 +116,14 @@ public class LotjuCameraStationMetadataService extends AbstractLotjuMetadataServ
                         kameraPair.getRight().add(esiasento);
                     } else {
                         log.error("Invalid cameraPresetId for {} and {}",
-                                ToStringHelpper.toString(kamera),
-                                ToStringHelpper.toString(esiasento));
+                                ToStringHelper.toString(kamera),
+                                ToStringHelper.toString(esiasento));
                     }
                 });
                 return esiasennot.size();
             }
 
-            log.error("Cannot update " + ToStringHelpper.toString(kamera) + " is invalid: has null vanhaId");
+            log.error("Cannot update " + ToStringHelper.toString(kamera) + " is invalid: has null vanhaId");
             return 0;
         }
     }

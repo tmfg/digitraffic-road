@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Immutable;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -49,7 +49,7 @@ public class SensorValueDescription {
 
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("sensorId", sensorValueDescriptionPK.getSensorId())
                 .appendField("sensorValue", this.getSensorValue())
                 .appendField("descriptionEn", getDescriptionEn())

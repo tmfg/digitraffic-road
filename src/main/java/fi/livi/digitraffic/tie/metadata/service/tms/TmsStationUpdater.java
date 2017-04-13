@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
@@ -166,13 +166,13 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         if (roadNaturalId == null) {
             logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                       "Insert failed {}: LamAsema.getTieosoite().getTienumero() is null",
-                      ToStringHelpper.toString(la));
+                      ToStringHelper.toString(la));
             return false;
         }
         if (roadSectionNaturalId == null ) {
             logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                        "Insert failed {}: LamAsema.getTieosoite().getTieosa() is null",
-                       ToStringHelpper.toString(la));
+                       ToStringHelper.toString(la));
             return false;
         }
 
@@ -201,7 +201,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         } else {
             logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                        "Insert failed {}: Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {}",
-                       ToStringHelpper.toString(la), roadSectionNaturalId, roadNaturalId);
+                       ToStringHelper.toString(la), roadSectionNaturalId, roadNaturalId);
             return false;
         }
     }
@@ -210,7 +210,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         final boolean valid = la.getVanhaId() != null;
         logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                    "{} is invalid: has null vanhaId",
-                   ToStringHelpper.toString(la));
+                   ToStringHelper.toString(la));
         return valid;
     }
 
@@ -228,7 +228,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             final int hash = HashCodeBuilder.reflectionHashCode(tms);
             final String before = ReflectionToStringBuilder.toString(tms);
 
-            log.debug("Updating " + ToStringHelpper.toString(la));
+            log.debug("Updating " + ToStringHelper.toString(la));
 
             setRoadStationIfNotSet(tms, (long)la.getVanhaId(), orphansNaturalIdToRoadStationMap);
 
@@ -241,12 +241,12 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             if ( roadNaturalId == null ) {
                 logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                            "{} update failed: LamAsema.getTieosoite().getTienumero() is null",
-                            ToStringHelpper.toString(la));
+                            ToStringHelper.toString(la));
             }
             if ( roadSectionNaturalId == null ) {
                 logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                            "{} update failed: LamAsema.getTieosoite().getTieosa() is null",
-                           ToStringHelpper.toString(la));
+                           ToStringHelper.toString(la));
             }
 
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
@@ -254,7 +254,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             if (rd == null) {
                 logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                           "{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
-                           ToStringHelpper.toString(la),
+                           ToStringHelper.toString(la),
                            roadSectionNaturalId,
                            roadNaturalId);
                 rd = tms.getRoadDistrict();

@@ -15,7 +15,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @DynamicUpdate
@@ -86,7 +86,7 @@ public class WeatherStation {
 
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("id", getId())
                 .appendField("lotjuId", getLotjuId())
                 .appendField("roadStationId", getRoadStationId())

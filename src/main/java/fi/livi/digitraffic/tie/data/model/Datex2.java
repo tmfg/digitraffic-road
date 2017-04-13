@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -39,7 +39,7 @@ public class Datex2 {
     @GeneratedValue(generator = "SEQ_DATEX2")
     private Long id;
 
-    @ApiModelProperty(value = "Message import " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Message import " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     @Column(name = "IMPORT_DATE")
     @NotNull
     private ZonedDateTime importTime;
@@ -49,7 +49,7 @@ public class Datex2 {
     @NotNull
     private String message;
 
-    @ApiModelProperty(value = "Message publication " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Message publication " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     private ZonedDateTime publicationTime;
 
     @ApiModelProperty(value = "Date2 situations", required = true)
