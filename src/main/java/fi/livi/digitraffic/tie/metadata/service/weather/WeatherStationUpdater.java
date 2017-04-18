@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
@@ -244,7 +244,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         final boolean valid = tsa.getVanhaId() != null;
         logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(tsa.getKeruunTila()),
                    "{} is invalid: has null vanhaId",
-                   ToStringHelpper.toString(tsa));
+                   ToStringHelper.toString(tsa));
         return valid;
     }
 

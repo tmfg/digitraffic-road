@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.data.dto.MeasuredDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.FluencyClass;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -54,7 +54,7 @@ public class LatestMedianDataDto implements MeasuredDataObjectDto {
     @Transient
     private FluencyClass fluencyClass;
 
-    @ApiModelProperty(value = "Value measured " + ToStringHelpper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Value measured " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
     private ZonedDateTime measuredTime;
 
     public ZonedDateTime getMeasuredTime() {

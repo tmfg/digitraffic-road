@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit"})
+@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
@@ -89,52 +89,30 @@ public class SensorValueDto {
         this.sensorValueId = sensorValueId;
     }
 
-    public double getSensorValue() {
-        return sensorValue;
-    }
+    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowStart;
 
-    public void setSensorValue(final double sensorValue) {
-        this.sensorValue = sensorValue;
-    }
+    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowEnd;
 
     public String getSensorNameOld() {
         return sensorNameOld;
-    }
-
-    public void setSensorNameOld(final String sensorNameOld) {
-        this.sensorNameOld = sensorNameOld;
     }
 
     public String getSensorUnit() {
         return sensorUnit;
     }
 
-    public void setSensorUnit(final String sensorUnit) {
-        this.sensorUnit = sensorUnit;
-    }
-
     public String getSensorValueDescriptionFi() {
         return sensorValueDescriptionFi;
-    }
-
-    public void setSensorValueDescriptionFi(final String sensorValueDescriptionFi) {
-        this.sensorValueDescriptionFi = sensorValueDescriptionFi;
     }
 
     public String getSensorValueDescriptionEn() {
         return sensorValueDescriptionEn;
     }
 
-    public void setSensorValueDescriptionEn(final String sensorValueDescriptionEn) {
-        this.sensorValueDescriptionEn = sensorValueDescriptionEn;
-    }
-
     public String getSensorNameFi() {
         return sensorNameFi;
-    }
-
-    public void setSensorNameFi(final String sensorNameFi) {
-        this.sensorNameFi = sensorNameFi;
     }
 
     public String getSensorShortNameFi() {
@@ -149,8 +127,12 @@ public class SensorValueDto {
         return stationLatestMeasuredTime;
     }
 
-    public void setStationLatestMeasuredTime(final ZonedDateTime stationLatestMeasured) {
-        this.stationLatestMeasuredTime = stationLatestMeasured;
+    public ZonedDateTime getTimeWindowStart() {
+        return timeWindowStart;
+    }
+
+    public ZonedDateTime getTimeWindowEnd() {
+        return timeWindowEnd;
     }
 
     public ZonedDateTime getUpdatedTime() {

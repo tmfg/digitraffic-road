@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -215,7 +215,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         final boolean valid = kamera.getVanhaId() != null;
         logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(kamera.getKeruunTila()),
                    "{} is invalid: has null vanhaId",
-                   ToStringHelpper.toString(kamera));
+                   ToStringHelper.toString(kamera));
         return valid;
     }
 

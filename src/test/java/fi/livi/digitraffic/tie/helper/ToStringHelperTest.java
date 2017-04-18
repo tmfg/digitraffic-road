@@ -11,7 +11,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @RunWith(JUnit4.class)
-public class ToStringHelpperTest extends AbstractTest {
+public class ToStringHelperTest extends AbstractTest {
 
     @Test
     public void testKameraToString() {
@@ -19,7 +19,7 @@ public class ToStringHelpperTest extends AbstractTest {
         kamera.setId(741L);
         kamera.setVanhaId(1501);
         kamera.setNimi("OLD_vt6_Lapinjärvi");
-        Assert.assertEquals("KameraVO: {\"lotjuId\":741,\"vanhaId\":1501,\"nimi\":\"OLD_vt6_Lapinjärvi\"}", ToStringHelpper.toString(kamera));
+        Assert.assertEquals("KameraVO: {\"lotjuId\":741,\"vanhaId\":1501,\"nimi\":\"OLD_vt6_Lapinjärvi\"}", ToStringHelper.toString(kamera));
     }
 
 
@@ -29,7 +29,7 @@ public class ToStringHelpperTest extends AbstractTest {
         lam.setId(607L);
         lam.setVanhaId(23210);
         lam.setNimi("L_vt12_Vammala");
-        Assert.assertEquals("LamAsemaVO: {\"lotjuId\":607,\"vanhaId\":23210,\"nimi\":\"L_vt12_Vammala\"}", ToStringHelpper.toString(lam));
+        Assert.assertEquals("LamAsemaVO: {\"lotjuId\":607,\"vanhaId\":23210,\"nimi\":\"L_vt12_Vammala\"}", ToStringHelper.toString(lam));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ToStringHelpperTest extends AbstractTest {
         tsa.setId(607L);
         tsa.setVanhaId(23210);
         tsa.setNimi("L_vt12_Vammala");
-        Assert.assertEquals("TiesaaAsemaVO: {\"lotjuId\":607,\"vanhaId\":23210,\"nimi\":\"L_vt12_Vammala\"}", ToStringHelpper.toString(tsa));
+        Assert.assertEquals("TiesaaAsemaVO: {\"lotjuId\":607,\"vanhaId\":23210,\"nimi\":\"L_vt12_Vammala\"}", ToStringHelper.toString(tsa));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ToStringHelpperTest extends AbstractTest {
         tsa.setNimi("L_vt12_Vammala");
         Assert.assertEquals(
                 "TiesaaAsemaVO: {\"aliasemaId\":null,\"antureillaKaapelikaivo\":null,\"antureillaPutkitukset\":null,\"anturiliitantaHuoltotarranMerkinnat\":null,\"anturiliitantaSarjanumero\":null,\"anturiliitantaValmistusviikko\":null,\"anturiliitantaValmistusvuosi\":null,\"anturiliitantayksikko\":null,\"ip\":null,\"kaapelikaivonKunto\":null,\"kehikko\":null,\"kehikonHuoltotarranMerkinnat\":null,\"kehikonSarjanumero\":null,\"kehikonValmistusviikko\":null,\"kehikonValmistusvuosi\":null,\"lisakuvaus\":null,\"master\":null,\"merkittavyys\":null,\"portti\":null,\"putkienMateriaali\":null,\"tyyppi\":null,\"ymparistoKuvaus\":null,\"aikakatkaisu\":null,\"aikavyohyke\":null,\"aliverkonPeite\":null,\"alkamisPaiva\":null,\"asemanSijainti\":null,\"asemanTila\":null,\"huoltoPuutteet\":null,\"huoltolevikkeenEtaisyysAsemasta\":null,\"julkinen\":null,\"keruuVali\":null,\"keruunTila\":null,\"korjaushuolto\":null,\"kunta\":null,\"kuntaKoodi\":null,\"laitekaappiId\":null,\"lisatieto\":null,\"liviId\":null,\"maa\":null,\"maakunta\":null,\"maakuntaKoodi\":null,\"nimiEn\":null,\"nimiFi\":null,\"nimiSe\":null,\"ohjelmistoversio\":null,\"paattymisPaiva\":null,\"riittavanKokoinenHuoltolevike\":null,\"synkronoituTierekisteriin\":null,\"vanhaId\":23210,\"verkkolaiteId\":null,\"vuosihuolto\":null,\"yhdyskaytava\":null,\"yhteysTapa\":null,\"korkeus\":null,\"latitudi\":null,\"longitudi\":null,\"tieosoite\":null,\"kuvaus\":null,\"nimi\":\"L_vt12_Vammala\",\"takuunPaattymisPvm\":null,\"id\":607,\"luonut\":null,\"luotu\":null,\"muokattu\":null,\"muokkaaja\":null}",
-                ToStringHelpper.toStringFull(tsa));
+                ToStringHelper.toStringFull(tsa));
     }
 
 }

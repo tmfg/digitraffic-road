@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
@@ -116,7 +116,7 @@ public class ForecastSectionWeather {
     }
 
     public String getTime() {
-        return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+        return ToStringHelper.toString(time.toLocalDateTime(), ToStringHelper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
     public void setTime(Timestamp time) {
