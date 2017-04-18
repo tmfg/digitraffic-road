@@ -51,13 +51,6 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
            nativeQuery = true)
     List<RoadStation> findOrphanTmsRoadStations();
 
-    @Query(value =
-           "SELECT rs.naturalId\n" +
-           "FROM RoadStation rs\n" +
-           "WHERE rs.type = ?1\n" +
-           "  AND rs.publishable = true")
-    List<Long> findPublishableRoadStationsNaturalIds(final RoadStationType roadStationType);
-
 
     @Query("SELECT CASE WHEN count(rs) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM RoadStation rs\n" +

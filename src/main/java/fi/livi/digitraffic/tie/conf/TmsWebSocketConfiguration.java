@@ -42,7 +42,7 @@ public class TmsWebSocketConfiguration {
         singleCounter++;
         counter++;
 
-        List<SensorValueDto> data =
+        final List<SensorValueDto> data =
                 roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
                         lastUpdated,
                         RoadStationType.TMS_STATION);
