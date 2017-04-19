@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -40,6 +39,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "where rs.type = :stationTypeId\n" +
             "  and rs.publishable = 1\n" +
             "  and s.obsolete = 0\n" +
+            "  and sv.value is not null\n" +
             "  and sv.measured > (\n" +
             "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
             "    from sensor_value sensv\n" +
