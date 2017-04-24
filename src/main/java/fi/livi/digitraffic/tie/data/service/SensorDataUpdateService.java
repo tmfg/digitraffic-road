@@ -69,7 +69,7 @@ public class SensorDataUpdateService {
     }
 
     /**
-     * Updates weather data to db
+     * Updates tms sensors data to db
      * @param data
      * @return true if success
      */

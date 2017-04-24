@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.dto;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -83,6 +85,10 @@ public class SensorValueDto {
 
     public Long getSensorValueId() {
         return sensorValueId;
+    }
+
+    public double getSensorValue() {
+        return sensorValue;
     }
 
     public void setSensorValueId(final Long sensorValueId) {

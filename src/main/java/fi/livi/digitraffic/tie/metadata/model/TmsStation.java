@@ -75,7 +75,7 @@ public class TmsStation {
     private CalculatorDeviceType calculatorDeviceType;
 
     @ManyToOne
-    @JoinColumn(name="road_district_id", nullable = false)
+    @JoinColumn(name="road_district_id")
     @Fetch(FetchMode.JOIN)
     private RoadDistrict roadDistrict;
 
