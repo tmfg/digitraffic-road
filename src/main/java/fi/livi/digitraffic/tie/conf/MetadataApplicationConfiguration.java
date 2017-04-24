@@ -6,8 +6,6 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -109,7 +107,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         LocaleChangeInterceptor localeChangeInterceptor = applicationContext.getBean(LocaleChangeInterceptor.class);
-        Assert.notNull(localeChangeInterceptor);
+        Assert.notNull(localeChangeInterceptor, "LocaleChangeInterceptor cannot be null");
         registry.addInterceptor(localeChangeInterceptor);
     }
 
@@ -125,14 +123,13 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
     public RetryTemplate retryTemplate() {
-        final Logger retryLog = LoggerFactory.getLogger(RetryTemplate.class);
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
         retryPolicy.setMaxAttempts(5);
 
-        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
         backOffPolicy.setBackOffPeriod(200); // 0.5 seconds
 
-        RetryTemplate template = new RetryTemplate();
+        final RetryTemplate template = new RetryTemplate();
         template.setRetryPolicy(retryPolicy);
         template.setBackOffPolicy(backOffPolicy);
         return template;
