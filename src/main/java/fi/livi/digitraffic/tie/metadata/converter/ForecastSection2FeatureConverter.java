@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -30,7 +32,11 @@ public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureC
     }
 
     private ForecastSectionFeature convert(ForecastSection fs) {
-        return new ForecastSectionFeature(fs.getId(), new LineString(fs.getForecastSectionCoordinates()), createProperties(fs));
+        final List<List<Double>> coordinates =
+            fs.getForecastSectionCoordinates().stream().map(c -> Arrays.asList(c.getLongitude().doubleValue(), c.getLatitude().doubleValue()))
+                                                       .collect(Collectors.toList());
+
+        return new ForecastSectionFeature(fs.getId(), new LineString(coordinates), createProperties(fs));
     }
 
     private ForecastSectionProperties createProperties(ForecastSection fs) {

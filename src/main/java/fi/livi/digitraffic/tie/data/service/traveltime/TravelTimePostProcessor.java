@@ -38,6 +38,7 @@ public class TravelTimePostProcessor {
     private static final Long MAX_TRAVEL_TIME = 9999999L;
     private static final Integer MAX_NOBS = 9999;
     private static final BigDecimal MAX_RATIO_TO_FREE_FLOW_SPEED = new BigDecimal("9.999");
+    private static final double MIN_FREE_FLOW_SPEED = 1.0;
 
     @Autowired
     public TravelTimePostProcessor(final TrafficFluencyService trafficFluencyService) {
@@ -63,9 +64,9 @@ public class TravelTimePostProcessor {
 
             final BigDecimal avgSpeed = getAverageSpeed(linkData, median);
             final BigDecimal ratioToFreeFlowSpeed = getRatioToFreeFlowSpeed(linkData, avgSpeed);
-            final FluencyClass fluency = ratioToFreeFlowSpeed == null ? null : trafficFluencyService.getMatchingFluencyClass(ratioToFreeFlowSpeed);
+            final FluencyClass fluency = trafficFluencyService.getMatchingFluencyClass(ratioToFreeFlowSpeed);
             log.debug("fluency class = {}", fluency);
-            final Long fluencyClassNumber = fluency != null ? new Long(fluency.getCode()) : null;
+            final Long fluencyClassNumber = fluency == null ? null : new Long(fluency.getCode());
 
             ProcessedMedianDataDto p = new ProcessedMedianDataDto(linkData.linkId, linkData.naturalId, periodEnd, median.median,
                                                                   median.numberOfObservations, avgSpeed, ratioToFreeFlowSpeed, fluencyClassNumber);
@@ -115,30 +116,38 @@ public class TravelTimePostProcessor {
     }
 
     private static BigDecimal getAverageSpeed(LinkFastLaneDto linkData, TravelTimeMedianDto median) {
-        final BigDecimal avgSpeed = new BigDecimal(60 * 60 * linkData.length, MATH_CONTEXT)
-                                               .divide(new BigDecimal(1000 * median.median), MATH_CONTEXT);
+        if (median.median != 0) {
+            final BigDecimal avgSpeed = new BigDecimal(60 * 60 * linkData.length, MATH_CONTEXT).divide(new BigDecimal(1000 * median.median), MATH_CONTEXT);
 
-        log.debug("link " + linkData.linkId + ", length=" + linkData.length + "m, median travel time="+
-                  median.median + "s => avg speed=" + avgSpeed);
-        return avgSpeed;
+            log.debug("link " + linkData.linkId + ", length=" + linkData.length + "m, median travel time="+
+                      median.median + "s => avg speed=" + avgSpeed);
+            return avgSpeed;
+        }
+        return null;
     }
 
     private static BigDecimal getRatioToFreeFlowSpeed(LinkFastLaneDto linkData, BigDecimal avgSpeed) {
-        final BigDecimal ratioToFreeFlowSpeed = avgSpeed.divide(new BigDecimal(linkData.getCurrentFreeFlowSpeed()), MATH_CONTEXT);
+        if (linkData.getCurrentFreeFlowSpeed() != null && linkData.getCurrentFreeFlowSpeed() > MIN_FREE_FLOW_SPEED) {
 
-        log.debug("link avg speed=" + avgSpeed + ", free speed=" + linkData.getCurrentFreeFlowSpeed() +
-                  " => ratio to free flow speed = " + ratioToFreeFlowSpeed);
-        return ratioToFreeFlowSpeed;
+            final BigDecimal ratioToFreeFlowSpeed = avgSpeed.divide(new BigDecimal(linkData.getCurrentFreeFlowSpeed()), MATH_CONTEXT);
+
+            log.debug("link avg speed=" + avgSpeed + ", free speed=" + linkData.getCurrentFreeFlowSpeed() +
+                      " => ratio to free flow speed = " + ratioToFreeFlowSpeed);
+            return ratioToFreeFlowSpeed;
+        }
+        return null;
     }
 
     /**
      * Sanity check for processed median data
      */
     private static boolean isMedianDataValid(final ProcessedMedianDataDto p) {
-        if (!ObjectUtils.allNotNull(p.averageSpeed, p.medianTravelTime, p.nobs, p.ratioToFreeFlowSpeed)) {
+        if (!ObjectUtils.allNotNull(p.averageSpeed, p.medianTravelTime, p.nobs)) {
             return false;
-        } else if (p.averageSpeed.compareTo(MAX_SPEED) > 0 || p.medianTravelTime.compareTo(MAX_TRAVEL_TIME) > 0 ||
-                   p.nobs.compareTo(MAX_NOBS) > 0 || p.ratioToFreeFlowSpeed.compareTo(MAX_RATIO_TO_FREE_FLOW_SPEED) > 0) {
+        } else if (p.averageSpeed.compareTo(MAX_SPEED) > 0
+                   || p.medianTravelTime.compareTo(MAX_TRAVEL_TIME) > 0
+                   || p.nobs.compareTo(MAX_NOBS) > 0
+                   || (p.ratioToFreeFlowSpeed != null && p.ratioToFreeFlowSpeed.compareTo(MAX_RATIO_TO_FREE_FLOW_SPEED) > 0)) {
             return false;
         } else {
             return true;
