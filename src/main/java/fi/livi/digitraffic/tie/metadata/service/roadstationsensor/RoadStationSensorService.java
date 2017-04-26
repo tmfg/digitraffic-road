@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
+import static java.util.stream.Collectors.toList;
+
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +35,6 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class RoadStationSensorService {
-
     private static final Logger log = LoggerFactory.getLogger(RoadStationSensorService.class);
 
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
@@ -78,17 +77,6 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByNaturalId(RoadStationType roadStationType) {
-        final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
-
-        final HashMap<Long, RoadStationSensor> naturalIdToRSS = new HashMap<>();
-        for (final RoadStationSensor roadStationSensor : all) {
-            naturalIdToRSS.put(roadStationSensor.getNaturalId(), roadStationSensor);
-        }
-        return naturalIdToRSS;
-    }
-
-    @Transactional(readOnly = true)
     public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().filter(rss -> rss.getLotjuId() != null).collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
@@ -103,8 +91,8 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
-
-        MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType(roadStationType));
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType
+            (roadStationType));
 
         return new RoadStationsSensorsMetadata(
                 !onlyUpdateInfo ?
@@ -115,29 +103,12 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
-
-        final List<Long> stationsNaturalIds =
-                roadStationRepository.findPublishableRoadStationsNaturalIds(roadStationType);
-        final Set<Long> allowedRoadStationsNaturalIds =
-                stationsNaturalIds.stream().collect(Collectors.toSet());
-
-        final Map<Long, List<SensorValueDto>> rsNaturalIdToRsSensorValues = new HashMap<>();
-        final List<SensorValueDto> sensors =
-                roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValues(
+        final List<SensorValueDto> sensors = roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
                         roadStationType.getTypeNumber(),
                         sensorValueTimeLimitInMins.get(roadStationType));
-        for (final SensorValueDto sensor : sensors) {
 
-            if (allowedRoadStationsNaturalIds.contains(sensor.getRoadStationNaturalId())) {
-                List<SensorValueDto> values = rsNaturalIdToRsSensorValues.get(Long.valueOf(sensor.getRoadStationNaturalId()));
-                if (values == null) {
-                    values = new ArrayList<>();
-                    rsNaturalIdToRsSensorValues.put(sensor.getRoadStationNaturalId(), values);
-                }
-                values.add(sensor);
-            }
-        }
-        return rsNaturalIdToRsSensorValues;
+        return sensors.stream()
+            .collect(Collectors.groupingBy(SensorValueDto::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));
     }
 
     @Transactional(readOnly = true)
@@ -151,14 +122,13 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public List<SensorValueDto> findAllPublishableRoadStationSensorValues(final long roadStationNaturalId,
                                                                           final RoadStationType roadStationType) {
-
-        boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
+        final boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
 
         if ( !publicAndNotObsolete ) {
             return Collections.emptyList();
         }
 
-        return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValues(
+        return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
                 roadStationNaturalId,
                 roadStationType.getTypeNumber(),
                 sensorValueTimeLimitInMins.get(roadStationType));
@@ -195,7 +165,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
-        return roadStationSensorValueDtoRepository.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
+        return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType.getTypeNumber(),
                 DateHelper.toDate(updatedAfter));
     }

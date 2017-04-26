@@ -177,33 +177,30 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         }
 
         final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
-        if (roadDistrict != null) {
-            final TmsStation newTmsStation = new TmsStation();
-            newTmsStation.setSummerFreeFlowSpeed1(0);
-            newTmsStation.setSummerFreeFlowSpeed2(0);
-            newTmsStation.setWinterFreeFlowSpeed1(0);
-            newTmsStation.setWinterFreeFlowSpeed2(0);
-            final RoadStation rs = new RoadStation(RoadStationType.TMS_STATION);
-            newTmsStation.setRoadStation(rs);
+        logWarnIf(roadDistrict == null && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+            "Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {} for {}",
+            roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(la));
 
-            setRoadAddressIfNotSet(rs);
+        final TmsStation newTmsStation = new TmsStation();
+        newTmsStation.setSummerFreeFlowSpeed1(0);
+        newTmsStation.setSummerFreeFlowSpeed2(0);
+        newTmsStation.setWinterFreeFlowSpeed1(0);
+        newTmsStation.setWinterFreeFlowSpeed2(0);
+        final RoadStation rs = new RoadStation(RoadStationType.TMS_STATION);
+        newTmsStation.setRoadStation(rs);
 
-            updateTmsStationAttributes(la, roadDistrict, newTmsStation);
+        setRoadAddressIfNotSet(rs);
 
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress " + rs.getRoadAddress());
-            }
-            roadStationService.save(rs);
-            tmsStationService.save(newTmsStation);
-            log.info("Created new " + newTmsStation);
-            return true;
-        } else {
-            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                       "Insert failed {}: Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {}",
-                       ToStringHelper.toString(la), roadSectionNaturalId, roadNaturalId);
-            return false;
+        updateTmsStationAttributes(la, roadDistrict, newTmsStation);
+
+        if (rs.getRoadAddress().getId() == null) {
+            roadStationService.save(rs.getRoadAddress());
+            log.info("Created new RoadAddress " + rs.getRoadAddress());
         }
+        roadStationService.save(rs);
+        tmsStationService.save(newTmsStation);
+        log.info("Created new " + newTmsStation);
+        return true;
     }
 
     private boolean validate(final LamAsemaVO la) {
@@ -252,17 +249,15 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
-                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                logWarnIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                           "{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
                            ToStringHelper.toString(la),
                            roadSectionNaturalId,
                            roadNaturalId);
                 rd = tms.getRoadDistrict();
-            } else {
-                if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
-                    log.info("Update TMS station (naturalID: " + convertToTmsNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
-                             " road district naturalId " + tms.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
-                }
+            } else if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
+                log.info("Update TMS station (naturalID: " + convertToTmsNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
+                         " road district naturalId " + tms.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
             }
 
             if ( updateTmsStationAttributes(la, rd, tms) ||
