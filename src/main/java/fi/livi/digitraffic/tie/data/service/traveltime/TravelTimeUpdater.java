@@ -73,7 +73,9 @@ public class TravelTimeUpdater {
                                                                             .map(m -> m.linkNaturalId)
                                                                             .collect(Collectors.toList());
 
-        log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
+        if (!linkIdsForMissingLinks.isEmpty()) {
+            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
+        }
 
         List<TravelTimeMeasurementLinkDto> measurementsForValidLinks =
                                                     data.measurements.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
@@ -111,7 +113,9 @@ public class TravelTimeUpdater {
                                                                        .map(m -> m.linkNaturalId)
                                                                        .collect(Collectors.toList());
 
-        log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
+        if (!linkIdsForMissingLinks.isEmpty()) {
+            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
+        }
 
         final List<TravelTimeMedianDto> mediansForValidLinks =
                                                     data.medians.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
