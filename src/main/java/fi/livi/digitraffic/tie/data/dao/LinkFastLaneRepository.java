@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
+import fi.livi.digitraffic.tie.metadata.model.SpeedLimitSeason;
 
 @Repository
 public class LinkFastLaneRepository {
@@ -36,11 +37,10 @@ public class LinkFastLaneRepository {
                                                            rs.getDouble("winter_free_flow_speed"),
                                                            isSpeedLimitSeason(rs.getInt("speed_limit_season"))));
 
-        Map<Long, LinkFastLaneDto> map = links.stream().collect(Collectors.toMap(LinkFastLaneDto::getNaturalId, Function.identity()));
-        return map;
+        return links.stream().collect(Collectors.toMap(LinkFastLaneDto::getNaturalId, Function.identity()));
     }
 
     private static boolean isSpeedLimitSeason(final int season) {
-        return season != 1;
+        return season != SpeedLimitSeason.SUMMER.getCode();
     }
 }

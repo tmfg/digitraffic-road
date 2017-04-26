@@ -23,6 +23,11 @@ public class TrafficFluencyService {
     private final FluencyClassRepository fluencyClassRepository;
     private final LinkFreeFlowSpeedRepository linkFreeFlowSpeedRepository;
 
+    // Configures the amount of fluency classes below alert threshold
+    // example: value is 2 -> classes 0.00-0.15 and 0.15-0.25 are below
+    // => treshold = 0.25
+    private final int alertThresholdCode = 2;
+
     @Autowired
     TrafficFluencyService(final TrafficFluencyRepository trafficFluencyRepository,
                           final FluencyClassRepository fluencyClassRepository,
@@ -88,7 +93,7 @@ public class TrafficFluencyService {
     @Transactional(readOnly = true)
     public FluencyClass getMatchingFluencyClass(final BigDecimal ratioToFreeFlowSpeed) {
         if (ratioToFreeFlowSpeed == null) {
-            throw new NullPointerException();
+            return null;
         }
         // findAllFluencyClassesOrderByLowerLimitDesc() returns classes sorted largest first
         // this way, if ratio belongs to two classes (such as 0.1 matches A (0 - 0.1), B (0.1 - 0.25),
@@ -108,6 +113,6 @@ public class TrafficFluencyService {
      */
     @Transactional(readOnly = true)
     public BigDecimal getAlertThreshold() {
-        return fluencyClassRepository.getFluencyClassThreshold();
+        return fluencyClassRepository.getFluencyClassUpperLimit(alertThresholdCode);
     }
 }

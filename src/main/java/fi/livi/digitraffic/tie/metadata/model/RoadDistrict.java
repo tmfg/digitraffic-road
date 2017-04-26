@@ -44,6 +44,12 @@ public class RoadDistrict {
     @JsonIgnore
     private Integer speedLimitSeason;
 
+    @ApiModelProperty("Road district speed limit season")
+    @JsonProperty("speedLimitSeason")
+    public SpeedLimitSeason getSpeedLimitSeason() {
+        return speedLimitSeason.equals(SpeedLimitSeason.SUMMER.getCode()) ? SpeedLimitSeason.SUMMER : SpeedLimitSeason.WINTER;
+    }
+
     public int getNaturalId() {
         return naturalId;
     }
@@ -84,7 +90,8 @@ public class RoadDistrict {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public Integer getSpeedLimitSeason() {
+    @JsonIgnore
+    public Integer getSpeedLimitSeasonCode() {
         return speedLimitSeason;
     }
 

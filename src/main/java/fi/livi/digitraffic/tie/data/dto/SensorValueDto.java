@@ -19,13 +19,13 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder(value = { "id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd"})
+@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
     @Id
     @JsonIgnore
-    private long sensorValueId;
+    private Long sensorValueId;
 
     @ApiModelProperty(value = "Measured sensor value", required = true, position = 3)
     private double sensorValue;
@@ -34,17 +34,11 @@ public class SensorValueDto {
     private String sensorUnit;
 
     @JsonProperty("roadStationId")
-    private long roadStationNaturalId;
-
-    @JsonIgnore
-    private long roadStationId;
+    private Long roadStationNaturalId;
 
     @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 2)
     @JsonProperty(value = "id")
-    private long sensorNaturalId;
-
-    @JsonIgnore
-    private long sensorId;
+    private Long sensorNaturalId;
 
     /** @deprecated */
     @Deprecated
@@ -67,44 +61,45 @@ public class SensorValueDto {
     private String sensorValueDescriptionEn;
 
     @JsonIgnore
-    private ZonedDateTime measuredTime;
-
-    @JsonIgnore
     private ZonedDateTime stationLatestMeasuredTime;
 
     /** Db's timestamp */
     @JsonIgnore
     private ZonedDateTime updatedTime;
 
-    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
-    private ZonedDateTime timeWindowStart;
-
-    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
-    private ZonedDateTime timeWindowEnd;
-
-    public long getRoadStationNaturalId() {
+    public Long getRoadStationNaturalId() {
         return roadStationNaturalId;
     }
 
-    public long getRoadStationId() {
-        return roadStationId;
+    public void setRoadStationNaturalId(final long roadStationNaturalId) {
+        this.roadStationNaturalId = roadStationNaturalId;
     }
 
-    public long getSensorNaturalId() {
+    public Long getSensorNaturalId() {
         return sensorNaturalId;
     }
 
-    public long getSensorId() {
-        return sensorId;
+    public void setSensorNaturalId(final Long sensorNaturalId) {
+        this.sensorNaturalId = sensorNaturalId;
     }
 
-    public long getSensorValueId() {
+    public Long getSensorValueId() {
         return sensorValueId;
     }
 
     public double getSensorValue() {
         return sensorValue;
     }
+
+    public void setSensorValueId(final Long sensorValueId) {
+        this.sensorValueId = sensorValueId;
+    }
+
+    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowStart;
+
+    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowEnd;
 
     public String getSensorNameOld() {
         return sensorNameOld;
@@ -130,16 +125,12 @@ public class SensorValueDto {
         return sensorShortNameFi;
     }
 
-    public ZonedDateTime getMeasuredTime() {
-        return measuredTime;
+    public void setSensorShortNameFi(final String sensorShortNameFi) {
+        this.sensorShortNameFi = sensorShortNameFi;
     }
 
     public ZonedDateTime getStationLatestMeasuredTime() {
         return stationLatestMeasuredTime;
-    }
-
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
     }
 
     public ZonedDateTime getTimeWindowStart() {
@@ -148,6 +139,14 @@ public class SensorValueDto {
 
     public ZonedDateTime getTimeWindowEnd() {
         return timeWindowEnd;
+    }
+
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(final ZonedDateTime updated) {
+        this.updatedTime = updated;
     }
 
     public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {

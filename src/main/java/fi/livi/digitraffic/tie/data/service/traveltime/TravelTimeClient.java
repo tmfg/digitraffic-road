@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 
 @Service
 public class TravelTimeClient {
@@ -38,6 +39,7 @@ public class TravelTimeClient {
 
     private final String mediansUrl;
     private final String individualMeasurementUrl;
+    private final String metadataUrl;
     private final String username;
     private final String password;
 
@@ -46,10 +48,12 @@ public class TravelTimeClient {
     @Autowired
     public TravelTimeClient(@Value("${traveltime.PKS.medians.url}") final String mediansUrl,
                             @Value("${traveltime.PKS.individual.url}") final String individualMeasurementUrl,
+                            @Value("${traveltime.PKS.metadata.url}") final String metadataUrl,
                             @Value("${traveltime.PKS.username}") final String username,
                             @Value("${traveltime.PKS.password}") final String password) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         this.mediansUrl = mediansUrl;
         this.individualMeasurementUrl = individualMeasurementUrl;
+        this.metadataUrl = metadataUrl;
         this.username = username;
         this.password = password;
 
@@ -84,6 +88,14 @@ public class TravelTimeClient {
         log.info("Fetching travel time individual measurements from: {}", url);
 
         return (TravelTimeMeasurementsDto) getTravelTimeData(url, TravelTimeMeasurementsDto.class);
+    }
+
+    @Retryable
+    public LinkMetadataDto getLinkMetadata() {
+
+        log.info("Fetching travel time link metadata from: {}", metadataUrl);
+
+        return (LinkMetadataDto) getTravelTimeData(metadataUrl, LinkMetadataDto.class);
     }
 
     private Object getTravelTimeData(final String url, final Class clazz) {

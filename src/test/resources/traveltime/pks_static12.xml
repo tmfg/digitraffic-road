@@ -1,0 +1,5699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jtdata>
+  <SUP>FI_FINNRA</SUP>
+  <service>Helsinki_Traveltimes</service>
+  <version>
+    <major>1</major>
+    <minor>2</minor>
+  </version>
+  <timestamp>
+    <utc>2017-03-14T23:07:01Z</utc>
+    <localtime>2017-03-15T01:07:01+02:00</localtime>
+  </timestamp>
+  <LastUpdate>2016-04-13T03:20:19Z</LastUpdate>
+  <sitelist>
+    <site>
+      <number>9</number>
+      <name language="fi">Koskelantie</name>
+      <name language="sv">Forsbyvägen</name>
+      <name language="en">Koskelantie</name>
+      <RNO>4</RNO>
+      <TRO>4/102-5</TRO>
+      <CO1 X="3387886" Y="6680078"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>37</number>
+      <name language="sv">Hangelby</name>
+      <name language="fi">Hangelby</name>
+      <name language="en">Hangelby</name>
+      <RNO>7</RNO>
+      <TRO>7/5-0</TRO>
+      <CO1 X="3409399" Y="6688360"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>4</number>
+      <name language="en">Ring I</name>
+      <name language="sv">Ring I</name>
+      <name language="fi">Kehä I</name>
+      <RNO>1</RNO>
+      <TRO>1/4-705</TRO>
+      <CO1 X="3378378" Y="6679444"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>67</number>
+      <name language="en">TIO015901</name>
+      <name language="fi">TIO015901</name>
+      <name language="sv">TIO015901</name>
+      <RNO>7</RNO>
+      <TRO>7/7-945</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>38</number>
+      <name language="en">Kulloo</name>
+      <name language="sv">Kullo</name>
+      <name language="fi">Kulloo</name>
+      <RNO>7</RNO>
+      <TRO>7/7-0</TRO>
+      <CO1 X="3416279" Y="6692097"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>63</number>
+      <name language="fi">Tattarisuo</name>
+      <name language="sv">Tattarmossen</name>
+      <name language="en">Tattarisuo</name>
+      <RNO>4</RNO>
+      <TRO>4/103-0</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>8</number>
+      <name language="fi">Itäkeskus</name>
+      <name language="sv">Östra centrum</name>
+      <name language="en">Itäkeskus</name>
+      <RNO>101</RNO>
+      <TRO>101/8-4211</TRO>
+      <CO1 X="3394144" Y="6679401"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>43</number>
+      <name language="sv">Kvarnbacka Österut</name>
+      <name language="fi">Myllymäki itään</name>
+      <name language="en">Myllymäki eastbound</name>
+      <RNO>50</RNO>
+      <TRO>50/5-3034</TRO>
+      <CO1 X="3376366" Y="6686197"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>36</number>
+      <name language="fi">Östersundom</name>
+      <name language="sv">Östersundom</name>
+      <name language="en">Östersundom</name>
+      <RNO>7</RNO>
+      <TRO>7/3-0</TRO>
+      <CO1 X="3401055" Y="6685268"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>24</number>
+      <name language="fi">Länsimäentie</name>
+      <name language="sv">Västerkullavägen</name>
+      <name language="en">Länsimäentie</name>
+      <RNO>7</RNO>
+      <TRO>7/1-2679</TRO>
+      <CO1 X="3395629" Y="6684045"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>30</number>
+      <name language="fi">Lohja</name>
+      <name language="sv">Lojo</name>
+      <name language="en">Lohja</name>
+      <RNO>25</RNO>
+      <TRO>25/21-3303</TRO>
+      <CO1 X="3359279" Y="6687423"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>58</number>
+      <name language="en">TIO01M312</name>
+      <name language="sv">TIO01M312</name>
+      <name language="fi">TIO01M312</name>
+      <RNO>101</RNO>
+      <TRO>101/5-900</TRO>
+      <CO1 X="3382575" Y="6682235"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>34</number>
+      <name language="en">Kaivoksela</name>
+      <name language="sv">Gruvsta</name>
+      <name language="fi">Kaivoksela</name>
+      <RNO>3</RNO>
+      <TRO>3/101-8511</TRO>
+      <CO1 X="3382669" Y="6685041"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>13</number>
+      <name language="en">Pakkala</name>
+      <name language="sv">Backas</name>
+      <name language="fi">Pakkala</name>
+      <RNO>50</RNO>
+      <TRO>50/6-4884</TRO>
+      <CO1 X="3386386" Y="6688942"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>3</number>
+      <name language="sv">Bocksbacka</name>
+      <name language="fi">Pukinmäki</name>
+      <name language="en">Pukinmäki</name>
+      <RNO>101</RNO>
+      <TRO>101/7-2103</TRO>
+      <CO1 X="3388323" Y="6682840"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>69</number>
+      <name language="sv">TIO015401</name>
+      <name language="fi">TIO015401</name>
+      <name language="en">TIO015401</name>
+      <RNO>7</RNO>
+      <TRO>7/2-1300</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>29</number>
+      <name language="sv">Mårtensbyvägen</name>
+      <name language="fi">Martinkyläntie</name>
+      <name language="en">Martinkyläntie</name>
+      <RNO>3</RNO>
+      <TRO>3/102-3144</TRO>
+      <CO1 X="3381922" Y="6688211"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>68</number>
+      <name language="en">TIO015501</name>
+      <name language="fi">TIO015501</name>
+      <name language="sv">TIO015501</name>
+      <RNO>7</RNO>
+      <TRO>7/3-2267</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>41</number>
+      <name language="en">Järvenperä eastbound</name>
+      <name language="fi">Järvenperä itään</name>
+      <name language="sv">Träskända Österut</name>
+      <RNO>50</RNO>
+      <TRO>50/3-3199</TRO>
+      <CO1 X="3372160" Y="6682464"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>31</number>
+      <name language="en">Hista</name>
+      <name language="fi">Hista</name>
+      <name language="sv">Hista</name>
+      <RNO>1</RNO>
+      <TRO>1/7-2528</TRO>
+      <CO1 X="3359279" Y="6687423"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>35</number>
+      <name language="en">Klaukkala</name>
+      <name language="sv">Klövskog</name>
+      <name language="fi">Klaukkala</name>
+      <RNO>3</RNO>
+      <TRO>3/104-0</TRO>
+      <CO1 X="3379288" Y="6695718"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>22</number>
+      <name language="sv">Korso</name>
+      <name language="fi">Korso</name>
+      <name language="en">Korso</name>
+      <RNO>4</RNO>
+      <TRO>4/106-1827</TRO>
+      <CO1 X="3396110" Y="6695821"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>61</number>
+      <name language="en">TIO010302</name>
+      <name language="sv">TIO010302</name>
+      <name language="fi">TIO010302</name>
+      <RNO>3</RNO>
+      <TRO>3/103-4246</TRO>
+      <CO1 X="3379899" Y="6692527"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>32</number>
+      <name language="sv">Nupurböle</name>
+      <name language="fi">Nupuri</name>
+      <name language="en">Nupuri</name>
+      <RNO>1</RNO>
+      <TRO>1/6-4096</TRO>
+      <CO1 X="3359279" Y="6687423"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>51</number>
+      <name language="fi">Tuupakka länteen</name>
+      <name language="sv">Stubbacka västerut</name>
+      <name language="en">Tuupakka westbound</name>
+      <RNO>50</RNO>
+      <TRO>50/6-2369</TRO>
+      <CO1 X="3383916" Y="6689302"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>52</number>
+      <name language="en">Petikko westbound</name>
+      <name language="fi">Petikko länteen</name>
+      <name language="sv">Petikko västerut</name>
+      <RNO>50</RNO>
+      <TRO>50/5-812</TRO>
+      <CO1 X="3379363" Y="6687211"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>48</number>
+      <name language="en">Länsisalmi westbound</name>
+      <name language="sv">Västersundom västerut</name>
+      <name language="fi">Länsisalmi länteen</name>
+      <RNO>50</RNO>
+      <TRO>50/8-3660</TRO>
+      <CO1 X="3396823" Y="6683687"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>16</number>
+      <name language="en">Veikkola</name>
+      <name language="fi">Veikkola</name>
+      <name language="sv">Veikkola</name>
+      <RNO>1</RNO>
+      <TRO>1/8-0</TRO>
+      <CO1 X="3359285" Y="6687428"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>47</number>
+      <name language="en">Hakunila eastbound</name>
+      <name language="sv">Håkansböle Österut</name>
+      <name language="fi">Hakunila itään</name>
+      <RNO>50</RNO>
+      <TRO>50/8-1700</TRO>
+      <CO1 X="3395646" Y="6685217"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>66</number>
+      <name language="en">TIO016151</name>
+      <name language="fi">TIO016151</name>
+      <name language="sv">TIO016151</name>
+      <RNO>7</RNO>
+      <TRO>7/9-3438</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>1</number>
+      <name language="fi">Otaniemi</name>
+      <name language="sv">Otnäs</name>
+      <name language="en">Otaniemi</name>
+      <RNO>101</RNO>
+      <TRO>101/2-741</TRO>
+      <CO1 X="3379118" Y="6676384"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>17</number>
+      <name language="fi">Hevoskallio</name>
+      <name language="sv">Hevoskallio</name>
+      <name language="en">Hevoskallio</name>
+      <RNO>1</RNO>
+      <TRO>1/9-5046</TRO>
+      <CO1 X="3349854" Y="6690910"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>50</number>
+      <name language="en">Koivuhaka westbound</name>
+      <name language="sv">Björkhagen västerut</name>
+      <name language="fi">Koivuhaka länteen</name>
+      <RNO>50</RNO>
+      <TRO>50/7-1027</TRO>
+      <CO1 X="3389476" Y="6687934"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>6</number>
+      <name language="en">Perkkaa</name>
+      <name language="sv">Bergans</name>
+      <name language="fi">Perkkaa</name>
+      <RNO>101</RNO>
+      <TRO>101/3-342</TRO>
+      <CO1 X="3379104" Y="6679920"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>15</number>
+      <name language="fi">Ämmässuo</name>
+      <name language="sv">Ämmässuo</name>
+      <name language="en">Ämmässuo</name>
+      <RNO>1</RNO>
+      <TRO>1/7-0</TRO>
+      <CO1 X="3365480" Y="6683910"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>33</number>
+      <name language="en">Kylänevantie</name>
+      <name language="sv">Bymossavägen</name>
+      <name language="fi">Kylänevantie</name>
+      <RNO>3</RNO>
+      <TRO>3/101-2703</TRO>
+      <CO1 X="3383845" Y="6679668"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>56</number>
+      <name language="en">TIO01M310</name>
+      <name language="sv">TIO01M310</name>
+      <name language="fi">TIO01M310</name>
+      <RNO>101</RNO>
+      <TRO>101/2-3923</TRO>
+      <CO1 X="3379060" Y="6679199"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>42</number>
+      <name language="fi">Askisto itään</name>
+      <name language="sv">Askis Österut</name>
+      <name language="en">Askisto eastbound</name>
+      <RNO>50</RNO>
+      <TRO>50/4-4357</TRO>
+      <CO1 X="3377140" Y="6686721"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>62</number>
+      <name language="en">Ring III</name>
+      <name language="fi">Kehä III</name>
+      <name language="sv">Ring III</name>
+      <RNO>7</RNO>
+      <TRO>7/2-0</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>49</number>
+      <name language="en">Hakunila westbound</name>
+      <name language="sv">Håkansböle västerut</name>
+      <name language="fi">Hakunila länteen</name>
+      <RNO>50</RNO>
+      <TRO>50/8-1600</TRO>
+      <CO1 X="3395564" Y="6685274"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>54</number>
+      <name language="fi">TIO01M101</name>
+      <name language="sv">TIO01M101</name>
+      <name language="en">TIO01M101</name>
+      <RNO>101</RNO>
+      <TRO>101/3-400</TRO>
+      <CO1 X="3379103" Y="6679897"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>10</number>
+      <name language="sv">Ring III</name>
+      <name language="fi">Kehä III</name>
+      <name language="en">Ring III</name>
+      <RNO>4</RNO>
+      <TRO>4/103-4318</TRO>
+      <CO1 X="3394039" Y="6685737"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>20</number>
+      <name language="fi">Stensintie</name>
+      <name language="sv">Stensvägen</name>
+      <name language="en">Stensintie</name>
+      <RNO>1</RNO>
+      <TRO>1/5-855</TRO>
+      <CO1 X="3374917" Y="6679009"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>65</number>
+      <name language="en">Vt 4</name>
+      <name language="sv">Vt 4</name>
+      <name language="fi">Vt 4</name>
+      <RNO>101</RNO>
+      <TRO>101/8-0</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>18</number>
+      <name language="en">Lusilantie</name>
+      <name language="fi">Lusilantie</name>
+      <name language="sv">Lusilantie</name>
+      <RNO>2</RNO>
+      <TRO>2/1-3768</TRO>
+      <CO1 X="3353135" Y="6693223"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>46</number>
+      <name language="sv">Fastböle Österut</name>
+      <name language="fi">Kuninkaala itään</name>
+      <name language="en">Kuninkaala eastbound</name>
+      <RNO>50</RNO>
+      <TRO>50/7-4149</TRO>
+      <CO1 X="3392425" Y="6686982"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>12</number>
+      <name language="fi">Tuupakka</name>
+      <name language="sv">Stubbacka</name>
+      <name language="en">Tuupakka</name>
+      <RNO>50</RNO>
+      <TRO>50/6-1631</TRO>
+      <CO1 X="3383178" Y="6689285"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>59</number>
+      <name language="fi">TIO01M313</name>
+      <name language="sv">TIO01M313</name>
+      <name language="en">TIO01M313</name>
+      <RNO>120</RNO>
+      <TRO>120/3-700</TRO>
+      <CO1 X="3381256" Y="6682777"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>57</number>
+      <name language="sv">TIO01M311</name>
+      <name language="fi">TIO01M311</name>
+      <name language="en">TIO01M311</name>
+      <RNO>1</RNO>
+      <TRO>1/4-1800</TRO>
+      <CO1 X="3377297" Y="6679295"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>40</number>
+      <name language="sv">Borgå</name>
+      <name language="fi">Porvoo</name>
+      <name language="en">Porvoo</name>
+      <RNO>7</RNO>
+      <TRO>7/9-3024</TRO>
+      <CO1 X="3425560" Y="6701004"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>39</number>
+      <name language="fi">Drägsby</name>
+      <name language="sv">Drägsby</name>
+      <name language="en">Drägsby</name>
+      <RNO>7</RNO>
+      <TRO>7/8-464</TRO>
+      <CO1 X="3421164" Y="6696534"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>19</number>
+      <name language="en">Munkkiniemi</name>
+      <name language="sv">Munksnäs</name>
+      <name language="fi">Munkkiniemi</name>
+      <RNO>1</RNO>
+      <TRO>1/3-503</TRO>
+      <CO1 X="3382193" Y="6678721"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>55</number>
+      <name language="sv">TIO01M304</name>
+      <name language="fi">TIO01M304</name>
+      <name language="en">TIO01M304</name>
+      <RNO>101</RNO>
+      <TRO>101/4-2200</TRO>
+      <CO1 X="3380666" Y="6681803"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>44</number>
+      <name language="en">Vantaankoski eastbound</name>
+      <name language="sv">Vandaforsen Österut</name>
+      <name language="fi">Vantaankoski itään</name>
+      <RNO>50</RNO>
+      <TRO>50/6-644</TRO>
+      <CO1 X="3382226" Y="6689101"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>5</number>
+      <name language="sv">Ring III</name>
+      <name language="fi">Kehä III</name>
+      <name language="en">Ring III</name>
+      <RNO>1</RNO>
+      <TRO>1/5-5969</TRO>
+      <CO1 X="3370422" Y="6680584"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>14</number>
+      <name language="en">Tikkurila</name>
+      <name language="sv">Dickursby</name>
+      <name language="fi">Tikkurila</name>
+      <RNO>50</RNO>
+      <TRO>50/7-3817</TRO>
+      <CO1 X="3392104" Y="6687063"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>21</number>
+      <name language="fi">Tattarisuo</name>
+      <name language="sv">Tattarmossen</name>
+      <name language="en">Tattarisuo</name>
+      <RNO>4</RNO>
+      <TRO>4/103-990</TRO>
+      <CO1 X="3392091" Y="6682723"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>53</number>
+      <name language="en">Järvenperä westbound</name>
+      <name language="fi">Järvenperä länteen</name>
+      <name language="sv">Träskända västerut</name>
+      <RNO>50</RNO>
+      <TRO>50/3-3933</TRO>
+      <CO1 X="3372549" Y="6683085"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>60</number>
+      <name language="en">TIO010301</name>
+      <name language="fi">TIO010301</name>
+      <name language="sv">TIO010301</name>
+      <RNO>3</RNO>
+      <TRO>3/104-1773</TRO>
+      <CO1 X="3379452" Y="6697472"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>7</number>
+      <name language="en">Pakila</name>
+      <name language="sv">Baggböle</name>
+      <name language="fi">Pakila</name>
+      <RNO>101</RNO>
+      <TRO>101/6-1713</TRO>
+      <CO1 X="3385365" Y="6682867"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>11</number>
+      <name language="en">Petikko</name>
+      <name language="fi">Petikko</name>
+      <name language="sv">Petikko</name>
+      <RNO>50</RNO>
+      <TRO>50/5-669</TRO>
+      <CO1 X="3379248" Y="6687126"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>26</number>
+      <name language="en">Järvenperä</name>
+      <name language="fi">Järvenperä</name>
+      <name language="sv">Träskända</name>
+      <RNO>50</RNO>
+      <TRO>50/4-0</TRO>
+      <CO1 X="3373580" Y="6684467"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>27</number>
+      <name language="fi">Hakunila</name>
+      <name language="sv">Håkansböle</name>
+      <name language="en">Hakunila</name>
+      <RNO>50</RNO>
+      <TRO>50/8-573</TRO>
+      <CO1 X="3394855" Y="6686009"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>2</number>
+      <name language="en">Konala</name>
+      <name language="fi">Konala</name>
+      <name language="sv">Kånala</name>
+      <RNO>101</RNO>
+      <TRO>101/4-2430</TRO>
+      <CO1 X="3380893" Y="6681832"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>64</number>
+      <name language="en">Ring I</name>
+      <name language="fi">Kehä I</name>
+      <name language="sv">Ring I</name>
+      <RNO>4</RNO>
+      <TRO>4/103-0</TRO>
+      <CO1 X="NaN" Y="NaN"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>45</number>
+      <name language="sv">Skattmans Österut</name>
+      <name language="fi">Veromies itään</name>
+      <name language="en">Veromies eastbound</name>
+      <RNO>50</RNO>
+      <TRO>50/6-5284</TRO>
+      <CO1 X="3386786" Y="6688915"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>23</number>
+      <name language="en">Järvenpää</name>
+      <name language="sv">Träskända</name>
+      <name language="fi">Järvenpää</name>
+      <RNO>4</RNO>
+      <TRO>4/108-3583</TRO>
+      <CO1 X="3397752" Y="6709689"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+    <site>
+      <number>25</number>
+      <name language="fi">Muurala</name>
+      <name language="sv">Morby</name>
+      <name language="en">Muurala</name>
+      <RNO>50</RNO>
+      <TRO>50/2-4609</TRO>
+      <CO1 X="3369060" Y="6680614"/>
+      <WGS84 lat="+NaN" lon="+NaN"/>
+    </site>
+  </sitelist>
+  <linklist>
+    <link>
+      <linkno>0</linkno>
+      <startsite>1</startsite>
+      <endsite>2</endsite>
+      <name language="sv">Otnäs → Kånala</name>
+      <name language="fi">Otaniemi → Konala</name>
+      <name language="en">Otaniemi → Konala</name>
+      <distance>
+        <value>7.00409</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>55.2363925086974</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>1</linkno>
+      <startsite>2</startsite>
+      <endsite>1</endsite>
+      <name language="en">Konala → Otaniemi</name>
+      <name language="fi">Konala → Otaniemi</name>
+      <name language="sv">Kånala → Otnäs</name>
+      <distance>
+        <value>7.00409</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>58.3876432047622</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>4</linkno>
+      <startsite>2</startsite>
+      <endsite>3</endsite>
+      <name language="fi">Konala → Pukinmäki</name>
+      <name language="sv">Kånala → Bocksbacka</name>
+      <name language="en">Konala → Pukinmäki</name>
+      <distance>
+        <value>7.85822</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>5</linkno>
+      <startsite>3</startsite>
+      <endsite>2</endsite>
+      <name language="en">Pukinmäki → Konala</name>
+      <name language="sv">Bocksbacka → Kånala</name>
+      <name language="fi">Pukinmäki → Konala</name>
+      <distance>
+        <value>7.85822</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77.3923093510186</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>6</linkno>
+      <startsite>5</startsite>
+      <endsite>4</endsite>
+      <name language="en">Ring III → Ring I</name>
+      <name language="sv">Ring III → Ring I</name>
+      <name language="fi">Kehä III → Kehä I</name>
+      <distance>
+        <value>8.63628</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>20</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>7</linkno>
+      <startsite>4</startsite>
+      <endsite>5</endsite>
+      <name language="en">Ring I → Ring III</name>
+      <name language="sv">Ring I → Ring III</name>
+      <name language="fi">Kehä I → Kehä III</name>
+      <distance>
+        <value>8.63628</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>20</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>8</linkno>
+      <startsite>2</startsite>
+      <endsite>7</endsite>
+      <name language="fi">Konala → Pakila</name>
+      <name language="sv">Kånala → Baggböle</name>
+      <name language="en">Konala → Pakila</name>
+      <distance>
+        <value>4.75116</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+    </link>
+    <link>
+      <linkno>9</linkno>
+      <startsite>7</startsite>
+      <endsite>2</endsite>
+      <name language="en">Pakila → Konala</name>
+      <name language="sv">Baggböle → Kånala</name>
+      <name language="fi">Pakila → Konala</name>
+      <distance>
+        <value>4.75116</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+    </link>
+    <link>
+      <linkno>10</linkno>
+      <startsite>7</startsite>
+      <endsite>3</endsite>
+      <name language="fi">Pakila → Pukinmäki</name>
+      <name language="sv">Baggböle → Bocksbacka</name>
+      <name language="en">Pakila → Pukinmäki</name>
+      <distance>
+        <value>3.10706</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+    </link>
+    <link>
+      <linkno>11</linkno>
+      <startsite>3</startsite>
+      <endsite>7</endsite>
+      <name language="en">Pukinmäki → Pakila</name>
+      <name language="sv">Bocksbacka → Baggböle</name>
+      <name language="fi">Pukinmäki → Pakila</name>
+      <distance>
+        <value>3.10706</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>78</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+    </link>
+    <link>
+      <linkno>12</linkno>
+      <startsite>9</startsite>
+      <endsite>10</endsite>
+      <name language="en">Koskelantie → Ring III</name>
+      <name language="sv">Forsbyvägen → Ring III</name>
+      <name language="fi">Koskelantie → Kehä III</name>
+      <distance>
+        <value>8.70655</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>13</linkno>
+      <startsite>10</startsite>
+      <endsite>9</endsite>
+      <name language="fi">Kehä III → Koskelantie</name>
+      <name language="sv">Ring III → Forsbyvägen</name>
+      <name language="en">Ring III → Koskelantie</name>
+      <distance>
+        <value>9.05476</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>14</linkno>
+      <startsite>3</startsite>
+      <endsite>8</endsite>
+      <name language="fi">Pukinmäki → Itäkeskus</name>
+      <name language="sv">Bocksbacka → Östra centrum</name>
+      <name language="en">Pukinmäki → Itäkeskus</name>
+      <distance>
+        <value>7.64601</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+    </link>
+    <link>
+      <linkno>15</linkno>
+      <startsite>8</startsite>
+      <endsite>3</endsite>
+      <name language="en">Itäkeskus → Pukinmäki</name>
+      <name language="sv">Östra centrum → Bocksbacka</name>
+      <name language="fi">Itäkeskus → Pukinmäki</name>
+      <distance>
+        <value>7.64601</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+    </link>
+    <link>
+      <linkno>16</linkno>
+      <startsite>3</startsite>
+      <endsite>10</endsite>
+      <name language="fi">Pukinmäki → Kehä III</name>
+      <name language="sv">Bocksbacka → Ring III</name>
+      <name language="en">Pukinmäki → Ring III</name>
+      <distance>
+        <value>7.75269</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>81.0207287022047</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>17</linkno>
+      <startsite>10</startsite>
+      <endsite>3</endsite>
+      <name language="en">Ring III → Pukinmäki</name>
+      <name language="fi">Kehä III → Pukinmäki</name>
+      <name language="sv">Ring III → Bocksbacka</name>
+      <distance>
+        <value>8.1009</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>82.8713166219606</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>18</linkno>
+      <startsite>3</startsite>
+      <endsite>9</endsite>
+      <name language="en">Pukinmäki → Koskelantie</name>
+      <name language="sv">Bocksbacka → Forsbyvägen</name>
+      <name language="fi">Pukinmäki → Koskelantie</name>
+      <distance>
+        <value>7.82398</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>19</linkno>
+      <startsite>9</startsite>
+      <endsite>3</endsite>
+      <name language="sv">Forsbyvägen → Bocksbacka</name>
+      <name language="fi">Koskelantie → Pukinmäki</name>
+      <name language="en">Koskelantie → Pukinmäki</name>
+      <distance>
+        <value>8.2</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>20</linkno>
+      <startsite>8</startsite>
+      <endsite>10</endsite>
+      <name language="en">Itäkeskus → Ring III</name>
+      <name language="fi">Itäkeskus → Kehä III</name>
+      <name language="sv">Östra centrum → Ring III</name>
+      <distance>
+        <value>8.10192</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80.6388207266793</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>21</linkno>
+      <startsite>10</startsite>
+      <endsite>8</endsite>
+      <name language="fi">Kehä III → Itäkeskus</name>
+      <name language="sv">Ring III → Östra centrum</name>
+      <name language="en">Ring III → Itäkeskus</name>
+      <distance>
+        <value>8.8768</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80.4772642544668</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>22</linkno>
+      <startsite>8</startsite>
+      <endsite>9</endsite>
+      <name language="en">Itäkeskus → Koskelantie</name>
+      <name language="fi">Itäkeskus → Koskelantie</name>
+      <name language="sv">Östra centrum → Forsbyvägen</name>
+      <distance>
+        <value>8.59988</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>70</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>23</linkno>
+      <startsite>9</startsite>
+      <endsite>8</endsite>
+      <name language="en">Koskelantie → Itäkeskus</name>
+      <name language="fi">Koskelantie → Itäkeskus</name>
+      <name language="sv">Forsbyvägen → Östra centrum</name>
+      <distance>
+        <value>8.59988</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>24</linkno>
+      <startsite>1</startsite>
+      <endsite>6</endsite>
+      <name language="fi">Otaniemi → Perkkaa</name>
+      <name language="sv">Otnäs → Bergans</name>
+      <name language="en">Otaniemi → Perkkaa</name>
+      <distance>
+        <value>3.92623</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>52</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+    </link>
+    <link>
+      <linkno>25</linkno>
+      <startsite>6</startsite>
+      <endsite>1</endsite>
+      <name language="sv">Bergans → Otnäs</name>
+      <name language="fi">Perkkaa → Otaniemi</name>
+      <name language="en">Perkkaa → Otaniemi</name>
+      <distance>
+        <value>3.6749</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>57</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+    </link>
+    <link>
+      <linkno>26</linkno>
+      <startsite>6</startsite>
+      <endsite>2</endsite>
+      <name language="sv">Bergans → Kånala</name>
+      <name language="fi">Perkkaa → Konala</name>
+      <name language="en">Perkkaa → Konala</name>
+      <distance>
+        <value>3.07786</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+    </link>
+    <link>
+      <linkno>27</linkno>
+      <startsite>2</startsite>
+      <endsite>6</endsite>
+      <name language="en">Konala → Perkkaa</name>
+      <name language="fi">Konala → Perkkaa</name>
+      <name language="sv">Kånala → Bergans</name>
+      <distance>
+        <value>3.32919</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+    </link>
+    <link>
+      <linkno>28</linkno>
+      <startsite>4</startsite>
+      <endsite>1</endsite>
+      <name language="en">Ring I → Otaniemi</name>
+      <name language="fi">Kehä I → Otaniemi</name>
+      <name language="sv">Ring I → Otnäs</name>
+      <distance>
+        <value>4.18738</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>55</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>29</linkno>
+      <startsite>1</startsite>
+      <endsite>4</endsite>
+      <name language="sv">Otnäs → Ring I</name>
+      <name language="fi">Otaniemi → Kehä I</name>
+      <name language="en">Otaniemi → Ring I</name>
+      <distance>
+        <value>4.5</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>30</linkno>
+      <startsite>4</startsite>
+      <endsite>6</endsite>
+      <name language="en">Ring I → Perkkaa</name>
+      <name language="sv">Ring I → Bergans</name>
+      <name language="fi">Kehä I → Perkkaa</name>
+      <distance>
+        <value>1.5</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>55</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>31</linkno>
+      <startsite>6</startsite>
+      <endsite>4</endsite>
+      <name language="fi">Perkkaa → Kehä I</name>
+      <name language="sv">Bergans → Ring I</name>
+      <name language="en">Perkkaa → Ring I</name>
+      <distance>
+        <value>0.8</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>70</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>32</linkno>
+      <startsite>6</startsite>
+      <endsite>7</endsite>
+      <name language="en">Perkkaa → Pakila</name>
+      <name language="sv">Bergans → Baggböle</name>
+      <name language="fi">Perkkaa → Pakila</name>
+      <distance>
+        <value>7.82902</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>69.2827231683606</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>33</linkno>
+      <startsite>7</startsite>
+      <endsite>6</endsite>
+      <name language="sv">Baggböle → Bergans</name>
+      <name language="fi">Pakila → Perkkaa</name>
+      <name language="en">Pakila → Perkkaa</name>
+      <distance>
+        <value>8.08035</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.9509216394905</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>34</linkno>
+      <startsite>7</startsite>
+      <endsite>8</endsite>
+      <name language="en">Pakila → Itäkeskus</name>
+      <name language="fi">Pakila → Itäkeskus</name>
+      <name language="sv">Baggböle → Östra centrum</name>
+      <distance>
+        <value>10.75307</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>14</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>3</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>35</linkno>
+      <startsite>8</startsite>
+      <endsite>7</endsite>
+      <name language="en">Itäkeskus → Pakila</name>
+      <name language="fi">Itäkeskus → Pakila</name>
+      <name language="sv">Östra centrum → Baggböle</name>
+      <distance>
+        <value>10.75307</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77.286302469842</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>15</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>3</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>40</linkno>
+      <startsite>4</startsite>
+      <endsite>2</endsite>
+      <name language="sv">Ring I → Kånala</name>
+      <name language="fi">Kehä I → Konala</name>
+      <name language="en">Ring I → Konala</name>
+      <distance>
+        <value>4.57786</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>58.2644399559862</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>41</linkno>
+      <startsite>2</startsite>
+      <endsite>4</endsite>
+      <name language="en">Konala → Ring I</name>
+      <name language="fi">Konala → Kehä I</name>
+      <name language="sv">Kånala → Ring I</name>
+      <distance>
+        <value>4.12919</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>61.7079218753836</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>42</linkno>
+      <startsite>11</startsite>
+      <endsite>12</endsite>
+      <name language="fi">Petikko → Tuupakka</name>
+      <name language="sv">Petikko → Stubbacka</name>
+      <name language="en">Petikko → Tuupakka</name>
+      <distance>
+        <value>4.71608</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>70</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>43</linkno>
+      <startsite>12</startsite>
+      <endsite>11</endsite>
+      <name language="en">Tuupakka → Petikko</name>
+      <name language="sv">Stubbacka → Petikko</name>
+      <name language="fi">Tuupakka → Petikko</name>
+      <distance>
+        <value>4.71608</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>70</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>44</linkno>
+      <startsite>12</startsite>
+      <endsite>13</endsite>
+      <name language="en">Tuupakka → Pakkala</name>
+      <name language="sv">Stubbacka → Backas</name>
+      <name language="fi">Tuupakka → Pakkala</name>
+      <distance>
+        <value>3.25283</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>45</linkno>
+      <startsite>13</startsite>
+      <endsite>12</endsite>
+      <name language="en">Pakkala → Tuupakka</name>
+      <name language="fi">Pakkala → Tuupakka</name>
+      <name language="sv">Backas → Stubbacka</name>
+      <distance>
+        <value>3.25283</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>46</linkno>
+      <startsite>13</startsite>
+      <endsite>14</endsite>
+      <name language="fi">Pakkala → Tikkurila</name>
+      <name language="sv">Backas → Dickursby</name>
+      <name language="en">Pakkala → Tikkurila</name>
+      <distance>
+        <value>6.1698</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>47</linkno>
+      <startsite>14</startsite>
+      <endsite>13</endsite>
+      <name language="fi">Tikkurila → Pakkala</name>
+      <name language="sv">Dickursby → Backas</name>
+      <name language="en">Tikkurila → Pakkala</name>
+      <distance>
+        <value>6.1698</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>48</linkno>
+      <startsite>14</startsite>
+      <endsite>10</endsite>
+      <name language="fi">Tikkurila → Kehä III</name>
+      <name language="sv">Dickursby → Ring III</name>
+      <name language="en">Tikkurila → Ring III</name>
+      <distance>
+        <value>3.79</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>49</linkno>
+      <startsite>10</startsite>
+      <endsite>14</endsite>
+      <name language="fi">Kehä III → Tikkurila</name>
+      <name language="sv">Ring III → Dickursby</name>
+      <name language="en">Ring III → Tikkurila</name>
+      <distance>
+        <value>3.09865</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>50</linkno>
+      <startsite>11</startsite>
+      <endsite>13</endsite>
+      <name language="en">Petikko → Pakkala</name>
+      <name language="sv">Petikko → Backas</name>
+      <name language="fi">Petikko → Pakkala</name>
+      <distance>
+        <value>7.96891</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.8689662556367</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>51</linkno>
+      <startsite>13</startsite>
+      <endsite>11</endsite>
+      <name language="en">Pakkala → Petikko</name>
+      <name language="fi">Pakkala → Petikko</name>
+      <name language="sv">Backas → Petikko</name>
+      <distance>
+        <value>7.96891</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.8689662556367</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>52</linkno>
+      <startsite>12</startsite>
+      <endsite>14</endsite>
+      <name language="en">Tuupakka → Tikkurila</name>
+      <name language="fi">Tuupakka → Tikkurila</name>
+      <name language="sv">Stubbacka → Dickursby</name>
+      <distance>
+        <value>9.42263</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>53</linkno>
+      <startsite>14</startsite>
+      <endsite>12</endsite>
+      <name language="en">Tikkurila → Tuupakka</name>
+      <name language="fi">Tikkurila → Tuupakka</name>
+      <name language="sv">Dickursby → Stubbacka</name>
+      <distance>
+        <value>9.42263</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>65</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>54</linkno>
+      <startsite>13</startsite>
+      <endsite>10</endsite>
+      <name language="en">Pakkala → Ring III</name>
+      <name language="fi">Pakkala → Kehä III</name>
+      <name language="sv">Backas → Ring III</name>
+      <distance>
+        <value>9.9598</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>69.0977255280732</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>55</linkno>
+      <startsite>10</startsite>
+      <endsite>13</endsite>
+      <name language="en">Ring III → Pakkala</name>
+      <name language="sv">Ring III → Backas</name>
+      <name language="fi">Kehä III → Pakkala</name>
+      <distance>
+        <value>9.26845</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.5727922870932</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>58</linkno>
+      <startsite>5</startsite>
+      <endsite>15</endsite>
+      <name language="fi">Kehä III → Ämmässuo</name>
+      <name language="sv">Ring III → Ämmässuo</name>
+      <name language="en">Ring III → Ämmässuo</name>
+      <distance>
+        <value>6.20215</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>59</linkno>
+      <startsite>15</startsite>
+      <endsite>5</endsite>
+      <name language="fi">Ämmässuo → Kehä III</name>
+      <name language="sv">Ämmässuo → Ring III</name>
+      <name language="en">Ämmässuo → Ring III</name>
+      <distance>
+        <value>6.20215</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>60</linkno>
+      <startsite>15</startsite>
+      <endsite>16</endsite>
+      <name language="sv">Ämmässuo → Veikkola</name>
+      <name language="fi">Ämmässuo → Veikkola</name>
+      <name language="en">Ämmässuo → Veikkola</name>
+      <distance>
+        <value>7.2617</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>61</linkno>
+      <startsite>16</startsite>
+      <endsite>15</endsite>
+      <name language="sv">Veikkola → Ämmässuo</name>
+      <name language="fi">Veikkola → Ämmässuo</name>
+      <name language="en">Veikkola → Ämmässuo</name>
+      <distance>
+        <value>7.2617</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>62</linkno>
+      <startsite>16</startsite>
+      <endsite>17</endsite>
+      <name language="en">Veikkola → Hevoskallio</name>
+      <name language="sv">Veikkola → Hevoskallio</name>
+      <name language="fi">Veikkola → Hevoskallio</name>
+      <distance>
+        <value>10.62</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>63</linkno>
+      <startsite>17</startsite>
+      <endsite>16</endsite>
+      <name language="en">Hevoskallio → Veikkola</name>
+      <name language="fi">Hevoskallio → Veikkola</name>
+      <name language="sv">Hevoskallio → Veikkola</name>
+      <distance>
+        <value>10.62</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>64</linkno>
+      <startsite>16</startsite>
+      <endsite>18</endsite>
+      <name language="sv">Veikkola → Lusilantie</name>
+      <name language="fi">Veikkola → Lusilantie</name>
+      <name language="en">Veikkola → Lusilantie</name>
+      <distance>
+        <value>9.34172</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>103</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>24</dirindex>
+    </link>
+    <link>
+      <linkno>65</linkno>
+      <startsite>18</startsite>
+      <endsite>16</endsite>
+      <name language="sv">Lusilantie → Veikkola</name>
+      <name language="fi">Lusilantie → Veikkola</name>
+      <name language="en">Lusilantie → Veikkola</name>
+      <distance>
+        <value>10</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>103</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>66</linkno>
+      <startsite>17</startsite>
+      <endsite>18</endsite>
+      <name language="en">Hevoskallio → Lusilantie</name>
+      <name language="sv">Hevoskallio → Lusilantie</name>
+      <name language="fi">Hevoskallio → Lusilantie</name>
+      <distance>
+        <value>8.81437</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>103</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>67</linkno>
+      <startsite>18</startsite>
+      <endsite>17</endsite>
+      <name language="fi">Lusilantie → Hevoskallio</name>
+      <name language="sv">Lusilantie → Hevoskallio</name>
+      <name language="en">Lusilantie → Hevoskallio</name>
+      <distance>
+        <value>8.7</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>103</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>68</linkno>
+      <startsite>5</startsite>
+      <endsite>16</endsite>
+      <name language="en">Ring III → Veikkola</name>
+      <name language="fi">Kehä III → Veikkola</name>
+      <name language="sv">Ring III → Veikkola</name>
+      <distance>
+        <value>13.46385</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>15</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>69</linkno>
+      <startsite>16</startsite>
+      <endsite>5</endsite>
+      <name language="fi">Veikkola → Kehä III</name>
+      <name language="sv">Veikkola → Ring III</name>
+      <name language="en">Veikkola → Ring III</name>
+      <distance>
+        <value>13.46385</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>15</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>70</linkno>
+      <startsite>15</startsite>
+      <endsite>17</endsite>
+      <name language="en">Ämmässuo → Hevoskallio</name>
+      <name language="sv">Ämmässuo → Hevoskallio</name>
+      <name language="fi">Ämmässuo → Hevoskallio</name>
+      <distance>
+        <value>17.8817</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>16</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>71</linkno>
+      <startsite>17</startsite>
+      <endsite>15</endsite>
+      <name language="sv">Hevoskallio → Ämmässuo</name>
+      <name language="fi">Hevoskallio → Ämmässuo</name>
+      <name language="en">Hevoskallio → Ämmässuo</name>
+      <distance>
+        <value>17.8817</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>114</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>16</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>72</linkno>
+      <startsite>15</startsite>
+      <endsite>18</endsite>
+      <name language="en">Ämmässuo → Lusilantie</name>
+      <name language="sv">Ämmässuo → Lusilantie</name>
+      <name language="fi">Ämmässuo → Lusilantie</name>
+      <distance>
+        <value>16.60342</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>107.538284164589</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>16</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>73</linkno>
+      <startsite>18</startsite>
+      <endsite>15</endsite>
+      <name language="en">Lusilantie → Ämmässuo</name>
+      <name language="sv">Lusilantie → Ämmässuo</name>
+      <name language="fi">Lusilantie → Ämmässuo</name>
+      <distance>
+        <value>17.2617</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>107.35789288633</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>16</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>76</linkno>
+      <startsite>19</startsite>
+      <endsite>4</endsite>
+      <name language="fi">Munkkiniemi → Kehä I</name>
+      <name language="sv">Munksnäs → Ring I</name>
+      <name language="en">Munkkiniemi → Ring I</name>
+      <distance>
+        <value>3.98288</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>77</linkno>
+      <startsite>4</startsite>
+      <endsite>19</endsite>
+      <name language="en">Ring I → Munkkiniemi</name>
+      <name language="fi">Kehä I → Munkkiniemi</name>
+      <name language="sv">Ring I → Munksnäs</name>
+      <distance>
+        <value>3.98288</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>78</linkno>
+      <startsite>19</startsite>
+      <endsite>6</endsite>
+      <name language="sv">Munksnäs → Bergans</name>
+      <name language="fi">Munkkiniemi → Perkkaa</name>
+      <name language="en">Munkkiniemi → Perkkaa</name>
+      <distance>
+        <value>3.4</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>93</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>79</linkno>
+      <startsite>6</startsite>
+      <endsite>19</endsite>
+      <name language="fi">Perkkaa → Munkkiniemi</name>
+      <name language="sv">Bergans → Munksnäs</name>
+      <name language="en">Perkkaa → Munkkiniemi</name>
+      <distance>
+        <value>3.6</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>80</linkno>
+      <startsite>4</startsite>
+      <endsite>20</endsite>
+      <name language="sv">Ring I → Stensvägen</name>
+      <name language="fi">Kehä I → Stensintie</name>
+      <name language="en">Ring I → Stensintie</name>
+      <distance>
+        <value>3.52255</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>81</linkno>
+      <startsite>20</startsite>
+      <endsite>4</endsite>
+      <name language="en">Stensintie → Ring I</name>
+      <name language="fi">Stensintie → Kehä I</name>
+      <name language="sv">Stensvägen → Ring I</name>
+      <distance>
+        <value>3.52255</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>82</linkno>
+      <startsite>20</startsite>
+      <endsite>5</endsite>
+      <name language="en">Stensintie → Ring III</name>
+      <name language="sv">Stensvägen → Ring III</name>
+      <name language="fi">Stensintie → Kehä III</name>
+      <distance>
+        <value>5.11373</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+    </link>
+    <link>
+      <linkno>83</linkno>
+      <startsite>5</startsite>
+      <endsite>20</endsite>
+      <name language="fi">Kehä III → Stensintie</name>
+      <name language="sv">Ring III → Stensvägen</name>
+      <name language="en">Ring III → Stensintie</name>
+      <distance>
+        <value>5.11373</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>84</linkno>
+      <startsite>9</startsite>
+      <endsite>21</endsite>
+      <name language="en">Koskelantie → Tattarisuo</name>
+      <name language="sv">Forsbyvägen → Tattarmossen</name>
+      <name language="fi">Koskelantie → Tattarisuo</name>
+      <distance>
+        <value>5.60463</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+    </link>
+    <link>
+      <linkno>85</linkno>
+      <startsite>21</startsite>
+      <endsite>9</endsite>
+      <name language="en">Tattarisuo → Koskelantie</name>
+      <name language="sv">Tattarmossen → Forsbyvägen</name>
+      <name language="fi">Tattarisuo → Koskelantie</name>
+      <distance>
+        <value>5.15476</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>86</linkno>
+      <startsite>21</startsite>
+      <endsite>10</endsite>
+      <name language="fi">Tattarisuo → Kehä III</name>
+      <name language="sv">Tattarmossen → Ring III</name>
+      <name language="en">Tattarisuo → Ring III</name>
+      <distance>
+        <value>3.10192</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+    </link>
+    <link>
+      <linkno>87</linkno>
+      <startsite>10</startsite>
+      <endsite>21</endsite>
+      <name language="fi">Kehä III → Tattarisuo</name>
+      <name language="sv">Ring III → Tattarmossen</name>
+      <name language="en">Ring III → Tattarisuo</name>
+      <distance>
+        <value>3.9</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>97</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>88</linkno>
+      <startsite>10</startsite>
+      <endsite>22</endsite>
+      <name language="en">Ring III → Korso</name>
+      <name language="fi">Kehä III → Korso</name>
+      <name language="sv">Ring III → Korso</name>
+      <distance>
+        <value>10.5605</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+    </link>
+    <link>
+      <linkno>89</linkno>
+      <startsite>22</startsite>
+      <endsite>10</endsite>
+      <name language="sv">Korso → Ring III</name>
+      <name language="fi">Korso → Kehä III</name>
+      <name language="en">Korso → Ring III</name>
+      <distance>
+        <value>10.4</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>90</linkno>
+      <startsite>22</startsite>
+      <endsite>23</endsite>
+      <name language="sv">Korso → Träskända</name>
+      <name language="fi">Korso → Järvenpää</name>
+      <name language="en">Korso → Järvenpää</name>
+      <distance>
+        <value>14.1798</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+    </link>
+    <link>
+      <linkno>91</linkno>
+      <startsite>23</startsite>
+      <endsite>22</endsite>
+      <name language="en">Järvenpää → Korso</name>
+      <name language="sv">Träskända → Korso</name>
+      <name language="fi">Järvenpää → Korso</name>
+      <distance>
+        <value>14.1798</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>92</linkno>
+      <startsite>10</startsite>
+      <endsite>27</endsite>
+      <name language="fi">Kehä III → Hakunila</name>
+      <name language="sv">Ring III → Håkansböle</name>
+      <name language="en">Ring III → Hakunila</name>
+      <distance>
+        <value>1.22374</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>85</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>93</linkno>
+      <startsite>27</startsite>
+      <endsite>10</endsite>
+      <name language="sv">Håkansböle → Ring III</name>
+      <name language="fi">Hakunila → Kehä III</name>
+      <name language="en">Hakunila → Ring III</name>
+      <distance>
+        <value>1.3</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>85</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>94</linkno>
+      <startsite>21</startsite>
+      <endsite>24</endsite>
+      <name language="fi">Tattarisuo → Länsimäentie</name>
+      <name language="sv">Tattarmossen → Västerkullavägen</name>
+      <name language="en">Tattarisuo → Länsimäentie</name>
+      <distance>
+        <value>3.52419</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>87</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>95</linkno>
+      <startsite>24</startsite>
+      <endsite>21</endsite>
+      <name language="fi">Länsimäentie → Tattarisuo</name>
+      <name language="sv">Västerkullavägen → Tattarmossen</name>
+      <name language="en">Länsimäentie → Tattarisuo</name>
+      <distance>
+        <value>3.97406</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>62</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>96</linkno>
+      <startsite>25</startsite>
+      <endsite>26</endsite>
+      <name language="en">Muurala → Järvenperä</name>
+      <name language="sv">Morby → Träskända</name>
+      <name language="fi">Muurala → Järvenperä</name>
+      <distance>
+        <value>6.23909</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>97</linkno>
+      <startsite>26</startsite>
+      <endsite>25</endsite>
+      <name language="sv">Träskända → Morby</name>
+      <name language="fi">Järvenperä → Muurala</name>
+      <name language="en">Järvenperä → Muurala</name>
+      <distance>
+        <value>6.23909</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>98</linkno>
+      <startsite>26</startsite>
+      <endsite>11</endsite>
+      <name language="en">Järvenperä → Petikko</name>
+      <name language="fi">Järvenperä → Petikko</name>
+      <name language="sv">Träskända → Petikko</name>
+      <distance>
+        <value>6.6144</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>99</linkno>
+      <startsite>11</startsite>
+      <endsite>26</endsite>
+      <name language="en">Petikko → Järvenperä</name>
+      <name language="fi">Petikko → Järvenperä</name>
+      <name language="sv">Petikko → Träskända</name>
+      <distance>
+        <value>6.6144</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>100</linkno>
+      <startsite>14</startsite>
+      <endsite>27</endsite>
+      <name language="fi">Tikkurila → Hakunila</name>
+      <name language="sv">Dickursby → Håkansböle</name>
+      <name language="en">Tikkurila → Hakunila</name>
+      <distance>
+        <value>3.0199</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+    </link>
+    <link>
+      <linkno>101</linkno>
+      <startsite>27</startsite>
+      <endsite>14</endsite>
+      <name language="fi">Hakunila → Tikkurila</name>
+      <name language="sv">Håkansböle → Dickursby</name>
+      <name language="en">Hakunila → Tikkurila</name>
+      <distance>
+        <value>3.0199</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+    </link>
+    <link>
+      <linkno>104</linkno>
+      <startsite>25</startsite>
+      <endsite>5</endsite>
+      <name language="sv">Morby → Ring III</name>
+      <name language="fi">Muurala → Kehä III</name>
+      <name language="en">Muurala → Ring III</name>
+      <distance>
+        <value>1.4</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>105</linkno>
+      <startsite>5</startsite>
+      <endsite>25</endsite>
+      <name language="fi">Kehä III → Muurala</name>
+      <name language="sv">Ring III → Morby</name>
+      <name language="en">Ring III → Muurala</name>
+      <distance>
+        <value>1.63235</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>106</linkno>
+      <startsite>25</startsite>
+      <endsite>15</endsite>
+      <name language="sv">Morby → Ämmässuo</name>
+      <name language="fi">Muurala → Ämmässuo</name>
+      <name language="en">Muurala → Ämmässuo</name>
+      <distance>
+        <value>6.5</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>87</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>107</linkno>
+      <startsite>15</startsite>
+      <endsite>25</endsite>
+      <name language="sv">Ämmässuo → Morby</name>
+      <name language="fi">Ämmässuo → Muurala</name>
+      <name language="en">Ämmässuo → Muurala</name>
+      <distance>
+        <value>6.18313</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>93</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>108</linkno>
+      <startsite>15</startsite>
+      <endsite>26</endsite>
+      <name language="en">Ämmässuo → Järvenperä</name>
+      <name language="fi">Ämmässuo → Järvenperä</name>
+      <name language="sv">Ämmässuo → Träskända</name>
+      <distance>
+        <value>10.8089</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>93</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>109</linkno>
+      <startsite>26</startsite>
+      <endsite>15</endsite>
+      <name language="fi">Järvenperä → Ämmässuo</name>
+      <name language="sv">Träskända → Ämmässuo</name>
+      <name language="en">Järvenperä → Ämmässuo</name>
+      <distance>
+        <value>10.8089</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>93</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>110</linkno>
+      <startsite>5</startsite>
+      <endsite>26</endsite>
+      <name language="fi">Kehä III → Järvenperä</name>
+      <name language="sv">Ring III → Träskända</name>
+      <name language="en">Ring III → Järvenperä</name>
+      <distance>
+        <value>6.25811</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>111</linkno>
+      <startsite>26</startsite>
+      <endsite>5</endsite>
+      <name language="en">Järvenperä → Ring III</name>
+      <name language="fi">Järvenperä → Kehä III</name>
+      <name language="sv">Träskända → Ring III</name>
+      <distance>
+        <value>7.1</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>112</linkno>
+      <startsite>19</startsite>
+      <endsite>1</endsite>
+      <name language="sv">Munksnäs → Otnäs</name>
+      <name language="fi">Munkkiniemi → Otaniemi</name>
+      <name language="en">Munkkiniemi → Otaniemi</name>
+      <distance>
+        <value>6.75938</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>113</linkno>
+      <startsite>1</startsite>
+      <endsite>19</endsite>
+      <name language="sv">Otnäs → Munksnäs</name>
+      <name language="fi">Otaniemi → Munkkiniemi</name>
+      <name language="en">Otaniemi → Munkkiniemi</name>
+      <distance>
+        <value>6.75938</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>114</linkno>
+      <startsite>3</startsite>
+      <endsite>21</endsite>
+      <name language="fi">Pukinmäki → Tattarisuo</name>
+      <name language="sv">Bocksbacka → Tattarmossen</name>
+      <name language="en">Pukinmäki → Tattarisuo</name>
+      <distance>
+        <value>4.65077</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>115</linkno>
+      <startsite>21</startsite>
+      <endsite>3</endsite>
+      <name language="en">Tattarisuo → Pukinmäki</name>
+      <name language="sv">Tattarmossen → Bocksbacka</name>
+      <name language="fi">Tattarisuo → Pukinmäki</name>
+      <distance>
+        <value>4.2009</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>116</linkno>
+      <startsite>8</startsite>
+      <endsite>21</endsite>
+      <name language="en">Itäkeskus → Tattarisuo</name>
+      <name language="sv">Östra centrum → Tattarmossen</name>
+      <name language="fi">Itäkeskus → Tattarisuo</name>
+      <distance>
+        <value>5</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>117</linkno>
+      <startsite>21</startsite>
+      <endsite>8</endsite>
+      <name language="fi">Tattarisuo → Itäkeskus</name>
+      <name language="sv">Tattarmossen → Östra centrum</name>
+      <name language="en">Tattarisuo → Itäkeskus</name>
+      <distance>
+        <value>4.9768</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>71</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>126</linkno>
+      <startsite>19</startsite>
+      <endsite>20</endsite>
+      <name language="fi">Munkkiniemi → Stensintie</name>
+      <name language="sv">Munksnäs → Stensvägen</name>
+      <name language="en">Munkkiniemi → Stensintie</name>
+      <distance>
+        <value>7.50543</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95.9282962154888</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>4</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>127</linkno>
+      <startsite>20</startsite>
+      <endsite>19</endsite>
+      <name language="sv">Stensvägen → Munksnäs</name>
+      <name language="fi">Stensintie → Munkkiniemi</name>
+      <name language="en">Stensintie → Munkkiniemi</name>
+      <distance>
+        <value>7.50543</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95.9282962154888</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>4</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>128</linkno>
+      <startsite>20</startsite>
+      <endsite>15</endsite>
+      <name language="en">Stensintie → Ämmässuo</name>
+      <name language="sv">Stensvägen → Ämmässuo</name>
+      <name language="fi">Stensintie → Ämmässuo</name>
+      <distance>
+        <value>11.31588</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>105.633776645249</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>3</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>5</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>129</linkno>
+      <startsite>15</startsite>
+      <endsite>20</endsite>
+      <name language="en">Ämmässuo → Stensintie</name>
+      <name language="sv">Ämmässuo → Stensvägen</name>
+      <name language="fi">Ämmässuo → Stensintie</name>
+      <distance>
+        <value>11.31588</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>105.633776645249</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>5</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>130</linkno>
+      <startsite>21</startsite>
+      <endsite>22</endsite>
+      <name language="en">Tattarisuo → Korso</name>
+      <name language="sv">Tattarmossen → Korso</name>
+      <name language="fi">Tattarisuo → Korso</name>
+      <distance>
+        <value>13.66242</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>111.767873789097</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>10</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>131</linkno>
+      <startsite>22</startsite>
+      <endsite>21</endsite>
+      <name language="fi">Korso → Tattarisuo</name>
+      <name language="sv">Korso → Tattarmossen</name>
+      <name language="en">Korso → Tattarisuo</name>
+      <distance>
+        <value>14.3</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>110.77107364685</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>10</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>132</linkno>
+      <startsite>10</startsite>
+      <endsite>23</endsite>
+      <name language="en">Ring III → Järvenpää</name>
+      <name language="sv">Ring III → Träskända</name>
+      <name language="fi">Kehä III → Järvenpää</name>
+      <distance>
+        <value>24.7403</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>5</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>22</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>133</linkno>
+      <startsite>23</startsite>
+      <endsite>10</endsite>
+      <name language="en">Järvenpää → Ring III</name>
+      <name language="sv">Träskända → Ring III</name>
+      <name language="fi">Järvenpää → Kehä III</name>
+      <distance>
+        <value>24.5798</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>117</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>22</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>134</linkno>
+      <startsite>25</startsite>
+      <endsite>11</endsite>
+      <name language="fi">Muurala → Petikko</name>
+      <name language="sv">Morby → Petikko</name>
+      <name language="en">Muurala → Petikko</name>
+      <distance>
+        <value>12.85349</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>135</linkno>
+      <startsite>11</startsite>
+      <endsite>25</endsite>
+      <name language="en">Petikko → Muurala</name>
+      <name language="sv">Petikko → Morby</name>
+      <name language="fi">Petikko → Muurala</name>
+      <distance>
+        <value>12.85349</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>136</linkno>
+      <startsite>26</startsite>
+      <endsite>12</endsite>
+      <name language="sv">Träskända → Stubbacka</name>
+      <name language="fi">Järvenperä → Tuupakka</name>
+      <name language="en">Järvenperä → Tuupakka</name>
+      <distance>
+        <value>11.33048</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>81.357252264097</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>137</linkno>
+      <startsite>12</startsite>
+      <endsite>26</endsite>
+      <name language="fi">Tuupakka → Järvenperä</name>
+      <name language="sv">Stubbacka → Träskända</name>
+      <name language="en">Tuupakka → Järvenperä</name>
+      <distance>
+        <value>11.33048</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>81.357252264097</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>138</linkno>
+      <startsite>13</startsite>
+      <endsite>27</endsite>
+      <name language="en">Pakkala → Hakunila</name>
+      <name language="fi">Pakkala → Hakunila</name>
+      <name language="sv">Backas → Håkansböle</name>
+      <distance>
+        <value>9.1897</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.5085402478908</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>16</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>139</linkno>
+      <startsite>27</startsite>
+      <endsite>13</endsite>
+      <name language="en">Hakunila → Pakkala</name>
+      <name language="fi">Hakunila → Pakkala</name>
+      <name language="sv">Håkansböle → Backas</name>
+      <distance>
+        <value>9.1897</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.5085402478908</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>17</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>142</linkno>
+      <startsite>12</startsite>
+      <endsite>29</endsite>
+      <name language="sv">Stubbacka → Mårtensbyvägen</name>
+      <name language="fi">Tuupakka → Martinkyläntie</name>
+      <name language="en">Tuupakka → Martinkyläntie</name>
+      <distance>
+        <value>2.22952</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>143</linkno>
+      <startsite>29</startsite>
+      <endsite>12</endsite>
+      <name language="sv">Mårtensbyvägen → Stubbacka</name>
+      <name language="fi">Martinkyläntie → Tuupakka</name>
+      <name language="en">Martinkyläntie → Tuupakka</name>
+      <distance>
+        <value>2.22952</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>75</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>144</linkno>
+      <startsite>11</startsite>
+      <endsite>29</endsite>
+      <name language="en">Petikko → Martinkyläntie</name>
+      <name language="fi">Petikko → Martinkyläntie</name>
+      <name language="sv">Petikko → Mårtensbyvägen</name>
+      <distance>
+        <value>3.68361</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>145</linkno>
+      <startsite>29</startsite>
+      <endsite>11</endsite>
+      <name language="en">Martinkyläntie → Petikko</name>
+      <name language="sv">Mårtensbyvägen → Petikko</name>
+      <name language="fi">Martinkyläntie → Petikko</name>
+      <distance>
+        <value>3.68361</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>55</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>146</linkno>
+      <startsite>16</startsite>
+      <endsite>26</endsite>
+      <name language="en">Veikkola → Järvenperä</name>
+      <name language="fi">Veikkola → Järvenperä</name>
+      <name language="sv">Veikkola → Träskända</name>
+      <distance>
+        <value>18.0706</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>100.43470945783</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>15</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>147</linkno>
+      <startsite>26</startsite>
+      <endsite>16</endsite>
+      <name language="sv">Träskända → Veikkola</name>
+      <name language="fi">Järvenperä → Veikkola</name>
+      <name language="en">Järvenperä → Veikkola</name>
+      <distance>
+        <value>18.0706</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>100.43470945783</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>15</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>148</linkno>
+      <startsite>15</startsite>
+      <endsite>11</endsite>
+      <name language="sv">Ämmässuo → Petikko</name>
+      <name language="fi">Ämmässuo → Petikko</name>
+      <name language="en">Ämmässuo → Petikko</name>
+      <distance>
+        <value>17.4233</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92.617821041553</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>149</linkno>
+      <startsite>11</startsite>
+      <endsite>15</endsite>
+      <name language="sv">Petikko → Ämmässuo</name>
+      <name language="fi">Petikko → Ämmässuo</name>
+      <name language="en">Petikko → Ämmässuo</name>
+      <distance>
+        <value>17.4233</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92.617821041553</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>150</linkno>
+      <startsite>29</startsite>
+      <endsite>34</endsite>
+      <name language="sv">Mårtensbyvägen → Gruvsta</name>
+      <name language="fi">Martinkyläntie → Kaivoksela</name>
+      <name language="en">Martinkyläntie → Kaivoksela</name>
+      <distance>
+        <value>3.28957</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>151</linkno>
+      <startsite>34</startsite>
+      <endsite>29</endsite>
+      <name language="sv">Gruvsta → Mårtensbyvägen</name>
+      <name language="fi">Kaivoksela → Martinkyläntie</name>
+      <name language="en">Kaivoksela → Martinkyläntie</name>
+      <distance>
+        <value>3.28957</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>4</dirindex>
+    </link>
+    <link>
+      <linkno>152</linkno>
+      <startsite>29</startsite>
+      <endsite>35</endsite>
+      <name language="en">Martinkyläntie → Klaukkala</name>
+      <name language="sv">Mårtensbyvägen → Klövskog</name>
+      <name language="fi">Martinkyläntie → Klaukkala</name>
+      <distance>
+        <value>8.11133</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>4</dirindex>
+    </link>
+    <link>
+      <linkno>153</linkno>
+      <startsite>35</startsite>
+      <endsite>29</endsite>
+      <name language="en">Klaukkala → Martinkyläntie</name>
+      <name language="sv">Klövskog → Mårtensbyvägen</name>
+      <name language="fi">Klaukkala → Martinkyläntie</name>
+      <distance>
+        <value>8.11133</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>95</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>154</linkno>
+      <startsite>33</startsite>
+      <endsite>34</endsite>
+      <name language="en">Kylänevantie → Kaivoksela</name>
+      <name language="sv">Bymossavägen → Gruvsta</name>
+      <name language="fi">Kylänevantie → Kaivoksela</name>
+      <distance>
+        <value>5.80752</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>4</dirindex>
+    </link>
+    <link>
+      <linkno>155</linkno>
+      <startsite>34</startsite>
+      <endsite>33</endsite>
+      <name language="en">Kaivoksela → Kylänevantie</name>
+      <name language="fi">Kaivoksela → Kylänevantie</name>
+      <name language="sv">Gruvsta → Bymossavägen</name>
+      <distance>
+        <value>5.80752</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>156</linkno>
+      <startsite>33</startsite>
+      <endsite>19</endsite>
+      <name language="en">Kylänevantie → Munkkiniemi</name>
+      <name language="sv">Bymossavägen → Munksnäs</name>
+      <name language="fi">Kylänevantie → Munkkiniemi</name>
+      <distance>
+        <value>2.60662</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>30</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>157</linkno>
+      <startsite>19</startsite>
+      <endsite>33</endsite>
+      <name language="en">Munkkiniemi → Kylänevantie</name>
+      <name language="fi">Munkkiniemi → Kylänevantie</name>
+      <name language="sv">Munksnäs → Bymossavägen</name>
+      <distance>
+        <value>2.60662</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>30</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>158</linkno>
+      <startsite>35</startsite>
+      <endsite>12</endsite>
+      <name language="en">Klaukkala → Tuupakka</name>
+      <name language="fi">Klaukkala → Tuupakka</name>
+      <name language="sv">Klövskog → Stubbacka</name>
+      <distance>
+        <value>9.1438</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>88</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>159</linkno>
+      <startsite>12</startsite>
+      <endsite>35</endsite>
+      <name language="en">Tuupakka → Klaukkala</name>
+      <name language="sv">Stubbacka → Klövskog</name>
+      <name language="fi">Tuupakka → Klaukkala</name>
+      <distance>
+        <value>9.1438</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>93</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>160</linkno>
+      <startsite>35</startsite>
+      <endsite>11</endsite>
+      <name language="en">Klaukkala → Petikko</name>
+      <name language="fi">Klaukkala → Petikko</name>
+      <name language="sv">Klövskog → Petikko</name>
+      <distance>
+        <value>10.5979</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>90</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>161</linkno>
+      <startsite>11</startsite>
+      <endsite>35</endsite>
+      <name language="en">Petikko → Klaukkala</name>
+      <name language="fi">Petikko → Klaukkala</name>
+      <name language="sv">Petikko → Klövskog</name>
+      <distance>
+        <value>10.5979</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>85</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>162</linkno>
+      <startsite>33</startsite>
+      <endsite>2</endsite>
+      <name language="en">Kylänevantie → Konala</name>
+      <name language="fi">Kylänevantie → Konala</name>
+      <name language="sv">Bymossavägen → Kånala</name>
+      <distance>
+        <value>5.88056</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>163</linkno>
+      <startsite>2</startsite>
+      <endsite>33</endsite>
+      <name language="en">Konala → Kylänevantie</name>
+      <name language="fi">Konala → Kylänevantie</name>
+      <name language="sv">Kånala → Bymossavägen</name>
+      <distance>
+        <value>5.88056</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>164</linkno>
+      <startsite>33</startsite>
+      <endsite>7</endsite>
+      <name language="en">Kylänevantie → Pakila</name>
+      <name language="fi">Kylänevantie → Pakila</name>
+      <name language="sv">Bymossavägen → Baggböle</name>
+      <distance>
+        <value>4.45412</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>165</linkno>
+      <startsite>7</startsite>
+      <endsite>33</endsite>
+      <name language="en">Pakila → Kylänevantie</name>
+      <name language="sv">Baggböle → Bymossavägen</name>
+      <name language="fi">Pakila → Kylänevantie</name>
+      <distance>
+        <value>4.45412</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>166</linkno>
+      <startsite>34</startsite>
+      <endsite>2</endsite>
+      <name language="sv">Gruvsta → Kånala</name>
+      <name language="fi">Kaivoksela → Konala</name>
+      <name language="en">Kaivoksela → Konala</name>
+      <distance>
+        <value>6.10457</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>167</linkno>
+      <startsite>2</startsite>
+      <endsite>34</endsite>
+      <name language="sv">Kånala → Gruvsta</name>
+      <name language="fi">Konala → Kaivoksela</name>
+      <name language="en">Konala → Kaivoksela</name>
+      <distance>
+        <value>6.10457</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>168</linkno>
+      <startsite>34</startsite>
+      <endsite>7</endsite>
+      <name language="sv">Gruvsta → Baggböle</name>
+      <name language="fi">Kaivoksela → Pakila</name>
+      <name language="en">Kaivoksela → Pakila</name>
+      <distance>
+        <value>4.67812</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>169</linkno>
+      <startsite>7</startsite>
+      <endsite>34</endsite>
+      <name language="en">Pakila → Kaivoksela</name>
+      <name language="fi">Pakila → Kaivoksela</name>
+      <name language="sv">Baggböle → Gruvsta</name>
+      <distance>
+        <value>4.67812</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>72</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>172</linkno>
+      <startsite>24</startsite>
+      <endsite>36</endsite>
+      <name language="fi">Länsimäentie → Östersundom</name>
+      <name language="sv">Västerkullavägen → Östersundom</name>
+      <name language="en">Länsimäentie → Östersundom</name>
+      <distance>
+        <value>5.68171</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>173</linkno>
+      <startsite>36</startsite>
+      <endsite>24</endsite>
+      <name language="fi">Östersundom → Länsimäentie</name>
+      <name language="sv">Östersundom → Västerkullavägen</name>
+      <name language="en">Östersundom → Länsimäentie</name>
+      <distance>
+        <value>5.68171</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>174</linkno>
+      <startsite>36</startsite>
+      <endsite>37</endsite>
+      <name language="fi">Östersundom → Hangelby</name>
+      <name language="sv">Östersundom → Hangelby</name>
+      <name language="en">Östersundom → Hangelby</name>
+      <distance>
+        <value>9.27678</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>175</linkno>
+      <startsite>37</startsite>
+      <endsite>36</endsite>
+      <name language="en">Hangelby → Östersundom</name>
+      <name language="sv">Hangelby → Östersundom</name>
+      <name language="fi">Hangelby → Östersundom</name>
+      <distance>
+        <value>9.27678</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>176</linkno>
+      <startsite>37</startsite>
+      <endsite>38</endsite>
+      <name language="sv">Hangelby → Kullo</name>
+      <name language="fi">Hangelby → Kulloo</name>
+      <name language="en">Hangelby → Kulloo</name>
+      <distance>
+        <value>7.97548</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>177</linkno>
+      <startsite>38</startsite>
+      <endsite>37</endsite>
+      <name language="en">Kulloo → Hangelby</name>
+      <name language="fi">Kulloo → Hangelby</name>
+      <name language="sv">Kullo → Hangelby</name>
+      <distance>
+        <value>7.97548</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>178</linkno>
+      <startsite>38</startsite>
+      <endsite>39</endsite>
+      <name language="en">Kulloo → Drägsby</name>
+      <name language="fi">Kulloo → Drägsby</name>
+      <name language="sv">Kullo → Drägsby</name>
+      <distance>
+        <value>6.74263</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>179</linkno>
+      <startsite>39</startsite>
+      <endsite>38</endsite>
+      <name language="fi">Drägsby → Kulloo</name>
+      <name language="sv">Drägsby → Kullo</name>
+      <name language="en">Drägsby → Kulloo</name>
+      <distance>
+        <value>6.74263</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>180</linkno>
+      <startsite>39</startsite>
+      <endsite>40</endsite>
+      <name language="sv">Drägsby → Borgå</name>
+      <name language="fi">Drägsby → Porvoo</name>
+      <name language="en">Drägsby → Porvoo</name>
+      <distance>
+        <value>6.43885</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+    </link>
+    <link>
+      <linkno>181</linkno>
+      <startsite>40</startsite>
+      <endsite>39</endsite>
+      <name language="fi">Porvoo → Drägsby</name>
+      <name language="sv">Borgå → Drägsby</name>
+      <name language="en">Porvoo → Drägsby</name>
+      <distance>
+        <value>6.43885</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+    </link>
+    <link>
+      <linkno>182</linkno>
+      <startsite>4</startsite>
+      <endsite>33</endsite>
+      <name language="sv">Ring I → Bymossavägen</name>
+      <name language="fi">Kehä I → Kylänevantie</name>
+      <name language="en">Ring I → Kylänevantie</name>
+      <distance>
+        <value>6.5895</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>51.1557949232843</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>19</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>183</linkno>
+      <startsite>33</startsite>
+      <endsite>4</endsite>
+      <name language="en">Kylänevantie → Ring I</name>
+      <name language="sv">Bymossavägen → Ring I</name>
+      <name language="fi">Kylänevantie → Kehä I</name>
+      <distance>
+        <value>6.5895</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>51.1557949232843</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>19</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>184</linkno>
+      <startsite>19</startsite>
+      <endsite>34</endsite>
+      <name language="en">Munkkiniemi → Kaivoksela</name>
+      <name language="fi">Munkkiniemi → Kaivoksela</name>
+      <name language="sv">Munksnäs → Gruvsta</name>
+      <distance>
+        <value>8.41414</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>51.8400410054704</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>185</linkno>
+      <startsite>34</startsite>
+      <endsite>19</endsite>
+      <name language="fi">Kaivoksela → Munkkiniemi</name>
+      <name language="sv">Gruvsta → Munksnäs</name>
+      <name language="en">Kaivoksela → Munkkiniemi</name>
+      <distance>
+        <value>8.41414</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>51.8400410054704</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>186</linkno>
+      <startsite>33</startsite>
+      <endsite>29</endsite>
+      <name language="fi">Kylänevantie → Martinkyläntie</name>
+      <name language="sv">Bymossavägen → Mårtensbyvägen</name>
+      <name language="en">Kylänevantie → Martinkyläntie</name>
+      <distance>
+        <value>9.09709</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>4</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>187</linkno>
+      <startsite>29</startsite>
+      <endsite>33</endsite>
+      <name language="en">Martinkyläntie → Kylänevantie</name>
+      <name language="fi">Martinkyläntie → Kylänevantie</name>
+      <name language="sv">Mårtensbyvägen → Bymossavägen</name>
+      <distance>
+        <value>9.09709</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>188</linkno>
+      <startsite>34</startsite>
+      <endsite>35</endsite>
+      <name language="fi">Kaivoksela → Klaukkala</name>
+      <name language="sv">Gruvsta → Klövskog</name>
+      <name language="en">Kaivoksela → Klaukkala</name>
+      <distance>
+        <value>11.4009</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>88.997145029724</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>4</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>189</linkno>
+      <startsite>35</startsite>
+      <endsite>34</endsite>
+      <name language="sv">Klövskog → Gruvsta</name>
+      <name language="fi">Klaukkala → Kaivoksela</name>
+      <name language="en">Klaukkala → Kaivoksela</name>
+      <distance>
+        <value>11.4009</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>88.997145029724</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>190</linkno>
+      <startsite>19</startsite>
+      <endsite>2</endsite>
+      <name language="en">Munkkiniemi → Konala</name>
+      <name language="sv">Munksnäs → Kånala</name>
+      <name language="fi">Munkkiniemi → Konala</name>
+      <distance>
+        <value>8.48718</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>50.3505605593993</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>191</linkno>
+      <startsite>2</startsite>
+      <endsite>19</endsite>
+      <name language="fi">Konala → Munkkiniemi</name>
+      <name language="sv">Kånala → Munksnäs</name>
+      <name language="en">Konala → Munkkiniemi</name>
+      <distance>
+        <value>8.48718</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>50.3505605593993</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>192</linkno>
+      <startsite>19</startsite>
+      <endsite>7</endsite>
+      <name language="sv">Munksnäs → Baggböle</name>
+      <name language="fi">Munkkiniemi → Pakila</name>
+      <name language="en">Munkkiniemi → Pakila</name>
+      <distance>
+        <value>7.06074</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>47.4671242075636</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>193</linkno>
+      <startsite>7</startsite>
+      <endsite>19</endsite>
+      <name language="fi">Pakila → Munkkiniemi</name>
+      <name language="sv">Baggböle → Munksnäs</name>
+      <name language="en">Pakila → Munkkiniemi</name>
+      <distance>
+        <value>7.06074</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>47.4671242075636</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>33</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>194</linkno>
+      <startsite>33</startsite>
+      <endsite>6</endsite>
+      <name language="sv">Bymossavägen → Bergans</name>
+      <name language="fi">Kylänevantie → Perkkaa</name>
+      <name language="en">Kylänevantie → Perkkaa</name>
+      <distance>
+        <value>9.20975</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.1455714839461</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>195</linkno>
+      <startsite>6</startsite>
+      <endsite>33</endsite>
+      <name language="sv">Bergans → Bymossavägen</name>
+      <name language="fi">Perkkaa → Kylänevantie</name>
+      <name language="en">Perkkaa → Kylänevantie</name>
+      <distance>
+        <value>8.95842</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.3706683690565</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>196</linkno>
+      <startsite>33</startsite>
+      <endsite>3</endsite>
+      <name language="en">Kylänevantie → Pukinmäki</name>
+      <name language="sv">Bymossavägen → Bocksbacka</name>
+      <name language="fi">Kylänevantie → Pukinmäki</name>
+      <distance>
+        <value>7.56118</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.9738659630918</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>197</linkno>
+      <startsite>3</startsite>
+      <endsite>33</endsite>
+      <name language="sv">Bocksbacka → Bymossavägen</name>
+      <name language="fi">Pukinmäki → Kylänevantie</name>
+      <name language="en">Pukinmäki → Kylänevantie</name>
+      <distance>
+        <value>7.56118</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>74.3501666381618</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>198</linkno>
+      <startsite>34</startsite>
+      <endsite>6</endsite>
+      <name language="sv">Gruvsta → Bergans</name>
+      <name language="fi">Kaivoksela → Perkkaa</name>
+      <name language="en">Kaivoksela → Perkkaa</name>
+      <distance>
+        <value>9.43376</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.2532431488857</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>199</linkno>
+      <startsite>6</startsite>
+      <endsite>34</endsite>
+      <name language="fi">Perkkaa → Kaivoksela</name>
+      <name language="sv">Bergans → Gruvsta</name>
+      <name language="en">Perkkaa → Kaivoksela</name>
+      <distance>
+        <value>9.18243</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.4765079656036</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>2</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>200</linkno>
+      <startsite>34</startsite>
+      <endsite>3</endsite>
+      <name language="en">Kaivoksela → Pukinmäki</name>
+      <name language="sv">Gruvsta → Bocksbacka</name>
+      <name language="fi">Kaivoksela → Pukinmäki</name>
+      <distance>
+        <value>7.78518</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.9155616875606</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>201</linkno>
+      <startsite>3</startsite>
+      <endsite>34</endsite>
+      <name language="sv">Bocksbacka → Gruvsta</name>
+      <name language="fi">Pukinmäki → Kaivoksela</name>
+      <name language="en">Pukinmäki → Kaivoksela</name>
+      <distance>
+        <value>7.78518</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>74.2804045003745</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>7</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>202</linkno>
+      <startsite>29</startsite>
+      <endsite>2</endsite>
+      <name language="en">Martinkyläntie → Konala</name>
+      <name language="fi">Martinkyläntie → Konala</name>
+      <name language="sv">Mårtensbyvägen → Kånala</name>
+      <distance>
+        <value>9.39414</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.675263321552</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>203</linkno>
+      <startsite>2</startsite>
+      <endsite>29</endsite>
+      <name language="sv">Kånala → Mårtensbyvägen</name>
+      <name language="fi">Konala → Martinkyläntie</name>
+      <name language="en">Konala → Martinkyläntie</name>
+      <distance>
+        <value>9.39414</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.675263321552</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>204</linkno>
+      <startsite>29</startsite>
+      <endsite>7</endsite>
+      <name language="fi">Martinkyläntie → Pakila</name>
+      <name language="sv">Mårtensbyvägen → Baggböle</name>
+      <name language="en">Martinkyläntie → Pakila</name>
+      <distance>
+        <value>7.96769</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.9834467404414</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>205</linkno>
+      <startsite>7</startsite>
+      <endsite>29</endsite>
+      <name language="sv">Baggböle → Mårtensbyvägen</name>
+      <name language="fi">Pakila → Martinkyläntie</name>
+      <name language="en">Pakila → Martinkyläntie</name>
+      <distance>
+        <value>7.96769</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.9834467404414</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>34</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>206</linkno>
+      <startsite>34</startsite>
+      <endsite>11</endsite>
+      <name language="en">Kaivoksela → Petikko</name>
+      <name language="fi">Kaivoksela → Petikko</name>
+      <name language="sv">Gruvsta → Petikko</name>
+      <distance>
+        <value>6.97318</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>63.5679840845289</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>207</linkno>
+      <startsite>11</startsite>
+      <endsite>34</endsite>
+      <name language="fi">Petikko → Kaivoksela</name>
+      <name language="sv">Petikko → Gruvsta</name>
+      <name language="en">Petikko → Kaivoksela</name>
+      <distance>
+        <value>6.97318</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>74.2752636996647</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>208</linkno>
+      <startsite>34</startsite>
+      <endsite>12</endsite>
+      <name language="sv">Gruvsta → Stubbacka</name>
+      <name language="fi">Kaivoksela → Tuupakka</name>
+      <name language="en">Kaivoksela → Tuupakka</name>
+      <distance>
+        <value>5.51909</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>76.1793651098295</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>209</linkno>
+      <startsite>12</startsite>
+      <endsite>34</endsite>
+      <name language="sv">Stubbacka → Gruvsta</name>
+      <name language="fi">Tuupakka → Kaivoksela</name>
+      <name language="en">Tuupakka → Kaivoksela</name>
+      <distance>
+        <value>5.51909</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>74.8988523704765</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>29</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>210</linkno>
+      <startsite>29</startsite>
+      <endsite>26</endsite>
+      <name language="sv">Mårtensbyvägen → Träskända</name>
+      <name language="fi">Martinkyläntie → Järvenperä</name>
+      <name language="en">Martinkyläntie → Järvenperä</name>
+      <distance>
+        <value>10.29801</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>74.1555545612729</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>211</linkno>
+      <startsite>26</startsite>
+      <endsite>29</endsite>
+      <name language="en">Järvenperä → Martinkyläntie</name>
+      <name language="fi">Järvenperä → Martinkyläntie</name>
+      <name language="sv">Träskända → Mårtensbyvägen</name>
+      <distance>
+        <value>10.29801</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>83.6849442662395</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>212</linkno>
+      <startsite>29</startsite>
+      <endsite>13</endsite>
+      <name language="sv">Mårtensbyvägen → Backas</name>
+      <name language="fi">Martinkyläntie → Pakkala</name>
+      <name language="en">Martinkyläntie → Pakkala</name>
+      <distance>
+        <value>5.48235</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.7265585453444</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>213</linkno>
+      <startsite>13</startsite>
+      <endsite>29</endsite>
+      <name language="en">Pakkala → Martinkyläntie</name>
+      <name language="sv">Backas → Mårtensbyvägen</name>
+      <name language="fi">Pakkala → Martinkyläntie</name>
+      <distance>
+        <value>5.48235</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.6757352556387</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>214</linkno>
+      <startsite>35</startsite>
+      <endsite>26</endsite>
+      <name language="en">Klaukkala → Järvenperä</name>
+      <name language="fi">Klaukkala → Järvenperä</name>
+      <name language="sv">Klövskog → Träskända</name>
+      <distance>
+        <value>17.2123</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>90.7581926237411</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>215</linkno>
+      <startsite>26</startsite>
+      <endsite>35</endsite>
+      <name language="sv">Träskända → Klövskog</name>
+      <name language="fi">Järvenperä → Klaukkala</name>
+      <name language="en">Järvenperä → Klaukkala</name>
+      <distance>
+        <value>17.2123</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>87.5601672826228</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>216</linkno>
+      <startsite>35</startsite>
+      <endsite>13</endsite>
+      <name language="fi">Klaukkala → Pakkala</name>
+      <name language="sv">Klövskog → Backas</name>
+      <name language="en">Klaukkala → Pakkala</name>
+      <distance>
+        <value>12.39663</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80.5235549321798</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>217</linkno>
+      <startsite>13</startsite>
+      <endsite>35</endsite>
+      <name language="en">Pakkala → Klaukkala</name>
+      <name language="sv">Backas → Klövskog</name>
+      <name language="fi">Pakkala → Klaukkala</name>
+      <distance>
+        <value>12.39663</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>83.5555298200938</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>218</linkno>
+      <startsite>9</startsite>
+      <endsite>24</endsite>
+      <name language="en">Koskelantie → Länsimäentie</name>
+      <name language="fi">Koskelantie → Länsimäentie</name>
+      <name language="sv">Forsbyvägen → Västerkullavägen</name>
+      <distance>
+        <value>9.12882</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>92.8786335134866</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>219</linkno>
+      <startsite>24</startsite>
+      <endsite>9</endsite>
+      <name language="sv">Västerkullavägen → Forsbyvägen</name>
+      <name language="fi">Länsimäentie → Koskelantie</name>
+      <name language="en">Länsimäentie → Koskelantie</name>
+      <distance>
+        <value>9.12882</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77.8646480066473</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>21</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>220</linkno>
+      <startsite>21</startsite>
+      <endsite>36</endsite>
+      <name language="sv">Tattarmossen → Östersundom</name>
+      <name language="fi">Tattarisuo → Östersundom</name>
+      <name language="en">Tattarisuo → Östersundom</name>
+      <distance>
+        <value>9.2059</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>102.87279288444</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>24</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>221</linkno>
+      <startsite>36</startsite>
+      <endsite>21</endsite>
+      <name language="en">Östersundom → Tattarisuo</name>
+      <name language="fi">Östersundom → Tattarisuo</name>
+      <name language="sv">Östersundom → Tattarmossen</name>
+      <distance>
+        <value>9.65577</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>85.3903496038854</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>24</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>222</linkno>
+      <startsite>24</startsite>
+      <endsite>37</endsite>
+      <name language="en">Länsimäentie → Hangelby</name>
+      <name language="sv">Västerkullavägen → Hangelby</name>
+      <name language="fi">Länsimäentie → Hangelby</name>
+      <distance>
+        <value>14.95849</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>36</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>223</linkno>
+      <startsite>37</startsite>
+      <endsite>24</endsite>
+      <name language="fi">Hangelby → Länsimäentie</name>
+      <name language="sv">Hangelby → Västerkullavägen</name>
+      <name language="en">Hangelby → Länsimäentie</name>
+      <distance>
+        <value>14.95849</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>36</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>224</linkno>
+      <startsite>36</startsite>
+      <endsite>38</endsite>
+      <name language="fi">Östersundom → Kulloo</name>
+      <name language="sv">Östersundom → Kullo</name>
+      <name language="en">Östersundom → Kulloo</name>
+      <distance>
+        <value>17.25226</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>37</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>225</linkno>
+      <startsite>38</startsite>
+      <endsite>36</endsite>
+      <name language="sv">Kullo → Östersundom</name>
+      <name language="fi">Kulloo → Östersundom</name>
+      <name language="en">Kulloo → Östersundom</name>
+      <distance>
+        <value>17.25226</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>37</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>226</linkno>
+      <startsite>37</startsite>
+      <endsite>39</endsite>
+      <name language="en">Hangelby → Drägsby</name>
+      <name language="sv">Hangelby → Drägsby</name>
+      <name language="fi">Hangelby → Drägsby</name>
+      <distance>
+        <value>14.71811</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>38</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>227</linkno>
+      <startsite>39</startsite>
+      <endsite>37</endsite>
+      <name language="en">Drägsby → Hangelby</name>
+      <name language="fi">Drägsby → Hangelby</name>
+      <name language="sv">Drägsby → Hangelby</name>
+      <distance>
+        <value>14.71811</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>38</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>228</linkno>
+      <startsite>38</startsite>
+      <endsite>40</endsite>
+      <name language="en">Kulloo → Porvoo</name>
+      <name language="fi">Kulloo → Porvoo</name>
+      <name language="sv">Kullo → Borgå</name>
+      <distance>
+        <value>13.18148</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>25</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>39</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>229</linkno>
+      <startsite>40</startsite>
+      <endsite>38</endsite>
+      <name language="en">Porvoo → Kulloo</name>
+      <name language="fi">Porvoo → Kulloo</name>
+      <name language="sv">Borgå → Kullo</name>
+      <distance>
+        <value>13.18148</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>116</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <dirindex>1</dirindex>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>39</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>230</linkno>
+      <startsite>19</startsite>
+      <endsite>2</endsite>
+      <name language="sv">Munksnäs → Kånala</name>
+      <name language="fi">Munkkiniemi → Konala</name>
+      <name language="en">Munkkiniemi → Konala</name>
+      <distance>
+        <value>6.47786</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.732022157756</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>231</linkno>
+      <startsite>2</startsite>
+      <endsite>19</endsite>
+      <name language="en">Konala → Munkkiniemi</name>
+      <name language="fi">Konala → Munkkiniemi</name>
+      <name language="sv">Kånala → Munksnäs</name>
+      <distance>
+        <value>6.92919</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.7739354805273</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>6</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>232</linkno>
+      <startsite>33</startsite>
+      <endsite>6</endsite>
+      <name language="sv">Bymossavägen → Bergans</name>
+      <name language="fi">Kylänevantie → Perkkaa</name>
+      <name language="en">Kylänevantie → Perkkaa</name>
+      <distance>
+        <value>6.00662</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>48.6576882131318</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>19</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>233</linkno>
+      <startsite>6</startsite>
+      <endsite>33</endsite>
+      <name language="en">Perkkaa → Kylänevantie</name>
+      <name language="sv">Bergans → Bymossavägen</name>
+      <name language="fi">Perkkaa → Kylänevantie</name>
+      <distance>
+        <value>6.20662</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>46.4426298956424</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>19</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>234</linkno>
+      <startsite>20</startsite>
+      <endsite>6</endsite>
+      <name language="fi">Stensintie → Perkkaa</name>
+      <name language="sv">Stensvägen → Bergans</name>
+      <name language="en">Stensintie → Perkkaa</name>
+      <distance>
+        <value>5.02255</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>78.9862177321235</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>4</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>235</linkno>
+      <startsite>6</startsite>
+      <endsite>20</endsite>
+      <name language="fi">Perkkaa → Stensintie</name>
+      <name language="sv">Bergans → Stensvägen</name>
+      <name language="en">Perkkaa → Stensintie</name>
+      <distance>
+        <value>4.32255</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>90.5368940259764</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>4</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>240</linkno>
+      <startsite>25</startsite>
+      <endsite>13</endsite>
+      <name language="fi">Muurala → Pakkala</name>
+      <name language="sv">Morby → Backas</name>
+      <name language="en">Muurala → Pakkala</name>
+      <distance>
+        <value>20.8224</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80.9806922006613</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>241</linkno>
+      <startsite>13</startsite>
+      <endsite>25</endsite>
+      <name language="fi">Pakkala → Muurala</name>
+      <name language="sv">Backas → Morby</name>
+      <name language="en">Pakkala → Muurala</name>
+      <distance>
+        <value>20.8224</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>80.9806922006613</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>242</linkno>
+      <startsite>25</startsite>
+      <endsite>14</endsite>
+      <name language="sv">Morby → Dickursby</name>
+      <name language="fi">Muurala → Tikkurila</name>
+      <name language="en">Muurala → Tikkurila</name>
+      <distance>
+        <value>26.9922</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>76.6719403092227</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>243</linkno>
+      <startsite>14</startsite>
+      <endsite>25</endsite>
+      <name language="sv">Dickursby → Morby</name>
+      <name language="fi">Tikkurila → Muurala</name>
+      <name language="en">Tikkurila → Muurala</name>
+      <distance>
+        <value>26.9922</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>76.6719403092227</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>244</linkno>
+      <startsite>26</startsite>
+      <endsite>13</endsite>
+      <name language="fi">Järvenperä → Pakkala</name>
+      <name language="sv">Träskända → Backas</name>
+      <name language="en">Järvenperä → Pakkala</name>
+      <distance>
+        <value>14.58331</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77.0333012645464</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>245</linkno>
+      <startsite>13</startsite>
+      <endsite>26</endsite>
+      <name language="sv">Backas → Träskända</name>
+      <name language="fi">Pakkala → Järvenperä</name>
+      <name language="en">Pakkala → Järvenperä</name>
+      <distance>
+        <value>14.58331</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>77.0333012645464</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>246</linkno>
+      <startsite>26</startsite>
+      <endsite>14</endsite>
+      <name language="en">Järvenperä → Tikkurila</name>
+      <name language="fi">Järvenperä → Tikkurila</name>
+      <name language="sv">Träskända → Dickursby</name>
+      <distance>
+        <value>20.75311</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.0147463087724</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>247</linkno>
+      <startsite>14</startsite>
+      <endsite>26</endsite>
+      <name language="fi">Tikkurila → Järvenperä</name>
+      <name language="sv">Dickursby → Träskända</name>
+      <name language="en">Tikkurila → Järvenperä</name>
+      <distance>
+        <value>20.75311</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.0147463087724</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>250</linkno>
+      <startsite>11</startsite>
+      <endsite>14</endsite>
+      <name language="en">Petikko → Tikkurila</name>
+      <name language="fi">Petikko → Tikkurila</name>
+      <name language="sv">Petikko → Dickursby</name>
+      <distance>
+        <value>14.13871</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>66.586460528627</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>251</linkno>
+      <startsite>14</startsite>
+      <endsite>11</endsite>
+      <name language="en">Tikkurila → Petikko</name>
+      <name language="sv">Dickursby → Petikko</name>
+      <name language="fi">Tikkurila → Petikko</name>
+      <distance>
+        <value>14.13871</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>66.586460528627</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>254</linkno>
+      <startsite>11</startsite>
+      <endsite>27</endsite>
+      <name language="fi">Petikko → Hakunila</name>
+      <name language="sv">Petikko → Håkansböle</name>
+      <name language="en">Petikko → Hakunila</name>
+      <distance>
+        <value>17.15861</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.2100126340338</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>255</linkno>
+      <startsite>27</startsite>
+      <endsite>11</endsite>
+      <name language="sv">Håkansböle → Petikko</name>
+      <name language="fi">Hakunila → Petikko</name>
+      <name language="en">Hakunila → Petikko</name>
+      <distance>
+        <value>17.15861</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>68.2100126340338</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>256</linkno>
+      <startsite>12</startsite>
+      <endsite>27</endsite>
+      <name language="en">Tuupakka → Hakunila</name>
+      <name language="sv">Stubbacka → Håkansböle</name>
+      <name language="fi">Tuupakka → Hakunila</name>
+      <distance>
+        <value>12.44253</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.555250580849</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>257</linkno>
+      <startsite>27</startsite>
+      <endsite>12</endsite>
+      <name language="fi">Hakunila → Tuupakka</name>
+      <name language="sv">Håkansböle → Stubbacka</name>
+      <name language="en">Hakunila → Tuupakka</name>
+      <distance>
+        <value>12.44253</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>67.555250580849</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>264</linkno>
+      <startsite>25</startsite>
+      <endsite>27</endsite>
+      <name language="en">Muurala → Hakunila</name>
+      <name language="fi">Muurala → Hakunila</name>
+      <name language="sv">Morby → Håkansböle</name>
+      <distance>
+        <value>30.0121</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>76.7048240337403</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>5</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>265</linkno>
+      <startsite>27</startsite>
+      <endsite>25</endsite>
+      <name language="sv">Håkansböle → Morby</name>
+      <name language="fi">Hakunila → Muurala</name>
+      <name language="en">Hakunila → Muurala</name>
+      <distance>
+        <value>30.0121</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>76.7048240337404</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>5</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>266</linkno>
+      <startsite>25</startsite>
+      <endsite>12</endsite>
+      <name language="en">Muurala → Tuupakka</name>
+      <name language="sv">Morby → Stubbacka</name>
+      <name language="fi">Muurala → Tuupakka</name>
+      <distance>
+        <value>17.56957</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>84.8425490591551</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>26</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>267</linkno>
+      <startsite>12</startsite>
+      <endsite>25</endsite>
+      <name language="en">Tuupakka → Muurala</name>
+      <name language="sv">Stubbacka → Morby</name>
+      <name language="fi">Tuupakka → Muurala</name>
+      <distance>
+        <value>17.56957</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>84.8425490591551</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>26</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>268</linkno>
+      <startsite>26</startsite>
+      <endsite>27</endsite>
+      <name language="fi">Järvenperä → Hakunila</name>
+      <name language="sv">Träskända → Håkansböle</name>
+      <name language="en">Järvenperä → Hakunila</name>
+      <distance>
+        <value>23.77301</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.4979708537143</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>11</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>14</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>269</linkno>
+      <startsite>27</startsite>
+      <endsite>26</endsite>
+      <name language="en">Hakunila → Järvenperä</name>
+      <name language="fi">Hakunila → Järvenperä</name>
+      <name language="sv">Håkansböle → Träskända</name>
+      <distance>
+        <value>23.77301</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>73.4979708537143</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>14</number>
+        </site>
+        <site>
+          <index>2</index>
+          <number>13</number>
+        </site>
+        <site>
+          <index>3</index>
+          <number>12</number>
+        </site>
+        <site>
+          <index>4</index>
+          <number>11</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>270</linkno>
+      <startsite>27</startsite>
+      <endsite>36</endsite>
+      <name language="en">Hakunila → Östersundom</name>
+      <name language="sv">Håkansböle → Östersundom</name>
+      <name language="fi">Hakunila → Östersundom</name>
+      <distance>
+        <value>7.13053</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>271</linkno>
+      <startsite>36</startsite>
+      <endsite>27</endsite>
+      <name language="sv">Östersundom → Håkansböle</name>
+      <name language="fi">Östersundom → Hakunila</name>
+      <name language="en">Östersundom → Hakunila</name>
+      <distance>
+        <value>7.13053</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>60</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+    </link>
+    <link>
+      <linkno>272</linkno>
+      <startsite>14</startsite>
+      <endsite>36</endsite>
+      <name language="fi">Tikkurila → Östersundom</name>
+      <name language="sv">Dickursby → Östersundom</name>
+      <name language="en">Tikkurila → Östersundom</name>
+      <distance>
+        <value>10.15043</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>64.218171711484</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>27</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>273</linkno>
+      <startsite>36</startsite>
+      <endsite>14</endsite>
+      <name language="en">Östersundom → Tikkurila</name>
+      <name language="fi">Östersundom → Tikkurila</name>
+      <name language="sv">Östersundom → Dickursby</name>
+      <distance>
+        <value>10.15043</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>64.218171711484</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>27</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>274</linkno>
+      <startsite>27</startsite>
+      <endsite>37</endsite>
+      <name language="en">Hakunila → Hangelby</name>
+      <name language="sv">Håkansböle → Hangelby</name>
+      <name language="fi">Hakunila → Hangelby</name>
+      <distance>
+        <value>16.40731</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>82.5257593816124</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>36</number>
+        </site>
+      </intermediates>
+    </link>
+    <link>
+      <linkno>275</linkno>
+      <startsite>37</startsite>
+      <endsite>27</endsite>
+      <name language="en">Hangelby → Hakunila</name>
+      <name language="fi">Hangelby → Hakunila</name>
+      <name language="sv">Hangelby → Håkansböle</name>
+      <distance>
+        <value>16.40731</value>
+        <unit>km</unit>
+      </distance>
+      <freeflowspeed>
+        <value>82.5257593816124</value>
+        <unit>km/h</unit>
+      </freeflowspeed>
+      <intermediates>
+        <site>
+          <index>1</index>
+          <number>36</number>
+        </site>
+      </intermediates>
+    </link>
+  </linklist>
+  <directionlist>
+    <directiontext>
+      <dirindex>5</dirindex>
+      <RDI>P</RDI>
+      <text lang="fi">Mäntsälään</text>
+      <text lang="sv">Mot Mäntsälä</text>
+      <text lang="en">To Mäntsälä</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>14</dirindex>
+      <RDI>P</RDI>
+      <text lang="sv">Mot Östra centrum</text>
+      <text lang="fi">Itäkeskukseen</text>
+      <text lang="en">To Itäkeskus</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>21</dirindex>
+      <text lang="sv">Norrut</text>
+      <text lang="fi">Pohjoiseen</text>
+      <text lang="en">Northbound</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>7</dirindex>
+      <text lang="fi">Kouvolaan</text>
+      <text lang="sv">Mot Kouvola</text>
+      <text lang="en">To Kouvola</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>0</dirindex>
+      <text lang="en">To Espoo</text>
+      <text lang="sv">Mot Esbo</text>
+      <text lang="fi">Espooseen</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>12</dirindex>
+      <text lang="sv">Mot Högfors</text>
+      <text lang="fi">Karkkilaan</text>
+      <text lang="en">To Karkkila</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>15</dirindex>
+      <RDI>N</RDI>
+      <text lang="en">To Tapiola</text>
+      <text lang="fi">Tapiolaan</text>
+      <text lang="sv">Mot Hagalund</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>9</dirindex>
+      <text lang="en">To Hanko</text>
+      <text lang="sv">Mot Hangö</text>
+      <text lang="fi">Hankoon</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>22</dirindex>
+      <text lang="en">Southbound</text>
+      <text lang="fi">Etelään</text>
+      <text lang="sv">Söderut</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>19</dirindex>
+      <text lang="en">To Koskenkylä</text>
+      <text lang="sv">Mot Forsby</text>
+      <text lang="fi">Koskenkylään</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>4</dirindex>
+      <RDI>P</RDI>
+      <text lang="en">To Hämeenlinna</text>
+      <text lang="sv">Mot Tavastehus</text>
+      <text lang="fi">Hämeenlinnaan</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>1</dirindex>
+      <RDI>N</RDI>
+      <text lang="fi">Helsinkiin</text>
+      <text lang="sv">Mot Helsingfors</text>
+      <text lang="en">To Helsinki</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>13</dirindex>
+      <text lang="en">To Vihti</text>
+      <text lang="fi">Vihtiin</text>
+      <text lang="sv">Mot Vichtis</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>17</dirindex>
+      <RDI>N</RDI>
+      <text lang="en">Westbound</text>
+      <text lang="fi">Länteen</text>
+      <text lang="sv">Västerut</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>3</dirindex>
+      <RDI>P</RDI>
+      <text lang="en">To Turku</text>
+      <text lang="sv">Mot Åbo</text>
+      <text lang="fi">Turkuun</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>23</dirindex>
+      <text lang="sv">Mot Nöykis</text>
+      <text lang="fi">Nöykkiöön</text>
+      <text lang="en">To Nöykkiö</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>20</dirindex>
+      <text lang="sv">Mot Karis</text>
+      <text lang="fi">Karjaalle</text>
+      <text lang="en">To Karjaa</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>6</dirindex>
+      <text lang="sv">Mot Lahtis</text>
+      <text lang="fi">Lahteen</text>
+      <text lang="en">To Lahti</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>25</dirindex>
+      <RDI>P</RDI>
+      <text lang="fi">Kotkaan</text>
+      <text lang="sv">Mot Kotka</text>
+      <text lang="en">To Kotka</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>18</dirindex>
+      <text lang="fi">Tuusulaan</text>
+      <text lang="sv">Mot Tusby</text>
+      <text lang="en">To Tuusula</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>8</dirindex>
+      <text lang="sv">Mot Borgå</text>
+      <text lang="fi">Porvooseen</text>
+      <text lang="en">To Porvoo</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>11</dirindex>
+      <text lang="en">To Forssa</text>
+      <text lang="fi">Forssaan</text>
+      <text lang="sv">Mot Forssa</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>16</dirindex>
+      <RDI>P</RDI>
+      <text lang="en">Eastbound</text>
+      <text lang="fi">Itään</text>
+      <text lang="sv">Österut</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>24</dirindex>
+      <text lang="en">To Pori</text>
+      <text lang="fi">Poriin</text>
+      <text lang="sv">Mot Björneborg</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>10</dirindex>
+      <text lang="en">To Lohja</text>
+      <text lang="fi">Lohjalle</text>
+      <text lang="sv">Mot Lojo</text>
+    </directiontext>
+    <directiontext>
+      <dirindex>2</dirindex>
+      <text lang="en">To Kirkkonummi</text>
+      <text lang="sv">Mot Kyrkslätt</text>
+      <text lang="fi">Kirkkonummelle</text>
+    </directiontext>
+  </directionlist>
+</jtdata>
