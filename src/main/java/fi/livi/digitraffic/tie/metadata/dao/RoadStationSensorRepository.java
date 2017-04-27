@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.QueryHint;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -25,6 +26,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
            "       AND allowed.roadStationType = s.roadStationType\n" +
            "  )" +
            "ORDER BY s.naturalId")
+    @EntityGraph(attributePaths = "sensorValueDescriptions")
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
 
     List<RoadStationSensor> findByRoadStationType(final RoadStationType roadStationType);
@@ -35,6 +37,8 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         "SELECT rs_sensors.road_station_id, LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
+            "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
+            "where sensor.obsolete_date is null\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -44,7 +48,9 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         "SELECT LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
+            "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
             "where rs_sensors.road_station_id = :id\n" +
+            "and sensor.obsolete_date is null\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     String listRoadStationSensors(@Param("id") final long roadStationId);

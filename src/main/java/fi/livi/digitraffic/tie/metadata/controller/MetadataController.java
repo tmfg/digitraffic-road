@@ -101,7 +101,7 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of permanently removed TMS stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/obsolete", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/removed", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeatureCollection listPermanentlyRemovedTmsStations(
