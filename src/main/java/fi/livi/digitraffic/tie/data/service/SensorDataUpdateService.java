@@ -77,10 +77,11 @@ public class SensorDataUpdateService {
     public SensorDataUpdateService(final DataSource dataSource,
                                    final RoadStationSensorService roadStationSensorService) throws SQLException {
         this.dataSource = dataSource;
+
         final List<RoadStationSensor> allowedTmsSensors =
             roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
-        allowedTmsSensors.stream().forEach(s -> System.out.println(s.getLotjuId() + " " + s.getNameFi()));
         allowedTmsSensorLotjuIds = allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
+
         final List<RoadStationSensor> allowedWeatherSensors =
             roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
         allowedWeatherSensorLotjuIds = allowedWeatherSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
