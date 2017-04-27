@@ -66,7 +66,6 @@ public class RoadStationSensorService {
         sensorValueTimeLimitInMins.put(RoadStationType.TMS_STATION, tmsStationSensorValueTimeLimitInMins);
     }
 
-    // TODO cachetus 1d? ja sensorvalue updateen filtteröinti
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllNonObsoleteRoadStationSensors(RoadStationType roadStationType) {
         return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalseAndAllowed(roadStationType);
