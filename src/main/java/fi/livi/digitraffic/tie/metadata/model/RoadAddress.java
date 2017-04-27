@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -127,16 +125,8 @@ public class RoadAddress implements Cloneable {
     @ApiModelProperty(value = "Road contract area code")
     private Integer contractAreaCode;
 
-    @JsonIgnore
-    @OneToOne(mappedBy="roadAddress")
-    private RoadStation roadStation;
-
     public RoadAddress() {
         // Possibility to initialize empty road address
-    }
-
-    public RoadAddress(final RoadStation roadStation) {
-        this.roadStation = roadStation;
     }
 
     public Long getId() {
@@ -221,14 +211,6 @@ public class RoadAddress implements Cloneable {
         this.roadSection = roadSection;
     }
 
-    public RoadStation getRoadStation() {
-        return roadStation;
-    }
-
-    public void setRoadStation(final RoadStation roadStation) {
-        this.roadStation = roadStation;
-    }
-
     @Override
     public String toString() {
         return new ToStringHelper(this)
@@ -258,7 +240,6 @@ public class RoadAddress implements Cloneable {
                 .append(roadMaintenanceClass, that.roadMaintenanceClass)
                 .append(contractArea, that.contractArea)
                 .append(contractAreaCode, that.contractAreaCode)
-                .append(roadStation, that.roadStation)
                 .isEquals();
     }
 
@@ -274,7 +255,6 @@ public class RoadAddress implements Cloneable {
                 .append(roadMaintenanceClass)
                 .append(contractArea)
                 .append(contractAreaCode)
-                .append(roadStation)
                 .toHashCode();
     }
 

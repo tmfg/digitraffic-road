@@ -100,16 +100,16 @@ public class MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated);
     }
 
-    @ApiOperation("The static information of obsolete TMS stations (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of permanently removed TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/obsolete", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeatureCollection listObsoleteTmsStations(
+    public TmsStationFeatureCollection listPermanentlyRemovedTmsStations(
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublicObsoleteTmsStationsAsFeatureCollection(lastUpdated);
+        return tmsStationService.findPermanentlyRemovedStations(lastUpdated);
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")

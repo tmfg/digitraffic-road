@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConv
 import fi.livi.digitraffic.tie.metadata.dao.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -54,10 +55,11 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllPublicObsoleteTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public TmsStationFeatureCollection findPermanentlyRemovedStations(final boolean onlyUpdateInfo) {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
         final List<TmsStation> stations = tmsStationRepository
-            .findByRoadStationIsPublicIsTrueAndRoadStationObsoleteIsTrueOrderByRoadStation_NaturalId();
+            .findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(CollectionStatus
+                .REMOVED_PERMANENTLY);
 
         return tmsStationMetadata2FeatureConverter.convert(
             onlyUpdateInfo ?
