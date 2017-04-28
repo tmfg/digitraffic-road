@@ -117,7 +117,7 @@ public class MetadataController {
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Vessel metadata not found"),
                         @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeature listTmsStation(
+    public TmsStationFeature getTmsStation(
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
         return tmsStationService.findTmsStationById(id);

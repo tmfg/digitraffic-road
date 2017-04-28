@@ -15,8 +15,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 public interface RoadStationSensorRepository extends JpaRepository<RoadStationSensor, Long> {
-    @Query(value =
-           "SELECT s\n" +
+    @Query("SELECT s\n" +
            "FROM RoadStationSensor s\n" +
            "WHERE s.obsolete = false\n" +
            "  AND s.roadStationType = ?1\n" +
@@ -30,8 +29,10 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationType(final RoadStationType roadStationType);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndLotjuIdIsNull(final RoadStationType roadStationType);
 
     @Query(value =
@@ -40,6 +41,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
             "where sensor.obsolete_date is null\n" +
+            "and sensor.road_station_type = 'TMS_STATION'\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -52,6 +54,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
             "where rs_sensors.road_station_id = :id\n" +
             "and sensor.obsolete_date is null\n" +
+            "and sensor.road_station_type = 'TMS_STATION'\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     String listRoadStationSensors(@Param("id") final long roadStationId);
