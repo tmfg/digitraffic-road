@@ -34,11 +34,16 @@ public interface DayDataRepository extends org.springframework.data.repository.R
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LinkMeasurementDataDto> listAllMedianTravelTimesForPreviousDay();
 
-    @Query(value =
-            "SELECT MAX(M.END_TIMESTAMP) AS UPDATED\n" +
-            "    FROM JOURNEYTIME_MEDIAN M\n" +
-            "    INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-            "    WHERE L.OBSOLETE = 0",
+    @Query(value = "select * from(\n" +
+        "SELECT M.END_TIMESTAMP AS UPDATED\n" +
+        "  FROM JOURNEYTIME_MEDIAN M \n" +
+        " WHERE exists(\n" +
+        "   select 0\n" +
+        "     from LINK L\n" +
+        "    WHERE M.LINK_ID = L.ID \n" +
+        "      AND L.OBSOLETE = 0)\n" +
+        "  order by M.END_TIMESTAMP desc)\n" +
+        "where rownum=1",
             nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
 
