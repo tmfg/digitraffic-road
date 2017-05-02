@@ -3,6 +3,9 @@ package fi.livi.digitraffic.tie.metadata.controller;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
+import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.ACTIVE;
+import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.BOTH;
+import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.REMOVED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
@@ -95,9 +98,9 @@ public class MetadataController {
     public TmsStationFeatureCollection listTmsStations(
                 @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                boolean lastUpdated) {
+                final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated);
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, ACTIVE);
     }
 
     @ApiOperation("The static information of permanently removed TMS stations (Traffic Measurement System / LAM)")
@@ -107,9 +110,22 @@ public class MetadataController {
     public TmsStationFeatureCollection listPermanentlyRemovedTmsStations(
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated,
+        @PathVariable("state") final String state) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findPermanentlyRemovedStations(lastUpdated);
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, REMOVED);
+    }
+
+    @ApiOperation("The static information of all TMS stations (Traffic Measurement System / LAM), both removed and active")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/all", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeatureCollection listAllTmsStations(
+        @ApiParam("If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated) {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, BOTH);
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
@@ -120,7 +136,7 @@ public class MetadataController {
     public TmsStationFeature getTmsStation(
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findTmsStationById(id);
+        return tmsStationService.getTmsStationById(id);
     }
 
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
@@ -130,7 +146,7 @@ public class MetadataController {
     public RoadStationsSensorsMetadata listNonObsoleteTmsStationSensors(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_AVAILABLE_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.TMS_STATION, lastUpdated);
     }
@@ -142,7 +158,7 @@ public class MetadataController {
     public CameraStationFeatureCollection listNonObsoleteCameraPresets(
                     @ApiParam("If parameter is given result will only contain update status.")
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_STATIONS_PATH);
         return cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
@@ -154,7 +170,7 @@ public class MetadataController {
     public WeatherStationFeatureCollection listNonObsoleteWeatherStations(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_PATH);
         return weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(lastUpdated);
     }
@@ -166,7 +182,7 @@ public class MetadataController {
     public RoadStationsSensorsMetadata listNonObsoleteWeatherStationSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
@@ -187,7 +203,7 @@ public class MetadataController {
     public ForecastSectionsMetadata listForecastSections(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
         return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
     }
@@ -199,11 +215,11 @@ public class MetadataController {
     public LocationFeatureCollection listLocations (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-            String version,
+            final String version,
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
@@ -215,11 +231,11 @@ public class MetadataController {
     public LocationTypesMetadata listaLocationTypes (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-                    String version,
+                    final String version,
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATION_TYPES_PATH);
         return locationService.findLocationSubtypes(lastUpdated, version);
     }
@@ -231,7 +247,7 @@ public class MetadataController {
     public LocationFeatureCollection getLocation (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-                    String version,
+                    final String version,
 
             @PathVariable("id") final int id) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);

@@ -27,11 +27,12 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class TmsStationService {
-
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
     private final TmsStationRepository tmsStationRepository;
     private final StaticDataStatusService staticDataStatusService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
+
+    public enum TmsListType { ACTIVE, REMOVED, BOTH}
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
@@ -43,32 +44,35 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
+        final TmsListType tmsListType) {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
-        final List<TmsStation> stations = tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsListType);
 
         return tmsStationMetadata2FeatureConverter.convert(
-                onlyUpdateInfo ?
-                Collections.emptyList() :
                 stations,
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
-    @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findPermanentlyRemovedStations(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
-        final List<TmsStation> stations = tmsStationRepository
-            .findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(CollectionStatus
-                .REMOVED_PERMANENTLY);
+    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsListType tmsListType) {
+        if(onlyUpdateInfo) {
+            return Collections.emptyList();
+        }
 
-        return tmsStationMetadata2FeatureConverter.convert(
-            onlyUpdateInfo ?
-                Collections.emptyList() :
-                stations,
-                updated != null ? updated.getUpdatedTime() : null);
+        switch(tmsListType) {
+            case ACTIVE:
+                return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+            case REMOVED:
+                return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY);
+            case BOTH:
+                return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
-    public TmsStationFeature findTmsStationById(final Long id) throws NonPublicRoadStationException {
+    public TmsStationFeature getTmsStationById(final Long id) throws NonPublicRoadStationException {
         final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(id);
 
         if(station == null) {

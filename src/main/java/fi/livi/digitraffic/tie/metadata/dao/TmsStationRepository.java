@@ -22,6 +22,10 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    List<TmsStation> findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+
     TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(long roadStationNaturalId);
 
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +

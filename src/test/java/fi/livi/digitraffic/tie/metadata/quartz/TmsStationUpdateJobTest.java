@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
+import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.ACTIVE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -38,7 +39,6 @@ public class TmsStationUpdateJobTest extends AbstractTest {
 
     @Test
     public void testUpdateTmsStations() {
-
         lotjuLAMMetatiedotServiceMock.initDataAndService();
 
         // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
@@ -46,7 +46,7 @@ public class TmsStationUpdateJobTest extends AbstractTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allInitial =
-                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
         assertEquals(3, allInitial.getFeatures().size());
 
         // Now change lotju metadata and update tms stations (2 non obsolete stations and 2 obsolete)
@@ -55,7 +55,7 @@ public class TmsStationUpdateJobTest extends AbstractTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allAfterChange =
-                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
+                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));
