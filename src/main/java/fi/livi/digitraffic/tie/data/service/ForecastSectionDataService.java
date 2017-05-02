@@ -1,41 +1,43 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.data.dao.ForecastSectionWeatherDao;
 import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
 
 @Service
 public class ForecastSectionDataService {
 
-    private final ForecastSectionRepository forecastSectionRepository;
-
     private final MetadataUpdatedRepository metadataUpdatedRepository;
 
+    private final ForecastSectionWeatherDao forecastSectionWeatherDao;
+
     @Autowired
-    public ForecastSectionDataService(ForecastSectionRepository forecastSectionRepository, MetadataUpdatedRepository metadataUpdatedRepository) {
-        this.forecastSectionRepository = forecastSectionRepository;
+    public ForecastSectionDataService(final MetadataUpdatedRepository metadataUpdatedRepository,
+                                      final ForecastSectionWeatherDao forecastSectionWeatherDao) {
         this.metadataUpdatedRepository = metadataUpdatedRepository;
+        this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData() {
 
         MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.FORECAST_SECTION_WEATHER.toString());
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAllByOrderByNaturalIdAsc();
+        final Map<String, List<ForecastSectionWeather>> forecastSectionWeatherData = forecastSectionWeatherDao.getForecastSectionWeatherData();
 
         return new ForecastSectionWeatherRootDto(
                 updated == null ? null : updated.getUpdatedTime(),
-                forecastSections.stream().map(fs -> new ForecastSectionWeatherDataDto(fs.getNaturalId(),
-                                                                                      fs.getForecastSectionWeatherList())).collect(Collectors.toList()));
+                forecastSectionWeatherData.entrySet().stream().map(w -> new ForecastSectionWeatherDataDto(w.getKey(),
+                                                                                                          w.getValue())).collect(Collectors.toList()));
     }
 }

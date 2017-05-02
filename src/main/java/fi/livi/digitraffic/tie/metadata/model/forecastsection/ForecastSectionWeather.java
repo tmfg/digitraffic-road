@@ -8,6 +8,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -66,13 +67,13 @@ public class ForecastSectionWeather {
     @Column(insertable = false, updatable = false)
     private String type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @JsonIgnore
     private ForecastSection forecastSection;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumns({@PrimaryKeyJoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
                             @PrimaryKeyJoinColumn(name="forecast_name", referencedColumnName = "forecast_name")})
     @Fetch(FetchMode.JOIN)
@@ -95,6 +96,25 @@ public class ForecastSectionWeather {
         this.weatherSymbol = weatherSymbol;
         this.windDirection = windDirection;
         this.windSpeed = windSpeed;
+        this.forecastConditionReason = forecastConditionReason;
+    }
+
+    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight,
+                                  OverallRoadCondition overallRoadCondition,
+                                  Reliability reliability, String roadTemperature, String temperature, String weatherSymbol,
+                                  Integer windDirection, Double windSpeed, String type,
+                                  ForecastConditionReason forecastConditionReason) {
+        this.forecastSectionWeatherPK = forecastSectionWeatherPK;
+        this.time = time;
+        this.daylight = daylight;
+        this.overallRoadCondition = overallRoadCondition;
+        this.reliability = reliability;
+        this.roadTemperature = roadTemperature;
+        this.temperature = temperature;
+        this.weatherSymbol = weatherSymbol;
+        this.windDirection = windDirection;
+        this.windSpeed = windSpeed;
+        this.type = type;
         this.forecastConditionReason = forecastConditionReason;
     }
 

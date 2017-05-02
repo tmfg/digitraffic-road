@@ -59,7 +59,7 @@ public class SingleTmsDataWebsocketEndpoint {
             final Set<Session> sessionSet = sessions.get(message.sensorValue.getRoadStationNaturalId());
 
             if(sessionSet != null) {
-                log.info("sessions: {}", sessionSet.size());
+                log.debug("sessions: {}", sessionSet.size());
                 WebsocketEndpoint.sendMessage(log, message, sessionSet);
             }
         }
