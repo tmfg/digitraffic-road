@@ -24,7 +24,7 @@ public class TmsStationServiceTest extends AbstractTest {
     @Test
     public void findPermanentlyRemovedStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, TmsStationService.TmsListType.REMOVED);
-        Assert.assertTrue(stations.getFeatures().size() > 0);
+        Assert.assertTrue(stations.getFeatures().size() == 0);
     }
 
     @Test
