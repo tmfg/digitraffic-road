@@ -110,8 +110,7 @@ public class MetadataController {
     public TmsStationFeatureCollection listPermanentlyRemovedTmsStations(
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            final boolean lastUpdated,
-        @PathVariable("state") final String state) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, REMOVED);
     }
@@ -144,7 +143,7 @@ public class MetadataController {
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
                         @ApiResponse(code = 500, message = "Internal server error") })
     public RoadStationsSensorsMetadata listNonObsoleteTmsStationSensors(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
+            @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_AVAILABLE_SENSORS_PATH);
