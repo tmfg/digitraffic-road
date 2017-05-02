@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of TMS stations", value = "TmsStationFeatureCollection")
-@JsonPropertyOrder({ "type", "features" })
+@JsonPropertyOrder({ "type", "dataUpdatedTime", "features" })
 public class TmsStationFeatureCollection extends RootDataObjectDto implements Iterable<TmsStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)

@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.TmsStationRepository;
+import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -24,11 +27,12 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 
 @Service
 public class TmsStationService {
-
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
     private final TmsStationRepository tmsStationRepository;
     private final StaticDataStatusService staticDataStatusService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
+
+    public enum TmsListType { ACTIVE, REMOVED, BOTH}
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
@@ -40,15 +44,42 @@ public class TmsStationService {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-
+    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
+        final TmsListType tmsListType) {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
+        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsListType);
 
         return tmsStationMetadata2FeatureConverter.convert(
-                onlyUpdateInfo ?
-                Collections.emptyList() :
-                findAllPublishableTmsStations(),
+                stations,
                 updated != null ? updated.getUpdatedTime() : null);
+    }
+
+    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsListType tmsListType) {
+        if(onlyUpdateInfo) {
+            return Collections.emptyList();
+        }
+
+        switch(tmsListType) {
+            case ACTIVE:
+                return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+            case REMOVED:
+                return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY);
+            case BOTH:
+                return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public TmsStationFeature getTmsStationById(final Long id) throws NonPublicRoadStationException {
+        final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(id);
+
+        if(station == null) {
+            throw new ObjectNotFoundException(TmsStation.class, id);
+        }
+
+        return tmsStationMetadata2FeatureConverter.convert(station);
     }
 
     @Transactional
@@ -71,18 +102,14 @@ public class TmsStationService {
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsMappedByByTmsNaturalId() {
         final List<TmsStation> allStations = tmsStationRepository.findAll();
-        final Map<Long, TmsStation> stationMap = new HashMap<>();
 
-        for(final TmsStation tms : allStations) {
-            stationMap.put(tms.getNaturalId(), tms);
-        }
-
-        return stationMap;
+        return allStations.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsMappedByByLotjuId() {
         final List<TmsStation> allStations = tmsStationRepository.findAll();
+
         return allStations.stream().filter(tms -> tms.getLotjuId() != null).collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
@@ -103,15 +130,18 @@ public class TmsStationService {
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllPublishableTmsStationsMappedByLotjuId() {
         final List<TmsStation> all = findAllPublishableTmsStations();
+
         return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
     public TmsStation findPublishableTmsStationByRoadStationNaturalId(long roadStationNaturalId) {
-        TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
+        final TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
+
         if (entity == null) {
             throw new ObjectNotFoundException(TmsStation.class, roadStationNaturalId);
         }
+
         return entity;
     }
 
@@ -122,7 +152,8 @@ public class TmsStationService {
 
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId() {
-        List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
+        final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
+
         return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
     }
 }

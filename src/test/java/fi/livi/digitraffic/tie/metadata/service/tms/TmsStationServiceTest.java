@@ -16,19 +16,32 @@ public class TmsStationServiceTest extends AbstractTest {
     private TmsStationService tmsStationService;
 
     @Test
-    public void testFindAllNonObsoleteTmsStationsAsFeatureCollection() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
+    public void findAllPublishableTmsStationsAsFeatureCollection() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, TmsStationService.TmsListType.ACTIVE);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsMappedByByNaturalId() {
+    public void findPermanentlyRemovedStations() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, TmsStationService.TmsListType.REMOVED);
+        Assert.assertTrue(stations.getFeatures().size() > 0);
+    }
+
+    @Test
+    public void findAllStations() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false,
+            TmsStationService.TmsListType.BOTH);
+        Assert.assertTrue(stations.getFeatures().size() > 0);
+    }
+
+    @Test
+    public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
         Assert.assertTrue(stations.size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsByMappedByLotjuId() {
+    public void findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsByMappedByLotjuId();
         Assert.assertTrue(stations.size() > 0);
     }
