@@ -21,7 +21,7 @@ import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @Table(name = "LAM_STATION")
@@ -75,7 +75,7 @@ public class TmsStation {
     private CalculatorDeviceType calculatorDeviceType;
 
     @ManyToOne
-    @JoinColumn(name="road_district_id", nullable = false)
+    @JoinColumn(name="road_district_id")
     @Fetch(FetchMode.JOIN)
     private RoadDistrict roadDistrict;
 
@@ -250,7 +250,7 @@ public class TmsStation {
 
     @Override
     public String toString() {
-        return new ToStringHelpper(this)
+        return new ToStringHelper(this)
                 .appendField("id", getId())
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("naturalId", getNaturalId())

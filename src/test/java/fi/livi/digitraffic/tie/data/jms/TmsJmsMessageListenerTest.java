@@ -47,7 +47,21 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-    
+
+    static {
+        try {
+            datatypeFactory = DatatypeFactory.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final DatatypeFactory datatypeFactory;
+    private static final XMLGregorianCalendar aikaikkunaAlku = datatypeFactory.newXMLGregorianCalendar("2016-02-16T10:00:00Z");
+    private static final XMLGregorianCalendar aikaikkunaLoppu = datatypeFactory.newXMLGregorianCalendar("2016-06-16T11:00:00Z");
+    private static final ZonedDateTime timeWindowStart = ZonedDateTime.parse("2016-02-16T12:00:00+02:00[Europe/Helsinki]");
+    private static final ZonedDateTime timeWindowEnd = ZonedDateTime.parse("2016-06-16T14:00:00+03:00[Europe/Helsinki]");
+
     private static final Logger log = LoggerFactory.getLogger(TmsJmsMessageListenerTest.class);
 
     @Autowired
@@ -58,12 +72,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
-
     @Autowired
     LockingService lockingService;
-
     @Autowired
     protected JdbcTemplate jdbcTemplate;
+
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
 
@@ -132,9 +145,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         JMSMessageListener<Lam> tmsJmsMessageListener =
                 new JMSMessageListener<Lam>(Lam.class, dataUpdater, true, log);
 
-        DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
+        XMLGregorianCalendar xgcal = datatypeFactory.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
         final float minX = 0.0f;
@@ -177,8 +189,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                     anturi.setArvo(arvo);
                     arvo += 0.5f;
                     anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
+
+                    anturi.setAikaikkunaAlku(aikaikkunaAlku);
+                    anturi.setAikaikkunaLoppu(aikaikkunaLoppu);
                 }
-                xgcal.add(df.newDuration(1000));
+                xgcal.add(datatypeFactory.newDuration(1000));
 
                 StringWriter xmlSW = new StringWriter();
                 jaxbMarshaller.marshal(lam, xmlSW);
@@ -218,6 +233,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         Map<Long, List<SensorValue>> valuesMap =
                 roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
+        boolean timeWindowsFound = false;
         for (Pair<Lam, String> pair : data) {
             Lam lam = pair.getLeft();
             long asemaLotjuId = lam.getAsemaId();
@@ -232,9 +248,16 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                                 .filter(sensorValue -> anturi.getLaskennallinenAnturiId().equals(sensorValue.getRoadStationSensor().getLotjuId().toString()))
                                 .findFirst();
                 Assert.assertTrue(found.isPresent());
-                Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
+                SensorValue sv = found.get();
+                Assert.assertEquals(sv.getValue(), (double) anturi.getArvo(), 0.05d);
+                if (found.get().getTimeWindowStart() != null) {
+                    Assert.assertEquals("Time window start not equal", timeWindowStart, sv.getTimeWindowStart());
+                    Assert.assertEquals("Time window end not equal", timeWindowEnd, sv.getTimeWindowEnd());
+                    timeWindowsFound = true;
+                }
             }
         }
+        Assert.assertTrue("Time window was set to zero sensors", timeWindowsFound);
         log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }

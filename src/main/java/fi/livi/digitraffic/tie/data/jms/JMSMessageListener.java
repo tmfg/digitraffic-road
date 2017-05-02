@@ -23,7 +23,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 public class JMSMessageListener<T> implements MessageListener {
 
@@ -116,10 +116,10 @@ public class JMSMessageListener<T> implements MessageListener {
             return Pair.of((T)object, text);
         } catch (JMSException jmse) {
             // getText() failed
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
         } catch (JAXBException e) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
         }
     }
@@ -129,7 +129,7 @@ public class JMSMessageListener<T> implements MessageListener {
         final TextMessage xmlMessage = (TextMessage) message;
         final String text = xmlMessage.getText();
         if (StringUtils.isBlank(text)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(xmlMessage));
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(xmlMessage));
             throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": null text");
         }
         return text.trim();
@@ -137,7 +137,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private void assertTextMessage(final Message message) {
         if (!(message instanceof TextMessage)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelpper.toStringFull(message));
+            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new IllegalArgumentException("Unknown message type: " + message.getClass());
         }
     }
@@ -168,7 +168,11 @@ public class JMSMessageListener<T> implements MessageListener {
                 log.debug("Handle data");
                 dataUpdater.updateData(targetList);
                 log.info("DrainQueue of size {} took {} ms", drained, start.getTime());
+            } else {
+                log.info("DrainQueue empty");
             }
+        } else {
+            log.info("drainQueueInternal: Shutdown called");
         }
     }
 

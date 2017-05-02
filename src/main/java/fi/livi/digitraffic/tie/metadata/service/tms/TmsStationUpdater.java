@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
@@ -166,51 +166,48 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         if (roadNaturalId == null) {
             logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                       "Insert failed {}: LamAsema.getTieosoite().getTienumero() is null",
-                      ToStringHelpper.toString(la));
+                      ToStringHelper.toString(la));
             return false;
         }
         if (roadSectionNaturalId == null ) {
             logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                        "Insert failed {}: LamAsema.getTieosoite().getTieosa() is null",
-                       ToStringHelpper.toString(la));
+                       ToStringHelper.toString(la));
             return false;
         }
 
         final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
-        if (roadDistrict != null) {
-            final TmsStation newTmsStation = new TmsStation();
-            newTmsStation.setSummerFreeFlowSpeed1(0);
-            newTmsStation.setSummerFreeFlowSpeed2(0);
-            newTmsStation.setWinterFreeFlowSpeed1(0);
-            newTmsStation.setWinterFreeFlowSpeed2(0);
-            final RoadStation rs = new RoadStation(RoadStationType.TMS_STATION);
-            newTmsStation.setRoadStation(rs);
+        logWarnIf(roadDistrict == null && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+            "Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {} for {}",
+            roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(la));
 
-            setRoadAddressIfNotSet(rs);
+        final TmsStation newTmsStation = new TmsStation();
+        newTmsStation.setSummerFreeFlowSpeed1(0);
+        newTmsStation.setSummerFreeFlowSpeed2(0);
+        newTmsStation.setWinterFreeFlowSpeed1(0);
+        newTmsStation.setWinterFreeFlowSpeed2(0);
+        final RoadStation rs = new RoadStation(RoadStationType.TMS_STATION);
+        newTmsStation.setRoadStation(rs);
 
-            updateTmsStationAttributes(la, roadDistrict, newTmsStation);
+        setRoadAddressIfNotSet(rs);
 
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress " + rs.getRoadAddress());
-            }
-            roadStationService.save(rs);
-            tmsStationService.save(newTmsStation);
-            log.info("Created new " + newTmsStation);
-            return true;
-        } else {
-            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                       "Insert failed {}: Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {}",
-                       ToStringHelpper.toString(la), roadSectionNaturalId, roadNaturalId);
-            return false;
+        updateTmsStationAttributes(la, roadDistrict, newTmsStation);
+
+        if (rs.getRoadAddress().getId() == null) {
+            roadStationService.save(rs.getRoadAddress());
+            log.info("Created new RoadAddress " + rs.getRoadAddress());
         }
+        roadStationService.save(rs);
+        tmsStationService.save(newTmsStation);
+        log.info("Created new " + newTmsStation);
+        return true;
     }
 
     private boolean validate(final LamAsemaVO la) {
         final boolean valid = la.getVanhaId() != null;
         logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                    "{} is invalid: has null vanhaId",
-                   ToStringHelpper.toString(la));
+                   ToStringHelper.toString(la));
         return valid;
     }
 
@@ -228,7 +225,7 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             final int hash = HashCodeBuilder.reflectionHashCode(tms);
             final String before = ReflectionToStringBuilder.toString(tms);
 
-            log.debug("Updating " + ToStringHelpper.toString(la));
+            log.debug("Updating " + ToStringHelper.toString(la));
 
             setRoadStationIfNotSet(tms, (long)la.getVanhaId(), orphansNaturalIdToRoadStationMap);
 
@@ -241,28 +238,26 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             if ( roadNaturalId == null ) {
                 logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                            "{} update failed: LamAsema.getTieosoite().getTienumero() is null",
-                            ToStringHelpper.toString(la));
+                            ToStringHelper.toString(la));
             }
             if ( roadSectionNaturalId == null ) {
                 logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                            "{} update failed: LamAsema.getTieosoite().getTieosa() is null",
-                           ToStringHelpper.toString(la));
+                           ToStringHelper.toString(la));
             }
 
             RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
                     roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
             if (rd == null) {
-                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
+                logWarnIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
                           "{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
-                           ToStringHelpper.toString(la),
+                           ToStringHelper.toString(la),
                            roadSectionNaturalId,
                            roadNaturalId);
                 rd = tms.getRoadDistrict();
-            } else {
-                if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
-                    log.info("Update TMS station (naturalID: " + convertToTmsNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
-                             " road district naturalId " + tms.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
-                }
+            } else if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
+                log.info("Update TMS station (naturalID: " + convertToTmsNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
+                         " road district naturalId " + tms.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
             }
 
             if ( updateTmsStationAttributes(la, rd, tms) ||

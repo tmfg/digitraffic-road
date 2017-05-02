@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -92,25 +93,25 @@ public class ForecastSection {
     @ApiModelProperty(value = "Forecast section obsolete date")
     private Date obsoleteDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="road_id")
     @Fetch(FetchMode.JOIN)
     private Road road;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="start_road_section_id")
     @Fetch(FetchMode.JOIN)
     private RoadSection startRoadSection;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="end_road_section_id")
     @Fetch(FetchMode.JOIN)
     private RoadSection endRoadSection;
 
-    @OneToMany(mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
-    @OneToMany(mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
     private List<ForecastSectionWeather> forecastSectionWeatherList;
 

@@ -21,7 +21,7 @@ public class LinkFreeFlowSpeedDto {
     private long linkNo;
 
     @ApiModelProperty(value = "Free flow speed [km/h]", required = true)
-    private double freeFlowSpeed;
+    private Double freeFlowSpeed;
 
     public long getLinkNo() {
         return linkNo;
@@ -31,11 +31,11 @@ public class LinkFreeFlowSpeedDto {
         this.linkNo = linkNo;
     }
 
-    public double getFreeFlowSpeed() {
+    public Double getFreeFlowSpeed() {
         return freeFlowSpeed;
     }
 
-    public void setFreeFlowSpeed(final double freeFlowSpeed) {
+    public void setFreeFlowSpeed(final Double freeFlowSpeed) {
         this.freeFlowSpeed = freeFlowSpeed;
     }
 }

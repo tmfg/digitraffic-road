@@ -41,7 +41,7 @@ public class RoadSection {
     @JsonIgnore
     private Integer beginDistance;
 
-    @ApiModelProperty(value = "Distance from the beginning of the road section. (Length of the road section)")
+    @ApiModelProperty(value = "Distance from the beginning to the end of the road section. (Length of the road section)")
     private Integer endDistance;
 
     @ManyToOne

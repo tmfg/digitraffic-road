@@ -8,6 +8,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -22,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
@@ -66,13 +67,13 @@ public class ForecastSectionWeather {
     @Column(insertable = false, updatable = false)
     private String type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @JsonIgnore
     private ForecastSection forecastSection;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumns({@PrimaryKeyJoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
                             @PrimaryKeyJoinColumn(name="forecast_name", referencedColumnName = "forecast_name")})
     @Fetch(FetchMode.JOIN)
@@ -98,6 +99,25 @@ public class ForecastSectionWeather {
         this.forecastConditionReason = forecastConditionReason;
     }
 
+    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight,
+                                  OverallRoadCondition overallRoadCondition,
+                                  Reliability reliability, String roadTemperature, String temperature, String weatherSymbol,
+                                  Integer windDirection, Double windSpeed, String type,
+                                  ForecastConditionReason forecastConditionReason) {
+        this.forecastSectionWeatherPK = forecastSectionWeatherPK;
+        this.time = time;
+        this.daylight = daylight;
+        this.overallRoadCondition = overallRoadCondition;
+        this.reliability = reliability;
+        this.roadTemperature = roadTemperature;
+        this.temperature = temperature;
+        this.weatherSymbol = weatherSymbol;
+        this.windDirection = windDirection;
+        this.windSpeed = windSpeed;
+        this.type = type;
+        this.forecastConditionReason = forecastConditionReason;
+    }
+
     public ForecastSectionWeatherPK getForecastSectionWeatherPK() {
         return forecastSectionWeatherPK;
     }
@@ -116,7 +136,7 @@ public class ForecastSectionWeather {
     }
 
     public String getTime() {
-        return ToStringHelpper.toString(time.toLocalDateTime(), ToStringHelpper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
+        return ToStringHelper.toString(time.toLocalDateTime(), ToStringHelper.TimestampFormat.ISO_8601_WITH_ZONE_OFFSET);
     }
 
     public void setTime(Timestamp time) {

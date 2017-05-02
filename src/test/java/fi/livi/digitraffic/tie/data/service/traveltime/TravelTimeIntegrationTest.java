@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
+import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
 
 public class TravelTimeIntegrationTest extends AbstractTest {
 
@@ -23,5 +24,14 @@ public class TravelTimeIntegrationTest extends AbstractTest {
         TravelTimeMediansDto medians = travelTimeClient.getMedians(ZonedDateTime.now().minusHours(2));
 
         assertNotNull(medians);
+    }
+
+    @Test
+    @Ignore("Needs username and password")
+    public void getLinkMetadataSucceeds() {
+
+        LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
+
+        assertNotNull(linkMetadata);
     }
 }

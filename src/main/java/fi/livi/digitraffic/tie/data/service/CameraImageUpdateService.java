@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.ToStringHelpper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
@@ -67,7 +67,7 @@ public class CameraImageUpdateService {
     @Transactional
     @Async
     public Future<Boolean> handleKuva(final Kuva kuva, final CameraPreset cameraPreset) {
-        log.info("Handling {}", ToStringHelpper.toString(kuva));
+        log.info("Handling {}", ToStringHelper.toString(kuva));
         // Update CameraPreset properties
         updateCameraPreset(cameraPreset, kuva);
         // Download image from http-server and upload it to sftp-server
@@ -91,7 +91,7 @@ public class CameraImageUpdateService {
                 }
             } else {
                 if (cameraPreset == null) {
-                    log.info("Could not update non existing camera preset for kuva {}", ToStringHelpper.toString(kuva));
+                    log.info("Could not update non existing camera preset for kuva {}", ToStringHelper.toString(kuva));
                 }
                 log.info("Delete {} preset's {} remote image {}",
                          cameraPreset != null ? "hidden" : "missing", presetId, getImageFullPath(filename));

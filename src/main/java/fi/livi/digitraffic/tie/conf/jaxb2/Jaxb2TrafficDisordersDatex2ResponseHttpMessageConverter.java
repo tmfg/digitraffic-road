@@ -40,7 +40,7 @@ public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jax
                     "http://tie.digitraffic.fi/schemas " +
                     "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIIResponseSchema_1_0.xsd " +
                     "http://datex2.eu/schema/2/2_0 " +
-                    "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_1_with_definitions_FI.xsd");
+                    "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
         } catch (PropertyException e) {
             log.error("setProperty failed", e);
         }

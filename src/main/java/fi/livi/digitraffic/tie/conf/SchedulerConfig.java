@@ -32,6 +32,7 @@ import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeLinkMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
@@ -131,6 +132,11 @@ public class SchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean travelTimeLinkMetadataUpdateJobDetail() {
+        return createJobDetail(TravelTimeLinkMetadataUpdateJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
                                                            @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
@@ -189,6 +195,12 @@ public class SchedulerConfig {
     public SimpleTriggerFactoryBean travelTimeMeasurementsUpdateJobTrigger(final JobDetail travelTimeMeasurementsUpdateJobDetail,
                                                                            @Value("${travelTimeMeasurementsUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(travelTimeMeasurementsUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean travelTimeLinkMetadataUpdateJobTrigger(final JobDetail travelTimeLinkMetadataUpdateJobDetail,
+                                                                           @Value("${travelTimeLinkMetadataUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(travelTimeLinkMetadataUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

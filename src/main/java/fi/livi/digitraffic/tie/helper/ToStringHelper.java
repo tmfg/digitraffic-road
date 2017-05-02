@@ -23,7 +23,7 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 /**
  * Provides helpper functions to stringify objects for logging
  */
-public class ToStringHelpper {
+public class ToStringHelper {
 
     private static final String LOTJU_ID = "lotjuId";
     private static final String VANHA_ID = "vanhaId";
@@ -37,7 +37,7 @@ public class ToStringHelpper {
     public static final String ISO_8601_UTC_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)";
     public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)";
 
-    public ToStringHelpper(final Object object) {
+    public ToStringHelper(final Object object) {
         sb = createStartSb(object);
     }
 
@@ -107,7 +107,7 @@ public class ToStringHelpper {
         }
     }
 
-    public ToStringHelpper appendField(final String fieldName, final Object value) {
+    public ToStringHelper appendField(final String fieldName, final Object value) {
         JSON_STYLE.append(sb, fieldName, value, true);
         return this;
     }
