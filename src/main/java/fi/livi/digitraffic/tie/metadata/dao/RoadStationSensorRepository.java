@@ -23,7 +23,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
            "       AND allowed.roadStationType = s.roadStationType\n" +
            "  )" +
            "ORDER BY s.naturalId")
-//    @EntityGraph(attributePaths = "sensorValueDescriptions")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
 
