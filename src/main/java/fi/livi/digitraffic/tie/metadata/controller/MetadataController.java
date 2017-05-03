@@ -3,9 +3,6 @@ package fi.livi.digitraffic.tie.metadata.controller;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
-import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.ACTIVE;
-import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.BOTH;
-import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.REMOVED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
@@ -91,51 +88,55 @@ public class MetadataController {
         this.travelTimeLinkMetadataService = travelTimeLinkMetadataService;
     }
 
-    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
+    @ApiOperation("BETA: The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeatureCollection listTmsStations(
                 @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                final boolean lastUpdated) {
+                final boolean lastUpdated,
+                @ApiParam("Return TMS stations of given state.")
+                @RequestParam(value = "state", required = false, defaultValue = "ACTIVE")
+                final TmsState state) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, ACTIVE);
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @ApiOperation("The static information of permanently removed TMS stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/removed", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-                        @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeatureCollection listPermanentlyRemovedTmsStations(
-        @ApiParam("If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            final boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, REMOVED);
-    }
-
-    @ApiOperation("The static information of all TMS stations (Traffic Measurement System / LAM), both removed and active")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/all", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/tms-number/{number}", produces =
+        APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeatureCollection listAllTmsStations(
-        @ApiParam("If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated) {
+    public TmsStationFeature getTmsStationByTmsNumber(
+        @PathVariable("number") final Long tmsNumber) throws NonPublicRoadStationException {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, BOTH);
+        return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("BETA: The static information of TMS stations of given road (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/road-number/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+        @ApiResponse(code = 404, message = "Vessel metadata not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeatureCollection listaTmsStationsByRoadNumber(
+        @PathVariable("number") final Integer roadNumber,
+        @ApiParam("Return TMS stations of given state.")
+        @RequestParam(value = "state", required = false, defaultValue = "ACTIVE")
+        final TmsState state) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
+    }
+
+    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/road-station-id/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Vessel metadata not found"),
                         @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeature getTmsStation(
+    public TmsStationFeature getTmsStationByRoadStationId(
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.getTmsStationById(id);
+        return tmsStationService.getTmsStationByRoadStationId(id);
     }
 
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")

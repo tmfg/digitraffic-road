@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.TmsStationRepository;
+import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -32,8 +33,6 @@ public class TmsStationService {
     private final StaticDataStatusService staticDataStatusService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
 
-    public enum TmsListType { ACTIVE, REMOVED, BOTH}
-
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
                              final StaticDataStatusService staticDataStatusService,
@@ -45,41 +44,79 @@ public class TmsStationService {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
-        final TmsListType tmsListType) {
+        final TmsState tmsState) {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
-        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsListType);
+        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
                 stations,
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
-    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsListType tmsListType) {
+    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsState tmsState) {
         if(onlyUpdateInfo) {
             return Collections.emptyList();
         }
 
-        switch(tmsListType) {
+        switch(tmsState) {
             case ACTIVE:
                 return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
             case REMOVED:
                 return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
                     (CollectionStatus.REMOVED_PERMANENTLY);
-            case BOTH:
+            case ALL:
                 return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-    public TmsStationFeature getTmsStationById(final Long id) throws NonPublicRoadStationException {
-        final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(id);
+    @Transactional(readOnly = true)
+    public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
+        final List<TmsStation> stations = findStations(roadNumber, tmsState);
 
+        return tmsStationMetadata2FeatureConverter.convert(
+            stations,
+            updated != null ? updated.getUpdatedTime() : null);
+    }
+
+    private List<TmsStation> findStations(final Integer roadNumber, final TmsState tmsState) {
+        switch(tmsState) {
+            case ACTIVE:
+                return tmsStationRepository
+                    .findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
+            case REMOVED:
+                return tmsStationRepository
+                    .findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY, roadNumber);
+            case ALL:
+                return tmsStationRepository
+                    .findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public TmsStationFeature getTmsStationByRoadStationId(final Long roadStationId) throws NonPublicRoadStationException {
+        final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(roadStationId);
+
+        return convert(roadStationId, station);
+    }
+
+    @Transactional(readOnly = true)
+    public TmsStationFeature getTmsStationByLamId(final Long lamId) throws NonPublicRoadStationException {
+        return convert(lamId, tmsStationRepository.findByRoadStationIsPublicIsTrueAndNaturalId(lamId));
+    }
+
+    private TmsStationFeature convert(final Long id, final TmsStation station) throws NonPublicRoadStationException {
         if(station == null) {
             throw new ObjectNotFoundException(TmsStation.class, id);
         }
 
         return tmsStationMetadata2FeatureConverter.convert(station);
+
     }
 
     @Transactional
