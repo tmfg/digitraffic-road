@@ -40,11 +40,6 @@ public class PerformanceMonitorAspect {
     public Object monitor(ProceedingJoinPoint pjp) throws Throwable {
 
         final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
-        final Method method = methodSignature.getMethod();
-        final PerformanceMonitor monitorAnnotation = method.getAnnotation(PerformanceMonitor.class);
-        final int warningLimit = monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
-        final int infoLimit = monitorAnnotation != null ? monitorAnnotation.maxInfoExcecutionTime() : DEFAULT_INFO_LIMIT;
-        final boolean monitor = monitorAnnotation != null ? monitorAnnotation.monitor() : true;
 
         final StopWatch stopWatch = StopWatch.createStarted();
 
@@ -56,21 +51,33 @@ public class PerformanceMonitorAspect {
             return pjp.proceed();
         } finally {
             stopWatch.stop();
-            final double executionTime = stopWatch.getTime();
+            monitor(pjp, methodSignature, stopWatch.getTime());
+        }
+    }
 
-            if (monitor) {
-                final String methodWithClass = methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName();
-                final Object[] args = pjp.getArgs();
+    private void monitor(final ProceedingJoinPoint pjp, final MethodSignature methodSignature, final long executionTime) {
+        final Method method = methodSignature.getMethod();
+        final PerformanceMonitor monitorAnnotation = method.getAnnotation(PerformanceMonitor.class);
+        final boolean monitor = monitorAnnotation != null ? monitorAnnotation.monitor() : true;
 
-                if (executionTime > warningLimit &&
-                    log.isWarnEnabled()) {
-                    log.warn(buildMessage(methodWithClass, args, executionTime));
-                } else if (executionTime > infoLimit &&
-                    log.isInfoEnabled()) {
-                    log.info(buildMessage(methodWithClass, args, executionTime));
-                }
+        if (monitor) {
+            final int warningLimit = monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
+            final int infoLimit = monitorAnnotation != null ? monitorAnnotation.maxInfoExcecutionTime() : DEFAULT_INFO_LIMIT;
+            final Object[] args = pjp.getArgs();
+            final String methodWithClass = getMethodWithClass(methodSignature);
+
+            if (executionTime > warningLimit &&
+                log.isWarnEnabled()) {
+                log.warn(buildMessage(methodWithClass, args, executionTime));
+            } else if (executionTime > infoLimit &&
+                       log.isInfoEnabled()) {
+                log.info(buildMessage(methodWithClass, args, executionTime));
             }
         }
+    }
+
+    private String getMethodWithClass(final MethodSignature methodSignature) {
+        return methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName();
     }
 
     private String buildMessage(final String invocationName,
