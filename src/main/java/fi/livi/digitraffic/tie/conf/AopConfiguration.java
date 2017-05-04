@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import fi.livi.digitraffic.tie.helper.PerformanceMonitorAspect;
+import fi.livi.digitraffic.tie.aop.PerformanceMonitorAspect;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)

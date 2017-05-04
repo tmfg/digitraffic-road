@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.helper;
+package fi.livi.digitraffic.tie.aop;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
