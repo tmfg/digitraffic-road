@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
+import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
@@ -50,6 +51,10 @@ public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 
     public static final String TMS_STATIONS_PATH = "/tms-stations";
+    public static final String TMS_STATIONS_TMS_NUMBER_PATH = TMS_STATIONS_PATH + "/tms-number";
+    public static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
+    public static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
+
     public static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
@@ -96,46 +101,52 @@ public class MetadataController {
                 @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                 final boolean lastUpdated,
-                @ApiParam("Return TMS stations of given state.")
-                @RequestParam(value = "state", required = false, defaultValue = "ACTIVE")
-                final TmsState state) {
+        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @RequestParam(value = "state", required = false, defaultValue = "active")
+        final String stateString) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+
+        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
     @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/tms-number/{number}", produces =
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces =
         APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeature getTmsStationByTmsNumber(
         @PathVariable("number") final Long tmsNumber) throws NonPublicRoadStationException {
-        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_TMS_NUMBER_PATH);
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
     @ApiOperation("BETA: The static information of TMS stations of given road (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/road-number/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 404, message = "Vessel metadata not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeatureCollection listaTmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
-        @ApiParam("Return TMS stations of given state.")
-        @RequestParam(value = "state", required = false, defaultValue = "ACTIVE")
-        final TmsState state) throws NonPublicRoadStationException {
-        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @RequestParam(value = "state", required = false, defaultValue = "active")
+        final String stateString) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_ROAD_NUMBER_PATH);
+
+        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
     @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH + "/road-station-id/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Vessel metadata not found"),
                         @ApiResponse(code = 500, message = "Internal server error")})
     public TmsStationFeature getTmsStationByRoadStationId(
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
-        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_ROAD_STATION_ID_PATH);
         return tmsStationService.getTmsStationByRoadStationId(id);
     }
 
