@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.helper.PerformanceMonitorAspect;
 
@@ -22,10 +21,5 @@ public class AopConfiguration {
     public PerformanceMonitorAspect performanceMonitorAspect() {
         this.performanceMonitorAspect = new PerformanceMonitorAspect();
         return performanceMonitorAspect;
-    }
-
-    @Scheduled(fixedRate = 60000)
-    public void logPerformanceMonitorSummary() {
-        performanceMonitorAspect.logRequestExecutionTimesAndResetCounters();
     }
 }
