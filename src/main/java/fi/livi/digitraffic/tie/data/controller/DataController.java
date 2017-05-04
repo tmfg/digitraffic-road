@@ -333,7 +333,7 @@ public class DataController {
     }
 */
 
-    @ApiOperation("BETA Current traffic disorders Datex2 messages")
+    @ApiOperation("Active traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
@@ -342,7 +342,7 @@ public class DataController {
         return datex2DataService.findActiveDatex2Response();
     }
 
-    @ApiOperation("BETA Traffic disorder Datex2 messages by situation id")
+    @ApiOperation("Traffic disorder Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
@@ -355,7 +355,7 @@ public class DataController {
         return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
     }
 
-    @ApiOperation("BETA Traffic disorder Datex2 messages disorders history")
+    @ApiOperation("Traffic disorder Datex2 messages disorders history")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 400, message = "Invalid parameter"),
