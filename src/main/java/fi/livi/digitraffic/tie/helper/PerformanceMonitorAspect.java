@@ -1,9 +1,5 @@
 package fi.livi.digitraffic.tie.helper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -19,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+
 @Aspect
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PerformanceMonitorAspect {
@@ -28,7 +26,14 @@ public class PerformanceMonitorAspect {
     public static final int DEFAULT_INFO_LIMIT = 5000;
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
-    @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
+    /**
+     *
+     * @Around("@annotation(org.springframework.transaction.annotation.Transactional)") -> @Transactional annotated methods.
+     * @Around("execution(* fi.livi.digitraffic.tie..*Service.*(..))") -> Every class which name ends to Service.
+     * @Around("within(@org.springframework.stereotype.Service *)") -> Every class which has @Service annotation.
+     *
+     */
+    @Around("within(@org.springframework.stereotype.Service *)")
     public Object monitor(ProceedingJoinPoint pjp) throws Throwable {
 
 
@@ -40,6 +45,8 @@ public class PerformanceMonitorAspect {
         final boolean monitor = monitorAnnotation != null ? monitorAnnotation.monitor() : true;
 
         final StopWatch stopWatch = StopWatch.createStarted();
+
+        log.info(methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName());
 
         try {
             return pjp.proceed();
@@ -115,30 +122,4 @@ public class PerformanceMonitorAspect {
         builder.append("]");
     }
 
-    /**
-     * Annotation to configure PerformanceMonitor limits.
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.METHOD})
-    public @interface PerformanceMonitor {
-        /**
-         * Limits when execution time is logged as warning
-         *
-         * @return maxWarnExcecutionTime in millis
-         */
-        int maxWarnExcecutionTime() default 5000;
-
-        /**
-         * Limits when execution time is logged as info
-         *
-         * @return maxInfoExcecutionTime in millis
-         */
-        int maxInfoExcecutionTime() default 1000;
-
-        /**
-         * Should transactional method be monitored
-         * @return monitor
-         */
-        boolean monitor() default true;
-    }
 }
