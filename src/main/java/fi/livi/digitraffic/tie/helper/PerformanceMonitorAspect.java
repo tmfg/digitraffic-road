@@ -33,11 +33,10 @@ public class PerformanceMonitorAspect {
      * @Around("within(@org.springframework.stereotype.Service *)") -> Every class which has @Service annotation.
      *
      */
-    @Around("within(@org.springframework.stereotype.Service *)")
+    @Around("within(@org.springframework.stereotype.Service *) || @annotation(fi.livi.digitraffic.tie.annotation.PerformanceMonitor)")
     public Object monitor(ProceedingJoinPoint pjp) throws Throwable {
 
-
-        final MethodSignature methodSignature = (MethodSignature)pjp.getSignature();
+        final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
         final Method method = methodSignature.getMethod();
         final PerformanceMonitor monitorAnnotation = method.getAnnotation(PerformanceMonitor.class);
         final int warningLimit = monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
@@ -46,7 +45,9 @@ public class PerformanceMonitorAspect {
 
         final StopWatch stopWatch = StopWatch.createStarted();
 
-        log.info(methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName());
+        if (log.isDebugEnabled()) {
+            log.debug("monitor {}#{}", methodSignature.getDeclaringType().getName(), methodSignature.getName());
+        }
 
         try {
             return pjp.proceed();
