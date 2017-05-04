@@ -27,6 +27,9 @@ public class PerformanceMonitorAspect {
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
     /**
+     * By default every method in class with @Service annotation is monitored.
+     * In addition any method can be monitored with @PerformanceMonitor annotation.
+     * @PerformanceMonitor annotation also has properties to adjust monitoring settings.
      *
      * @Around("@annotation(org.springframework.transaction.annotation.Transactional)") -> @Transactional annotated methods.
      * @Around("execution(* fi.livi.digitraffic.tie..*Service.*(..))") -> Every class which name ends to Service.
