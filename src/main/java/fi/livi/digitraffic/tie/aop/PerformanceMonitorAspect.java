@@ -23,7 +23,7 @@ public class PerformanceMonitorAspect {
 
     private static final Logger log = LoggerFactory.getLogger("PerformanceMonitor");
     public static final int DEFAULT_WARNING_LIMIT = 5000;
-    public static final int DEFAULT_INFO_LIMIT = 5000;
+    public static final int DEFAULT_INFO_LIMIT = 1000;
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
     /**
