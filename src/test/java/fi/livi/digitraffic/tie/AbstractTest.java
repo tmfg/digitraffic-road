@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MetadataApplication.class,
-                properties = "config.test=true",
+                properties = { "config.test=true","javamelody.enabled=false" },
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 public abstract class AbstractTest {
