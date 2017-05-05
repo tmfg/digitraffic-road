@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
-import static fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService.TmsListType.ACTIVE;
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ACTIVE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
