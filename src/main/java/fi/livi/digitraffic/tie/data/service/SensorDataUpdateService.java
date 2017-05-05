@@ -6,9 +6,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.internal.OracleConnection;
 
@@ -27,6 +33,8 @@ public class SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateService.class);
 
     private final DataSource dataSource;
+    private final Set<Long> allowedTmsSensorLotjuIds;
+    private final Set<Long> allowedWeatherSensorLotjuIds;
 
     private static final String MERGE_STATEMENT =
             "MERGE INTO SENSOR_VALUE dst\n" +
@@ -51,7 +59,7 @@ public class SensorDataUpdateService {
                     "                           , dst.updated = sysdate\n" +
                     "                           , dst.time_window_start = :timeWindowStart\n" +
                     "                           , dst.time_window_end = :timeWindowEnd\n" +
-                "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
+                    "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
                     "     VALUES (SEQ_SENSOR_VALUE.nextval\n" +
                     "           , src.road_station_id\n" +
                     "           , src.road_station_sensor_id\n" +
@@ -63,9 +71,20 @@ public class SensorDataUpdateService {
                     "     WHERE src.road_station_id IS NOT NULL\n" +
                     "       AND src.road_station_sensor_id IS NOT NULL";
 
+
+
     @Autowired
-    public SensorDataUpdateService(final DataSource dataSource) throws SQLException {
+    public SensorDataUpdateService(final DataSource dataSource,
+                                   final RoadStationSensorService roadStationSensorService) throws SQLException {
         this.dataSource = dataSource;
+
+        final List<RoadStationSensor> allowedTmsSensors =
+            roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
+        allowedTmsSensorLotjuIds = allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
+
+        final List<RoadStationSensor> allowedWeatherSensors =
+            roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
+        allowedWeatherSensorLotjuIds = allowedWeatherSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
     }
 
     /**
@@ -79,23 +98,17 @@ public class SensorDataUpdateService {
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
              OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
-            final long startFilter = System.currentTimeMillis();
+            final StopWatch stopWatch = StopWatch.createStarted();
             final Collection<Lam> newestLamData = filterNewestLamValues(data);
-            final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendLamBatchData(opsMerge, newestLamData);
-
-            final long endAppendStartMerge = System.currentTimeMillis();
+            Pair<Integer, Integer> rowsAndNotAllowed =
+                appendLamBatchData(opsMerge, newestLamData, allowedTmsSensorLotjuIds);
             opsMerge.executeBatch();
-            final long endMerge = System.currentTimeMillis();
+            stopWatch.stop();
 
-            log.info(String.format("Update tms sensors data for %1$d " +
-                                   "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, merge %5$d ms)",
-                                   rows,
-                                   endMerge - startFilter, // total
-                                   endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartMerge - endFilterStartAppend, // append data
-                                   endMerge - endAppendStartMerge)); // merge
+            log.info("Update tms sensors data for {} rows, took {} ms (Skipped {} not allowed sensor values)",
+                     rowsAndNotAllowed.getLeft(),
+                     stopWatch.getTime(),
+                     rowsAndNotAllowed.getRight());
             return true;
         } catch (Exception e) {
             log.error("Error while updating tms data", e);
@@ -114,23 +127,18 @@ public class SensorDataUpdateService {
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
              OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
-            final long startFilter = System.currentTimeMillis();
+            final StopWatch stopWatch = StopWatch.createStarted();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
-            final long endFilterStartAppend = System.currentTimeMillis();
-            final int rows = appendTiesaaBatchData(opsMerge, newestTiesaaData);
-
-            final long endAppendStartMerge = System.currentTimeMillis();
+            final Pair<Integer, Integer> rowsAndNotAllowed =
+                appendTiesaaBatchData(opsMerge, newestTiesaaData, allowedWeatherSensorLotjuIds);
             opsMerge.executeBatch();
-            final long endMerge = System.currentTimeMillis();
+            stopWatch.stop();
 
-            log.info(String.format("Update weather sensors data for %1$d " +
-                                   "rows, took %2$d ms (data filter: %3$d ms, " +
-                                   "append batch: %4$d ms, merge %5$d ms)",
-                                   rows,
-                                   endMerge - startFilter, // total
-                                   endFilterStartAppend - startFilter, // filter data
-                                   endAppendStartMerge - endFilterStartAppend, // append data
-                                   endMerge - endAppendStartMerge)); // merge
+            log.info("Update weather sensors data for {} rows took {} ms (Skipped {} not allowed sensor values)",
+                     rowsAndNotAllowed.getLeft(),
+                     stopWatch.getTime(),
+                     rowsAndNotAllowed.getRight());
+
             return true;
         } catch (Exception e) {
             log.error("Error while updating weather data", e);
@@ -169,49 +177,63 @@ public class SensorDataUpdateService {
     }
 
 
-    private static int appendLamBatchData(OraclePreparedStatement ops, Collection<Lam> lams) throws SQLException {
+    private static Pair<Integer, Integer> appendLamBatchData(OraclePreparedStatement ops,
+                                                             Collection<Lam> lams,
+                                                             Set<Long> allowedTmsSensorLotjuIds) throws SQLException {
         int rows = 0;
-
+        int notAllowed = 0;
         for (Lam lam : lams) {
             List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
             LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Lam.Anturit.Anturi anturi : anturit) {
-                rows++;
-                ops.setDoubleAtName("value", (double) anturi.getArvo());
-                ops.setTimestampAtName("measured", measured);
-                ops.setLongAtName("rsLotjuId", lam.getAsemaId());
-                ops.setLongAtName("sensorLotjuId", Long.parseLong(anturi.getLaskennallinenAnturiId()));
-                ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
-                final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
-                final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
-                ops.setTimestampAtName("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
-                ops.setTimestampAtName("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
-                ops.addBatch();
+                final long sensorLotjuId = Long.parseLong(anturi.getLaskennallinenAnturiId());
+                if ( allowedTmsSensorLotjuIds.contains( sensorLotjuId ) ) {
+                    rows++;
+                    ops.setDoubleAtName("value", (double) anturi.getArvo());
+                    ops.setTimestampAtName("measured", measured);
+                    ops.setLongAtName("rsLotjuId", lam.getAsemaId());
+                    ops.setLongAtName("sensorLotjuId", sensorLotjuId);
+                    ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
+                    final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
+                    final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
+                    ops.setTimestampAtName("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
+                    ops.setTimestampAtName("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
+                    ops.addBatch();
+                } else {
+                    notAllowed++;
+                }
             }
         }
-        return rows;
+        return Pair.of(rows, notAllowed);
     }
 
-    private static int appendTiesaaBatchData(OraclePreparedStatement ops, Collection<Tiesaa> tiesaas) throws SQLException {
+    private static Pair<Integer, Integer> appendTiesaaBatchData(OraclePreparedStatement ops,
+                                                                Collection<Tiesaa> tiesaas,
+                                                                Set<Long> allowedWeatherSensorLotjuIds) throws SQLException {
         int rows = 0;
-
+        int notAllowed = 0;
         for (Tiesaa tiesaa : tiesaas) {
             List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
             LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
             Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
-                rows++;
-                ops.setDoubleAtName("value", (double) anturi.getArvo());
-                ops.setTimestampAtName("measured", measured);
-                ops.setLongAtName("rsLotjuId", tiesaa.getAsemaId());
-                ops.setLongAtName("sensorLotjuId", anturi.getLaskennallinenAnturiId());
-                ops.setStringAtName("stationType", RoadStationType.WEATHER_STATION.name());
-                ops.setTimestampAtName("timeWindowStart", null);
-                ops.setTimestampAtName("timeWindowEnd", null);
-                ops.addBatch();
+                final long sensorLotjuId = anturi.getLaskennallinenAnturiId();
+                if (allowedWeatherSensorLotjuIds.contains(sensorLotjuId)) {
+                    rows++;
+                    ops.setDoubleAtName("value", (double) anturi.getArvo());
+                    ops.setTimestampAtName("measured", measured);
+                    ops.setLongAtName("rsLotjuId", tiesaa.getAsemaId());
+                    ops.setLongAtName("sensorLotjuId", sensorLotjuId);
+                    ops.setStringAtName("stationType", RoadStationType.WEATHER_STATION.name());
+                    ops.setTimestampAtName("timeWindowStart", null);
+                    ops.setTimestampAtName("timeWindowEnd", null);
+                    ops.addBatch();
+                } else {
+                    notAllowed++;
+                }
             }
         }
-        return rows;
+        return Pair.of(rows, notAllowed);
     }
 }

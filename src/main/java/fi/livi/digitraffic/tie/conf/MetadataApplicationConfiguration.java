@@ -76,6 +76,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setMinPoolSize(5);
         dataSource.setMaxIdleTime(5);
         dataSource.setValidateConnectionOnBorrow(true);
+        dataSource.setSQLForValidateConnection("SELECT 1 FROM DUAL");
         dataSource.setMaxStatements(10);
         dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
         return dataSource;

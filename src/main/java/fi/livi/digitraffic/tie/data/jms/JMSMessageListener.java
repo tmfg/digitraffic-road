@@ -168,7 +168,11 @@ public class JMSMessageListener<T> implements MessageListener {
                 log.debug("Handle data");
                 dataUpdater.updateData(targetList);
                 log.info("DrainQueue of size {} took {} ms", drained, start.getTime());
+            } else {
+                log.info("DrainQueue empty");
             }
+        } else {
+            log.info("drainQueueInternal: Shutdown called");
         }
     }
 

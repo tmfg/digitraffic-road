@@ -110,7 +110,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
 
         log.info("Obsoleted {} RoadStationSensors", obsoleted);
         log.info("Updated {} RoadStationSensors", update);
-        log.info("Inserted {} RoadStationSensors", insert);
+        log.info("Inserted {} RoadStationSensors", inserted);
 
         if (insert.size() > inserted) {
             log.warn("Insert failed for {} RoadStationSensors", (insert.size()-inserted));

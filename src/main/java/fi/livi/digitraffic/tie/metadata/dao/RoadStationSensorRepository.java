@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.QueryHint;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -25,7 +23,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
            "       AND allowed.roadStationType = s.roadStationType\n" +
            "  )" +
            "ORDER BY s.naturalId")
-    @EntityGraph(attributePaths = "sensorValueDescriptions")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
 
