@@ -226,7 +226,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
 
             if (rs.getRoadAddress().getId() == null) {
                 roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress " + rs.getRoadAddress());
+                log.info("Created new " + rs.getRoadAddress());
             }
             roadStationService.save(rws.getRoadStation());
             rws = weatherStationService.save(rws);
