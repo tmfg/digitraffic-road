@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -100,7 +99,7 @@ public class RoadStation {
     @JoinTable(name = "ROAD_STATION_SENSORS",
                joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
-    List<RoadStationSensor> roadStationSensors = new ArrayList<>();
+    private List<RoadStationSensor> roadStationSensors = new ArrayList<>();
 
     /**
      * This value is calculated by db so it's value is not
