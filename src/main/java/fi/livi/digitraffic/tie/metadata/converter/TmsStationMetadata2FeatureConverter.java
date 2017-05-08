@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
+import fi.livi.digitraffic.tie.metadata.dto.StationSensor;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
@@ -51,15 +51,10 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
     }
 
     private Map<Long, List<Long>> createSensorMap() {
-        final List<Object[]> list = roadStationSensorRepository.listRoadStationSensors();
+        final List<StationSensor> list = roadStationSensorRepository.listRoadStationSensors();
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
-        list.stream().forEach(oo -> {
-            final Long rsId = ((BigDecimal)oo[0]).longValue();
-            final String sensorList = (String)oo[1];
-
-            sensorMap.put(rsId, sensorList(sensorList));
-        });
+        list.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
 
         return sensorMap;
     }
@@ -68,9 +63,9 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
         if(tms.getRoadStationId() != null) {
-            final String sensorList = roadStationSensorRepository.listRoadStationSensors(tms.getRoadStationId());
+            final StationSensor stationSensor = roadStationSensorRepository.listRoadStationSensors(tms.getRoadStationId());
 
-            sensorMap.put(tms.getRoadStationId(), sensorList(sensorList));
+            sensorMap.put(stationSensor.getRoadStationId(), sensorList(stationSensor.getSensors()));
         }
 
         return convert(sensorMap, tms);

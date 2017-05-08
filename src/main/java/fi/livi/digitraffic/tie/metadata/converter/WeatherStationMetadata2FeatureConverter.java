@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
+import fi.livi.digitraffic.tie.metadata.dto.StationSensor;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
@@ -53,15 +53,10 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
     }
 
     private Map<Long, List<Long>> createSensorMap() {
-        final List<Object[]> list = weatherStationRepository.listWeatherStationSensors();
+        final List<StationSensor> sensorList = weatherStationRepository.listWeatherStationSensors();
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
-        list.stream().forEach(oo -> {
-            final Long rsId = ((BigDecimal)oo[0]).longValue();
-            final String sensorList = (String)oo[1];
-
-            sensorMap.put(rsId, sensorList(sensorList));
-        });
+        sensorList.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
 
         return sensorMap;
     }
@@ -69,7 +64,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
     private static List<Long> sensorList(final String sensorList) {
         return Stream.of(sensorList.split(",")).map(Long::valueOf).collect(Collectors.toList());
     }
-    
+
     private WeatherStationFeature convert(final Map<Long, List<Long>> sensorMap, final WeatherStation rws) throws NonPublicRoadStationException {
         final WeatherStationFeature f = new WeatherStationFeature();
         if (log.isDebugEnabled()) {
