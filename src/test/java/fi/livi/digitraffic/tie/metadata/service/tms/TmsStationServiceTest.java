@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ACTIVE;
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ALL;
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.REMOVED;
+
 import java.util.Map;
 
 import org.junit.Assert;
@@ -17,20 +21,19 @@ public class TmsStationServiceTest extends AbstractTest {
 
     @Test
     public void findAllPublishableTmsStationsAsFeatureCollection() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, TmsStationService.TmsListType.ACTIVE);
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 
     @Test
     public void findPermanentlyRemovedStations() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, TmsStationService.TmsListType.REMOVED);
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, REMOVED);
         Assert.assertTrue(stations.getFeatures().size() == 0);
     }
 
     @Test
     public void findAllStations() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false,
-            TmsStationService.TmsListType.BOTH);
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ALL);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 

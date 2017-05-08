@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dao;
+package fi.livi.digitraffic.tie.metadata.dao.tms;
 
 import java.util.List;
 import javax.persistence.QueryHint;
@@ -26,18 +26,35 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
 
-    TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(long roadStationNaturalId);
+    TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(final long roadStationNaturalId);
 
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM TmsStation tms\n" +
            "WHERE tms.roadStation.naturalId = ?1\n" +
            "  AND tms.roadStation.obsolete = false\n" +
            "  AND tms.roadStation.isPublic = true")
-    boolean tmsExistsWithRoadStationNaturalId(long roadStationNaturalId);
+    boolean tmsExistsWithRoadStationNaturalId(final long roadStationNaturalId);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
     List<TmsStation> findByLotjuIdIsNull();
 
     TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long id);
+
+    TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long lamId);
+
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    List<TmsStation> findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
+        roadNumber);
+
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(
+        final CollectionStatus removedPermanently, final Integer roadNumber);
+
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
+        roadNumber);
 }
