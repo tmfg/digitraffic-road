@@ -14,6 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturit;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiTiesaaAsemat;
@@ -36,6 +37,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         super(marshaller, weatherMetadataServerAddress, log);
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<TiesaaAsemaVO> getTiesaaAsemmas() {
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();

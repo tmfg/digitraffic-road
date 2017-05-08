@@ -12,6 +12,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsemat;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsematResponse;
@@ -34,6 +35,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         super(marshaller, tmsMetadataServerAddress, log);
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<LamAsemaVO> getLamAsemas() {
 

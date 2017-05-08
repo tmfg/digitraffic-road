@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
@@ -38,6 +39,7 @@ public class LotjuWeatherStationMetadataService extends AbstractLotjuMetadataSer
         return lotjuWeatherStationClient.getTiesaaAsemmas();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 100000)
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
         log.info("Fetching TiesaaLaskennallinenAnturis for {} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
 

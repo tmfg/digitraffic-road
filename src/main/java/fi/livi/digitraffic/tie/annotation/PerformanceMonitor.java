@@ -15,6 +15,13 @@ import java.lang.annotation.Target;
 public @interface PerformanceMonitor {
 
     /**
+     * Limits when execution time is logged as error
+     *
+     * @return maxErroExcecutionTime in millis
+     */
+    int maxErroExcecutionTime() default 60000;
+
+    /**
      * Limits when execution time is logged as warning
      *
      * @return maxWarnExcecutionTime in millis

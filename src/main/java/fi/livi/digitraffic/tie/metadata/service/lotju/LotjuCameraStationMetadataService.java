@@ -43,7 +43,7 @@ public class LotjuCameraStationMetadataService extends AbstractLotjuMetadataServ
 
         log.info("Fetch Kameras");
         final List<KameraVO> kamerat = lotjuCameraStationClient.getKameras();
-        log.info("Fetched " + kamerat.size() + " Kameras");
+        log.info("Fetched {} Kameras", kamerat.size());
         log.info("Fetch Esiasentos for Kameras");
 
         StopWatch start = StopWatch.createStarted();

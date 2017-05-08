@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.data.dao.LinkFastLaneRepository;
 import fi.livi.digitraffic.tie.data.dao.TravelTimeRepository;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.LinkFastLaneDto;
@@ -92,6 +93,7 @@ public class TravelTimeUpdater {
         log.info("Processed and saved PKS measurements for {} links", processed.size());
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Transactional
     public void updateMedians(final ZonedDateTime from) {
 
