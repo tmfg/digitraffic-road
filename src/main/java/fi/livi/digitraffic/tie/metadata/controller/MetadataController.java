@@ -127,7 +127,7 @@ public class MetadataController {
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 404, message = "Vessel metadata not found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    public TmsStationFeatureCollection listaTmsStationsByRoadNumber(
+    public TmsStationFeatureCollection listTmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
@@ -154,7 +154,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
                         @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationsSensorsMetadata listNonObsoleteTmsStationSensors(
+    public RoadStationsSensorsMetadata listTmsStationSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) {
@@ -166,7 +166,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraStationFeatureCollection listNonObsoleteCameraPresets(
+    public CameraStationFeatureCollection listCameraPresets(
                     @ApiParam("If parameter is given result will only contain update status.")
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) {
@@ -178,7 +178,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public WeatherStationFeatureCollection listNonObsoleteWeatherStations(
+    public WeatherStationFeatureCollection listWeatherStations(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             final boolean lastUpdated) {
@@ -190,7 +190,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station Sensors"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationsSensorsMetadata listNonObsoleteWeatherStationSensors(
+    public RoadStationsSensorsMetadata listWeatherStationSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             final boolean lastUpdated) {
@@ -239,7 +239,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationTypesMetadata listaLocationTypes (
+    public LocationTypesMetadata listLocationTypes(
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
                     final String version,
