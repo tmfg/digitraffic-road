@@ -13,6 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeEsiasennotKameranTunnuksella;
@@ -33,13 +34,14 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         super(marshaller, cameraMetadataServerAddress, log);
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
-        log.info("Fetched {} Kameras for, took {} ms", response.getValue().getKamerat().size(), start.getTime());
+        log.info("Fetched {} Kameras took {} ms", response.getValue().getKamerat().size(), start.getTime());
         return response.getValue().getKamerat();
     }
 

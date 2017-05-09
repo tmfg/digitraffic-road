@@ -22,6 +22,7 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 public class PerformanceMonitorAspect {
 
     private static final Logger log = LoggerFactory.getLogger("PerformanceMonitor");
+    public static final int DEFAULT_ERROR_LIMIT = 60000;
     public static final int DEFAULT_WARNING_LIMIT = 5000;
     public static final int DEFAULT_INFO_LIMIT = 1000;
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
@@ -61,12 +62,16 @@ public class PerformanceMonitorAspect {
         final boolean monitor = monitorAnnotation != null ? monitorAnnotation.monitor() : true;
 
         if (monitor) {
+            final int erroLimit = monitorAnnotation != null ? monitorAnnotation.maxErroExcecutionTime() : DEFAULT_ERROR_LIMIT;
             final int warningLimit = monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
             final int infoLimit = monitorAnnotation != null ? monitorAnnotation.maxInfoExcecutionTime() : DEFAULT_INFO_LIMIT;
             final Object[] args = pjp.getArgs();
             final String methodWithClass = getMethodWithClass(methodSignature);
 
-            if (executionTime > warningLimit &&
+            if (executionTime > erroLimit &&
+                log.isErrorEnabled()) {
+                log.error(buildMessage(methodWithClass, args, executionTime));
+            } else if (executionTime > warningLimit &&
                 log.isWarnEnabled()) {
                 log.warn(buildMessage(methodWithClass, args, executionTime));
             } else if (executionTime > infoLimit &&
@@ -92,10 +97,8 @@ public class PerformanceMonitorAspect {
             buildValueToString(builder, args);
         }
 
-        builder.append(" invocation time was ")
-               .append(decimalFormat.format(executionTimeSeconds))
-               .append(" s");
-        return StringUtils.truncate(builder.toString(), 1000);
+        return StringUtils.truncate(builder.toString(), 1000) +
+               String.format(" invocation time was %s s", decimalFormat.format(executionTimeSeconds));
     }
 
     private void buildValueToString(final StringBuilder builder, final Object value) {
