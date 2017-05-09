@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
-import fi.livi.digitraffic.tie.metadata.dto.StationSensor;
+import fi.livi.digitraffic.tie.metadata.dto.StationSensors;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
@@ -46,7 +46,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<StationSensor> listStationSensorsByType(@Param("stationType") final String stationType);
+    List<StationSensors> listStationSensorsByType(@Param("stationType") final String stationType);
 
     @Query(value =
         "SELECT rs_sensors.road_station_id, LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
@@ -58,5 +58,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
-    StationSensor listRoadStationSensorsByIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String stationType);
+    List<StationSensors> getStationSensorsByIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
+        stationType);
 }

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.metadata.dto.StationSensor;
+import fi.livi.digitraffic.tie.metadata.dto.StationSensors;
 
 @Component
 public class StationSensorConverter {
@@ -22,22 +23,21 @@ public class StationSensorConverter {
     }
 
     public Map<Long, List<Long>> createSensorMap(final String type) {
-        final List<StationSensor> list = roadStationSensorRepository.listStationSensorsByType(type);
-        final Map<Long, List<Long>> sensorMap = new HashMap<>();
+        final List<StationSensors> list = roadStationSensorRepository.listStationSensorsByType(type);
 
-        list.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
-
-        return sensorMap;
+        return createMap(list);
     }
 
     public Map<Long, List<Long>> createSensorMap(final Long roadStationId, final String type) {
+        return roadStationId == null ?
+            Collections.emptyMap() :
+            createMap(roadStationSensorRepository.getStationSensorsByIdAndType(roadStationId, type));
+    }
+
+    private static Map<Long, List<Long>> createMap(final List<StationSensors> sensors) {
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
-        if(roadStationId != null) {
-            final StationSensor stationSensor = roadStationSensorRepository.listRoadStationSensorsByIdAndType(roadStationId, type);
-
-            sensorMap.put(stationSensor.getRoadStationId(), sensorList(stationSensor.getSensors()));
-        }
+        sensors.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
 
         return sensorMap;
     }

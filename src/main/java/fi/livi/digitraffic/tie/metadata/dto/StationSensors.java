@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dto;
 
-public interface StationSensor {
+public interface StationSensors {
     Long getRoadStationId();
 
     String getSensors();
