@@ -1,13 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.math.BigDecimal;
+import static fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository.TMS_STATION_TYPE;
+
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
@@ -15,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
@@ -27,17 +24,17 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
     private static final Log log = LogFactory.getLog( TmsStationMetadata2FeatureConverter.class );
 
-    private final RoadStationSensorRepository roadStationSensorRepository;
+    private final StationSensorConverter stationSensorConverter;
+
     @Autowired
-    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter,
-        final RoadStationSensorRepository roadStationSensorRepository) {
+    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter, final StationSensorConverter stationSensorConverter) {
         super(coordinateConverter);
-        this.roadStationSensorRepository = roadStationSensorRepository;
+        this.stationSensorConverter = stationSensorConverter;
     }
 
     public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated) {
         final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated);
-        final Map<Long, List<Long>> sensorMap = createSensorMap();
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(TMS_STATION_TYPE);
 
         for(final TmsStation tms : stations) {
             try {
@@ -50,34 +47,10 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         return collection;
     }
 
-    private Map<Long, List<Long>> createSensorMap() {
-        final List<Object[]> list = roadStationSensorRepository.listRoadStationSensors();
-        final Map<Long, List<Long>> sensorMap = new HashMap<>();
-
-        list.stream().forEach(oo -> {
-            final Long rsId = ((BigDecimal)oo[0]).longValue();
-            final String sensorList = (String)oo[1];
-
-            sensorMap.put(rsId, sensorList(sensorList));
-        });
-
-        return sensorMap;
-    }
-
     public TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
-        final Map<Long, List<Long>> sensorMap = new HashMap<>();
-
-        if(tms.getRoadStationId() != null) {
-            final String sensorList = roadStationSensorRepository.listRoadStationSensors(tms.getRoadStationId());
-
-            sensorMap.put(tms.getRoadStationId(), sensorList(sensorList));
-        }
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(tms.getRoadStationId(), TMS_STATION_TYPE);
 
         return convert(sensorMap, tms);
-    }
-
-    private static List<Long> sensorList(final String sensorList) {
-        return Stream.of(sensorList.split(",")).map(Long::valueOf).collect(Collectors.toList());
     }
 
     public TmsStationFeature convert(final Map<Long, List<Long>> sensorMap, final TmsStation tms) throws NonPublicRoadStationException {
