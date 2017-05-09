@@ -1,12 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import static fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository.WEATHER_STATION_TYPE;
+
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
-import fi.livi.digitraffic.tie.metadata.dto.StationSensor;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
@@ -27,18 +25,20 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 public final class WeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
     private static final Log log = LogFactory.getLog( WeatherStationMetadata2FeatureConverter.class );
 
-    private WeatherStationRepository weatherStationRepository;
+    private final WeatherStationRepository weatherStationRepository;
+    private final StationSensorConverter stationSensorConverter;
 
     @Autowired
     public WeatherStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter,
-        final WeatherStationRepository weatherStationRepository) {
+        final WeatherStationRepository weatherStationRepository, final StationSensorConverter stationSensorConverter) {
         super(coordinateConverter);
         this.weatherStationRepository = weatherStationRepository;
+        this.stationSensorConverter = stationSensorConverter;
     }
 
     public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated) {
         final WeatherStationFeatureCollection collection = new WeatherStationFeatureCollection(lastUpdated);
-        final Map<Long, List<Long>> sensorMap = createSensorMap();
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(WEATHER_STATION_TYPE);
 
         for(final WeatherStation rws : stations) {
             try {
@@ -46,23 +46,9 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
             } catch (final NonPublicRoadStationException nprse) {
                 //Skip non public roadstation
                 log.warn("Skipping: " + nprse.getMessage());
-                continue;
             }
         }
         return collection;
-    }
-
-    private Map<Long, List<Long>> createSensorMap() {
-        final List<StationSensor> sensorList = weatherStationRepository.listWeatherStationSensors();
-        final Map<Long, List<Long>> sensorMap = new HashMap<>();
-
-        sensorList.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
-
-        return sensorMap;
-    }
-
-    private static List<Long> sensorList(final String sensorList) {
-        return Stream.of(sensorList.split(",")).map(Long::valueOf).collect(Collectors.toList());
     }
 
     private WeatherStationFeature convert(final Map<Long, List<Long>> sensorMap, final WeatherStation rws) throws NonPublicRoadStationException {
