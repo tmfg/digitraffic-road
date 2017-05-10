@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -35,9 +36,9 @@ public class WeatherStation {
 
     private boolean master;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="road_station_id", nullable = false)
-    @Fetch(FetchMode.JOIN)
+    @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
 
     public Long getId() {
