@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureColle
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
 @Component
 public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -72,8 +75,13 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
     }
 
     private Map<Long, Long> getNearestMap(final List<CameraPreset> cameraPresets) {
-        final Set<Long> wsIdList = cameraPresets.stream().map(cp -> cp.getNearestWeatherStation().getId()).collect(Collectors.toSet());
-        final List<NearestRoadStation> nsList = cameraPresetRepository.findAllRoadStationNaturalIds(wsIdList);
+        final Set<Long> wsIdList = cameraPresets.stream()
+            .map(cp -> cp.getNearestWeatherStation())
+            .filter(Objects::nonNull)
+            .map(WeatherStation::getId)
+            .collect(Collectors.toSet());
+        final List<NearestRoadStation> nsList = wsIdList.isEmpty() ? Collections.emptyList() : cameraPresetRepository
+            .findAllRoadStationNaturalIds(wsIdList);
 
         return nsList.stream().collect(Collectors.toMap(NearestRoadStation::getWeatherStationId, NearestRoadStation::getNearestNaturalId));
     }
@@ -108,7 +116,10 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
             properties.setLotjuId(cp.getCameraLotjuId());
             properties.setCameraId(cp.getCameraId());
             properties.setCameraType(cp.getCameraType());
-            properties.setNearestWeatherStationNaturalId(nearestMap.get(cp.getNearestWeatherStation().getId()));
+
+            if(cp.getNearestWeatherStation() != null) {
+                properties.setNearestWeatherStationNaturalId(nearestMap.get(cp.getNearestWeatherStation().getId()));
+            }
 
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();
