@@ -111,6 +111,7 @@ public class JMSMessageListener<T> implements MessageListener {
             final StringReader sr = new StringReader(text);
             Object object = jaxbUnmarshaller.unmarshal(sr);
             if (object instanceof JAXBElement) {
+                // For Datex2 messages extra stuff
                 object = ((JAXBElement) object).getValue();
             }
             return Pair.of((T)object, text);
@@ -159,13 +160,15 @@ public class JMSMessageListener<T> implements MessageListener {
                 log.error("JMS message queue size " + blockingQueue.size() + " exceeds error limit " + QUEUE_SIZE_ERROR_LIMIT);
             } else if (blockingQueue.size() > QUEUE_SIZE_WARNING_LIMIT) {
                 log.warn("JMS message queue size " + blockingQueue.size() + " exceeds warning limit " + QUEUE_SIZE_WARNING_LIMIT);
+            } else {
+                log.info("JMS message queue size " + blockingQueue.size());
             }
 
             // Allocate array with some extra because queue size can change any time
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
             final int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
-                log.debug("Handle data");
+                log.info("DrainQueue of size {}", drained);
                 dataUpdater.updateData(targetList);
                 log.info("DrainQueue of size {} took {} ms", drained, start.getTime());
             } else {
@@ -177,6 +180,7 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     public int getAndResetMessageCounter() {
+        log.info("Current in memory blockingQueue size {}", blockingQueue.size());
         return minuteMessageCounter.getAndSet(0);
     }
 }
