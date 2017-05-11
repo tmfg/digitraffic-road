@@ -3,15 +3,16 @@ package fi.livi.digitraffic.tie.metadata.dao;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.metadata.dto.NearestRoadStation;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Repository
@@ -53,4 +54,11 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
            "WHERE PUBLISHABLE = 0",
            nativeQuery = true)
     List<String> findAllNotPublishableCameraPresetsPresetIds();
+
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @Query(value = "select rs.natural_id nearest_natural_id, ws.id weather_station_id\n" +
+        "from weather_station ws, road_station rs\n" +
+        "where ws.id in (:wsIdList)\n" +
+        "and ws.road_station_id = rs.id", nativeQuery = true)
+    List<NearestRoadStation> findAllRoadStationNaturalIds(@Param("wsIdList") final Collection<Long> wsIdList);
 }
