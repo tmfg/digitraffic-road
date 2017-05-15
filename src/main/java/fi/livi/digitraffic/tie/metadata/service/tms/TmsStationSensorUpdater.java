@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -38,7 +37,6 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     /**
      * Updates all available tms road station sensors
      */
-    @Transactional
     public boolean updateRoadStationSensors() {
         log.info("Update TMS RoadStationSensors start");
 
@@ -67,6 +65,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             final RoadStationSensor currentSaved = currentSensorsMappedByNaturalId.remove(Long.valueOf(anturi.getVanhaId()));
             if ( currentSaved != null ) {
                 currentSaved.setLotjuId(anturi.getId());
+                roadStationSensorService.save(currentSaved);
                 updated.addAndGet(1);
             }
         });
@@ -129,14 +128,14 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         for (final LamLaskennallinenAnturiVO anturi : insert) {
             RoadStationSensor sensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, sensor);
-            sensor = roadStationSensorService.saveRoadStationSensor(sensor);
+            sensor = roadStationSensorService.save(sensor);
             log.info("Created new " + sensor);
             counter++;
         }
         return counter;
     }
 
-    private static int updateRoadStationSensors(final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update) {
+    private int updateRoadStationSensors(final List<Pair<LamLaskennallinenAnturiVO, RoadStationSensor>> update) {
 
         int counter = 0;
         for (final Pair<LamLaskennallinenAnturiVO, RoadStationSensor> pair : update) {
@@ -150,6 +149,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
                 counter++;
                 log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ReflectionToStringBuilder.toString(sensor));
             }
+            roadStationSensorService.save(sensor);
         }
         return counter;
     }

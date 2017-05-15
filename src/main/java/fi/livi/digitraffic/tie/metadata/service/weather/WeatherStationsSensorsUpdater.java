@@ -3,19 +3,15 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
@@ -47,7 +43,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     /**
      * Updates all available sensors of weather road stations
      */
-    @Transactional
+    @PerformanceMonitor(maxErroExcecutionTime = 900000, maxWarnExcecutionTime = 600000)
     public boolean updateWeatherStationsSensors() {
         log.info("Update WeatherStations RoadStationSensors start");
 
@@ -86,36 +82,13 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     private boolean updateSensorsOfWeatherStations(
             final List<Pair<WeatherStation,  List<TiesaaLaskennallinenAnturiVO>>> stationAnturisPairs) {
 
-        final Map<Long, RoadStationSensor> allSensorsMappedByLotjuId =
-                roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
-
         final AtomicInteger countAdded = new AtomicInteger();
         final AtomicInteger countRemoved = new AtomicInteger();
 
         stationAnturisPairs.stream().forEach(pair -> {
-            WeatherStation station = pair.getKey();
-            List<RoadStationSensor> rsSensors = station.getRoadStation().getRoadStationSensors();
-            List<TiesaaLaskennallinenAnturiVO> anturis = pair.getValue();
-
-            if (anturis != null) {
-                anturis.stream().forEach(anturi -> {
-                    RoadStationSensor sensor = allSensorsMappedByLotjuId.get(anturi.getId());
-                    Optional<RoadStationSensor> existingSensor =
-                            rsSensors.stream().filter(s -> anturi.getId().equals(s.getLotjuId())).findFirst();
-                    if (sensor == null) {
-                        log.error("No Weather RoadStationSensor found with lotjuId {}", anturi.getId());
-                    } else if (!existingSensor.isPresent()) {
-                        rsSensors.add(sensor);
-                        countAdded.addAndGet(1);
-                        log.info("Add sensor {} for {}", sensor, station);
-                    }
-                });
-            }
-
-            final List<RoadStationSensor> toRemove = rsSensors.stream().filter(s -> s.getLotjuId() == null || anturis == null ||
-                    !anturis.stream().filter(a -> a.getId().equals(s.getLotjuId())).findFirst().isPresent()).collect(Collectors.toList());
-            countRemoved.addAndGet(toRemove.size());
-            rsSensors.removeAll(toRemove);
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(pair.getKey(), pair.getRight());
+            countRemoved.addAndGet(deletedInserted.getLeft());
+            countAdded.addAndGet(deletedInserted.getRight());
         });
 
         log.info("Sensor removed from road stations {}", countRemoved);

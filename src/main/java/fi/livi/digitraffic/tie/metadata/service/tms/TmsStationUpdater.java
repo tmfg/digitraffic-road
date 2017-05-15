@@ -14,7 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
@@ -51,7 +50,6 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
-    @Transactional
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
@@ -95,11 +93,17 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                 currentSaved.setLotjuId(la.getId());
                 currentSaved.getRoadStation().setLotjuId(la.getId());
                 updated.addAndGet(1);
+                tmsStationService.save(currentSaved);
             }
         });
 
         // Obsolete not found stations
-        final long obsoleted = noLotjuIds.values().stream().filter(tms -> tms.obsolete()).count();
+        final long obsoleted = noLotjuIds.values().stream()
+            .filter(tms -> {
+                boolean obsolete = tms.obsolete();
+                tmsStationService.save(tms);
+                return obsolete;
+            }).count();
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Fixed {} TmsStations without lotjuId", updated);
@@ -131,7 +135,12 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         }
 
         // tms-stations in database, but not in server -> obsolete
-        long obsoleted = currentStationsByLotjuId.values().stream().filter(tms -> tms.obsolete()).count();
+        long obsoleted = currentStationsByLotjuId.values().stream()
+            .filter(tms -> {
+                boolean obsolete = tms.obsolete();
+                tmsStationService.save(tms);
+                return obsolete;
+            }).count();
 
         final int updated = updateTmsStations(update);
         final long inserted = insertTmsStations(insert);
@@ -265,14 +274,17 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
                 counter.addAndGet(1);
                 log.info("Updated TmsStation:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(tms));
             }
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress " + rs.getRoadAddress());
-            }
-            if (rs.getId() == null) {
-                roadStationService.save(rs);
-                log.info("Created new RoadStation " + tms.getRoadStation());
-            }
+//            if (rs.getRoadAddress().getId() == null) {
+//                // TODO turha?
+//                roadStationService.save(rs.getRoadAddress());
+//                log.info("Created new RoadAddress " + rs.getRoadAddress());
+//            }
+//            if (rs.getId() == null) {
+//                // TODO turha?
+//                roadStationService.save(rs);
+//                log.info("Created new RoadStation " + tms.getRoadStation());
+//            }
+            tmsStationService.save(tms);
         });
         return counter.get();
     }

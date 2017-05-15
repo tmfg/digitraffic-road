@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -42,28 +41,28 @@ public class RoadStationStatusUpdater {
         this.roadStationService = roadStationService;
     }
 
-    @Transactional
     public boolean updateTmsStationsStatuses() {
         if (!lotjuTmsStationMetadataService.isEnabled()) {
             log.info("Not updating TMS stations statuses because LotjuTmsStationMetadataService not enabled");
             return false;
         }
         log.info("Update TMS stations statuses");
-        final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allLams.parallelStream().forEach(from -> {
+        final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
+
+        allLams.stream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
                 updated.compareAndSet(false,
                                       AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to));
+                roadStationService.save(to);
             }
         });
         return updated.get();
     }
 
-    @Transactional
     public boolean updateWeatherStationsStatuses() {
         if (!lotjuWeatherStationMetadataService.isEnabled()) {
             log.info("Not updating weather stations statuses because LotjuWeatherStationMetadataClient not enabled");
@@ -74,17 +73,17 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allTiesaaAsemas.parallelStream().forEach(from -> {
+        allTiesaaAsemas.stream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
                 updated.compareAndSet(false,
                                       AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to));
+                roadStationService.save(to);
             }
         });
         return updated.get();
     }
 
-    @Transactional
     public boolean updateCameraStationsStatuses() {
         if (!lotjuCameraStationMetadataService.isEnabled()) {
             log.info("Not updating camera stations statuses because LotjuCameraStationService not enabled");
@@ -95,11 +94,12 @@ public class RoadStationStatusUpdater {
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
         final AtomicBoolean updated = new AtomicBoolean(false);
 
-        allKameras.parallelStream().forEach(from -> {
+        allKameras.stream().forEach(from -> {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
             if (to != null) {
                 updated.compareAndSet(false,
                                       AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to));
+                roadStationService.save(to);
             }
         });
         return updated.get();

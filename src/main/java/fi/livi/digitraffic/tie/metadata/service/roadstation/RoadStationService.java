@@ -32,18 +32,6 @@ public class RoadStationService {
         this.roadAddressRepository = roadAddressRepository;
     }
 
-    @Transactional
-    public RoadStation save(final RoadStation roadStation) {
-        try {
-            final RoadStation value = roadStationRepository.save(roadStation);
-            roadStationRepository.flush();
-            return value;
-        } catch (Exception e) {
-            log.error("Could not save " + roadStation);
-            throw e;
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<RoadStation> findByType(final RoadStationType type) {
         return roadStationRepository.findByType(type);
@@ -86,15 +74,13 @@ public class RoadStationService {
     }
 
     @Transactional
+    public RoadStation save(final RoadStation roadStation) {
+        return roadStationRepository.save(roadStation);
+    }
+
+    @Transactional
     public RoadAddress save(final RoadAddress roadAddress) {
-        try {
-            final RoadAddress value = roadAddressRepository.save(roadAddress);
-            roadAddressRepository.flush();
-            return value;
-        } catch (Exception e) {
-            log.error("Could not save " + roadAddress);
-            throw e;
-        }
+        return roadAddressRepository.save(roadAddress);
     }
 
     @Transactional(readOnly = true)

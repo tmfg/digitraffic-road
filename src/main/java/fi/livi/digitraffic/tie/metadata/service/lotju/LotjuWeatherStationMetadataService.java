@@ -35,6 +35,7 @@ public class LotjuWeatherStationMetadataService extends AbstractLotjuMetadataSer
         this.lotjuWeatherStationClient = lotjuWeatherStationClient;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     public List<TiesaaAsemaVO> getTiesaaAsemmas() {
         return lotjuWeatherStationClient.getTiesaaAsemmas();
     }

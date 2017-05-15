@@ -37,7 +37,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         super(marshaller, weatherMetadataServerAddress, log);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     List<TiesaaAsemaVO> getTiesaaAsemmas() {
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
@@ -48,6 +48,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         return response.getValue().getTiesaaAsema();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
 
@@ -61,6 +62,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         return response.getValue().getLaskennallinenAnturi();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();

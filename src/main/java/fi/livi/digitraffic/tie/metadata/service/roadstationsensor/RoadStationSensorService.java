@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,9 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
+import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class RoadStationSensorService {
@@ -73,7 +76,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllRoadStationSensors(final RoadStationType roadStationType) {
-        return roadStationSensorRepository.findByRoadStationType(roadStationType);
+        return roadStationSensorRepository.findDistinctByRoadStationType(roadStationType);
     }
 
     @Transactional(readOnly = true)
@@ -84,7 +87,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public Map<Long, RoadStationSensor> findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType roadStationType) {
-        final List<RoadStationSensor> all = roadStationSensorRepository.findByRoadStationTypeAndLotjuIdIsNull(roadStationType);
+        final List<RoadStationSensor> all = roadStationSensorRepository.findDistinctByRoadStationTypeAndLotjuIdIsNull(roadStationType);
         return all.stream().filter(rss -> rss.getLotjuId() == null).collect(Collectors.toMap(RoadStationSensor::getNaturalId, Function.identity()));
     }
 
@@ -135,15 +138,8 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public RoadStationSensor saveRoadStationSensor(RoadStationSensor roadStationSensor) {
-        try {
-            final RoadStationSensor sensor = roadStationSensorRepository.save(roadStationSensor);
-            roadStationSensorRepository.flush();
-            return sensor;
-        } catch (Exception e) {
-            log.error("Could not save " + roadStationSensor);
-            throw e;
-        }
+    public RoadStationSensor save(RoadStationSensor roadStationSensor) {
+        return roadStationSensorRepository.save(roadStationSensor);
     }
 
     @Transactional(readOnly = true)
@@ -173,5 +169,36 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public ZonedDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
         return DateHelper.toZonedDateTime(sensorValueRepository.getLastUpdated(roadStationType));
+    }
+
+    /**
+     *
+     * @param weatherStation Station which sensors should be updated
+     * @param anturis current anturis
+     * @return Pair of deleted and inserted count of sensors for given weather station
+     */
+    @Transactional
+    public Pair<Integer, Integer> updateSensorsOfWeatherStations(final WeatherStation weatherStation, final List<TiesaaLaskennallinenAnturiVO> anturis) {
+        final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+
+        final int deleted = anturis.isEmpty() ?
+                                roadStationSensorRepository.deleteRoadStationsSensors(weatherStation.getRoadStationId()) :
+                                roadStationSensorRepository.deleteNonExistingSensors(RoadStationType.WEATHER_STATION.name(),
+                                                                                     weatherStation.getRoadStationId(),
+                                                                                     sensorslotjuIds);
+
+        final int inserted = anturis.isEmpty() ?
+                                0 : roadStationSensorRepository.insertNonExistingSensors(RoadStationType.WEATHER_STATION.name(),
+                                                                                         weatherStation.getRoadStationId(),
+                                                                                         sensorslotjuIds);
+
+        return Pair.of(deleted, inserted);
+    }
+
+    @Transactional
+    public boolean obsolete(RoadStationSensor rss) {
+        final boolean obsoleted = rss.obsolete();
+        roadStationSensorRepository.save(rss);
+        return obsoleted;
     }
 }

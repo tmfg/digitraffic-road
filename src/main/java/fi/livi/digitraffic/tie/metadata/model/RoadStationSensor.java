@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -13,11 +13,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.SortNatural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -80,7 +82,9 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     @ApiModelProperty("Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
-    private List<SensorValueDescription> sensorValueDescriptions;
+    @OrderBy("sensorValueDescriptionPK.sensorValue")
+    @SortNatural
+    private SortedSet<SensorValueDescription> sensorValueDescriptions;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
@@ -201,11 +205,11 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
                 .toString();
     }
 
-    public List<SensorValueDescription> getSensorValueDescriptions() {
+    public SortedSet<SensorValueDescription> getSensorValueDescriptions() {
         return sensorValueDescriptions;
     }
 
-    public void setSensorValueDescriptions(final List<SensorValueDescription> sensorValueDescriptions) {
+    public void setSensorValueDescriptions(final SortedSet<SensorValueDescription> sensorValueDescriptions) {
         this.sensorValueDescriptions = sensorValueDescriptions;
     }
 

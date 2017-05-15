@@ -17,7 +17,7 @@ public class AbstractRoadStationSensorUpdater {
         this.roadStationSensorService = roadStationSensorService;
     }
 
-    protected static long obsoleteRoadStationSensors(final Collection<RoadStationSensor> toObsolete) {
-        return toObsolete.stream().filter(rss -> rss.obsolete()).count();
+    protected long obsoleteRoadStationSensors(final Collection<RoadStationSensor> toObsolete) {
+        return toObsolete.stream().filter(rss -> roadStationSensorService.obsolete(rss)).count();
     }
 }

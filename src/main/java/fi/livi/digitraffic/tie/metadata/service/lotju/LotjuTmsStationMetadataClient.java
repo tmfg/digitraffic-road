@@ -48,6 +48,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         return response.getValue().getAsemat();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
 
@@ -58,6 +59,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         return response.getValue().getLamlaskennallisetanturit();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
