@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -91,14 +92,14 @@ public class CameraPreset {
     /**
      * RoadStation is same for one camera all presets
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ROAD_STATION_ID")
-    @Fetch(FetchMode.JOIN)
+    @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="NEAREST_RD_WEATHER_STATION_ID")
-    @Fetch(FetchMode.JOIN)
+    @Fetch(FetchMode.SELECT)
     private WeatherStation nearestWeatherStation;
 
     /**

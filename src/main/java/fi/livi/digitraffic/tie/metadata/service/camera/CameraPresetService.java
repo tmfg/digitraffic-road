@@ -69,19 +69,13 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-
-        MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
+        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 findAllPublishableCameraPresets(),
                 updated != null ? updated.getUpdatedTime() : null);
-    }
-
-    @Transactional(readOnly = true)
-    public CameraPreset findCameraPresetByPresetId(final String presetId) {
-        return cameraPresetRepository.findCameraPresetByPresetId(presetId);
     }
 
     @Transactional(readOnly = true)
