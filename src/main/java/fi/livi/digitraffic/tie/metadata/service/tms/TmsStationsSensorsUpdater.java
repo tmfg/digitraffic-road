@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +71,12 @@ public class TmsStationsSensorsUpdater {
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
         currentTmsStationMappedByByLotjuId.values().stream().forEach(tmsStation -> {
             final List<LamLaskennallinenAnturiVO> anturis = anturisMappedByAsemaLotjuId.remove(tmsStation.getLotjuId());
-            stationAnturisPairs.add(Pair.of(tmsStation, anturis));
+            if (anturis != null) {
+                stationAnturisPairs.add(Pair.of(tmsStation, anturis));
+            } else {
+                log.error("No anturis for " + tmsStation);
+                stationAnturisPairs.add(Pair.of(tmsStation, Collections.emptyList()));
+            }
         });
 
         // Update sensors of road stations
