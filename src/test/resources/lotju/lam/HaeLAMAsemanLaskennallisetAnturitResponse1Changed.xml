@@ -24,15 +24,15 @@
         <yksikko>kpl/h</yksikko>
     </ns2:lamlaskennallisetanturit>
     <ns2:lamlaskennallisetanturit>
-        <id>149</id>
+        <id>150</id>
         <b>128</b>
         <g>169</g>
-        <kuvaus>Keskinopeus suunta 1 (-5 min)</kuvaus>
-        <laskentaKaava>@Audit select asemaId, sum(liukuvat_5min.nopeus) / sum(liukuvat_5min.lukumaara) as keskinopeus_5min_liukuva_suunta1 from liukuvat_5min (suunta in (0, 1)) group by asemaId</laskentaKaava>
-        <lyhytNimi>km/h1</lyhytNimi>
-        <nimi>keskinopeus_5min_liukuva_suunta1</nimi>
+        <kuvaus>Keskinopeus suunta 2 (-5 min)</kuvaus>
+        <laskentaKaava>select asemaId, sum(liukuvat_5min.nopeus) / sum(liukuvat_5min.lukumaara) as keskinopeus_5min_liukuva_suunta2 from liukuvat_5min (suunta in (0, 2)) group by asemaId</laskentaKaava>
+        <lyhytNimi>km/h2</lyhytNimi>
+        <nimi>keskinopeus_5min_liukuva_suunta2</nimi>
         <r>255</r>
-        <vanhaId>5122</vanhaId>
+        <vanhaId>5125</vanhaId>
         <yksikko>km/h</yksikko>
     </ns2:lamlaskennallisetanturit>
 </ns2:HaeLAMAsemanLaskennallisetAnturitResponse>

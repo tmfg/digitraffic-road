@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
@@ -86,7 +88,12 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
         final AtomicInteger countRemoved = new AtomicInteger();
 
         stationAnturisPairs.stream().forEach(pair -> {
-            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(pair.getKey(), pair.getRight());
+            WeatherStation ws = pair.getKey();
+            final List<TiesaaLaskennallinenAnturiVO> anturis = pair.getRight();
+            final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(ws.getRoadStationId(),
+                                                                                                             RoadStationType.WEATHER_STATION,
+                                                                                                             sensorslotjuIds);
             countRemoved.addAndGet(deletedInserted.getLeft());
             countAdded.addAndGet(deletedInserted.getRight());
         });

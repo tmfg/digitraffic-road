@@ -64,8 +64,11 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
             appendTiesaaAnturis(
                     1,
                     readLamAsemasLaskennallinenAnturis("lotju/lam/HaeLAMAsemanLaskennallisetAnturitResponse1.xml"),
-                    initialLamAsemasSensorsMap,
-                    afterChangeLamAsemasAnturisMap);
+                    initialLamAsemasSensorsMap);
+            appendTiesaaAnturis(
+                1,
+                readLamAsemasLaskennallinenAnturis("lotju/lam/HaeLAMAsemanLaskennallisetAnturitResponse1Changed.xml"),
+                afterChangeLamAsemasAnturisMap);
             appendTiesaaAnturis(
                     310,
                     readLamAsemasLaskennallinenAnturis("lotju/lam/HaeLAMAsemanLaskennallisetAnturitResponse310.xml"),

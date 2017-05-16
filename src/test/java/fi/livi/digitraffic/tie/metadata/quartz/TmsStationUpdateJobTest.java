@@ -5,9 +5,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -21,6 +25,8 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 public class TmsStationUpdateJobTest extends AbstractTest {
+
+    private static final Logger log = LoggerFactory.getLogger(TmsStationUpdateJobTest.class);
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -149,6 +155,25 @@ public class TmsStationUpdateJobTest extends AbstractTest {
 
         assertEquals("Kuopio", before.getProperties().getDirection2Municipality());
         assertEquals("Kuopioon", after.getProperties().getDirection2Municipality());
+
+        final TmsStationFeature before1 = findWithLotjuId(allInitial, 1);
+        final TmsStationFeature after1 = findWithLotjuId(allAfterChange, 1);
+
+        List<Long> sensorsInitial = before1.getProperties().getStationSensors();
+        List<Long> sensorsAfter = after1.getProperties().getStationSensors();
+
+        log.info("SensorsInitial {}", sensorsInitial);
+        log.info("SensorsAfter {}", sensorsAfter);
+
+        Assert.assertTrue(sensorsInitial.contains(5116L));
+        Assert.assertTrue(sensorsInitial.contains(5119L));
+        Assert.assertTrue(sensorsInitial.contains(5122L));
+        Assert.assertFalse(sensorsInitial.contains(5125L));
+
+        Assert.assertTrue(sensorsAfter.contains(5116L));
+        Assert.assertTrue(sensorsAfter.contains(5119L));
+        Assert.assertFalse(sensorsAfter.contains(5122L));
+        Assert.assertTrue(sensorsAfter.contains(5125L));
 
     }
 

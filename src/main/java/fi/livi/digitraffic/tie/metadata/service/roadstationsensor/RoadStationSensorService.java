@@ -32,9 +32,7 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class RoadStationSensorService {
@@ -173,23 +171,25 @@ public class RoadStationSensorService {
 
     /**
      *
-     * @param weatherStation Station which sensors should be updated
-     * @param anturis current anturis
+     * @param roadStationId station which sensors to update
+     * @param roadStationType what is type of station
+     * @param sensorslotjuIds current anturis lotju ids
      * @return Pair of deleted and inserted count of sensors for given weather station
      */
     @Transactional
-    public Pair<Integer, Integer> updateSensorsOfWeatherStations(final WeatherStation weatherStation, final List<TiesaaLaskennallinenAnturiVO> anturis) {
-        final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+    public Pair<Integer, Integer> updateSensorsOfWeatherStations(final long roadStationId,
+                                                                 final RoadStationType roadStationType,
+                                                                 final List<Long> sensorslotjuIds) {
 
-        final int deleted = anturis.isEmpty() ?
-                                roadStationSensorRepository.deleteRoadStationsSensors(weatherStation.getRoadStationId()) :
-                                roadStationSensorRepository.deleteNonExistingSensors(RoadStationType.WEATHER_STATION.name(),
-                                                                                     weatherStation.getRoadStationId(),
+        final int deleted = sensorslotjuIds.isEmpty() ?
+                                roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
+                                roadStationSensorRepository.deleteNonExistingSensors(roadStationType.name(),
+                                    roadStationId,
                                                                                      sensorslotjuIds);
 
-        final int inserted = anturis.isEmpty() ?
-                                0 : roadStationSensorRepository.insertNonExistingSensors(RoadStationType.WEATHER_STATION.name(),
-                                                                                         weatherStation.getRoadStationId(),
+        final int inserted = sensorslotjuIds.isEmpty() ?
+                                0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
+                                                                                         roadStationId,
                                                                                          sensorslotjuIds);
 
         return Pair.of(deleted, inserted);

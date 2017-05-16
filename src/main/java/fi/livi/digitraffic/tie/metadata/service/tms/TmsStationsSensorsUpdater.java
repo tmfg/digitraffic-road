@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -13,14 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 
@@ -34,8 +30,7 @@ public class TmsStationsSensorsUpdater {
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
-    public TmsStationsSensorsUpdater(final RoadStationService roadStationService,
-                                     final RoadStationSensorService roadStationSensorService,
+    public TmsStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
                                      final StaticDataStatusService staticDataStatusService,
                                      final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
@@ -48,7 +43,6 @@ public class TmsStationsSensorsUpdater {
     /**
      * Updates all available sensors of weather road stations
      */
-    @Transactional
     public boolean updateTmsStationsSensors() {
         log.info("Update TMS Stations Sensors start");
 
@@ -90,36 +84,18 @@ public class TmsStationsSensorsUpdater {
 
     private boolean updateSensorsOfTmsStations(final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs) {
 
-        final Map<Long, RoadStationSensor> allSensorsMappedByLotjuId =
-                roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.TMS_STATION);
-
         final AtomicInteger countAdded = new AtomicInteger();
         final AtomicInteger countRemoved = new AtomicInteger();
 
         stationAnturisPairs.stream().forEach(pair -> {
-            TmsStation station = pair.getKey();
-            List<RoadStationSensor> rsSensors = station.getRoadStation().getRoadStationSensors();
-            List<LamLaskennallinenAnturiVO> anturis = pair.getValue();
-
-            if (anturis != null) {
-                anturis.stream().forEach(anturi -> {
-                    RoadStationSensor sensor = allSensorsMappedByLotjuId.get(anturi.getId());
-                    Optional<RoadStationSensor> existingSensor =
-                            rsSensors.stream().filter(s -> anturi.getId().equals(s.getLotjuId())).findFirst();
-                    if (sensor == null) {
-                        log.error("No Weather RoadStationSensor found with lotjuId {}", anturi.getId());
-                    } else if (!existingSensor.isPresent()) {
-                        rsSensors.add(sensor);
-                        countAdded.addAndGet(1);
-                        log.info("Add sensor {} for {}", sensor, station);
-                    }
-                });
-            }
-
-            final List<RoadStationSensor> toRemove = rsSensors.stream().filter(s -> s.getLotjuId() == null || anturis == null ||
-                    !anturis.stream().filter(a -> a.getId().equals(s.getLotjuId())).findFirst().isPresent()).collect(Collectors.toList());
-            countRemoved.addAndGet(toRemove.size());
-            rsSensors.removeAll(toRemove);
+            final TmsStation tms = pair.getKey();
+            final List<LamLaskennallinenAnturiVO> anturis = pair.getRight();
+            final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
+                                                                                                             RoadStationType.TMS_STATION,
+                                                                                                             sensorslotjuIds);
+            countRemoved.addAndGet(deletedInserted.getLeft());
+            countAdded.addAndGet(deletedInserted.getRight());
         });
 
         log.info("Sensor removed from road stations {}", countRemoved);

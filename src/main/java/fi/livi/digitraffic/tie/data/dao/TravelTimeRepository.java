@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -142,7 +142,7 @@ public class TravelTimeRepository {
      */
     private class MedianBatchSetter implements BatchPreparedStatementSetter {
 
-        private Log log = LogFactory.getLog(getClass());
+        private Logger log = LoggerFactory.getLogger(getClass());
 
         private List<ProcessedMedianDataDto> medianDatas;
 
