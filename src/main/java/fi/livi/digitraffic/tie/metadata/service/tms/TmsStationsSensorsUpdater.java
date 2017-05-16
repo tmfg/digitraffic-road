@@ -74,7 +74,7 @@ public class TmsStationsSensorsUpdater {
             if (anturis != null) {
                 stationAnturisPairs.add(Pair.of(tmsStation, anturis));
             } else {
-                log.error("No anturis for " + tmsStation);
+                log.info("No anturis for " + tmsStation);
                 stationAnturisPairs.add(Pair.of(tmsStation, Collections.emptyList()));
             }
         });
