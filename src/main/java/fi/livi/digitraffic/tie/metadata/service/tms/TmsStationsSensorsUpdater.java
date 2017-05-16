@@ -90,12 +90,18 @@ public class TmsStationsSensorsUpdater {
         stationAnturisPairs.stream().forEach(pair -> {
             final TmsStation tms = pair.getKey();
             final List<LamLaskennallinenAnturiVO> anturis = pair.getRight();
-            final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
-                                                                                                             RoadStationType.TMS_STATION,
-                                                                                                             sensorslotjuIds);
-            countRemoved.addAndGet(deletedInserted.getLeft());
-            countAdded.addAndGet(deletedInserted.getRight());
+            try {
+                final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+                Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
+                    RoadStationType.TMS_STATION,
+                    sensorslotjuIds);
+                countRemoved.addAndGet(deletedInserted.getLeft());
+                countAdded.addAndGet(deletedInserted.getRight());
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.info("Anturis {}", anturis);
+                throw e;
+            }
         });
 
         log.info("Sensor removed from road stations {}", countRemoved);
