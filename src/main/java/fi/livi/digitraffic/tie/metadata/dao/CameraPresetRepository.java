@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.dao;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -17,6 +18,11 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Repository
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
+
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
+    List<CameraPreset> findAll();
+
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();

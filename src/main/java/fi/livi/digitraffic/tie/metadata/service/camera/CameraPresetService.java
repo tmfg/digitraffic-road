@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
+import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
@@ -24,6 +26,9 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 @Service
 public class CameraPresetService {
 
+    private final RoadStationRepository roadStationRepository;
+    private final WeatherStationRepository weatherStationRepository;
+
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
 
     private final CameraPresetRepository cameraPresetRepository;
@@ -31,9 +36,13 @@ public class CameraPresetService {
     private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
-    CameraPresetService(final CameraPresetRepository cameraPresetRepository,
-                        final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
-                        final StaticDataStatusService staticDataStatusService) {
+    public CameraPresetService(final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
+                               final StaticDataStatusService staticDataStatusService,
+                               final CameraPresetRepository cameraPresetRepository,
+                               final RoadStationRepository roadStationRepository,
+                               final WeatherStationRepository weatherStationRepository) {
+        this.roadStationRepository = roadStationRepository;
+        this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
         this.staticDataStatusService = staticDataStatusService;
@@ -53,9 +62,15 @@ public class CameraPresetService {
     @Transactional
     public CameraPreset save(final CameraPreset cameraPreset) {
         try {
-            final CameraPreset value = cameraPresetRepository.save(cameraPreset);
+            // Cascade none
+            roadStationRepository.save(cameraPreset.getRoadStation());
+            if (cameraPreset.getNearestWeatherStation() != null) {
+                weatherStationRepository.save(cameraPreset.getNearestWeatherStation());
+            }
+            final CameraPreset saved = cameraPresetRepository.save(cameraPreset);
+            // Without this detached entity errors occurs
             cameraPresetRepository.flush();
-            return value;
+            return saved;
         } catch (Exception e) {
             log.error("Could not save " + cameraPreset);
             throw e;

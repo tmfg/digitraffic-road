@@ -18,7 +18,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -50,11 +49,14 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     /**
      * Adds road stations for presets without road station
      */
-    @Transactional
     public boolean fixCameraPresetsWithMissingRoadStations() {
 
         final List<CameraPreset> currentCameraPresetsWithoutRoadStation =
                 cameraPresetService.findAllCameraPresetsWithoutRoadStation();
+
+        if (currentCameraPresetsWithoutRoadStation.isEmpty()) {
+            return false;
+        }
 
         final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
@@ -65,21 +67,21 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             // Fix cameraId for all
             cameraPreset.setCameraId(CameraHelper.convertPresetIdToCameraId(cameraPreset.getPresetId()));
 
-            final RoadStation existingRs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
+            RoadStation rs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
 
-            if (existingRs != null) {
-                cameraPreset.setRoadStation(existingRs);
-                log.info("Fixed " + cameraPreset + " missing RoadStation with exiting " + existingRs);
+            if (rs != null) {
+                cameraPreset.setRoadStation(rs);
+                log.info("Fixed {} missing RoadStation with exiting {}", cameraPreset, rs);
             } else {
-                final RoadStation rs = new RoadStation(RoadStationType.CAMERA_STATION);
+                rs = new RoadStation(RoadStationType.CAMERA_STATION);
                 rs.setName("GENERATED");
                 rs.setNaturalId(naturalId);
                 cameraPreset.setRoadStation(rs);
                 rs.obsolete();
-                roadStationService.save(rs);
                 cameraRoadStationseMappedByNaturalId.put(naturalId, rs);
-                log.info("Fixed " + cameraPreset + " missing RoadStation with new " + rs);
+                log.info("Fixed {} missing RoadStation with new {}", cameraPreset, rs);
             }
+            cameraPresetService.save(cameraPreset);
         });
         return !currentCameraPresetsWithoutRoadStation.isEmpty();
     }
@@ -87,7 +89,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     /**
      * Sets presets and road stations lotjuIds and obsoletes missing
      */
-    @Transactional
     public boolean fixPresetsWithoutLotjuIds(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasento) {
 
         // Kameras and esiasentos from lotju mapped by cameraId
@@ -99,6 +100,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         // CameraPresets in db without lotjuId
         Map<String, List<CameraPreset>> withoutLotjuIdMappedByCameraId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
 
+        if (withoutLotjuIdMappedByCameraId.isEmpty()) {
+            return false;
+        }
+
         final AtomicInteger updated = new AtomicInteger();
         final AtomicInteger obsoleted = new AtomicInteger();
 
@@ -109,7 +114,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             if (kameraPair == null) {
                 // If kamera not found in lotju -> obsolete all presets
-                entry.getValue().stream().forEach(CameraPreset::obsolete);
+                entry.getValue().stream().forEach(cp -> {
+                    cp.obsolete();
+                    cameraPresetService.save(cp);
+                });
             } else {
                 // loop camera's presets and set their lotjuIds
                 entry.getValue().stream().forEach(cameraPreset -> {
@@ -129,6 +137,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                     } else if (cameraPreset.obsolete()) {
                         obsoleted.addAndGet(1);
                     }
+                    cameraPresetService.save(cameraPreset);
                 });
             }
         });
@@ -139,7 +148,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         return updated.get() > 0;
     }
 
-    @Transactional
     public boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {
 
         final Map<Long, CameraPreset> presetsMappedByLotjuId = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
@@ -174,7 +182,12 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         }
 
         // camera presets in database, but not in server
-        long countObsoletePresets = presetsMappedByLotjuId.values().stream().filter(cp -> cp.obsolete()).count();
+        long countObsoletePresets = presetsMappedByLotjuId.values().stream()
+            .filter(cp -> {
+                final boolean obsolete = cp.obsolete();
+                cameraPresetService.save(cp);
+                return obsolete;
+            }).count();
 
         final Map<Long, WeatherStation> lotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
@@ -192,11 +205,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         cameraPresetService.findAll().stream().filter(cp -> cp.getRoadStationId() != null).collect(Collectors.groupingBy(CameraPreset::getRoadStationId)).values().stream()
                 .forEach(cpList -> {
                     Optional<CameraPreset> nonObsolete = cpList.stream().filter(cameraPreset -> !cameraPreset.isObsolete()).findFirst();
+                    RoadStation rs = nonObsolete.isPresent() ? nonObsolete.get().getRoadStation() : cpList.get(0).getRoadStation();
                     if (nonObsolete.isPresent()) {
-                        nonObsolete.get().getRoadStation().setObsolete(false);
-                    } else if (cpList.get(0).getRoadStation().obsolete()) {
+                        rs.setObsolete(false);
+                    } else if (rs.obsolete()) {
                         countObsoleteRs.addAndGet(1);
                     }
+                    roadStationService.save(rs);
                 });
 
         log.info("Obsoleted {} CameraPresets not existing in LOTJU", countObsoletePresets);
@@ -255,14 +270,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 log.info("Updated CameraPreset:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(cameraPreset));
             }
 
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress {}", rs.getRoadAddress());
-            }
-            if (rs.getId() == null) {
-                roadStationService.save(rs);
-                log.info("Created new RoadStation {}", rs);
-            }
+            cameraPresetService.save(cameraPreset);
         }
         return counter;
     }
@@ -295,13 +303,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             updateCameraPresetAtributes(kamera, esiasento, lotjuIdToWeatherStationMap, cp);
 
-            // Save only transient objects
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-            }
-            if (cp.getRoadStation().getId() == null) {
-                roadStationService.save(cp.getRoadStation());
-            }
             cameraPresetService.save(cp);
             log.info("Created new CameraPreset {}{}", cp, (roadStationNew ? " and RoadStation " + rs : ""));
         }

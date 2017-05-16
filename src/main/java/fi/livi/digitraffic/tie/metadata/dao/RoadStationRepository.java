@@ -2,8 +2,12 @@ package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.util.List;
 
+import javax.persistence.QueryHint;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +17,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @EntityGraph(attributePaths = { "roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<RoadStation> findByType(RoadStationType type);
 
     @Query(value =
