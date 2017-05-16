@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao.tms;
 
 import java.util.List;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -14,6 +15,11 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Repository
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
+
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    List<TmsStation> findAll();
+
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(final CollectionStatus collectionStatus);

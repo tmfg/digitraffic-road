@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation", "nearestWeatherStation.roadStation", "nearestWeatherStation.roadStation.roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findAll();
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

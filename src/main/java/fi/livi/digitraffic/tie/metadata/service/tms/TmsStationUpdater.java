@@ -202,12 +202,12 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
 
         updateTmsStationAttributes(la, roadDistrict, newTmsStation);
 
-        if (rs.getRoadAddress().getId() == null) {
-            roadStationService.save(rs.getRoadAddress());
-            log.info("Created new RoadAddress " + rs.getRoadAddress());
-        }
+        final boolean newRa = rs.getRoadAddress().getId() == null;
+
         roadStationService.save(rs);
         tmsStationService.save(newTmsStation);
+
+        log.info("Created new " + rs.getRoadAddress());
         log.info("Created new " + newTmsStation);
         return true;
     }

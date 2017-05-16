@@ -17,6 +17,7 @@ import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
@@ -30,14 +31,17 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 public class TmsStationService {
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
     private final TmsStationRepository tmsStationRepository;
+    private final RoadStationRepository roadStationRepository;
     private final StaticDataStatusService staticDataStatusService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
+                             final RoadStationRepository roadStationRepository,
                              final StaticDataStatusService staticDataStatusService,
                              final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter) {
         this.tmsStationRepository = tmsStationRepository;
+        this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
     }
@@ -127,9 +131,12 @@ public class TmsStationService {
     @Transactional
     public TmsStation save(final TmsStation tmsStation) {
         try {
-            final TmsStation tms = tmsStationRepository.save(tmsStation);
+            // Cascade none
+            roadStationRepository.save(tmsStation.getRoadStation());
+            // Without this detached entity errors occurs
+            final TmsStation saved = tmsStationRepository.save(tmsStation);
             tmsStationRepository.flush();
-            return tms;
+            return saved;
         } catch (Exception e) {
             log.error("Could not save " + tmsStation);
             throw e;

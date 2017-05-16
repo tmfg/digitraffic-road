@@ -246,7 +246,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             final CameraPreset cameraPreset = pair.getRight();
 
             final int hash = HashCodeBuilder.reflectionHashCode(cameraPreset);
-            final String before = ReflectionToStringBuilder.toString(cameraPreset);
+            final String before = cameraPreset.toString();
 
             RoadStation rs = cameraPreset.getRoadStation();
             if (rs == null) {
@@ -267,7 +267,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             if ( updateCameraPresetAtributes(kamera, esiasento, lotjuIdToWeatherStationMap, cameraPreset) ||
                  hash != HashCodeBuilder.reflectionHashCode(cameraPreset) ) {
                 counter++;
-                log.info("Updated CameraPreset:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(cameraPreset));
+                log.info("Updated CameraPreset:\n{} -> \n{}", before, cameraPreset.toString());
             }
 
             cameraPresetService.save(cameraPreset);
