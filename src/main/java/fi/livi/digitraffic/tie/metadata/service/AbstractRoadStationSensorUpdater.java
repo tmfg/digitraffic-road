@@ -18,6 +18,7 @@ public class AbstractRoadStationSensorUpdater {
     }
 
     protected long obsoleteRoadStationSensors(final Collection<RoadStationSensor> toObsolete) {
-        return toObsolete.stream().filter(rss -> roadStationSensorService.obsolete(rss)).count();
+        return toObsolete.stream().filter(RoadStationSensor::obsolete)
+            .peek(rss -> roadStationSensorService.save(rss)).count();
     }
 }

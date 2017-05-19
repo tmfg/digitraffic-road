@@ -255,7 +255,7 @@ public class Datex2DataService {
         List<Datex2> unhandled = datex2Repository.findByPublicationTimeIsNull();
 
         log.info("Handle {} unhandled Datex2 Messages", unhandled.size());
-        unhandled.stream().forEach(datex2 -> {
+        unhandled.forEach(datex2 -> {
             try {
                 TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2.getMessage(), datex2.getImportTime());
                 if (tsDatex2 != null) {

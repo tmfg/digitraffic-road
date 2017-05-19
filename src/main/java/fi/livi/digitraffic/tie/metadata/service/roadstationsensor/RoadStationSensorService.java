@@ -194,11 +194,4 @@ public class RoadStationSensorService {
 
         return Pair.of(deleted, inserted);
     }
-
-    @Transactional
-    public boolean obsolete(RoadStationSensor rss) {
-        final boolean obsoleted = rss.obsolete();
-        roadStationSensorRepository.save(rss);
-        return obsoleted;
-    }
 }

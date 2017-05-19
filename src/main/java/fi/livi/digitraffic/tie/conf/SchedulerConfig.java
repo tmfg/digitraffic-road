@@ -67,7 +67,7 @@ public class SchedulerConfig {
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
 
-            triggers.stream().forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
+            triggers.forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
 
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }

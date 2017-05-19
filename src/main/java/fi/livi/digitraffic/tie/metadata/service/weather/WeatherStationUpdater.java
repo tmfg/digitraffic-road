@@ -90,7 +90,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         final List<TiesaaAsemaVO> insert = new ArrayList<>(); // new WeatherStations
 
         final AtomicInteger invalid = new AtomicInteger();
-        tiesaaAsemas.stream().forEach(tsa -> {
+        tiesaaAsemas.forEach(tsa -> {
 
             if (validate(tsa)) {
                 final WeatherStation currentSaved = currentLotjuIdToWeatherStationMap.remove(tsa.getId());
@@ -110,7 +110,8 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
         }
 
         // rws in database, but not in server
-        final long obsoleted = currentLotjuIdToWeatherStationMap.values().stream().filter(ws -> weatherStationService.obsoleteStation(ws)).count();
+        final long obsoleted = currentLotjuIdToWeatherStationMap.values().stream().filter(WeatherStation::obsolete)
+            .peek(ws -> weatherStationService.save(ws)).count();
 
         final int updated = updateWeatherStations(update);
         final int inserted = insertWeatherStations(insert);
@@ -127,7 +128,7 @@ public class WeatherStationUpdater extends AbstractWeatherStationAttributeUpdate
     private int updateWeatherStations(final List<Pair<TiesaaAsemaVO, WeatherStation>> update) {
 
         final AtomicInteger counter = new AtomicInteger();
-        update.stream().forEach(pair -> {
+        update.forEach(pair -> {
 
             final TiesaaAsemaVO tsa = pair.getLeft();
             final WeatherStation rws = pair.getRight();

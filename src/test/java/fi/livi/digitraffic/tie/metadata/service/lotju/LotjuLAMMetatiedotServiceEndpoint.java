@@ -129,7 +129,7 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
         for (final LamLaskennallinenAnturiVO tsa : tiesaaLaskennallinenAnturis) {
 
             for (final Map<Long, List<LamLaskennallinenAnturiVO>> tiesaaAnturisMap : tiesaaAnturisMaps) {
-                List<LamLaskennallinenAnturiVO> eas = tiesaaAnturisMap.get(Long.valueOf(tsaId));
+                List<LamLaskennallinenAnturiVO> eas = tiesaaAnturisMap.get(tsaId);
                 if (eas == null) {
                     eas = new ArrayList<>();
                     tiesaaAnturisMap.put(tsaId, eas);
@@ -236,9 +236,9 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
     public List<LamLaskennallinenAnturiVO> haeLAMAsemanLaskennallisetAnturit(final Long id) {
         log.info("haeLAMAsemanLaskennallisetAnturit " + id + " isStateAfterChange: " + isStateAfterChange());
         if (isStateAfterChange()) {
-            return afterChangeLamAsemasAnturisMap.get(Long.valueOf(id));
+            return afterChangeLamAsemasAnturisMap.get(id);
         }
-        return initialLamAsemasSensorsMap.get(Long.valueOf(id));
+        return initialLamAsemasSensorsMap.get(id);
     }
 
     @Override

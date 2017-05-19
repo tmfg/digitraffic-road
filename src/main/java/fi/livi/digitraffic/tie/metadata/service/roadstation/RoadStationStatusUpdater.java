@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,68 +40,65 @@ public class RoadStationStatusUpdater {
         this.roadStationService = roadStationService;
     }
 
-    public boolean updateTmsStationsStatuses() {
+    public int updateTmsStationsStatuses() {
         if (!lotjuTmsStationMetadataService.isEnabled()) {
             log.info("Not updating TMS stations statuses because LotjuTmsStationMetadataService not enabled");
-            return false;
+            return 0;
         }
         log.info("Update TMS stations statuses");
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
-        final AtomicBoolean updated = new AtomicBoolean(false);
 
         final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
 
-        allLams.stream().forEach(from -> {
+        int updated = 0;
+        for(LamAsemaVO from : allLams) {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                updated.compareAndSet(false,
-                                      AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to));
+            if (to != null && AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+                updated++;
                 roadStationService.save(to);
             }
-        });
-        return updated.get();
+        }
+        return updated;
     }
 
-    public boolean updateWeatherStationsStatuses() {
+    public int updateWeatherStationsStatuses() {
         if (!lotjuWeatherStationMetadataService.isEnabled()) {
             log.info("Not updating weather stations statuses because LotjuWeatherStationMetadataClient not enabled");
-            return false;
+            return 0;
         }
         log.info("Update weather stations statuses");
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
-        final AtomicBoolean updated = new AtomicBoolean(false);
+        int updated = 0;
 
-        allTiesaaAsemas.stream().forEach(from -> {
+        for (TiesaaAsemaVO from : allTiesaaAsemas) {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                updated.compareAndSet(false,
-                                      AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to));
+            if (to != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+                updated++;
                 roadStationService.save(to);
             }
-        });
-        return updated.get();
+        }
+        return updated;
     }
 
-    public boolean updateCameraStationsStatuses() {
+    public int updateCameraStationsStatuses() {
         if (!lotjuCameraStationMetadataService.isEnabled()) {
             log.info("Not updating camera stations statuses because LotjuCameraStationService not enabled");
-            return false;
+            return 0;
         }
         log.info("Update camera stations statuses");
         final List<KameraVO> allKameras = lotjuCameraStationMetadataService.getKameras();
         final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
-        final AtomicBoolean updated = new AtomicBoolean(false);
+        int updated = 0;
 
-        allKameras.stream().forEach(from -> {
+        for (KameraVO from : allKameras) {
             RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null) {
-                updated.compareAndSet(false,
-                                      AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to));
+            if (to != null && AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+                updated++;
                 roadStationService.save(to);
             }
-        });
-        return updated.get();
+        };
+        return updated;
     }
 
     private Map<Long, RoadStation> getLotjuIdRoadStationMap(final RoadStationType roadStationType) {

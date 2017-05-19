@@ -86,7 +86,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<LamLaskennallinenAnturiVO> insert = new ArrayList<>(); // New sensors
 
         final AtomicInteger invalid = new AtomicInteger();
-        allLamLaskennallinenAnturis.stream().forEach(anturi -> {
+        allLamLaskennallinenAnturis.forEach(anturi -> {
             if (validate(anturi)) {
                 final RoadStationSensor currentSaved = sensorsMappedByLotjuId.remove(anturi.getId());
                 if ( currentSaved != null ) {

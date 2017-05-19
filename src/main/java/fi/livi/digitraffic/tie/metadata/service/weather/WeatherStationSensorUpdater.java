@@ -83,7 +83,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> insert = new ArrayList<>(); // new WeatherStations
 
         AtomicInteger invalid = new AtomicInteger();
-        allTiesaaLaskennallinenAnturis.stream().forEach(anturi -> {
+        allTiesaaLaskennallinenAnturis.forEach(anturi -> {
             if (validate(anturi)) {
                 final RoadStationSensor currentSaved = currentSensorsMappedByLotjuId.remove(anturi.getId());
 

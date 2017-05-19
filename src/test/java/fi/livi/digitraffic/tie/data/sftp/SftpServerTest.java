@@ -86,7 +86,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 break;
             }
         }
-        sessions.stream().forEach(Session::close);
+        sessions.forEach(Session::close);
     }
 
     @Test
@@ -98,12 +98,12 @@ public class SftpServerTest extends AbstractSftpTest {
             newSessions.add(this.sftpSessionFactory.getSession());
         }
         // relase sessions to pool
-        newSessions.stream().forEach(Session::close);
+        newSessions.forEach(Session::close);
 
         Field sessionField = ReflectionUtils.findField(CachingSessionFactory.CachedSession.class, "targetSession");
         sessionField.setAccessible(true);
         Set<Session> newRealSessions = new HashSet<>();
-        newSessions.stream().forEach(s -> {
+        newSessions.forEach(s -> {
             newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
         });
 
@@ -113,11 +113,11 @@ public class SftpServerTest extends AbstractSftpTest {
             cachedSessions.add(this.sftpSessionFactory.getSession());
         }
         Set<Session> cachedRealSessions = new HashSet<>();
-        cachedSessions.stream().forEach(s -> {
+        cachedSessions.forEach(s -> {
             cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
         });
 
         assertTrue("All sessions should be found from cachedSessions", cachedRealSessions.containsAll(newRealSessions));
-        cachedSessions.stream().forEach(Session::close);
+        cachedSessions.forEach(Session::close);
     }
 }

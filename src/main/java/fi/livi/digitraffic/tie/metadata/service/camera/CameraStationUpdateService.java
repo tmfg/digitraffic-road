@@ -61,13 +61,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
                 roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
 
-        currentCameraPresetsWithoutRoadStation.stream().forEach(cameraPreset -> {
+        for (CameraPreset cameraPreset : currentCameraPresetsWithoutRoadStation) {
             // Convert presetId to naturalId because using cameraId is not reliable before first run
             final long naturalId = CameraHelper.convertPresetIdToVanhaId(cameraPreset.getPresetId());
             // Fix cameraId for all
             cameraPreset.setCameraId(CameraHelper.convertPresetIdToCameraId(cameraPreset.getPresetId()));
 
-            RoadStation rs = cameraRoadStationseMappedByNaturalId.get(Long.valueOf(naturalId));
+            RoadStation rs = cameraRoadStationseMappedByNaturalId.get(naturalId);
 
             if (rs != null) {
                 cameraPreset.setRoadStation(rs);
@@ -82,7 +82,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 log.info("Fixed {} missing RoadStation with new {}", cameraPreset, rs);
             }
             cameraPresetService.save(cameraPreset);
-        });
+        }
         return !currentCameraPresetsWithoutRoadStation.isEmpty();
     }
 
@@ -98,29 +98,26 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                         Function.identity()));
 
         // CameraPresets in db without lotjuId
-        Map<String, List<CameraPreset>> withoutLotjuIdMappedByCameraId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
+        Map<String, List<CameraPreset>> cameraPresetsWithoutLotjuId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
 
-        if (withoutLotjuIdMappedByCameraId.isEmpty()) {
+        if (cameraPresetsWithoutLotjuId.isEmpty()) {
             return false;
         }
 
-        final AtomicInteger updated = new AtomicInteger();
-        final AtomicInteger obsoleted = new AtomicInteger();
+        int updated = 0;
+        int obsoleted = 0;
 
-        withoutLotjuIdMappedByCameraId.entrySet().stream().forEach(entry -> {
-
+        for (Map.Entry<String, List<CameraPreset>> entry : cameraPresetsWithoutLotjuId.entrySet()) {
             String cameraId = entry.getKey();
             Pair<KameraVO, List<EsiasentoVO>> kameraPair = cameraIdToKameraEsiasentosPair.get(cameraId);
 
             if (kameraPair == null) {
                 // If kamera not found in lotju -> obsolete all presets
-                entry.getValue().stream().forEach(cp -> {
-                    cp.obsolete();
-                    cameraPresetService.save(cp);
-                });
+                entry.getValue().stream().filter(CameraPreset::obsolete)
+                    .peek(cp -> cameraPresetService.save(cp));
             } else {
                 // loop camera's presets and set their lotjuIds
-                entry.getValue().stream().forEach(cameraPreset -> {
+                for (CameraPreset cameraPreset : entry.getValue()) {
                     String direction = CameraHelper.getDirectionFromPresetId(cameraPreset.getPresetId());
                     // Find esiasento for preset
                     Optional<EsiasentoVO> found =
@@ -131,21 +128,21 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                         String before = ReflectionToStringBuilder.toString(cameraPreset);
                         cameraPreset.setCameraLotjuId(kameraPair.getKey().getId());
                         cameraPreset.setLotjuId(found.get().getId());
-                        updated.addAndGet(1);
+                        updated++;
                         log.info("Updated CameraPreset lotju id:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(cameraPreset));
                     // if esiasento is not found -> obsolete preset
                     } else if (cameraPreset.obsolete()) {
-                        obsoleted.addAndGet(1);
+                        obsoleted++;
                     }
                     cameraPresetService.save(cameraPreset);
-                });
+                }
             }
-        });
+        }
 
         log.info("Obsoleted {} camera presets", obsoleted);
         log.info("Fixed {} camera presets without lotjuId", updated);
 
-        return updated.get() > 0;
+        return updated > 0 || obsoleted > 0;
     }
 
     public boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {
@@ -157,13 +154,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         final AtomicInteger invalid = new AtomicInteger();
 
-        lotjuIdToKameraAndEsiasentos.values().stream().forEach(kameraEsiasentoPair -> {
+        for (Pair<KameraVO, List<EsiasentoVO>> kameraEsiasentoPair : lotjuIdToKameraAndEsiasentos.values()) {
 
             final KameraVO kamera = kameraEsiasentoPair.getLeft();
 
             if (validate(kamera)) {
 
-                kameraEsiasentoPair.getRight().stream().forEach(esiasento -> {
+                for (EsiasentoVO esiasento : kameraEsiasentoPair.getRight()) {
                     final CameraPreset existingPreset = presetsMappedByLotjuId.remove(esiasento.getId());
 
                     if (existingPreset != null) {
@@ -171,11 +168,11 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                     } else {
                         insert.add(Pair.of(kamera, esiasento));
                     }
-                });
+                }
             } else {
                 invalid.addAndGet(1);
             }
-        });
+        }
 
         if (invalid.get() > 0) {
             log.error("Found {} invalid Kameras from LOTJU", invalid);
@@ -183,11 +180,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // camera presets in database, but not in server
         long countObsoletePresets = presetsMappedByLotjuId.values().stream()
-            .filter(cp -> {
-                final boolean obsolete = cp.obsolete();
-                cameraPresetService.save(cp);
-                return obsolete;
-            }).count();
+            .filter(CameraPreset::obsolete).peek(cp -> cameraPresetService.save(cp)).count();
 
         final Map<Long, WeatherStation> lotjuIdToWeatherStationMap =
                 weatherStationService.findAllWeatherStationsMappedByLotjuId();
@@ -202,7 +195,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         // Go through all camera presets' road stations and check for non obsolete presets.
         // If just one non obsolete preset exists set road station obsolete false.
         // If not found any non obsolete presets for road station then obsolete it.
-        cameraPresetService.findAll().stream().filter(cp -> cp.getRoadStationId() != null).collect(Collectors.groupingBy(CameraPreset::getRoadStationId)).values().stream()
+        cameraPresetService.findAll().stream().filter(cp -> cp.getRoadStationId() != null)
+            .collect(Collectors.groupingBy(CameraPreset::getRoadStationId)).values().stream()
                 .forEach(cpList -> {
                     Optional<CameraPreset> nonObsolete = cpList.stream().filter(cameraPreset -> !cameraPreset.isObsolete()).findFirst();
                     RoadStation rs = nonObsolete.isPresent() ? nonObsolete.get().getRoadStation() : cpList.get(0).getRoadStation();
@@ -309,11 +303,9 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         return insert.size();
     }
 
-    private boolean updateCameraPresetAtributes(
-            final KameraVO kameraFrom,
-            final EsiasentoVO esiasentoFrom,
-            final Map<Long, WeatherStation> lotjuIdToWeatherStationMap,
-            final CameraPreset to) {
+    private boolean updateCameraPresetAtributes(final KameraVO kameraFrom, final EsiasentoVO esiasentoFrom,
+                                                final Map<Long, WeatherStation> lotjuIdToWeatherStationMap,
+                                                final CameraPreset to) {
 
         final int hash = HashCodeBuilder.reflectionHashCode(to);
         final String cameraId = CameraHelper.convertVanhaIdToKameraId(kameraFrom.getVanhaId());

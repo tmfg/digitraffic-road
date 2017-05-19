@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +44,6 @@ public class CameraStationUpdater extends AbstractCameraStationAttributeUpdater 
 
         Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
                 lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Fetched Cameras:");
-            for (final Pair<KameraVO, List<EsiasentoVO>> cameraPreset : lotjuIdToKameraAndEsiasentos.values()) {
-                log.info(ToStringBuilder.reflectionToString(cameraPreset.getLeft().getVanhaId()) + " : " + ToStringBuilder.reflectionToString(cameraPreset.getRight()));
-            }
-        }
 
         final boolean fixedRoadStations = cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         final boolean fixedPresets = cameraStationUpdateService.fixPresetsWithoutLotjuIds(lotjuIdToKameraAndEsiasentos);

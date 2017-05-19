@@ -97,7 +97,7 @@ public class WeatherStationService {
         final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
             roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.WEATHER_STATION);
 
-        weatherStations.stream().forEach(ws -> {
+        weatherStations.forEach(ws -> {
             setRoadStationIfNotSet(ws, ws.getRoadStationNaturalId(), orphansNaturalIdToRoadStationMap);
             if (ws.getRoadStation().getId() == null) {
                 roadStationService.save(ws.getRoadStation());
@@ -111,7 +111,7 @@ public class WeatherStationService {
         Map<Long, WeatherStation> naturalIdToWeatherStationMap =
             findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId();
 
-        tiesaaAsemas.stream().forEach(tiesaaAsema -> {
+        tiesaaAsemas.forEach(tiesaaAsema -> {
 
             WeatherStation ws = tiesaaAsema.getVanhaId() != null ?
                                 naturalIdToWeatherStationMap.get(tiesaaAsema.getVanhaId().longValue()) : null;
@@ -137,12 +137,5 @@ public class WeatherStationService {
     @Transactional
     public void save(WeatherStation rws) {
         weatherStationRepository.save(rws);
-    }
-
-    @Transactional
-    public boolean obsoleteStation(final WeatherStation weatherStation) {
-        final boolean obsoleted = weatherStation.obsolete();
-        weatherStationRepository.save(weatherStation);
-        return obsoleted;
     }
 }
