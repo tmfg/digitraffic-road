@@ -15,6 +15,12 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
+import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;
+import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @Service
 public class RoadStationService {
@@ -46,6 +52,11 @@ public class RoadStationService {
             map.put(roadStation.getNaturalId(), roadStation);
         }
         return map;
+    }
+
+    @Transactional(readOnly = true)
+    public RoadStation findByTypeAndNaturalId(final RoadStationType type, Long naturalId) {
+        return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
     }
 
     @Transactional(readOnly = true)
@@ -87,4 +98,26 @@ public class RoadStationService {
     public List<RoadStation> findAll() {
         return roadStationRepository.findAll();
     }
+
+    @Transactional
+    public boolean updateRoadStation(LamAsemaVO from) {
+        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
+        return rs != null && AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+    }
+
+    @Transactional
+    public boolean updateRoadStation(TiesaaAsemaVO from) {
+        log.info("A: {}: {}", from.getId(),from.getKeruunTila());
+        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
+        boolean value = rs != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        log.info("B: {}: {}", from.getId(),from.getKeruunTila());
+        return value;
+    }
+
+    @Transactional
+    public boolean updateRoadStation(KameraVO from) {
+        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
+        return rs != null && AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+    }
+
 }

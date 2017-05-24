@@ -345,6 +345,7 @@ public class CameraPreset {
                 .appendField("id", id)
                 .appendField("cameraId", cameraId)
                 .appendField("lotjuId", lotjuId)
+                .appendField("obsoleteDate", obsoleteDate)
                 .appendField("roadStationLotjuId", getRoadStationLotjuId())
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())

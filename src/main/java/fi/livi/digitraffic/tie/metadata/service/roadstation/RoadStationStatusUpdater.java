@@ -46,16 +46,12 @@ public class RoadStationStatusUpdater {
             return 0;
         }
         log.info("Update TMS stations statuses");
-        final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.TMS_STATION);
-
         final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
 
         int updated = 0;
         for(LamAsemaVO from : allLams) {
-            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null && AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+            if (roadStationService.updateRoadStation(from)) {
                 updated++;
-                roadStationService.save(to);
             }
         }
         return updated;
@@ -68,14 +64,11 @@ public class RoadStationStatusUpdater {
         }
         log.info("Update weather stations statuses");
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
-        final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.WEATHER_STATION);
-        int updated = 0;
 
+        int updated = 0;
         for (TiesaaAsemaVO from : allTiesaaAsemas) {
-            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+            if (roadStationService.updateRoadStation(from)) {
                 updated++;
-                roadStationService.save(to);
             }
         }
         return updated;
@@ -88,14 +81,11 @@ public class RoadStationStatusUpdater {
         }
         log.info("Update camera stations statuses");
         final List<KameraVO> allKameras = lotjuCameraStationMetadataService.getKameras();
-        final Map<Long, RoadStation> lotjuIdRoadStationMap = getLotjuIdRoadStationMap(RoadStationType.CAMERA_STATION);
-        int updated = 0;
 
+        int updated = 0;
         for (KameraVO from : allKameras) {
-            RoadStation to = lotjuIdRoadStationMap.get(from.getId());
-            if (to != null && AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, to)) {
+            if (roadStationService.updateRoadStation(from)) {
                 updated++;
-                roadStationService.save(to);
             }
         };
         return updated;

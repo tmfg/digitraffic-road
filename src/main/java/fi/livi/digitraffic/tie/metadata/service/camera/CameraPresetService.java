@@ -1,17 +1,32 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
@@ -26,6 +41,7 @@ import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 @Service
 public class CameraPresetService {
 
+    private final EntityManager entityManager;
     private final RoadStationRepository roadStationRepository;
     private final WeatherStationRepository weatherStationRepository;
 
@@ -36,16 +52,29 @@ public class CameraPresetService {
     private final StaticDataStatusService staticDataStatusService;
 
     @Autowired
-    public CameraPresetService(final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
+    public CameraPresetService(final EntityManager entityManager,
+                               final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
                                final StaticDataStatusService staticDataStatusService,
                                final CameraPresetRepository cameraPresetRepository,
                                final RoadStationRepository roadStationRepository,
                                final WeatherStationRepository weatherStationRepository) {
+        this.entityManager = entityManager;
         this.roadStationRepository = roadStationRepository;
         this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
         this.staticDataStatusService = staticDataStatusService;
+    }
+
+    private Criteria createCriteria() {
+        return entityManager.unwrap(Session.class)
+            .createCriteria(CameraPreset.class)
+            .setFetchSize(1000);
+    }
+
+    private CriteriaBuilder createCriteriaBuilder() {
+        return entityManager
+            .getCriteriaBuilder();
     }
 
     @Transactional(readOnly = true)
@@ -95,7 +124,15 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public List<CameraPreset> findPublishableCameraPresetByLotjuIdIn(final Collection<Long> lotjuIds) {
-        return cameraPresetRepository.findByPublishableIsTrueAndLotjuIdIn(lotjuIds);
+        final List<Criterion> criterions = new ArrayList<>();
+        criterions.add(Restrictions.eq("publishable", true));
+        for (List<Long> ids : Iterables.partition(lotjuIds, 1000)) {
+            criterions.add(Restrictions.in("lotjuId", ids));
+        }
+
+        final Criteria c = createCriteria();
+        c.add(Restrictions.and(criterions.toArray(new Criterion[0])));
+        return c.list();
     }
 
     @Transactional(readOnly = true)
@@ -110,7 +147,39 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public Map<String, List<CameraPreset>> findWithoutLotjuIdMappedByCameraId() {
-        List<CameraPreset> all = cameraPresetRepository.findByCameraLotjuIdIsNullOrLotjuIdIsNull();
+        final List<CameraPreset> all = cameraPresetRepository.findByRoadStation_LotjuIdIsNullOrLotjuIdIsNull();
         return all.stream().collect(Collectors.groupingBy(CameraPreset::getCameraId));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, CameraPreset> findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(Long cameraLotjuId) {
+        final List<CameraPreset> all = cameraPresetRepository.findByRoadStation_LotjuId(cameraLotjuId);
+        return all.stream().collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
+    }
+
+    @Transactional
+    public int obsoletePresetsExcludingLotjuIds(Set<Long> presetsLotjuIdsNotToObsolete) {
+
+        final CriteriaBuilder cb = createCriteriaBuilder();
+        final CriteriaUpdate<CameraPreset> update = cb.createCriteriaUpdate(CameraPreset.class);
+        final Root<CameraPreset> root = update.from(CameraPreset.class);
+        update.set("obsoleteDate", LocalDate.now());
+
+        List<Predicate> predicates = new ArrayList<>();
+        for (List<Long> ids : Iterables.partition(presetsLotjuIdsNotToObsolete, 1000)) {
+            predicates.add(cb.not(root.get("lotjuId").in(ids)));
+        }
+        update.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return this.entityManager.createQuery(update).executeUpdate();
+    }
+
+    @Transactional
+    public int obsoleteCameraRoadStationsWithoutPublishablePresets() {
+        return cameraPresetRepository.obsoleteCameraRoadStationsWithoutPublishablePresets();
+    }
+    @Transactional
+    public int nonObsoleteCameraRoadStationsWithPublishablePresets() {
+        return cameraPresetRepository.nonObsoleteCameraRoadStationsWithPublishablePresets();
     }
 }

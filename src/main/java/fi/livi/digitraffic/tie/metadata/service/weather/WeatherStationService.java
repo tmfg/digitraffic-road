@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
@@ -34,17 +35,20 @@ public class WeatherStationService {
     private final StaticDataStatusService staticDataStatusService;
     private final RoadStationService roadStationService;
     private final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter;
+    private final RoadStationRepository roadStationRepository;
 
     @Autowired
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final StaticDataStatusService staticDataStatusService,
                                  final RoadStationService roadStationService,
-                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
+                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter,
+                                 final RoadStationRepository roadStationRepository) {
 
         this.weatherStationRepository = weatherStationRepository;
         this.staticDataStatusService = staticDataStatusService;
         this.roadStationService = roadStationService;
         this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
+        this.roadStationRepository = roadStationRepository;
     }
 
     @Transactional(readOnly = true)
@@ -135,7 +139,22 @@ public class WeatherStationService {
     }
 
     @Transactional
-    public void save(WeatherStation rws) {
-        weatherStationRepository.save(rws);
+    public WeatherStation save(WeatherStation rws) {
+        try {
+            // Cascade none
+            roadStationRepository.save(rws.getRoadStation());
+            // Without this detached entity errors occurs
+            final WeatherStation saved = weatherStationRepository.save(rws);
+            weatherStationRepository.flush();
+            return saved;
+        } catch (Exception e) {
+            log.error("Could not save " + rws);
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public WeatherStation findWeatherStationByLotjuId(Long tsaLotjuId) {
+        return weatherStationRepository.findByLotjuId(tsaLotjuId);
     }
 }

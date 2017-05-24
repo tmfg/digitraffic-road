@@ -66,7 +66,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         stationType);
 
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value =
             "DELETE FROM ROAD_STATION_SENSORS\n" +
             "WHERE ROAD_STATION_ID = :roadStationId\n" +
@@ -81,14 +81,14 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
                                  @Param("roadStationId") final Long roadStationId,
                                  @Param("sensorsLotjuIds") final List<Long> sensorsLotjuIds);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value =
             "DELETE FROM ROAD_STATION_SENSORS\n" +
             "WHERE ROAD_STATION_ID = :roadStationId",
            nativeQuery = true)
     int deleteRoadStationsSensors(@Param("roadStationId") final Long roadStationId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value =
             "INSERT INTO ROAD_STATION_SENSORS DST (ROAD_STATION_ID, ROAD_STATION_SENSOR_ID)\n" +
             "  SELECT RS.ID AS ROAD_STATION_ID\n" +

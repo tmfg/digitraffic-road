@@ -67,4 +67,8 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                                      final long roadStationNaturalId,
                                      @Param("roadStationType")
                                      final RoadStationType roadStationType);
+
+    RoadStation findByTypeAndNaturalId(final RoadStationType type, final Long naturalId);
+
+    RoadStation findByTypeAndLotjuId(final RoadStationType tmsStation, final Long id);
 }

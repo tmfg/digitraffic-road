@@ -3,11 +3,13 @@ package fi.livi.digitraffic.tie.metadata.dao;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -48,11 +50,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
             nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
 
-    CameraPreset findCameraPresetByPresetId(final String presetId);
-
-    List<CameraPreset> findByPublishableIsTrueAndLotjuIdIn(final Collection<Long> presetIds);
-
-    List<CameraPreset> findByCameraLotjuIdIsNullOrLotjuIdIsNull();
+    List<CameraPreset> findByRoadStation_LotjuIdIsNullOrLotjuIdIsNull();
 
     @Query(value =
            "SELECT CP.PRESET_ID\n" +
@@ -67,4 +65,43 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
         "where ws.id in (:wsIdList)\n" +
         "and ws.road_station_id = rs.id", nativeQuery = true)
     List<NearestRoadStation> findAllRoadStationNaturalIds(@Param("wsIdList") final Collection<Long> wsIdList);
+
+    List<CameraPreset> findByRoadStation_LotjuId(final Long cameraLotjuId);
+
+    @Query(value =
+               "SELECT CP.LOTJU_ID\n" +
+               "FROM CAMERA_PRESET CP\n" +
+               "WHERE CP.LOTJU_ID IS NOT NULL",
+           nativeQuery = true)
+    Set<Long> findAllCameraPresetsLotjuIds();
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+               "UPDATE ROAD_STATION RS\n" +
+               "SET RS.OBSOLETE = 0\n" +
+               "  , RS.OBSOLETE_DATE = NULL\n" +
+               "WHERE RS.ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
+               "  AND RS.OBSOLETE_DATE IS NOT NULL\n" +
+               "  AND EXISTS(\n" +
+               "    SELECT NULL\n" +
+               "    FROM CAMERA_PRESET CP\n" +
+               "    WHERE CP.PUBLISHABLE = 1\n" +
+               "      AND CP.ROAD_STATION_ID = RS.ID\n" +
+               ")", nativeQuery = true)
+    int nonObsoleteCameraRoadStationsWithPublishablePresets();
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+               "UPDATE ROAD_STATION RS\n" +
+               "SET RS.OBSOLETE = 1\n" +
+               "  , RS.OBSOLETE_DATE = sysdate\n" +
+               "WHERE RS.ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
+               "  AND RS.OBSOLETE_DATE IS NULL\n" +
+               "  AND NOT EXISTS(\n" +
+               "    SELECT NULL\n" +
+               "    FROM CAMERA_PRESET CP\n" +
+               "    WHERE CP.PUBLISHABLE = 1\n" +
+               "      AND CP.ROAD_STATION_ID = RS.ID\n" +
+               ")", nativeQuery = true)
+    int obsoleteCameraRoadStationsWithoutPublishablePresets();
 }
