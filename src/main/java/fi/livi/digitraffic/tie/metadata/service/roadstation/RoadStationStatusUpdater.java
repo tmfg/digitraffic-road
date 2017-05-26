@@ -1,22 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
-import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;
-import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
@@ -89,10 +81,5 @@ public class RoadStationStatusUpdater {
             }
         };
         return updated;
-    }
-
-    private Map<Long, RoadStation> getLotjuIdRoadStationMap(final RoadStationType roadStationType) {
-        List<RoadStation> tmsStations = roadStationService.findByType(roadStationType);
-        return tmsStations.parallelStream().filter(rs -> rs.getLotjuId() != null).collect(Collectors.toMap(RoadStation::getLotjuId, Function.identity()));
     }
 }
