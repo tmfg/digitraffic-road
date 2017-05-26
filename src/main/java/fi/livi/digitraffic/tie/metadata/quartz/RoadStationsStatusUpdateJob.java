@@ -35,6 +35,6 @@ public class RoadStationsStatusUpdateJob extends SimpleUpdateJob {
         log.info("Updated {} TMS stations statuses", tmsCount);
         log.info("Updated {} weather stations statuses", wsCount);
         log.info("Updated {} camera stations statuses", csCount);
-        log.info("Deleted {} non publishable weather camera images", csCount);
+        log.info("Deleted {} non publishable weather camera images", deleted);
     }
 }
