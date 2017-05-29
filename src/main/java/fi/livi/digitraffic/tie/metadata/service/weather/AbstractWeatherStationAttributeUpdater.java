@@ -9,18 +9,14 @@ import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
-public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationUpdater {
+public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    protected RoadStationService roadStationService;
-
-    public AbstractWeatherStationAttributeUpdater(final RoadStationService roadStationService, final Logger logger) {
+    public AbstractWeatherStationAttributeUpdater(final Logger logger) {
         super(logger);
-        this.roadStationService = roadStationService;
     }
 
     public static boolean updateRoadStationAttributes(final TiesaaAsemaVO from, final RoadStation to) {

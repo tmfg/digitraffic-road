@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
+import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
@@ -23,32 +25,34 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @Service
-public class WeatherStationService {
+public class WeatherStationService extends AbstractWeatherStationAttributeUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationService.class);
     private final WeatherStationRepository weatherStationRepository;
     private final StaticDataStatusService staticDataStatusService;
     private final RoadStationService roadStationService;
     private final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter;
-    private final RoadStationRepository roadStationRepository;
+    private final RoadAddressRepository roadAddressRepository;
 
     @Autowired
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final StaticDataStatusService staticDataStatusService,
                                  final RoadStationService roadStationService,
                                  final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter,
-                                 final RoadStationRepository roadStationRepository) {
-
+                                 final RoadAddressRepository roadAddressRepository) {
+        super(log);
         this.weatherStationRepository = weatherStationRepository;
         this.staticDataStatusService = staticDataStatusService;
         this.roadStationService = roadStationService;
         this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
-        this.roadStationRepository = roadStationRepository;
+        this.roadAddressRepository = roadAddressRepository;
     }
 
     @Transactional(readOnly = true)
@@ -88,73 +92,72 @@ public class WeatherStationService {
         return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
     }
 
-    @Transactional(readOnly = true)
-    public List<WeatherStation> findAllWeatherStationsWithoutRoadStation() {
-        return weatherStationRepository.findByRoadStationIsNull();
-    }
-
-    @Transactional
-    public void fixOrphanRoadStations() {
-        List<WeatherStation> weatherStations =
-            findAllWeatherStationsWithoutRoadStation();
-
-        final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
-            roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.WEATHER_STATION);
-
-        weatherStations.forEach(ws -> {
-            setRoadStationIfNotSet(ws, ws.getRoadStationNaturalId(), orphansNaturalIdToRoadStationMap);
-            if (ws.getRoadStation().getId() == null) {
-                roadStationService.save(ws.getRoadStation());
-                log.info("Created new RoadStation " + ws.getRoadStation());
-            }
-        });
-    }
-
     @Transactional
     public void fixNullLotjuIds(final List<TiesaaAsemaVO> tiesaaAsemas) {
         Map<Long, WeatherStation> naturalIdToWeatherStationMap =
             findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId();
 
-        tiesaaAsemas.forEach(tiesaaAsema -> {
-
+        int updated = 0;
+        for( TiesaaAsemaVO tiesaaAsema : tiesaaAsemas) {
             WeatherStation ws = tiesaaAsema.getVanhaId() != null ?
                                 naturalIdToWeatherStationMap.get(tiesaaAsema.getVanhaId().longValue()) : null;
             if (ws != null) {
                 ws.setLotjuId(tiesaaAsema.getId());
                 ws.getRoadStation().setLotjuId(tiesaaAsema.getId());
+                updated++;
             }
-        });
-    }
-
-    private static void setRoadStationIfNotSet(WeatherStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
-        RoadStation rs = rws.getRoadStation();
-
-        if (rs == null) {
-            rs = tsaVanhaId != null ? orphansNaturalIdToRoadStationMap.remove(tsaVanhaId) : null;
-            if (rs == null) {
-                rs = new RoadStation(RoadStationType.WEATHER_STATION);
-            }
-            rws.setRoadStation(rs);
         }
-    }
-
-    @Transactional
-    public WeatherStation save(WeatherStation rws) {
-        try {
-            // Cascade none
-            roadStationRepository.save(rws.getRoadStation());
-            // Without this detached entity errors occurs
-            final WeatherStation saved = weatherStationRepository.save(rws);
-            weatherStationRepository.flush();
-            return saved;
-        } catch (Exception e) {
-            log.error("Could not save " + rws);
-            throw e;
-        }
+        log.info("Fixed null lotjuIds for {} weather stations", updated);
     }
 
     @Transactional(readOnly = true)
     public WeatherStation findWeatherStationByLotjuId(Long tsaLotjuId) {
         return weatherStationRepository.findByLotjuId(tsaLotjuId);
+    }
+
+    @Transactional
+    public UpdateStatus updateOrInsertWeatherStation(TiesaaAsemaVO tiesaaAsema) {
+        WeatherStation rws = findWeatherStationByLotjuId(tiesaaAsema.getId());
+
+        try {
+            if (rws != null) {
+                final int hash = HashCodeBuilder.reflectionHashCode(rws);
+                final String before = ReflectionToStringBuilder.toString(rws);
+
+                final RoadStation rs = rws.getRoadStation();
+                setRoadAddressIfNotSet(rs);
+
+                if (updateWeatherStationAttributes(tiesaaAsema, rws) ||
+                    hash != HashCodeBuilder.reflectionHashCode(rws)) {
+                    log.info("Updated: \n{} -> \n{}", before, ReflectionToStringBuilder.toString(rws));
+                    return UpdateStatus.UPDATED;
+                }
+                return UpdateStatus.NOT_UPDATED;
+            } else {
+                rws = new WeatherStation();
+                rws.setRoadStation(new RoadStation(RoadStationType.WEATHER_STATION));
+                setRoadAddressIfNotSet(rws.getRoadStation());
+                updateWeatherStationAttributes(tiesaaAsema, rws);
+                weatherStationRepository.save(rws);
+                log.info("Created new {}", rws);
+                return UpdateStatus.INSERTED;
+            }
+        } finally {
+            // Needed for tests to work :(
+            weatherStationRepository.flush();
+        }
+    }
+
+    private static boolean updateWeatherStationAttributes(final TiesaaAsemaVO from,
+                                                          final WeatherStation to) {
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
+
+        to.setLotjuId(from.getId());
+        to.setMaster(from.isMaster() != null ? from.isMaster() : true);
+        to.setWeatherStationType(WeatherStationType.fromTiesaaAsemaTyyppi(from.getTyyppi()));
+
+        // Update RoadStation
+        return updateRoadStationAttributes(from, to.getRoadStation()) ||
+            HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 }

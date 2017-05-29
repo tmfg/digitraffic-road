@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,13 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
-public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
+public class WeatherStationsSensorsUpdater {
+
+    private static Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
@@ -29,12 +31,10 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
-    public WeatherStationsSensorsUpdater(final RoadStationService roadStationService,
-                                         final RoadStationSensorService roadStationSensorService,
+    public WeatherStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                          final WeatherStationService weatherStationService,
                                          final StaticDataStatusService staticDataStatusService,
                                          final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
-        super(roadStationService, LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class));
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
@@ -102,7 +102,6 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
 
         return countRemoved > 0 || countAdded > 0;
     }
-
 
     private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);

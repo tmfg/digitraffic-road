@@ -1,14 +1,25 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
@@ -30,12 +41,20 @@ public class RoadStationService {
     private final RoadStationRepository roadStationRepository;
 
     private final RoadAddressRepository roadAddressRepository;
+    private final EntityManager entityManager;
 
     @Autowired
     public RoadStationService(final RoadStationRepository roadStationRepository,
-                              final RoadAddressRepository roadAddressRepository) {
+                              final RoadAddressRepository roadAddressRepository,
+                              final EntityManager entityManager) {
         this.roadStationRepository = roadStationRepository;
         this.roadAddressRepository = roadAddressRepository;
+        this.entityManager = entityManager;
+    }
+
+    private CriteriaBuilder createCriteriaBuilder() {
+        return entityManager
+            .getCriteriaBuilder();
     }
 
     @Transactional(readOnly = true)
@@ -79,11 +98,6 @@ public class RoadStationService {
         return map;
     }
 
-    @Transactional(readOnly = true)
-    public List<RoadStation> findOrphanWeatherStationRoadStations() {
-        return roadStationRepository.findOrphanWeatherRoadStations();
-    }
-
     @Transactional
     public RoadStation save(final RoadStation roadStation) {
         return roadStationRepository.save(roadStation);
@@ -107,11 +121,8 @@ public class RoadStationService {
 
     @Transactional
     public boolean updateRoadStation(TiesaaAsemaVO from) {
-        log.info("A: {}: {}", from.getId(),from.getKeruunTila());
         RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
-        boolean value = rs != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
-        log.info("B: {}: {}", from.getId(),from.getKeruunTila());
-        return value;
+        return rs != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
     }
 
     @Transactional
@@ -120,4 +131,22 @@ public class RoadStationService {
         return rs != null && AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
     }
 
+    @Transactional
+    public int obsoleteRoadStationsExcludingLotjuIds(final RoadStationType roadStationType, final List<Long> roadStationsLotjuIdsNotToObsolete) {
+        final CriteriaBuilder cb = createCriteriaBuilder();
+        final CriteriaUpdate<RoadStation> update = cb.createCriteriaUpdate(RoadStation.class);
+        final Root<RoadStation> root = update.from(RoadStation.class);
+        EntityType<RoadStation> rootModel = root.getModel();
+        update.set("obsoleteDate", LocalDate.now());
+        update.set("obsolete", true);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        for (List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
+            predicates.add(cb.not(root.get("lotjuId").in(ids)));
+        }
+        update.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return this.entityManager.createQuery(update).executeUpdate();
+    }
 }

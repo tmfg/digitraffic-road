@@ -59,7 +59,7 @@ public class TmsDataServiceTest extends AbstractTest {
 
     @Test
     public void findPublishableTmsDataById() {
-        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23001);
+        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(-23001);
         assertNotNull(object);
         assertNotNull(object.getDataUpdatedTime());
         assertNotNull(object.getTmsStations());

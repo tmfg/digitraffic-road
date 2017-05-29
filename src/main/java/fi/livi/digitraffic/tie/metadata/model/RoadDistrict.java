@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
@@ -97,5 +100,47 @@ public class RoadDistrict {
 
     public void setSpeedLimitSeason(final Integer speedLimitSeason) {
         this.speedLimitSeason = speedLimitSeason;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelper(this)
+            .appendField("id", getId())
+            .appendField("naturalId", getNaturalId())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RoadDistrict that = (RoadDistrict) o;
+
+        return new EqualsBuilder()
+            .append(naturalId, that.naturalId)
+            .append(obsolete, that.obsolete)
+            .append(id, that.id)
+            .append(name, that.name)
+            .append(obsoleteDate, that.obsoleteDate)
+            .append(speedLimitSeason, that.speedLimitSeason)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+            .append(id)
+            .append(naturalId)
+            .append(name)
+            .append(obsolete)
+            .append(obsoleteDate)
+            .append(speedLimitSeason)
+            .toHashCode();
     }
 }

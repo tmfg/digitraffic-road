@@ -63,6 +63,7 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         sensorsInitial = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+
         allInitial =
             weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
@@ -73,6 +74,7 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
+
         sensorsAfterChange = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
         allAfterChange =
             weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);

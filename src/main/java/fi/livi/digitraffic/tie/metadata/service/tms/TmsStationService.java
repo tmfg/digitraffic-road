@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,36 +18,57 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
+import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
+import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 
 @Service
-public class TmsStationService {
+public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
+
     private final TmsStationRepository tmsStationRepository;
     private final RoadStationRepository roadStationRepository;
     private final StaticDataStatusService staticDataStatusService;
+    private final RoadStationService roadStationService;
+    private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
+    private final RoadAddressRepository roadAddressRepository;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
                              final RoadStationRepository roadStationRepository,
                              final StaticDataStatusService staticDataStatusService,
-                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter) {
+                             final RoadStationService roadStationService,
+                             final RoadDistrictService roadDistrictService,
+                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
+                             final RoadAddressRepository roadAddressRepository) {
+        super(log);
         this.tmsStationRepository = tmsStationRepository;
         this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
+        this.roadStationService = roadStationService;
+        this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
+        this.roadAddressRepository = roadAddressRepository;
     }
 
     @Transactional(readOnly = true)
@@ -128,21 +153,6 @@ public class TmsStationService {
         return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
     }
 
-    @Transactional
-    public TmsStation save(final TmsStation tmsStation) {
-        try {
-            // Cascade none
-            roadStationRepository.save(tmsStation.getRoadStation());
-            // Without this detached entity errors occurs
-            final TmsStation saved = tmsStationRepository.save(tmsStation);
-            tmsStationRepository.flush();
-            return saved;
-        } catch (Exception e) {
-            log.error("Could not save " + tmsStation);
-            throw e;
-        }
-    }
-
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsMappedByByTmsNaturalId() {
         final List<TmsStation> allStations = tmsStationRepository.findAll();
@@ -199,5 +209,111 @@ public class TmsStationService {
         final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
 
         return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
+    }
+
+    @Transactional
+    public List<TmsStation> findTmsStationsWithoutRoadStation() {
+        return tmsStationRepository.findByRoadStationIsNull();
+    }
+
+    @Transactional
+    public int fixNullLotjuIds(List<LamAsemaVO> lamAsemas) {
+        Map<Long, TmsStation> naturalIdToWeatherStationMap =
+            findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
+        int updated = 0;
+        for (LamAsemaVO lamAsema : lamAsemas) {
+            TmsStation ws = lamAsema.getVanhaId() != null ?
+                                naturalIdToWeatherStationMap.get(lamAsema.getVanhaId().longValue()) : null;
+            if (ws != null) {
+                ws.setLotjuId(lamAsema.getId());
+                ws.getRoadStation().setLotjuId(lamAsema.getId());
+                updated++;
+            }
+        }
+        log.info("Fixed null lotjuIds for {} tms stations", updated);
+        return updated;
+    }
+
+    public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
+        TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
+
+        if (existingTms != null) {
+            final int hash = HashCodeBuilder.reflectionHashCode(existingTms);
+            final String before = ReflectionToStringBuilder.toString(existingTms);
+
+            RoadStation rs = existingTms.getRoadStation();
+            if (rs == null) {
+                rs = roadStationService.findByTypeAndNaturalId(RoadStationType.TMS_STATION, lam.getVanhaId().longValue());
+                existingTms.setRoadStation(rs);
+            }
+            if (rs == null) {
+                rs = new RoadStation(RoadStationType.WEATHER_STATION);
+                existingTms.setRoadStation(rs);
+                roadStationService.save(rs);
+            }
+            if (setRoadAddressIfNotSet(rs)) {
+                roadAddressRepository.save(rs.getRoadAddress());
+            }
+
+            if ( updateTmsStationAttributes(lam, existingTms) ||
+                hash != HashCodeBuilder.reflectionHashCode(existingTms) ) {
+                log.info("Updated:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(existingTms));
+                return UpdateStatus.UPDATED;
+            }
+            return UpdateStatus.NOT_UPDATED;
+        } else {
+            final TmsStation newTms = new TmsStation();
+            newTms.setRoadStation(new RoadStation(RoadStationType.TMS_STATION));
+            setRoadAddressIfNotSet(newTms.getRoadStation());
+            updateTmsStationAttributes(lam, newTms);
+//            roadStationRepository.save(newTms.getRoadStation());
+            tmsStationRepository.save(newTms);
+
+            log.info("Created new {}", newTms);
+            return UpdateStatus.INSERTED;
+        }
+    }
+
+    private boolean updateTmsStationAttributes(final LamAsemaVO from, final TmsStation to) {
+        final int hash = HashCodeBuilder.reflectionHashCode(to);
+        to.setNaturalId(convertToTmsNaturalId(from.getVanhaId()));
+        to.setLotjuId(from.getId());
+
+        to.setName(from.getNimi());
+        to.setDirection1Municipality(from.getSuunta1Kunta());
+        to.setDirection1MunicipalityCode(from.getSuunta1KuntaKoodi());
+        to.setDirection2Municipality(from.getSuunta2Kunta());
+        to.setDirection2MunicipalityCode(from.getSuunta2KuntaKoodi());
+        to.setTmsStationType(TmsStationType.convertFromLamasemaTyyppi(from.getTyyppi()));
+        to.setCalculatorDeviceType(CalculatorDeviceType.convertFromLaiteTyyppi(from.getLaskinlaite()));
+
+        final Integer roadNaturalId = from.getTieosoite() != null ? from.getTieosoite().getTienumero() : null;
+        final Integer roadSectionNaturalId = from.getTieosoite() != null ? from.getTieosoite().getTieosa() : null;
+
+        if (roadNaturalId != null && roadSectionNaturalId != null) {
+            to.setRoadDistrict(roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId));
+            if (to.getRoadDistrict() == null && !isPermanentlyDeletedKeruunTila(from.getKeruunTila())) {
+                log.warn("Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {} for {}",
+                         roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(from));
+            }
+        } else {
+            to.setRoadDistrict(null);
+        }
+
+        // Update RoadStation
+        final boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
+        to.setObsolete(to.getRoadStation().isObsolete());
+        to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
+
+        return updated ||
+            hash != HashCodeBuilder.reflectionHashCode(to);
+    }
+
+    private TmsStation findTmsStationByLotjuId(final Long lotjuId) {
+        return tmsStationRepository.findByLotjuId(lotjuId);
+    }
+
+    private static Long convertToTmsNaturalId(final Integer roadStationVanhaId) {
+        return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
     }
 }

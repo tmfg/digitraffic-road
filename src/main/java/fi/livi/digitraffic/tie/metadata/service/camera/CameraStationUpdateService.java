@@ -33,14 +33,16 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 public class CameraStationUpdateService extends AbstractCameraStationAttributeUpdater {
 
     private final CameraPresetService cameraPresetService;
+    private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
 
     @Autowired
     public CameraStationUpdateService(final CameraPresetService cameraPresetService,
                                       final RoadStationService roadStationService,
                                       final WeatherStationService weatherStationService) {
-        super(roadStationService, LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
+        super(LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
         this.cameraPresetService = cameraPresetService;
+        this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
     }
 
@@ -208,9 +210,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 updateCameraPresetAtributes(kamera, esiasento, cp);
 
                 cameraPresetService.save(cp);
-                log.info("Created new CameraPreset {}{}", cp, (roadStationNew ? " and RoadStation " + rs : ""));
+                log.info("Created new {}{}", cp, (roadStationNew ? " and RoadStation " + rs : ""));
                 inserted++;
-
             }
         }
 
@@ -237,8 +238,9 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             log.info("Old preset: {}", ToStringBuilder.reflectionToString(to));
             log.info("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
             log.info("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
-            logWarnIf(!isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()),
-                "Update: CameraPresetId doesn't match old: {} vs new {}", to.getPresetId(), presetId);
+            if (!isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila())) {
+                log.warn("Update: CameraPresetId doesn't match old: {} vs new {}", to.getPresetId(), presetId);
+            }
         }
         to.setPresetId(presetId);
 
@@ -268,9 +270,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         if (tsaLotjuId != null) {
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getNearestWeatherStation().getLotjuId())) {
                 final WeatherStation nearestWs = weatherStationService.findWeatherStationByLotjuId(tsaLotjuId);
-                logErrorIf(nearestWs == null && !isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()),
-                    "Could not set set nearest Weather Station for cameraPreset {}. Weather station with lotjuId {} not found.",
-                    to.getPresetId(), tsaLotjuId);
+                if(nearestWs == null && !isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila())) {
+                    log.error("Could not set set nearest Weather Station for cameraPreset {}. Weather station with lotjuId {} not found.",
+                              to.getPresetId(), tsaLotjuId);
+                }
                 to.setNearestWeatherStation(nearestWs);
             }
         } else {

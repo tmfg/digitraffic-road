@@ -40,6 +40,9 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findDistinctByRoadStationTypeAndLotjuIdIsNull(final RoadStationType roadStationType);
 
+    @EntityGraph(attributePaths = {"sensorValueDescriptions"})
+    RoadStationSensor findByRoadStationTypeAndLotjuId(final RoadStationType stationType, final Long sensorLotjuId);
+
     @Query(value =
         "SELECT rs_sensors.road_station_id, LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
             "FROM   road_station_sensor sensor\n" +

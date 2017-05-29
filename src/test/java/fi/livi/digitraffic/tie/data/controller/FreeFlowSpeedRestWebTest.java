@@ -45,7 +45,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
     public void testFreeFlowSpeedDataRestApiByTmsId() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.FREE_FLOW_SPEEDS_PATH + "/tms/23001"))
+                DataController.FREE_FLOW_SPEEDS_PATH + "/tms/-23001"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
