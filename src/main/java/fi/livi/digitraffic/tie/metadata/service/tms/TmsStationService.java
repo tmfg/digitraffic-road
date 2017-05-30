@@ -266,7 +266,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             newTms.setRoadStation(new RoadStation(RoadStationType.TMS_STATION));
             setRoadAddressIfNotSet(newTms.getRoadStation());
             updateTmsStationAttributes(lam, newTms);
-//            roadStationRepository.save(newTms.getRoadStation());
             tmsStationRepository.save(newTms);
 
             log.info("Created new {}", newTms);

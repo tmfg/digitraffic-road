@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.apache.commons.io.FileUtils;
@@ -33,8 +34,7 @@ public abstract class AbstractTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-//    @PersistenceContext
-    @Autowired
+    @PersistenceContext
     protected EntityManager entityManager;
 
     protected Path getPath(final String filename) {
