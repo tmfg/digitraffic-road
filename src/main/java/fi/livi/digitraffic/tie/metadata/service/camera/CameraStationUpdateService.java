@@ -210,7 +210,11 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 updateCameraPresetAtributes(kamera, esiasento, cp);
 
                 cameraPresetService.save(cp);
-                log.info("Created new {}{}", cp, (roadStationNew ? " and RoadStation " + rs : ""));
+                if (roadStationNew) {
+                    log.info("Created new {} and RoadStation {}", cp, rs);
+                } else {
+                    log.info("Created new {}", cp);
+                }
                 inserted++;
             }
         }
