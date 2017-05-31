@@ -59,15 +59,19 @@ public class LockingDao {
 
     public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
 
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("lockName", lockName);
-        params.put("instanceId", callerInstanceId);
-        params.put("expirationSeconds", expirationSeconds);
+        HashMap<String, Object> mergeParams = new HashMap<>();
+        mergeParams.put("lockName", lockName);
+        mergeParams.put("instanceId", callerInstanceId);
+        mergeParams.put("expirationSeconds", expirationSeconds);
+
+        HashMap<String, Object> selectParams = new HashMap<>();
+        selectParams.put("lockName", lockName);
+        selectParams.put("instanceId", callerInstanceId);
 
         try {
             // If lock was acquired successfull then query should return one row
-            jdbcTemplate.update(MERGE, params);
-            return jdbcTemplate.queryForList(SELECT, params, String.class).size() == 1;
+            jdbcTemplate.update(MERGE, mergeParams);
+            return jdbcTemplate.queryForList(SELECT, selectParams, String.class).size() == 1;
         } catch (Exception e) {
             // May happen when lock-row doesn't exist in db and different instances try to insert it at the same time
             if (e instanceof org.springframework.dao.DuplicateKeyException) {
