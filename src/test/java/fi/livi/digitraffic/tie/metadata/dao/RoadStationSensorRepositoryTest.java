@@ -19,6 +19,5 @@ public class RoadStationSensorRepositoryTest extends AbstractTest {
             roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, -18L);
         Assert.assertTrue(result != null);
         Assert.assertTrue(result.getSensorValueDescriptions().size() == 7);
-        System.out.println(result);
     }
 }
