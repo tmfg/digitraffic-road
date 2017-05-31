@@ -82,24 +82,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                 updated != null ? updated.getUpdatedTime() : null);
     }
 
-    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsState tmsState) {
-        if(onlyUpdateInfo) {
-            return Collections.emptyList();
-        }
-
-        switch(tmsState) {
-            case ACTIVE:
-                return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
-            case REMOVED:
-                return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
-                    (CollectionStatus.REMOVED_PERMANENTLY);
-            case ALL:
-                return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
         final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
@@ -108,23 +90,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
             updated != null ? updated.getUpdatedTime() : null);
-    }
-
-    private List<TmsStation> findStations(final Integer roadNumber, final TmsState tmsState) {
-        switch(tmsState) {
-            case ACTIVE:
-                return tmsStationRepository
-                    .findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
-            case REMOVED:
-                return tmsStationRepository
-                    .findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId
-                    (CollectionStatus.REMOVED_PERMANENTLY, roadNumber);
-            case ALL:
-                return tmsStationRepository
-                    .findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 
     @Transactional(readOnly = true)
@@ -139,14 +104,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return convert(lamId, tmsStationRepository.findByRoadStationIsPublicIsTrueAndNaturalId(lamId));
     }
 
-    private TmsStationFeature convert(final Long id, final TmsStation station) throws NonPublicRoadStationException {
-        if(station == null) {
-            throw new ObjectNotFoundException(TmsStation.class, id);
-        }
-
-        return tmsStationMetadata2FeatureConverter.convert(station);
-
-    }
 
     @Transactional
     public List<TmsStation> findAllPublishableTmsStations() {
@@ -211,7 +168,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TmsStation> findTmsStationsWithoutRoadStation() {
         return tmsStationRepository.findByRoadStationIsNull();
     }
@@ -234,6 +191,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return updated;
     }
 
+    @Transactional
     public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
         TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
 
@@ -270,6 +228,41 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
             log.info("Created new {}", newTms);
             return UpdateStatus.INSERTED;
+        }
+    }
+
+    private List<TmsStation> findStations(final Integer roadNumber, final TmsState tmsState) {
+        switch(tmsState) {
+        case ACTIVE:
+            return tmsStationRepository
+                .findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
+        case REMOVED:
+            return tmsStationRepository
+                .findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY, roadNumber);
+        case ALL:
+            return tmsStationRepository
+                .findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
+        default:
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsState tmsState) {
+        if(onlyUpdateInfo) {
+            return Collections.emptyList();
+        }
+
+        switch(tmsState) {
+        case ACTIVE:
+            return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+        case REMOVED:
+            return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
+                (CollectionStatus.REMOVED_PERMANENTLY);
+        case ALL:
+            return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+        default:
+            throw new IllegalArgumentException();
         }
     }
 
@@ -314,5 +307,14 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     private static Long convertToTmsNaturalId(final Integer roadStationVanhaId) {
         return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
+    }
+
+    private TmsStationFeature convert(final Long id, final TmsStation station) throws NonPublicRoadStationException {
+        if(station == null) {
+            throw new ObjectNotFoundException(TmsStation.class, id);
+        }
+
+        return tmsStationMetadata2FeatureConverter.convert(station);
+
     }
 }
