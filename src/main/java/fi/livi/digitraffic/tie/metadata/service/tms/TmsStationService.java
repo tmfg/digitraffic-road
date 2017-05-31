@@ -187,7 +187,9 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                 updated++;
             }
         }
-        log.info("Fixed null lotjuIds for {} tms stations", updated);
+        if (updated > 0) {
+            log.info("Fixed null lotjuIds for {} tms stations", updated);
+        }
         return updated;
     }
 
