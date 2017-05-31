@@ -26,7 +26,7 @@ import progress.message.jclient.Topic;
 
 public abstract class AbstractJMSListenerConfiguration<T> {
 
-    protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 10;
+    protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
@@ -92,7 +92,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
      * listening JMS-messages if lock is acquired for this
      * thread
      */
-    @Scheduled(fixedRateString = "${jms.connection.intervalMs}")
+    @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
     public void connectAndListen() throws JMSException, JAXBException {
 
         if (shutdownCalled.get()) {
