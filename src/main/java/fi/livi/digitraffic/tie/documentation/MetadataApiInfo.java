@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.documentation;
 
+import java.util.Collections;
+
 import fi.livi.digitraffic.tie.metadata.service.BuildVersionService;
 import fi.livi.digitraffic.tie.metadata.service.MessageService;
 import springfox.documentation.service.ApiInfo;
@@ -17,7 +19,8 @@ public class MetadataApiInfo extends ApiInfo {
               null, //termsOfServiceUrl,
               (Contact) null, //contact,
               null, //license,
-              null); //licenseUrl)
+              null,
+              Collections.emptyList()); //vendorExtensions
         this.messageService = messageService;
         this.buildVersionService = buildVersionService;
     }
