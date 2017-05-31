@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +20,6 @@ public class LockingDaoTest extends AbstractTest {
 
     @Autowired
     private LockingDao lockingDao;
-
-    @Before
-    public void beforeTest() {
-        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
-        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_1);
-        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_2);
-        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_2);
-    }
-
-    @After
-    public void afterTest() {
-        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
-        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_1);
-        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_2);
-        lockingDao.releaseLock(LOCK_NAME_2, INSTANCE_ID_2);
-    }
 
     @Test
     public void testLockingAfterExpiration() {
@@ -70,24 +52,5 @@ public class LockingDaoTest extends AbstractTest {
                 log.debug("Interrupted", e);
             }
         }
-    }
-
-    @Test
-    public void testLockingAndRelasing() {
-
-        // Acquire 1. lock
-        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
-        Assert.assertTrue(locked1);
-
-        // Try to acquire 1. lock again
-        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
-        Assert.assertFalse(locked1Second);
-
-        // release lock
-        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
-
-        // Try to acquire 1. lock again
-        boolean locked1Third = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
-        Assert.assertTrue(locked1Third);
     }
 }

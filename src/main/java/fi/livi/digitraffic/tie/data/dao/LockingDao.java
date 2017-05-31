@@ -40,11 +40,6 @@ public class LockingDao {
             "    INSERT (dst.LOCK_NAME, dst.INSTANCE_ID, dst.LOCK_LOCKED, dst.LOCK_EXPIRES)\n" +
             "    VALUES (src.LOCK_NAME, src.INSTANCE_ID, src.LOCK_LOCKED, src.LOCK_EXPIRES)";
 
-    private static final String RELEASE =
-            "DELETE FROM LOCKING_TABLE LT\n" +
-            "WHERE LT.LOCK_NAME = :lockName\n" +
-            "  AND LT.INSTANCE_ID = :instanceId";
-
     private static final String SELECT =
             "SELECT LOCK_NAME\n" +
             "FROM LOCKING_TABLE LT\n" +
@@ -80,12 +75,5 @@ public class LockingDao {
             }
             throw e;
         }
-    }
-
-    public void releaseLock(final String lockName, final String callerInstanceId) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("lockName", lockName);
-        params.put("instanceId", callerInstanceId);
-        jdbcTemplate.update(RELEASE, params);
     }
 }
