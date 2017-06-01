@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
@@ -46,7 +45,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
 
     private final TmsStationRepository tmsStationRepository;
-    private final RoadStationRepository roadStationRepository;
     private final StaticDataStatusService staticDataStatusService;
     private final RoadStationService roadStationService;
     private final RoadDistrictService roadDistrictService;
@@ -55,7 +53,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
-                             final RoadStationRepository roadStationRepository,
                              final StaticDataStatusService staticDataStatusService,
                              final RoadStationService roadStationService,
                              final RoadDistrictService roadDistrictService,
@@ -63,7 +60,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                              final RoadAddressRepository roadAddressRepository) {
         super(log);
         this.tmsStationRepository = tmsStationRepository;
-        this.roadStationRepository = roadStationRepository;
         this.staticDataStatusService = staticDataStatusService;
         this.roadStationService = roadStationService;
         this.roadDistrictService = roadDistrictService;
