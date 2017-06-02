@@ -152,6 +152,10 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
+    public int getQueueSize() {
+        return blockingQueue.size();
+    }
+
     private void drainQueueInternal() {
         if ( !shutdownCalled.get() ) {
             StopWatch start = StopWatch.createStarted();
