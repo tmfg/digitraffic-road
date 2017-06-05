@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @DynamicUpdate
 @Immutable
-public class SensorValueDescription {
+public class SensorValueDescription implements Comparable<SensorValueDescription> {
 
     @EmbeddedId
     SensorValueDescriptionPK sensorValueDescriptionPK;
@@ -57,4 +57,15 @@ public class SensorValueDescription {
                 .toString();
     }
 
+    @Override
+    public int compareTo(SensorValueDescription o) {
+        if (getSensorValue() == null && o.getSensorValue() == null) {
+            return 0;
+        } else if (o.getSensorValue() == null) {
+            return -1;
+        } else if (getSensorValue() == null) {
+            return 1;
+        }
+        return getSensorValue().compareTo(o.getSensorValue());
+    }
 }

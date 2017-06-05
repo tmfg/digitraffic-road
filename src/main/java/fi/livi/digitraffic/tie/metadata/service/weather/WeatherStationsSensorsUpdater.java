@@ -3,28 +3,27 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
-public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttributeUpdater {
+public class WeatherStationsSensorsUpdater {
+
+    private static Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
@@ -32,12 +31,10 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
-    public WeatherStationsSensorsUpdater(final RoadStationService roadStationService,
-                                         final RoadStationSensorService roadStationSensorService,
+    public WeatherStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                          final WeatherStationService weatherStationService,
                                          final StaticDataStatusService staticDataStatusService,
                                          final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
-        super(roadStationService, LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class));
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
         this.staticDataStatusService = staticDataStatusService;
@@ -47,7 +44,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     /**
      * Updates all available sensors of weather road stations
      */
-    @Transactional
+    @PerformanceMonitor(maxErroExcecutionTime = 900000, maxWarnExcecutionTime = 600000)
     public boolean updateWeatherStationsSensors() {
         log.info("Update WeatherStations RoadStationSensors start");
 
@@ -67,7 +64,7 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
                 lotjuWeatherStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(rwsLotjuIds);
 
         final List<Pair<WeatherStation,  List<TiesaaLaskennallinenAnturiVO>>> stationAnturisPair = new ArrayList<>();
-        currentLotjuIdToWeatherStationsMap.values().stream().forEach(weatherStation -> {
+        currentLotjuIdToWeatherStationsMap.values().forEach(weatherStation -> {
             final List<TiesaaLaskennallinenAnturiVO> anturis = currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.remove(weatherStation.getLotjuId());
             stationAnturisPair.add(Pair.of(weatherStation, anturis));
         });
@@ -86,44 +83,25 @@ public class WeatherStationsSensorsUpdater extends AbstractWeatherStationAttribu
     private boolean updateSensorsOfWeatherStations(
             final List<Pair<WeatherStation,  List<TiesaaLaskennallinenAnturiVO>>> stationAnturisPairs) {
 
-        final Map<Long, RoadStationSensor> allSensorsMappedByLotjuId =
-                roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+        int countAdded = 0;
+        int countRemoved = 0;
 
-        final AtomicInteger countAdded = new AtomicInteger();
-        final AtomicInteger countRemoved = new AtomicInteger();
-
-        stationAnturisPairs.stream().forEach(pair -> {
-            WeatherStation station = pair.getKey();
-            List<RoadStationSensor> rsSensors = station.getRoadStation().getRoadStationSensors();
-            List<TiesaaLaskennallinenAnturiVO> anturis = pair.getValue();
-
-            if (anturis != null) {
-                anturis.stream().forEach(anturi -> {
-                    RoadStationSensor sensor = allSensorsMappedByLotjuId.get(anturi.getId());
-                    Optional<RoadStationSensor> existingSensor =
-                            rsSensors.stream().filter(s -> anturi.getId().equals(s.getLotjuId())).findFirst();
-                    if (sensor == null) {
-                        log.error("No Weather RoadStationSensor found with lotjuId {}", anturi.getId());
-                    } else if (!existingSensor.isPresent()) {
-                        rsSensors.add(sensor);
-                        countAdded.addAndGet(1);
-                        log.info("Add sensor {} for {}", sensor, station);
-                    }
-                });
-            }
-
-            final List<RoadStationSensor> toRemove = rsSensors.stream().filter(s -> s.getLotjuId() == null || anturis == null ||
-                    !anturis.stream().filter(a -> a.getId().equals(s.getLotjuId())).findFirst().isPresent()).collect(Collectors.toList());
-            countRemoved.addAndGet(toRemove.size());
-            rsSensors.removeAll(toRemove);
-        });
+        for (Pair<WeatherStation, List<TiesaaLaskennallinenAnturiVO>> pair : stationAnturisPairs) {
+            WeatherStation ws = pair.getKey();
+            final List<TiesaaLaskennallinenAnturiVO> anturis = pair.getRight();
+            final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(ws.getRoadStationId(),
+                                                                                                             RoadStationType.WEATHER_STATION,
+                                                                                                             sensorslotjuIds);
+            countRemoved += deletedInserted.getLeft();
+            countAdded += deletedInserted.getRight();
+        }
 
         log.info("Sensor removed from road stations {}", countRemoved);
         log.info("Sensor added to road stations {}", countAdded);
 
-        return countRemoved.get() > 0 || countAdded.get() > 0;
+        return countRemoved > 0 || countAdded > 0;
     }
-
 
     private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);

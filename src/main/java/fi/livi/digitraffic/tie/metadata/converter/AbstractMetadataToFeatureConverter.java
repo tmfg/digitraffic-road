@@ -60,13 +60,13 @@ public class AbstractMetadataToFeatureConverter {
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             if (rs.getAltitude() != null) {
                 return new Point(
-                        rs.getLongitude().longValue(),
-                        rs.getLatitude().longValue(),
-                        rs.getAltitude().longValue());
+                        rs.getLongitude().doubleValue(),
+                        rs.getLatitude().doubleValue(),
+                        rs.getAltitude().doubleValue());
             } else {
                 return new Point(
-                        rs.getLongitude().longValue(),
-                        rs.getLatitude().longValue());
+                        rs.getLongitude().doubleValue(),
+                        rs.getLatitude().doubleValue());
             }
         }
         return null;

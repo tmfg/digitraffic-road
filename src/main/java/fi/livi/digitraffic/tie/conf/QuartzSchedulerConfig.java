@@ -40,8 +40,8 @@ import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
-public class SchedulerConfig {
-    private static final Logger log = LoggerFactory.getLogger(SchedulerConfig.class);
+public class QuartzSchedulerConfig {
+    private static final Logger log = LoggerFactory.getLogger(QuartzSchedulerConfig.class);
 
     @Bean
     public JobFactory jobFactory(final ApplicationContext applicationContext) {
@@ -67,7 +67,7 @@ public class SchedulerConfig {
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
 
-            triggers.stream().forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
+            triggers.forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
 
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }

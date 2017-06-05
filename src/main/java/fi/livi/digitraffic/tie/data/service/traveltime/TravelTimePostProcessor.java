@@ -72,7 +72,7 @@ public class TravelTimePostProcessor {
                                                                   median.numberOfObservations, avgSpeed, ratioToFreeFlowSpeed, fluencyClassNumber);
 
             if (!isMedianDataValid(p)) {
-                log.error("median with too large values does not fit in database, skipped: {}", p);
+                log.warn("Median was not valid -> skipped: {}", p);
             } else {
                 processed.add(p);
             }

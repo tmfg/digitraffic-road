@@ -34,8 +34,7 @@ public class CameraHelper {
     }
 
     public static long convertPresetIdToVanhaId(final String presetId) {
-        String cameraId = convertPresetIdToCameraId(presetId);
-        cameraId = StringUtils.removeStart(cameraId, "C0");
+        final String cameraId = convertPresetIdToCameraId(presetId);
         return Long.parseLong(StringUtils.removeStart(cameraId, "C"));
     }
 

@@ -46,6 +46,7 @@ public class LotjuTmsStationMetadataService extends AbstractLotjuMetadataService
         return lotjuTmsStationMetadataClient.getAllLamLaskennallinenAnturis();
     }
 
+//    TODO @PerformanceMonitor(maxErroExcecutionTime = , maxWarnExcecutionTime = )
     public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(Set<Long> tmsLotjuIds) {
         final Map<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new HashMap<>();
         final AtomicInteger countAnturis = new AtomicInteger();

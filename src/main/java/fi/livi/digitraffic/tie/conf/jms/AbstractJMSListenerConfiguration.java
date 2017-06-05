@@ -27,7 +27,7 @@ import progress.message.jclient.Topic;
 public abstract class AbstractJMSListenerConfiguration<T> {
 
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
-
+    private static String STATISTICS_PREFIX = "STATISTICS:";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
     private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger();
@@ -70,12 +70,15 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     /** Log statistics once in minute */
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
-        int messagesPerMinute = getJMSMessageListener().getAndResetMessageCounter();
-        int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
-        int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
-        log.info("STATISTICS: Received {} messages per minute", messagesPerMinute);
-        log.info("STATISTICS: MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
-                lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
+
+        final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
+        final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
+        log.info("{} MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
+                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
+
+        final JMSMessageListener<T> listener = getJMSMessageListener();
+        log.info("{} Received {} messages per minute. Current queue size {}.",
+                 STATISTICS_PREFIX, listener.getAndResetMessageCounter(), getJMSMessageListener().getQueueSize());
     }
 
     /**

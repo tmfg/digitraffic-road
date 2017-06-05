@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.QueryHint;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -30,11 +32,16 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
 
+    @EntityGraph(attributePaths = {"sensorValueDescriptions"})
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<RoadStationSensor> findByRoadStationType(final RoadStationType roadStationType);
+    List<RoadStationSensor> findDistinctByRoadStationType(final RoadStationType roadStationType);
 
+    @EntityGraph(attributePaths = {"sensorValueDescriptions"})
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<RoadStationSensor> findByRoadStationTypeAndLotjuIdIsNull(final RoadStationType roadStationType);
+    List<RoadStationSensor> findDistinctByRoadStationTypeAndLotjuIdIsNull(final RoadStationType roadStationType);
+
+    @EntityGraph(attributePaths = {"sensorValueDescriptions"})
+    RoadStationSensor findByRoadStationTypeAndLotjuId(final RoadStationType stationType, final Long sensorLotjuId);
 
     @Query(value =
         "SELECT rs_sensors.road_station_id, LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
@@ -60,4 +67,48 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "order by rs_sensors.road_station_id", nativeQuery = true)
     List<StationSensors> getStationSensorsByIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
         stationType);
+
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+            "DELETE FROM ROAD_STATION_SENSORS\n" +
+            "WHERE ROAD_STATION_ID = :roadStationId\n" +
+            "AND ROAD_STATION_SENSOR_ID NOT IN (\n" +
+            "    SELECT SENSOR.ID\n" +
+            "    FROM ROAD_STATION_SENSOR SENSOR\n" +
+            "    WHERE SENSOR.ROAD_STATION_TYPE = :roadStationType\n" +
+            "      AND SENSOR.LOTJU_ID IN (:sensorsLotjuIds)\n" +
+            ")",
+           nativeQuery = true)
+    int deleteNonExistingSensors(@Param("roadStationType") final String roadStationType,
+                                 @Param("roadStationId") final Long roadStationId,
+                                 @Param("sensorsLotjuIds") final List<Long> sensorsLotjuIds);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+            "DELETE FROM ROAD_STATION_SENSORS\n" +
+            "WHERE ROAD_STATION_ID = :roadStationId",
+           nativeQuery = true)
+    int deleteRoadStationsSensors(@Param("roadStationId") final Long roadStationId);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value =
+            "INSERT INTO ROAD_STATION_SENSORS DST (ROAD_STATION_ID, ROAD_STATION_SENSOR_ID)\n" +
+            "  SELECT RS.ID AS ROAD_STATION_ID\n" +
+            "       , SENSOR.ID AS ROAD_STATION_SENSOR_ID\n" +
+            "  FROM ROAD_STATION_SENSOR SENSOR, ROAD_STATION RS\n" +
+            "  WHERE SENSOR.ROAD_STATION_TYPE = :roadStationType\n" +
+            "    AND RS.ROAD_STATION_TYPE = SENSOR.ROAD_STATION_TYPE\n" +
+            "    AND SENSOR.LOTJU_ID IN (:sensorsLotjuIds)\n" +
+            "    AND RS.ID = :roadStationId\n" +
+            "    AND NOT EXISTS(\n" +
+            "      SELECT NULL\n" +
+            "      FROM ROAD_STATION_SENSORS RSS\n" +
+            "      WHERE RSS.ROAD_STATION_ID = RS.ID\n" +
+            "        AND RSS.ROAD_STATION_SENSOR_ID = SENSOR.ID\n" +
+            "  )",
+           nativeQuery = true)
+    int insertNonExistingSensors(@Param("roadStationType") final String roadStationType,
+                                 @Param("roadStationId") final Long roadStationId,
+                                 @Param("sensorsLotjuIds") final List<Long> sensorsLotjuIds);
 }

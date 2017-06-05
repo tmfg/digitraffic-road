@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
 @Component
 public final class WeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
-    private static final Log log = LogFactory.getLog( WeatherStationMetadata2FeatureConverter.class );
+    private static final Logger log = LoggerFactory.getLogger( WeatherStationMetadata2FeatureConverter.class );
 
     private final WeatherStationRepository weatherStationRepository;
     private final StationSensorConverter stationSensorConverter;

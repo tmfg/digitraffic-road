@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
@@ -97,5 +98,14 @@ public class RoadDistrict {
 
     public void setSpeedLimitSeason(final Integer speedLimitSeason) {
         this.speedLimitSeason = speedLimitSeason;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringHelper(this)
+            .appendField("id", getId())
+            .appendField("naturalId", getNaturalId())
+            .appendField("name", getName())
+            .toString();
     }
 }

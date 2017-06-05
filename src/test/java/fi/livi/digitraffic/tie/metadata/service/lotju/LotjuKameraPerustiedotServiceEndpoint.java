@@ -64,7 +64,7 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
         for (final EsiasentoVO ea : esiasentos) {
             final long kId = ea.getKameraId();
             for (final Map<Long, List<EsiasentoVO>> eaMap : esiasentosMap) {
-                List<EsiasentoVO> eas = eaMap.get(Long.valueOf(kId));
+                List<EsiasentoVO> eas = eaMap.get(kId);
                 if (eas == null) {
                     eas = new ArrayList<>();
                     eaMap.put(kId, eas);

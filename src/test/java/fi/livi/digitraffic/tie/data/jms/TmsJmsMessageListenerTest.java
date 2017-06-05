@@ -72,12 +72,10 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
-    @Autowired
-    LockingService lockingService;
+
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
 
     @Before

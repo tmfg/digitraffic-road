@@ -63,6 +63,7 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         sensorsInitial = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+
         allInitial =
             weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(2, allInitial.getFeatures().size());
@@ -73,6 +74,7 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         weatherStationSensorUpdater.updateRoadStationSensors();
         weatherStationUpdater.updateWeatherStations();
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
+
         sensorsAfterChange = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
         allAfterChange =
             weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
@@ -157,11 +159,11 @@ public class WeatherStationUpdateJobTest extends AbstractTest {
         assertNull(sensor2Initial);
         assertNotNull(sensor2After);
 
-        final RoadStationSensor sensor3Initial = findSensorWithLotjuId(initial36, 3, true);
-        final RoadStationSensor sensor3After = findSensorWithLotjuId(after36, 3, false);
+        final RoadStationSensor sensor36Initial = findSensorWithLotjuId(initial36, 3, true);
+        final RoadStationSensor sensor36After = findSensorWithLotjuId(after36, 3, false);
 
-        assertNotNull(sensor3Initial);
-        assertNull(sensor3After);
+        assertNotNull(sensor36Initial);
+        assertNull(sensor36After);
 
         assertEquals(CollectionStatus.GATHERING,
                      findWithLotjuId(allAfterChange, 35).getProperties().getCollectionStatus());

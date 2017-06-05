@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -23,8 +21,6 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
 public class RoadStationStatusesUpdateJobTest extends AbstractTest {
-
-    private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
 
     @Autowired
     private RoadStationService roadStationService;
@@ -64,7 +60,8 @@ public class RoadStationStatusesUpdateJobTest extends AbstractTest {
 
         List<RoadStation> allInitial = roadStationService.findAll();
         // Detatch entitys so updates wont affect them
-        allInitial.forEach(rs -> entityManager.detach(rs));
+        entityManager.flush();
+        entityManager.clear();
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
         lotjuLAMMetatiedotServiceMock.setStateAfterChange(true);

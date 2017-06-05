@@ -37,7 +37,7 @@ public class StationSensorConverter {
     private static Map<Long, List<Long>> createMap(final List<StationSensors> sensors) {
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
-        sensors.stream().forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
+        sensors.forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
 
         return sensorMap;
     }

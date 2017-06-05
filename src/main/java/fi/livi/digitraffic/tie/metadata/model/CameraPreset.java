@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -40,7 +41,7 @@ public class CameraPreset {
     private Long roadStationId;
     /** Old field, means weather station? */
     @Column(name="NEAREST_ROADSTATION_ID")
-    private Long nearestRoadstationIid;
+    private Long nearestRoadstationId;
 
     /**
      * presetName1 == presentationName == nimiEsitys
@@ -92,12 +93,12 @@ public class CameraPreset {
     /**
      * RoadStation is same for one camera all presets
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="ROAD_STATION_ID")
     @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="NEAREST_RD_WEATHER_STATION_ID")
     @Fetch(FetchMode.SELECT)
     private WeatherStation nearestWeatherStation;
@@ -344,6 +345,7 @@ public class CameraPreset {
                 .appendField("id", id)
                 .appendField("cameraId", cameraId)
                 .appendField("lotjuId", lotjuId)
+                .appendField("obsoleteDate", obsoleteDate)
                 .appendField("roadStationLotjuId", getRoadStationLotjuId())
                 .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
