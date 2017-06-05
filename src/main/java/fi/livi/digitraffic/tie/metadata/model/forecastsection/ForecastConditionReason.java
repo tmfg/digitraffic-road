@@ -12,18 +12,10 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import io.swagger.annotations.ApiModelProperty;
-
 @Entity
 @DynamicUpdate
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ForecastConditionReason {
-
     @EmbeddedId
-    @JsonIgnore
     private ForecastSectionWeatherPK forecastSectionWeatherPK;
 
     @Enumerated(EnumType.STRING)
@@ -35,10 +27,8 @@ public class ForecastConditionReason {
     @Enumerated(EnumType.STRING)
     private WindCondition windCondition;
 
-    @ApiModelProperty(value = "Tells if there is freezing rain: true/false")
     private Boolean freezingRainCondition;
 
-    @ApiModelProperty(value = "Tells if it is slippery: true/false")
     private Boolean winterSlipperiness;
 
     @Enumerated(EnumType.STRING)
@@ -53,7 +43,6 @@ public class ForecastConditionReason {
             @JoinColumn(name="forecast_name", referencedColumnName="forecast_name")
     })
     @Fetch(FetchMode.JOIN)
-    @JsonIgnore
     private ForecastSectionWeather forecastSectionWeather;
 
     public ForecastConditionReason() {
