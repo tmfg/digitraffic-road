@@ -2,7 +2,9 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.data.dto.forecast.ForecastConditionReasonDto;
+import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.OverallRoadCondition;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.PrecipitationCondition;
@@ -26,7 +27,6 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
 
 @Repository
 public class ForecastSectionWeatherDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -34,9 +34,8 @@ public class ForecastSectionWeatherDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Map<String, List<ForecastSectionWeather>> getForecastSectionWeatherData() {
-
-        final HashMap<String, List<ForecastSectionWeather>> res = new HashMap<>();
+    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData() {
+        final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
             "SELECT * FROM FORECAST_SECTION_WEATHER fsw " +
@@ -47,10 +46,10 @@ public class ForecastSectionWeatherDao {
                 String forecastSectionNaturalId = rs.getString("natural_id");
 
                 if (res.containsKey(forecastSectionNaturalId)) {
-                    res.get(forecastSectionNaturalId).add(mapForecastSectionWeather(rs));
+                    res.get(forecastSectionNaturalId).add(mapRoadConditionDto(rs));
                 } else {
-                    final ArrayList<ForecastSectionWeather> list = new ArrayList<>();
-                    list.add(mapForecastSectionWeather(rs));
+                    final ArrayList<RoadConditionDto> list = new ArrayList<>();
+                    list.add(mapRoadConditionDto(rs));
                     res.put(forecastSectionNaturalId, list);
                 }
             });
@@ -58,27 +57,27 @@ public class ForecastSectionWeatherDao {
         return res;
     }
 
-    private ForecastSectionWeather mapForecastSectionWeather(final ResultSet rs) throws SQLException {
+    private RoadConditionDto mapRoadConditionDto(final ResultSet rs) throws SQLException {
+        final Calendar c = Calendar.getInstance();
 
-        final ForecastSectionWeatherPK forecastSectionWeatherPK =
-                            new ForecastSectionWeatherPK(rs.getLong("forecast_section_id"), rs.getString("forecast_name"));
-
-        return new ForecastSectionWeather(forecastSectionWeatherPK,
-                                          rs.getTimestamp("time"),
-                                          DaoUtils.findBoolean(rs, "daylight"),
-                                          DaoUtils.findEnum(rs, "overall_road_condition", OverallRoadCondition.class),
-                                          DaoUtils.findEnum(rs, "reliability", Reliability.class),
-                                          rs.getString("road_temperature"),
-                                          rs.getString("temperature"),
-                                          rs.getString("weather_symbol"),
-                                          DaoUtils.findInteger(rs, "wind_direction"),
-                                          DaoUtils.findDouble(rs, "wind_speed"),
-                                          rs.getString("type"),
-                                          mapForecastConditionReason(rs, forecastSectionWeatherPK));
+        return new RoadConditionDto(
+                        rs.getString("forecast_name"),
+                        ZonedDateTime.ofInstant(rs.getTimestamp("time", c).toInstant(), c.getTimeZone().toZoneId()),
+                        DaoUtils.findBoolean(rs, "daylight"),
+                        DaoUtils.findEnum(rs, "overall_road_condition", OverallRoadCondition.class),
+                        DaoUtils.findEnum(rs, "reliability", Reliability.class),
+                        rs.getString("road_temperature"),
+                        rs.getString("temperature"),
+                        rs.getString("weather_symbol"),
+                        DaoUtils.findInteger(rs, "wind_direction"),
+                        DaoUtils.findDouble(rs, "wind_speed"),
+                        rs.getString("type"),
+                        mapForecastConditionReason(rs));
     }
 
-    private ForecastConditionReason mapForecastConditionReason(final ResultSet rs, final ForecastSectionWeatherPK forecastSectionWeatherPK) throws SQLException {
 
+
+    private ForecastConditionReasonDto mapForecastConditionReason(final ResultSet rs) throws SQLException {
         final PrecipitationCondition precipitationCondition = DaoUtils.findEnum(rs, "precipitation_condition", PrecipitationCondition.class);
         final RoadCondition roadCondition = DaoUtils.findEnum(rs, "road_condition", RoadCondition.class);
         final WindCondition windCondition = DaoUtils.findEnum(rs, "wind_condition", WindCondition.class);
@@ -89,7 +88,7 @@ public class ForecastSectionWeatherDao {
 
         if (ObjectUtils.anyNotNull(precipitationCondition, roadCondition, windCondition, freezingRainCondition, winterSlipperiness,
                                    visibilityCondition, frictionCondition)) {
-            return new ForecastConditionReason(forecastSectionWeatherPK, precipitationCondition, roadCondition, windCondition, freezingRainCondition,
+            return new ForecastConditionReasonDto(precipitationCondition, roadCondition, windCondition, freezingRainCondition,
                                                winterSlipperiness, visibilityCondition, frictionCondition);
         } else {
             return null;

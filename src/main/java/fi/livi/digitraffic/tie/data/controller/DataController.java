@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
-import fi.livi.digitraffic.tie.data.dto.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
@@ -281,57 +281,13 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public ForecastSectionWeatherRootDto roadConditions() {
-        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
-        return forecastSectionDataService.getForecastSectionWeatherData();
-    }
-
-/*
-    @ApiOperation("Current traffic disorders in simple format")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto trafficDisordersSimple(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
-            @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+    public ForecastSectionWeatherRootDto roadConditions(
+            @ApiParam("If parameter is given result will only contain update status")
+            @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
-        return datex2DataService.findActiveDatex2Data(lastUpdated);
+        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
+        return forecastSectionDataService.getForecastSectionWeatherData(lastUpdated);
     }
-
-    @ApiOperation("Traffic disorders by situation id in simple format")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/{situationId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(code = 404, message = "Situation id not found"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto trafficDisordersSimpleBySituationId(
-            @ApiParam(value = "Situation id.")
-            @PathVariable
-            String situationId) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "/" + situationId);
-        return datex2DataService.findAllDatex2DataBySituationId(situationId);
-    }
-
-    @ApiOperation("Traffic disorders history in simple format")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(code = 404, message = "Situation id not found"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto trafficDisordersSimpleOfHistory(
-            @ApiParam(value = "Situation id", required = false)
-            @RequestParam(required = false)
-            final String situationId,
-            @ApiParam(value = "Year (>2014)", required = true)
-            @RequestParam
-            final int year,
-            @ApiParam(value = "Month (1-12)", required = true)
-            @RequestParam
-            final int month
-    ) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_JSON_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
-        return datex2DataService.findDatex2Data(situationId, year, month);
-    }
-*/
 
     @ApiOperation("Active traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
