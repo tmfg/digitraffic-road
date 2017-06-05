@@ -3,12 +3,7 @@ package fi.livi.digitraffic.tie.helper;
 import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -24,7 +19,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
  * Provides helpper functions to stringify objects for logging
  */
 public class ToStringHelper {
-
     private static final String LOTJU_ID = "lotjuId";
     private static final String VANHA_ID = "vanhaId";
     private static final String NIMI = "nimi";
@@ -34,7 +28,6 @@ public class ToStringHelper {
     private final StringBuffer sb;
     private boolean toStringCalled;
 
-    public static final String ISO_8601_UTC_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 UTC format (eg. 2016-04-20T09:38:16.328Z)";
     public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)";
 
     public ToStringHelper(final Object object) {
@@ -61,7 +54,7 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String toString(EsiasentoVO esiasento) {
+    public static String toString(final EsiasentoVO esiasento) {
         final StringBuffer sb = createStartSb(esiasento);
         JSON_STYLE.append(sb, LOTJU_ID, esiasento.getId());
         JSON_STYLE.append(sb, "kameraId", esiasento.getKameraId(), true);
@@ -83,7 +76,7 @@ public class ToStringHelper {
     }
 
     public static String toStringFull(final Object object, final String...secretFields) {
-        ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
+        final ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
             @Override
             protected Object getValue(Field field) throws IllegalAccessException {
                 for (String excludeFieldName : secretFields) {
@@ -133,7 +126,7 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String  toString(Tiesaa tiesaa) {
+    public static String  toString(final Tiesaa tiesaa) {
         final StringBuffer sb = createStartSb(tiesaa);
         JSON_STYLE.append(sb, "asemaId", tiesaa.getAsemaId());
         if (tiesaa.getAika() != null) {
@@ -164,7 +157,7 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String  toString(Lam lam) {
+    public static String toString(final Lam lam) {
         final StringBuffer sb = createStartSb(lam);
         JSON_STYLE.append(sb, "asemaId", lam.getAsemaId());
         if (lam.getAika() != null) {
@@ -176,7 +169,7 @@ public class ToStringHelper {
         sb.append("anturit: [");
 
         boolean first = true;
-        for (Lam.Anturit.Anturi anturi : lam.getAnturit().getAnturi()) {
+        for (final Lam.Anturit.Anturi anturi : lam.getAnturit().getAnturi()) {
             if (!first) {
                 sb.append(", ");
             }
@@ -195,7 +188,7 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String toString(Kuva kuva) {
+    public static String toString(final Kuva kuva) {
         final StringBuffer sb = createStartSb(kuva);
         JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
         JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
@@ -212,39 +205,12 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String nullSafeToString(Object o) {
+    public static String nullSafeToString(final Object o) {
         return o != null ? o.toString() : null;
     }
 
     public enum TimestampFormat {
         ISO_8601_UTC,
         ISO_8601_WITH_ZONE_OFFSET
-    }
-
-    public static String toString(final ZonedDateTime zonedDateTime, final TimestampFormat timestampFormat) {
-        if (zonedDateTime == null) {
-            return null;
-        }
-        if (TimestampFormat.ISO_8601_UTC == timestampFormat) {
-            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC).toString();
-        } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
-            return zonedDateTime.toOffsetDateTime().toString();
-        }
-        throw new NotImplementedException("ToString for " + ZonedDateTime.class.getSimpleName() +
-                " for " + timestampFormat + " not implemented");
-    }
-
-    public static String toString(final LocalDateTime localDateTime, final TimestampFormat timestampFormat) {
-        if (localDateTime == null) {
-            return null;
-        }
-        final ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-        if (TimestampFormat.ISO_8601_UTC == timestampFormat) {
-            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC).toString();
-        } else if (TimestampFormat.ISO_8601_WITH_ZONE_OFFSET == timestampFormat) {
-            return zonedDateTime.toOffsetDateTime().toString();
-        }
-        throw new NotImplementedException("ToString for " + localDateTime.getClass().getSimpleName() +
-                " for " + timestampFormat + " not implemented");
     }
 }
