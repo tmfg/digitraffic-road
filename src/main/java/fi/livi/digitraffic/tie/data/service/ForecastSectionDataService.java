@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,12 +29,18 @@ public class ForecastSectionDataService {
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData() {
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
         final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.FORECAST_SECTION_WEATHER.toString());
+        final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
+
+        if(onlyUpdateInfo) {
+            return new ForecastSectionWeatherRootDto(updatedTime);
+        }
+
         final Map<String, List<RoadConditionDto>> forecastSectionWeatherData = forecastSectionWeatherDao.getForecastSectionWeatherData();
 
         return new ForecastSectionWeatherRootDto(
-                updated == null ? null : updated.getUpdatedTime(),
+                updatedTime,
                 getWeatherData(forecastSectionWeatherData));
     }
 
