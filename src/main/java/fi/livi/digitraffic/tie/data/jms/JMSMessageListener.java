@@ -162,13 +162,13 @@ public class JMSMessageListener<T> implements MessageListener {
                 return;
             } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
                 log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
-                int sizeLeft = queueToDrain;
-                while ( sizeLeft > QUEUE_MAXIMUM_SIZE ) {
+                int trashed = 0;
+                while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
                     messageQueue.poll();
-                    sizeLeft--;
+                    queueToDrain--;
+                    trashed++;
                 }
-                log.warn("JMS message queue size decreased by {} messages by trashing", queueToDrain-sizeLeft, QUEUE_MAXIMUM_SIZE );
-                queueToDrain = QUEUE_MAXIMUM_SIZE;
+                log.warn("JMS message queue size decreased by {} messages by trashing", trashed, QUEUE_MAXIMUM_SIZE );
             } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
                 log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
             } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {

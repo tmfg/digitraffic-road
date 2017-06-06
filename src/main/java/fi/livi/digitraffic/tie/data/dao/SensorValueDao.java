@@ -81,29 +81,15 @@ public class SensorValueDao {
 
     private static Map<String, Object>[] appendLamBatchData(final Collection<Lam> lams,
                                                             final Set<Long> allowedTmsSensorLotjuIds) {
-
         final ArrayList<Map> batchData = new ArrayList<>();
         int updateCount = 0;
         int notAllowed = 0;
         for (Lam lam : lams) {
-            List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
-            Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+            final List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
             for (Lam.Anturit.Anturi anturi : anturit) {
-                final long sensorLotjuId = Long.parseLong(anturi.getLaskennallinenAnturiId());
-                if ( allowedTmsSensorLotjuIds.contains( sensorLotjuId ) ) {
+                if ( allowedTmsSensorLotjuIds.contains( Long.parseLong(anturi.getLaskennallinenAnturiId()) ) ) {
+                    batchData.add(createArgsMap(lam, anturi));
                     updateCount++;
-                    final HashMap<String, Object> args = new HashMap<>();
-                    args.put("value", (double) anturi.getArvo());
-                    args.put("measured", measured);
-                    args.put("rsLotjuId", lam.getAsemaId());
-                    args.put("sensorLotjuId", sensorLotjuId);
-                    args.put("stationType", RoadStationType.TMS_STATION.name());
-                    final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
-                    final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
-                    args.put("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
-                    args.put("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
-                    batchData.add(args);
                 } else {
                     notAllowed++;
                 }
@@ -119,22 +105,12 @@ public class SensorValueDao {
         int notAllowed = 0;
         final ArrayList<Map> batchData = new ArrayList<>();
         for (Tiesaa tiesaa : tiesaas) {
-            List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
-            Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+            final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
             for (Tiesaa.Anturit.Anturi anturi : anturit) {
-                final long sensorLotjuId = anturi.getLaskennallinenAnturiId();
-                if (allowedWeatherSensorLotjuIds.contains(sensorLotjuId)) {
+                if (allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
+                    batchData.add(createArgsMap(tiesaa, anturi));
                     updateCount++;
-                    final HashMap<String, Object> args = new HashMap<>();
-                    args.put("value", (double) anturi.getArvo());
-                    args.put("measured", measured);
-                    args.put("rsLotjuId", tiesaa.getAsemaId());
-                    args.put("sensorLotjuId", sensorLotjuId);
-                    args.put("stationType", RoadStationType.WEATHER_STATION.name());
-                    args.put("timeWindowStart", null);
-                    args.put("timeWindowEnd", null);
-                    batchData.add(args);
+
                 } else {
                     notAllowed++;
                 }
@@ -142,5 +118,39 @@ public class SensorValueDao {
         }
         log.info("Update {} allowed and skipped {} not allowed weather sensor values", updateCount, notAllowed);
         return (Map<String, Object>[])batchData.toArray(((Map[])new HashMap[0]));
+    }
+
+    private static Map createArgsMap(Lam lam, Lam.Anturit.Anturi anturi) {
+        final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
+        final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+        final HashMap<String, Object> args = new HashMap<>();
+
+        args.put("value", (double) anturi.getArvo());
+        args.put("measured", measured);
+        args.put("rsLotjuId", lam.getAsemaId());
+        args.put("sensorLotjuId", Long.parseLong(anturi.getLaskennallinenAnturiId()));
+        args.put("stationType", RoadStationType.TMS_STATION.name());
+        final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
+        final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
+        args.put("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
+        args.put("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
+
+        return args;
+    }
+
+    private static Map createArgsMap(Tiesaa tiesaa, Tiesaa.Anturit.Anturi anturi) {
+        final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
+        final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+        final HashMap<String, Object> args = new HashMap<>();
+
+        args.put("value", (double) anturi.getArvo());
+        args.put("measured", measured);
+        args.put("rsLotjuId", tiesaa.getAsemaId());
+        args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());
+        args.put("stationType", RoadStationType.WEATHER_STATION.name());
+        args.put("timeWindowStart", null);
+        args.put("timeWindowEnd", null);
+
+        return args;
     }
 }
