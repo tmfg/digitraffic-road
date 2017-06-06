@@ -56,41 +56,30 @@
     <!-- TMS and weather sensors data -->
     <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
     </logger>
 
     <!-- JMS message listener -->
     <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
     </logger>
 
     <!-- JMS message configuration -->
     <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
+    </logger>
+
+    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="false">
+        <appender-ref ref="FILE_JMS" />
     </logger>
 
     <!-- Camera presets images -->
     <logger name="fi.livi.digitraffic.tie.data.service.CameraImageUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
     </logger>
 
     <!-- Camera presets data -->
     <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
     </logger>
 
     <!-- debugging log -->
