@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ACTIVE;
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ALL;
+import static fi.livi.digitraffic.tie.metadata.controller.TmsState.REMOVED;
+
 import java.util.Map;
 
 import org.junit.Assert;
@@ -16,19 +20,31 @@ public class TmsStationServiceTest extends AbstractTest {
     private TmsStationService tmsStationService;
 
     @Test
-    public void testFindAllNonObsoleteTmsStationsAsFeatureCollection() {
-        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false);
+    public void findAllPublishableTmsStationsAsFeatureCollection() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
         Assert.assertTrue(stations.getFeatures().size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsMappedByByNaturalId() {
+    public void findPermanentlyRemovedStations() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, REMOVED);
+        Assert.assertTrue(stations.getFeatures().size() == 0);
+    }
+
+    @Test
+    public void findAllStations() {
+        final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ALL);
+        Assert.assertTrue(stations.getFeatures().size() > 0);
+    }
+
+    @Test
+    public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
         Assert.assertTrue(stations.size() > 0);
     }
 
     @Test
-    public void testFindAllTmsStationsByMappedByLotjuId() {
+    public void findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsByMappedByLotjuId();
         Assert.assertTrue(stations.size() > 0);
     }

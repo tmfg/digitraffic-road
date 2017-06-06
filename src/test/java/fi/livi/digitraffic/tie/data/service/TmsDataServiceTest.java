@@ -1,18 +1,23 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.metadata.model.RoadStationType.TMS_STATION;
+import static org.hamcrest.Matchers.emptyCollectionOf;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.tms.TmsStationDto;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -30,12 +35,11 @@ public class TmsDataServiceTest extends AbstractTest {
 
     @Before
     public void initData() {
-        Map<Long, TmsStation> stations =
-                tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
-        List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
+        final Map<Long, TmsStation> stations = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
+        final List<RoadStationSensor> availableSensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors(TMS_STATION);
+
         stations.values().forEach(station -> {
-            RoadStation rs = station.getRoadStation();
+            final RoadStation rs = station.getRoadStation();
             availableSensors.forEach(s -> {
                 if (!rs.getRoadStationSensors().contains(s)) {
                     rs.getRoadStationSensors().add(s);
@@ -45,20 +49,25 @@ public class TmsDataServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindPublicTmsData()  {
+    public void findPublishableTmsData() {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(false);
-        Assert.notNull(object);
-        Assert.notNull(object.getDataUpdatedTime());
-        Assert.notNull(object.getTmsStations());
-        Assert.notEmpty(object.getTmsStations());
+        assertNotNull(object);
+        assertNotNull(object.getDataUpdatedTime());
+        assertNotNull(object.getTmsStations());
+        assertNotNull(object.getTmsStations());
     }
 
     @Test
-    public void testFindPublicTmsDataById()  {
+    public void findPublishableTmsDataById() {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23001);
-        Assert.notNull(object);
-        Assert.notNull(object.getDataUpdatedTime());
-        Assert.notNull(object.getTmsStations());
-        Assert.notEmpty(object.getTmsStations());
+        assertNotNull(object);
+        assertNotNull(object.getDataUpdatedTime());
+        assertNotNull(object.getTmsStations());
+        Assert.assertThat(object.getTmsStations(), not(emptyCollectionOf(TmsStationDto.class)));
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void findPublishableTmsDataByIdNotFound() {
+        tmsDataService.findPublishableTmsData(-1);
     }
 }

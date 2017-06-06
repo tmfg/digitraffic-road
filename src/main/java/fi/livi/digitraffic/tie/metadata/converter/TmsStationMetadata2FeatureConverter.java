@@ -1,9 +1,13 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import static fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository.TMS_STATION_TYPE;
 
+import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,25 +18,27 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Component
 public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
-
     private static final Log log = LogFactory.getLog( TmsStationMetadata2FeatureConverter.class );
 
+    private final StationSensorConverter stationSensorConverter;
+
     @Autowired
-    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter) {
+    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter, final StationSensorConverter stationSensorConverter) {
         super(coordinateConverter);
+        this.stationSensorConverter = stationSensorConverter;
     }
 
     public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated) {
         final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(TMS_STATION_TYPE);
 
         for(final TmsStation tms : stations) {
             try {
-                collection.add(convert(tms));
+                collection.add(convert(sensorMap, tms));
             } catch (final NonPublicRoadStationException nprse) {
                 //Skip non public roadstation
                 log.warn("Skipping: " + nprse.getMessage());
@@ -41,13 +47,13 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         return collection;
     }
 
-    /**
-     *
-     * @param tms
-     * @return
-     * @throws NonPublicRoadStationException If road station is non public exception is thrown
-     */
-    private TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
+    public TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(tms.getRoadStationId(), TMS_STATION_TYPE);
+
+        return convert(sensorMap, tms);
+    }
+
+    public TmsStationFeature convert(final Map<Long, List<Long>> sensorMap, final TmsStation tms) throws NonPublicRoadStationException {
         final TmsStationFeature f = new TmsStationFeature();
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + tms);
@@ -69,8 +75,8 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         properties.setName(tms.getName());
 
         if (tms.getRoadStation() != null) {
-            properties.setStationSensors(tms.getRoadStation().getRoadStationSensors()
-                .stream().map(RoadStationSensor::getNaturalId).collect(Collectors.toList()));
+            final List<Long> sensorList = sensorMap.get(tms.getRoadStationId());
+            properties.setStationSensors(ObjectUtils.firstNonNull(sensorList, Collections.emptyList()));
         }
         // RoadStation properties
         final RoadStation rs = tms.getRoadStation();

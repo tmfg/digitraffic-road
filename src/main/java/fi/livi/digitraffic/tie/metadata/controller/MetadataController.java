@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
+import fi.livi.digitraffic.tie.helper.EnumConverter;
+import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.traveltime.LinkFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
@@ -48,6 +51,10 @@ public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 
     public static final String TMS_STATIONS_PATH = "/tms-stations";
+    public static final String TMS_STATIONS_TMS_NUMBER_PATH = TMS_STATIONS_PATH + "/tms-number";
+    public static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
+    public static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
+
     public static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
     public static final String CAMERA_STATIONS_PATH = "/camera-stations";
     public static final String WEATHER_STATIONS_PATH = "/weather-stations";
@@ -86,26 +93,71 @@ public class MetadataController {
         this.travelTimeLinkMetadataService = travelTimeLinkMetadataService;
     }
 
-    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
+    @ApiOperation("BETA: The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public TmsStationFeatureCollection listTmsStations(
-                @ApiParam(value = "If parameter is given result will only contain update status.")
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+                        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeatureCollection tmsStations(
+                @ApiParam("If parameter is given result will only contain update status.")
                 @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                boolean lastUpdated) {
+                final boolean lastUpdated,
+        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @RequestParam(value = "state", required = false, defaultValue = "active")
+        final String stateString) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_PATH);
-        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated);
+
+        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+
+        return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
+    }
+
+    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces =
+        APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeature tmsStationsByTmsNumber(
+        @PathVariable("number") final Long tmsNumber) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_TMS_NUMBER_PATH);
+        return tmsStationService.getTmsStationByLamId(tmsNumber);
+    }
+
+    @ApiOperation("BETA: The static information of TMS stations of given road (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+        @ApiResponse(code = 404, message = "Vessel metadata not found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeatureCollection tmsStationsByRoadNumber(
+        @PathVariable("number") final Integer roadNumber,
+        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @RequestParam(value = "state", required = false, defaultValue = "active")
+        final String stateString) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_ROAD_NUMBER_PATH);
+
+        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+
+        return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
+    }
+
+    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
+                        @ApiResponse(code = 404, message = "Vessel metadata not found"),
+                        @ApiResponse(code = 500, message = "Internal server error")})
+    public TmsStationFeature tmsStationsByRoadStationId(
+        @PathVariable("id") final Long id) throws NonPublicRoadStationException {
+        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_ROAD_STATION_ID_PATH);
+        return tmsStationService.getTmsStationByRoadStationId(id);
     }
 
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
-                            @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationsSensorsMetadata listNonObsoleteTmsStationSensors(
-            @ApiParam(value = "If parameter is given result will only contain update status.")
+    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors"),
+                        @ApiResponse(code = 500, message = "Internal server error") })
+    public RoadStationsSensorsMetadata tmsSensors(
+            @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_AVAILABLE_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.TMS_STATION, lastUpdated);
     }
@@ -114,10 +166,10 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraStationFeatureCollection listNonObsoleteCameraPresets(
+    public CameraStationFeatureCollection cameraStations(
                     @ApiParam("If parameter is given result will only contain update status.")
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + CAMERA_STATIONS_PATH);
         return cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
@@ -126,10 +178,10 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Feature Collections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public WeatherStationFeatureCollection listNonObsoleteWeatherStations(
+    public WeatherStationFeatureCollection weatherStations(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_PATH);
         return weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(lastUpdated);
     }
@@ -138,10 +190,10 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station Sensors"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public RoadStationsSensorsMetadata listNonObsoleteWeatherStationSensors(
+    public RoadStationsSensorsMetadata weatherSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH);
         return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
     }
@@ -150,7 +202,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public List<LocationVersion> listLocationVersions () {
+    public List<LocationVersion> locationVersions () {
         log.info(REQUEST_LOG_PREFIX + LOCATION_VERSIONS_PATH);
         return locationService.findLocationVersions();
     }
@@ -159,10 +211,10 @@ public class MetadataController {
     @ApiOperation("The static information of weather forecast sections")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public ForecastSectionsMetadata listForecastSections(
+    public ForecastSectionsMetadata forecastSections(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-            boolean lastUpdated) {
+            final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + FORECAST_SECTIONS_PATH);
         return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
     }
@@ -171,14 +223,14 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationFeatureCollection listLocations (
+    public LocationFeatureCollection locations (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-            String version,
+            final String version,
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH);
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
@@ -187,14 +239,14 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationTypesMetadata listaLocationTypes (
+    public LocationTypesMetadata locationTypes(
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-                    String version,
+                    final String version,
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    boolean lastUpdated) {
+                    final boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + LOCATION_TYPES_PATH);
         return locationService.findLocationSubtypes(lastUpdated, version);
     }
@@ -203,10 +255,10 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LocationFeatureCollection getLocation (
+    public LocationFeatureCollection locationsById(
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
-                    String version,
+                    final String version,
 
             @PathVariable("id") final int id) {
         log.info(REQUEST_LOG_PREFIX + LOCATIONS_PATH + "/" + id);
@@ -217,7 +269,7 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = TRAVEL_TIME_LINKS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of travel time links"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public LinkFeatureCollection getTravelTimeLinkMetadata() {
+    public LinkFeatureCollection travelTimeLinks() {
         log.info(REQUEST_LOG_PREFIX + TRAVEL_TIME_LINKS_PATH);
         return travelTimeLinkMetadataService.getLinkMetadata();
     }

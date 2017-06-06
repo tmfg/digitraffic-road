@@ -119,7 +119,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficFluencyRootDataObjectDto fluencyCurrent(
+    public TrafficFluencyRootDataObjectDto fluencyCurrentById(
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
@@ -143,7 +143,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public HistoryRootDataObjectDto fluencyHistoryPreviousDayId(
+    public HistoryRootDataObjectDto fluencyHistoryPreviousDayById(
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
@@ -155,7 +155,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public HistoryRootDataObjectDto fluencyHistory(
+    public HistoryRootDataObjectDto fluencyHistoryById(
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id,
@@ -173,7 +173,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public FreeFlowSpeedRootDataObjectDto listFreeFlowSpeeds(
+    public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
@@ -185,7 +185,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/link/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public FreeFlowSpeedRootDataObjectDto listLinkFreeFlowSpeeds(
+    public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfLinkById(
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
@@ -197,7 +197,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public FreeFlowSpeedRootDataObjectDto listTmsFreeFlowSpeeds(
+    public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(
             @ApiParam(value = "TMS station id", required = true)
             @PathVariable
             final long id) {
@@ -209,7 +209,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of camera station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraRootDataObjectDto listCameraStationsData(
+    public CameraRootDataObjectDto cameraData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
@@ -221,7 +221,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of camera station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public CameraRootDataObjectDto listCameraStationData(
+    public CameraRootDataObjectDto cameraDataById(
             @ApiParam(value = "Camera id", required = true)
             @PathVariable
             final String id) {
@@ -233,7 +233,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TmsRootDataObjectDto listTmsStationData(
+    public TmsRootDataObjectDto tmsData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
@@ -245,7 +245,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public TmsRootDataObjectDto listTmsStationData(
+    public TmsRootDataObjectDto tmsDataById(
             @ApiParam(value = "TMS Station id", required = true)
             @PathVariable
             final long id) {
@@ -257,7 +257,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public WeatherRootDataObjectDto listWeatherStationData(
+    public WeatherRootDataObjectDto weatherData(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
@@ -269,7 +269,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weather station data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public WeatherRootDataObjectDto listWeatherStationData(
+    public WeatherRootDataObjectDto weatherDataById(
             @ApiParam(value = "Weather Station id", required = true)
             @PathVariable
             final long id) {
@@ -281,7 +281,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section data"),
                     @ApiResponse(code = 500, message = "Internal server error") })
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData() {
+    public ForecastSectionWeatherRootDto roadConditions() {
         log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
         return forecastSectionDataService.getForecastSectionWeatherData();
     }
@@ -291,7 +291,7 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_JSON_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto listActiveTrafficDisorders(
+    public Datex2RootDataObjectDto trafficDisordersSimple(
             @ApiParam(value = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             boolean lastUpdated) {
@@ -304,7 +304,7 @@ public class DataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto listAllTrafficDisordersBySituationId(
+    public Datex2RootDataObjectDto trafficDisordersSimpleBySituationId(
             @ApiParam(value = "Situation id.")
             @PathVariable
             String situationId) {
@@ -317,7 +317,7 @@ public class DataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public Datex2RootDataObjectDto listTrafficDisorderHistory(
+    public Datex2RootDataObjectDto trafficDisordersSimpleOfHistory(
             @ApiParam(value = "Situation id", required = false)
             @RequestParam(required = false)
             final String situationId,
@@ -333,21 +333,21 @@ public class DataController {
     }
 */
 
-    @ApiOperation("BETA Current traffic disorders Datex2 messages")
+    @ApiOperation("Active traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficDisordersDatex2Response listActiveTrafficDisordersDatex2() {
+    public TrafficDisordersDatex2Response trafficDisordersDatex2() {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH);
         return datex2DataService.findActiveDatex2Response();
     }
 
-    @ApiOperation("BETA Traffic disorder Datex2 messages by situation id")
+    @ApiOperation("Traffic disorder Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficDisordersDatex2Response listAllTrafficDisordersDatex2BySituationId(
+    public TrafficDisordersDatex2Response trafficDisordersDatex2BySituationId(
             @ApiParam(value = "Situation id.", required = true)
             @PathVariable
             String situationId) {
@@ -355,13 +355,13 @@ public class DataController {
         return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
     }
 
-    @ApiOperation("BETA Traffic disorder Datex2 messages disorders history")
+    @ApiOperation("Traffic disorder Datex2 messages disorders history")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 400, message = "Invalid parameter"),
                             @ApiResponse(code = 404, message = "Situation id not found"),
                             @ApiResponse(code = 500, message = "Internal server error") })
-    public TrafficDisordersDatex2Response listTrafficDisordersDatex2History(
+    public TrafficDisordersDatex2Response trafficDisordersDatex2OfHistory(
             @ApiParam(value = "Situation id", required = false)
             @RequestParam(required = false)
             final String situationId,

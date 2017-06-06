@@ -40,7 +40,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
             "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
-            "        AND (disorder.validy_status = 'ACTIVE'\n" +
+            "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
             "             AND disorder.overall_end_time > sysdate)\n" +
             // Skip old Datex2 messages of HÄTI system
             "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +

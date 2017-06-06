@@ -11,7 +11,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {
-
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataToFeatureConverter.class);
 
     protected final CoordinateConverter coordinateConverter;
@@ -20,12 +19,6 @@ public class AbstractMetadataToFeatureConverter {
         this.coordinateConverter = coordinateConverter;
     }
 
-    /**
-     *
-     * @param properties
-     * @param roadStation
-     * @throws NonPublicRoadStationException If road station is non public exception is thrown
-     */
     protected static void setRoadStationProperties(final RoadStationProperties properties, final RoadStation roadStation)
             throws NonPublicRoadStationException {
         if (!roadStation.isPublic()) {

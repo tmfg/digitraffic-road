@@ -5,13 +5,13 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -90,17 +90,16 @@ public class RoadStation {
     private ZonedDateTime repairMaintenanceDate;
     private ZonedDateTime annualMaintenanceDate;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
-    @Fetch(FetchMode.JOIN)
+    @Fetch(FetchMode.SELECT)
     private RoadAddress roadAddress;
-
 
     @ManyToMany
     @JoinTable(name = "ROAD_STATION_SENSORS",
                joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
-    List<RoadStationSensor> roadStationSensors = new ArrayList<>();
+    private List<RoadStationSensor> roadStationSensors = new ArrayList<>();
 
     /**
      * This value is calculated by db so it's value is not

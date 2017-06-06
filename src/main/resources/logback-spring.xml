@@ -38,6 +38,21 @@
         </encoder>
     </appender>
 
+    <!-- PerformanceMonitor messages logging in separate file -->
+    <appender name="FILE_PERFORMANCE_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
+        <file>metadata-performance-daily.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>metadata-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>92</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
+                 Useful if logged only oneliners to one file and full straces to other -->
+            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- TMS and weather sensors data -->
     <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
@@ -81,6 +96,14 @@
     <!-- debugging log -->
     <logger name="net.bull.javamelody" additivity="false">
         <level value="ERROR" />
+        <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+    </logger>
+
+    <!-- PerformanceMonitorAspect log -->
+    <logger name="PerformanceMonitor" additivity="false">
+        <appender-ref ref="FILE_PERFORMANCE_MONITOR" />
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
         </springProfile>

@@ -81,7 +81,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     /**
      * Drain queue and calls handleData if data available.
      */
-    @Scheduled(fixedRateString = "${jms.queue.pollingIntervalMs}")
+    @Scheduled(fixedDelayString = "${jms.queue.pollingIntervalMs}")
     public void drainQueueScheduled() throws JAXBException {
         getJMSMessageListener().drainQueueScheduled();
     }
