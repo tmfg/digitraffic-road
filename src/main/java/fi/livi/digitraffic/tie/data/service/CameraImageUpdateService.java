@@ -118,8 +118,9 @@ public class CameraImageUpdateService {
             if (session.exists(imageRemotePath) ) {
                 log.info("Delete image {}", imageRemotePath);
                 session.remove(imageRemotePath);
+                return true;
             }
-            return true;
+            return false;
         } catch (IOException e) {
             log.error("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
             return false;
