@@ -61,7 +61,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
 
         JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = (data) -> {
             List<Tiesaa> tiesaaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
-            sensorDataUpdateService.updateWeatherData(tiesaaData);
+            return sensorDataUpdateService.updateWeatherData(tiesaaData);
         };
 
         return new JMSMessageListener<>(Tiesaa.class,

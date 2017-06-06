@@ -54,9 +54,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public JMSMessageListener<D2LogicalModel> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> {
-            datex2DataService.updateDatex2Data(data);
-        };
+        JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> datex2DataService.updateDatex2Data(data);
 
         return new JMSMessageListener<>(D2LogicalModel.class,
                                         handleData,

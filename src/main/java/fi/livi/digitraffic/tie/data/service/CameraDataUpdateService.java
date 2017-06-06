@@ -33,7 +33,7 @@ public class CameraDataUpdateService {
     }
 
     @Transactional
-    public void updateCameraData(final List<Kuva> data) throws SQLException {
+    public int updateCameraData(final List<Kuva> data) throws SQLException {
 
         final HashMap<Long, Kuva> latestKuvasMappedByPresetLotjuId = filterLatestKuvasAndMapByPresetId(data);
 
@@ -65,6 +65,7 @@ public class CameraDataUpdateService {
         }
 
         log.info("Updating {} weather camera images took {} ms", futures.size(), start.getTime());
+        return futures.size();
     }
 
     private HashMap<Long, Kuva> filterLatestKuvasAndMapByPresetId(final List<Kuva> data) {

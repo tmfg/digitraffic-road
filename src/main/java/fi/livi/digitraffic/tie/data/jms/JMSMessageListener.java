@@ -30,7 +30,7 @@ public class JMSMessageListener<T> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
 
     public interface JMSDataUpdater<T> {
-        void updateData(List<Pair<T, String>> data);
+        int updateData(List<Pair<T, String>> data);
     }
 
     private static final int QUEUE_SIZE_WARNING_LIMIT = 200;
@@ -42,8 +42,9 @@ public class JMSMessageListener<T> implements MessageListener {
     private final Unmarshaller jaxbUnmarshaller;
     private final ConcurrentLinkedQueue<Pair<T,String>> messageQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
-    private final AtomicInteger minuteMessageCounter = new AtomicInteger();
-    private final AtomicInteger minuteMessageDrainedCounter = new AtomicInteger();
+    private final AtomicInteger messageCounter = new AtomicInteger();
+    private final AtomicInteger messageDrainedCounter = new AtomicInteger();
+    private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
     private final JMSDataUpdater dataUpdater;
@@ -80,7 +81,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
     @Override
     public void onMessage(final Message message) {
-        minuteMessageCounter.incrementAndGet();
+        messageCounter.incrementAndGet();
         if (shutdownCalled.get()) {
             log.error("Not handling any messages anymore because app is shutting down");
             return;
@@ -179,7 +180,7 @@ public class JMSMessageListener<T> implements MessageListener {
             // Allocate array with current message queue size and drain same amount of messages
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(queueToDrain);
             int counter = 0;
-            while (targetList.size() < queueToDrain) {
+            while (counter < queueToDrain) {
                 final Pair<T, String> next = messageQueue.poll();
                 if (next != null) {
                     targetList.add(next);
@@ -191,10 +192,11 @@ public class JMSMessageListener<T> implements MessageListener {
             }
 
             if ( counter > 0 && !shutdownCalled.get() ) {
-                log.info("JMS message queue drained {} of {} messages. Now update data.", counter, queueToDrain);
-                minuteMessageDrainedCounter.addAndGet(counter);
-                dataUpdater.updateData(targetList);
-                log.info("JMS message queue draining and updating of {} messages took {} ms", counter, start.getTime());
+                log.info("JMS message queue drained {} of {} messages. Next update data to db.", counter, queueToDrain);
+                messageDrainedCounter.addAndGet(counter);
+                final int updated = dataUpdater.updateData(targetList);
+                dbRowsUpdatedCounter.addAndGet(updated);
+                log.info("JMS message queue draining and updating of {} messages ({} db rows) took {} ms", counter, updated, start.getTime());
             }
         } else {
             log.info("drainQueueInternal: Shutdown called");
@@ -202,21 +204,25 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     public JmsStatistics getAndResetMessageCounter() {
-        return new JmsStatistics(minuteMessageCounter.getAndSet(0),
-                                 minuteMessageDrainedCounter.getAndSet(0),
+        return new JmsStatistics(messageCounter.getAndSet(0),
+                                 messageDrainedCounter.getAndSet(0),
+                                 dbRowsUpdatedCounter.getAndSet(0),
                                  messageQueue.size());
     }
 
     public class JmsStatistics {
         private final int messagesReceived;
         private final int messagesDrained;
+        private final int dbRowsUpdated;
         private final int queueSize;
 
         public JmsStatistics(final int messagesReceived,
                              final int messagesDrained,
+                             final int dbRowsUpdated,
                              final int queueSize) {
             this.messagesReceived = messagesReceived;
             this.messagesDrained = messagesDrained;
+            this.dbRowsUpdated = dbRowsUpdated;
             this.queueSize = queueSize;
         }
 
@@ -226,6 +232,10 @@ public class JMSMessageListener<T> implements MessageListener {
 
         public int getMessagesDrained() {
             return messagesDrained;
+        }
+
+        public int getDbRowsUpdated() {
+            return dbRowsUpdated;
         }
 
         public int getQueueSize() {
