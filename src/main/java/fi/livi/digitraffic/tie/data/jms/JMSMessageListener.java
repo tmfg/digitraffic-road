@@ -44,6 +44,7 @@ public class JMSMessageListener<T> implements MessageListener {
     private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger minuteMessageCounter = new AtomicInteger();
+    private final AtomicInteger minuteMessageDrainedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
     private final JMSDataUpdater dataUpdater;
@@ -152,10 +153,6 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    public int getQueueSize() {
-        return blockingQueue.size();
-    }
-
     private void drainQueueInternal() {
         if ( !shutdownCalled.get() ) {
             StopWatch start = StopWatch.createStarted();
@@ -173,6 +170,7 @@ public class JMSMessageListener<T> implements MessageListener {
             final int drained = blockingQueue.drainTo(targetList);
             if ( drained > 0 && !shutdownCalled.get() ) {
                 log.info("DrainQueue of size {}", drained);
+                minuteMessageDrainedCounter.addAndGet(drained);
                 dataUpdater.updateData(targetList);
                 log.info("DrainQueue of size {} took {} ms", drained, start.getTime());
             } else {
@@ -183,8 +181,35 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    public int getAndResetMessageCounter() {
-        log.info("Current in memory blockingQueue size {}", blockingQueue.size());
-        return minuteMessageCounter.getAndSet(0);
+    public JmsStatistics getAndResetMessageCounter() {
+        return new JmsStatistics(minuteMessageCounter.getAndSet(0),
+                                 minuteMessageDrainedCounter.getAndSet(0),
+                                 blockingQueue.size());
+    }
+
+    public class JmsStatistics {
+        private final int messagesReceived;
+        private final int messagesDrained;
+        private final int queueSize;
+
+        public JmsStatistics(final int messagesReceived,
+                             final int messagesDrained,
+                             final int queueSize) {
+            this.messagesReceived = messagesReceived;
+            this.messagesDrained = messagesDrained;
+            this.queueSize = queueSize;
+        }
+
+        public int getMessagesReceived() {
+            return messagesReceived;
+        }
+
+        public int getMessagesDrained() {
+            return messagesDrained;
+        }
+
+        public int getQueueSize() {
+            return queueSize;
+        }
     }
 }

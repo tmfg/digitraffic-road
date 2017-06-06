@@ -71,14 +71,16 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
 
+        final JMSMessageListener<T> listener = getJMSMessageListener();
+        final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
         final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
         final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
+
         log.info("{} MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
                  STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
-
-        final JMSMessageListener<T> listener = getJMSMessageListener();
-        log.info("{} Received {} messages per minute. Current queue size {}.",
-                 STATISTICS_PREFIX, listener.getAndResetMessageCounter(), getJMSMessageListener().getQueueSize());
+        log.info("{} Received {} and drained {} messages per minute. Current queue size {}.",
+                 STATISTICS_PREFIX, jmsStats.getMessagesReceived(), jmsStats.getMessagesDrained() , jmsStats.getQueueSize());
+        log.info("{} Current in memory blockingQueue size {}", jmsStats);
     }
 
     /**
