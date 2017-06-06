@@ -59,9 +59,9 @@ public class CameraImageUpdateService {
 
 
     @Transactional(readOnly = true)
-    public void deleteAllImagesForNonPublishablePresets() {
+    public long deleteAllImagesForNonPublishablePresets() {
         List<String> presetIdsToDelete = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
-        presetIdsToDelete.forEach(presetId -> deleteImageQuietly(getPresetImageName(presetId)));
+        return presetIdsToDelete.stream().filter(presetId -> deleteImageQuietly(getPresetImageName(presetId))).count();
     }
 
     @Transactional

@@ -93,7 +93,7 @@ public class MetadataController {
         this.travelTimeLinkMetadataService = travelTimeLinkMetadataService;
     }
 
-    @ApiOperation("BETA: The static information of TMS stations (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 500, message = "Internal server error")})
@@ -111,7 +111,7 @@ public class MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces =
         APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
@@ -122,7 +122,7 @@ public class MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @ApiOperation("BETA: The static information of TMS stations of given road (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 404, message = "Vessel metadata not found"),
@@ -139,7 +139,7 @@ public class MetadataController {
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
-    @ApiOperation("BETA: The static information of one TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Vessel metadata not found"),

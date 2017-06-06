@@ -37,7 +37,7 @@ public class TmsWebSocketConfiguration {
         }
     }
 
-    @Scheduled(fixedRateString = "${websocket.tms.pollingIntervalMs}")
+    @Scheduled(fixedDelayString = "${websocket.tms.pollingIntervalMs}")
     public void pollTmsData() {
         singleCounter++;
         counter++;

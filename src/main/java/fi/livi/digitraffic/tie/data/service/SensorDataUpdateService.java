@@ -93,7 +93,7 @@ public class SensorDataUpdateService {
      * @return true if success
      */
     @Transactional
-    public boolean updateLamData(List<Lam> data) {
+    public boolean updateLamData(final List<Lam> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
              OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
@@ -122,7 +122,7 @@ public class SensorDataUpdateService {
      * @return true if success
      */
     @Transactional
-    public boolean updateWeatherData(List<Tiesaa> data) {
+    public boolean updateWeatherData(final List<Tiesaa> data) {
 
         try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
              OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
@@ -146,7 +146,7 @@ public class SensorDataUpdateService {
         return false;
     }
 
-    private static Collection<Lam> filterNewestLamValues(List<Lam> data) {
+    private static Collection<Lam> filterNewestLamValues(final List<Lam> data) {
         // Collect newest data per station
         HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
         for (Lam lam : data) {
@@ -161,7 +161,7 @@ public class SensorDataUpdateService {
         return tmsMapByLamStationLotjuId.values();
     }
 
-    private static Collection<Tiesaa> filterNewestTiesaaValues(List<Tiesaa> data) {
+    private static Collection<Tiesaa> filterNewestTiesaaValues(final List<Tiesaa> data) {
         // Collect newest data per station
         HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
         for (Tiesaa tiesaa : data) {
@@ -177,9 +177,9 @@ public class SensorDataUpdateService {
     }
 
 
-    private static Pair<Integer, Integer> appendLamBatchData(OraclePreparedStatement ops,
-                                                             Collection<Lam> lams,
-                                                             Set<Long> allowedTmsSensorLotjuIds) throws SQLException {
+    private static Pair<Integer, Integer> appendLamBatchData(final OraclePreparedStatement ops,
+                                                             final Collection<Lam> lams,
+                                                             final Set<Long> allowedTmsSensorLotjuIds) throws SQLException {
         int rows = 0;
         int notAllowed = 0;
         for (Lam lam : lams) {
@@ -208,9 +208,9 @@ public class SensorDataUpdateService {
         return Pair.of(rows, notAllowed);
     }
 
-    private static Pair<Integer, Integer> appendTiesaaBatchData(OraclePreparedStatement ops,
-                                                                Collection<Tiesaa> tiesaas,
-                                                                Set<Long> allowedWeatherSensorLotjuIds) throws SQLException {
+    private static Pair<Integer, Integer> appendTiesaaBatchData(final OraclePreparedStatement ops,
+                                                                final Collection<Tiesaa> tiesaas,
+                                                                final Set<Long> allowedWeatherSensorLotjuIds) throws SQLException {
         int rows = 0;
         int notAllowed = 0;
         for (Tiesaa tiesaa : tiesaas) {

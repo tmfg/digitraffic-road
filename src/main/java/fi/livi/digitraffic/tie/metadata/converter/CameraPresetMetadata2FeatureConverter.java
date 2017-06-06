@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
 @Component
 public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
-    private static final Log log = LogFactory.getLog( CameraPresetMetadata2FeatureConverter.class );
+    private static final Logger log = LoggerFactory.getLogger( CameraPresetMetadata2FeatureConverter.class );
 
     private final CameraPresetRepository cameraPresetRepository;
 

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,7 +37,7 @@ public class WeatherStation {
 
     private boolean master;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;

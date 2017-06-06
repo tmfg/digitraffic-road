@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -20,6 +21,8 @@ import org.springframework.util.Assert;
 import com.google.common.base.Predicate;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
+import fi.livi.digitraffic.tie.data.controller.DataController;
+import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -28,6 +31,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ConditionalOnControllersEnabled
 @Configuration
 @EnableSwagger2
+@ComponentScan(basePackageClasses = {
+    DataController.class, MetadataController.class
+})
 public class SwaggerConfiguration {
 
     private final MetadataApiInfoService metadataApiInfoService;

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.util.List;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -12,6 +13,11 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
 @Repository
 public interface WeatherStationRepository extends JpaRepository<WeatherStation, Long> {
+
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress"})
+    List<WeatherStation> findAll();
+
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<WeatherStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
@@ -23,4 +29,6 @@ public interface WeatherStationRepository extends JpaRepository<WeatherStation, 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<WeatherStation> findByRoadStationIsNull();
+
+    WeatherStation findByLotjuId(Long lotjuId);
 }

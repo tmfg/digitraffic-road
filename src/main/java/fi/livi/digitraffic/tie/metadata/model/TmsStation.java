@@ -2,10 +2,12 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -79,7 +81,7 @@ public class TmsStation {
     @Fetch(FetchMode.JOIN)
     private RoadDistrict roadDistrict;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;

@@ -103,7 +103,7 @@ public class LotjuCameraStationMetadataService extends AbstractLotjuMetadataServ
                 final List<EsiasentoVO> esiasennot = getEsiasentos(kamera.getId());
 
                 final String kameraId = CameraHelper.convertVanhaIdToKameraId(kamera.getVanhaId());
-                esiasennot.stream().forEach(esiasento -> {
+                esiasennot.forEach(esiasento -> {
 
                     final String presetId = CameraHelper.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
 

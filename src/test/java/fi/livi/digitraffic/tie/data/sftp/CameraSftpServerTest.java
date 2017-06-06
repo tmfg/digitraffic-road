@@ -165,7 +165,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
         try (final Session session = this.sftpSessionFactory.getSession()) {
 
-            kuvas.stream().forEach(kuva -> {
+            kuvas.forEach(kuva -> {
                 String filePath = getSftpPath(kuva);
                 if (kuva.getNimi().startsWith("X")) {
                     try {

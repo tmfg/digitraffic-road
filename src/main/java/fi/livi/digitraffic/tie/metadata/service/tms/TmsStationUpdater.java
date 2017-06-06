@@ -2,56 +2,47 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
-import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
-import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 
 @Service
-public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
+public class TmsStationUpdater {
 
+    private static final Logger log = LoggerFactory.getLogger(TmsStationUpdater.class);
+
+    private final RoadStationService roadStationService;
     private final TmsStationService tmsStationService;
-    private final RoadDistrictService roadDistrictService;
     private final StaticDataStatusService staticDataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationUpdater(final RoadStationService roadStationService,
                              final TmsStationService tmsStationService,
-                             final RoadDistrictService roadDistrictService,
                              final StaticDataStatusService staticDataStatusService,
                              final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
-        super(roadStationService, LoggerFactory.getLogger(AbstractTmsStationAttributeUpdater.class));
+        this.roadStationService = roadStationService;
         this.tmsStationService = tmsStationService;
-        this.roadDistrictService = roadDistrictService;
         this.staticDataStatusService = staticDataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
-    @Transactional
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
@@ -69,12 +60,8 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
             }
         }
 
-        final boolean updatedWithoutLotjuIds = fixTmsStationsWithoutLotjuId(asemas);
-
-        final Map<Long, TmsStation> currentStationsByLotjuId = tmsStationService.findAllTmsStationsMappedByByLotjuId();
-
-        final boolean updatedTmsStations = updateTmsStationsMetadata(asemas, currentStationsByLotjuId);
-        updateStaticDataStatus(updatedWithoutLotjuIds || updatedTmsStations);
+        final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
+        updateStaticDataStatus(updatedTmsStations);
         log.info("UpdateTmsStations end");
         return updatedTmsStations;
     }
@@ -83,233 +70,47 @@ public class TmsStationUpdater extends AbstractTmsStationAttributeUpdater {
         staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
     }
 
-    private boolean fixTmsStationsWithoutLotjuId(final List<LamAsemaVO> asemas) {
+    private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {
 
-        Map<Long, TmsStation> noLotjuIds = tmsStationService.findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
+        final int fixed = tmsStationService.fixNullLotjuIds(lamAsemas);
 
-        final AtomicInteger updated = new AtomicInteger();
-        asemas.stream().filter(la -> validate(la)).forEach(la -> {
-            final Long tmsNaturalId = convertToTmsNaturalId(la.getVanhaId());
-            final TmsStation currentSaved = noLotjuIds.remove(tmsNaturalId);
-            if (currentSaved != null) {
-                currentSaved.setLotjuId(la.getId());
-                currentSaved.getRoadStation().setLotjuId(la.getId());
-                updated.addAndGet(1);
+        int updated = 0;
+        int inserted = 0;
+
+        final List<LamAsemaVO> toUpdate =
+            lamAsemas.stream().filter(lam -> validate(lam)).collect(Collectors.toList());
+
+        final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamAsemaVO::getId).collect(Collectors.toList());
+        final int obsoleted = roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
+
+        final Collection invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
+        invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
+
+        for (LamAsemaVO tsa : toUpdate) {
+            UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
+            if (result == UpdateStatus.INSERTED) {
+                updated++;
+            } else if (result == UpdateStatus.INSERTED) {
+                inserted++;
             }
-        });
-
-        // Obsolete not found stations
-        final long obsoleted = noLotjuIds.values().stream().filter(tms -> tms.obsolete()).count();
-
-        log.info("Obsoleted {} TmsStations", obsoleted);
-        log.info("Fixed {} TmsStations without lotjuId", updated);
-
-        return obsoleted > 0 || updated.get() > 0;
-    }
-
-    private boolean updateTmsStationsMetadata(final List<LamAsemaVO> asemas, final Map<Long, TmsStation> currentStationsByLotjuId) {
-        final List<Pair<LamAsemaVO, TmsStation>> update = new ArrayList<>(); // tms-stations to update
-        final List<LamAsemaVO> insert = new ArrayList<>(); // new tms-stations
-
-        AtomicInteger invalid = new AtomicInteger();
-        asemas.stream().forEach(la -> {
-            if ( validate(la) ) {
-                final TmsStation currentSaved = currentStationsByLotjuId.remove(la.getId());
-
-                if ( currentSaved != null ) {
-                    update.add(Pair.of(la, currentSaved));
-                } else {
-                    insert.add(la);
-                }
-            } else {
-                invalid.addAndGet(1);
-            }
-        });
-
-        if (invalid.get() > 0) {
-            log.warn("Found {} LamAsemas from LOTJU", invalid);
         }
 
-        // tms-stations in database, but not in server -> obsolete
-        long obsoleted = currentStationsByLotjuId.values().stream().filter(tms -> tms.obsolete()).count();
-
-        final int updated = updateTmsStations(update);
-        final long inserted = insertTmsStations(insert);
 
         log.info("Obsoleted {} TmsStations", obsoleted);
         log.info("Updated {} TmsStations", updated);
         log.info("Inserted {} TmsStations", inserted);
-        if (insert.size() > inserted) {
-            log.warn("Insert failed for {} TmsStations", (insert.size()-inserted));
+        if (!invalid.isEmpty()) {
+            log.warn("Invalid WeatherStations from lotju {}", invalid.size());
         }
 
-        return obsoleted > 0 || inserted > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0 || fixed > 0;
     }
 
-    /**
-     * @param roadStationVanhaId LamAsema.vanhaId
-     * @return
-     */
-    private static Long convertToTmsNaturalId(final Integer roadStationVanhaId) {
-        return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
-    }
-
-    private long insertTmsStations(final List<LamAsemaVO> insert) {
-        return insert.stream().filter(la -> insertTmsStation(la)).count();
-    }
-
-    private boolean insertTmsStation(final LamAsemaVO la) {
-
-        final Integer roadNaturalId = la.getTieosoite().getTienumero();
-        final Integer roadSectionNaturalId = la.getTieosoite().getTieosa();
-
-        if (roadNaturalId == null) {
-            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                      "Insert failed {}: LamAsema.getTieosoite().getTienumero() is null",
-                      ToStringHelper.toString(la));
-            return false;
+    private boolean validate(final LamAsemaVO lamAsema) {
+        final boolean valid = lamAsema.getVanhaId() != null;
+        if(!valid && !isPermanentlyDeletedKeruunTila(lamAsema.getKeruunTila())) {
+            log.error("{} is invalid: has null vanhaId", ToStringHelper.toString(lamAsema));
         }
-        if (roadSectionNaturalId == null ) {
-            logErrorIf(!isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                       "Insert failed {}: LamAsema.getTieosoite().getTieosa() is null",
-                       ToStringHelper.toString(la));
-            return false;
-        }
-
-        final RoadDistrict roadDistrict = roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId);
-        logWarnIf(roadDistrict == null && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-            "Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {} for {}",
-            roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(la));
-
-        final TmsStation newTmsStation = new TmsStation();
-        newTmsStation.setSummerFreeFlowSpeed1(0);
-        newTmsStation.setSummerFreeFlowSpeed2(0);
-        newTmsStation.setWinterFreeFlowSpeed1(0);
-        newTmsStation.setWinterFreeFlowSpeed2(0);
-        final RoadStation rs = new RoadStation(RoadStationType.TMS_STATION);
-        newTmsStation.setRoadStation(rs);
-
-        setRoadAddressIfNotSet(rs);
-
-        updateTmsStationAttributes(la, roadDistrict, newTmsStation);
-
-        if (rs.getRoadAddress().getId() == null) {
-            roadStationService.save(rs.getRoadAddress());
-            log.info("Created new RoadAddress " + rs.getRoadAddress());
-        }
-        roadStationService.save(rs);
-        tmsStationService.save(newTmsStation);
-        log.info("Created new " + newTmsStation);
-        return true;
-    }
-
-    private boolean validate(final LamAsemaVO la) {
-        final boolean valid = la.getVanhaId() != null;
-        logErrorIf(!valid && !isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                   "{} is invalid: has null vanhaId",
-                   ToStringHelper.toString(la));
         return valid;
-    }
-
-    private int updateTmsStations(final List<Pair<LamAsemaVO, TmsStation>> update) {
-
-        final Map<Long, RoadStation> orphansNaturalIdToRoadStationMap =
-                roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.TMS_STATION);
-
-        final AtomicInteger counter = new AtomicInteger();
-        update.stream().forEach(pair -> {
-
-            final LamAsemaVO la = pair.getLeft();
-            final TmsStation tms = pair.getRight();
-
-            final int hash = HashCodeBuilder.reflectionHashCode(tms);
-            final String before = ReflectionToStringBuilder.toString(tms);
-
-            log.debug("Updating " + ToStringHelper.toString(la));
-
-            setRoadStationIfNotSet(tms, (long)la.getVanhaId(), orphansNaturalIdToRoadStationMap);
-
-            RoadStation rs = tms.getRoadStation();
-            setRoadAddressIfNotSet(rs);
-
-            final Integer roadNaturalId = la.getTieosoite() != null ? la.getTieosoite().getTienumero() : null;
-            final Integer roadSectionNaturalId = la.getTieosoite() != null ? la.getTieosoite().getTieosa() : null;
-
-            if ( roadNaturalId == null ) {
-                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                           "{} update failed: LamAsema.getTieosoite().getTienumero() is null",
-                            ToStringHelper.toString(la));
-            }
-            if ( roadSectionNaturalId == null ) {
-                logErrorIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                           "{} update failed: LamAsema.getTieosoite().getTieosa() is null",
-                           ToStringHelper.toString(la));
-            }
-
-            RoadDistrict rd = (roadNaturalId != null && roadSectionNaturalId != null) ?
-                    roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId) : null;
-            if (rd == null) {
-                logWarnIf(!CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()),
-                          "{} update: Could not find RoadDistrict with LamAsema.getTieosoite().getTieosa() {}, LamAsema.getTieosoite().getTienumero() {}",
-                           ToStringHelper.toString(la),
-                           roadSectionNaturalId,
-                           roadNaturalId);
-                rd = tms.getRoadDistrict();
-            } else if (tms.getRoadDistrict().getNaturalId() != rd.getNaturalId()) {
-                log.info("Update TMS station (naturalID: " + convertToTmsNaturalId(la.getVanhaId()) + ") " + la.getNimi() +
-                         " road district naturalId " + tms.getRoadDistrict().getNaturalId() + " -> " + rd.getNaturalId());
-            }
-
-            if ( updateTmsStationAttributes(la, rd, tms) ||
-                 hash != HashCodeBuilder.reflectionHashCode(tms) ) {
-                counter.addAndGet(1);
-                log.info("Updated TmsStation:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(tms));
-            }
-            if (rs.getRoadAddress().getId() == null) {
-                roadStationService.save(rs.getRoadAddress());
-                log.info("Created new RoadAddress " + rs.getRoadAddress());
-            }
-            if (rs.getId() == null) {
-                roadStationService.save(rs);
-                log.info("Created new RoadStation " + tms.getRoadStation());
-            }
-        });
-        return counter.get();
-    }
-
-    private static void setRoadStationIfNotSet(TmsStation rws, Long tsaVanhaId, Map<Long, RoadStation> orphansNaturalIdToRoadStationMap) {
-        RoadStation rs = rws.getRoadStation();
-
-        if (rs == null) {
-            rs = tsaVanhaId != null ? orphansNaturalIdToRoadStationMap.remove(tsaVanhaId) : null;
-            if (rs == null) {
-                rs = new RoadStation(RoadStationType.TMS_STATION);
-            }
-            rws.setRoadStation(rs);
-        }
-    }
-
-    private static boolean updateTmsStationAttributes(final LamAsemaVO from, final RoadDistrict roadDistrict, final TmsStation to) {
-        final int hash = HashCodeBuilder.reflectionHashCode(to);
-        to.setNaturalId(convertToTmsNaturalId(from.getVanhaId()));
-        to.setLotjuId(from.getId());
-
-        to.setName(from.getNimi());
-        to.setDirection1Municipality(from.getSuunta1Kunta());
-        to.setDirection1MunicipalityCode(from.getSuunta1KuntaKoodi());
-        to.setDirection2Municipality(from.getSuunta2Kunta());
-        to.setDirection2MunicipalityCode(from.getSuunta2KuntaKoodi());
-        to.setTmsStationType(TmsStationType.convertFromLamasemaTyyppi(from.getTyyppi()));
-        to.setCalculatorDeviceType(CalculatorDeviceType.convertFromLaiteTyyppi(from.getLaskinlaite()));
-
-        to.setRoadDistrict(roadDistrict);
-
-        // Update RoadStation
-        final boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
-        to.setObsolete(to.getRoadStation().isObsolete());
-        to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
-
-        return  updated ||
-                hash != HashCodeBuilder.reflectionHashCode(to);
     }
 }

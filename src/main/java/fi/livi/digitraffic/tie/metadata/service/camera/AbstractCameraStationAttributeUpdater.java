@@ -9,21 +9,16 @@ import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.Julkisuus;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
-public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationUpdater {
+public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    protected RoadStationService roadStationService;
-
-    public AbstractCameraStationAttributeUpdater(
-            final RoadStationService roadStationService, final Logger logger) {
+    public AbstractCameraStationAttributeUpdater(final Logger logger) {
         super(logger);
-        this.roadStationService = roadStationService;
     }
 
     public static boolean updateRoadStationAttributes(final KameraVO from, final RoadStation to) {
