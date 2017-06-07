@@ -80,7 +80,6 @@ public abstract class AbstractJMSListenerConfiguration<T> {
                  STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
         log.info("{} Received {} and drained {} messages per minute. Current queue size {}.",
                  STATISTICS_PREFIX, jmsStats.getMessagesReceived(), jmsStats.getMessagesDrained() , jmsStats.getQueueSize());
-        log.info("{} Current in memory blockingQueue size {}", jmsStats);
     }
 
     /**
