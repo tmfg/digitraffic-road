@@ -178,8 +178,14 @@ public class CameraPresetService {
     public int obsoleteCameraRoadStationsWithoutPublishablePresets() {
         return cameraPresetRepository.obsoleteCameraRoadStationsWithoutPublishablePresets();
     }
+
     @Transactional
     public int nonObsoleteCameraRoadStationsWithPublishablePresets() {
         return cameraPresetRepository.nonObsoleteCameraRoadStationsWithPublishablePresets();
+    }
+
+    @Transactional(readOnly = true)
+    public CameraPreset findPublishableCameraPresetByLotjuId(final long presetLotjuId) {
+        return cameraPresetRepository.findByPublishableTrueAndLotjuId(presetLotjuId);
     }
 }

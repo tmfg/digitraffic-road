@@ -78,8 +78,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
-    private static final String CAMERA_ID = "C01502";
-
     private ArrayList<Kuva> kuvas = new ArrayList<>();
 
     @Before

@@ -142,6 +142,7 @@ public class RoadStationService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        predicates.add( cb.or(cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))), cb.notEqual(root.get(rootModel.getSingularAttribute("obsolete", Boolean.class)), true)) );
         for (List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
