@@ -32,8 +32,7 @@ public final class DateHelper {
 
     public static LocalDateTime toLocalDateTime(XMLGregorianCalendar calendar) {
         if (calendar != null) {
-            ZonedDateTime zonedDateTime = calendar.toGregorianCalendar().toZonedDateTime();
-            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
+            return calendar.toGregorianCalendar().toZonedDateTime().withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         }
         return null;
     }
@@ -81,7 +80,7 @@ public final class DateHelper {
 
     public static LocalDateTime toLocalDateTime(ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
-            return zonedDateTime.toLocalDateTime();
+            return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         }
         return null;
     }
