@@ -68,9 +68,9 @@ public class SensorValueDao {
     }
 
     public int updateLamSensorData(Collection<Lam> data, Set<Long> allowedTmsSensorLotjuIds) {
-        Map<String, Object>[] batchData = appendLamBatchData(data, allowedTmsSensorLotjuIds);
-        jdbcTemplate.batchUpdate(MERGE_STATEMENT, batchData);
-        return batchData.length;
+        ArrayList<Map<String, Object>> batchData = appendLamBatchData(data, allowedTmsSensorLotjuIds);
+        jdbcTemplate.batchUpdate(MERGE_STATEMENT, batchData.toArray(new Map[0]));
+        return batchData.size();
     }
 
     public int updateWeatherSensorData(Collection<Tiesaa> data, Set<Long> allowedWeatherSensorLotjuIds) {
@@ -79,9 +79,9 @@ public class SensorValueDao {
         return batchData.length;
     }
 
-    private static Map<String, Object>[] appendLamBatchData(final Collection<Lam> lams,
-                                                            final Set<Long> allowedTmsSensorLotjuIds) {
-        final ArrayList<Map> batchData = new ArrayList<>();
+    private static ArrayList<Map<String, Object>> appendLamBatchData(final Collection<Lam> lams,
+                                                                     final Set<Long> allowedTmsSensorLotjuIds) {
+        final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         int updateCount = 0;
         int notAllowed = 0;
         for (Lam lam : lams) {
@@ -96,7 +96,7 @@ public class SensorValueDao {
             }
         }
         log.info("Update {} allowed and skipped {} not allowed tms sensor values", updateCount, notAllowed);
-        return (Map<String, Object>[])batchData.toArray(((Map[])new HashMap[0]));
+        return batchData;
     }
 
     private static Map<String, Object>[] appendTiesaaBatchData(final Collection<Tiesaa> tiesaas,
