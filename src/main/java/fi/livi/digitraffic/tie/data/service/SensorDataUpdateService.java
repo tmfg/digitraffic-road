@@ -49,13 +49,16 @@ public class SensorDataUpdateService {
     /**
      * Updates tms sensors data to db
      * @param data
-     * @return true if success
+     * @return count of updated db rows
      */
     @Transactional
     public int updateLamData(final List<Lam> data) {
 
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<Lam> filtered = filterNewestLamValues(data);
+        if (data.size()-filtered.size() > 0) {
+            log.info("Filtered {} tms station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+        }
         final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds);
         stopWatch.stop();
         log.info("Update tms sensors data for {} sensors of {} stations took {} ms", rows, filtered.size(), stopWatch.getTime());
@@ -65,33 +68,32 @@ public class SensorDataUpdateService {
     /**
      * Updates weather data to db
      * @param data
-     * @return true if success
+     * @return count of updated db rows
      */
     @Transactional
     public int updateWeatherData(final Collection<Tiesaa> data) {
 
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<Tiesaa> filtered = filterNewestTiesaaValues(data);
+        if (data.size()-filtered.size() > 0) {
+            log.info("Filtered {} weather station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+        }
         final int rows = sensorValueDao.updateWeatherSensorData(filtered, allowedWeatherSensorLotjuIds);
         stopWatch.stop();
-
-        log.info("Update weather sensors data for {} sensors of {} stations took {} ms",
-                 rows,
-                 filtered.size(),
-                 stopWatch.getTime());
+        log.info("Update weather sensors data for {} sensors of {} stations took {} ms", rows, filtered.size(), stopWatch.getTime());
         return rows;
     }
 
     private static Collection<Lam> filterNewestLamValues(final List<Lam> data) {
         // Collect newest data per station
         HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
-        for (Lam lam : data) {
-            Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
-            if (currentLam == null || lam.getAika().toGregorianCalendar().before(currentLam.getAika().toGregorianCalendar())) {
+        for (Lam lamCandidate : data) {
+            Lam currentLam = tmsMapByLamStationLotjuId.get(lamCandidate.getAsemaId());
+            if (currentLam == null || lamCandidate.getAika().toGregorianCalendar().after(currentLam.getAika().toGregorianCalendar())) {
                 if (currentLam != null) {
-                    log.info("Replace " + currentLam.getAika() + " with " + lam.getAika());
+                    log.info("Replace " + currentLam.getAika() + " with " + lamCandidate.getAika());
                 }
-                tmsMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
+                tmsMapByLamStationLotjuId.put(lamCandidate.getAsemaId(), lamCandidate);
             }
         }
         return tmsMapByLamStationLotjuId.values();
@@ -100,13 +102,13 @@ public class SensorDataUpdateService {
     private static Collection<Tiesaa> filterNewestTiesaaValues(final Collection<Tiesaa> data) {
         // Collect newest data per station
         HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
-        for (Tiesaa tiesaa : data) {
-            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
-            if (currentTiesaa == null || tiesaa.getAika().toGregorianCalendar().before(currentTiesaa.getAika().toGregorianCalendar())) {
+        for (Tiesaa tiesaaCandidate : data) {
+            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
+            if (currentTiesaa == null || tiesaaCandidate.getAika().toGregorianCalendar().after(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
-                    log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaa.getAika());
+                    log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaaCandidate.getAika());
                 }
-                tiesaaMapByTmsStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
+                tiesaaMapByTmsStationLotjuId.put(tiesaaCandidate.getAsemaId(), tiesaaCandidate);
             }
         }
         return tiesaaMapByTmsStationLotjuId.values();
