@@ -16,6 +16,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -25,13 +26,17 @@ import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
+    private final int imageUpdateTimeout;
     private final CameraImageUpdateService cameraImageUpdateService;
 
     private static final ExecutorService jobThreadPool = Executors.newFixedThreadPool(5);
     private static final ExecutorService updateTaskThreadPool = Executors.newFixedThreadPool(5);
 
     @Autowired
-    CameraDataUpdateService(final CameraImageUpdateService cameraImageUpdateService) {
+    CameraDataUpdateService(@Value("${camera-image-uploader.imageUpdateTimeout}")
+                                   final int imageUpdateTimeout,
+                                   final CameraImageUpdateService cameraImageUpdateService) {
+        this.imageUpdateTimeout = imageUpdateTimeout;
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
@@ -42,7 +47,7 @@ public class CameraDataUpdateService {
         final StopWatch start = StopWatch.createStarted();
 
         latestKuvas.forEach(kuva -> {
-            final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateService, 20000);
+            final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateService, imageUpdateTimeout);
             futures.add(jobThreadPool.submit(task));
         });
 
