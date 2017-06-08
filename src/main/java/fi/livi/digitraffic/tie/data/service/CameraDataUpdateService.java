@@ -27,7 +27,8 @@ public class CameraDataUpdateService {
 
     private final CameraImageUpdateService cameraImageUpdateService;
 
-    private static final ExecutorService threadpool = Executors.newFixedThreadPool(5);
+    private static final ExecutorService jobThreadPool = Executors.newFixedThreadPool(5);
+    private static final ExecutorService updateTaskThreadPool = Executors.newFixedThreadPool(5);
 
     @Autowired
     CameraDataUpdateService(final CameraImageUpdateService cameraImageUpdateService) {
@@ -42,7 +43,7 @@ public class CameraDataUpdateService {
 
         latestKuvas.forEach(kuva -> {
             final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateService, 20000);
-            futures.add(threadpool.submit(task));
+            futures.add(jobThreadPool.submit(task));
         });
 
         while ( futures.parallelStream().filter(f -> !f.isDone()).findFirst().isPresent() ) {
@@ -96,16 +97,15 @@ public class CameraDataUpdateService {
 
         @Override
         public Boolean call() {
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-
+            final Future<Boolean> future = updateTaskThreadPool.submit(task);
             try {
-                return exec.submit(task).get(timeout, TimeUnit.MILLISECONDS);
+                return future.get(timeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 log.error("ImageUpdateTasks failed to complete before timeout {} ms", timeout);
             } catch (Exception e) {
                 log.error("ImageUpdateTasks failed to complete with exception", e);
             } finally {
-                exec.shutdown();
+                future.cancel(true);
             }
 
             return false;
