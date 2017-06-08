@@ -82,6 +82,7 @@ public class TmsStationUpdater {
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamAsemaVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
+        log.info("Not to obsolete lotju ids {}", notToObsoleteLotjuIds);
 
         final Collection invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
