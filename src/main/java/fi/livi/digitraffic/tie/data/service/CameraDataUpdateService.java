@@ -105,6 +105,7 @@ public class CameraDataUpdateService {
             } catch (Exception e) {
                 log.error("ImageUpdateTasks failed to complete with exception", e);
             } finally {
+                // This is safe even if task is already finished
                 future.cancel(true);
             }
 
