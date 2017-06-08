@@ -58,10 +58,7 @@ public class SensorDataUpdateService {
         final Collection<Lam> filtered = filterNewestLamValues(data);
         final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds);
         stopWatch.stop();
-        log.info("Update tms sensors data for {} sensors of {} stations took {} ms",
-            rows,
-            filtered.size(),
-            stopWatch.getTime());
+        log.info("Update tms sensors data for {} sensors of {} stations took {} ms", rows, filtered.size(), stopWatch.getTime());
         return rows;
     }
 
