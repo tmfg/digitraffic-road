@@ -211,10 +211,10 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     public class JmsStatistics {
-        private final int messagesReceived;
-        private final int messagesDrained;
-        private final int dbRowsUpdated;
-        private final int queueSize;
+        public final int messagesReceived;
+        public final int messagesDrained;
+        public final int dbRowsUpdated;
+        public final int queueSize;
 
         public JmsStatistics(final int messagesReceived,
                              final int messagesDrained,
@@ -224,22 +224,6 @@ public class JMSMessageListener<T> implements MessageListener {
             this.messagesDrained = messagesDrained;
             this.dbRowsUpdated = dbRowsUpdated;
             this.queueSize = queueSize;
-        }
-
-        public int getMessagesReceived() {
-            return messagesReceived;
-        }
-
-        public int getMessagesDrained() {
-            return messagesDrained;
-        }
-
-        public int getDbRowsUpdated() {
-            return dbRowsUpdated;
-        }
-
-        public int getQueueSize() {
-            return queueSize;
         }
     }
 }
