@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +34,6 @@ public class CameraImageUpdateService {
     private final int readTimeout;
     private final CameraPresetService cameraPresetService;
     private final SessionFactory sftpSessionFactory;
-    private final RetryTemplate retryTemplate;
 
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
@@ -45,14 +43,12 @@ public class CameraImageUpdateService {
                              @Value("${camera-image-uploader.http.readTimeout}")
                              final int readTimeout,
                              final CameraPresetService cameraPresetService,
-                             final SessionFactory sftpSessionFactory,
-                             final RetryTemplate retryTemplate) {
+                             final SessionFactory sftpSessionFactory) {
         this.sftpUploadFolder = sftpUploadFolder;
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
         this.cameraPresetService = cameraPresetService;
         this.sftpSessionFactory = sftpSessionFactory;
-        this.retryTemplate = retryTemplate;
     }
 
     @Transactional(readOnly = true)
@@ -126,6 +122,7 @@ public class CameraImageUpdateService {
     private void downloadAndUploadImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         log.info("Download image {} ({})", downloadImageUrl, uploadImageFileName);
         final byte[] data = downloadImage(downloadImageUrl);
+        log.info("Image downloaded of size {} bytes", data.length);
         try (final Session session = sftpSessionFactory.getSession()) {
             final String uploadPath = getImageFullPath(uploadImageFileName);
             log.info("Upload image to sftp server path {}", uploadPath);
@@ -142,7 +139,7 @@ public class CameraImageUpdateService {
             URLConnection con = url.openConnection();
             con.setConnectTimeout(connectTimeout);
             con.setReadTimeout(readTimeout);
-            return  IOUtils.toByteArray(con.getInputStream());
+            return IOUtils.toByteArray(con.getInputStream());
         } catch (Exception e) {
             log.error("Error while trying to download image from {}", downloadImageUrl);
             throw new RuntimeException(e);

@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +40,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
@@ -141,7 +144,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             final Resource resource = resourceLoader.getResource("classpath:" + IMAGE_DIR + imageNumber + RESOURCE_IMAGE_SUFFIX);
             final File imageFile = resource.getFile();
             final byte[] bytes = FileUtils.readFileToByteArray(imageFile);
-            final Kuva kuva = createKuvaDataAndHttpStub(cp, bytes);
+            final Kuva kuva = createKuvaDataAndHttpStub(cp, bytes, 0);
             kuvas.add(kuva);
 
             // Upload missing presets images to server
@@ -211,17 +214,58 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         }
     }
 
+    @Test
+    public void testImageHandlingTimeout() throws Exception {
+
+        CameraPreset cpNoDelay = generateMissingDummyPreset();
+        cpNoDelay.setPublicExternal(true);
+        cpNoDelay.setPublicInternal(true);
+        cpNoDelay.setPresetId(cpNoDelay.getPresetId().replace("X", "C"));
+        cameraPresetService.save(cpNoDelay);
+
+        CameraPreset cpWithDelay = generateMissingDummyPreset();
+        cpWithDelay.setPublicExternal(true);
+        cpWithDelay.setPublicInternal(true);
+        cpWithDelay.setPresetId(cpWithDelay.getPresetId().replace("X", "C"));
+        cameraPresetService.save(cpWithDelay);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        log.info("Created {}" , cpNoDelay);
+        log.info("Created {}" , cpWithDelay);
+
+        Kuva kuva = createKuvaDataAndHttpStub(cpNoDelay, "Image content".getBytes(), 0);
+        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 5000);
+
+        long updated = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuva));
+        Assert.assertTrue("Timeout should not have happened and one image should have been updated",updated == 1L);
+
+        long updatedWithTimeout = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuvaWithTimeout));
+        Assert.assertTrue("Timeout should have happened and no images should have been updated",updatedWithTimeout == 0L);
+
+        long updatedWithAndWithoutTimeout = cameraDataUpdateService.updateCameraData(Arrays.asList(kuvaWithTimeout, kuva));
+        Assert.assertTrue("Timeout should happen only to other and one image should have been updated",updatedWithAndWithoutTimeout == 1L);
+    }
+
+
     private CameraPreset generateMissingDummyPreset() {
         CameraPreset cp = new CameraPreset();
         String cameraId = "X" + RandomUtils.nextLong(10000, 100000);
         String direction = String.valueOf(RandomUtils.nextLong(10, 100));
         cp.setPresetId(cameraId + direction);
         cp.setCameraId(cameraId);
-        cp.setRoadStation(new RoadStation(RoadStationType.CAMERA_STATION));
+        final RoadStation rs = new RoadStation(RoadStationType.CAMERA_STATION);
+        rs.setNaturalId(RandomUtils.nextLong(1, 1000) * -1 );
+        rs.setLotjuId(rs.getNaturalId());
+        cp.setLotjuId(rs.getNaturalId());
+        cp.setCameraLotjuId(rs.getNaturalId());
+        rs.setName(cameraId);
+        cp.setRoadStation(rs);
         return cp;
     }
 
-    private Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data) {
+    private Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data, final int httpResponseDelay) {
         try {
             DatatypeFactory df = DatatypeFactory.newInstance();
             GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -246,7 +290,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             kuva.setYKoordinaatti("23456.78");
 
             if (data != null) {
-                createHttpResponseStubFor(cp.getPresetId(), data);
+                createHttpResponseStubFor(cp.getPresetId(), data, httpResponseDelay);
             }
             return kuva;
         } catch (DatatypeConfigurationException e) {
@@ -255,13 +299,14 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
     }
 
-    private void createHttpResponseStubFor(final String presetId, final byte[] data) {
+    private void createHttpResponseStubFor(final String presetId, final byte[] data, final int httpResponseDelay) {
         imageFilesMap.put(presetId, data);
         final String url = getImageUrlPath(presetId);
         log.info("Create mock with url {}", url);
         stubFor(get(urlEqualTo(getImageUrlPath(presetId)))
                 .willReturn(aResponse().withBody(data)
                         .withHeader("Content-Type", "image/jpeg")
-                        .withStatus(200)));
+                        .withStatus(200)
+                        .withFixedDelay(httpResponseDelay)));
     }
 }
