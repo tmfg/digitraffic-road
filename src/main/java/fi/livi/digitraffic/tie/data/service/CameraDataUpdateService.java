@@ -42,7 +42,7 @@ public class CameraDataUpdateService {
 
     public long updateCameraData(final List<Kuva> data) throws SQLException {
 
-        final Collection<Kuva> latestKuvas = filterLatestKuvasAndMapByPresetId(data);
+        final Collection<Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
         final StopWatch start = StopWatch.createStarted();
 
@@ -70,7 +70,7 @@ public class CameraDataUpdateService {
         return updateCount;
     }
 
-    private Collection<Kuva> filterLatestKuvasAndMapByPresetId(final List<Kuva> data) {
+    private Collection<Kuva> filterLatest(final List<Kuva> data) {
         // Collect newest kuva per preset
         final HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.forEach(kuva -> {
