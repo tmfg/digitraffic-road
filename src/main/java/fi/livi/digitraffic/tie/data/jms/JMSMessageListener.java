@@ -131,7 +131,7 @@ public class JMSMessageListener<T> implements MessageListener {
         final String text = xmlMessage.getText();
         if (StringUtils.isBlank(text)) {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(xmlMessage));
-            throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": null text");
+            throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": blank text");
         }
         return text.trim();
     }
@@ -157,25 +157,30 @@ public class JMSMessageListener<T> implements MessageListener {
             StopWatch start = StopWatch.createStarted();
 
             int queueToDrain = messageQueue.size();
-            if ( queueToDrain <= 0 ) {
-                log.info("JMS message queue was empty");
+//            if ( queueToDrain <= 0 ) {
+//                log.info("JMS message queue was empty");
+//                return;
+//            } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
+//                log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
+//                int trashed = 0;
+//                while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
+//                    messageQueue.poll();
+//                    queueToDrain--;
+//                    trashed++;
+//                }
+//                log.warn("JMS message queue size decreased by {} messages by trashing", trashed, QUEUE_MAXIMUM_SIZE );
+//            } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
+//                log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
+//            } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {
+//                log.warn("JMS message queue size {} exceeds warning limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT );
+//            } else {
+//                log.info("JMS message queue size {}", queueToDrain );
+//            }
+            if ( queueToDrain < QUEUE_MAXIMUM_SIZE ) {
+                log.info("Skip size {}", queueToDrain);
                 return;
-            } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
-                log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
-                int trashed = 0;
-                while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
-                    messageQueue.poll();
-                    queueToDrain--;
-                    trashed++;
-                }
-                log.warn("JMS message queue size decreased by {} messages by trashing", trashed, QUEUE_MAXIMUM_SIZE );
-            } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
-                log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
-            } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {
-                log.warn("JMS message queue size {} exceeds warning limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT );
-            } else {
-                log.info("JMS message queue size {}", queueToDrain );
             }
+            log.info("JMS message queue size {}", queueToDrain );
 
             // Allocate array with current message queue size and drain same amount of messages
             ArrayList<Pair<T, String>> targetList = new ArrayList<>(queueToDrain);
