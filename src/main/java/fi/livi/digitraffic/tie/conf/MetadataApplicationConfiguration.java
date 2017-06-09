@@ -72,6 +72,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
         dataSource.setFastConnectionFailoverEnabled(true);
+        dataSource.setInitialPoolSize(5);
         dataSource.setMaxPoolSize(20);
         dataSource.setMinPoolSize(5);
         dataSource.setMaxIdleTime(5);
