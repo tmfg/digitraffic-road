@@ -19,9 +19,6 @@ import fi.livi.digitraffic.tie.AbstractTest;
 @RunWith(JUnit4.class)
 public class DateHelpperTest extends AbstractTest {
 
-
-
-
     @Test
     public void testZonedDateTimeToDate() throws DatatypeConfigurationException {
         GregorianCalendar c = GregorianCalendar.from((ZonedDateTime.parse("2016-01-22T10:00:00Z")));
