@@ -103,12 +103,13 @@ public class CameraDataUpdateService {
         @Override
         public Boolean call() {
             final Future<Boolean> future = updateTaskThreadPool.submit(task);
+            final String presetId =  CameraImageUpdateService.resolvePresetIdFrom(null, task.kuva);
             try {
                 return future.get(timeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
-                log.error("ImageUpdateTasks failed to complete before timeout {} ms", timeout);
+                log.error("ImageUpdateTasks failed to complete for {} before timeout {} ms", presetId, timeout);
             } catch (Exception e) {
-                log.error("ImageUpdateTasks failed to complete with exception", e);
+                log.error("ImageUpdateTasks failed to complete for " + presetId + " with exception", e);
             } finally {
                 // This is safe even if task is already finished
                 future.cancel(true);

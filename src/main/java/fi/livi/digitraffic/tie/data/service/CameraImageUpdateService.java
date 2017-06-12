@@ -146,7 +146,7 @@ public class CameraImageUpdateService {
         }
     }
 
-    private static String resolvePresetIdFrom(final CameraPreset cameraPreset, final Kuva kuva) {
+    public static String resolvePresetIdFrom(final CameraPreset cameraPreset, final Kuva kuva) {
         return cameraPreset != null ? cameraPreset.getPresetId() : kuva.getNimi().substring(0, 8);
     }
 
