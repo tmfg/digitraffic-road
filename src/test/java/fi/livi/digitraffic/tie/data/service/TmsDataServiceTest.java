@@ -36,7 +36,7 @@ public class TmsDataServiceTest extends AbstractTest {
     @Before
     public void initData() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
-        final List<RoadStationSensor> availableSensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors(TMS_STATION);
+        final List<RoadStationSensor> availableSensors = roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(TMS_STATION);
 
         stations.values().forEach(station -> {
             final RoadStation rs = station.getRoadStation();

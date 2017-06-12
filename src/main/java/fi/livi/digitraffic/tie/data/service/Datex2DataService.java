@@ -59,7 +59,7 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public void updateDatex2Data(List<Pair<D2LogicalModel, String>> data) {
+    public int updateDatex2Data(List<Pair<D2LogicalModel, String>> data) {
 
         for (Pair<D2LogicalModel, String> pair : data) {
 
@@ -73,6 +73,7 @@ public class Datex2DataService {
 
             datex2Repository.save(datex2);
         }
+        return data.size();
     }
 
     private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {

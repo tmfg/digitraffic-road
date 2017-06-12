@@ -61,9 +61,10 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         JMSMessageListener.JMSDataUpdater<Kuva> handleData = (List<Pair<Kuva, String>> data) -> {
             try {
                 List<Kuva> kuvaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
-                cameraDataUpdateService.updateCameraData(kuvaData);
+                return cameraDataUpdateService.updateCameraData(kuvaData);
             } catch (SQLException e) {
                 log.error("Error while handling Camera data", e);
+                return 0;
             }
         };
 

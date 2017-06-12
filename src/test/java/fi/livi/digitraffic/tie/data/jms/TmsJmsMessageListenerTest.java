@@ -22,6 +22,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +36,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -128,20 +128,20 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Lam> dataUpdater = (data) -> {
-            long start = System.currentTimeMillis();
+            final StopWatch sw = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+            final int updated = sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList()));
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            long end = System.currentTimeMillis();
-            log.info("handleData took " + (end-start) + " ms");
+            log.info("handleData took {} ms", sw.getTime());
+            return updated;
         };
         JMSMessageListener<Lam> tmsJmsMessageListener =
-                new JMSMessageListener<Lam>(Lam.class, dataUpdater, true, log);
+                new JMSMessageListener<>(Lam.class, dataUpdater, true, log);
 
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
         XMLGregorianCalendar xgcal = datatypeFactory.newXMLGregorianCalendar(gcal);
@@ -154,7 +154,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         log.info("Start with arvo " + arvo);
 
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
+                roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
@@ -165,7 +165,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
-            long start = System.currentTimeMillis();
+            final StopWatch sw = StopWatch.createStarted();
             data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
@@ -201,19 +201,17 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                     break;
                 }
             }
-            long end = System.currentTimeMillis();
-            long duration = (end - start);
-            log.info("Data generation took " + duration + " ms");
-            long startHandle = System.currentTimeMillis();
+
+            log.info("Data generation took {} ms", sw.getTime());
+            final StopWatch swHandle = StopWatch.createStarted();
             tmsJmsMessageListener.drainQueueScheduled();
-            long endHandle = System.currentTimeMillis();
-            handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
+            handleDataTotalTime += swHandle.getTime();
 
             try {
                 // send data with 1 s interval
-                long sleep = 1000 - duration;
+                long sleep = 1000 - sw.getTime();
                 if (sleep < 0) {
-                    log.error("Data generation took too long");
+                    log.error("Data generation and handle took too long");
                 } else {
                     Thread.sleep(sleep);
                 }
@@ -222,8 +220,9 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             }
         }
 
-        log.info("End with arvo " + arvo);
-        log.info("Handle tms data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
+        log.info("End with arvo {}", arvo);
+        log.info("Handle tms data total took {} ms and max was {} ms {}",
+                 handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         log.info("Check data validy");
         // Assert sensor values are updated to db

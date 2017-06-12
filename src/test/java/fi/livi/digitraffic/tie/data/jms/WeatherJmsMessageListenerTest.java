@@ -21,6 +21,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -114,18 +115,17 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
 
         JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
-            long start = System.currentTimeMillis();
+            StopWatch sw = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            Assert.assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
-
+            final int updated = sensorDataUpdateService.updateWeatherData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList()));
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            long end = System.currentTimeMillis();
-            log.info("handleData took " + (end-start) + " ms");
+            log.info("handleData took {} ms", sw.getTime());
+            return updated;
         };
 
         JMSMessageListener jmsMessageListener = new JMSMessageListener(Tiesaa.class, dataUpdater, true, log);
@@ -142,7 +142,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         log.info("Start with arvo " + arvo);
 
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
+                roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
@@ -153,7 +153,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
-            long start = System.currentTimeMillis();
+            final StopWatch sw = StopWatch.createStarted();
             data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
@@ -192,17 +192,15 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                     break;
                 }
             }
-            long end = System.currentTimeMillis();
-            long duration = (end - start);
-            log.info("Data generation took " + duration + " ms");
-            long startHandle = System.currentTimeMillis();
+
+            log.info("Data generation took {} ms", sw.getTime());
+            StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
-            long endHandle = System.currentTimeMillis();
-            handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
+            handleDataTotalTime += swHandle.getTime();
 
             try {
                 // send data with 1 s intervall
-                long sleep = 1000 - duration;
+                long sleep = 1000 - sw.getTime();
                 if (sleep < 0) {
                     log.error("Data generation took too long");
                 } else {
@@ -212,9 +210,9 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 e.printStackTrace();
             }
         }
-        log.info("End with arvo " + arvo);
-        log.info("Handle weather data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
-
+        log.info("End with arvo {}", arvo);
+        log.info("Handle weather data total took {} ms and max was {} ms {}",
+                 handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
         // Assert sensor values are updated to db
         List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());

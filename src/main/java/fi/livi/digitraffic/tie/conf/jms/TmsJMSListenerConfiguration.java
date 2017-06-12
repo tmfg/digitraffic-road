@@ -60,7 +60,7 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     public JMSMessageListener<Lam> createJMSMessageListener() throws JAXBException {
         JMSMessageListener.JMSDataUpdater<Lam> handleData = (data) -> {
             List<Lam> lamData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
-            sensorDataUpdateService.updateLamData(lamData);
+            return sensorDataUpdateService.updateLamData(lamData);
         };
 
         return new JMSMessageListener<>(Lam.class,
