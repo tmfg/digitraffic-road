@@ -20,17 +20,12 @@ public class RoadStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int tmsCount = roadStationStatusUpdater.updateTmsStationsStatuses();
+        staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
         final int wsCount = roadStationStatusUpdater.updateWeatherStationsStatuses();
+        staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
         final int csCount = roadStationStatusUpdater.updateCameraStationsStatuses();
-        if (tmsCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
-        }
-        if (wsCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
-        }
-        if (csCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
-        }
+        staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
+
         long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
         log.info("Updated {} TMS stations statuses", tmsCount);
         log.info("Updated {} weather stations statuses", wsCount);
