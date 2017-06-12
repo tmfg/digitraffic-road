@@ -40,7 +40,7 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    public long updateCameraData(final List<Kuva> data) throws SQLException {
+    public int updateCameraData(final List<Kuva> data) throws SQLException {
 
         final Collection<Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
@@ -67,7 +67,7 @@ public class CameraDataUpdateService {
             }).count();
 
         log.info("Updating success for {} weather camera images of {} took {} ms", updateCount, futures.size(), start.getTime());
-        return updateCount;
+        return (int) updateCount;
     }
 
     private Collection<Kuva> filterLatest(final List<Kuva> data) {
