@@ -1,0 +1,23 @@
+syntax="proto2";
+
+package lam;
+
+option java_package = "fi.ely.lotju.lam.proto";
+option java_outer_classname = "LAMRealtimeProtos";
+
+message Lam {
+  required int64 asemaId = 1;
+  required int64 aika = 2;
+
+  required bool isRealtime = 3 [default = true];
+  required bool isNollaOhitus = 4 [default = false];
+
+  message Anturi {
+    required int64 laskennallinenAnturiId = 1;
+    required int32 arvo = 2;
+    optional int64 aikaikkunaAlku = 3;
+    optional int64 aikaikkunaLoppu = 4;
+  }
+
+  repeated Anturi anturi = 5;
+}

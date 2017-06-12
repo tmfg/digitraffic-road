@@ -108,24 +108,23 @@ public abstract class AbstractJMSListenerConfiguration<T> {
             connection = createConnection(getJmsParameters(), connectionFactory);
         }
 
-        JMSParameters jmsParameters = getJmsParameters();
+        final JMSParameters jmsParameters = getJmsParameters();
         try {
-
             // If lock can be acquired then start listening
-            boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
+            final boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
                     getJmsParameters().getLockInstanceId(),
                     JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + jmsParameters.getLockInstanceId() + ")");
+                log.debug("MessageListener lock acquired for {} (instanceId: {})", jmsParameters.getLockInstanceName(),
+                    jmsParameters.getLockInstanceId());
                 // Calling start multiple times is safe
                 connection.start();
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock not acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + jmsParameters.getLockInstanceId() + "), another instance is holding the lock");
+                log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
+                    "instance is holding the lock", jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
                 // Calling stop multiple times is safe
                 connection.stop();
             }
@@ -142,22 +141,23 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         }
     }
 
-    protected QueueConnection createConnection(JMSParameters jmsParameters,
-                                               QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
+    protected QueueConnection createConnection(final JMSParameters jmsParameters,
+                                               final QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
 
         log.info("Create JMS connection with parameters: " + jmsParameters);
 
         try {
-            QueueConnection queueConnection = connectionFactory.createQueueConnection(
-                    jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
-            JMSExceptionListener jmsExceptionListener =
-                    new JMSExceptionListener(queueConnection, jmsParameters);
+            final QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
+            final JMSExceptionListener jmsExceptionListener = new JMSExceptionListener(queueConnection, jmsParameters);
+
             queueConnection.setExceptionListener(jmsExceptionListener);
-            Connection sonicCon = (Connection) queueConnection;
+
+            final Connection sonicCon = (Connection) queueConnection;
+            final ConnectionMetaData meta = queueConnection.getMetaData();
+
             log.info("Connection created: " + connectionFactory.toString());
             log.info("Jms connection url " + sonicCon.getBrokerURL() + ", connection fault tolerant: " + sonicCon.isFaultTolerant() +
                     ", broker urls: " + connectionFactory.getConnectionURLs());
-            ConnectionMetaData meta = queueConnection.getMetaData();
             log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
@@ -209,8 +209,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     }
 
     protected Destination createDestination(String jmsQueueKey) throws JMSException {
-        boolean topic = isQueueTopic(jmsQueueKey);
-        String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
+        final boolean topic = isQueueTopic(jmsQueueKey);
+        final String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
         return topic ? new Topic(jmsQueue) : new Queue(jmsQueue);
     }
 
@@ -242,11 +242,11 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         private final String jmsQueueKey;
         private final String lockInstanceName;
 
-        public JMSParameters(String jmsQueueKey,
-                             String jmsUserId,
-                             String jmsPassword,
-                             String lockInstanceName,
-                             String lockInstanceId) {
+        public JMSParameters(final String jmsQueueKey,
+                             final String jmsUserId,
+                             final String jmsPassword,
+                             final String lockInstanceName,
+                             final String lockInstanceId) {
             this.jmsQueueKey = jmsQueueKey;
             this.jmsUserId = jmsUserId;
             this.jmsPassword = jmsPassword;
