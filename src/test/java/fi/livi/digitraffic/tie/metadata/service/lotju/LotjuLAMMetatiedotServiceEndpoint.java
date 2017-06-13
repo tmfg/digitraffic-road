@@ -40,8 +40,7 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
     private final Map<Long, List<LamLaskennallinenAnturiVO>> afterChangeLamAsemasAnturisMap = new HashMap<>();
 
 
-    public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
-                                                                final ResourceLoader resourceLoader,
+    public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                                                 final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
             instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);

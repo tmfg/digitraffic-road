@@ -47,8 +47,7 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
         return instance;
     }
 
-    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather,
-                                                  final ResourceLoader resourceLoader,
+    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
                                                   final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV3.SERVICE, jaxb2Marshaller);
     }
