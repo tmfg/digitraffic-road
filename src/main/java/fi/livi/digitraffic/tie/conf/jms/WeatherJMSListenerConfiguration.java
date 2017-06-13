@@ -1,12 +1,8 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
+import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
@@ -23,8 +20,7 @@ import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.weather.enabled")
 @Configuration
-public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Tiesaa> {
-
+public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Tiesaa, Tiesaa> {
     private static final Logger log = LoggerFactory.getLogger(WeatherJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final SensorDataUpdateService sensorDataUpdateService;
@@ -57,14 +53,10 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     }
 
     @Override
-    public JMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
+    public NormalJMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
+        final JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = sensorDataUpdateService::updateWeatherData;
 
-        JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = (data) -> {
-            List<Tiesaa> tiesaaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
-            sensorDataUpdateService.updateWeatherData(tiesaaData);
-        };
-
-        return new JMSMessageListener<>(Tiesaa.class,
+        return new NormalJMSMessageListener<>(Tiesaa.class,
                                         handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);

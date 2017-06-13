@@ -24,8 +24,7 @@ import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
-public abstract class AbstractJMSListenerConfiguration<T> {
-
+public abstract class AbstractJMSListenerConfiguration<T, K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
     private static String STATISTICS_PREFIX = "STATISTICS:";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
@@ -36,11 +35,11 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     private final LockingService lockingService;
     private final Logger log;
     private QueueConnection connection;
-    private JMSMessageListener<T> messageListener;
+    private JMSMessageListener<T, K> messageListener;
 
-    public AbstractJMSListenerConfiguration(QueueConnectionFactory connectionFactory,
+    public AbstractJMSListenerConfiguration(final QueueConnectionFactory connectionFactory,
                                             final LockingService lockingService,
-                                            Logger log) {
+                                            final Logger log) {
         this.connectionFactory = connectionFactory;
         this.lockingService = lockingService;
         this.log = log;
@@ -49,9 +48,9 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     public abstract JMSParameters getJmsParameters();
 
-    protected abstract JMSMessageListener<T> createJMSMessageListener() throws JAXBException;
+    protected abstract JMSMessageListener<T, K> createJMSMessageListener() throws JAXBException;
 
-    private JMSMessageListener<T> getJMSMessageListener() throws JAXBException {
+    private JMSMessageListener<T, K> getJMSMessageListener() throws JAXBException {
         if (messageListener == null) {
             messageListener = createJMSMessageListener();
         }
@@ -70,8 +69,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     /** Log statistics once in minute */
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
-
-        final JMSMessageListener<T> listener = getJMSMessageListener();
+        final JMSMessageListener<T, K> listener = getJMSMessageListener();
         final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
         final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
         final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
@@ -89,7 +87,6 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     public void drainQueueScheduled() throws JAXBException {
         getJMSMessageListener().drainQueueScheduled();
     }
-
 
     /**
      * Checks if connection can be created and starts

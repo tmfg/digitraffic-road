@@ -2,9 +2,11 @@ package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -20,6 +22,7 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
            "  AND sv.roadStationSensor.roadStationType = ?2")
     List<SensorValue> findSensorvaluesByRoadStationNaturalId(final long roadStationNaturalId, final RoadStationType roadStationType);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<SensorValue> findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(final List<Long> tmsLotjuIds, final RoadStationType roadStationType);
 
     @Query(value =

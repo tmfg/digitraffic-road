@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-    
+
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
     @Autowired
@@ -110,17 +110,17 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
      */
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+        final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
+            .findAllPublishableWeatherStationsMappedByLotjuId();
 
-        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
-
-        JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
+        final JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            Assert.assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+            assertTrue("Update failed", sensorDataUpdateService.updateWeatherData(data));
 
             TestTransaction.flagForCommit();
             TestTransaction.end();
@@ -128,7 +128,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             log.info("handleData took " + (end-start) + " ms");
         };
 
-        JMSMessageListener jmsMessageListener = new JMSMessageListener(Tiesaa.class, dataUpdater, true, log);
+        final JMSMessageListener jmsMessageListener = new JMSMessageListener(Tiesaa.class, dataUpdater, true, log);
 
         DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();

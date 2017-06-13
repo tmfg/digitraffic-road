@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.jms;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -16,25 +14,22 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public class JMSMessageListener<T> implements MessageListener {
-
+public class JMSMessageListener<T, K> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
     public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
 
-    public interface JMSDataUpdater<T> {
-        void updateData(List<Pair<T, String>> data);
+    public interface JMSDataUpdater<K> {
+        void updateData(List<K> data);
     }
 
     private static final int MAX_NORMAL_QUEUE_SIZE = 100;
@@ -43,8 +38,8 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private final Logger log;
 
-    private final Unmarshaller jaxbUnmarshaller;
-    private final BlockingQueue<Pair<T,String>> blockingQueue = new LinkedBlockingQueue<>();
+    protected final Unmarshaller jaxbUnmarshaller;
+    private final BlockingQueue<K> blockingQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger minuteMessageCounter = new AtomicInteger();
     private final AtomicInteger minuteMessageDrainedCounter = new AtomicInteger();
@@ -90,7 +85,7 @@ public class JMSMessageListener<T> implements MessageListener {
             return;
         }
 
-        final List<Pair<T,String>> data = unmarshalMessage(message);
+        final List<K> data = unmarshalMessage(message);
         if (CollectionUtils.isNotEmpty(data)) {
             blockingQueue.addAll(data);
 
@@ -107,7 +102,7 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    protected List<Pair<T, String>> unmarshalMessage(final Message message) {
+    protected List<K> unmarshalMessage(final Message message) {
         try {
             if(message instanceof TextMessage) {
                 return unmarshallText((TextMessage) message);
@@ -127,34 +122,24 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    private List<Pair<T, String>> unmarshallerBytes(final BytesMessage message) throws JMSException {
+    private List<K> unmarshallerBytes(final BytesMessage message) throws JMSException {
         final int bodyLength = (int) message.getBodyLength();
         final byte[] bytes = new byte[bodyLength];
 
         message.readBytes(bytes);
 
-        return getObjectFromBytes(bytes).stream()
-            .map(t -> Pair.of(t, StringUtils.EMPTY))
-            .collect(Collectors.toList());
+        return getObjectFromBytes(bytes);
     }
 
-    protected List<T> getObjectFromBytes(final byte[] body) {
+    protected List<K> getObjectFromBytes(final byte[] body) {
         return Collections.emptyList();
     }
 
-    private List<Pair<T, String>> unmarshallText(final TextMessage message) throws JMSException, JAXBException {
-        final String text = parseTextMessageText(message);
-
-        final StringReader sr = new StringReader(text);
-        Object object = jaxbUnmarshaller.unmarshal(sr);
-        if (object instanceof JAXBElement) {
-            // For Datex2 messages extra stuff
-            object = ((JAXBElement) object).getValue();
-        }
-        return Collections.singletonList(Pair.of((T)object, text));
+    protected List<K> unmarshallText(final TextMessage message) throws JMSException, JAXBException {
+        return Collections.emptyList();
     }
 
-    private String parseTextMessageText(final Message message) throws JMSException {
+    protected String parseTextMessageText(final Message message) throws JMSException {
         assertTextMessage(message);
         final TextMessage xmlMessage = (TextMessage) message;
         final String text = xmlMessage.getText();
@@ -194,7 +179,7 @@ public class JMSMessageListener<T> implements MessageListener {
             }
 
             // Allocate array with some extra because queue size can change any time
-            final ArrayList<Pair<T, String>> targetList = new ArrayList<>(blockingQueue.size() + 5);
+            final ArrayList<K> targetList = new ArrayList<>(blockingQueue.size() + 5);
             final int drained = blockingQueue.drainTo(targetList);
 
             if ( drained > 0 && !shutdownCalled.get() ) {

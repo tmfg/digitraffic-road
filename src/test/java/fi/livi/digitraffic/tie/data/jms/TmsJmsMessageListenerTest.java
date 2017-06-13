@@ -2,18 +2,23 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.io.StringWriter;
+import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -21,7 +26,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -34,6 +39,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.livi.digitraffic.tie.conf.jms.listener.TmsJMSMessageListener;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
@@ -79,7 +85,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Before
     public void initData() throws JAXBException {
-
         jaxbMarshaller = JAXBContext.newInstance(Lam.class).createMarshaller();
 
         if (!TestTransaction.isActive()) {
@@ -87,7 +92,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         }
 
         log.info("Add available sensors for TMS Stations");
-        String merge =
+        final String merge =
                 "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
                 "USING (\n" +
                 "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
@@ -116,39 +121,55 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         // Now we have stations with sensors and lotjuid:s that we can update
     }
 
-    /**
-     * Send some data bursts to jms handler and test performance of database updates.
-     * @throws JAXBException
-     * @throws DatatypeConfigurationException
-     */
+    public static BytesMessage createBytesMessage(final LAMRealtimeProtos.Lam lam) throws JMSException, IOException {
+        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
+        lam.writeDelimitedTo(bous);
+        final byte[] lamBytes = bous.toByteArray();
+
+        final BytesMessage bytesMessage = mock(BytesMessage.class);
+
+        when(bytesMessage.getBodyLength()).thenReturn((long)lamBytes.length);
+        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
+            final byte[] bytes = (byte[]) invocation.getArguments()[0];
+            System.arraycopy(lamBytes, 0, bytes, 0, lamBytes.length);
+
+            return lamBytes.length;
+        });
+
+        return bytesMessage;
+    }
+
+        /**
+         * Send some data bursts to jms handler and test performance of database updates.
+         * @throws JAXBException
+         * @throws DatatypeConfigurationException
+         */
     @Test
-    public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+    public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException, JMSException, IOException {
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = (data) -> {
-            long start = System.currentTimeMillis();
+            final long start = System.currentTimeMillis();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+            assertTrue("Update failed", sensorDataUpdateService.updateLamData(data));
             TestTransaction.flagForCommit();
             TestTransaction.end();
             long end = System.currentTimeMillis();
             log.info("handleData took " + (end-start) + " ms");
         };
-        JMSMessageListener<LAMRealtimeProtos.Lam> tmsJmsMessageListener =
-                new JMSMessageListener<LAMRealtimeProtos.Lam>(LAMRealtimeProtos.Lam.class, dataUpdater, true, log);
+        final TmsJMSMessageListener tmsJmsMessageListener = new TmsJMSMessageListener(dataUpdater, true, log);
 
-        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        XMLGregorianCalendar xgcal = datatypeFactory.newXMLGregorianCalendar(gcal);
+        Instant time = Instant.now();
 
         // Generate update-data
         final float minX = 0.0f;
         final float maxX = 100.0f;
         final Random rand = new Random();
-        float arvo = rand.nextFloat() * (maxX - minX) + minX;
+        int arvo = (int)(rand.nextFloat() * (maxX - minX) + minX);
         log.info("Start with arvo " + arvo);
 
         final List<RoadStationSensor> availableSensors =
@@ -159,41 +180,43 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 1000;
-        final List<Pair<Lam, String>> data = new ArrayList<>(lamsWithLotjuId.size());
+        final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
-            long start = System.currentTimeMillis();
+            final long start = System.currentTimeMillis();
             data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
                     stationsIter = lamsWithLotjuId.values().iterator();
                 }
-                TmsStation currentStation = stationsIter.next();
+                final TmsStation currentStation = stationsIter.next();
+                final LAMRealtimeProtos.Lam.Builder lamBuilder = LAMRealtimeProtos.Lam.newBuilder();
 
-                Lam lam = new Lam();
-                data.add(Pair.of(lam, null));
+                lamBuilder.setAsemaId(currentStation.getLotjuId());
+                lamBuilder.setAika(time.toEpochMilli());
+                lamBuilder.setIsRealtime(false);
+                lamBuilder.setIsNollaOhitus(false);
 
-                lam.setAsemaId(currentStation.getLotjuId());
-                lam.setAika((XMLGregorianCalendar) xgcal.clone());
-                Lam.Anturit lamAnturit = new Lam.Anturit();
-                lam.setAnturit(lamAnturit);
-                List<Lam.Anturit.Anturi> anturit = lamAnturit.getAnturi();
-                for (RoadStationSensor availableSensor : availableSensors) {
-                    Lam.Anturit.Anturi anturi = new Lam.Anturit.Anturi();
-                    anturit.add(anturi);
-                    anturi.setArvo(arvo);
-                    arvo += 0.5f;
-                    anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId().toString());
+                for (final RoadStationSensor availableSensor : availableSensors) {
+                    final LAMRealtimeProtos.Lam.Anturi.Builder anturiBuilder = LAMRealtimeProtos.Lam.Anturi.newBuilder();
+                    anturiBuilder.setArvo(arvo);
+                    anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
 
-                    anturi.setAikaikkunaAlku(aikaikkunaAlku);
-                    anturi.setAikaikkunaLoppu(aikaikkunaLoppu);
+                    anturiBuilder.setAikaikkunaAlku(aikaikkunaAlku.toGregorianCalendar().toInstant().toEpochMilli());
+                    anturiBuilder.setAikaikkunaLoppu(aikaikkunaLoppu.toGregorianCalendar().toInstant().toEpochMilli());
+
+                    lamBuilder.addAnturi(anturiBuilder.build());
+
+                    arvo += 1f;
                 }
-                xgcal.add(datatypeFactory.newDuration(1000));
 
-                StringWriter xmlSW = new StringWriter();
-                jaxbMarshaller.marshal(lam, xmlSW);
-                tmsJmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Lam: " + currentStation.getLotjuId()));
+                final LAMRealtimeProtos.Lam lam = lamBuilder.build();
+
+                data.add(lam);
+                time = time.plusMillis(1000);
+
+                tmsJmsMessageListener.onMessage(createBytesMessage(lam));
 
                 if (data.size() >= 100 || lamsWithLotjuId.values().size() <= data.size()) {
                     break;
@@ -201,7 +224,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             }
             long end = System.currentTimeMillis();
             long duration = (end - start);
-            log.info("Data generation took " + duration + " ms");
+            log.info("Data generation took {} ms", duration);
             long startHandle = System.currentTimeMillis();
             tmsJmsMessageListener.drainQueueScheduled();
             long endHandle = System.currentTimeMillis();
@@ -220,31 +243,33 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             }
         }
 
-        log.info("End with arvo " + arvo);
-        log.info("Handle tms data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " + (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
+        log.info("End with arvo {}", arvo);
+        log.info("Handle tms data total took {} ms and max was {} ms {}",
+            handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)", handleDataTotalTime, maxHandleTime);
 
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        List<Long> lamLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
-        Map<Long, List<SensorValue>> valuesMap =
+        final List<Long> lamLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
+        final Map<Long, List<SensorValue>> valuesMap =
                 roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
         boolean timeWindowsFound = false;
-        for (Pair<Lam, String> pair : data) {
-            Lam lam = pair.getLeft();
+        for (final LAMRealtimeProtos.Lam lam : data) {
             long asemaLotjuId = lam.getAsemaId();
-            List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
-            List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
+            final List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
+            final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
 
-            for (Lam.Anturit.Anturi anturi : anturit) {
-                Optional<SensorValue> found =
+            for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
+                final Optional<SensorValue> found =
                         sensorValues
                                 .stream()
                                 .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
-                                .filter(sensorValue -> anturi.getLaskennallinenAnturiId().equals(sensorValue.getRoadStationSensor().getLotjuId().toString()))
+                                .filter(sensorValue -> anturi.getLaskennallinenAnturiId() == sensorValue.getRoadStationSensor()
+                                    .getLotjuId())
                                 .findFirst();
-                Assert.assertTrue(found.isPresent());
-                SensorValue sv = found.get();
+                assertTrue(found.isPresent());
+
+                final SensorValue sv = found.get();
                 Assert.assertEquals(sv.getValue(), (double) anturi.getArvo(), 0.05d);
                 if (found.get().getTimeWindowStart() != null) {
                     Assert.assertEquals("Time window start not equal", timeWindowStart, sv.getTimeWindowStart());
@@ -260,10 +285,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Test
     public void test2LastUpdated() {
-        ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
-        log.info("lastUpdated " + lastUpdated + " vs " + LocalDateTime.now().minusMinutes(2));
+        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
+        log.info("lastUpdated {} vs {}", lastUpdated, LocalDateTime.now().minusMinutes(2));
         assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
-        List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
+        final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
+            (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());
     }
 }
