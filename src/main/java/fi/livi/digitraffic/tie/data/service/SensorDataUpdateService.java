@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.service;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -75,7 +77,7 @@ public class SensorDataUpdateService {
 
     @Autowired
     public SensorDataUpdateService(final DataSource dataSource,
-                                   final RoadStationSensorService roadStationSensorService) throws SQLException {
+                                   final RoadStationSensorService roadStationSensorService) {
         this.dataSource = dataSource;
 
         final List<RoadStationSensor> allowedTmsSensors =
@@ -93,15 +95,13 @@ public class SensorDataUpdateService {
      * @return true if success
      */
     @Transactional
-    public boolean updateLamData(final List<Lam> data) {
-
-        try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
-
+    public boolean updateLamData(final List<LAMRealtimeProtos.Lam> data) {
+        try (final OracleConnection connection = (OracleConnection) dataSource.getConnection();
+             final OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
             final StopWatch stopWatch = StopWatch.createStarted();
-            final Collection<Lam> newestLamData = filterNewestLamValues(data);
-            Pair<Integer, Integer> rowsAndNotAllowed =
-                appendLamBatchData(opsMerge, newestLamData, allowedTmsSensorLotjuIds);
+            final Collection<LAMRealtimeProtos.Lam> newestLamData = filterNewestLamValues(data);
+
+            final Pair<Integer, Integer> rowsAndNotAllowed = appendLamBatchData(opsMerge, newestLamData, allowedTmsSensorLotjuIds);
             opsMerge.executeBatch();
             stopWatch.stop();
 
@@ -110,7 +110,7 @@ public class SensorDataUpdateService {
                      stopWatch.getTime(),
                      rowsAndNotAllowed.getRight());
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error while updating tms data", e);
         }
         return false;
@@ -123,9 +123,8 @@ public class SensorDataUpdateService {
      */
     @Transactional
     public boolean updateWeatherData(final List<Tiesaa> data) {
-
-        try (OracleConnection connection = (OracleConnection) dataSource.getConnection();
-             OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
+        try (final OracleConnection connection = (OracleConnection) dataSource.getConnection();
+             final OraclePreparedStatement opsMerge = (OraclePreparedStatement) connection.prepareStatement(MERGE_STATEMENT)) {
 
             final StopWatch stopWatch = StopWatch.createStarted();
             final Collection<Tiesaa> newestTiesaaData = filterNewestTiesaaValues(data);
@@ -140,18 +139,19 @@ public class SensorDataUpdateService {
                      rowsAndNotAllowed.getRight());
 
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error while updating weather data", e);
         }
         return false;
     }
 
-    private static Collection<Lam> filterNewestLamValues(final List<Lam> data) {
+    private static Collection<LAMRealtimeProtos.Lam> filterNewestLamValues(final List<LAMRealtimeProtos.Lam> data) {
         // Collect newest data per station
-        HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
-        for (Lam lam : data) {
-            Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
-            if (currentLam == null || lam.getAika().toGregorianCalendar().before(currentLam.getAika().toGregorianCalendar())) {
+        final HashMap<Long, LAMRealtimeProtos.Lam> tmsMapByLamStationLotjuId = new HashMap<>();
+
+        for (final LAMRealtimeProtos.Lam lam : data) {
+            final LAMRealtimeProtos.Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
+            if (currentLam == null || lam.getAika() < currentLam.getAika()) {
                 if (currentLam != null) {
                     log.info("Replace " + currentLam.getAika() + " with " + lam.getAika());
                 }
@@ -163,9 +163,9 @@ public class SensorDataUpdateService {
 
     private static Collection<Tiesaa> filterNewestTiesaaValues(final List<Tiesaa> data) {
         // Collect newest data per station
-        HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
-        for (Tiesaa tiesaa : data) {
-            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
+        final HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
+        for (final Tiesaa tiesaa : data) {
+            final Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
             if (currentTiesaa == null || tiesaa.getAika().toGregorianCalendar().before(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
                     log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaa.getAika());
@@ -178,17 +178,19 @@ public class SensorDataUpdateService {
 
 
     private static Pair<Integer, Integer> appendLamBatchData(final OraclePreparedStatement ops,
-                                                             final Collection<Lam> lams,
+                                                             final Collection<LAMRealtimeProtos.Lam> lams,
                                                              final Set<Long> allowedTmsSensorLotjuIds) throws SQLException {
         int rows = 0;
         int notAllowed = 0;
-        for (Lam lam : lams) {
-            List<Lam.Anturit.Anturi> anturit = lam.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
-            Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
-            for (Lam.Anturit.Anturi anturi : anturit) {
-                final long sensorLotjuId = Long.parseLong(anturi.getLaskennallinenAnturiId());
-                if ( allowedTmsSensorLotjuIds.contains( sensorLotjuId ) ) {
+        for (final LAMRealtimeProtos.Lam lam : lams) {
+            final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
+            final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
+            final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+
+            for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
+                final long sensorLotjuId = anturi.getLaskennallinenAnturiId();
+
+                if (allowedTmsSensorLotjuIds.contains(sensorLotjuId)) {
                     rows++;
                     ops.setDoubleAtName("value", (double) anturi.getArvo());
                     ops.setTimestampAtName("measured", measured);
@@ -213,11 +215,12 @@ public class SensorDataUpdateService {
                                                                 final Set<Long> allowedWeatherSensorLotjuIds) throws SQLException {
         int rows = 0;
         int notAllowed = 0;
-        for (Tiesaa tiesaa : tiesaas) {
-            List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
-            Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
-            for (Tiesaa.Anturit.Anturi anturi : anturit) {
+        for (final Tiesaa tiesaa : tiesaas) {
+            final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
+            final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
+            final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+
+            for (final Tiesaa.Anturit.Anturi anturi : anturit) {
                 final long sensorLotjuId = anturi.getLaskennallinenAnturiId();
                 if (allowedWeatherSensorLotjuIds.contains(sensorLotjuId)) {
                     rows++;

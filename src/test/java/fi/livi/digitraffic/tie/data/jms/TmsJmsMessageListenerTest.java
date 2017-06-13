@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -34,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -124,24 +123,23 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
      */
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+        final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
-        Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
-
-        JMSMessageListener.JMSDataUpdater<Lam> dataUpdater = (data) -> {
+        final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = (data) -> {
             long start = System.currentTimeMillis();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            Assert.assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
+            assertTrue("Update failed", sensorDataUpdateService.updateLamData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList())));
             TestTransaction.flagForCommit();
             TestTransaction.end();
             long end = System.currentTimeMillis();
             log.info("handleData took " + (end-start) + " ms");
         };
-        JMSMessageListener<Lam> tmsJmsMessageListener =
-                new JMSMessageListener<Lam>(Lam.class, dataUpdater, true, log);
+        JMSMessageListener<LAMRealtimeProtos.Lam> tmsJmsMessageListener =
+                new JMSMessageListener<LAMRealtimeProtos.Lam>(LAMRealtimeProtos.Lam.class, dataUpdater, true, log);
 
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
         XMLGregorianCalendar xgcal = datatypeFactory.newXMLGregorianCalendar(gcal);

@@ -61,10 +61,10 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
 
     @Override
     public JMSMessageListener<LAMRealtimeProtos.Lam> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = (data) -> {
+        final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = (data) -> {
             final List<LAMRealtimeProtos.Lam> lamData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
 
-            //sensorDataUpdateService.updateLamData(lamData);
+            sensorDataUpdateService.updateLamData(lamData);
         };
 
         return new TmsJMSMessageListener(
