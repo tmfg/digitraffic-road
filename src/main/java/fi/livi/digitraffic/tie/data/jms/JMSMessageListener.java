@@ -66,7 +66,7 @@ public class JMSMessageListener<T> implements MessageListener {
         this.drainScheduled = drainScheduled;
         this.log = log;
         this.jaxbUnmarshaller = JAXBContext.newInstance(typeClass).createUnmarshaller();
-        log.info(log.getName() + " JMSMessageListener initialized with drainScheduled " + drainScheduled);
+        log.info("{} JMSMessageListener initialized with drainScheduled: {}", log.getName(), drainScheduled);
     }
 
     public boolean isDrainScheduled() {
