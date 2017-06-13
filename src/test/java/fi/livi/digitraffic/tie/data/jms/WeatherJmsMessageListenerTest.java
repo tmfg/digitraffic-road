@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.jms;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -14,9 +13,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -32,7 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.xml.transform.StringResult;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
@@ -64,12 +63,12 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-    private Marshaller jaxbMarshaller;
+
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Before
     public void initData() throws JAXBException {
-
-        jaxbMarshaller = JAXBContext.newInstance(Tiesaa.class).createMarshaller();
 
         log.info("Add available sensors for weather stations");
         if (!TestTransaction.isActive()) {
@@ -128,7 +127,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             return updated;
         };
 
-        JMSMessageListener jmsMessageListener = new JMSMessageListener(Tiesaa.class, dataUpdater, true, log);
+        JMSMessageListener jmsMessageListener = new JMSMessageListener(jaxb2Marshaller, dataUpdater, true, log);
 
         DatatypeFactory df = DatatypeFactory.newInstance();
         GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -184,9 +183,9 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
                 xgcal.add(df.newDuration(1000));
 
-                StringWriter xmlSW = new StringWriter();
-                jaxbMarshaller.marshal(tiesaa, xmlSW);
-                jmsMessageListener.onMessage(createTextMessage(xmlSW.toString(), "Tiesaa " + currentStation.getLotjuId()));
+                StringResult result = new StringResult();
+                jaxb2Marshaller.marshal(tiesaa, result);
+                jmsMessageListener.onMessage(createTextMessage(result.toString(), "Tiesaa " + currentStation.getLotjuId()));
 
                 if (data.size() >= 100 || weatherStationsWithLotjuId.size() <= data.size()) {
                     break;

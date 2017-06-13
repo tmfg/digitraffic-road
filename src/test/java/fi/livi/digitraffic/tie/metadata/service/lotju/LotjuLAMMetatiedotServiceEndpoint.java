@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
@@ -40,16 +41,17 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
 
 
     public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
-                                                                final ResourceLoader resourceLoader) {
+                                                                final ResourceLoader resourceLoader,
+                                                                final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+            instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera,
-                                              final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV3.SERVICE);
+    private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                              final Jaxb2Marshaller jaxb2Marshaller) {
+        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV3.SERVICE, jaxb2Marshaller);
     }
 
     @Override

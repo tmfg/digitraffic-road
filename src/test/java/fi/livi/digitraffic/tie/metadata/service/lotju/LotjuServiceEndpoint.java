@@ -1,19 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.io.File;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.oxm.XmlMappingException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.xml.transform.StringSource;
 
 public abstract class LotjuServiceEndpoint {
 
@@ -21,6 +23,7 @@ public abstract class LotjuServiceEndpoint {
     private final String metadataServerAddress;
     private final Class<?> metatiedotClass;
     private final QName serviceName;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     private boolean stateAfterChange = false;
 
@@ -30,11 +33,13 @@ public abstract class LotjuServiceEndpoint {
     public LotjuServiceEndpoint(final ResourceLoader resourceLoader,
                                 final String metadataServerAddress,
                                 final Class<?> metatiedotClass,
-                                final QName serviceName) {
+                                final QName serviceName,
+                                final Jaxb2Marshaller jaxb2Marshaller) {
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
         this.serviceName = serviceName;
+        this.jaxb2Marshaller = jaxb2Marshaller;
     }
 
     /**
@@ -78,16 +83,14 @@ public abstract class LotjuServiceEndpoint {
     protected Object readLotjuMetadataXml(final String filePath, final Class<?> objectFactoryClass) {
         try {
             final Resource resource = resourceLoader.getResource("classpath:" + filePath);
-            final File xmlFile = resource.getFile();
-            final JAXBContext jaxbContext = JAXBContext.newInstance(objectFactoryClass);
-            final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            String content = FileUtils.readFileToString(resource.getFile(), UTF_8);
 
             final JAXBElement<?> response =
-                    (JAXBElement<?>) jaxbUnmarshaller.unmarshal(xmlFile);
+                    (JAXBElement<?>) jaxb2Marshaller.unmarshal(new StringSource(content));
             return response.getValue();
         } catch (final IOException e) {
             throw new LotjuTestException(e);
-        } catch (final JAXBException e) {
+        } catch (final XmlMappingException e) {
             throw new LotjuTestException(e);
         }
     }

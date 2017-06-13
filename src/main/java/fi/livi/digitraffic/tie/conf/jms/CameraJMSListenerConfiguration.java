@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
@@ -29,6 +30,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final CameraDataUpdateService cameraDataUpdateService;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
     public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
@@ -40,11 +42,13 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
                                           @Value("${jms.camera.inQueue}")
                                           final String jmsQueueKey,
                                           final CameraDataUpdateService cameraDataUpdateService,
-                                          LockingService lockingService) {
+                                          LockingService lockingService,
+                                          Jaxb2Marshaller jaxb2Marshaller) {
         super(connectionFactory,
               lockingService,
               log);
         this.cameraDataUpdateService = cameraDataUpdateService;
+        this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
                                           CameraJMSListenerConfiguration.class.getSimpleName(),
@@ -68,7 +72,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
             }
         };
 
-        return new JMSMessageListener<>(Kuva.class,
+        return new JMSMessageListener<>(jaxb2Marshaller,
                                         handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);

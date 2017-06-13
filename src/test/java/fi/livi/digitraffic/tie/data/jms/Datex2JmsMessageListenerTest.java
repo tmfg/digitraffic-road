@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
@@ -42,6 +43,9 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     @Autowired
     private Datex2Repository datex2Repository;
 
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
+
     @Test
     public void testDatex2ReceiveMessages() throws JAXBException, DatatypeConfigurationException, IOException {
 
@@ -52,7 +56,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
 
         JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
-                new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
+                new JMSMessageListener<D2LogicalModel>(jaxb2Marshaller, dataUpdater, false, log);
 
         List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
@@ -92,7 +96,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
 
         JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
-                new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
+                new JMSMessageListener<D2LogicalModel>(jaxb2Marshaller, dataUpdater, false, log);
 
         log.info("Read Datex2 messages from filesystem");
 //        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");

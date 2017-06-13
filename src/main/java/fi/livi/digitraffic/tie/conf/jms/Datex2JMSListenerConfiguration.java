@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
@@ -24,6 +25,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final Datex2DataService datex2DataService;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
     public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}")
@@ -35,12 +37,14 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
                                           @Value("${jms.datex2.inQueue}")
                                           final String jmsQueueKey,
                                           final Datex2DataService datex2DataService,
-                                          final LockingService lockingService) throws JMSException {
+                                          final LockingService lockingService,
+                                          final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
 
         super(JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
               lockingService,
               log);
         this.datex2DataService = datex2DataService;
+        this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
                                           Datex2JMSListenerConfiguration.class.getSimpleName(),
@@ -56,7 +60,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     public JMSMessageListener<D2LogicalModel> createJMSMessageListener() throws JAXBException {
         JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> datex2DataService.updateDatex2Data(data);
 
-        return new JMSMessageListener<>(D2LogicalModel.class,
+        return new JMSMessageListener<>(jaxb2Marshaller,
                                         handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);

@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.jms;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,15 +11,16 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
+import org.springframework.oxm.XmlMappingException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
@@ -39,7 +39,6 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private final Logger log;
 
-    private final Unmarshaller jaxbUnmarshaller;
     private final ConcurrentLinkedQueue<Pair<T,String>> messageQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger messageCounter = new AtomicInteger();
@@ -47,25 +46,27 @@ public class JMSMessageListener<T> implements MessageListener {
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
+    private final Jaxb2Marshaller jaxb2Marshaller;
     private final JMSDataUpdater dataUpdater;
 
     /**
      *
-     * @param typeClass
+     *
+     * @param jaxb2Marshaller marshaller
      * @param dataUpdater Data updater handle
      * @param drainScheduled If true received messages will be handled only when drainQueueScheduled is called. If set to false
      *                       messages will be handled immediately when they arrived and message sender is notified of successful receive.
      * @param log
      * @throws JAXBException
      */
-    public JMSMessageListener(final Class<T> typeClass,
-                              final JMSDataUpdater dataUpdater,
-                              final boolean drainScheduled,
-                              final Logger log) throws JAXBException {
+    public JMSMessageListener(Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log)
+        throws JAXBException {
+
+        this.jaxb2Marshaller = jaxb2Marshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
-        this.jaxbUnmarshaller = JAXBContext.newInstance(typeClass).createUnmarshaller();
+
         log.info(log.getName() + " JMSMessageListener initialized with drainScheduled " + drainScheduled);
     }
 
@@ -107,9 +108,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
         try {
             final String text = parseTextMessageText(message);
-
-            final StringReader sr = new StringReader(text);
-            Object object = jaxbUnmarshaller.unmarshal(sr);
+            Object object = jaxb2Marshaller.unmarshal(new StringSource(text));
             if (object instanceof JAXBElement) {
                 // For Datex2 messages extra stuff
                 object = ((JAXBElement) object).getValue();
@@ -119,7 +118,7 @@ public class JMSMessageListener<T> implements MessageListener {
             // getText() failed
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
-        } catch (JAXBException e) {
+        } catch (XmlMappingException e) {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
         }
