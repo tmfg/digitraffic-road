@@ -92,8 +92,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         entityManager.flush();
         entityManager.clear();
-        entityManager.flush();
-        entityManager.clear();
 
         // Init minimum TEST_UPLOADS non obsolete presets
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
