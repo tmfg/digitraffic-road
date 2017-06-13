@@ -52,11 +52,6 @@ public class RoadStationService {
         this.entityManager = entityManager;
     }
 
-    private CriteriaBuilder createCriteriaBuilder() {
-        return entityManager
-            .getCriteriaBuilder();
-    }
-
     @Transactional(readOnly = true)
     public List<RoadStation> findByType(final RoadStationType type) {
         return roadStationRepository.findByType(type);
@@ -133,7 +128,7 @@ public class RoadStationService {
 
     @Transactional
     public int obsoleteRoadStationsExcludingLotjuIds(final RoadStationType roadStationType, final List<Long> roadStationsLotjuIdsNotToObsolete) {
-        final CriteriaBuilder cb = createCriteriaBuilder();
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaUpdate<RoadStation> update = cb.createCriteriaUpdate(RoadStation.class);
         final Root<RoadStation> root = update.from(RoadStation.class);
         EntityType<RoadStation> rootModel = root.getModel();
