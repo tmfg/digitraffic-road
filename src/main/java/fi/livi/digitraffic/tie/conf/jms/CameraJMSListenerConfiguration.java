@@ -33,17 +33,13 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
-                                          QueueConnectionFactory connectionFactory,
-                                          @Value("${jms.userId}")
-                                          final String jmsUserId,
-                                          @Value("${jms.password}")
-                                          final String jmsPassword,
-                                          @Value("${jms.camera.inQueue}")
-                                          final String jmsQueueKey,
+    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                          @Value("${jms.userId}") final String jmsUserId,
+                                          @Value("${jms.password}") final String jmsPassword,
+                                          @Value("${jms.camera.inQueue}") final String jmsQueueKey,
                                           final CameraDataUpdateService cameraDataUpdateService,
-                                          LockingService lockingService,
-                                          Jaxb2Marshaller jaxb2Marshaller) {
+                                          final LockingService lockingService,
+                                          final Jaxb2Marshaller jaxb2Marshaller) {
         super(connectionFactory,
               lockingService,
               log);
@@ -62,9 +58,10 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public JMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<Kuva> handleData = (List<Pair<Kuva, String>> data) -> {
+
+        final JMSMessageListener.JMSDataUpdater<Kuva> handleData = (List<Pair<Kuva, String>> data) -> {
             try {
-                List<Kuva> kuvaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+                final List<Kuva> kuvaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
                 return cameraDataUpdateService.updateCameraData(kuvaData);
             } catch (SQLException e) {
                 log.error("Error while handling Camera data", e);

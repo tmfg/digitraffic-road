@@ -28,14 +28,10 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}")
-                                          final String jmsConnectionUrls,
-                                          @Value("${jms.datex2.userId}")
-                                          final String jmsUserId,
-                                          @Value("${jms.datex2.password}")
-                                          final String jmsPassword,
-                                          @Value("${jms.datex2.inQueue}")
-                                          final String jmsQueueKey,
+    public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}") final String jmsConnectionUrls,
+                                          @Value("${jms.datex2.userId}") final String jmsUserId,
+                                          @Value("${jms.datex2.password}") final String jmsPassword,
+                                          @Value("${jms.datex2.inQueue}") final String jmsQueueKey,
                                           final Datex2DataService datex2DataService,
                                           final LockingService lockingService,
                                           final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
@@ -58,7 +54,8 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public JMSMessageListener<D2LogicalModel> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> datex2DataService.updateDatex2Data(data);
+
+        final JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> datex2DataService.updateDatex2Data(data);
 
         return new JMSMessageListener<>(jaxb2Marshaller,
                                         handleData,

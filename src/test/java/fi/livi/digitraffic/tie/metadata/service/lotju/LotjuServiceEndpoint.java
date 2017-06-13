@@ -30,11 +30,8 @@ public abstract class LotjuServiceEndpoint {
     protected final ResourceLoader resourceLoader;
     private boolean inited;
 
-    public LotjuServiceEndpoint(final ResourceLoader resourceLoader,
-                                final String metadataServerAddress,
-                                final Class<?> metatiedotClass,
-                                final QName serviceName,
-                                final Jaxb2Marshaller jaxb2Marshaller) {
+    public LotjuServiceEndpoint(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
+                                final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller) {
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
@@ -83,7 +80,7 @@ public abstract class LotjuServiceEndpoint {
     protected Object readLotjuMetadataXml(final String filePath, final Class<?> objectFactoryClass) {
         try {
             final Resource resource = resourceLoader.getResource("classpath:" + filePath);
-            String content = FileUtils.readFileToString(resource.getFile(), UTF_8);
+            final String content = FileUtils.readFileToString(resource.getFile(), UTF_8);
 
             final JAXBElement<?> response =
                     (JAXBElement<?>) jaxb2Marshaller.unmarshal(new StringSource(content));

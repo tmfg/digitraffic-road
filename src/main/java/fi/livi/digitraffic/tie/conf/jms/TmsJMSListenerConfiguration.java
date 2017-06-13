@@ -32,14 +32,10 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
-                                       QueueConnectionFactory connectionFactory,
-                                       @Value("${jms.userId}")
-                                       final String jmsUserId,
-                                       @Value("${jms.password}")
-                                       final String jmsPassword,
-                                       @Value("${jms.tms.inQueue}")
-                                       final String jmsQueueKey,
+    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                       @Value("${jms.userId}") final String jmsUserId,
+                                       @Value("${jms.password}") final String jmsPassword,
+                                       @Value("${jms.tms.inQueue}") final String jmsQueueKey,
                                        final SensorDataUpdateService sensorDataUpdateService,
                                        final LockingService lockingService,
                                        final Jaxb2Marshaller jaxb2Marshaller) {
@@ -62,8 +58,9 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
 
     @Override
     public JMSMessageListener<Lam> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<Lam> handleData = (data) -> {
-            List<Lam> lamData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+
+        final JMSMessageListener.JMSDataUpdater<Lam> handleData = (data) -> {
+            final List<Lam> lamData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
             return sensorDataUpdateService.updateLamData(lamData);
         };
 

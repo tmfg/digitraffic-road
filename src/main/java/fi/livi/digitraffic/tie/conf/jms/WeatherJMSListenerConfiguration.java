@@ -32,16 +32,12 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
-                                           QueueConnectionFactory connectionFactory,
-                                           @Value("${jms.userId}")
-                                           final String jmsUserId,
-                                           @Value("${jms.password}")
-                                           final String jmsPassword,
-                                           @Value("${jms.weather.inQueue}")
-                                           final String jmsQueueKey,
+    public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                           @Value("${jms.userId}") final String jmsUserId,
+                                           @Value("${jms.password}") final String jmsPassword,
+                                           @Value("${jms.weather.inQueue}") final String jmsQueueKey,
                                            final SensorDataUpdateService sensorDataUpdateService,
-                                           LockingService lockingService,
+                                           final LockingService lockingService,
                                            final Jaxb2Marshaller jaxb2Marshaller) {
 
         super(connectionFactory,
@@ -63,8 +59,8 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     @Override
     public JMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
 
-        JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = (data) -> {
-            List<Tiesaa> tiesaaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
+        final JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = (data) -> {
+            final List<Tiesaa> tiesaaData = data.stream().map(Pair::getLeft).collect(Collectors.toList());
             return sensorDataUpdateService.updateWeatherData(tiesaaData);
         };
 
