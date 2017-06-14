@@ -3,13 +3,11 @@ package fi.livi.digitraffic.tie.data.service;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -22,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
+import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -168,7 +166,7 @@ public class SensorDataUpdateService {
             final Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaa.getAsemaId());
             if (currentTiesaa == null || tiesaa.getAika().toGregorianCalendar().before(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
-                    log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaa.getAika());
+                    log.info("Replace {} with {}", currentTiesaa.getAika(), tiesaa.getAika());
                 }
                 tiesaaMapByTmsStationLotjuId.put(tiesaa.getAsemaId(), tiesaa);
             }
@@ -182,25 +180,25 @@ public class SensorDataUpdateService {
                                                              final Set<Long> allowedTmsSensorLotjuIds) throws SQLException {
         int rows = 0;
         int notAllowed = 0;
+
+        final TimestampCache timestampCache = new TimestampCache();
+
         for (final LAMRealtimeProtos.Lam lam : lams) {
             final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
-            final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(lam.getAika());
-            final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+            final Timestamp measured = timestampCache.get(lam.getAika());
 
             for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
                 final long sensorLotjuId = anturi.getLaskennallinenAnturiId();
 
                 if (allowedTmsSensorLotjuIds.contains(sensorLotjuId)) {
                     rows++;
-                    ops.setDoubleAtName("value", (double) anturi.getArvo());
+                    ops.setIntAtName("value", anturi.getArvo());
                     ops.setTimestampAtName("measured", measured);
                     ops.setLongAtName("rsLotjuId", lam.getAsemaId());
                     ops.setLongAtName("sensorLotjuId", sensorLotjuId);
                     ops.setStringAtName("stationType", RoadStationType.TMS_STATION.name());
-                    final LocalDateTime alku = DateHelper.toLocalDateTime(anturi.getAikaikkunaAlku());
-                    final LocalDateTime loppu = DateHelper.toLocalDateTime(anturi.getAikaikkunaLoppu());
-                    ops.setTimestampAtName("timeWindowStart", alku != null ? Timestamp.valueOf(alku) : null);
-                    ops.setTimestampAtName("timeWindowEnd", loppu != null ? Timestamp.valueOf(loppu) : null);
+                    ops.setTimestampAtName("timeWindowStart", timestampCache.get(anturi.getAikaikkunaAlku()));
+                    ops.setTimestampAtName("timeWindowEnd", timestampCache.get(anturi.getAikaikkunaLoppu()));
                     ops.addBatch();
                 } else {
                     notAllowed++;
