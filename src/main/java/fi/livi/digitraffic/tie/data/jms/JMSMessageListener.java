@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public class JMSMessageListener<T, K> implements MessageListener {
+public abstract class JMSMessageListener<T, K> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
     public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
 
