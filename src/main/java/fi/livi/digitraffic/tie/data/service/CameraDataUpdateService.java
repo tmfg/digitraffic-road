@@ -2,72 +2,75 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @Service
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
-    private final CameraPresetService cameraPresetService;
+    private final int imageUpdateTimeout;
     private final CameraImageUpdateService cameraImageUpdateService;
 
+    private static final ExecutorService jobThreadPool = Executors.newFixedThreadPool(5);
+    private static final ExecutorService updateTaskThreadPool = Executors.newFixedThreadPool(5);
+
     @Autowired
-    CameraDataUpdateService(final CameraPresetService cameraPresetService,
-                            final CameraImageUpdateService cameraImageUpdateService) {
-        this.cameraPresetService = cameraPresetService;
+    CameraDataUpdateService(@Value("${camera-image-uploader.imageUpdateTimeout}")
+                                   final int imageUpdateTimeout,
+                                   final CameraImageUpdateService cameraImageUpdateService) {
+        this.imageUpdateTimeout = imageUpdateTimeout;
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    @Transactional
-    public void updateCameraData(final List<Kuva> data) throws SQLException {
+    public int updateCameraData(final List<Kuva> data) throws SQLException {
 
-        final HashMap<Long, Kuva> latestKuvasMappedByPresetLotjuId = filterLatestKuvasAndMapByPresetId(data);
-
-        final List<CameraPreset> cameraPresets = cameraPresetService.findPublishableCameraPresetByLotjuIdIn(latestKuvasMappedByPresetLotjuId.keySet());
-
+        final Collection<Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
         final StopWatch start = StopWatch.createStarted();
 
-        for (final CameraPreset cameraPreset : cameraPresets) {
-            final Kuva kuva = latestKuvasMappedByPresetLotjuId.remove(cameraPreset.getLotjuId());
-            if (kuva == null) {
-                log.error("No kuva for preset {}", cameraPreset.toString());
-            } else {
-                futures.add(cameraImageUpdateService.handleKuva(kuva, cameraPreset));
-            }
-        }
+        latestKuvas.forEach(kuva -> {
+            final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateService, imageUpdateTimeout);
+            futures.add(jobThreadPool.submit(task));
+        });
 
-        // Handle missing presets to delete possible images from disk
-        for (Kuva notFoundPresetsKuva : latestKuvasMappedByPresetLotjuId.values()) {
-            futures.add(cameraImageUpdateService.handleKuva(notFoundPresetsKuva, null));
-        }
-
-        while ( futures.parallelStream().filter(f -> !f.isDone()).findFirst().isPresent() ) {
+        while ( futures.parallelStream().anyMatch(f -> !f.isDone()) ) {
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
                 log.debug("InterruptedException", e);
             }
         }
+        final long updateCount = futures.parallelStream().filter(p -> {
+                try {
+                    return p.get();
+                } catch (Exception e) {
+                    return false;
+                }
+            }).count();
 
-        log.info("Updating {} weather camera images took {} ms", futures.size(), start.getTime());
+        log.info("Updating success for {} weather camera images of {} took {} ms", updateCount, futures.size(), start.getTime());
+        return (int) updateCount;
     }
 
-    private HashMap<Long, Kuva> filterLatestKuvasAndMapByPresetId(final List<Kuva> data) {
+    private Collection<Kuva> filterLatest(final List<Kuva> data) {
         // Collect newest kuva per preset
         final HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.forEach(kuva -> {
@@ -83,6 +86,52 @@ public class CameraDataUpdateService {
                 log.warn("Kuva esiasentoId is null: {}", ToStringHelper.toString(kuva));
             }
         });
-        return kuvaMappedByPresetLotjuId;
+        return kuvaMappedByPresetLotjuId.values();
+    }
+
+
+    private class UpdateJobManager implements Callable<Boolean> {
+
+        protected final long timeout;
+        protected final ImageUpdateTask task;
+
+        public UpdateJobManager(final Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
+            this.timeout = timeout;
+            this.task = new ImageUpdateTask(kuva, cameraImageUpdateService);
+        }
+
+        @Override
+        public Boolean call() {
+            final Future<Boolean> future = updateTaskThreadPool.submit(task);
+            final String presetId =  CameraImageUpdateService.resolvePresetIdFrom(null, task.kuva);
+            try {
+                return future.get(timeout, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                log.error("ImageUpdateTasks failed to complete for {} before timeout {} ms", presetId, timeout);
+            } catch (Exception e) {
+                log.error("ImageUpdateTasks failed to complete for " + presetId + " with exception", e);
+            } finally {
+                // This is safe even if task is already finished
+                future.cancel(true);
+            }
+
+            return false;
+        }
+    }
+
+    private static class ImageUpdateTask implements Callable<Boolean> {
+
+        private final Kuva kuva;
+        private final CameraImageUpdateService cameraImageUpdateService;
+
+        public ImageUpdateTask(final Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
+            this.kuva = kuva;
+            this.cameraImageUpdateService = cameraImageUpdateService;
+        }
+
+        @Override
+        public Boolean call() throws InterruptedException {
+            return cameraImageUpdateService.handleKuva(kuva);
+        }
     }
 }

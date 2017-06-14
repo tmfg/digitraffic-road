@@ -49,9 +49,8 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         datex2Repository.deleteAll();
 
         // Create listener
-        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> {
-            datex2DataService.updateDatex2Data(data);
-        };
+        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
+
         JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
                 new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);
 
@@ -90,9 +89,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Delete old messages");
         datex2Repository.deleteAll();
 
-        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> {
-            datex2DataService.updateDatex2Data(data);
-        };
+        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
 
         JMSMessageListener<D2LogicalModel> datexJmsMessageListener =
                 new JMSMessageListener<D2LogicalModel>(D2LogicalModel.class, dataUpdater, false, log);

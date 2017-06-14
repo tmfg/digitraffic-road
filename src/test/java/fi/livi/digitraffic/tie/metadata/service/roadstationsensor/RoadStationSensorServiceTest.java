@@ -24,7 +24,7 @@ public class RoadStationSensorServiceTest extends AbstractTest {
 
     @Test
     public void testFindAllNonObsoleteRoadStationSensors() {
-        final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.WEATHER_STATION);
+        final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
         log.info("Sensors {}", sensors.size());
         Assert.assertTrue(sensors.size() >= 50);
     }
