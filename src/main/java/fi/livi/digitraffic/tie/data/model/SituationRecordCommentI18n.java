@@ -42,12 +42,6 @@ public class SituationRecordCommentI18n {
     @Length(min = 2, max = 2)
     private String lang;
 
-    public SituationRecordCommentI18n() {}
-
-    public SituationRecordCommentI18n(String lang) {
-        this.lang = lang;
-    }
-
     @ApiModelProperty(value = "Comment value", required = true)
     @NotNull
     private String value;
@@ -57,6 +51,12 @@ public class SituationRecordCommentI18n {
     @JoinColumn(name="DATEX2_SITUATION_RECORD_ID", nullable = false)
     @Fetch(FetchMode.JOIN)
     private Datex2SituationRecord situationRecord;
+
+    public SituationRecordCommentI18n() {}
+
+    public SituationRecordCommentI18n(String lang) {
+        this.lang = lang;
+    }
 
     public String getLang() {
         return lang;

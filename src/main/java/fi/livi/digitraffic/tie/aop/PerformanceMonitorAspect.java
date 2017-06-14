@@ -94,7 +94,7 @@ public class PerformanceMonitorAspect {
         return monitorAnnotation != null ? monitorAnnotation.monitor() : true;
     }
 
-    private String getMethodWithClass(final MethodSignature methodSignature) {
+    private static String getMethodWithClass(final MethodSignature methodSignature) {
         return methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName();
     }
 
