@@ -8,14 +8,8 @@ import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 
-/**
- * Luotu: 13.6.2017 klo 11.22
- *
- * @author teijoro
- */
 public class TmsJMSMessageListener extends NormalJMSMessageListener<LAMRealtimeProtos.Lam> {
     public TmsJMSMessageListener(final JMSDataUpdater<LAMRealtimeProtos.Lam> handleData, final boolean queueTopic, final Logger log) throws JAXBException {
         super(LAMRealtimeProtos.Lam.class, handleData, queueTopic, log);
@@ -31,20 +25,12 @@ public class TmsJMSMessageListener extends NormalJMSMessageListener<LAMRealtimeP
             while(bais.available() > 0) {
                 final LAMRealtimeProtos.Lam lam = LAMRealtimeProtos.Lam.parseDelimitedFrom(bais);
 
-                debug(lam);
-
                 lamList.add(lam);
             }
-        } catch (final InvalidProtocolBufferException e) {
-            e.printStackTrace();
         } catch (final IOException e) {
-            e.printStackTrace();
+            log.error("Exception while parsing", e);
         }
 
         return lamList;
-    }
-
-    private static void debug(final LAMRealtimeProtos.Lam lam) {
-        System.out.println(String.format("%d : %d anturia", lam.getAsemaId(), lam.getAnturiCount()));
     }
 }

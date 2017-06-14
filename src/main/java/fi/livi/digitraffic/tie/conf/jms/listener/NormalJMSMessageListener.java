@@ -12,11 +12,6 @@ import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 
-/**
- * Luotu: 13.6.2017 klo 7.34
- *
- * @author teijoro
- */
 public class NormalJMSMessageListener<T> extends JMSMessageListener<T,T> {
     public NormalJMSMessageListener(final Class<T> typeClass, final JMSDataUpdater dataUpdater, final boolean drainScheduled,
         final Logger log) throws JAXBException {

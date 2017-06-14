@@ -36,7 +36,7 @@ public class JMSMessageListener<T, K> implements MessageListener {
     private static final int QUEUE_SIZE_WARNING_LIMIT = 2 * MAX_NORMAL_QUEUE_SIZE;
     private static final int QUEUE_SIZE_ERROR_LIMIT = 10 * MAX_NORMAL_QUEUE_SIZE;
 
-    private final Logger log;
+    protected final Logger log;
 
     protected final Unmarshaller jaxbUnmarshaller;
     private final BlockingQueue<K> blockingQueue = new LinkedBlockingQueue<>();
