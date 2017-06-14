@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @ConditionalOnControllersEnabled
@@ -56,7 +57,21 @@ public class SwaggerConfiguration {
                 .apiInfo(metadataApiInfoService.getApiInfo())
                 .select()
                 .paths(getMetadataApiPaths())
-                .build();
+                .build()
+                .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    UiConfiguration uiConfiguration() {
+        return new UiConfiguration(
+            "validatorUrl",// url
+            "list",       // docExpansion          => none | list
+            "alpha",      // apiSorter             => alpha
+            "model",     // defaultModelRendering => schema
+            UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS,
+            false,        // enableJsonEditor      => true | false
+            true,         // showRequestHeaders    => true | false
+            60000L);      // requestTimeout => in milliseconds, defaults to null (uses jquery xh timeout)
     }
 
     /**
