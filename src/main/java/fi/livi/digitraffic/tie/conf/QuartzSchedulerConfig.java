@@ -1,8 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static fi.livi.digitraffic.tie.conf.TriggerFactoryFactory.createRepeatingTrigger;
-
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -10,6 +9,10 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
@@ -20,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -42,6 +46,14 @@ import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
 @ConditionalOnProperty(name = "quartz.enabled")
 public class QuartzSchedulerConfig {
     private static final Logger log = LoggerFactory.getLogger(QuartzSchedulerConfig.class);
+    private final Environment environment;
+
+    // Number has 13 digits in db
+    private final Date QUARTZ_MAX_DATE = new Date(9999999999999L);
+
+    public QuartzSchedulerConfig(final Environment environment) {
+        this.environment = environment;
+    }
 
     @Bean
     public JobFactory jobFactory(final ApplicationContext applicationContext) {
@@ -54,7 +66,24 @@ public class QuartzSchedulerConfig {
     public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
                                                      final JobFactory jobFactory,
                                                      final Optional<List<Trigger>> triggerBeans) throws IOException {
-        final SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        final SchedulerFactoryBean factory = new SchedulerFactoryBean() {
+            @Override
+            protected Scheduler createScheduler(SchedulerFactory schedulerFactory, String schedulerName) throws SchedulerException {
+                Scheduler scheduler = super.createScheduler(schedulerFactory, schedulerName);
+                triggerBeans.get().forEach(t -> {
+                    try {
+                        // If trigger is missing but job exists in db, the trigger will not be created (why?). Delete the job to recreate it and the trigger again.
+                        if (scheduler.checkExists(t.getJobKey()) && !scheduler.checkExists(t.getKey())) {
+                            log.info("Delete orphan job {}", t.getJobKey());
+                            scheduler.deleteJob(t.getJobKey());
+                        }
+                    } catch (SchedulerException e) {
+                        e.printStackTrace();
+                    }
+                });
+                return scheduler;
+            }
+        };
         // this allows to update triggers in DB when updating settings in config file:
         factory.setOverwriteExistingJobs(true);
         factory.setDataSource(dataSource);
@@ -66,9 +95,7 @@ public class QuartzSchedulerConfig {
 
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
-
             triggers.forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
-
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
         return factory;
@@ -208,6 +235,37 @@ public class QuartzSchedulerConfig {
         factoryBean.setJobClass(jobClass);
         // job has to be durable to be stored in DB:
         factoryBean.setDurability(true);
+        return factoryBean;
+    }
+
+    /**
+     * @param jobDetail
+     * @param repeatIntervalMs how often is job repeated in ms. If time <= 0 it's triggered only once.
+     * @return
+     */
+    private SimpleTriggerFactoryBean createRepeatingTrigger(final JobDetail jobDetail, final long repeatIntervalMs) {
+
+        final String jobName = jobDetail.getJobClass().getSimpleName();
+        final String jobEnabledProperty = environment.getProperty("quartz." + jobName + ".enabled");
+
+        final boolean jobEnabled = jobEnabledProperty == null || !"false".equalsIgnoreCase(jobEnabledProperty);
+
+
+        final SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
+        factoryBean.setJobDetail(jobDetail);
+        factoryBean.setRepeatInterval(repeatIntervalMs);
+        factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
+        // In case of misfire: The first misfired execution is run immediately, remaining are discarded.
+        // Next execution happens after desired interval. Effectively the first execution time is moved to current time.
+        factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
+
+        if (!jobEnabled) {
+            factoryBean.setStartTime(QUARTZ_MAX_DATE);
+        } else {
+            // Delay first execution 5 seconds
+            factoryBean.setStartDelay(5000L);
+        }
+        log.info("Created Trigger for {} enabled {}", jobName, jobEnabled);
         return factoryBean;
     }
 }
