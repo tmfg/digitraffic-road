@@ -70,7 +70,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
 
         for (LamLaskennallinenAnturiVO anturi : toUpdate) {
             UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;

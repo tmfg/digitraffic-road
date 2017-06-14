@@ -86,7 +86,7 @@ public class WeatherStationUpdater  {
 
         for (TiesaaAsemaVO tsa : toUpdate) {
             UpdateStatus result = weatherStationService.updateOrInsertWeatherStation(tsa);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;

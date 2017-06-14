@@ -42,7 +42,7 @@ public class SituationRecordCommentI18n {
     @Length(min = 2, max = 2)
     private String lang;
 
-    public SituationRecordCommentI18n() {};
+    public SituationRecordCommentI18n() {}
 
     public SituationRecordCommentI18n(String lang) {
         this.lang = lang;

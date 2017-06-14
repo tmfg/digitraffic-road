@@ -112,7 +112,8 @@ public class PerformanceMonitorAspect {
                 final Object[] objects = (Object[]) value;
                 buildArrayToString(builder, objects);
             } catch (ClassCastException e) {
-                builder.append("?");
+                log.debug("buildArrayToString Error", e);
+                builder.append("[" + value + "]");
             }
         } else if (value instanceof Collection<?>) {
             final Collection<?> values = (Collection<?>) value;

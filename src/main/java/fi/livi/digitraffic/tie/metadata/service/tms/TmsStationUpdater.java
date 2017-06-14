@@ -89,7 +89,7 @@ public class TmsStationUpdater {
 
         for (LamAsemaVO tsa : toUpdate) {
             UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;
