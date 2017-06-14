@@ -17,10 +17,11 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public abstract class JMSMessageListener<T, K> implements MessageListener {
+public abstract class JMSMessageListener<K> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
     public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
 
@@ -42,17 +43,21 @@ public abstract class JMSMessageListener<T, K> implements MessageListener {
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
+    protected final Jaxb2Marshaller jaxb2Marshaller;
     private final JMSDataUpdater dataUpdater;
 
     /**
      *
+     *
+     * @param jaxb2Marshaller
      * @param dataUpdater Data updater handle
      * @param drainScheduled If true received messages will be handled only when drainQueueScheduled is called. If set to false
      *                       messages will be handled immediately when they arrived and message sender is notified of successful receive.
      * @param log
      * @throws JAXBException
      */
-    public JMSMessageListener(final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log) {
+    public JMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log) {
+        this.jaxb2Marshaller = jaxb2Marshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
@@ -77,7 +82,7 @@ public abstract class JMSMessageListener<T, K> implements MessageListener {
             return;
         }
 
-        List<K> data = unmarshalMessage(message);
+        final List<K> data = unmarshalMessage(message);
         if (data != null) {
             messageQueue.addAll(data);
 
@@ -99,7 +104,7 @@ public abstract class JMSMessageListener<T, K> implements MessageListener {
             if(message instanceof TextMessage) {
                 return unmarshallText((TextMessage) message);
             } else if(message instanceof BytesMessage) {
-                return unmarshallerBytes((BytesMessage)message);
+                return unmarshallBytes((BytesMessage)message);
             } else {
                 throw new IllegalArgumentException(message.getClass().getCanonicalName());
             }
@@ -114,7 +119,7 @@ public abstract class JMSMessageListener<T, K> implements MessageListener {
         }
     }
 
-    private List<K> unmarshallerBytes(final BytesMessage message) throws JMSException {
+    private List<K> unmarshallBytes(final BytesMessage message) throws JMSException {
         final int bodyLength = (int) message.getBodyLength();
         final byte[] bytes = new byte[bodyLength];
 

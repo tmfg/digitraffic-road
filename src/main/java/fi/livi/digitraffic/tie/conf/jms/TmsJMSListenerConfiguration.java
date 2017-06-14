@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.conf.jms.listener.TmsJMSMessageListener;
@@ -25,23 +26,19 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
 
     private final JMSParameters jmsParameters;
     private final SensorDataUpdateService sensorDataUpdateService;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
-                                       QueueConnectionFactory connectionFactory,
-                                       @Value("${jms.userId}")
-                                       final String jmsUserId,
-                                       @Value("${jms.password}")
-                                       final String jmsPassword,
-                                       @Value("${jms.tms.inQueue}")
-                                       final String jmsQueueKey,
-                                       final SensorDataUpdateService sensorDataUpdateService,
-                                       final LockingService lockingService) {
+    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+        @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
+        @Value("${jms.tms.inQueue}") final String jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
+        final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
 
         super(connectionFactory,
               lockingService,
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
+        this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
                                           TmsJMSListenerConfiguration.class.getSimpleName(),
@@ -57,7 +54,7 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     public TmsJMSMessageListener createJMSMessageListener() throws JAXBException {
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = sensorDataUpdateService::updateLamData;
 
-        return new TmsJMSMessageListener(
+        return new TmsJMSMessageListener(jaxb2Marshaller,
                                         handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);

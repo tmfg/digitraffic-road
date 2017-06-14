@@ -19,18 +19,13 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-<<<<<<< HEAD
 import org.apache.commons.io.output.ByteArrayOutputStream;
-=======
 import org.apache.commons.lang3.time.StopWatch;
->>>>>>> develop
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -40,13 +35,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.conf.jms.listener.TmsJMSMessageListener;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
-import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
@@ -85,12 +80,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    private Marshaller jaxbMarshaller;
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Before
     public void initData() throws JAXBException {
-        jaxbMarshaller = JAXBContext.newInstance(Lam.class).createMarshaller();
-
         if (!TestTransaction.isActive()) {
             TestTransaction.start();
         }
@@ -167,7 +161,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             log.info("handleData took {} ms", sw.getTime());
             return updated;
         };
-        final TmsJMSMessageListener tmsJmsMessageListener = new TmsJMSMessageListener(dataUpdater, true, log);
+        final TmsJMSMessageListener tmsJmsMessageListener = new TmsJMSMessageListener(jaxb2Marshaller, dataUpdater, true, log);
 
         Instant time = Instant.now();
 

@@ -7,12 +7,13 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 
 public class TmsJMSMessageListener extends NormalJMSMessageListener<LAMRealtimeProtos.Lam> {
-    public TmsJMSMessageListener(final JMSDataUpdater<LAMRealtimeProtos.Lam> handleData, final boolean queueTopic, final Logger log) throws JAXBException {
-        super(LAMRealtimeProtos.Lam.class, handleData, queueTopic, log);
+    public TmsJMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater<LAMRealtimeProtos.Lam> handleData, final boolean queueTopic, final Logger log) throws JAXBException {
+        super(jaxb2Marshaller, handleData, queueTopic, log);
     }
 
     @Override

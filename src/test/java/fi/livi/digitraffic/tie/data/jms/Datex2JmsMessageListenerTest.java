@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.conf.jms.listener.Datex2JMSMessageListener;
@@ -34,6 +35,9 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     @Autowired
     private Datex2Repository datex2Repository;
 
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
+
     @Test
     public void testDatex2ReceiveMessages() throws JAXBException, DatatypeConfigurationException, IOException {
         log.info("Delete all Datex2 messages");
@@ -41,7 +45,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         // Create listener
         final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
-        final Datex2JMSMessageListener datexJmsMessageListener = new Datex2JMSMessageListener(dataUpdater, false, log);
+        final Datex2JMSMessageListener datexJmsMessageListener = new Datex2JMSMessageListener(jaxb2Marshaller, dataUpdater, false, log);
 
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
@@ -77,14 +81,11 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Delete old messages");
         datex2Repository.deleteAll();
 
-<<<<<<< HEAD
-        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
-=======
-        JMSMessageListener.JMSDataUpdater<D2LogicalModel> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
->>>>>>> develop
+        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data
+            (data);
 
         final Datex2JMSMessageListener datexJmsMessageListener =
-                new Datex2JMSMessageListener(dataUpdater, false, log);
+                new Datex2JMSMessageListener(jaxb2Marshaller, dataUpdater, false, log);
 
         log.info("Read Datex2 messages from filesystem");
 //        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");

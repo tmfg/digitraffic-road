@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
@@ -25,22 +26,18 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final CameraDataUpdateService cameraDataUpdateService;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
-                                          QueueConnectionFactory connectionFactory,
-                                          @Value("${jms.userId}")
-                                          final String jmsUserId,
-                                          @Value("${jms.password}")
-                                          final String jmsPassword,
-                                          @Value("${jms.camera.inQueue}")
-                                          final String jmsQueueKey,
-                                          final CameraDataUpdateService cameraDataUpdateService,
-                                          LockingService lockingService) {
+    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+        @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
+        @Value("${jms.camera.inQueue}") final String jmsQueueKey, final CameraDataUpdateService cameraDataUpdateService,
+        LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
         super(connectionFactory,
               lockingService,
               log);
         this.cameraDataUpdateService = cameraDataUpdateService;
+        this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
                                           CameraJMSListenerConfiguration.class.getSimpleName(),
@@ -54,17 +51,16 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public NormalJMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
-        JMSMessageListener.JMSDataUpdater<Kuva> handleData = data -> {
+        final JMSMessageListener.JMSDataUpdater<Kuva> handleData = data -> {
             try {
-                cameraDataUpdateService.updateCameraData(data);
+                return cameraDataUpdateService.updateCameraData(data);
             } catch (SQLException e) {
                 log.error("Error while handling Camera data", e);
                 return 0;
             }
         };
 
-        return new NormalJMSMessageListener<>(Kuva.class,
-                                        handleData,
+        return new NormalJMSMessageListener<>(jaxb2Marshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }

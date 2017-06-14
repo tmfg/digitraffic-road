@@ -35,7 +35,7 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
     private final LockingService lockingService;
     private final Logger log;
     private QueueConnection connection;
-    private JMSMessageListener<T, K> messageListener;
+    private JMSMessageListener<K> messageListener;
 
     public AbstractJMSListenerConfiguration(final QueueConnectionFactory connectionFactory,
                                             final LockingService lockingService,
@@ -48,9 +48,9 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
 
     public abstract JMSParameters getJmsParameters();
 
-    protected abstract JMSMessageListener<T, K> createJMSMessageListener() throws JAXBException;
+    protected abstract JMSMessageListener<K> createJMSMessageListener() throws JAXBException;
 
-    private JMSMessageListener<T, K> getJMSMessageListener() throws JAXBException {
+    private JMSMessageListener<K> getJMSMessageListener() throws JAXBException {
         if (messageListener == null) {
             messageListener = createJMSMessageListener();
         }
@@ -68,7 +68,7 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
     /** Log statistics once in minute */
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
-        final JMSMessageListener<T, K> listener = getJMSMessageListener();
+        final JMSMessageListener<K> listener = getJMSMessageListener();
         final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
         final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
         final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
