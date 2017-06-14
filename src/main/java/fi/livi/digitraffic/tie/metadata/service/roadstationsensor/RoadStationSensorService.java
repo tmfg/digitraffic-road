@@ -91,7 +91,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStationSensor> findAllNonObsoleteRoadStationSensors(RoadStationType roadStationType) {
+    public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType roadStationType) {
         return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalseAndAllowed(roadStationType);
     }
 
@@ -119,9 +119,9 @@ public class RoadStationSensorService {
             (roadStationType));
 
         return new RoadStationsSensorsMetadata(
-                !onlyUpdateInfo ?
-                    findAllNonObsoleteRoadStationSensors(roadStationType) :
-                    Collections.emptyList(),
+            !onlyUpdateInfo ?
+            findAllNonObsoleteAndAllowedRoadStationSensors(roadStationType) :
+            Collections.emptyList(),
                 updated != null ? updated.getUpdatedTime() : null);
     }
 

@@ -26,7 +26,11 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+<<<<<<< HEAD
 import org.apache.commons.io.output.ByteArrayOutputStream;
+=======
+import org.apache.commons.lang3.time.StopWatch;
+>>>>>>> develop
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -149,17 +153,19 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
 
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = (data) -> {
-            final long start = System.currentTimeMillis();
+            final StopWatch sw = StopWatch.createStarted();
+
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            assertTrue("Update failed", sensorDataUpdateService.updateLamData(data));
+            final int updated = sensorDataUpdateService.updateLamData(data);
+
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            long end = System.currentTimeMillis();
-            log.info("handleData took " + (end-start) + " ms");
+            log.info("handleData took {} ms", sw.getTime());
+            return updated;
         };
         final TmsJMSMessageListener tmsJmsMessageListener = new TmsJMSMessageListener(dataUpdater, true, log);
 
@@ -173,7 +179,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         log.info("Start with arvo " + arvo);
 
         final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteRoadStationSensors(RoadStationType.TMS_STATION);
+                roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
@@ -184,7 +190,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
-            final long start = System.currentTimeMillis();
+            final StopWatch sw = StopWatch.createStarted();
+
             data.clear();
             while (true) {
                 if (!stationsIter.hasNext()) {
@@ -222,19 +229,18 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                     break;
                 }
             }
-            long end = System.currentTimeMillis();
-            long duration = (end - start);
-            log.info("Data generation took {} ms", duration);
-            long startHandle = System.currentTimeMillis();
+
+            log.info("Data generation took {} ms", sw.getTime());
+            final StopWatch swHandle = StopWatch.createStarted();
+
             tmsJmsMessageListener.drainQueueScheduled();
-            long endHandle = System.currentTimeMillis();
-            handleDataTotalTime = handleDataTotalTime + (endHandle-startHandle);
+            handleDataTotalTime += swHandle.getTime();
 
             try {
                 // send data with 1 s interval
-                long sleep = 1000 - duration;
+                long sleep = 1000 - sw.getTime();
                 if (sleep < 0) {
-                    log.error("Data generation took too long");
+                    log.error("Data generation and handle took too long");
                 } else {
                     Thread.sleep(sleep);
                 }
@@ -245,7 +251,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         log.info("End with arvo {}", arvo);
         log.info("Handle tms data total took {} ms and max was {} ms {}",
-            handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)", handleDataTotalTime, maxHandleTime);
+                 handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         log.info("Check data validy");
         // Assert sensor values are updated to db
@@ -255,7 +261,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         boolean timeWindowsFound = false;
         for (final LAMRealtimeProtos.Lam lam : data) {
-            long asemaLotjuId = lam.getAsemaId();
+            final long asemaLotjuId = lam.getAsemaId();
             final List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
             final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
 
@@ -278,9 +284,9 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
             }
         }
-        Assert.assertTrue("Time window was set to zero sensors", timeWindowsFound);
+        assertTrue("Time window was set to zero sensors", timeWindowsFound);
         log.info("Data is valid");
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+        assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 
     @Test

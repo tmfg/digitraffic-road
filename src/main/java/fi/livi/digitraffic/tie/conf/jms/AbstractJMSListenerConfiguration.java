@@ -62,8 +62,7 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
         log.info("Shutdown...");
         shutdownCalled.set(true);
         log.info("Closing JMS connection");
-        closeConnectionQuietly(connection);
-        connection = null;
+        closeConnectionQuietly();
     }
 
     /** Log statistics once in minute */
@@ -76,8 +75,8 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
 
         log.info("{} MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
                  STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
-        log.info("{} Received {} and drained {} messages per minute. Current queue size {}.",
-                 STATISTICS_PREFIX, jmsStats.getMessagesReceived(), jmsStats.getMessagesDrained() , jmsStats.getQueueSize());
+        log.info("{} Received {} messages, drained {} messages and updated {} db rows per minute. Current in memory queue size {}.",
+                 STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
     }
 
     /**
@@ -95,46 +94,46 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
      */
     @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
     public void connectAndListen() throws JMSException, JAXBException {
-
         if (shutdownCalled.get()) {
+            closeConnectionQuietly();
             return;
-        }
-
-        // Try to connect if not connected and not shutting down
-        if (connection == null) {
-            connection = createConnection(getJmsParameters(), connectionFactory);
         }
 
         final JMSParameters jmsParameters = getJmsParameters();
         try {
-            // If lock can be acquired then start listening
+            // If lock can be acquired then connect and start listening
             final boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
-                    getJmsParameters().getLockInstanceId(),
-                    JMS_CONNECTION_LOCK_EXPIRATION_S);
+                                                              getJmsParameters().getLockInstanceId(),
+                                                              JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock acquired for {} (instanceId: {})", jmsParameters.getLockInstanceName(),
-                    jmsParameters.getLockInstanceId());
+                log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
+                          " (instanceId: " + jmsParameters.getLockInstanceId() + ")");
+
+                // Try to connect if not connected
+                if (connection == null) {
+                    connection = createConnection(getJmsParameters(), connectionFactory);
+                }
+
                 // Calling start multiple times is safe
                 connection.start();
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
+
                 log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
                     "instance is holding the lock", jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
                 // Calling stop multiple times is safe
-                connection.stop();
+                closeConnectionQuietly();
             }
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
-            closeConnectionQuietly(connection);
-            connection = null;
+            closeConnectionQuietly();
         }
 
         // Check if shutdown was called during connection initialization
-        if (shutdownCalled.get() && connection != null) {
-            closeConnectionQuietly(connection);
-            connection = null;
+        if (shutdownCalled.get()) {
+            closeConnectionQuietly();
         }
     }
 
@@ -168,7 +167,7 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
             return queueConnection;
         } catch (Exception e) {
             log.error("Connection initialization failed", e);
-            closeConnectionQuietly(connection);
+            closeConnectionQuietly();
             throw e;
         }
     }
@@ -185,12 +184,15 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
         return session;
     }
 
-    private void closeConnectionQuietly(QueueConnection queueConnection) {
-        if (queueConnection != null) {
+    private void closeConnectionQuietly() {
+        if (connection != null) {
             try {
-                queueConnection.close();
+                // also stops the connection
+                connection.close();
             } catch (JMSException e) {
                 log.debug("Closing connection failed", e);
+            } finally {
+                connection = null;
             }
         }
     }
@@ -225,9 +227,8 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
         @Override
         public void onException(final JMSException jsme) {
             log.error("JMSException: errorCode: " + JMSErrorResolver.resolveErrorMessageByErrorCode(jsme.getErrorCode()) + " for " + jmsParameters.getLockInstanceName(), jsme);
-            // Always try to disconnect old connection and then reconnect
-            closeConnectionQuietly(connection);
-            connection = null;
+            // Always try to disconnect old connection and then reconnect on next try
+            closeConnectionQuietly();
         }
     }
 

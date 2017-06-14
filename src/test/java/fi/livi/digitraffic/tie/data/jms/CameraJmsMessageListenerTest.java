@@ -156,14 +156,16 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 TestTransaction.end();
             }
             TestTransaction.start();
+            int updated = 0;
             try {
-                cameraDataUpdateService.updateCameraData(data);
+                updated = cameraDataUpdateService.updateCameraData(data);
             } catch (SQLException e) {
                 Assert.fail("Data updating failed");
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
             log.info("handleData took {} ms", start.getTime());
+            return updated;
         };
 
         final NormalJMSMessageListener<Kuva> cameraJmsMessageListener =

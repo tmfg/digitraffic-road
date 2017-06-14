@@ -59,6 +59,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
                 cameraDataUpdateService.updateCameraData(data);
             } catch (SQLException e) {
                 log.error("Error while handling Camera data", e);
+                return 0;
             }
         };
 
