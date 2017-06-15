@@ -126,7 +126,7 @@ public class SensorValueDao {
     private static Map createArgsMap(final TimestampCache timestampCache, final LAMRealtimeProtos.Lam lam, final LAMRealtimeProtos.Lam.Anturi anturi) {
         final HashMap<String, Object> args = new HashMap<>();
 
-        args.put("value", (double) anturi.getArvo());
+        args.put("value", anturi.getArvo());
         args.put("measured", timestampCache.get(lam.getAika()));
         args.put("rsLotjuId", lam.getAsemaId());
         args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());
