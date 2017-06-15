@@ -203,7 +203,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                 existingTms.setRoadStation(rs);
             }
             if (rs == null) {
-                rs = new RoadStation(RoadStationType.WEATHER_STATION);
+                rs = new RoadStation(RoadStationType.TMS_STATION);
                 existingTms.setRoadStation(rs);
                 roadStationService.save(rs);
             }

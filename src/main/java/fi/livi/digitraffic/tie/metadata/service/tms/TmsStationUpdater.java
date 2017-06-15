@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +46,6 @@ public class TmsStationUpdater {
         log.info("Update tms Stations start");
 
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Fetched LAMs:");
-            for (final LamAsemaVO asema : asemas) {
-                log.debug(ToStringBuilder.reflectionToString(asema));
-            }
-        }
 
         final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
         updateStaticDataStatus(updatedTmsStations);

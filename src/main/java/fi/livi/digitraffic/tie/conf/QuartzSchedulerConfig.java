@@ -155,7 +155,6 @@ public class QuartzSchedulerConfig {
         return createJobDetail(ForecastSectionWeatherUpdateJob.class);
     }
 
-
     @Bean
     public JobDetailFactoryBean unhandledDatex2MessagesImportJobDetail() {
         return createJobDetail(UnhandledDatex2MessagesImportJob.class);
