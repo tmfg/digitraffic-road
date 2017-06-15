@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Repository
 public class SensorValueDao {
-
     private static final Logger log = LoggerFactory.getLogger(SensorValueDao.class);
 
     private static final String MERGE_STATEMENT =
@@ -49,6 +48,9 @@ public class SensorValueDao {
             "                           , dst.updated = sysdate\n" +
             "                           , dst.time_window_start = :timeWindowStart\n" +
             "                           , dst.time_window_end = :timeWindowEnd\n" +
+            "     WHERE dst.value != :value\n" +
+            "     OR dst.time_window_start is null\n" +
+            "     OR dst.time_window_start != :timeWindowStart\n" +
             "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
             "     VALUES (SEQ_SENSOR_VALUE.nextval\n" +
             "           , src.road_station_id\n" +
@@ -71,14 +73,20 @@ public class SensorValueDao {
     public int updateLamSensorData(final Collection<LAMRealtimeProtos.Lam> data, final Set<Long> allowedTmsSensorLotjuIds) {
         final TimestampCache timestampCache = new TimestampCache();
         final ArrayList<Map<String, Object>> batchData = appendLamBatchData(timestampCache, data, allowedTmsSensorLotjuIds);
-        jdbcTemplate.batchUpdate(MERGE_STATEMENT, batchData.toArray(new Map[0]));
-        return batchData.size();
+
+        return batchUpdate(MERGE_STATEMENT, batchData.toArray(new Map[0]));
     }
 
     public int updateWeatherSensorData(final Collection<Tiesaa> data, final Set<Long> allowedWeatherSensorLotjuIds) {
         final Map<String, Object>[] batchData = appendTiesaaBatchData(data, allowedWeatherSensorLotjuIds);
-        jdbcTemplate.batchUpdate(MERGE_STATEMENT, batchData);
-        return batchData.length;
+
+        return batchUpdate(MERGE_STATEMENT, batchData);
+    }
+
+    private int batchUpdate(final String statement, final Map<String, Object> data[]) {
+        jdbcTemplate.batchUpdate(statement, data);
+
+        return data.length;
     }
 
     private static ArrayList<Map<String, Object>> appendLamBatchData(final TimestampCache timestampCache, final Collection<LAMRealtimeProtos.Lam> lams,
@@ -107,9 +115,9 @@ public class SensorValueDao {
         int updateCount = 0;
         int notAllowed = 0;
         final ArrayList<Map> batchData = new ArrayList<>();
-        for (Tiesaa tiesaa : tiesaas) {
+        for (final Tiesaa tiesaa : tiesaas) {
             final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            for (Tiesaa.Anturit.Anturi anturi : anturit) {
+            for (final Tiesaa.Anturit.Anturi anturi : anturit) {
                 if (allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
                     batchData.add(createArgsMap(tiesaa, anturi));
                     updateCount++;
@@ -131,8 +139,8 @@ public class SensorValueDao {
         args.put("rsLotjuId", lam.getAsemaId());
         args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());
         args.put("stationType", RoadStationType.TMS_STATION.name());
-        args.put("timeWindowStart", timestampCache.get(anturi.getAikaikkunaAlku()));
-        args.put("timeWindowEnd", timestampCache.get(anturi.getAikaikkunaLoppu()));
+        args.put("timeWindowStart", anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null);
+        args.put("timeWindowEnd", anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null);
 
         return args;
     }
