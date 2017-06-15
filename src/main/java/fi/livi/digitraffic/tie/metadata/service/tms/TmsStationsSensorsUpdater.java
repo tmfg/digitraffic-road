@@ -47,11 +47,6 @@ public class TmsStationsSensorsUpdater {
     public boolean updateTmsStationsSensors() {
         log.info("Update TMS Stations Sensors start");
 
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.warn("Not updating TMS Stations Sensors metadata because LotjuTmsStationMetadataService not enabled");
-            return false;
-        }
-
         // Update sensors of road stations
         // Get current TmsStations
         final Map<Long, TmsStation> currentTmsStationMappedByByLotjuId =

@@ -37,11 +37,6 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     public boolean updateRoadStationSensors() {
         log.info("Update TMS RoadStationSensors start");
 
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.warn("Not updating TMS stations sensors because LotjuTmsStationMetadataService not enabled");
-            return false;
-        }
-
         // Update available RoadStationSensors types to db
         List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
                 lotjuTmsStationMetadataService.getAllLamLaskennallinenAnturis();

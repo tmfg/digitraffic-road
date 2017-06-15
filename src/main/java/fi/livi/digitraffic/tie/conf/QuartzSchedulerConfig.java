@@ -15,6 +15,7 @@ import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,17 +31,19 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
+import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.RoadStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeLinkMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -72,13 +75,13 @@ public class QuartzSchedulerConfig {
                 Scheduler scheduler = super.createScheduler(schedulerFactory, schedulerName);
                 triggerBeans.get().forEach(t -> {
                     try {
-                        // If trigger is missing but job exists in db, the trigger will not be created (why?). Delete the job to recreate it and the trigger again.
-                        if (scheduler.checkExists(t.getJobKey()) && !scheduler.checkExists(t.getKey())) {
+                        // If trigger is missing but job exists in db, the trigger will not be created. Delete the job to recreate it and the trigger again.
+                        if (scheduler.checkExists(t.getJobKey()) && !scheduler.checkExists(t.getKey()) && Key.DEFAULT_GROUP.equals(t.getKey().getGroup())) {
                             log.info("Delete orphan job {}", t.getJobKey());
                             scheduler.deleteJob(t.getJobKey());
                         }
                     } catch (SchedulerException e) {
-                        e.printStackTrace();
+                        log.error("Deleting job " + t.getJobKey() + " with missing trigger failed", e);
                     }
                 });
                 return scheduler;
@@ -125,8 +128,18 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean roadStationsStatusUpdateJobDetail() {
-        return createJobDetail(RoadStationsStatusUpdateJob.class);
+    public JobDetailFactoryBean cameraStationsStatusUpdateJobDetail() {
+        return createJobDetail(CameraStationsStatusUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean tmsStationsStatusUpdateJobDetail() {
+        return createJobDetail(TmsStationsStatusUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean weatherStationsStatusUpdateJobDetail() {
+        return createJobDetail(WeatherStationsStatusUpdateJob.class);
     }
 
     @Bean
@@ -182,9 +195,21 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean roadStationsStatusUpdateJobTrigger(final JobDetail roadStationsStatusUpdateJobDetail,
-                                                                       @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(roadStationsStatusUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean cameraStationsStatusUpdateJobTrigger(final JobDetail cameraStationsStatusUpdateJobDetail,
+                                                                         @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(cameraStationsStatusUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean tmsStationsStatusUpdateJobTrigger(final JobDetail tmsStationsStatusUpdateJobDetail,
+                                                                      @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(tmsStationsStatusUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean weatherStationsStatusUpdateJobTrigger(final JobDetail weatherStationsStatusUpdateJobDetail,
+                                                                          @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(weatherStationsStatusUpdateJobDetail, frequency);
     }
 
     @Bean

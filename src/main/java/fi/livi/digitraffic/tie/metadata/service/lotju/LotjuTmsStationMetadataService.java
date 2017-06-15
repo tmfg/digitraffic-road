@@ -23,14 +23,13 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturi
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 
 @Service
-public class LotjuTmsStationMetadataService extends AbstractLotjuMetadataService {
+public class LotjuTmsStationMetadataService {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuTmsStationMetadataService.class);
     private final LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
     @Autowired
     public LotjuTmsStationMetadataService(final LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient) {
-        super(lotjuTmsStationMetadataClient.isEnabled());
         this.lotjuTmsStationMetadataClient = lotjuTmsStationMetadataClient;
     }
 

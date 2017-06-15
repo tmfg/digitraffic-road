@@ -50,11 +50,6 @@ public class WeatherStationUpdater  {
     public boolean updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-        if (!lotjuWeatherStationMetadataService.isEnabled()) {
-            log.warn("Not updating WeatherStations metadata because LotjuWeatherStationService not enabled");
-            return false;
-        }
-
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
         final boolean updateStaticDataStatus = updateWeatherStationsMetadata(tiesaaAsemas);

@@ -46,11 +46,6 @@ public class TmsStationUpdater {
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.warn("Not updating tms stations because LotjuTmsStationMetadataService not enabled");
-            return false;
-        }
-
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
 
         if (log.isDebugEnabled()) {
