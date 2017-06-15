@@ -14,9 +14,14 @@ import org.springframework.xml.transform.StringSource;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 
 public class NormalJMSMessageListener<T> extends JMSMessageListener<T> {
-    public NormalJMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled,
-        final Logger log) {
+    public NormalJMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater<T> dataUpdater, final boolean
+        drainScheduled, final Logger log) {
         super(jaxb2Marshaller, dataUpdater, drainScheduled, log);
+    }
+
+    @Override
+    protected List<T> getObjectFromBytes(final byte[] body) {
+        throw new IllegalStateException();
     }
 
     protected List<T> unmarshallText(final TextMessage message) throws JMSException, JAXBException {

@@ -21,7 +21,7 @@ import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.weather.enabled")
 @Configuration
-public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Tiesaa, Tiesaa> {
+public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Tiesaa> {
     private static final Logger log = LoggerFactory.getLogger(WeatherJMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;

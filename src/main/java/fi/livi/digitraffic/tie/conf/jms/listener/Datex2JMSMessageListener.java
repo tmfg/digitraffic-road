@@ -16,8 +16,13 @@ import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 public class Datex2JMSMessageListener extends JMSMessageListener<Pair<D2LogicalModel, String>> {
-    public Datex2JMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log) {
+    public Datex2JMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater, final boolean drainScheduled, final Logger log) {
         super(jaxb2Marshaller, dataUpdater, drainScheduled, log);
+    }
+
+    @Override
+    protected List<Pair<D2LogicalModel, String>> getObjectFromBytes(final byte[] body) {
+        throw new IllegalStateException();
     }
 
     protected List<Pair<D2LogicalModel, String>> unmarshallText(final TextMessage message) throws JMSException, JAXBException {

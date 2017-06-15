@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @ConditionalOnProperty(name = "jms.datex2.enabled")
 @Configuration
-public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<D2LogicalModel, Pair<D2LogicalModel, String>> {
+public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Pair<D2LogicalModel, String>> {
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;

@@ -21,7 +21,7 @@ import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.tms.enabled")
 @Configuration
-public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam, LAMRealtimeProtos.Lam> {
+public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
     private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;

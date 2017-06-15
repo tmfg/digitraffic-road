@@ -22,7 +22,7 @@ import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.camera.enabled")
 @Configuration
-public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Kuva, Kuva> {
+public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfiguration<Kuva> {
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final CameraDataUpdateService cameraDataUpdateService;

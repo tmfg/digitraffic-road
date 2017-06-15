@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,7 +43,7 @@ public abstract class JMSMessageListener<K> implements MessageListener {
 
     private final boolean drainScheduled;
     protected final Jaxb2Marshaller jaxb2Marshaller;
-    private final JMSDataUpdater dataUpdater;
+    private final JMSDataUpdater<K> dataUpdater;
 
     /**
      *
@@ -56,7 +55,8 @@ public abstract class JMSMessageListener<K> implements MessageListener {
      * @param log
      * @throws JAXBException
      */
-    public JMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log) {
+    public JMSMessageListener(final Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater<K> dataUpdater, final boolean drainScheduled,
+        final Logger log) {
         this.jaxb2Marshaller = jaxb2Marshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
@@ -128,13 +128,9 @@ public abstract class JMSMessageListener<K> implements MessageListener {
         return getObjectFromBytes(bytes);
     }
 
-    protected List<K> getObjectFromBytes(final byte[] body) {
-        return Collections.emptyList();
-    }
+    protected abstract List<K> getObjectFromBytes(final byte[] body);
 
-    protected List<K> unmarshallText(final TextMessage message) throws JMSException, JAXBException {
-        return Collections.emptyList();
-    }
+    protected abstract List<K> unmarshallText(final TextMessage message) throws JMSException, JAXBException;
 
     protected String parseTextMessageText(final Message message) throws JMSException {
         assertTextMessage(message);

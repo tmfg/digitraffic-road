@@ -24,7 +24,7 @@ import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
-public abstract class AbstractJMSListenerConfiguration<T, K> {
+public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
     private static String STATISTICS_PREFIX = "STATISTICS:";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
@@ -144,7 +144,7 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
 
         try {
             final QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
-            final JMSExceptionListener jmsExceptionListener = new JMSExceptionListener(queueConnection, jmsParameters);
+            final JMSExceptionListener jmsExceptionListener = new JMSExceptionListener(jmsParameters);
 
             queueConnection.setExceptionListener(jmsExceptionListener);
 
@@ -173,8 +173,8 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
     }
 
     private Session createSessionAndConsumer(String jmsQueueKey, QueueConnection queueConnection) throws JMSException, JAXBException {
-        boolean drainScheduled = isQueueTopic(jmsQueueKey);
-        Session session = drainScheduled ?
+        final boolean drainScheduled = isQueueTopic(jmsQueueKey);
+        final Session session = drainScheduled ?
                           queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE) : // ACKNOWLEDGE automatically when message received
                           queueConnection.createSession(false,
                                   progress.message.jclient.Session.SINGLE_MESSAGE_ACKNOWLEDGE); // ACKNOWLEDGE after successful handling
@@ -214,13 +214,9 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
     }
 
     public class JMSExceptionListener implements ExceptionListener {
-
-        private QueueConnection connection;
         private final JMSParameters jmsParameters;
 
-        public JMSExceptionListener(final QueueConnection connection,
-                                    final JMSParameters jmsParameters) {
-            this.connection = connection;
+        public JMSExceptionListener(final JMSParameters jmsParameters) {
             this.jmsParameters = jmsParameters;
         }
 
@@ -233,7 +229,6 @@ public abstract class AbstractJMSListenerConfiguration<T, K> {
     }
 
     protected class JMSParameters {
-
         private final String jmsUserId;
         private final String jmsPassword;
         private final String lockInstanceId;
