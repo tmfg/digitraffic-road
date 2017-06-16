@@ -75,8 +75,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
         final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
-        log.info("{} MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
-                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
+        log.info("{} MessageListener lock acquired {} and not acquired {} times per minute (instanceId: {})",
+                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
         log.info("{} Received {} messages, drained {} messages and updated {} db rows per minute. Current in memory queue size {}.",
                  STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
     }
