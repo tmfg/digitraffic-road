@@ -35,12 +35,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.livi.digitraffic.tie.conf.jms.listener.TmsJMSMessageListener;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -79,9 +78,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Before
     public void initData() throws JAXBException {
@@ -161,7 +157,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             log.info("handleData took {} ms", sw.getTime());
             return updated;
         };
-        final TmsJMSMessageListener tmsJmsMessageListener = new TmsJMSMessageListener(jaxb2Marshaller, dataUpdater, true, log);
+        final JMSMessageListener tmsJmsMessageListener = new JMSMessageListener(new TmsMessageMarshaller(),
+            dataUpdater, true, log);
 
         Instant time = Instant.now();
 

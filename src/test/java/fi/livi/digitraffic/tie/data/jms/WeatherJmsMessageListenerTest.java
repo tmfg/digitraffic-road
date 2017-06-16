@@ -32,8 +32,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.xml.transform.StringResult;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -124,7 +124,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             return updated;
         };
 
-        final NormalJMSMessageListener<Tiesaa> jmsMessageListener = new NormalJMSMessageListener(jaxb2Marshaller, dataUpdater, true, log);
+        final JMSMessageListener<Tiesaa> jmsMessageListener = new JMSMessageListener(new TextMessageMarshaller(jaxb2Marshaller),
+            dataUpdater, true, log);
 
         final DatatypeFactory df = DatatypeFactory.newInstance();
         final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();

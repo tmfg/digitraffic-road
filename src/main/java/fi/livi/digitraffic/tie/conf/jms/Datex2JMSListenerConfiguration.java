@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.Datex2JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
@@ -51,10 +51,11 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public Datex2JMSMessageListener createJMSMessageListener() throws JAXBException {
+    public JMSMessageListener<Pair<D2LogicalModel, String>> createJMSMessageListener() throws JAXBException {
         final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> handleData = datex2DataService::updateDatex2Data;
+        final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller);
 
-        return new Datex2JMSMessageListener(jaxb2Marshaller, handleData,
+        return new JMSMessageListener(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }

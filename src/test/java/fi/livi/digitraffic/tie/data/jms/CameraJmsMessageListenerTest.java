@@ -39,7 +39,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.xml.transform.StringResult;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
@@ -161,8 +161,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             return updated;
         };
 
-        final NormalJMSMessageListener<Kuva> cameraJmsMessageListener =
-                new NormalJMSMessageListener<Kuva>(jaxb2Marshaller, dataUpdater, true, log);
+        final JMSMessageListener<Kuva> cameraJmsMessageListener =
+                new JMSMessageListener<Kuva>(new TextMessageMarshaller(jaxb2Marshaller), dataUpdater, true, log);
 
         final DatatypeFactory df = DatatypeFactory.newInstance();
         final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();

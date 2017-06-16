@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.livi.digitraffic.tie.conf.jms.listener.TmsJMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
@@ -51,11 +51,11 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     }
 
     @Override
-    public TmsJMSMessageListener createJMSMessageListener() throws JAXBException {
+    public JMSMessageListener<LAMRealtimeProtos.Lam> createJMSMessageListener() throws JAXBException {
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = sensorDataUpdateService::updateLamData;
+        final TmsMessageMarshaller messageMarshaller = new TmsMessageMarshaller();
 
-        return new TmsJMSMessageListener(jaxb2Marshaller,
-                                        handleData,
+        return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }

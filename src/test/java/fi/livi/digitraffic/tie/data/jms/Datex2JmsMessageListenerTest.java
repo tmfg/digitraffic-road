@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.Datex2JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.Datex2;
@@ -45,7 +45,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
 
         // Create listener
         final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
-        final Datex2JMSMessageListener datexJmsMessageListener = new Datex2JMSMessageListener(jaxb2Marshaller, dataUpdater, false, log);
+        final JMSMessageListener datexJmsMessageListener = new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
 
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
@@ -84,8 +84,8 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data
             (data);
 
-        final Datex2JMSMessageListener datexJmsMessageListener =
-                new Datex2JMSMessageListener(jaxb2Marshaller, dataUpdater, false, log);
+        final JMSMessageListener datexJmsMessageListener =
+                new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
 
         log.info("Read Datex2 messages from filesystem");
 //        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
@@ -97,7 +97,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Persist changes");
     }
 
-    private static void readAndSendMessages(final List<Resource> datex2Resources, final Datex2JMSMessageListener messageListener,
+    private static void readAndSendMessages(final List<Resource> datex2Resources, final JMSMessageListener messageListener,
         final boolean autoFix) throws IOException {
         log.info("Read and send " + datex2Resources.size() + " Datex2 messages...");
         for (final Resource datex2Resource : datex2Resources) {

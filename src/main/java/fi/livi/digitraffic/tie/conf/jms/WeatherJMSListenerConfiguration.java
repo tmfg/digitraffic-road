@@ -12,8 +12,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -51,10 +51,11 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     }
 
     @Override
-    public NormalJMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
+    public JMSMessageListener<Tiesaa> createJMSMessageListener() throws JAXBException {
         final JMSMessageListener.JMSDataUpdater<Tiesaa> handleData = sensorDataUpdateService::updateWeatherData;
+        final TextMessageMarshaller textMessageMarshaller = new TextMessageMarshaller(jaxb2Marshaller);
 
-        return new NormalJMSMessageListener<>(jaxb2Marshaller, handleData,
+        return new JMSMessageListener<>(textMessageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }

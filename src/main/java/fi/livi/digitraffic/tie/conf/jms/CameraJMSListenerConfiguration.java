@@ -13,8 +13,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.conf.jms.listener.NormalJMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
@@ -50,7 +50,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public NormalJMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
+    public JMSMessageListener<Kuva> createJMSMessageListener() throws JAXBException {
         final JMSMessageListener.JMSDataUpdater<Kuva> handleData = data -> {
             try {
                 return cameraDataUpdateService.updateCameraData(data);
@@ -59,8 +59,9 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
                 return 0;
             }
         };
+        final TextMessageMarshaller messageMarshaller = new TextMessageMarshaller(jaxb2Marshaller);
 
-        return new NormalJMSMessageListener<>(jaxb2Marshaller, handleData,
+        return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }
