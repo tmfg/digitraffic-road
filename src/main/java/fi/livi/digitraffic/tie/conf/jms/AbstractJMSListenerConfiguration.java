@@ -130,6 +130,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
             closeConnectionQuietly();
+            lockingService.releaseLock(getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
         }
 
         // Check if shutdown was called during connection initialization

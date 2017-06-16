@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -52,5 +53,27 @@ public class LockingDaoTest extends AbstractTest {
                 log.debug("Interrupted", e);
             }
         }
+    }
+
+
+    @Test
+    public void testLockingAndRelasing() {
+
+        StopWatch start = StopWatch.createStarted();
+        // Acquire 1. lock
+        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
+        Assert.assertTrue(locked1);
+
+        // Try to acquire 1. lock again with other instance
+        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        Assert.assertFalse(locked1Second);
+
+        // release lock
+        lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
+
+        // Try to acquire 1. lock again
+        boolean locked1Third = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        Assert.assertTrue(locked1Third);
+        Assert.assertTrue("Test must be run under 5 seconds", start.getTime() < 5000L);
     }
 }

@@ -47,6 +47,11 @@ public class LockingDao {
             "  AND LT.INSTANCE_ID = :instanceId\n" +
             "  AND LT.LOCK_EXPIRES > sysdate";
 
+    private static final String RELEASE =
+            "DELETE FROM LOCKING_TABLE\n" +
+            "WHERE LOCK_NAME = :lockName\n" +
+            "  AND INSTANCE_ID = :instanceId";
+
     @Autowired
     public LockingDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -75,5 +80,12 @@ public class LockingDao {
             }
             throw e;
         }
+    }
+
+    public void releaseLock(final String lockName, final String callerInstanceId) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("lockName", lockName);
+        params.put("instanceId", callerInstanceId);
+        jdbcTemplate.update(RELEASE, params);
     }
 }

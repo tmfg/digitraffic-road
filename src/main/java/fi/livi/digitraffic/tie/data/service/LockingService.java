@@ -20,4 +20,9 @@ public class LockingService {
     public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
         return lockingDao.acquireLock(lockName, callerInstanceId, expirationSeconds);
     }
+
+    @Transactional
+    public void releaseLock(final String lockName, final String callerInstanceId) {
+        lockingDao.releaseLock(lockName, callerInstanceId);
+    }
 }
