@@ -41,7 +41,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         stationsSensorsWatch.stop();
 
         if (stationsUpdated || updatedTmsStationsSensors) {
-            dataStatusService.updateDataUpdated(DataType.LAM_STATION);
+            dataStatusService.updateDataUpdated(DataType.LAM_STATION_METADATA);
         }
 
         log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",

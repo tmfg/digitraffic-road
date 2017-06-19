@@ -70,7 +70,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
         final TmsState tmsState) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION_METADATA);
         final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
@@ -80,7 +80,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION_METADATA);
         final List<TmsStation> stations = findStations(roadNumber, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
