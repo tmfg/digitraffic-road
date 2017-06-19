@@ -9,7 +9,6 @@ import fi.livi.digitraffic.tie.metadata.converter.Link2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.LinkRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.traveltime.LinkFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.Link;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
@@ -31,9 +30,6 @@ public class TravelTimeLinkMetadataService {
 
     public LinkFeatureCollection getLinkMetadata() {
         final List<Link> links = linkRepository.findByObsoleteDateIsNullOrderByNaturalId();
-
-        final DataUpdated updated = dataStatusService.findDataUpdatedByDataType(DataType.TRAVEL_TIME_LINKS_METADATA);
-
-        return link2FeatureConverter.convert(links, updated != null ? updated.getUpdatedTime() : null);
+        return link2FeatureConverter.convert(links, dataStatusService.findDataUpdatedTimeByDataType(DataType.TRAVEL_TIME_LINKS_METADATA));
     }
 }

@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
@@ -38,20 +36,15 @@ public class ForecastSectionService {
     @Transactional(readOnly = true)
     public ForecastSectionFeatureCollection findAllForecastSections() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
-
-        dataStatusService.findDataUpdatedByDataType(DataType.FORECAST_SECTION_METADATA);
-
-        return forecastSection2FeatureConverter.convert(forecastSections, ZonedDateTime.now());
+        return forecastSection2FeatureConverter.convert(forecastSections, dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA));
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
-
-        final DataUpdated updated = dataStatusService.findDataUpdatedByDataType(DataType.FORECAST_SECTION_METADATA);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo ?
                     null :
                     findAllForecastSections(),
-                updated != null ? updated.getUpdatedTime() : null);
+                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA));
     }
 }

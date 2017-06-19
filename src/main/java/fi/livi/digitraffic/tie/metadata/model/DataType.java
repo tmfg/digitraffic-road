@@ -19,7 +19,7 @@ public enum DataType {
     ;
 
 
-    public static DataType getForRoadStationType(final RoadStationType roadStationType) {
+    public static DataType getSensorMetadataTypeForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
             return TMS_STATION_SENSOR_METADATA;
         } else if (RoadStationType.WEATHER_STATION == roadStationType) {

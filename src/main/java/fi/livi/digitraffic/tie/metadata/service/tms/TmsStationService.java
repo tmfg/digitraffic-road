@@ -31,7 +31,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -317,9 +316,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     private ZonedDateTime getMetadataLastUpdated() {
-        final DataUpdated sensorsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.TMS_STATION_SENSOR_METADATA);
-        final DataUpdated stationsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.TMS_STATION_METADATA);
-        return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
-                         stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA);
+        return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

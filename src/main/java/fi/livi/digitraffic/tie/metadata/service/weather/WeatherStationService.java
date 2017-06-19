@@ -21,7 +21,6 @@ import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2Feature
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
@@ -152,9 +151,8 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     }
 
     private ZonedDateTime getMetadataLastUpdated() {
-        final DataUpdated sensorsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.WEATHER_STATION_SENSOR_METADATA);
-        final DataUpdated stationsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.WEATHER_STATION_METADATA);
-        return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
-                         stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_SENSOR_METADATA);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_METADATA);
+        return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

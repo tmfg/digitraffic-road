@@ -79,11 +79,6 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
-    public DataUpdated findDataUpdatedByDataType(final DataType dataType) {
-        return dataUpdatedRepository.findByDataType(dataType.name());
-    }
-
-    @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTimeByDataType(final DataType dataType) {
         DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
         return updated != null ? updated.getUpdatedTime() : null;

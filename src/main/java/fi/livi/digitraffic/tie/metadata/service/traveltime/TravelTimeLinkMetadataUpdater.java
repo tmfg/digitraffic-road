@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.traveltime;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +29,6 @@ import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.DirectionTextDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
@@ -66,10 +66,10 @@ public class TravelTimeLinkMetadataUpdater {
     @Transactional
     public void updateLinkMetadataIfUpdateAvailable() {
 
-        final DataUpdated updated = dataStatusService.findDataUpdatedByDataType(DataType.TRAVEL_TIME_LINKS_METADATA);
+        final ZonedDateTime updated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TRAVEL_TIME_LINKS_METADATA);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
-        if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
+        if (updated == null || linkMetadata.lastUpdate.isAfter(updated)) {
             updateLinkMetadata(linkMetadata);
             dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_LINKS_METADATA, linkMetadata.lastUpdate);
         } else {
