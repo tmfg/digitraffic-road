@@ -22,6 +22,6 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
         Timestamp messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA,
-                                                   ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
+                                            ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
     }
 }

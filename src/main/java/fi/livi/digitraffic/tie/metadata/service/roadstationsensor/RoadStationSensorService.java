@@ -118,7 +118,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.getForRoadStationType
+        final DataUpdated updated = dataStatusService.findDataUpdatedByDataType(DataType.getForRoadStationType
             (roadStationType));
 
         return new RoadStationsSensorsMetadata(

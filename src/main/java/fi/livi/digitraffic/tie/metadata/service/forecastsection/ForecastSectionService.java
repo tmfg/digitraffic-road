@@ -39,14 +39,14 @@ public class ForecastSectionService {
     public ForecastSectionFeatureCollection findAllForecastSections() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 
-        dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION_METADATA);
+        dataStatusService.findDataUpdatedByDataType(DataType.FORECAST_SECTION_METADATA);
 
         return forecastSection2FeatureConverter.convert(forecastSections, ZonedDateTime.now());
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
 
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION_METADATA);
+        final DataUpdated updated = dataStatusService.findDataUpdatedByDataType(DataType.FORECAST_SECTION_METADATA);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo ?

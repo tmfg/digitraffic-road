@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
@@ -29,7 +28,6 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 @Service
@@ -38,22 +36,16 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     private static final Logger log = LoggerFactory.getLogger(WeatherStationService.class);
     private final WeatherStationRepository weatherStationRepository;
     private final DataStatusService dataStatusService;
-    private final RoadStationService roadStationService;
     private final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter;
-    private final RoadAddressRepository roadAddressRepository;
 
     @Autowired
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final DataStatusService dataStatusService,
-                                 final RoadStationService roadStationService,
-                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter,
-                                 final RoadAddressRepository roadAddressRepository) {
+                                 final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
         super(log);
         this.weatherStationRepository = weatherStationRepository;
         this.dataStatusService = dataStatusService;
-        this.roadStationService = roadStationService;
         this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
-        this.roadAddressRepository = roadAddressRepository;
     }
 
     @Transactional(readOnly = true)
@@ -160,8 +152,8 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     }
 
     private ZonedDateTime getMetadataLastUpdated() {
-        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR_METADATA);
-        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_METADATA);
+        final DataUpdated sensorsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.WEATHER_STATION_SENSOR_METADATA);
+        final DataUpdated stationsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.WEATHER_STATION_METADATA);
         return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
                          stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
     }

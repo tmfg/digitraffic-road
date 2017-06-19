@@ -317,8 +317,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     private ZonedDateTime getMetadataLastUpdated() {
-        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TMS_STATION_SENSOR_METADATA);
-        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TMS_STATION_METADATA);
+        final DataUpdated sensorsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.TMS_STATION_SENSOR_METADATA);
+        final DataUpdated stationsUpdated = dataStatusService.findDataUpdatedByDataType(DataType.TMS_STATION_METADATA);
         return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
                          stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
     }
