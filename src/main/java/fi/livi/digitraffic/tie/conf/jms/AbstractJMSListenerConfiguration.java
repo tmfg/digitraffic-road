@@ -106,8 +106,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         JMSParameters jmsParameters = getJmsParameters();
         try {
             // If lock can be acquired then connect and start listening
-            boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
-                                                              getJmsParameters().getLockInstanceId(),
+            boolean lockAcquired = lockingService.acquireLock(jmsParameters.getLockInstanceName(),
+                                                              jmsParameters.getLockInstanceId(),
                                                               JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
@@ -117,7 +117,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
                 // Try to connect if not connected
                 if (connection == null) {
-                    connection = createConnection(getJmsParameters(), connectionFactory);
+                    connection = createConnection(jmsParameters, connectionFactory);
                 }
                 // Calling start multiple times is safe
                 connection.start();
@@ -130,12 +130,13 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
             closeConnectionQuietly();
-            lockingService.releaseLock(getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
+            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
         }
 
         // Check if shutdown was called during connection initialization
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
+            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
         }
     }
 
