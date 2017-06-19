@@ -47,7 +47,7 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
@@ -59,7 +59,7 @@ public class RoadStationSensorService {
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private final RoadStationRepository roadStationRepository;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final SensorValueRepository sensorValueRepository;
     private final EntityManager entityManager;
 
@@ -68,7 +68,7 @@ public class RoadStationSensorService {
     @Autowired
     public RoadStationSensorService(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                     final RoadStationSensorRepository roadStationSensorRepository,
-                                    final StaticDataStatusService staticDataStatusService,
+                                    final DataStatusService dataStatusService,
                                     final RoadStationRepository roadStationRepository,
                                     final SensorValueRepository sensorValueRepository,
                                     final EntityManager entityManager,
@@ -79,7 +79,7 @@ public class RoadStationSensorService {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.sensorValueRepository = sensorValueRepository;
         this.entityManager = entityManager;
 
@@ -118,7 +118,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType
+        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType
             (roadStationType));
 
         return new RoadStationsSensorsMetadata(

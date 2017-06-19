@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
@@ -27,17 +27,17 @@ public class WeatherStationsSensorsUpdater {
 
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
     public WeatherStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                          final WeatherStationService weatherStationService,
-                                         final StaticDataStatusService staticDataStatusService,
+                                         final DataStatusService dataStatusService,
                                          final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
@@ -99,6 +99,6 @@ public class WeatherStationsSensorsUpdater {
     }
 
     private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 }

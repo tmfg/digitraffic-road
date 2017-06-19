@@ -27,7 +27,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION_SENSOR);
+            dataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION_SENSOR);
         }
         sensorsWatch.stop();
 
@@ -40,7 +40,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         stationsSensors.stop();
 
         if (stationsUpdated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
+            dataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
         }
 
         log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",

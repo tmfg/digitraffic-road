@@ -16,7 +16,7 @@ public class WeatherStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int wsCount = roadStationStatusUpdater.updateWeatherStationsStatuses();
-        staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
+        dataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
 
         log.info("Updated {} weather stations statuses", wsCount);
     }

@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.DirectionTextDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkMetadataDto;
@@ -46,7 +46,7 @@ public class TravelTimeLinkMetadataUpdater {
     private final SiteDao siteDao;
     private final DirectionDao directionDao;
     private final TravelTimeClient travelTimeClient;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
 
     private final static Pattern roadAddressPattern = Pattern.compile("^(\\d+)\\/(\\d+)-(\\d+)$");
 
@@ -55,23 +55,23 @@ public class TravelTimeLinkMetadataUpdater {
                                          final SiteDao siteDao,
                                          final DirectionDao directionDao,
                                          final TravelTimeClient travelTimeClient,
-                                         final StaticDataStatusService staticDataStatusService) {
+                                         final DataStatusService dataStatusService) {
         this.linkDao = linkDao;
         this.siteDao = siteDao;
         this.directionDao = directionDao;
         this.travelTimeClient = travelTimeClient;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
     public void updateLinkMetadataIfUpdateAvailable() {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.TRAVEL_TIME_LINKS);
+        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.TRAVEL_TIME_LINKS);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
         if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
             updateLinkMetadata(linkMetadata);
-            staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
+            dataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
         } else {
             log.info("Travel time PKS link metadata up-to-date");
         }

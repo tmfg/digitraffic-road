@@ -16,7 +16,7 @@ public class TmsStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int tmsCount = roadStationStatusUpdater.updateTmsStationsStatuses();
-        staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
+        dataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
         log.info("Updated {} TMS stations statuses", tmsCount);
     }
 }

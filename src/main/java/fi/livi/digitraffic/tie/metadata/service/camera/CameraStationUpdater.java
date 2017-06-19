@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -24,17 +24,17 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 public class CameraStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
 
     @Autowired
-    public CameraStationUpdater(final StaticDataStatusService staticDataStatusService,
+    public CameraStationUpdater(final DataStatusService dataStatusService,
                                 final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
                                 final CameraStationUpdateService cameraStationUpdateService,
                                 final CameraPresetService cameraPresetService) {
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
@@ -56,7 +56,7 @@ public class CameraStationUpdater {
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.CAMERA_PRESET, updateStaticDataStatus);
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.CAMERA_PRESET, updateStaticDataStatus);
     }
 
     public boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {

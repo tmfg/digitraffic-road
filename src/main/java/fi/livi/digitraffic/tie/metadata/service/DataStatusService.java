@@ -14,8 +14,8 @@ import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 
 @Service
-public class StaticDataStatusService {
-    private static final Logger log = LoggerFactory.getLogger(StaticDataStatusService.class);
+public class DataStatusService {
+    private static final Logger log = LoggerFactory.getLogger(DataStatusService.class);
 
     public enum StaticStatusType {
         TMS("LAM_DATA_LAST_UPDATED"),
@@ -39,8 +39,8 @@ public class StaticDataStatusService {
     private final MetadataUpdatedRepository metadataUpdatedRepository;
 
     @Autowired
-    public StaticDataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
-                                   final MetadataUpdatedRepository metadataUpdatedRepository) {
+    public DataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
+                             final MetadataUpdatedRepository metadataUpdatedRepository) {
         this.staticDataStatusDAO = staticDataStatusDAO;
         this.metadataUpdatedRepository = metadataUpdatedRepository;
     }

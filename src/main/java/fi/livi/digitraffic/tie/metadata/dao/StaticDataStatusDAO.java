@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService.StaticStatusType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService.StaticStatusType;
 
 @Repository
 public class StaticDataStatusDAO {

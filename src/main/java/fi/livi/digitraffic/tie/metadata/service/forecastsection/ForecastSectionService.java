@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionF
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class ForecastSectionService {
@@ -24,14 +24,14 @@ public class ForecastSectionService {
 
     private final ForecastSection2FeatureConverter forecastSection2FeatureConverter;
 
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public ForecastSectionService(final ForecastSectionRepository forecastSectionRepository,
-                                  final StaticDataStatusService staticDataStatusService,
+                                  final DataStatusService dataStatusService,
                                   final ForecastSection2FeatureConverter forecastSection2FeatureConverter) {
         this.forecastSectionRepository = forecastSectionRepository;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.forecastSection2FeatureConverter = forecastSection2FeatureConverter;
     }
 
@@ -39,14 +39,14 @@ public class ForecastSectionService {
     public ForecastSectionFeatureCollection findAllForecastSections() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 
-        staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
+        dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
 
         return forecastSection2FeatureConverter.convert(forecastSections, ZonedDateTime.now());
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
+        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo ?

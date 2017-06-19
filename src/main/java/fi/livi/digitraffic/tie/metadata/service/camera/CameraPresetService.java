@@ -36,7 +36,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureColle
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.MetadataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class CameraPresetService {
@@ -49,12 +49,12 @@ public class CameraPresetService {
 
     private final CameraPresetRepository cameraPresetRepository;
     private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public CameraPresetService(final EntityManager entityManager,
                                final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
-                               final StaticDataStatusService staticDataStatusService,
+                               final DataStatusService dataStatusService,
                                final CameraPresetRepository cameraPresetRepository,
                                final RoadStationRepository roadStationRepository,
                                final WeatherStationRepository weatherStationRepository) {
@@ -63,7 +63,7 @@ public class CameraPresetService {
         this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
     }
 
     private Criteria createCriteria() {
@@ -113,7 +113,7 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
+        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?

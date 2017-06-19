@@ -20,7 +20,7 @@ public class CameraStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int csCount = roadStationStatusUpdater.updateCameraStationsStatuses();
-        staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
+        dataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
 
         long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
         log.info("Updated {} camera stations statuses", csCount);
