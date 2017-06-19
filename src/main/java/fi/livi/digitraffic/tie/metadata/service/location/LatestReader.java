@@ -22,9 +22,9 @@ public class LatestReader extends AbstractReader<Void> {
 
     private DataType getMetadataType(final String type) {
         if(StringUtils.equals(type, "csv")) {
-            return DataType.LOCATIONS;
+            return DataType.LOCATIONS_METADATA;
         } else if(StringUtils.equals(type, "dat")) {
-            return DataType.LOCATION_TYPES;
+            return DataType.LOCATION_TYPES_METADATA;
         }
 
         throw new IllegalArgumentException("Unknown metadatatype " + type);

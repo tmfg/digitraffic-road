@@ -16,11 +16,11 @@ public class MetadataVersions {
     }
 
     public MetadataVersion getLocationsVersion() {
-        return versionMap.get(DataType.LOCATIONS);
+        return versionMap.get(DataType.LOCATIONS_METADATA);
     }
 
     public MetadataVersion getLocationTypeVersion() {
-        return versionMap.get(DataType.LOCATION_TYPES);
+        return versionMap.get(DataType.LOCATION_TYPES_METADATA);
     }
 
     public static class MetadataVersion {
