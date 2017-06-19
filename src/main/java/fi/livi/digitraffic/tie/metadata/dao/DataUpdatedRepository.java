@@ -8,13 +8,13 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
 @Repository
-public interface MetadataUpdatedRepository extends JpaRepository<DataUpdated, Long> {
+public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> {
 
     @Query(value =
            "SELECT *\n" +
-           "FROM METADATA_UPDATED\n" +
+           "FROM DATA_UPDATED\n" +
            "WHERE METADATA_TYPE = :metadataType",
            nativeQuery = true)
-    DataUpdated findByMetadataType(@Param("metadataType")
-                                   final String metadataType);
+    DataUpdated findByDataType(@Param("metadataType")
+                               final String metadataType);
 }

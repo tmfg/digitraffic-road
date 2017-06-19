@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
+import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
@@ -36,13 +36,13 @@ public class DataStatusService {
     }
 
     private final StaticDataStatusDAO staticDataStatusDAO;
-    private final MetadataUpdatedRepository metadataUpdatedRepository;
+    private final DataUpdatedRepository dataUpdatedRepository;
 
     @Autowired
     public DataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
-                             final MetadataUpdatedRepository metadataUpdatedRepository) {
+                             final DataUpdatedRepository dataUpdatedRepository) {
         this.staticDataStatusDAO = staticDataStatusDAO;
-        this.metadataUpdatedRepository = metadataUpdatedRepository;
+        this.dataUpdatedRepository = dataUpdatedRepository;
     }
 
     @Transactional
@@ -57,10 +57,10 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
-        final DataUpdated updated = metadataUpdatedRepository.findByMetadataType(dataType.name());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
         log.info("Update DataUpdated, type: " + dataType + ", version: " + version);
         if (updated == null) {
-            metadataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
+            dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
@@ -69,10 +69,10 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, ZonedDateTime updated) {
-        DataUpdated dataUpdated = metadataUpdatedRepository.findByMetadataType(dataType.name());
+        DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType.name());
         log.info("Update DataUpdated, type: " + dataType + ", updated: " + updated);
         if (dataUpdated == null) {
-            metadataUpdatedRepository.save(new DataUpdated(dataType, updated, null));
+            dataUpdatedRepository.save(new DataUpdated(dataType, updated, null));
         } else {
             dataUpdated.setUpdatedTime(updated);
         }
@@ -80,6 +80,6 @@ public class DataStatusService {
 
     @Transactional(readOnly = true)
     public DataUpdated findMetadataUpdatedByMetadataType(final DataType dataType) {
-        return metadataUpdatedRepository.findByMetadataType(dataType.name());
+        return dataUpdatedRepository.findByDataType(dataType.name());
     }
 }
