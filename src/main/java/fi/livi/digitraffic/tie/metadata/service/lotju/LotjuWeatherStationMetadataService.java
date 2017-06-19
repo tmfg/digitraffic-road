@@ -24,14 +24,13 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
-public class LotjuWeatherStationMetadataService extends AbstractLotjuMetadataService {
+public class LotjuWeatherStationMetadataService {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuWeatherStationMetadataService.class);
     private final LotjuWeatherStationMetadataClient lotjuWeatherStationClient;
 
     @Autowired
     public LotjuWeatherStationMetadataService(final LotjuWeatherStationMetadataClient lotjuWeatherStationClient) {
-        super(lotjuWeatherStationClient.isEnabled());
         this.lotjuWeatherStationClient = lotjuWeatherStationClient;
     }
 

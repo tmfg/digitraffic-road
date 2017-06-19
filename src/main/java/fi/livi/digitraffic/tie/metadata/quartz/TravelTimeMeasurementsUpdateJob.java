@@ -38,6 +38,7 @@ public class TravelTimeMeasurementsUpdateJob extends SimpleUpdateJob {
                 travelTimeUpdater.updateIndividualMeasurements(from.plusMinutes(minute));
             } catch (HttpServerErrorException e) {
                 // Request failed after retries. Skip this minute.
+                log.debug("HttpServerErrorException", e);
             }
         });
     }

@@ -81,3 +81,6 @@ jms.datex2.enabled=true
 
 # Websocket stream of LAM sensor values
 websocket.tms.enabled=true
+
+# Disable jobs. Format: quartz.{jobClassName}.enabled = false
+# Ie. quartz.CameraUpdateJob.enabled = false

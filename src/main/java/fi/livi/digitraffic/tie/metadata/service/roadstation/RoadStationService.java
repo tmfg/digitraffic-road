@@ -52,11 +52,6 @@ public class RoadStationService {
         this.entityManager = entityManager;
     }
 
-    private CriteriaBuilder createCriteriaBuilder() {
-        return entityManager
-            .getCriteriaBuilder();
-    }
-
     @Transactional(readOnly = true)
     public List<RoadStation> findByType(final RoadStationType type) {
         return roadStationRepository.findByType(type);
@@ -133,7 +128,7 @@ public class RoadStationService {
 
     @Transactional
     public int obsoleteRoadStationsExcludingLotjuIds(final RoadStationType roadStationType, final List<Long> roadStationsLotjuIdsNotToObsolete) {
-        final CriteriaBuilder cb = createCriteriaBuilder();
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaUpdate<RoadStation> update = cb.createCriteriaUpdate(RoadStation.class);
         final Root<RoadStation> root = update.from(RoadStation.class);
         EntityType<RoadStation> rootModel = root.getModel();
@@ -142,6 +137,7 @@ public class RoadStationService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        predicates.add( cb.or(cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))), cb.notEqual(root.get(rootModel.getSingularAttribute("obsolete", Boolean.class)), true)) );
         for (List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }

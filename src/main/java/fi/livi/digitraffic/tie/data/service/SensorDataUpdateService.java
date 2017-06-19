@@ -91,7 +91,7 @@ public class SensorDataUpdateService {
             Lam currentLam = tmsMapByLamStationLotjuId.get(lamCandidate.getAsemaId());
             if (currentLam == null || lamCandidate.getAika().toGregorianCalendar().after(currentLam.getAika().toGregorianCalendar())) {
                 if (currentLam != null) {
-                    log.info("Replace " + currentLam.getAika() + " with " + lamCandidate.getAika());
+                    log.debug("Replace lam " + currentLam.getAika() + " with " + lamCandidate.getAika());
                 }
                 tmsMapByLamStationLotjuId.put(lamCandidate.getAsemaId(), lamCandidate);
             }
@@ -106,7 +106,7 @@ public class SensorDataUpdateService {
             Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
             if (currentTiesaa == null || tiesaaCandidate.getAika().toGregorianCalendar().after(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
-                    log.info("Replace " + currentTiesaa.getAika() + " with " + tiesaaCandidate.getAika());
+                    log.debug("Replace tiesaa " + currentTiesaa.getAika() + " with " + tiesaaCandidate.getAika());
                 }
                 tiesaaMapByTmsStationLotjuId.put(tiesaaCandidate.getAsemaId(), tiesaaCandidate);
             }
