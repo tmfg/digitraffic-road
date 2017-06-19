@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurement
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMedianDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
@@ -60,7 +60,7 @@ public class TravelTimeUpdater {
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            dataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
+            dataStatusService.setMetadataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS, from);
             return;
         }
 
@@ -88,7 +88,7 @@ public class TravelTimeUpdater {
                                                                                           measurementsForValidLinks), validLinks);
 
         travelTimeRepository.insertMeasurementData(processed);
-        dataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
+        dataStatusService.setMetadataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS, from);
 
         log.info("Processed and saved PKS measurements for {} links", processed.size());
     }
@@ -103,7 +103,7 @@ public class TravelTimeUpdater {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            dataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
+            dataStatusService.setMetadataUpdated(DataType.TRAVEL_TIME_MEDIANS, from);
             return;
         }
 
@@ -133,7 +133,7 @@ public class TravelTimeUpdater {
 
         travelTimeRepository.insertMedianData(processedMedians);
         travelTimeRepository.updateLatestMedianData(processedMedians);
-        dataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
+        dataStatusService.setMetadataUpdated(DataType.TRAVEL_TIME_MEDIANS, from);
 
         log.info("Processed and saved PKS medians for {} links", processedMedians.size());
     }

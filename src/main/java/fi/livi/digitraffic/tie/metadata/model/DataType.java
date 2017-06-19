@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-public enum MetadataType {
+public enum DataType {
 
     CAMERA_STATION,
     LAM_STATION,
@@ -18,7 +18,7 @@ public enum MetadataType {
     ;
 
 
-    public static MetadataType getForRoadStationType(final RoadStationType roadStationType) {
+    public static DataType getForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
             return LAM_ROAD_STATION_SENSOR;
         } else if (RoadStationType.WEATHER_STATION == roadStationType) {

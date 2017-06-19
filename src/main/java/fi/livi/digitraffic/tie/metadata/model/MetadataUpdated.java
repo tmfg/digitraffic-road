@@ -23,7 +23,7 @@ public class MetadataUpdated {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private MetadataType metadataType;
+    private DataType dataType;
 
     @Column(name = "UPDATED")
     private ZonedDateTime updatedTime;
@@ -34,8 +34,8 @@ public class MetadataUpdated {
         // Empty for repository
     }
 
-    public MetadataUpdated(final MetadataType type, final ZonedDateTime updatedTime, final String version) {
-        setMetadataType(type);
+    public MetadataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
+        setDataType(type);
         setUpdatedTime(updatedTime);
         setVersion(version);
     }
@@ -48,12 +48,12 @@ public class MetadataUpdated {
         this.id = id;
     }
 
-    public MetadataType getMetadataType() {
-        return metadataType;
+    public DataType getDataType() {
+        return dataType;
     }
 
-    public void setMetadataType(MetadataType metadataType) {
-        this.metadataType = metadataType;
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
 
     public ZonedDateTime getUpdatedTime() {

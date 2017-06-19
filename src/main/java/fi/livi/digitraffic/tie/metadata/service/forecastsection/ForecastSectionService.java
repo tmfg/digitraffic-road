@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.metadata.converter.ForecastSection2FeatureConvert
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
@@ -39,14 +39,14 @@ public class ForecastSectionService {
     public ForecastSectionFeatureCollection findAllForecastSections() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
 
-        dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
+        dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION);
 
         return forecastSection2FeatureConverter.convert(forecastSections, ZonedDateTime.now());
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(MetadataType.FORECAST_SECTION);
+        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo ?

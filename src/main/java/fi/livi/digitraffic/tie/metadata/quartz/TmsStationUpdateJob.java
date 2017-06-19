@@ -5,7 +5,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
@@ -28,7 +28,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            dataStatusService.updateMetadataUpdated(MetadataType.LAM_ROAD_STATION_SENSOR);
+            dataStatusService.updateDataUpdated(DataType.LAM_ROAD_STATION_SENSOR);
         }
         sensorsWatch.stop();
 
@@ -41,7 +41,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         stationsSensorsWatch.stop();
 
         if (stationsUpdated || updatedTmsStationsSensors) {
-            dataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
+            dataStatusService.updateDataUpdated(DataType.LAM_STATION);
         }
 
         log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",

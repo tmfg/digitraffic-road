@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
 
 @Service
@@ -30,7 +30,7 @@ public class ForecastSectionDataService {
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.FORECAST_SECTION_WEATHER.toString());
+        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(DataType.FORECAST_SECTION_WEATHER.toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
         if(onlyUpdateInfo) {
