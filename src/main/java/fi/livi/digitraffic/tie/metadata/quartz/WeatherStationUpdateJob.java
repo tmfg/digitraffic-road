@@ -40,7 +40,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         stationsSensors.stop();
 
         if (stationsUpdated) {
-            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION);
+            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         }
 
         log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",

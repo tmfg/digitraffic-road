@@ -70,7 +70,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     @Transactional(readOnly = true)
     public WeatherStationFeatureCollection findAllPublishableWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
         final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR);
-        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION);
+        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_METADATA);
         final ZonedDateTime updated = DateHelper.getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
                                                      stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
 
