@@ -13,7 +13,7 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     @Query(value =
            "SELECT *\n" +
            "FROM DATA_UPDATED\n" +
-           "WHERE METADATA_TYPE = :metadataType",
+           "WHERE DATA_TYPE = :metadataType",
            nativeQuery = true)
     DataUpdated findByDataType(@Param("metadataType")
                                final String metadataType);
