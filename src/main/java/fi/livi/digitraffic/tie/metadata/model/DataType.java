@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 public enum DataType {
 
-    CAMERA_STATION,
+    CAMERA_STATION_METADATA,
     LAM_STATION,
     WEATHER_STATION,
     // ROAD_STATION_SENSOR,

@@ -113,7 +113,7 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.CAMERA_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.CAMERA_STATION_METADATA);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?

@@ -19,7 +19,7 @@ public class CameraUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         if (cameraStationUpdater.updateCameras()) {
-            dataStatusService.updateDataUpdated(DataType.CAMERA_STATION);
+            dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
         cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
     }
