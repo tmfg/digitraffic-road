@@ -22,7 +22,7 @@ public class ForecastSectionCoordinatesUpdateJob extends SimpleUpdateJob {
         boolean updated = forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         if (updated) {
-            dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION);
+            dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA);
         }
 
         String updateStatus = updated ? "Coordinates were updated." : "Coordinates were up-to-date.";

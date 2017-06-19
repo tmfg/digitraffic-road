@@ -16,5 +16,5 @@ public interface MetadataUpdatedRepository extends JpaRepository<DataUpdated, Lo
            "WHERE METADATA_TYPE = :metadataType",
            nativeQuery = true)
     DataUpdated findByMetadataType(@Param("metadataType")
-                                       final String metadataType);
+                                   final String metadataType);
 }

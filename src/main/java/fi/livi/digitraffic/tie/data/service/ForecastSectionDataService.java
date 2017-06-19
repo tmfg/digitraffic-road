@@ -30,7 +30,7 @@ public class ForecastSectionDataService {
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
-        final DataUpdated updated = metadataUpdatedRepository.findByMetadataType(DataType.FORECAST_SECTION_WEATHER.toString());
+        final DataUpdated updated = metadataUpdatedRepository.findByMetadataType(DataType.FORECAST_SECTION_WEATHER_DATA.toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
         if(onlyUpdateInfo) {
