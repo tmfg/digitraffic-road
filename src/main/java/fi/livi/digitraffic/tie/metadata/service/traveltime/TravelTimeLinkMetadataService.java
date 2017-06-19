@@ -32,7 +32,7 @@ public class TravelTimeLinkMetadataService {
     public LinkFeatureCollection getLinkMetadata() {
         final List<Link> links = linkRepository.findByObsoleteDateIsNullOrderByNaturalId();
 
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS_METADATA);
 
         return link2FeatureConverter.convert(links, updated != null ? updated.getUpdatedTime() : null);
     }

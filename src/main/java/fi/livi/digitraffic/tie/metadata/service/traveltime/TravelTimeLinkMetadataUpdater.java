@@ -66,12 +66,12 @@ public class TravelTimeLinkMetadataUpdater {
     @Transactional
     public void updateLinkMetadataIfUpdateAvailable() {
 
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS_METADATA);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
         if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
             updateLinkMetadata(linkMetadata);
-            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_LINKS_METADATA, linkMetadata.lastUpdate);
         } else {
             log.info("Travel time PKS link metadata up-to-date");
         }

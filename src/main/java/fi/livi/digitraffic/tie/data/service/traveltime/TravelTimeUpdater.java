@@ -60,7 +60,7 @@ public class TravelTimeUpdater {
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS, from);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
             return;
         }
 
@@ -88,7 +88,7 @@ public class TravelTimeUpdater {
                                                                                           measurementsForValidLinks), validLinks);
 
         travelTimeRepository.insertMeasurementData(processed);
-        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS, from);
+        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
 
         log.info("Processed and saved PKS measurements for {} links", processed.size());
     }
@@ -103,7 +103,7 @@ public class TravelTimeUpdater {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS, from);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
             return;
         }
 
@@ -133,7 +133,7 @@ public class TravelTimeUpdater {
 
         travelTimeRepository.insertMedianData(processedMedians);
         travelTimeRepository.updateLatestMedianData(processedMedians);
-        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS, from);
+        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
 
         log.info("Processed and saved PKS medians for {} links", processedMedians.size());
     }

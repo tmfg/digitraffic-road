@@ -26,7 +26,7 @@ public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(final JobExecutionContext context) throws Exception {
 
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.TRAVEL_TIME_MEDIANS.name());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.TRAVEL_TIME_MEDIANS_DATA.name());
 
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime from = getStartTime(updated, now);
