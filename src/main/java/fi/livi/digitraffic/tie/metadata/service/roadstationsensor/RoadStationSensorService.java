@@ -43,7 +43,7 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
@@ -118,7 +118,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.getForRoadStationType
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.getForRoadStationType
             (roadStationType));
 
         return new RoadStationsSensorsMetadata(

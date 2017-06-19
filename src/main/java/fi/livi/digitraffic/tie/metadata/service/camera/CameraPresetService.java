@@ -35,7 +35,7 @@ import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
@@ -113,7 +113,7 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.CAMERA_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.CAMERA_STATION);
 
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?

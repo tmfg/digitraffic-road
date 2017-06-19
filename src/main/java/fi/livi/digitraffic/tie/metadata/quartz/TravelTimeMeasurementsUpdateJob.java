@@ -12,7 +12,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeUpdater;
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
 @DisallowConcurrentExecution
 public class TravelTimeMeasurementsUpdateJob extends SimpleUpdateJob {
@@ -26,7 +26,7 @@ public class TravelTimeMeasurementsUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(final JobExecutionContext context) throws Exception {
 
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(DataType.TRAVEL_TIME_MEASUREMENTS.name());
+        final DataUpdated updated = metadataUpdatedRepository.findByMetadataType(DataType.TRAVEL_TIME_MEASUREMENTS.name());
 
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime from = TravelTimeMediansUpdateJob.getStartTime(updated, now);

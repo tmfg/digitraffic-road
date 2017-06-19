@@ -21,7 +21,7 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) throws Exception {
         Timestamp messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        dataStatusService.setMetadataUpdated(DataType.FORECAST_SECTION_WEATHER,
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER,
                                                    ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
     }
 }

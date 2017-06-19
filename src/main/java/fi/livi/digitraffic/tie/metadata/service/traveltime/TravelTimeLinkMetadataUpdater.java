@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.metadata.dao.SiteDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.DirectionTextDto;
 import fi.livi.digitraffic.tie.metadata.service.traveltime.dto.LinkDto;
@@ -66,12 +66,12 @@ public class TravelTimeLinkMetadataUpdater {
     @Transactional
     public void updateLinkMetadataIfUpdateAvailable() {
 
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TRAVEL_TIME_LINKS);
         final LinkMetadataDto linkMetadata = travelTimeClient.getLinkMetadata();
 
         if (updated == null || linkMetadata.lastUpdate.isAfter(updated.getUpdatedTime())) {
             updateLinkMetadata(linkMetadata);
-            dataStatusService.setMetadataUpdated(DataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_LINKS, linkMetadata.lastUpdate);
         } else {
             log.info("Travel time PKS link metadata up-to-date");
         }

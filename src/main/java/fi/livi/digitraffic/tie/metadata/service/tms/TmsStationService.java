@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -70,7 +70,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
         final TmsState tmsState) {
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
         final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
@@ -80,7 +80,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION);
         final List<TmsStation> stations = findStations(roadNumber, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(

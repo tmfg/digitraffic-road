@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
@@ -46,7 +46,7 @@ public class ForecastSectionService {
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
 
-        final MetadataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION);
+        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.FORECAST_SECTION);
 
         return new ForecastSectionsMetadata(
                 onlyUpdateInfo ?

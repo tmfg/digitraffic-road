@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
 @Service
 public class DataStatusService {
@@ -52,15 +52,15 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType) {
-        updateDataUpdated(dataType, null);
+        updateDataUpdated(dataType, (String)null);
     }
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(dataType.name());
-        log.info("Update MetadataUpdated, type: " + dataType + ", version: " + version);
+        final DataUpdated updated = metadataUpdatedRepository.findByMetadataType(dataType.name());
+        log.info("Update DataUpdated, type: " + dataType + ", version: " + version);
         if (updated == null) {
-            metadataUpdatedRepository.save(new MetadataUpdated(dataType, ZonedDateTime.now(), version));
+            metadataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
             updated.setVersion(version);
@@ -68,17 +68,18 @@ public class DataStatusService {
     }
 
     @Transactional
-    public void setMetadataUpdated(final DataType dataType, ZonedDateTime updated) {
-        MetadataUpdated metadataUpdated = metadataUpdatedRepository.findByMetadataType(dataType.name());
-        if (metadataUpdated == null) {
-            metadataUpdatedRepository.save(new MetadataUpdated(dataType, updated, null));
+    public void updateDataUpdated(final DataType dataType, ZonedDateTime updated) {
+        DataUpdated dataUpdated = metadataUpdatedRepository.findByMetadataType(dataType.name());
+        log.info("Update DataUpdated, type: " + dataType + ", updated: " + updated);
+        if (dataUpdated == null) {
+            metadataUpdatedRepository.save(new DataUpdated(dataType, updated, null));
         } else {
-            metadataUpdated.setUpdatedTime(updated);
+            dataUpdated.setUpdatedTime(updated);
         }
     }
 
     @Transactional(readOnly = true)
-    public MetadataUpdated findMetadataUpdatedByMetadataType(final DataType dataType) {
+    public DataUpdated findMetadataUpdatedByMetadataType(final DataType dataType) {
         return metadataUpdatedRepository.findByMetadataType(dataType.name());
     }
 }

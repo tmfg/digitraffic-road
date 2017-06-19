@@ -15,11 +15,11 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @DynamicUpdate
-public class MetadataUpdated {
+public class DataUpdated {
     @Id
-    @GenericGenerator(name = "SEQ_METAD_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_METAD_UPDATED"))
-    @GeneratedValue(generator = "SEQ_METAD_UPDATED")
+    @GenericGenerator(name = "SEQ_DATA_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATA_UPDATED"))
+    @GeneratedValue(generator = "SEQ_DATA_UPDATED")
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -30,11 +30,11 @@ public class MetadataUpdated {
 
     private String version;
 
-    private MetadataUpdated() {
+    private DataUpdated() {
         // Empty for repository
     }
 
-    public MetadataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
+    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
         setDataType(type);
         setUpdatedTime(updatedTime);
         setVersion(version);

@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
@@ -69,8 +69,8 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
 
     @Transactional(readOnly = true)
     public WeatherStationFeatureCollection findAllPublishableWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final MetadataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR);
-        final MetadataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION);
+        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR);
+        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION);
         final ZonedDateTime updated = DateHelper.getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
                                                      stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
 
