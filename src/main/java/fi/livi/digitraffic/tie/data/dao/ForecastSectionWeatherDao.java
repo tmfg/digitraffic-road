@@ -77,7 +77,7 @@ public class ForecastSectionWeatherDao {
 
 
 
-    private ForecastConditionReasonDto mapForecastConditionReason(final ResultSet rs) throws SQLException {
+    private static ForecastConditionReasonDto mapForecastConditionReason(final ResultSet rs) throws SQLException {
         final PrecipitationCondition precipitationCondition = DaoUtils.findEnum(rs, "precipitation_condition", PrecipitationCondition.class);
         final RoadCondition roadCondition = DaoUtils.findEnum(rs, "road_condition", RoadCondition.class);
         final WindCondition windCondition = DaoUtils.findEnum(rs, "wind_condition", WindCondition.class);

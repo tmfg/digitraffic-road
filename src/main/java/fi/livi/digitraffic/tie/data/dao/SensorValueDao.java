@@ -26,7 +26,7 @@ public class SensorValueDao {
     private static final Logger log = LoggerFactory.getLogger(SensorValueDao.class);
 
     private static final String MERGE_STATEMENT =
-        "MERGE INTO SENSOR_VALUE dst\n" +
+            "MERGE INTO SENSOR_VALUE dst\n" +
             "USING (\n" +
             "  SELECT (\n" +
             "        SELECT sensor.id  \n" +

@@ -96,7 +96,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
      * thread
      */
     @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
-    public void connectAndListen() throws JMSException, JAXBException {
+    public void connectAndListen() {
 
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
@@ -147,7 +147,7 @@ public abstract class AbstractJMSListenerConfiguration<T> {
             QueueConnection queueConnection = connectionFactory.createQueueConnection(
                     jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
             JMSExceptionListener jmsExceptionListener =
-                    new JMSExceptionListener(queueConnection, jmsParameters);
+                    new JMSExceptionListener(jmsParameters);
             queueConnection.setExceptionListener(jmsExceptionListener);
             Connection sonicCon = (Connection) queueConnection;
             log.info("Connection created: " + connectionFactory.toString());
@@ -215,12 +215,9 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     public class JMSExceptionListener implements ExceptionListener {
 
-        private QueueConnection connection;
         private final JMSParameters jmsParameters;
 
-        public JMSExceptionListener(final QueueConnection connection,
-                                    final JMSParameters jmsParameters) {
-            this.connection = connection;
+        public JMSExceptionListener(final JMSParameters jmsParameters) {
             this.jmsParameters = jmsParameters;
         }
 

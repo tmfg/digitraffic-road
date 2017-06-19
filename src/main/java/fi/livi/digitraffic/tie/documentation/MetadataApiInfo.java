@@ -50,7 +50,7 @@ public class MetadataApiInfo extends ApiInfo {
 
     @Override
     public String getTermsOfServiceUrl() {
-        return messageService.getMessage("apiInfo.terms.of.service");
+        return messageService.getMessage("apiInfo.terms.of.service.url");
     }
 
 

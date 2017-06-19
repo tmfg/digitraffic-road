@@ -66,8 +66,7 @@ public class JMSMessageListener<T> implements MessageListener {
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
-
-        log.info(log.getName() + " JMSMessageListener initialized with drainScheduled " + drainScheduled);
+        log.info("{} JMSMessageListener initialized with drainScheduled: {}", log.getName(), drainScheduled);
     }
 
     public boolean isDrainScheduled() {

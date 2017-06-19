@@ -19,6 +19,11 @@
 To configure project copy ***src/main/resources/application-localhost.template*** -file
 as ***application-localhost.properties*** and configure it according to your environment.
 
+If you want to disable some jobs, it can be done by adding following line to application.properties file
+
+    # Disable jobs. Format: quartz.{jobClassName}.enabled = false
+    quartz.CameraUpdateJob.enabled = false
+
 ### Configure Oracle JDBC driver
 
 Download Oracle JDBC driver and add it to your local Maven repository.

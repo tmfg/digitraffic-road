@@ -1,15 +1,11 @@
 package fi.livi.digitraffic.tie.conf.jaxb2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 @Configuration
 public class MetadataMarshallerConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(MetadataMarshallerConfiguration.class);
 
     @Bean
     public Jaxb2Marshaller marshaller() {

@@ -62,7 +62,11 @@ public class CameraPreset {
     private Integer presetOrder;
 
     /**
-     * Web application's public value
+     * Web application's public value. If false, OVERRIDES LODJU (publicExternal).
+     * If true this is ignored.
+     *
+     * P(public) =: publicInternal && publicExternal
+     *
      */
     private boolean publicInternal;
 
