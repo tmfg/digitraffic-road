@@ -28,7 +28,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            dataStatusService.updateDataUpdated(DataType.LAM_ROAD_STATION_SENSOR);
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         }
         sensorsWatch.stop();
 
@@ -41,7 +41,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         stationsSensorsWatch.stop();
 
         if (stationsUpdated || updatedTmsStationsSensors) {
-            dataStatusService.updateDataUpdated(DataType.LAM_STATION_METADATA);
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
         }
 
         log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",

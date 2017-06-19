@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.weather;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
+
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
@@ -69,16 +70,11 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
 
     @Transactional(readOnly = true)
     public WeatherStationFeatureCollection findAllPublishableWeatherStationAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR);
-        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_METADATA);
-        final ZonedDateTime updated = DateHelper.getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
-                                                     stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
-
         return weatherStationMetadata2FeatureConverter.convert(
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
-                updated);
+                getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)
@@ -161,5 +157,12 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
         // Update RoadStation
         return updateRoadStationAttributes(from, to.getRoadStation()) ||
             HashCodeBuilder.reflectionHashCode(to) != hash;
+    }
+
+    private ZonedDateTime getMetadataLastUpdated() {
+        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_SENSOR_METADATA);
+        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.WEATHER_STATION_METADATA);
+        return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
+                         stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
     }
 }

@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
 import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -70,22 +72,20 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
         final TmsState tmsState) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION_METADATA);
         final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
                 stations,
-                updated != null ? updated.getUpdatedTime() : null);
+                getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final DataUpdated updated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.LAM_STATION_METADATA);
         final List<TmsStation> stations = findStations(roadNumber, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
-            updated != null ? updated.getUpdatedTime() : null);
+            getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)
@@ -314,5 +314,12 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
         return tmsStationMetadata2FeatureConverter.convert(station);
 
+    }
+
+    private ZonedDateTime getMetadataLastUpdated() {
+        final DataUpdated sensorsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TMS_STATION_SENSOR_METADATA);
+        final DataUpdated stationsUpdated = dataStatusService.findMetadataUpdatedByMetadataType(DataType.TMS_STATION_METADATA);
+        return getNewest(sensorsUpdated != null ? sensorsUpdated.getUpdatedTime() : null,
+                         stationsUpdated != null ? stationsUpdated.getUpdatedTime() : null);
     }
 }

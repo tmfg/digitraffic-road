@@ -3,10 +3,10 @@ package fi.livi.digitraffic.tie.metadata.model;
 public enum DataType {
 
     CAMERA_STATION_METADATA,
-    LAM_STATION_METADATA,
+    TMS_STATION_METADATA,
     WEATHER_STATION_METADATA,
-    WEATHER_STATION_SENSOR,
-    LAM_ROAD_STATION_SENSOR,
+    WEATHER_STATION_SENSOR_METADATA,
+    TMS_STATION_SENSOR_METADATA,
     FORECAST_SECTION,
     FORECAST_SECTION_WEATHER,
     LOCATIONS,
@@ -19,9 +19,9 @@ public enum DataType {
 
     public static DataType getForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
-            return LAM_ROAD_STATION_SENSOR;
+            return TMS_STATION_SENSOR_METADATA;
         } else if (RoadStationType.WEATHER_STATION == roadStationType) {
-            return WEATHER_STATION_SENSOR;
+            return WEATHER_STATION_SENSOR_METADATA;
         }
         throw new IllegalArgumentException("No metadata type for " + roadStationType);
     }

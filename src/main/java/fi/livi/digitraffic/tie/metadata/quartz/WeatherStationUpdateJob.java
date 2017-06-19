@@ -27,7 +27,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR);
+            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
         }
         sensorsWatch.stop();
 
