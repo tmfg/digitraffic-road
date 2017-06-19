@@ -69,7 +69,7 @@ public class WeatherStationsSensorsUpdater {
         // Update sensors of road stations
         final boolean updateStaticDataStatus =
                 updateSensorsOfWeatherStations(stationAnturisPair);
-        updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
+        updateRoadWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update WeatherStations RoadStationSensors end");
         return updateStaticDataStatus;
@@ -98,7 +98,7 @@ public class WeatherStationsSensorsUpdater {
         return countRemoved > 0 || countAdded > 0;
     }
 
-    private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
+    private void updateRoadWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
         dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 }

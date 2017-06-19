@@ -77,7 +77,7 @@ public class TmsStationsSensorsUpdater {
         // Update sensors of road stations
         final boolean updateStaticDataStatus =
                 updateSensorsOfTmsStations(stationAnturisPairs);
-        updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
+        updateRoadWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update TMS Stations Sensors end");
         return updateStaticDataStatus;
@@ -111,7 +111,7 @@ public class TmsStationsSensorsUpdater {
         return countRemoved > 0 || countAdded > 0;
     }
 
-    private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
+    private void updateRoadWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
         dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 }
