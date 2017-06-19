@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.io.StringReader;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -229,7 +228,6 @@ public class Datex2DataService {
     }
 
     public TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
-        StringReader sr = new StringReader(datex2Xml);
         try {
             Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
             if (object instanceof JAXBElement) {
