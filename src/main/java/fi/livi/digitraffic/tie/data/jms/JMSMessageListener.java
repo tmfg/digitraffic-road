@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.jms;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,15 +11,16 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
+import org.springframework.oxm.XmlMappingException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
@@ -39,7 +39,6 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private final Logger log;
 
-    private final Unmarshaller jaxbUnmarshaller;
     private final ConcurrentLinkedQueue<Pair<T,String>> messageQueue = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger messageCounter = new AtomicInteger();
@@ -47,25 +46,26 @@ public class JMSMessageListener<T> implements MessageListener {
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
+    private final Jaxb2Marshaller jaxb2Marshaller;
     private final JMSDataUpdater dataUpdater;
 
     /**
      *
-     * @param typeClass
+     *
+     * @param jaxb2Marshaller marshaller
      * @param dataUpdater Data updater handle
      * @param drainScheduled If true received messages will be handled only when drainQueueScheduled is called. If set to false
      *                       messages will be handled immediately when they arrived and message sender is notified of successful receive.
      * @param log
      * @throws JAXBException
      */
-    public JMSMessageListener(final Class<T> typeClass,
-                              final JMSDataUpdater dataUpdater,
-                              final boolean drainScheduled,
-                              final Logger log) throws JAXBException {
+    public JMSMessageListener(Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log)
+        throws JAXBException {
+
+        this.jaxb2Marshaller = jaxb2Marshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
-        this.jaxbUnmarshaller = JAXBContext.newInstance(typeClass).createUnmarshaller();
         log.info("{} JMSMessageListener initialized with drainScheduled: {}", log.getName(), drainScheduled);
     }
 
@@ -107,9 +107,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
         try {
             final String text = parseTextMessageText(message);
-
-            final StringReader sr = new StringReader(text);
-            Object object = jaxbUnmarshaller.unmarshal(sr);
+            Object object = jaxb2Marshaller.unmarshal(new StringSource(text));
             if (object instanceof JAXBElement) {
                 // For Datex2 messages extra stuff
                 object = ((JAXBElement) object).getValue();
@@ -119,7 +117,7 @@ public class JMSMessageListener<T> implements MessageListener {
             // getText() failed
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
-        } catch (JAXBException e) {
+        } catch (XmlMappingException e) {
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
         }
@@ -153,53 +151,53 @@ public class JMSMessageListener<T> implements MessageListener {
     }
 
     private void drainQueueInternal() {
-        if ( shutdownCalled.get() ) {
-            log.info("drainQueueInternal: Shutdown called");
-        }
+        if ( !shutdownCalled.get() ) {
+            StopWatch start = StopWatch.createStarted();
 
-        StopWatch start = StopWatch.createStarted();
-
-        int queueToDrain = messageQueue.size();
-        if ( queueToDrain <= 0 ) {
-            log.info("JMS message queue was empty");
-            return;
-        } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
-            log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
-            int trashed = 0;
-            while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
-                messageQueue.poll();
-                queueToDrain--;
-                trashed++;
-            }
-            log.warn("JMS message queue size decreased by {} messages by trashing to size {}", trashed, messageQueue.size());
-        } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
-            log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
-        } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {
-            log.warn("JMS message queue size {} exceeds warning limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT );
-        } else {
-            log.info("JMS message queue size {}", queueToDrain );
-        }
-
-        // Allocate array with current message queue size and drain same amount of messages
-        ArrayList<Pair<T, String>> targetList = new ArrayList<>(queueToDrain);
-        int counter = 0;
-        while (counter < queueToDrain) {
-            final Pair<T, String> next = messageQueue.poll();
-            if (next != null) {
-                targetList.add(next);
-                counter++;
+            int queueToDrain = messageQueue.size();
+            if ( queueToDrain <= 0 ) {
+                log.info("JMS message queue was empty");
+                return;
+            } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
+                log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
+                int trashed = 0;
+                while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
+                    messageQueue.poll();
+                    queueToDrain--;
+                    trashed++;
+                }
+                log.warn("JMS message queue size decreased by {} messages by trashing to size {}", trashed, messageQueue.size());
+            } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
+                log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
+            } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {
+                log.warn("JMS message queue size {} exceeds warning limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT );
             } else {
-                log.error("Next in message queue should never be null");
-                break;
+                log.info("JMS message queue size {}", queueToDrain );
             }
-        }
 
-        if ( counter > 0 && !shutdownCalled.get() ) {
-            log.info("JMS message queue drained {} of {} messages. Next update data to db.", counter, queueToDrain);
-            messageDrainedCounter.addAndGet(counter);
-            final int updated = dataUpdater.updateData(targetList);
-            dbRowsUpdatedCounter.addAndGet(updated);
-            log.info("JMS message queue draining and updating of {} messages ({} db rows) took {} ms", counter, updated, start.getTime());
+            // Allocate array with current message queue size and drain same amount of messages
+            ArrayList<Pair<T, String>> targetList = new ArrayList<>(queueToDrain);
+            int counter = 0;
+            while (counter < queueToDrain) {
+                final Pair<T, String> next = messageQueue.poll();
+                if (next != null) {
+                    targetList.add(next);
+                    counter++;
+                } else {
+                    log.error("Next in message queue should never be null");
+                    break;
+                }
+            }
+
+            if ( counter > 0 && !shutdownCalled.get() ) {
+                log.info("JMS message queue drained {} of {} messages. Next update data to db.", counter, queueToDrain);
+                messageDrainedCounter.addAndGet(counter);
+                final int updated = dataUpdater.updateData(targetList);
+                dbRowsUpdatedCounter.addAndGet(updated);
+                log.info("JMS message queue draining and updating of {} messages ({} db rows) took {} ms", counter, updated, start.getTime());
+            }
+        } else {
+            log.info("drainQueueInternal: Shutdown called");
         }
     }
 
