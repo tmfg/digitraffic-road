@@ -93,7 +93,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
      * thread
      */
     @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
-    public void connectAndListen() throws JMSException, JAXBException {
+    public void connectAndListen() {
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
             return;

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.UUID;
+
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
