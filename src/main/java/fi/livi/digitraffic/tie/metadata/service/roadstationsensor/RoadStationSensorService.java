@@ -9,12 +9,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -33,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
-
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -162,24 +159,28 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public RoadStationSensor save(RoadStationSensor roadStationSensor) {
+    public RoadStationSensor save(final RoadStationSensor roadStationSensor) {
         return roadStationSensorRepository.save(roadStationSensor);
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
-        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
+    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(final List<Long> lamLotjuIds,
+        final RoadStationType roadStationType) {
+        final List<SensorValue> sensorValues = sensorValueRepository
+            .findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
 
-        HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
-        for (SensorValue sensorValue : sensorValues) {
-            Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
+        final HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
+        for (final SensorValue sensorValue : sensorValues) {
+            final Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
+
             List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.get(rsLotjuId);
             if (list == null) {
-                list = new LinkedList<>();
+                list = new ArrayList<>();
                 sensorValuesListByTmsLotjuIdMap.put(rsLotjuId, list);
             }
             list.add(sensorValue);
         }
+
         return sensorValuesListByTmsLotjuIdMap;
     }
 

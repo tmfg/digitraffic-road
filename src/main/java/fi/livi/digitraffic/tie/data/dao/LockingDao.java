@@ -53,18 +53,17 @@ public class LockingDao {
             "  AND INSTANCE_ID = :instanceId";
 
     @Autowired
-    public LockingDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public LockingDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
-
-        HashMap<String, Object> mergeParams = new HashMap<>();
+    public boolean acquireLock(final String lockName, final String callerInstanceId, final int expirationSeconds) {
+        final HashMap<String, Object> mergeParams = new HashMap<>();
         mergeParams.put("lockName", lockName);
         mergeParams.put("instanceId", callerInstanceId);
         mergeParams.put("expirationSeconds", expirationSeconds);
 
-        HashMap<String, Object> selectParams = new HashMap<>();
+        final HashMap<String, Object> selectParams = new HashMap<>();
         selectParams.put("lockName", lockName);
         selectParams.put("instanceId", callerInstanceId);
 

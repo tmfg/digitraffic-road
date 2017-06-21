@@ -1,14 +1,11 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -17,17 +14,20 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
-public class Datex2ServiceTest extends AbstractTest {
+public class Datex2DataServiceTest extends AbstractTest {
 
-    private static final Logger log = LoggerFactory.getLogger(Datex2ServiceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(Datex2DataServiceTest.class);
 
     @Autowired
     Datex2DataService datex2DataService;
@@ -35,7 +35,8 @@ public class Datex2ServiceTest extends AbstractTest {
     @Autowired
     Datex2Repository datex2Repository;
 
-    private Unmarshaller jaxbUnmarshaller;
+    @Autowired
+    Jaxb2Marshaller jaxb2Marshaller;
 
     private static final String situationId1 = "GUID50005166";
     private static final String situationId2 = "GUID50006936";
@@ -44,7 +45,6 @@ public class Datex2ServiceTest extends AbstractTest {
 
     @Before
     public void init() throws JAXBException, IOException {
-        jaxbUnmarshaller = JAXBContext.newInstance(D2LogicalModel.class).createUnmarshaller();
         datex2Content1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");
         datex2Content2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
     }
@@ -101,6 +101,18 @@ public class Datex2ServiceTest extends AbstractTest {
         findDatex2AndAssert(situationId2, true);
     }
 
+    @Test
+    public void testMultiThreadUnmarshall() throws InterruptedException {
+        Datex2Thread first = new Datex2Thread("datex2Content1", datex2Content1);
+        Datex2Thread second = new Datex2Thread("datex2Content2", datex2Content2);
+        while (first.isRunning() || second.isRunning()) {
+            log.info("Sleep");
+            Thread.sleep(100);
+        }
+        Assert.assertTrue(first.isSuccess());
+        Assert.assertTrue(second.isSuccess());
+    }
+
     private TrafficDisordersDatex2Response findDatex2AndAssert(String situationId, boolean found) {
         try {
             TrafficDisordersDatex2Response response = datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
@@ -130,13 +142,56 @@ public class Datex2ServiceTest extends AbstractTest {
     }
 
     private void updateDatex2Data(final String datex2Content) throws IOException, JAXBException {
-        Object object = jaxbUnmarshaller.unmarshal(new StringReader(datex2Content));
+        Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Content));
         if (object instanceof JAXBElement) {
             object = ((JAXBElement) object).getValue();
         }
         D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
         Pair<D2LogicalModel, String> pair = Pair.of(d2LogicalModel, datex2Content);
         datex2DataService.updateDatex2Data(Collections.singletonList(pair));
+    }
+
+    private class Datex2Thread implements Runnable {
+
+        Thread t;
+        private final String name;
+        private final String datex2;
+        private boolean running = false;
+        private boolean success = false;
+
+        Datex2Thread(final String name, final String datex2) {
+            this.name = name;
+            this.datex2 = datex2;
+            t = new Thread(this, name);
+            log.info("Start new thread: {}", t);
+            t.start(); // Start the thread
+            running = true;
+        }
+
+        public void run() {
+            try {
+                for (int i = 10; i > 0; i--) {
+                    TimestampedTrafficDisorderDatex2 d2 =
+                        datex2DataService.unMarshallDatex2Message(datex2, ZonedDateTime.now());
+                    if ( d2 == null ) {
+                        throw new RuntimeException("Datex2 response can't be null!");
+                    }
+                    log.info(name + "{}: {}", name, i);
+                }
+                success = true;
+            } finally {
+                running = false;
+                log.info("{} exiting with success status {}", name, success);
+            }
+        }
+
+        public boolean isRunning() {
+            return running;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
     }
 
 }
