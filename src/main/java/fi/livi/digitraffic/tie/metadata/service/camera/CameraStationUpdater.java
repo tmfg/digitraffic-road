@@ -43,11 +43,6 @@ public class CameraStationUpdater {
     public boolean updateCameras() {
         log.info("Update Cameras start");
 
-        if (!lotjuCameraStationMetadataService.isEnabled()) {
-            log.warn("Not updating cameraPresets metadatas because LotjuCameraStationMetadataService not enabled");
-            return false;
-        }
-
         Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
             lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
 

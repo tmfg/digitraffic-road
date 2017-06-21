@@ -30,9 +30,9 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
 
     @Autowired
     public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-        @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-        @Value("${jms.weather.inQueue}") final String jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
-        LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
+                                           @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
+                                           @Value("${jms.weather.inQueue}") final String jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
+                                           LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
 
         super(connectionFactory,
               lockingService,

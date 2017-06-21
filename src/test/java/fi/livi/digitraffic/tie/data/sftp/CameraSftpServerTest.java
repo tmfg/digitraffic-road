@@ -234,7 +234,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         log.info("Created {}" , cpWithDelay);
 
         Kuva kuva = createKuvaDataAndHttpStub(cpNoDelay, "Image content".getBytes(), 0);
-        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 5000);
+        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 10000);
 
         long updated = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuva));
         Assert.assertTrue("Timeout should not have happened and one image should have been updated",updated == 1L);

@@ -289,7 +289,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     }
 
     private void createHttpResponseStubFor(String kuva) throws IOException {
-        byte[] data = imageFilesMap.get(kuva);
         log.info("Create mock with url: " + REQUEST_PATH + kuva);
         stubFor(get(urlEqualTo(REQUEST_PATH + kuva))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuva))

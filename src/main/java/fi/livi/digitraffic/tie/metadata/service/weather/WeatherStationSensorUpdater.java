@@ -37,11 +37,6 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
     public boolean updateRoadStationSensors() {
         log.info("Update weather RoadStationSensors start");
 
-        if (!lotjuWeatherStationMetadataService.isEnabled()) {
-            log.warn("Not updating RoadStationSensor metadata because LotjuWeatherStationService not enabled");
-            return false;
-        }
-
         // Update available RoadStationSensors types to db
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuWeatherStationMetadataService.getAllTiesaaLaskennallinenAnturis();

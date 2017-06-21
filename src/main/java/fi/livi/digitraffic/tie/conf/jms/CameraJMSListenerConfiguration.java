@@ -30,9 +30,9 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Autowired
     public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-        @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-        @Value("${jms.camera.inQueue}") final String jmsQueueKey, final CameraDataUpdateService cameraDataUpdateService,
-        LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
+                                          @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
+                                          @Value("${jms.camera.inQueue}") final String jmsQueueKey, final CameraDataUpdateService cameraDataUpdateService,
+                                          final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
         super(connectionFactory,
               lockingService,
               log);

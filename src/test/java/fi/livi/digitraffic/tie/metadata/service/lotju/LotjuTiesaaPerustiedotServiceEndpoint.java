@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.AnturiSanomaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ArvoVastaavuusVO;
@@ -38,16 +39,17 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
     private List<TiesaaLaskennallinenAnturiVO> afterChangeLaskennallisetAnturis;
 
     public static LotjuTiesaaPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
-                                                                    final ResourceLoader resourceLoader) {
+                                                                    final ResourceLoader resourceLoader,
+                                                                    final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuTiesaaPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+            instance = new LotjuTiesaaPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather,
-                                                  final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV3.SERVICE);
+    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
+                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV3.SERVICE, jaxb2Marshaller);
     }
 
     @Override

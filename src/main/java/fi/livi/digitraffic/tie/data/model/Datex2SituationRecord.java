@@ -167,6 +167,6 @@ public class Datex2SituationRecord {
 
     public void setPublicComments(List<SituationRecordCommentI18n> publicComments) {
         this.publicComments = publicComments;
-        publicComments.forEach((k)-> k.setSituationRecord(this));
+        publicComments.forEach(k-> k.setSituationRecord(this));
     }
 }

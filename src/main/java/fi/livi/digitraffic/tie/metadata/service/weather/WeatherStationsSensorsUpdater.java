@@ -48,11 +48,6 @@ public class WeatherStationsSensorsUpdater {
     public boolean updateWeatherStationsSensors() {
         log.info("Update WeatherStations RoadStationSensors start");
 
-        if (!lotjuWeatherStationMetadataService.isEnabled()) {
-            log.warn("Not updating WeatherStations Sensors metadata because LotjuWeatherStationService not enabled");
-            return false;
-        }
-
         // Update sensors of road stations
         // Get current WeatherStations
         final Map<Long, WeatherStation> currentLotjuIdToWeatherStationsMap =

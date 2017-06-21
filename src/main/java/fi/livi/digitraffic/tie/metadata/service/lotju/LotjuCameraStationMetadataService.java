@@ -26,14 +26,13 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
-public class LotjuCameraStationMetadataService extends AbstractLotjuMetadataService {
+public class LotjuCameraStationMetadataService {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataService.class);
     private final LotjuCameraStationMetadataClient lotjuCameraStationClient;
 
     @Autowired
     public LotjuCameraStationMetadataService(final LotjuCameraStationMetadataClient lotjuCameraStationClient) {
-        super(lotjuCameraStationClient.isEnabled());
         this.lotjuCameraStationClient = lotjuCameraStationClient;
     }
 
@@ -81,10 +80,6 @@ public class LotjuCameraStationMetadataService extends AbstractLotjuMetadataServ
 
     private List<EsiasentoVO> getEsiasentos(Long kameraId) {
         return lotjuCameraStationClient.getEsiasentos(kameraId);
-    }
-
-    public boolean isEnabled() {
-        return lotjuCameraStationClient.isEnabled();
     }
 
     private class EsiasentoFetcher implements Callable<Integer> {

@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
@@ -49,7 +48,7 @@ public class JavaMelodyConfiguration implements ServletContextInitializer {
     public FilterRegistrationBean javaMelody(@Value("${javamelody.authorized-users}")
                                              final String javamelodyAuthorizedUsers,
                                              @Value("${javamelody.storage-directory}")
-                                             final String javamelodyStorageDirectory) throws IOException {
+                                             final String javamelodyStorageDirectory) {
         final FilterRegistrationBean javaMelody = new FilterRegistrationBean();
         final MonitoringFilter filter = new MonitoringFilter();
         javaMelody.setFilter(filter);

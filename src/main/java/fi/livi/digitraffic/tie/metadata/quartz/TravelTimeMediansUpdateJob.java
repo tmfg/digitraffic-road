@@ -38,6 +38,7 @@ public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
                 travelTimeUpdater.updateMedians(from.plusMinutes(minute));
             } catch (HttpServerErrorException e) {
                 // Request failed after retries. Skip this minute.
+                log.debug("HttpServerErrorException", e);
             }
         });
     }

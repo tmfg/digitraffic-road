@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,19 +45,7 @@ public class TmsStationUpdater {
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.warn("Not updating tms stations because LotjuTmsStationMetadataService not enabled");
-            return false;
-        }
-
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Fetched LAMs:");
-            for (final LamAsemaVO asema : asemas) {
-                log.debug(ToStringBuilder.reflectionToString(asema));
-            }
-        }
 
         final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
         updateStaticDataStatus(updatedTmsStations);
@@ -89,7 +76,7 @@ public class TmsStationUpdater {
 
         for (LamAsemaVO tsa : toUpdate) {
             UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;

@@ -30,9 +30,10 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Autowired
     public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}") final String jmsConnectionUrls,
-        @Value("${jms.datex2.userId}") final String jmsUserId, @Value("${jms.datex2.password}") final String jmsPassword,
-        @Value("${jms.datex2.inQueue}") final String jmsQueueKey, final Datex2DataService datex2DataService,
-        final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
+                                          @Value("${jms.datex2.userId}") final String jmsUserId,
+                                          @Value("${jms.datex2.password}") final String jmsPassword,
+                                          @Value("${jms.datex2.inQueue}") final String jmsQueueKey, final Datex2DataService datex2DataService,
+                                          final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
 
         super(JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
               lockingService,

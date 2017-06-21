@@ -59,29 +59,42 @@ public class PerformanceMonitorAspect {
     private void monitor(final ProceedingJoinPoint pjp, final MethodSignature methodSignature, final long executionTime) {
         final Method method = methodSignature.getMethod();
         final PerformanceMonitor monitorAnnotation = method.getAnnotation(PerformanceMonitor.class);
-        final boolean monitor = monitorAnnotation != null ? monitorAnnotation.monitor() : true;
+        final boolean monitor = getMonitor(monitorAnnotation);
 
         if (monitor) {
-            final int erroLimit = monitorAnnotation != null ? monitorAnnotation.maxErroExcecutionTime() : DEFAULT_ERROR_LIMIT;
-            final int warningLimit = monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
-            final int infoLimit = monitorAnnotation != null ? monitorAnnotation.maxInfoExcecutionTime() : DEFAULT_INFO_LIMIT;
+            final int errorLimit = getErrorLimit(monitorAnnotation);
+            final int warningLimit = getWarningLimit(monitorAnnotation);
+            final int infoLimit = getInfoLimit(monitorAnnotation);
             final Object[] args = pjp.getArgs();
             final String methodWithClass = getMethodWithClass(methodSignature);
 
-            if (executionTime > erroLimit &&
-                log.isErrorEnabled()) {
+            if (executionTime > errorLimit && log.isErrorEnabled()) {
                 log.error(buildMessage(methodWithClass, args, executionTime));
-            } else if (executionTime > warningLimit &&
-                log.isWarnEnabled()) {
+            } else if (executionTime > warningLimit && log.isWarnEnabled()) {
                 log.warn(buildMessage(methodWithClass, args, executionTime));
-            } else if (executionTime > infoLimit &&
-                       log.isInfoEnabled()) {
+            } else if (executionTime > infoLimit && log.isInfoEnabled()) {
                 log.info(buildMessage(methodWithClass, args, executionTime));
             }
         }
     }
 
-    private String getMethodWithClass(final MethodSignature methodSignature) {
+    private int getInfoLimit(final PerformanceMonitor monitorAnnotation) {
+        return monitorAnnotation != null ? monitorAnnotation.maxInfoExcecutionTime() : DEFAULT_INFO_LIMIT;
+    }
+
+    private int getWarningLimit(final PerformanceMonitor monitorAnnotation) {
+        return monitorAnnotation != null ? monitorAnnotation.maxWarnExcecutionTime() : DEFAULT_WARNING_LIMIT;
+    }
+
+    private int getErrorLimit(final PerformanceMonitor monitorAnnotation) {
+        return monitorAnnotation != null ? monitorAnnotation.maxErroExcecutionTime() : DEFAULT_ERROR_LIMIT;
+    }
+
+    private boolean getMonitor(final PerformanceMonitor monitorAnnotation) {
+        return monitorAnnotation != null ? monitorAnnotation.monitor() : true;
+    }
+
+    private static String getMethodWithClass(final MethodSignature methodSignature) {
         return methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName();
     }
 
@@ -112,7 +125,8 @@ public class PerformanceMonitorAspect {
                 final Object[] objects = (Object[]) value;
                 buildArrayToString(builder, objects);
             } catch (ClassCastException e) {
-                builder.append("?");
+                log.debug("buildArrayToString Error", e);
+                builder.append("[" + value + "]");
             }
         } else if (value instanceof Collection<?>) {
             final Collection<?> values = (Collection<?>) value;
