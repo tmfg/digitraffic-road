@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.data.jms.JMSMessageListener.MESSAGE_UNMARS
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
