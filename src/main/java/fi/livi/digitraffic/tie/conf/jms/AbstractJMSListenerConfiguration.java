@@ -24,8 +24,7 @@ import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
-public abstract class AbstractJMSListenerConfiguration<T> {
-
+public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
     private static String STATISTICS_PREFIX = "STATISTICS:";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
@@ -36,11 +35,11 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     private final LockingService lockingService;
     private final Logger log;
     private QueueConnection connection;
-    private JMSMessageListener<T> messageListener;
+    private JMSMessageListener<K> messageListener;
 
-    public AbstractJMSListenerConfiguration(QueueConnectionFactory connectionFactory,
+    public AbstractJMSListenerConfiguration(final QueueConnectionFactory connectionFactory,
                                             final LockingService lockingService,
-                                            Logger log) {
+                                            final Logger log) {
         this.connectionFactory = connectionFactory;
         this.lockingService = lockingService;
         this.log = log;
@@ -49,9 +48,9 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
     public abstract JMSParameters getJmsParameters();
 
-    protected abstract JMSMessageListener<T> createJMSMessageListener() throws JAXBException;
+    protected abstract JMSMessageListener<K> createJMSMessageListener() throws JAXBException;
 
-    private JMSMessageListener<T> getJMSMessageListener() throws JAXBException {
+    private JMSMessageListener<K> getJMSMessageListener() throws JAXBException {
         if (messageListener == null) {
             messageListener = createJMSMessageListener();
         }
@@ -69,14 +68,13 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     /** Log statistics once in minute */
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
     public void logMessagesReceived() throws JAXBException {
-
-        final JMSMessageListener<T> listener = getJMSMessageListener();
+        final JMSMessageListener<K> listener = getJMSMessageListener();
         final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
         final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
         final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
-        log.info("{} MessageListener lock acquired {} and not acquired {} times per minute for {} (instanceId: {})",
-                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceName(), getJmsParameters().getLockInstanceId());
+        log.info("{} MessageListener lock acquired {} and not acquired {} times per minute (instanceId: {})",
+                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
         log.info("{} Received {} messages, drained {} messages and updated {} db rows per minute. Current in memory queue size {}.",
                  STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
     }
@@ -89,7 +87,6 @@ public abstract class AbstractJMSListenerConfiguration<T> {
         getJMSMessageListener().drainQueueScheduled();
     }
 
-
     /**
      * Checks if connection can be created and starts
      * listening JMS-messages if lock is acquired for this
@@ -97,18 +94,17 @@ public abstract class AbstractJMSListenerConfiguration<T> {
      */
     @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
     public void connectAndListen() {
-
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
             return;
         }
 
-        JMSParameters jmsParameters = getJmsParameters();
+        final JMSParameters jmsParameters = getJmsParameters();
         try {
             // If lock can be acquired then connect and start listening
-            boolean lockAcquired = lockingService.acquireLock(getJmsParameters().getLockInstanceName(),
-                                                              getJmsParameters().getLockInstanceId(),
-                                                              JMS_CONNECTION_LOCK_EXPIRATION_S);
+            final boolean lockAcquired = lockingService.acquireLock(jmsParameters.getLockInstanceName(),
+                                                                    jmsParameters.getLockInstanceId(),
+                                                                    JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
@@ -117,43 +113,48 @@ public abstract class AbstractJMSListenerConfiguration<T> {
 
                 // Try to connect if not connected
                 if (connection == null) {
-                    connection = createConnection(getJmsParameters(), connectionFactory);
+                    connection = createConnection(jmsParameters, connectionFactory);
                 }
+
                 // Calling start multiple times is safe
                 connection.start();
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock not acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + jmsParameters.getLockInstanceId() + "), another instance is holding the lock");
+                log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
+                    "instance is holding the lock", jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
+                // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
             closeConnectionQuietly();
+            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
         }
 
         // Check if shutdown was called during connection initialization
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
+            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
         }
     }
 
-    protected QueueConnection createConnection(JMSParameters jmsParameters,
-                                               QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
+    protected QueueConnection createConnection(final JMSParameters jmsParameters,
+                                               final QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
 
         log.info("Create JMS connection with parameters: " + jmsParameters);
 
         try {
-            QueueConnection queueConnection = connectionFactory.createQueueConnection(
-                    jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
-            JMSExceptionListener jmsExceptionListener =
-                    new JMSExceptionListener(jmsParameters);
+            final QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
+            final JMSExceptionListener jmsExceptionListener = new JMSExceptionListener(jmsParameters);
+
             queueConnection.setExceptionListener(jmsExceptionListener);
-            Connection sonicCon = (Connection) queueConnection;
+
+            final Connection sonicCon = (Connection) queueConnection;
+            final ConnectionMetaData meta = queueConnection.getMetaData();
+
             log.info("Connection created: " + connectionFactory.toString());
             log.info("Jms connection url " + sonicCon.getBrokerURL() + ", connection fault tolerant: " + sonicCon.isFaultTolerant() +
                     ", broker urls: " + connectionFactory.getConnectionURLs());
-            ConnectionMetaData meta = queueConnection.getMetaData();
             log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
@@ -173,8 +174,8 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     }
 
     private Session createSessionAndConsumer(String jmsQueueKey, QueueConnection queueConnection) throws JMSException, JAXBException {
-        boolean drainScheduled = isQueueTopic(jmsQueueKey);
-        Session session = drainScheduled ?
+        final boolean drainScheduled = isQueueTopic(jmsQueueKey);
+        final Session session = drainScheduled ?
                           queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE) : // ACKNOWLEDGE automatically when message received
                           queueConnection.createSession(false,
                                   progress.message.jclient.Session.SINGLE_MESSAGE_ACKNOWLEDGE); // ACKNOWLEDGE after successful handling
@@ -208,13 +209,12 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     }
 
     protected Destination createDestination(String jmsQueueKey) throws JMSException {
-        boolean topic = isQueueTopic(jmsQueueKey);
-        String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
+        final boolean topic = isQueueTopic(jmsQueueKey);
+        final String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
         return topic ? new Topic(jmsQueue) : new Queue(jmsQueue);
     }
 
     public class JMSExceptionListener implements ExceptionListener {
-
         private final JMSParameters jmsParameters;
 
         public JMSExceptionListener(final JMSParameters jmsParameters) {
@@ -230,18 +230,17 @@ public abstract class AbstractJMSListenerConfiguration<T> {
     }
 
     protected class JMSParameters {
-
         private final String jmsUserId;
         private final String jmsPassword;
         private final String lockInstanceId;
         private final String jmsQueueKey;
         private final String lockInstanceName;
 
-        public JMSParameters(String jmsQueueKey,
-                             String jmsUserId,
-                             String jmsPassword,
-                             String lockInstanceName,
-                             String lockInstanceId) {
+        public JMSParameters(final String jmsQueueKey,
+                             final String jmsUserId,
+                             final String jmsPassword,
+                             final String lockInstanceName,
+                             final String lockInstanceId) {
             this.jmsQueueKey = jmsQueueKey;
             this.jmsUserId = jmsUserId;
             this.jmsPassword = jmsPassword;

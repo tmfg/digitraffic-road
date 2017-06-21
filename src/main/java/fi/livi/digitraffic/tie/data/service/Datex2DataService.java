@@ -9,18 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.XmlMappingException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
@@ -50,12 +51,12 @@ public class Datex2DataService {
 
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
     private final Datex2Repository datex2Repository;
-    private final Unmarshaller jaxbUnmarshaller;
+    private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public Datex2DataService(Datex2Repository datex2Repository) throws JAXBException {
+    public Datex2DataService(final Datex2Repository datex2Repository, Jaxb2Marshaller jaxb2Marshaller) throws JAXBException {
         this.datex2Repository = datex2Repository;
-        jaxbUnmarshaller = JAXBContext.newInstance(D2LogicalModel.class).createUnmarshaller();
+        this.jaxb2Marshaller = jaxb2Marshaller;
     }
 
     @Transactional
@@ -227,10 +228,10 @@ public class Datex2DataService {
         return new TrafficDisordersDatex2Response().withDisorder(timestampedTrafficDisorderDatex2s);
     }
 
-    private TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
+    public TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
         StringReader sr = new StringReader(datex2Xml);
         try {
-            Object object = jaxbUnmarshaller.unmarshal(sr);
+            Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
             if (object instanceof JAXBElement) {
                 object = ((JAXBElement) object).getValue();
             }
@@ -244,7 +245,7 @@ public class Datex2DataService {
                             .withD2LogicalModel(d2LogicalModel)
                             .withPublished(published);
             return tsDatex2;
-        } catch (JAXBException e) {
+        } catch (XmlMappingException e) {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
         return null;
