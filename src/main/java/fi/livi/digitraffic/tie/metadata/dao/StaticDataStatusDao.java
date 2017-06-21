@@ -8,12 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService.StaticStatusType;
 
+/**
+ * Used by old daemon. Should be removed after old daemon is eol.
+ */
+@Deprecated
 @Repository
-public class StaticDataStatusDAO {
+public class StaticDataStatusDao {
     private final EntityManager entityManager;
 
     @Autowired
-    public StaticDataStatusDAO(final EntityManager entityManager) {
+    public StaticDataStatusDao(final EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

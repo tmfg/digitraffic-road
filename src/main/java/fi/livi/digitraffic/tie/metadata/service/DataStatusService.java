@@ -9,10 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDAO;
+import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDao;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
+/**
+ * Used by old daemon. Should be removed after old daemon is eol.
+ */
+@Deprecated
 @Service
 public class DataStatusService {
     private static final Logger log = LoggerFactory.getLogger(DataStatusService.class);
@@ -35,19 +39,19 @@ public class DataStatusService {
         }
     }
 
-    private final StaticDataStatusDAO staticDataStatusDAO;
+    private final StaticDataStatusDao staticDataStatusDao;
     private final DataUpdatedRepository dataUpdatedRepository;
 
     @Autowired
-    public DataStatusService(final StaticDataStatusDAO staticDataStatusDAO,
+    public DataStatusService(final StaticDataStatusDao staticDataStatusDao,
                              final DataUpdatedRepository dataUpdatedRepository) {
-        this.staticDataStatusDAO = staticDataStatusDAO;
+        this.staticDataStatusDao = staticDataStatusDao;
         this.dataUpdatedRepository = dataUpdatedRepository;
     }
 
     @Transactional
     public void updateStaticDataStatus(final StaticStatusType type, final boolean updateStaticDataStatus) {
-        staticDataStatusDAO.updateStaticDataStatus(type, updateStaticDataStatus);
+        staticDataStatusDao.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 
     @Transactional
