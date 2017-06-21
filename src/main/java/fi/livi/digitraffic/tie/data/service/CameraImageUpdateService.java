@@ -60,12 +60,17 @@ public class CameraImageUpdateService {
     @Transactional
     @Retryable(maxAttempts = 5)
     public boolean handleKuva(final Kuva kuva) {
-        log.info("Handling {}", ToStringHelper.toString(kuva));
-        final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
-        // Update preset attributes
-        updateCameraPreset(cameraPreset, kuva);
-        // Download image from http-server and upload it to sftp-server
-        return updateImage(cameraPreset, kuva);
+        try {
+            log.info("Handling {}", ToStringHelper.toString(kuva));
+            final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
+            // Update preset attributes
+            updateCameraPreset(cameraPreset, kuva);
+            // Download image from http-server and upload it to sftp-server
+            return updateImage(cameraPreset, kuva);
+        } catch (final Exception e) {
+            log.error("Image handling failed for " + ToStringHelper.toString(kuva), e);
+            throw e;
+        }
     }
 
     private boolean updateImage(CameraPreset cameraPreset, Kuva kuva) {
