@@ -75,6 +75,7 @@ public class TravelTimeLinkMetadataUpdater {
         } else {
             log.info("Travel time PKS link metadata up-to-date");
         }
+        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_LINKS_METADATA_CHECK);
     }
 
     @Transactional

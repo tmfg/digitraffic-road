@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class WeatherStationUpdateJob extends SimpleUpdateJob {
+public class WeatherStationMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     public WeatherStationSensorUpdater weatherStationSensorUpdater;
@@ -29,6 +29,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         if (sensorsUpdated) {
             dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
         sensorsWatch.stop();
 
         final StopWatch stationsWatch = StopWatch.createStarted();
@@ -42,6 +43,7 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         if (stationsUpdated) {
             dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
 
         log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensors.getTime());

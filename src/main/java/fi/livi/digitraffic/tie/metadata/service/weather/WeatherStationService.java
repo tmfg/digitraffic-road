@@ -65,7 +65,8 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
                 !onlyUpdateInfo ?
                     weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId() :
                     Collections.emptyList(),
-                getMetadataLastUpdated());
+                getMetadataLastUpdated(),
+                getMetadataLastChecked());
     }
 
     @Transactional(readOnly = true)
@@ -153,6 +154,12 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     private ZonedDateTime getMetadataLastUpdated() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_SENSOR_METADATA);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_METADATA);
+        return getNewest(sensorsUpdated, stationsUpdated);
+    }
+
+    public ZonedDateTime getMetadataLastChecked() {
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_METADATA_CHECK);
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

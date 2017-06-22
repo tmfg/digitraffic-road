@@ -9,7 +9,7 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 
 @DisallowConcurrentExecution
-public class CameraStationsStatusUpdateJob extends SimpleUpdateJob {
+public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private RoadStationStatusUpdater roadStationStatusUpdater;
@@ -20,7 +20,10 @@ public class CameraStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int csCount = roadStationStatusUpdater.updateCameraStationsStatuses();
-        dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
+        if (csCount > 0) {
+            dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
 
         long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
         log.info("Updated {} camera stations statuses", csCount);

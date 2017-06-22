@@ -8,7 +8,7 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 
 @DisallowConcurrentExecution
-public class TmsStationsStatusUpdateJob extends SimpleUpdateJob {
+public class TmsStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private RoadStationStatusUpdater roadStationStatusUpdater;
@@ -16,7 +16,10 @@ public class TmsStationsStatusUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final int tmsCount = roadStationStatusUpdater.updateTmsStationsStatuses();
-        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
+        if (tmsCount > 0) {
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
         log.info("Updated {} TMS stations statuses", tmsCount);
     }
 }

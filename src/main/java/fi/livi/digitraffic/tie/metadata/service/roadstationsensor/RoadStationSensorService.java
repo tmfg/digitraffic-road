@@ -120,7 +120,8 @@ public class RoadStationSensorService {
             !onlyUpdateInfo ?
                 findAllNonObsoleteAndAllowedRoadStationSensors(roadStationType) :
                 Collections.emptyList(),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(roadStationType)));
+            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(roadStationType)),
+            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(roadStationType)));
     }
 
     @Transactional(readOnly = true)

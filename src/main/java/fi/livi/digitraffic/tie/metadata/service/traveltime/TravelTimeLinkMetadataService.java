@@ -30,6 +30,8 @@ public class TravelTimeLinkMetadataService {
 
     public LinkFeatureCollection getLinkMetadata() {
         final List<Link> links = linkRepository.findByObsoleteDateIsNullOrderByNaturalId();
-        return link2FeatureConverter.convert(links, dataStatusService.findDataUpdatedTimeByDataType(DataType.TRAVEL_TIME_LINKS_METADATA));
+        return link2FeatureConverter.convert(links,
+                                             dataStatusService.findDataUpdatedTimeByDataType(DataType.TRAVEL_TIME_LINKS_METADATA),
+                                             dataStatusService.findDataUpdatedTimeByDataType(DataType.TRAVEL_TIME_LINKS_METADATA_CHECK));
     }
 }

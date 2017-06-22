@@ -9,7 +9,7 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 
 @DisallowConcurrentExecution
-public class CameraUpdateJob extends SimpleUpdateJob {
+public class CameraMetadataUpdateJob extends SimpleUpdateJob {
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
@@ -21,6 +21,7 @@ public class CameraUpdateJob extends SimpleUpdateJob {
         if (cameraStationUpdater.updateCameras()) {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
         cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
     }
 }

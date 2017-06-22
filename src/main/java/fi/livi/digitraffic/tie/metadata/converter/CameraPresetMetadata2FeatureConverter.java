@@ -45,8 +45,8 @@ public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadat
         this.cameraPresetRepository = cameraPresetRepository;
     }
 
-    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final ZonedDateTime lastUpdated) {
-        final CameraStationFeatureCollection collection = new CameraStationFeatureCollection(lastUpdated);
+    public CameraStationFeatureCollection convert(final List<CameraPreset> cameraPresets, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
+        final CameraStationFeatureCollection collection = new CameraStationFeatureCollection(lastUpdated, dataLastCheckedTime);
 
         // Cameras mapped with cameraId
         final Map<String, CameraStationFeature> cameraStationMap = new HashMap<>();

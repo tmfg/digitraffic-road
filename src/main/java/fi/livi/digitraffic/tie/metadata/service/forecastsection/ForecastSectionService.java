@@ -36,7 +36,9 @@ public class ForecastSectionService {
     @Transactional(readOnly = true)
     public ForecastSectionFeatureCollection findAllForecastSections() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
-        return forecastSection2FeatureConverter.convert(forecastSections, dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA));
+        return forecastSection2FeatureConverter.convert(forecastSections,
+                                                        dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
+                                                        dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
     }
 
     public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
@@ -45,6 +47,7 @@ public class ForecastSectionService {
                 onlyUpdateInfo ?
                     null :
                     findAllForecastSections(),
-                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA));
+                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
+                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
     }
 }

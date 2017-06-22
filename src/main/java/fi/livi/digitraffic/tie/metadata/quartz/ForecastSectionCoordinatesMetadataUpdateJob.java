@@ -10,9 +10,9 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionMetadataUpdater;
 
 @DisallowConcurrentExecution
-public class ForecastSectionCoordinatesUpdateJob extends SimpleUpdateJob {
+public class ForecastSectionCoordinatesMetadataUpdateJob extends SimpleUpdateJob {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesUpdateJob.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesMetadataUpdateJob.class);
 
     @Autowired
     private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
@@ -24,6 +24,7 @@ public class ForecastSectionCoordinatesUpdateJob extends SimpleUpdateJob {
         if (updated) {
             dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
 
         String updateStatus = updated ? "Coordinates were updated." : "Coordinates were up-to-date.";
         log.info(updateStatus);

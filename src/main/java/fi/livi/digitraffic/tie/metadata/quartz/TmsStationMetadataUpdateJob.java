@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class TmsStationUpdateJob extends SimpleUpdateJob {
+public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -30,6 +30,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         if (sensorsUpdated) {
             dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
         sensorsWatch.stop();
 
         final StopWatch stationsWatch = StopWatch.createStarted();
@@ -43,6 +44,7 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         if (stationsUpdated || updatedTmsStationsSensors) {
             dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
 
         log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
