@@ -98,7 +98,7 @@ public class CameraStationUpdater {
         long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
         long nonOsoletedRoadStations = cameraPresetService.nonObsoleteCameraRoadStationsWithPublishablePresets();
 
-        log.info("Obsoleted {} CameraPresets not existing in LOTJU", obsoletePresets);
+        log.info("Obsoleted {} CameraPresets that are not active", obsoletePresets);
         log.info("Obsoleted {} Camera RoadStations without active presets", obsoletedRoadStations);
         log.info("Non obsoleted {} Camera RoadStations with active presets", nonOsoletedRoadStations);
         log.info("Updated {} CameraPresets", updated);

@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -161,9 +162,11 @@ public class CameraPresetService {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<CameraPreset> update = cb.createCriteriaUpdate(CameraPreset.class);
         final Root<CameraPreset> root = update.from(CameraPreset.class);
+        final EntityType<CameraPreset> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
         List<Predicate> predicates = new ArrayList<>();
+        predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
         for (List<Long> ids : Iterables.partition(presetsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
