@@ -177,37 +177,37 @@ public class QuartzSchedulerConfig {
 
     @Bean
     public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
-                                                           @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
+                                                                   @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
     public SimpleTriggerFactoryBean tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail,
-                                                               @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
+                                                                       @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(tmsStationMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
     public SimpleTriggerFactoryBean weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJobDetail,
-                                                                   @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
+                                                                           @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(weatherStationMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
     public SimpleTriggerFactoryBean cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJobDetail,
-                                                                         @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+                                                                                 @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
     public SimpleTriggerFactoryBean tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJobDetail,
-                                                                      @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+                                                                              @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(tmsStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
     public SimpleTriggerFactoryBean weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJobDetail,
-                                                                          @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+                                                                                  @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(weatherStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
@@ -219,7 +219,7 @@ public class QuartzSchedulerConfig {
 
     @Bean
     public SimpleTriggerFactoryBean forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionCoordinatesMetadataUpdateJobDetail,
-                                                                               @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
+                                                                                       @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(forecastSectionCoordinatesMetadataUpdateJobDetail, frequency);
     }
 
