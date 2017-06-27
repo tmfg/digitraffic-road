@@ -66,7 +66,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     }
 
     /** Log statistics once in minute */
-    @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 1000)
+    @Scheduled(cron = "0 * * * * ?")
     public void logMessagesReceived() throws JAXBException {
         final JMSMessageListener<K> listener = getJMSMessageListener();
         final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
