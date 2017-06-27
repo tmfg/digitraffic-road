@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -34,9 +35,8 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class CameraPresetService {
@@ -49,12 +49,12 @@ public class CameraPresetService {
 
     private final CameraPresetRepository cameraPresetRepository;
     private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public CameraPresetService(final EntityManager entityManager,
                                final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
-                               final StaticDataStatusService staticDataStatusService,
+                               final DataStatusService dataStatusService,
                                final CameraPresetRepository cameraPresetRepository,
                                final RoadStationRepository roadStationRepository,
                                final WeatherStationRepository weatherStationRepository) {
@@ -63,7 +63,7 @@ public class CameraPresetService {
         this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
     }
 
     private Criteria createCriteria() {
@@ -113,13 +113,12 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.CAMERA_STATION);
-
         return cameraPresetMetadata2FeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 findAllPublishableCameraPresets(),
-                updated != null ? updated.getUpdatedTime() : null);
+                dataStatusService.findDataUpdatedTimeByDataType(DataType.CAMERA_STATION_METADATA),
+                dataStatusService.findDataUpdatedTimeByDataType(DataType.CAMERA_STATION_METADATA_CHECK));
     }
 
     @Transactional(readOnly = true)
@@ -163,9 +162,11 @@ public class CameraPresetService {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<CameraPreset> update = cb.createCriteriaUpdate(CameraPreset.class);
         final Root<CameraPreset> root = update.from(CameraPreset.class);
+        final EntityType<CameraPreset> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
         List<Predicate> predicates = new ArrayList<>();
+        predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
         for (List<Long> ids : Iterables.partition(presetsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
@@ -178,8 +179,14 @@ public class CameraPresetService {
     public int obsoleteCameraRoadStationsWithoutPublishablePresets() {
         return cameraPresetRepository.obsoleteCameraRoadStationsWithoutPublishablePresets();
     }
+
     @Transactional
     public int nonObsoleteCameraRoadStationsWithPublishablePresets() {
         return cameraPresetRepository.nonObsoleteCameraRoadStationsWithPublishablePresets();
+    }
+
+    @Transactional(readOnly = true)
+    public CameraPreset findPublishableCameraPresetByLotjuId(final long presetLotjuId) {
+        return cameraPresetRepository.findByPublishableTrueAndLotjuId(presetLotjuId);
     }
 }

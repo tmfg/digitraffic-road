@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
@@ -29,36 +28,24 @@ public class TmsStationUpdater {
 
     private final RoadStationService roadStationService;
     private final TmsStationService tmsStationService;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationUpdater(final RoadStationService roadStationService,
                              final TmsStationService tmsStationService,
-                             final StaticDataStatusService staticDataStatusService,
+                             final DataStatusService dataStatusService,
                              final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         this.roadStationService = roadStationService;
         this.tmsStationService = tmsStationService;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
     public boolean updateTmsStations() {
         log.info("Update tms Stations start");
 
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.warn("Not updating tms stations because LotjuTmsStationMetadataService not enabled");
-            return false;
-        }
-
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Fetched LAMs:");
-            for (final LamAsemaVO asema : asemas) {
-                log.debug(ToStringBuilder.reflectionToString(asema));
-            }
-        }
 
         final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
         updateStaticDataStatus(updatedTmsStations);
@@ -67,7 +54,7 @@ public class TmsStationUpdater {
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
     }
 
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {
@@ -82,13 +69,14 @@ public class TmsStationUpdater {
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamAsemaVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
+        log.info("Not to obsolete lotju ids {}", notToObsoleteLotjuIds);
 
         final Collection invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
 
         for (LamAsemaVO tsa : toUpdate) {
             UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;

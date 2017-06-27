@@ -69,7 +69,7 @@ public class ForecastSectionDataUpdater {
 
             // Update observation for forecast section
             ForecastSectionWeather observation =
-                    forecastSection.getForecastSectionWeatherList().stream().filter(f -> f.getType().equals("OBSERVATION")).findFirst().orElse(null);
+                    forecastSection.getForecastSectionWeatherList().stream().filter(f -> "OBSERVATION".equals(f.getType())).findFirst().orElse(null);
 
             if (observation != null) {
                 updateObservation(observation, weatherData.observation);
@@ -89,7 +89,7 @@ public class ForecastSectionDataUpdater {
 
             // Update forecasts 2h, 4h, 6h, 12h for forecast section
             List<ForecastSectionWeather> forecasts =
-                    forecastSection.getForecastSectionWeatherList().stream().filter(f -> f.getType().equals("FORECAST")).collect(Collectors.toList());
+                    forecastSection.getForecastSectionWeatherList().stream().filter(f -> "FORECAST".equals(f.getType())).collect(Collectors.toList());
             Set<String> existingForecastNames = forecasts.stream().map(f -> f.getForecastName()).collect(Collectors.toSet());
 
             List<String> forecastNamesInData = weatherData.forecast.stream().map(data -> data.forecastName).collect(Collectors.toList());

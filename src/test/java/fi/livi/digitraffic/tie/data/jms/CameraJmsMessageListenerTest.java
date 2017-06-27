@@ -8,8 +8,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -19,12 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -42,10 +36,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.xml.transform.StringResult;
 
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -57,7 +53,6 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
 public class CameraJmsMessageListenerTest extends AbstractSftpTest {
-    
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
     private static final String IMAGE_SUFFIX = "image.jpg";
@@ -70,18 +65,15 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     private CameraDataUpdateService cameraDataUpdateService;
 
     @Autowired
-    LockingService lockingService;
-
-    @Autowired
     private CameraStationUpdateService cameraStationUpdateService;
 
     @Autowired
-    ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
-    private Marshaller jaxbMarshaller;
-    private Unmarshaller jaxbUnmarshaller;
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Before
     public void initData() throws IOException, JAXBException {
@@ -91,25 +83,26 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         entityManager.flush();
         entityManager.clear();
 
-        jaxbMarshaller = JAXBContext.newInstance(Kuva.class).createMarshaller();
-        jaxbUnmarshaller = JAXBContext.newInstance(Kuva.class).createUnmarshaller();
-
         int i = 5;
         while (i > 0) {
-            String imageName = i + IMAGE_SUFFIX;
-            Resource resource = resourceLoader.getResource("classpath:" + IMAGE_DIR + imageName);
+            final String imageName = i + IMAGE_SUFFIX;
+            final Resource resource = resourceLoader.getResource("classpath:" + IMAGE_DIR + imageName);
             final File imageFile = resource.getFile();
-            byte[] bytes = FileUtils.readFileToByteArray(imageFile);
+            final byte[] bytes = FileUtils.readFileToByteArray(imageFile);
+
             imageFilesMap.put(imageName, bytes);
             i--;
         }
 
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
-        Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
+
+        final Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
         log.info("All camera presets size {}", cameraPresets.size());
+
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
-        Iterator<CameraPreset> iter = cameraPresets.values().iterator();
+        final Iterator<CameraPreset> iter = cameraPresets.values().iterator();
+
         while (missingMin > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
@@ -140,44 +133,45 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
-
-        log.info("Using weathercam.importDir: " + testFolder.getRoot().getPath());
-
+        log.info("Using weathercam.importDir:{}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
-        log.info("Mock server port: " + port);
+        log.info("Mock server port: {}", port);
+
         createHttpResponseStubFor(1 + IMAGE_SUFFIX);
         createHttpResponseStubFor(2 + IMAGE_SUFFIX);
         createHttpResponseStubFor(3 + IMAGE_SUFFIX);
         createHttpResponseStubFor(4 + IMAGE_SUFFIX);
         createHttpResponseStubFor(5 + IMAGE_SUFFIX);
 
-        JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
-            StopWatch start = StopWatch.createStarted();
+        final JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
+            final StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
+            int updated = 0;
             try {
-                cameraDataUpdateService.updateCameraData(data.stream().map(p -> p.getLeft()).collect(Collectors.toList()));
+                updated = cameraDataUpdateService.updateCameraData(data);
             } catch (SQLException e) {
                 Assert.fail("Data updating failed");
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
             log.info("handleData took {} ms", start.getTime());
+            return updated;
         };
 
-        JMSMessageListener<Kuva> cameraJmsMessageListener =
-                new JMSMessageListener<Kuva>(Kuva.class, dataUpdater, true, log);
+        final JMSMessageListener<Kuva> cameraJmsMessageListener =
+                new JMSMessageListener<Kuva>(new TextMessageMarshaller(jaxb2Marshaller), dataUpdater, true, log);
 
-        DatatypeFactory df = DatatypeFactory.newInstance();
-        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
+        final DatatypeFactory df = DatatypeFactory.newInstance();
+        final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
+        final XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
-        List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
-        Iterator<CameraPreset> presetIterator = presets.iterator();
+        final List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
+        final Iterator<CameraPreset> presetIterator = presets.iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
@@ -217,13 +211,11 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 data.add(Pair.of(kuva, null));
                 xgcal.add(df.newDuration(1000));
 
-                StringWriter xmlSW = new StringWriter();
-                jaxbMarshaller.marshal(kuva, xmlSW);
-                StringReader sr = new StringReader(xmlSW.toString());
-                Kuva object = (Kuva)jaxbUnmarshaller.unmarshal(sr);
+                final StringResult result = new StringResult();
+                jaxb2Marshaller.marshal(kuva, result);
 
                 cameraJmsMessageListener.onMessage(
-                        fi.livi.digitraffic.tie.data.jms.AbstractJmsMessageListenerTest.createTextMessage(xmlSW.toString(), "Kuva " + preset.getPresetId()));
+                        AbstractJmsMessageListenerTest.createTextMessage(result.toString(), "Kuva " + preset.getPresetId()));
 
                 if (data.size() >= 25) {
                     break;
@@ -298,7 +290,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     }
 
     private void createHttpResponseStubFor(String kuva) throws IOException {
-        byte[] data = imageFilesMap.get(kuva);
         log.info("Create mock with url: " + REQUEST_PATH + kuva);
         stubFor(get(urlEqualTo(REQUEST_PATH + kuva))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuva))

@@ -5,11 +5,11 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 
 @DisallowConcurrentExecution
-public class RoadStationsStatusUpdateJob extends SimpleUpdateJob {
+public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private RoadStationStatusUpdater roadStationStatusUpdater;
@@ -19,22 +19,14 @@ public class RoadStationsStatusUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) {
-        final int tmsCount = roadStationStatusUpdater.updateTmsStationsStatuses();
-        final int wsCount = roadStationStatusUpdater.updateWeatherStationsStatuses();
         final int csCount = roadStationStatusUpdater.updateCameraStationsStatuses();
-        if (tmsCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
-        }
-        if (wsCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
-        }
         if (csCount > 0) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.CAMERA_STATION);
+            dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
-        long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
-        log.info("Updated {} TMS stations statuses", tmsCount);
-        log.info("Updated {} weather stations statuses", wsCount);
+        dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
         log.info("Updated {} camera stations statuses", csCount);
+
+        long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
         log.info("Deleted {} non publishable weather camera images", deleted);
     }
 }

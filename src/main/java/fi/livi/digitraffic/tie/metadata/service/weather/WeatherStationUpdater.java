@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
@@ -29,17 +29,17 @@ public class WeatherStationUpdater  {
 
     private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
     public WeatherStationUpdater(final RoadStationService roadStationService,
                                  final WeatherStationService weatherStationService,
-                                 final StaticDataStatusService staticDataStatusService,
+                                 final DataStatusService dataStatusService,
                                  final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
@@ -50,22 +50,17 @@ public class WeatherStationUpdater  {
     public boolean updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-        if (!lotjuWeatherStationMetadataService.isEnabled()) {
-            log.warn("Not updating WeatherStations metadata because LotjuWeatherStationService not enabled");
-            return false;
-        }
-
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
         final boolean updateStaticDataStatus = updateWeatherStationsMetadata(tiesaaAsemas);
-        updateRoasWeatherStationStaticDataStatus(updateStaticDataStatus);
+        updateRoadWeatherStationStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update WeatherStations end");
         return updateStaticDataStatus;
     }
 
-    private void updateRoasWeatherStationStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER, updateStaticDataStatus);
+    private void updateRoadWeatherStationStaticDataStatus(final boolean updateStaticDataStatus) {
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER, updateStaticDataStatus);
     }
 
     private boolean updateWeatherStationsMetadata(final List<TiesaaAsemaVO> tiesaaAsemas) {
@@ -86,7 +81,7 @@ public class WeatherStationUpdater  {
 
         for (TiesaaAsemaVO tsa : toUpdate) {
             UpdateStatus result = weatherStationService.updateOrInsertWeatherStation(tsa);
-            if (result == UpdateStatus.INSERTED) {
+            if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {
                 inserted++;

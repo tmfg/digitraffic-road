@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
@@ -32,11 +33,8 @@ public class RoadStationStatusUpdater {
         this.roadStationService = roadStationService;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateTmsStationsStatuses() {
-        if (!lotjuTmsStationMetadataService.isEnabled()) {
-            log.info("Not updating TMS stations statuses because LotjuTmsStationMetadataService not enabled");
-            return 0;
-        }
         log.info("Update TMS stations statuses");
         final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
 
@@ -49,11 +47,8 @@ public class RoadStationStatusUpdater {
         return updated;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateWeatherStationsStatuses() {
-        if (!lotjuWeatherStationMetadataService.isEnabled()) {
-            log.info("Not updating weather stations statuses because LotjuWeatherStationMetadataClient not enabled");
-            return 0;
-        }
         log.info("Update weather stations statuses");
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
@@ -66,11 +61,8 @@ public class RoadStationStatusUpdater {
         return updated;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateCameraStationsStatuses() {
-        if (!lotjuCameraStationMetadataService.isEnabled()) {
-            log.info("Not updating camera stations statuses because LotjuCameraStationService not enabled");
-            return 0;
-        }
         log.info("Update camera stations statuses");
         final List<KameraVO> allKameras = lotjuCameraStationMetadataService.getKameras();
 

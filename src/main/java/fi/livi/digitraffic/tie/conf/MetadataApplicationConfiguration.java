@@ -72,12 +72,33 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
         dataSource.setFastConnectionFailoverEnabled(true);
+        dataSource.setInitialPoolSize(5);
         dataSource.setMaxPoolSize(20);
         dataSource.setMinPoolSize(5);
         dataSource.setMaxIdleTime(5);
         dataSource.setValidateConnectionOnBorrow(true);
         dataSource.setMaxStatements(10);
         dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+        /* Times are in seconds */
+        /* The maximum connection reuse count allows connections to be gracefully closed and removed
+           from the connection pool after a connection has been borrowed a specific number of times. */
+        dataSource.setMaxConnectionReuseCount(100);
+        /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
+         * has been in use for a specific amount of time. The timer for this property starts when a connection is physically created.
+         * Borrowed connections are closed only after they are returned to the pool and the reuse time has been exceeded. */
+        dataSource.setMaxConnectionReuseTime(300);
+        /* The abandoned connection timeout enables borrowed connections to be reclaimed back into the connection pool after a connection
+           has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
+        dataSource.setAbandonedConnectionTimeout(60);
+        /* The time-to-live connection timeout enables borrowed connections to remain borrowed for a specific amount of time before the
+           connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
+           that are otherwise lost on maintaining connections longer than their expected usage. */
+        dataSource.setTimeToLiveConnectionTimeout(600);
+        /* The inactive connection timeout specifies how long an available connection can remain idle before it is closed and removed from the pool.
+           This timeout property is only applicable to available connections and does not affect borrowed connections. This property helps conserve
+           resources that are otherwise lost on maintaining connections that are no longer being used. The inactive connection timeout
+           (together with the maximum pool size) allows a connection pool to grow and shrink as application load changes. */
+        dataSource.setInactiveConnectionTimeout(60);
         return dataSource;
     }
 

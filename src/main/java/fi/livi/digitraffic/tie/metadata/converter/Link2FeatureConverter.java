@@ -25,7 +25,7 @@ public class Link2FeatureConverter extends AbstractMetadataToFeatureConverter {
         super(coordinateConverter);
     }
 
-    public LinkFeatureCollection convert(final List<Link> links, final ZonedDateTime lastUpdated) {
+    public LinkFeatureCollection convert(final List<Link> links, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
 
         final ArrayList<LinkFeature> linkFeatures = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class Link2FeatureConverter extends AbstractMetadataToFeatureConverter {
             linkFeatures.add(convert(link));
         }
 
-        return new LinkFeatureCollection(lastUpdated, linkFeatures);
+        return new LinkFeatureCollection(linkFeatures, lastUpdated, dataLastCheckedTime);
     }
 
     private LinkFeature convert(final Link link) {

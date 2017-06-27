@@ -5,13 +5,13 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class TmsStationUpdateJob extends SimpleUpdateJob {
+public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -28,8 +28,9 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_ROAD_STATION_SENSOR);
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
         sensorsWatch.stop();
 
         final StopWatch stationsWatch = StopWatch.createStarted();
@@ -41,8 +42,9 @@ public class TmsStationUpdateJob extends SimpleUpdateJob {
         stationsSensorsWatch.stop();
 
         if (stationsUpdated || updatedTmsStationsSensors) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.LAM_STATION);
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
 
         log.info("UpdateRoadStationSensors took: {} ms, updateTmsStations took: {} ms, updateTmsStationsSensors took: {} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());

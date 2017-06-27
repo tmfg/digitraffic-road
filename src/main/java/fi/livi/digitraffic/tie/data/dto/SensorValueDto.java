@@ -63,6 +63,12 @@ public class SensorValueDto {
     @JsonIgnore
     private ZonedDateTime stationLatestMeasuredTime;
 
+    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowStart;
+
+    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
+    private ZonedDateTime timeWindowEnd;
+
     /** Db's timestamp */
     @JsonIgnore
     private ZonedDateTime updatedTime;
@@ -94,12 +100,6 @@ public class SensorValueDto {
     public void setSensorValueId(final Long sensorValueId) {
         this.sensorValueId = sensorValueId;
     }
-
-    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
-    private ZonedDateTime timeWindowStart;
-
-    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
-    private ZonedDateTime timeWindowEnd;
 
     public String getSensorNameOld() {
         return sensorNameOld;

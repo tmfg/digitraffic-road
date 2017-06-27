@@ -11,13 +11,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.RootMetadataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of Cameras with presets", value = "CameraStationFeatureCollection")
-@JsonPropertyOrder({ "type", "features" })
-public class CameraStationFeatureCollection extends RootDataObjectDto implements Iterable<CameraStationFeature> {
+@JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
+public class CameraStationFeatureCollection extends RootMetadataObjectDto implements Iterable<CameraStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
@@ -25,8 +25,8 @@ public class CameraStationFeatureCollection extends RootDataObjectDto implements
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<CameraStationFeature> features = new ArrayList<CameraStationFeature>();
 
-    public CameraStationFeatureCollection(final ZonedDateTime dataUpdatedTime) {
-        super(dataUpdatedTime);
+    public CameraStationFeatureCollection(final ZonedDateTime dataUpdatedTime, final ZonedDateTime dataLastCheckedTime) {
+        super(dataUpdatedTime, dataLastCheckedTime);
     }
 
     public String getType() {

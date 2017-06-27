@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.helper;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -30,10 +31,9 @@ public final class DateHelper {
         return second;
     }
 
-    public static LocalDateTime toLocalDateTime(XMLGregorianCalendar calendar) {
+    public static LocalDateTime toLocalDateTime(final XMLGregorianCalendar calendar) {
         if (calendar != null) {
-            ZonedDateTime zonedDateTime = calendar.toGregorianCalendar().toZonedDateTime();
-            return ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneId.systemDefault()).toLocalDateTime();
+            return calendar.toGregorianCalendar().toZonedDateTime().withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         }
         return null;
     }
@@ -41,10 +41,10 @@ public final class DateHelper {
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */
-    public static ZonedDateTime toZonedDateTimeWithoutMillis(XMLGregorianCalendar calendar)  {
+    public static ZonedDateTime toZonedDateTimeWithoutMillis(final XMLGregorianCalendar calendar)  {
         if (calendar != null) {
             try {
-                XMLGregorianCalendar calSeconds =
+                final XMLGregorianCalendar calSeconds =
                         DatatypeFactory.newInstance().newXMLGregorianCalendar(
                                 calendar.getYear(),
                                 calendar.getMonth(),
@@ -62,7 +62,7 @@ public final class DateHelper {
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTime(XMLGregorianCalendar calendar) {
+    public static ZonedDateTime toZonedDateTime(final XMLGregorianCalendar calendar) {
         if (calendar != null) {
             // This way Time is formed as 1995-01-01T00:00+02:00[Europe/Helsinki]
             //                 and not as 1995-01-01T00:00+02:00[GMT+02:00]
@@ -72,30 +72,30 @@ public final class DateHelper {
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTime(LocalDateTime localDateTime) {
+    public static ZonedDateTime toZonedDateTime(final LocalDateTime localDateTime) {
         if (localDateTime != null) {
             return localDateTime.atZone(ZoneId.systemDefault());
         }
         return null;
     }
 
-    public static LocalDateTime toLocalDateTime(ZonedDateTime zonedDateTime) {
+    public static LocalDateTime toLocalDateTime(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
-            return zonedDateTime.toLocalDateTime();
+            return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         }
         return null;
     }
 
-    public static Date toDate(ZonedDateTime zonedDateTime) {
+    public static Date toDate(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
             return Date.from(zonedDateTime.toInstant());
         }
         return null;
     }
 
-    public static XMLGregorianCalendar toXMLGregorianCalendar(ZonedDateTime zonedDateTime) {
+    public static XMLGregorianCalendar toXMLGregorianCalendar(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
-            GregorianCalendar gregorianCalendar = GregorianCalendar.from(zonedDateTime);
+            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(zonedDateTime);
             try {
                 return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
             } catch (DatatypeConfigurationException e) {
@@ -105,10 +105,10 @@ public final class DateHelper {
         return null;
     }
 
-    public static XMLGregorianCalendar toXMLGregorianCalendarUtc(ZonedDateTime zonedDateTime) {
+    public static XMLGregorianCalendar toXMLGregorianCalendarUtc(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
-            ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC);
-            GregorianCalendar gregorianCalendar = GregorianCalendar.from(utc);
+            final ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC);
+            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(utc);
             try {
                 return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
             } catch (DatatypeConfigurationException e) {
@@ -116,5 +116,9 @@ public final class DateHelper {
             }
         }
         return null;
+    }
+
+    public static LocalDateTime toLocalDateTime(final long aika) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(aika), ZoneId.systemDefault());
     }
 }

@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -32,17 +33,17 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
     private Map<Long, List<EsiasentoVO>> initialEsiasentos = new HashMap<>();
     private Map<Long, List<EsiasentoVO>> afterChangeEsiasentos = new HashMap<>();
 
-    public static LotjuKameraPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
-                                                                    final ResourceLoader resourceLoader) {
+    public static LotjuKameraPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                                    final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuKameraPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader);
+            instance = new LotjuKameraPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera,
-                                                  final ResourceLoader resourceLoader) {
-        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV3.SERVICE);
+    private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV3.SERVICE, jaxb2Marshaller);
     }
 
     @Override
