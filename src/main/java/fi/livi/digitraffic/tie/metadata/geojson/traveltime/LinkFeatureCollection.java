@@ -7,13 +7,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.RootMetadataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of travel time links", value = "LinkFeatureCollection")
-@JsonPropertyOrder({ "type", "dataUpdatedTime", "features" })
-public class LinkFeatureCollection extends RootDataObjectDto implements Iterable<LinkFeature> {
+@JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
+public class LinkFeatureCollection extends RootMetadataObjectDto implements Iterable<LinkFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     public final String type = "FeatureCollection";
@@ -21,8 +21,8 @@ public class LinkFeatureCollection extends RootDataObjectDto implements Iterable
     @ApiModelProperty(value = "Features", required = true, position = 2)
     public final List<LinkFeature> features;
 
-    public LinkFeatureCollection(final ZonedDateTime localTimestamp, final List<LinkFeature> linkFeatures) {
-        super(localTimestamp);
+    public LinkFeatureCollection(final List<LinkFeature> linkFeatures, final ZonedDateTime localTimestamp, final ZonedDateTime dataLastCheckedTime) {
+        super(localTimestamp, dataLastCheckedTime);
         this.features = linkFeatures;
     }
 

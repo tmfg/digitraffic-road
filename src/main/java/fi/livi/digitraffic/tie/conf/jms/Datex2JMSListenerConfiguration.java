@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @ConditionalOnProperty(name = "jms.datex2.enabled")
 @Configuration
-public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<D2LogicalModel> {
-
+public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Pair<D2LogicalModel, String>> {
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
+
     private final JMSParameters jmsParameters;
     private final Datex2DataService datex2DataService;
     private final Jaxb2Marshaller jaxb2Marshaller;
@@ -31,10 +33,8 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}") final String jmsConnectionUrls,
                                           @Value("${jms.datex2.userId}") final String jmsUserId,
                                           @Value("${jms.datex2.password}") final String jmsPassword,
-                                          @Value("${jms.datex2.inQueue}") final String jmsQueueKey,
-                                          final Datex2DataService datex2DataService,
-                                          final LockingService lockingService,
-                                          final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
+                                          @Value("${jms.datex2.inQueue}") final String jmsQueueKey, final Datex2DataService datex2DataService,
+                                          final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
 
         super(JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
               lockingService,
@@ -53,12 +53,11 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public JMSMessageListener<D2LogicalModel> createJMSMessageListener() throws JAXBException {
+    public JMSMessageListener<Pair<D2LogicalModel, String>> createJMSMessageListener() throws JAXBException {
+        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> handleData = datex2DataService::updateDatex2Data;
+        final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller);
 
-        final JMSMessageListener.JMSDataUpdater<D2LogicalModel> handleData = (data) -> datex2DataService.updateDatex2Data(data);
-
-        return new JMSMessageListener<>(jaxb2Marshaller,
-                                        handleData,
+        return new JMSMessageListener(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKey()),
                                         log);
     }

@@ -21,9 +21,9 @@ public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureC
         super(coordinateConverter);
     }
 
-    public ForecastSectionFeatureCollection convert(List<ForecastSection> forecastSections, final ZonedDateTime lastUpdated) {
+    public ForecastSectionFeatureCollection convert(List<ForecastSection> forecastSections, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
 
-        final ForecastSectionFeatureCollection forecastSectionFeatures = new ForecastSectionFeatureCollection(lastUpdated);
+        final ForecastSectionFeatureCollection forecastSectionFeatures = new ForecastSectionFeatureCollection(lastUpdated, dataLastCheckedTime);
 
         for (ForecastSection fs : forecastSections) {
             forecastSectionFeatures.add(convert(fs));

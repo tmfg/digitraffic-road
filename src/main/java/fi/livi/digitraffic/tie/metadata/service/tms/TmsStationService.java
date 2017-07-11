@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
 import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +30,13 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
@@ -45,22 +46,23 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationService.class);
 
     private final TmsStationRepository tmsStationRepository;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final RoadStationService roadStationService;
     private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
     private final RoadAddressRepository roadAddressRepository;
+    private ZonedDateTime metadataLastChecked;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
-                             final StaticDataStatusService staticDataStatusService,
+                             final DataStatusService dataStatusService,
                              final RoadStationService roadStationService,
                              final RoadDistrictService roadDistrictService,
                              final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
                              final RoadAddressRepository roadAddressRepository) {
         super(log);
         this.tmsStationRepository = tmsStationRepository;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.roadStationService = roadStationService;
         this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
@@ -68,24 +70,23 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo,
-        final TmsState tmsState) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
+    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo, final TmsState tmsState) {
         final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
-                stations,
-                updated != null ? updated.getUpdatedTime() : null);
+            stations,
+            getMetadataLastUpdated(),
+            getMetadataLastChecked());
     }
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.LAM_STATION);
         final List<TmsStation> stations = findStations(roadNumber, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
-            updated != null ? updated.getUpdatedTime() : null);
+            getMetadataLastUpdated(),
+            getMetadataLastChecked());
     }
 
     @Transactional(readOnly = true)
@@ -314,5 +315,17 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
         return tmsStationMetadata2FeatureConverter.convert(station);
 
+    }
+
+    private ZonedDateTime getMetadataLastUpdated() {
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA);
+        return getNewest(sensorsUpdated, stationsUpdated);
+    }
+
+    public ZonedDateTime getMetadataLastChecked() {
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA_CHECK);
+        return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

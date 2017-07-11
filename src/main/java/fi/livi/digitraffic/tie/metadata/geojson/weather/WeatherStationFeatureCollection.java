@@ -8,13 +8,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.RootMetadataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of Weather Stations", value = "FeatureCollection")
-@JsonPropertyOrder({ "type", "features" })
-public class WeatherStationFeatureCollection extends RootDataObjectDto implements Iterable<WeatherStationFeature> {
+@JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
+public class WeatherStationFeatureCollection extends RootMetadataObjectDto implements Iterable<WeatherStationFeature> {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
@@ -22,8 +22,8 @@ public class WeatherStationFeatureCollection extends RootDataObjectDto implement
     @ApiModelProperty(value = "Features", required = true, position = 2)
     private List<WeatherStationFeature> features = new ArrayList<>();
 
-    public WeatherStationFeatureCollection(final ZonedDateTime dataUpdatedTime) {
-        super(dataUpdatedTime);
+    public WeatherStationFeatureCollection(final ZonedDateTime dataUpdatedTime, final ZonedDateTime dataLastCheckedTime) {
+        super(dataUpdatedTime, dataLastCheckedTime);
     }
 
     public String getType() {

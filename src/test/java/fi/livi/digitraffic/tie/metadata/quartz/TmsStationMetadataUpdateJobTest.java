@@ -24,9 +24,9 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
-public class TmsStationUpdateJobTest extends AbstractTest {
+public class TmsStationMetadataUpdateJobTest extends AbstractTest {
 
-    private static final Logger log = LoggerFactory.getLogger(TmsStationUpdateJobTest.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsStationMetadataUpdateJobTest.class);
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;

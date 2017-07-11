@@ -83,6 +83,10 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         /* The maximum connection reuse count allows connections to be gracefully closed and removed
            from the connection pool after a connection has been borrowed a specific number of times. */
         dataSource.setMaxConnectionReuseCount(100);
+        /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
+         * has been in use for a specific amount of time. The timer for this property starts when a connection is physically created.
+         * Borrowed connections are closed only after they are returned to the pool and the reuse time has been exceeded. */
+        dataSource.setMaxConnectionReuseTime(300);
         /* The abandoned connection timeout enables borrowed connections to be reclaimed back into the connection pool after a connection
            has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
         dataSource.setAbandonedConnectionTimeout(60);

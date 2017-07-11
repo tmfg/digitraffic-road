@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
@@ -27,17 +27,17 @@ public class TmsStationsSensorsUpdater {
 
     private RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
-                                     final StaticDataStatusService staticDataStatusService,
+                                     final DataStatusService dataStatusService,
                                      final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
@@ -77,7 +77,7 @@ public class TmsStationsSensorsUpdater {
         // Update sensors of road stations
         final boolean updateStaticDataStatus =
                 updateSensorsOfTmsStations(stationAnturisPairs);
-        updateRoasWeatherSensorStaticDataStatus(updateStaticDataStatus);
+        updateRoadWeatherSensorStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update TMS Stations Sensors end");
         return updateStaticDataStatus;
@@ -111,7 +111,7 @@ public class TmsStationsSensorsUpdater {
         return countRemoved > 0 || countAdded > 0;
     }
 
-    private void updateRoasWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
+    private void updateRoadWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 }

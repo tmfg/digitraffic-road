@@ -31,19 +31,19 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeLinkMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -113,41 +113,41 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean cameraUpdateJobDetail() {
-        return createJobDetail(CameraUpdateJob.class);
+    public JobDetailFactoryBean cameraMetadataUpdateJobDetail() {
+        return createJobDetail(CameraMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean tmsStationUpdateJobDetail() {
-        return createJobDetail(TmsStationUpdateJob.class);
+    public JobDetailFactoryBean tmsStationMetadataUpdateJobDetail() {
+        return createJobDetail(TmsStationMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean weatherStationUpdateJobDetail() {
-        return createJobDetail(WeatherStationUpdateJob.class);
+    public JobDetailFactoryBean weatherStationMetadataUpdateJobDetail() {
+        return createJobDetail(WeatherStationMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean cameraStationsStatusUpdateJobDetail() {
-        return createJobDetail(CameraStationsStatusUpdateJob.class);
+    public JobDetailFactoryBean cameraStationsStatusMetadataUpdateJobDetail() {
+        return createJobDetail(CameraStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean tmsStationsStatusUpdateJobDetail() {
-        return createJobDetail(TmsStationsStatusUpdateJob.class);
+    public JobDetailFactoryBean tmsStationsStatusMetadataUpdateJobDetail() {
+        return createJobDetail(TmsStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean weatherStationsStatusUpdateJobDetail() {
-        return createJobDetail(WeatherStationsStatusUpdateJob.class);
+    public JobDetailFactoryBean weatherStationsStatusMetadataUpdateJobDetail() {
+        return createJobDetail(WeatherStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
     public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionCoordinatesUpdateJobDetail() {
-        return createJobDetail(ForecastSectionCoordinatesUpdateJob.class);
+    public JobDetailFactoryBean forecastSectionCoordinatesMetadataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionCoordinatesMetadataUpdateJob.class);
     }
 
     @Bean
@@ -176,39 +176,39 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean cameraUpdateJobTrigger(final JobDetail cameraUpdateJobDetail,
-                                                           @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(cameraUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
+                                                                   @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean tmsStationUpdateJobTrigger(final JobDetail tmsStationUpdateJobDetail,
-                                                               @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(tmsStationUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail,
+                                                                       @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(tmsStationMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean weatherStationUpdateJobTrigger(final JobDetail weatherStationUpdateJobDetail,
-                                                                   @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(weatherStationUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJobDetail,
+                                                                           @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(weatherStationMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean cameraStationsStatusUpdateJobTrigger(final JobDetail cameraStationsStatusUpdateJobDetail,
-                                                                         @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(cameraStationsStatusUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJobDetail,
+                                                                                 @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(cameraStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean tmsStationsStatusUpdateJobTrigger(final JobDetail tmsStationsStatusUpdateJobDetail,
-                                                                      @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(tmsStationsStatusUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJobDetail,
+                                                                              @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(tmsStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean weatherStationsStatusUpdateJobTrigger(final JobDetail weatherStationsStatusUpdateJobDetail,
-                                                                          @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(weatherStationsStatusUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJobDetail,
+                                                                                  @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(weatherStationsStatusMetadataUpdateJobDetail, frequency);
     }
 
     @Bean
@@ -218,9 +218,9 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean forecastSectionCoordinatesUpdateJobTrigger(final JobDetail forecastSectionCoordinatesUpdateJobDetail,
-                                                                               @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(forecastSectionCoordinatesUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionCoordinatesMetadataUpdateJobDetail,
+                                                                                       @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(forecastSectionCoordinatesMetadataUpdateJobDetail, frequency);
     }
 
     @Bean

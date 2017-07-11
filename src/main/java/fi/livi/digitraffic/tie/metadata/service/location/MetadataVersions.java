@@ -6,21 +6,21 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 
 public class MetadataVersions {
-    private final Map<MetadataType, MetadataVersion> versionMap = new EnumMap<MetadataType, MetadataVersion>(MetadataType.class);
+    private final Map<DataType, MetadataVersion> versionMap = new EnumMap<DataType, MetadataVersion>(DataType.class);
 
-    public void addVersion(final MetadataType type, final String filename, final String version) {
+    public void addVersion(final DataType type, final String filename, final String version) {
         versionMap.put(type, new MetadataVersion(filename, version));
     }
 
     public MetadataVersion getLocationsVersion() {
-        return versionMap.get(MetadataType.LOCATIONS);
+        return versionMap.get(DataType.LOCATIONS_METADATA);
     }
 
     public MetadataVersion getLocationTypeVersion() {
-        return versionMap.get(MetadataType.LOCATION_TYPES);
+        return versionMap.get(DataType.LOCATION_TYPES_METADATA);
     }
 
     public static class MetadataVersion {

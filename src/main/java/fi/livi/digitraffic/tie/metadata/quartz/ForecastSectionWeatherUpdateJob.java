@@ -8,7 +8,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionDataUpdater;
 
 @DisallowConcurrentExecution
@@ -21,7 +21,7 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) throws Exception {
         Timestamp messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        staticDataStatusService.setMetadataUpdated(MetadataType.FORECAST_SECTION_WEATHER,
-                                                   ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA,
+                                            ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
     }
 }

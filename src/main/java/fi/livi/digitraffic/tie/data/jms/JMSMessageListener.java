@@ -10,59 +10,45 @@ import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
-import org.springframework.oxm.XmlMappingException;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public class JMSMessageListener<T> implements MessageListener {
-
+public class JMSMessageListener<K> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
     public static final String MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE = MESSAGE_UNMARSHALLING_ERROR + " for message: {}";
 
-    public interface JMSDataUpdater<T> {
-        int updateData(List<Pair<T, String>> data);
+    public interface JMSDataUpdater<K> {
+        int updateData(final List<K> data);
+    }
+
+    public interface MessageMarshaller<K> {
+        List<K> unmarshalMessage(final Message message) throws JMSException;
     }
 
     private static final int QUEUE_SIZE_WARNING_LIMIT = 200;
     private static final int QUEUE_SIZE_ERROR_LIMIT = 1000;
     private static final int QUEUE_MAXIMUM_SIZE = 10000;
 
-    private final Logger log;
+    protected final Logger log;
 
-    private final ConcurrentLinkedQueue<Pair<T,String>> messageQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<K> messageQueue = new ConcurrentLinkedQueue<>();
+
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger messageCounter = new AtomicInteger();
     private final AtomicInteger messageDrainedCounter = new AtomicInteger();
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
 
     private final boolean drainScheduled;
-    private final Jaxb2Marshaller jaxb2Marshaller;
-    private final JMSDataUpdater dataUpdater;
+    private final JMSDataUpdater<K> dataUpdater;
+    private final MessageMarshaller<K> messageMarshaller;
 
-    /**
-     *
-     *
-     * @param jaxb2Marshaller marshaller
-     * @param dataUpdater Data updater handle
-     * @param drainScheduled If true received messages will be handled only when drainQueueScheduled is called. If set to false
-     *                       messages will be handled immediately when they arrived and message sender is notified of successful receive.
-     * @param log
-     * @throws JAXBException
-     */
-    public JMSMessageListener(Jaxb2Marshaller jaxb2Marshaller, final JMSDataUpdater dataUpdater, final boolean drainScheduled, final Logger log)
-        throws JAXBException {
-
-        this.jaxb2Marshaller = jaxb2Marshaller;
+    public JMSMessageListener(final MessageMarshaller<K> messageMarshaller, final JMSDataUpdater<K> dataUpdater, final boolean drainScheduled,
+        final Logger log) {
+        this.messageMarshaller = messageMarshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
@@ -87,9 +73,11 @@ public class JMSMessageListener<T> implements MessageListener {
             return;
         }
 
-        Pair<T,String> data = unmarshalMessage(message);
-        if (data != null) {
-            messageQueue.add(data);
+        final List<K> data = unmarshalMessage(message);
+
+        if (CollectionUtils.isNotEmpty(data)) {
+            messageQueue.addAll(data);
+
             // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
             if (!isDrainScheduled()) {
                 log.info("Handle JMS message immediately");
@@ -103,41 +91,13 @@ public class JMSMessageListener<T> implements MessageListener {
         }
     }
 
-    protected Pair<T, String> unmarshalMessage(final Message message) {
-
+    private List<K> unmarshalMessage(final Message message) {
         try {
-            final String text = parseTextMessageText(message);
-            Object object = jaxb2Marshaller.unmarshal(new StringSource(text));
-            if (object instanceof JAXBElement) {
-                // For Datex2 messages extra stuff
-                object = ((JAXBElement) object).getValue();
-            }
-            return Pair.of((T)object, text);
-        } catch (JMSException jmse) {
+            return messageMarshaller.unmarshalMessage(message);
+        } catch (final JMSException jmse) {
             // getText() failed
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, jmse);
-        } catch (XmlMappingException e) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
-            throw new JMSUnmarshalMessageException(MESSAGE_UNMARSHALLING_ERROR, e);
-        }
-    }
-
-    private String parseTextMessageText(final Message message) throws JMSException {
-        assertTextMessage(message);
-        final TextMessage xmlMessage = (TextMessage) message;
-        final String text = xmlMessage.getText();
-        if (StringUtils.isBlank(text)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(xmlMessage));
-            throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": blank text");
-        }
-        return text.trim();
-    }
-
-    private void assertTextMessage(final Message message) {
-        if (!(message instanceof TextMessage)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
-            throw new IllegalArgumentException("Unknown message type: " + message.getClass());
         }
     }
 
@@ -152,7 +112,7 @@ public class JMSMessageListener<T> implements MessageListener {
 
     private void drainQueueInternal() {
         if ( !shutdownCalled.get() ) {
-            StopWatch start = StopWatch.createStarted();
+            final StopWatch start = StopWatch.createStarted();
 
             int queueToDrain = messageQueue.size();
             if ( queueToDrain <= 0 ) {
@@ -176,10 +136,10 @@ public class JMSMessageListener<T> implements MessageListener {
             }
 
             // Allocate array with current message queue size and drain same amount of messages
-            ArrayList<Pair<T, String>> targetList = new ArrayList<>(queueToDrain);
+            ArrayList<K> targetList = new ArrayList<>(queueToDrain);
             int counter = 0;
             while (counter < queueToDrain) {
-                final Pair<T, String> next = messageQueue.poll();
+                final K next = messageQueue.poll();
                 if (next != null) {
                     targetList.add(next);
                     counter++;

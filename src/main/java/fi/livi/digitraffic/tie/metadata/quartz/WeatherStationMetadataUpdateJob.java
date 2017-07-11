@@ -5,13 +5,13 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
-public class WeatherStationUpdateJob extends SimpleUpdateJob {
+public class WeatherStationMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     public WeatherStationSensorUpdater weatherStationSensorUpdater;
@@ -27,8 +27,9 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION_SENSOR);
+            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
         sensorsWatch.stop();
 
         final StopWatch stationsWatch = StopWatch.createStarted();
@@ -40,8 +41,9 @@ public class WeatherStationUpdateJob extends SimpleUpdateJob {
         stationsSensors.stop();
 
         if (stationsUpdated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.WEATHER_STATION);
+            dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
 
         log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensors.getTime());

@@ -12,12 +12,17 @@ public class LockingService {
     private final LockingDao lockingDao;
 
     @Autowired
-    public LockingService(LockingDao lockingDao) {
+    public LockingService(final LockingDao lockingDao) {
         this.lockingDao = lockingDao;
     }
 
     @Transactional
-    public boolean acquireLock(final String lockName, final String callerInstanceId, int expirationSeconds) {
+    public boolean acquireLock(final String lockName, final String callerInstanceId, final int expirationSeconds) {
         return lockingDao.acquireLock(lockName, callerInstanceId, expirationSeconds);
+    }
+
+    @Transactional
+    public void releaseLock(final String lockName, final String callerInstanceId) {
+        lockingDao.releaseLock(lockName, callerInstanceId);
     }
 }

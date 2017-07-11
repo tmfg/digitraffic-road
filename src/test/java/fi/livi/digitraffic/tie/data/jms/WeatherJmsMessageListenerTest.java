@@ -34,7 +34,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.xml.transform.StringResult;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-    
+
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
     @Autowired
@@ -59,9 +59,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     private SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
-    LockingService lockingService;
-
-    @Autowired
     protected JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -69,13 +66,12 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     @Before
     public void initData() throws JAXBException {
-
         log.info("Add available sensors for weather stations");
         if (!TestTransaction.isActive()) {
             TestTransaction.start();
         }
 
-        String merge =
+        final String merge =
                 "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
                 "USING (\n" +
                 "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
@@ -110,66 +106,70 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
      */
     @Test
     public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+        final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
+            .findAllPublishableWeatherStationsMappedByLotjuId();
 
-        Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
+        final JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
+            final StopWatch sw = StopWatch.createStarted();
 
-        JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
-            StopWatch sw = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
                 TestTransaction.end();
             }
             TestTransaction.start();
-            final int updated = sensorDataUpdateService.updateWeatherData(data.stream().map(o -> o.getLeft()).collect(Collectors.toList()));
+
+            final int updated = sensorDataUpdateService.updateWeatherData(data);
             TestTransaction.flagForCommit();
             TestTransaction.end();
             log.info("handleData took {} ms", sw.getTime());
             return updated;
         };
 
-        JMSMessageListener jmsMessageListener = new JMSMessageListener(jaxb2Marshaller, dataUpdater, true, log);
+        final JMSMessageListener<Tiesaa> jmsMessageListener = new JMSMessageListener(new TextMessageMarshaller(jaxb2Marshaller),
+            dataUpdater, true, log);
 
-        DatatypeFactory df = DatatypeFactory.newInstance();
-        GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
+        final DatatypeFactory df = DatatypeFactory.newInstance();
+        final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
+        final XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
 
         // Generate update-data
         final float minX = 0.0f;
         final float maxX = 100.0f;
-        Random rand = new Random();
+        final Random rand = new Random();
         float arvo = rand.nextFloat() * (maxX - minX) + minX;
         log.info("Start with arvo " + arvo);
 
-        final List<RoadStationSensor> availableSensors =
-                roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
+        final List<RoadStationSensor> availableSensors = roadStationSensorService
+            .findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
+        final long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
         final List<Pair<Tiesaa, String>> data = new ArrayList<>();
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
             final StopWatch sw = StopWatch.createStarted();
             data.clear();
+
             while (true) {
                 if (!stationsIter.hasNext()) {
                     stationsIter = weatherStationsWithLotjuId.values().iterator();
                 }
-                WeatherStation currentStation = stationsIter.next();
+                final WeatherStation currentStation = stationsIter.next();
 
-                Tiesaa tiesaa = new Tiesaa();
+                final Tiesaa tiesaa = new Tiesaa();
                 data.add(Pair.of(tiesaa, null));
 
                 tiesaa.setAsemaId(currentStation.getLotjuId());
                 tiesaa.setAika((XMLGregorianCalendar) xgcal.clone());
-                Tiesaa.Anturit tiesaaAnturit = new Tiesaa.Anturit();
+                final Tiesaa.Anturit tiesaaAnturit = new Tiesaa.Anturit();
                 tiesaa.setAnturit(tiesaaAnturit);
-                List<Tiesaa.Anturit.Anturi> anturit = tiesaaAnturit.getAnturi();
-                for (RoadStationSensor availableSensor : availableSensors) {
-                    Tiesaa.Anturit.Anturi anturi = new Tiesaa.Anturit.Anturi();
+                final List<Tiesaa.Anturit.Anturi> anturit = tiesaaAnturit.getAnturi();
+                for (final RoadStationSensor availableSensor : availableSensors) {
+                    final Tiesaa.Anturit.Anturi anturi = new Tiesaa.Anturit.Anturi();
                     anturit.add(anturi);
 
                     anturi.setArvo(arvo);
@@ -183,7 +183,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
                 xgcal.add(df.newDuration(1000));
 
-                StringResult result = new StringResult();
+                final StringResult result = new StringResult();
                 jaxb2Marshaller.marshal(tiesaa, result);
                 jmsMessageListener.onMessage(createTextMessage(result.toString(), "Tiesaa " + currentStation.getLotjuId()));
 
@@ -200,12 +200,13 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             try {
                 // send data with 1 s intervall
                 long sleep = 1000 - sw.getTime();
+
                 if (sleep < 0) {
                     log.error("Data generation took too long");
                 } else {
                     Thread.sleep(sleep);
                 }
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -214,36 +215,36 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
-        Map<Long, List<SensorValue>> valuesMap =
+        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
+        final Map<Long, List<SensorValue>> valuesMap =
                     roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
-        for (Pair<Tiesaa, String> pair : data) {
-            Tiesaa tiesaa = pair.getLeft();
-            long asemaLotjuId = tiesaa.getAsemaId();
-            List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
-            List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
+        for (final Pair<Tiesaa, String> pair : data) {
+            final Tiesaa tiesaa = pair.getLeft();
+            final long asemaLotjuId = tiesaa.getAsemaId();
+            final List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
+            final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
 
-            for (Tiesaa.Anturit.Anturi anturi : anturit) {
-                Optional<SensorValue> found =
+            for (final Tiesaa.Anturit.Anturi anturi : anturit) {
+                final Optional<SensorValue> found =
                         sensorValues
                                 .stream()
                                 .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
                                 .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
                                 .findFirst();
-                Assert.assertTrue(found.isPresent());
+                assertTrue(found.isPresent());
                 Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
             }
         }
         log.info("Data is valid");
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+        assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 
     @Test
     public void test2LastUpdated() {
-        ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
         assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
-        List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
+        final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
         assertFalse(updated.isEmpty());
     }
 }

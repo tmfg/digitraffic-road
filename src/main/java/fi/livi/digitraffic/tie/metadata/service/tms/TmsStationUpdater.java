@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
@@ -28,17 +28,17 @@ public class TmsStationUpdater {
 
     private final RoadStationService roadStationService;
     private final TmsStationService tmsStationService;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationUpdater(final RoadStationService roadStationService,
                              final TmsStationService tmsStationService,
-                             final StaticDataStatusService staticDataStatusService,
+                             final DataStatusService dataStatusService,
                              final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         this.roadStationService = roadStationService;
         this.tmsStationService = tmsStationService;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
@@ -54,7 +54,7 @@ public class TmsStationUpdater {
     }
 
     private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
-        staticDataStatusService.updateStaticDataStatus(StaticDataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
+        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
     }
 
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {

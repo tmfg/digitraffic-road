@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,12 +41,11 @@ import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
@@ -59,7 +57,7 @@ public class RoadStationSensorService {
     private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private final RoadStationRepository roadStationRepository;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
     private final SensorValueRepository sensorValueRepository;
     private final EntityManager entityManager;
 
@@ -68,7 +66,7 @@ public class RoadStationSensorService {
     @Autowired
     public RoadStationSensorService(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
                                     final RoadStationSensorRepository roadStationSensorRepository,
-                                    final StaticDataStatusService staticDataStatusService,
+                                    final DataStatusService dataStatusService,
                                     final RoadStationRepository roadStationRepository,
                                     final SensorValueRepository sensorValueRepository,
                                     final EntityManager entityManager,
@@ -79,7 +77,7 @@ public class RoadStationSensorService {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
         this.sensorValueRepository = sensorValueRepository;
         this.entityManager = entityManager;
 
@@ -118,14 +116,12 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public RoadStationsSensorsMetadata findRoadStationsSensorsMetadata(final RoadStationType roadStationType, final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = staticDataStatusService.findMetadataUpdatedByMetadataType(MetadataType.getForRoadStationType
-            (roadStationType));
-
         return new RoadStationsSensorsMetadata(
             !onlyUpdateInfo ?
-            findAllNonObsoleteAndAllowedRoadStationSensors(roadStationType) :
-            Collections.emptyList(),
-                updated != null ? updated.getUpdatedTime() : null);
+                findAllNonObsoleteAndAllowedRoadStationSensors(roadStationType) :
+                Collections.emptyList(),
+            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(roadStationType)),
+            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(roadStationType)));
     }
 
     @Transactional(readOnly = true)
@@ -162,24 +158,28 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public RoadStationSensor save(RoadStationSensor roadStationSensor) {
+    public RoadStationSensor save(final RoadStationSensor roadStationSensor) {
         return roadStationSensorRepository.save(roadStationSensor);
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(List<Long> lamLotjuIds, RoadStationType roadStationType) {
-        List<SensorValue> sensorValues = sensorValueRepository.findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
+    public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(final List<Long> lamLotjuIds,
+        final RoadStationType roadStationType) {
+        final List<SensorValue> sensorValues = sensorValueRepository
+            .findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
 
-        HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
-        for (SensorValue sensorValue : sensorValues) {
-            Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
+        final HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
+        for (final SensorValue sensorValue : sensorValues) {
+            final Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
+
             List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.get(rsLotjuId);
             if (list == null) {
-                list = new LinkedList<>();
+                list = new ArrayList<>();
                 sensorValuesListByTmsLotjuIdMap.put(rsLotjuId, list);
             }
             list.add(sensorValue);
         }
+
         return sensorValuesListByTmsLotjuIdMap;
     }
 
