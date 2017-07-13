@@ -71,12 +71,18 @@ public class Datex2DataService {
 
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
-            datex2Repository.save(datex2);
+            final Datex2 d = datex2Repository.findByPublicationTime(datex2.getPublicationTime());
+
+            if (d != null && d.getMessage().equals(datex2.getMessage())) {
+                log.info("Datex2 message with publication time {} has already been persisted. Skipping.", datex2.getPublicationTime());
+            } else {
+                datex2Repository.save(datex2);
+            }
         }
         return data.size();
     }
 
-    private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
+    private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
         datex2.setPublicationTime(DateHelper.toZonedDateTimeWithoutMillis(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
@@ -85,7 +91,7 @@ public class Datex2DataService {
         }
     }
 
-    private void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
+    private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
         List<Situation> situations = situationPublication.getSituation();
         for (Situation situation : situations) {
             Datex2Situation d2Situation = new Datex2Situation();
@@ -98,7 +104,7 @@ public class Datex2DataService {
         }
     }
 
-    private void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
+    private static void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
         for (SituationRecord record : situationRecords) {
             Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
             d2Situation.addSituationRecord(d2SituationRecord);
@@ -131,7 +137,7 @@ public class Datex2DataService {
      * @param value
      * @return
      */
-    private List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
+    private static List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
         if (value == null) {
             return Collections.emptyList();
         }
@@ -153,7 +159,7 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
+    private Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.QueryHint;
@@ -16,6 +17,16 @@ import fi.livi.digitraffic.tie.data.model.Datex2;
 @Repository
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
+    Datex2 findByPublicationTime(final ZonedDateTime publicationTime);
+
+    @Query(value = "SELECT *\n" +
+                   "FROM (\n" +
+                   " SELECT d.*, row_number() OVER (ORDER BY d.PUBLICATION_TIME DESC) rnum\n" +
+                   " FROM DATEX2 d\n" +
+                   ") src \n" +
+                   "WHERE rnum = 1",
+           nativeQuery = true)
+    Datex2 getLatest();
 
     @Query(value =
             "select max(datex2.import_date) as updated\n" +
