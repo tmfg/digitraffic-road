@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +18,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import fi.livi.digitraffic.tie.data.model.Datex2;
 
 @Service
 public class Datex2HttpClient {
@@ -40,12 +37,12 @@ public class Datex2HttpClient {
     private final String baseUrl;
     private final String datex2Uri;
 
-    public Datex2HttpClient(final String baseUrl, final String datex2Uri) {
+    public Datex2HttpClient(@Value("Datex2HttpBaseUrl") final String baseUrl, @Value("Datex2HttpResourceUri") final String datex2Uri) {
         this.baseUrl = baseUrl;
         this.datex2Uri = datex2Uri;
     }
 
-    public Collection<Datex2> getDatex2MessagesFrom(final ZonedDateTime from) {
+    public List<String> getDatex2MessagesFrom(final ZonedDateTime from) {
         try {
             log.info("Read datex2 messages from " + from);
             final String html = getContent(baseUrl + datex2Uri);
@@ -59,26 +56,23 @@ public class Datex2HttpClient {
 
             final List<String> urls = newFiles.parallelStream().map(f -> baseUrl + datex2Uri + f).collect(Collectors.toList());
 
-            return getMessages(urls);
+            return getDatex2Messages(urls);
         } catch (IOException e) {
             log.error("Datex2s read failed", e);
         }
         return null;
     }
 
-    private List<Datex2> getMessages(final List<String> datex2MessageUrls) {
-        final List<Datex2> messages = new ArrayList<>();
+    private List<String> getDatex2Messages(final List<String> datex2MessageUrls) {
+        final List<String> messages = new ArrayList<>();
 
         for (String datex2MessageUrl : datex2MessageUrls) {
             try {
                 log.info("Read Datex2 message: " + datex2MessageUrl);
+
                 final String content = getContent(datex2MessageUrl);
-                final Datex2 datex2 = new Datex2();
-                final String name = StringUtils.substringAfterLast(datex2MessageUrl, "/");
-                final ZonedDateTime date = parseDate(name);
-                datex2.setImportTime(date);
-                datex2.setMessage(content);
-                messages.add(datex2);
+                messages.add(content);
+
                 log.info("Datex2 message read done");
             } catch (IOException e) {
                 log.error("Read content failed from " + datex2MessageUrl, e);

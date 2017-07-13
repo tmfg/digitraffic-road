@@ -229,7 +229,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         }
     }
 
-    protected class JMSParameters {
+    public class JMSParameters {
         private final String jmsUserId;
         private final String jmsPassword;
         private final String lockInstanceId;
