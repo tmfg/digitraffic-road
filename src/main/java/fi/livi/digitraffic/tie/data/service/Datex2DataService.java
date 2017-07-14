@@ -159,7 +159,7 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    private Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
+    public Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }

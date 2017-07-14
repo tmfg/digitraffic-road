@@ -11,9 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,6 +34,7 @@ public class Datex2HttpClient {
 
     private final String baseUrl;
     private final String datex2Uri;
+    private static final String autoindexQueryArguments = "?F=0&C=N&O=D";
 
     public Datex2HttpClient(@Value("Datex2HttpBaseUrl") final String baseUrl, @Value("Datex2HttpResourceUri") final String datex2Uri) {
         this.baseUrl = baseUrl;
@@ -45,14 +44,9 @@ public class Datex2HttpClient {
     public List<String> getDatex2MessagesFrom(final ZonedDateTime from) {
         try {
             log.info("Read datex2 messages from " + from);
-            final String html = getContent(baseUrl + datex2Uri);
+            final String html = getContent(baseUrl + datex2Uri + autoindexQueryArguments);
 
-            final Set<String> filenames = parseFilenames(html);
-
-            final List<String> newFiles = filenames.stream().filter(filename -> {
-                final ZonedDateTime fileDate = parseDate(filename);
-                return from == null || (fileDate != null && from.isBefore(fileDate));
-            }).sorted().collect(Collectors.toList());
+            final List<String> newFiles = getNewFiles(from, html);
 
             final List<String> urls = newFiles.parallelStream().map(f -> baseUrl + datex2Uri + f).collect(Collectors.toList());
 
@@ -61,6 +55,27 @@ public class Datex2HttpClient {
             log.error("Datex2s read failed", e);
         }
         return null;
+    }
+
+    private List<String> getNewFiles(final ZonedDateTime from, final String html) {
+        final Matcher m = fileNamePattern.matcher(html);
+        final List<String> filenames = new ArrayList<>();
+
+        while (m.find()) {
+            final String filename = m.group(1);
+            final ZonedDateTime fileDate = parseDate(filename);
+            if (!isNewFile(from, fileDate)) { // Links in html are ordered by filename which contains file date
+                break;
+            }
+            if (filename != null && !filenames.contains(filename)) {
+                filenames.add(filename);
+            }
+        }
+        return filenames;
+    }
+
+    private boolean isNewFile(final ZonedDateTime from, final ZonedDateTime fileDate) {
+        return from == null || (fileDate != null && from.isBefore(fileDate));
     }
 
     private List<String> getDatex2Messages(final List<String> datex2MessageUrls) {
@@ -88,19 +103,6 @@ public class Datex2HttpClient {
         con.setConnectTimeout(1000);
         con.setReadTimeout(10000);
         return new BufferedReader(new InputStreamReader(con.getInputStream())).lines().collect(Collectors.joining("\n"));
-    }
-
-    private Set<String> parseFilenames(final CharSequence html) {
-        final Matcher m = fileNamePattern.matcher(html);
-        final HashSet<String> filenames = new HashSet<>();
-
-        while (m.find()) {
-            final String filename = m.group(1);
-            if (filename != null) {
-                filenames.add(filename);
-            }
-        }
-        return filenames;
     }
 
     private ZonedDateTime parseDate(final String filename) {
