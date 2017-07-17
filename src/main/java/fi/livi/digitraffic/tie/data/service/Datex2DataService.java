@@ -71,15 +71,22 @@ public class Datex2DataService {
 
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
-            final Datex2 d = datex2Repository.findByPublicationTime(datex2.getPublicationTime());
+            final List<Datex2> d2 = findByPublicationTime(datex2.getPublicationTime());
 
-            if (d != null && d.getMessage().equals(datex2.getMessage())) {
-                log.info("Datex2 message with publication time {} has already been persisted. Skipping.", datex2.getPublicationTime());
+            if (!d2.isEmpty() && d2.stream().anyMatch(d -> d.getMessage().equals(datex2.getMessage()))) {
+                log.info("Datex2 message with publication time {} and situation ids {} has already been persisted. Skipping.",
+                         datex2.getPublicationTime(), datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", ")));
             } else {
                 datex2Repository.save(datex2);
             }
         }
         return data.size();
+    }
+
+    @Transactional
+    public List<Datex2> findByPublicationTime(final ZonedDateTime publicationTime) {
+        // Publication time is a DATE field in DB so it doesn't contain milliseconds.
+        return datex2Repository.findByPublicationTime(publicationTime.withNano(0));
     }
 
     private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
