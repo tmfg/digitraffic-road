@@ -61,24 +61,24 @@ public class Datex2MessageServiceTest extends AbstractTest {
         when(datex2HttpClient.getDatex2MessagesFrom(Matchers.any())).thenReturn(Arrays.asList(datex2Content1));
         datex2MessageService.updateDatex2Messages();
 
-        List<Datex2> datex2s = datex2Repository.findByPublicationTime(datex2PublicationTime1.withNano(0));
+        List<Datex2> datex2s = datex2DataService.findByPublicationTime(datex2PublicationTime1);
         assertEquals(1, datex2s.size());
         assertEquals(1, datex2s.get(0).getSituations().size());
         assertEquals("GUID50005166", datex2s.get(0).getSituations().get(0).getSituationId());
 
-        datex2s = datex2Repository.findByPublicationTime(datex2PublicationTime2.withNano(0));
+        datex2s = datex2DataService.findByPublicationTime(datex2PublicationTime2);
         assertEquals(0, datex2s.size());
 
         when(datex2HttpClient.getDatex2MessagesFrom(Matchers.any())).thenReturn(Arrays.asList(datex2Content1, datex2Content2));
         datex2MessageService.updateDatex2Messages();
 
         // datex2Content1 is persisted only once
-        datex2s = datex2Repository.findByPublicationTime(datex2PublicationTime1.withNano(0));
+        datex2s = datex2DataService.findByPublicationTime(datex2PublicationTime1);
         assertEquals(1, datex2s.size());
         assertEquals(1, datex2s.get(0).getSituations().size());
         assertEquals("GUID50005166", datex2s.get(0).getSituations().get(0).getSituationId());
 
-        datex2s = datex2Repository.findByPublicationTime(datex2PublicationTime2.withNano(0));
+        datex2s = datex2DataService.findByPublicationTime(datex2PublicationTime2);
         assertEquals(1, datex2s.size());
         assertEquals(1, datex2s.get(0).getSituations().size());
         assertEquals("GUID50006936", datex2s.get(0).getSituations().get(0).getSituationId());

@@ -59,9 +59,11 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public int updateDatex2Data(List<Pair<D2LogicalModel, String>> data) {
+    public int updateDatex2Data(final List<Pair<D2LogicalModel, String>> data) {
 
-        for (Pair<D2LogicalModel, String> pair : data) {
+        int saved = 0;
+
+        for (final Pair<D2LogicalModel, String> pair : data) {
 
             Datex2 datex2 = new Datex2();
             datex2.setImportTime(ZonedDateTime.now());
@@ -73,19 +75,30 @@ public class Datex2DataService {
 
             final List<Datex2> d2 = findByPublicationTime(datex2.getPublicationTime());
 
-            if (!d2.isEmpty() && d2.stream().anyMatch(d -> d.getMessage().equals(datex2.getMessage()))) {
-                log.info("Datex2 message with publication time {} and situation ids {} has already been persisted. Skipping.",
-                         datex2.getPublicationTime(), datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", ")));
+            // Prepare for a rare event in which two different messages have the same publication time
+            if (!d2.isEmpty()) {
+                final String situationIds = datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", "));
+
+                if (d2.stream().anyMatch(d -> d.getMessage().equals(datex2.getMessage()))) {
+                    log.info("Datex2 message with publication time {} and situation id(s) {} has already been persisted. Skipping.",
+                             datex2.getPublicationTime(), situationIds);
+                } else {
+                    log.info("Saving Datex2 message with existing publication time {}. Situation id(s) {}",
+                             datex2.getPublicationTime(), situationIds);
+                    datex2Repository.save(datex2);
+                    saved++;
+                }
             } else {
                 datex2Repository.save(datex2);
+                saved++;
             }
         }
-        return data.size();
+        return saved;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Datex2> findByPublicationTime(final ZonedDateTime publicationTime) {
-        // Publication time is a DATE field in DB so it doesn't contain milliseconds.
+        // Publication time is a DATE field in DB so it doesn't contain fractions of a second.
         return datex2Repository.findByPublicationTime(publicationTime.withNano(0));
     }
 
