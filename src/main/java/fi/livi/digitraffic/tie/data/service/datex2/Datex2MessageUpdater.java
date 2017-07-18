@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @Service
-public class Datex2MessageService {
+public class Datex2MessageUpdater {
 
     private final Datex2Repository datex2Repository;
     private final Datex2HttpClient datex2HttpClient;
@@ -27,7 +27,7 @@ public class Datex2MessageService {
     private final Datex2DataService datex2DataService;
 
     @Autowired
-    public Datex2MessageService(final Datex2Repository datex2Repository, final Datex2HttpClient datex2HttpClient,
+    public Datex2MessageUpdater(final Datex2Repository datex2Repository, final Datex2HttpClient datex2HttpClient,
                                 final Jaxb2Marshaller jaxb2Marshaller, final Datex2DataService datex2DataService) {
         this.datex2Repository = datex2Repository;
         this.datex2HttpClient = datex2HttpClient;
