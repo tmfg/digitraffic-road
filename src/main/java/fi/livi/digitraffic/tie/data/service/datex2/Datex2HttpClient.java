@@ -32,23 +32,21 @@ public class Datex2HttpClient {
 
     private static final Pattern fileNamePattern = Pattern.compile("href=\"(Datex2_[0-9-]*\\.xml)\"");
 
-    private final String baseUrl;
-    private final String datex2Uri;
+    private final String url;
     private static final String autoindexQueryArguments = "?F=0&C=N&O=D";
 
-    public Datex2HttpClient(@Value("Datex2HttpBaseUrl") final String baseUrl, @Value("Datex2HttpResourceUri") final String datex2Uri) {
-        this.baseUrl = baseUrl;
-        this.datex2Uri = datex2Uri;
+    public Datex2HttpClient(@Value("${Datex2MessageUrl}") final String url) {
+        this.url = url;
     }
 
     public List<String> getDatex2MessagesFrom(final ZonedDateTime from) {
         try {
             log.info("Read datex2 messages from " + from);
-            final String html = getContent(baseUrl + datex2Uri + autoindexQueryArguments);
+            final String html = getContent(url + autoindexQueryArguments);
 
             final List<String> newFiles = getNewFiles(from, html);
 
-            final List<String> urls = newFiles.parallelStream().map(f -> baseUrl + datex2Uri + f).collect(Collectors.toList());
+            final List<String> urls = newFiles.parallelStream().map(f -> url + f).collect(Collectors.toList());
 
             return getDatex2Messages(urls);
         } catch (IOException e) {
@@ -71,7 +69,8 @@ public class Datex2HttpClient {
                 filenames.add(filename);
             }
         }
-        return filenames;
+        // Sort files from oldest to newest
+        return filenames.stream().sorted().collect(Collectors.toList());
     }
 
     private boolean isNewFile(final ZonedDateTime from, final ZonedDateTime fileDate) {
@@ -83,7 +82,7 @@ public class Datex2HttpClient {
 
         for (String datex2MessageUrl : datex2MessageUrls) {
             try {
-                log.info("Read Datex2 message: " + datex2MessageUrl);
+                log.info("Reading Datex2 message: " + datex2MessageUrl);
 
                 final String content = getContent(datex2MessageUrl);
                 messages.add(content);
@@ -97,7 +96,6 @@ public class Datex2HttpClient {
     }
 
     private String getContent(final String url) throws IOException {
-        log.info("Reading Datex2 html file from {}", url);
         final URL d2Url = new URL(url);
         final URLConnection con = d2Url.openConnection();
         con.setConnectTimeout(1000);

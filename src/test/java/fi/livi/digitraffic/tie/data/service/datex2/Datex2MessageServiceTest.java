@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 public class Datex2MessageServiceTest extends AbstractTest {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private Datex2MessageService datex2MessageService;
+    private Datex2MessageUpdater datex2MessageService;
 
     @MockBean
     private Datex2HttpClient datex2HttpClient;
@@ -45,7 +45,7 @@ public class Datex2MessageServiceTest extends AbstractTest {
 
     @Before
     public void before() throws IOException {
-        datex2MessageService = new Datex2MessageService(datex2Repository, datex2HttpClient, jaxb2Marshaller, datex2DataService);
+        datex2MessageService = new Datex2MessageUpdater(datex2Repository, datex2HttpClient, jaxb2Marshaller, datex2DataService);
 
         datex2Repository.deleteAll();
 

@@ -28,6 +28,7 @@ locationsMetadataUpdateJob.frequency=86400000
 travelTimeMediansUpdateJob.frequency=60000
 travelTimeMeasurementsUpdateJob.frequency=60000
 travelTimeLinkMetadataUpdateJob.frequency=86400000
+datex2MessageUpdateJob.frequency=180000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
@@ -46,6 +47,8 @@ traveltime.PKS.individual.url=https://birch.nctr.co.uk/xml/pks_mtp_obs.xml
 traveltime.PKS.metadata.url=https://birch.nctr.co.uk/xml/pks_static12.xml
 traveltime.PKS.username=
 traveltime.PKS.password=
+
+Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 
 # JMS settings
 

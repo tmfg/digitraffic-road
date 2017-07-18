@@ -33,6 +33,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.Datex2MessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
@@ -176,6 +177,11 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean datex2MessageUpdateJobDetail() {
+        return createJobDetail(Datex2MessageUpdateJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
                                                                    @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
@@ -252,6 +258,12 @@ public class QuartzSchedulerConfig {
     public SimpleTriggerFactoryBean travelTimeLinkMetadataUpdateJobTrigger(final JobDetail travelTimeLinkMetadataUpdateJobDetail,
                                                                            @Value("${travelTimeLinkMetadataUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(travelTimeLinkMetadataUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean datex2MessageUpdateJobTrigger(final JobDetail datex2MessageUpdateJobDetail,
+                                                                  @Value("${datex2MessageUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(datex2MessageUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
