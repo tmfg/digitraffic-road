@@ -109,6 +109,7 @@ public class ForecastSection {
     private RoadSection endRoadSection;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy(value = "forecastSectionCoordinatesPK.orderNumber")
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,1 +1,9 @@
-cd ../digitraffic-ci-db/ && ./clean-migrate-sujuvuus-vagrant.sh && cd ../digitraffic-metadata/ && mvn clean install
+#!/bin/bash
+set -e
+
+(
+  cd ../digitraffic-ci-db
+  ./clean-migrate-sujuvuus-vagrant.sh
+)
+
+mvn clean install
