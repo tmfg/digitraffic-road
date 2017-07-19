@@ -274,25 +274,4 @@ public class Datex2DataService {
         }
         return null;
     }
-
-    @Transactional
-    public void handleUnhandledDatex2Messages() {
-        log.info("Fetch unhandled Datex2 messages");
-        List<Datex2> unhandled = datex2Repository.findByPublicationTimeIsNull();
-
-        log.info("Handle {} unhandled Datex2 Messages", unhandled.size());
-        unhandled.forEach(datex2 -> {
-            try {
-                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2.getMessage(), datex2.getImportTime());
-                if (tsDatex2 != null) {
-                    parseAndAppendPayloadPublicationData(tsDatex2.getD2LogicalModel().getPayloadPublication(), datex2);
-                    datex2Repository.save(datex2);
-                }
-            } catch (Exception e) {
-                log.error("Handling unhandled Datex2 message failed", e);
-            }
-
-        });
-        log.info("Handled {} unhandled Datex2 Messages", unhandled.size());
-    }
 }
