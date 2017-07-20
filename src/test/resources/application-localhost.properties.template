@@ -78,3 +78,10 @@ jms.datex2.inQueue=<datex2-topic>
 
 # Websocket stream of TMS sensor values
 #websocket.tms.enabled=true
+
+# Developer life improvements
+logging.file=digitraffic-metadata
+logging.level.root=INFO
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
