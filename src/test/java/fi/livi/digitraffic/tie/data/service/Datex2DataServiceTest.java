@@ -82,26 +82,6 @@ public class Datex2DataServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testHandleUnhandledDatex2() throws JAXBException, IOException, InterruptedException {
-
-        datex2Repository.deleteAll();
-        Assert.assertTrue(datex2Repository.findAll().isEmpty());
-
-        saveDatex2(datex2Content1);
-        Thread.sleep(50); // delay 2nd save a bit
-        saveDatex2(datex2Content2);
-
-        Assert.assertTrue(datex2Repository.findAll().size() == 2);
-        findDatex2AndAssert(situationId1, false);
-        findDatex2AndAssert(situationId2, false);
-
-        datex2DataService.handleUnhandledDatex2Messages();
-
-        findDatex2AndAssert(situationId1, true);
-        findDatex2AndAssert(situationId2, true);
-    }
-
-    @Test
     public void testMultiThreadUnmarshall() throws InterruptedException {
         Datex2Thread first = new Datex2Thread("datex2Content1", datex2Content1);
         Datex2Thread second = new Datex2Thread("datex2Content2", datex2Content2);
