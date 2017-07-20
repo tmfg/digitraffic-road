@@ -98,7 +98,7 @@ public class Datex2HttpClient {
     private String getContent(final String url) throws IOException {
         final URL d2Url = new URL(url);
         final URLConnection con = d2Url.openConnection();
-        con.setConnectTimeout(1000);
+        con.setConnectTimeout(10000);
         con.setReadTimeout(10000);
         return new BufferedReader(new InputStreamReader(con.getInputStream())).lines().collect(Collectors.joining("\n"));
     }
