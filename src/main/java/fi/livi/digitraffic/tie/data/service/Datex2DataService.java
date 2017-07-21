@@ -93,7 +93,7 @@ public class Datex2DataService {
                 saved++;
             }
         }
-        log.info("Saved {} new Datex2 message(s)", saved);
+        log.info("Saved {} new Datex2 messages", saved);
         return saved;
     }
 
