@@ -86,6 +86,8 @@ public class Datex2HttpClient {
 
                 final String content = getContent(datex2MessageUrl);
                 messages.add(content);
+
+                log.info("Datex2 message read done");
             } catch (IOException e) {
                 log.error("Read content failed from " + datex2MessageUrl, e);
             }
