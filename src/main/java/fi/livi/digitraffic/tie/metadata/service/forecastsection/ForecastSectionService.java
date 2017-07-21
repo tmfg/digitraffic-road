@@ -35,7 +35,7 @@ public class ForecastSectionService {
 
     @Transactional(readOnly = true)
     public ForecastSectionFeatureCollection findAllForecastSections() {
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
+        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
         return forecastSection2FeatureConverter.convert(forecastSections,
                                                         dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
                                                         dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
