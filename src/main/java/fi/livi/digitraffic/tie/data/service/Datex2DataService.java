@@ -75,7 +75,7 @@ public class Datex2DataService {
 
             final List<Datex2> d2 = findByPublicationTime(datex2.getPublicationTime());
 
-            // Prepare for a rare event in which two different messages have the same publication time
+            // Prepare for a rare event in which two different messages have the same publication time and avoid duplicates
             if (!d2.isEmpty()) {
                 final String situationIds = datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", "));
 
@@ -93,6 +93,7 @@ public class Datex2DataService {
                 saved++;
             }
         }
+        log.info("Saved {} new Datex2 messages", saved);
         return saved;
     }
 
