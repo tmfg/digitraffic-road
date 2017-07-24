@@ -105,7 +105,7 @@ public class Datex2DataService {
             d2Situation.addSituationRecord(d2SituationRecord);
             d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
 
-            // Only 1. comment seems to be valid
+            // Only first comment seems to be valid
             List<Comment> pc = record.getGeneralPublicComment();
             if (pc != null && !pc.isEmpty()) {
                 Comment comment = pc.get(0);
