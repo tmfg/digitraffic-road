@@ -45,7 +45,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             // Skip old Datex2 messages of HÄTI system
             "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
-            "order by d.publication_time, id",
+            "order by d.publication_time, d.id",
             nativeQuery = true)
     List<Datex2> findAllActive();
 
