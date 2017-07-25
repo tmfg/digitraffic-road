@@ -26,7 +26,7 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractTest {
     public void updateForecastSectionCoordinatesSucceeds() {
         forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll(new Sort(Sort.Direction.ASC, "naturalId"));
+        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
 
         assertTrue(forecastSections.size() > 250);
         assertEquals("00001_001_000_0", forecastSections.get(0).getNaturalId());
