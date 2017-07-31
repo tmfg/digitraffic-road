@@ -32,8 +32,8 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         this.stationSensorConverter = stationSensorConverter;
     }
 
-    public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated) {
-        final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated);
+    public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
+        final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated, dataLastCheckedTime);
         final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(TMS_STATION_TYPE);
 
         for(final TmsStation tms : stations) {

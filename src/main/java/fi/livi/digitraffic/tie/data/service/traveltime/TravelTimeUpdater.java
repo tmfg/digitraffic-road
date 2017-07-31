@@ -23,8 +23,8 @@ import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurement
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMeasurementsDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMedianDto;
 import fi.livi.digitraffic.tie.data.service.traveltime.dto.TravelTimeMediansDto;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.service.StaticDataStatusService;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class TravelTimeUpdater {
@@ -35,19 +35,19 @@ public class TravelTimeUpdater {
     private final LinkFastLaneRepository linkFastLaneRepository;
     private final TravelTimePostProcessor travelTimePostProcessor;
     private final TravelTimeRepository travelTimeRepository;
-    private final StaticDataStatusService staticDataStatusService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public TravelTimeUpdater(final TravelTimeClient travelTimeClient,
                              final LinkFastLaneRepository linkFastLaneRepository,
                              final TravelTimePostProcessor travelTimePostProcessor,
                              final TravelTimeRepository travelTimeRepository,
-                             final StaticDataStatusService staticDataStatusService) {
+                             final DataStatusService dataStatusService) {
         this.travelTimeClient = travelTimeClient;
         this.linkFastLaneRepository = linkFastLaneRepository;
         this.travelTimePostProcessor = travelTimePostProcessor;
         this.travelTimeRepository = travelTimeRepository;
-        this.staticDataStatusService = staticDataStatusService;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -60,7 +60,7 @@ public class TravelTimeUpdater {
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
             return;
         }
 
@@ -88,7 +88,7 @@ public class TravelTimeUpdater {
                                                                                           measurementsForValidLinks), validLinks);
 
         travelTimeRepository.insertMeasurementData(processed);
-        staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEASUREMENTS, from);
+        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
 
         log.info("Processed and saved PKS measurements for {} links", processed.size());
     }
@@ -103,7 +103,7 @@ public class TravelTimeUpdater {
             log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
         } else {
             log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
-            staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
             return;
         }
 
@@ -133,7 +133,7 @@ public class TravelTimeUpdater {
 
         travelTimeRepository.insertMedianData(processedMedians);
         travelTimeRepository.updateLatestMedianData(processedMedians);
-        staticDataStatusService.setMetadataUpdated(MetadataType.TRAVEL_TIME_MEDIANS, from);
+        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
 
         log.info("Processed and saved PKS medians for {} links", processedMedians.size());
     }

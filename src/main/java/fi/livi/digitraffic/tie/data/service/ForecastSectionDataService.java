@@ -12,25 +12,25 @@ import fi.livi.digitraffic.tie.data.dao.ForecastSectionWeatherDao;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
-import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
 @Service
 public class ForecastSectionDataService {
-    private final MetadataUpdatedRepository metadataUpdatedRepository;
+    private final DataUpdatedRepository dataUpdatedRepository;
 
     private final ForecastSectionWeatherDao forecastSectionWeatherDao;
 
     @Autowired
-    public ForecastSectionDataService(final MetadataUpdatedRepository metadataUpdatedRepository,
+    public ForecastSectionDataService(final DataUpdatedRepository dataUpdatedRepository,
                                       final ForecastSectionWeatherDao forecastSectionWeatherDao) {
-        this.metadataUpdatedRepository = metadataUpdatedRepository;
+        this.dataUpdatedRepository = dataUpdatedRepository;
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.FORECAST_SECTION_WEATHER.toString());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.FORECAST_SECTION_WEATHER_DATA.toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
         if(onlyUpdateInfo) {

@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionMetadataUpdater;
 
 @DisallowConcurrentExecution
-public class ForecastSectionCoordinatesUpdateJob extends SimpleUpdateJob {
+public class ForecastSectionCoordinatesMetadataUpdateJob extends SimpleUpdateJob {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesUpdateJob.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesMetadataUpdateJob.class);
 
     @Autowired
     private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
@@ -22,8 +22,9 @@ public class ForecastSectionCoordinatesUpdateJob extends SimpleUpdateJob {
         boolean updated = forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         if (updated) {
-            staticDataStatusService.updateMetadataUpdated(MetadataType.FORECAST_SECTION);
+            dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA);
         }
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
 
         String updateStatus = updated ? "Coordinates were updated." : "Coordinates were up-to-date.";
         log.info(updateStatus);

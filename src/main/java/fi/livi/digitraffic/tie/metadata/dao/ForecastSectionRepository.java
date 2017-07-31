@@ -17,5 +17,5 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection", "startRoadSection.roadDistrict", "endRoadSection" +
         ".roadDistrict", "forecastSectionCoordinates" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<ForecastSection> findAll(final Sort sort);
+    List<ForecastSection> findDistinctBy(final Sort sort);
 }

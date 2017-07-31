@@ -81,3 +81,13 @@ jms.datex2.enabled=true
 
 # Websocket stream of LAM sensor values
 websocket.tms.enabled=true
+
+# Disable jobs. Format: quartz.{jobClassName}.enabled = false
+# Ie. quartz.CameraUpdateJob.enabled = false
+
+# Developer life improvements
+logging.file=digitraffic-metadata
+logging.level.root=INFO
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

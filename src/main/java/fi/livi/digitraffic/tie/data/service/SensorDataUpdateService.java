@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
-import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -25,16 +24,13 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 public class SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateService.class);
 
-
     private final Set<Long> allowedTmsSensorLotjuIds;
     private final Set<Long> allowedWeatherSensorLotjuIds;
-
 
     private final SensorValueDao sensorValueDao;
 
     @Autowired
-    public SensorDataUpdateService(final SensorValueDao sensorValueDao,
-                                   final RoadStationSensorService roadStationSensorService) throws SQLException {
+    public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService) {
         this.sensorValueDao = sensorValueDao;
 
         final List<RoadStationSensor> allowedTmsSensors =
@@ -52,10 +48,10 @@ public class SensorDataUpdateService {
      * @return count of updated db rows
      */
     @Transactional
-    public int updateLamData(final List<Lam> data) {
-
+    public int updateLamData(final List<LAMRealtimeProtos.Lam> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<Lam> filtered = filterNewestLamValues(data);
+        final Collection<LAMRealtimeProtos.Lam> filtered = filterNewestLamValues(data);
+
         if (data.size()-filtered.size() > 0) {
             log.info("Filtered {} tms station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
@@ -72,9 +68,9 @@ public class SensorDataUpdateService {
      */
     @Transactional
     public int updateWeatherData(final Collection<Tiesaa> data) {
-
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<Tiesaa> filtered = filterNewestTiesaaValues(data);
+
         if (data.size()-filtered.size() > 0) {
             log.info("Filtered {} weather station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
@@ -84,16 +80,17 @@ public class SensorDataUpdateService {
         return rows;
     }
 
-    private static Collection<Lam> filterNewestLamValues(final List<Lam> data) {
+    private static Collection<LAMRealtimeProtos.Lam> filterNewestLamValues(final List<LAMRealtimeProtos.Lam> data) {
         // Collect newest data per station
-        HashMap<Long, Lam> tmsMapByLamStationLotjuId = new HashMap<>();
-        for (Lam lamCandidate : data) {
-            Lam currentLam = tmsMapByLamStationLotjuId.get(lamCandidate.getAsemaId());
-            if (currentLam == null || lamCandidate.getAika().toGregorianCalendar().after(currentLam.getAika().toGregorianCalendar())) {
+        final HashMap<Long, LAMRealtimeProtos.Lam> tmsMapByLamStationLotjuId = new HashMap<>();
+
+        for (final LAMRealtimeProtos.Lam lam : data) {
+            final LAMRealtimeProtos.Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
+            if (currentLam == null || lam.getAika() < currentLam.getAika()) {
                 if (currentLam != null) {
-                    log.debug("Replace lam " + currentLam.getAika() + " with " + lamCandidate.getAika());
+                    log.debug("Replace lam " + currentLam.getAika() + " with " + lam.getAika());
                 }
-                tmsMapByLamStationLotjuId.put(lamCandidate.getAsemaId(), lamCandidate);
+                tmsMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
             }
         }
         return tmsMapByLamStationLotjuId.values();
@@ -101,8 +98,9 @@ public class SensorDataUpdateService {
 
     private static Collection<Tiesaa> filterNewestTiesaaValues(final Collection<Tiesaa> data) {
         // Collect newest data per station
-        HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
-        for (Tiesaa tiesaaCandidate : data) {
+        final HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
+
+        for (final Tiesaa tiesaaCandidate : data) {
             Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
             if (currentTiesaa == null || tiesaaCandidate.getAika().toGregorianCalendar().after(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {

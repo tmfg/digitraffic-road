@@ -36,8 +36,8 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
         this.stationSensorConverter = stationSensorConverter;
     }
 
-    public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated) {
-        final WeatherStationFeatureCollection collection = new WeatherStationFeatureCollection(lastUpdated);
+    public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
+        final WeatherStationFeatureCollection collection = new WeatherStationFeatureCollection(lastUpdated, dataLastCheckedTime);
         final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(WEATHER_STATION_TYPE);
 
         for(final WeatherStation rws : stations) {

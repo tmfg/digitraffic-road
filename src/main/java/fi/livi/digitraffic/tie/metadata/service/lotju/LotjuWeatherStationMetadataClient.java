@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
@@ -53,8 +51,6 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
 
         log.info("Fetching all LaskennallisetAnturit");
-        final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentRwsLotjuIdToTiesaaAnturiMap =
-                new HashMap<>();
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
 
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)

@@ -27,9 +27,9 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
 
-public class WeatherStationUpdateJobTest extends AbstractTest {
+public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
 
-    private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdateJobTest.class);
+    private static final Logger log = LoggerFactory.getLogger(WeatherStationMetadataUpdateJobTest.class);
 
     @Autowired
     private WeatherStationSensorUpdater weatherStationSensorUpdater;

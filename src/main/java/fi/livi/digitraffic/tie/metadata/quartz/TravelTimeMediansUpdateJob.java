@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.HttpServerErrorException;
 
 import fi.livi.digitraffic.tie.data.service.traveltime.TravelTimeUpdater;
-import fi.livi.digitraffic.tie.metadata.dao.MetadataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
-import fi.livi.digitraffic.tie.metadata.model.MetadataUpdated;
+import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
 @DisallowConcurrentExecution
 public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
@@ -21,12 +21,12 @@ public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
     private TravelTimeUpdater travelTimeUpdater;
 
     @Autowired
-    private MetadataUpdatedRepository metadataUpdatedRepository;
+    private DataUpdatedRepository dataUpdatedRepository;
 
     @Override
     protected void doExecute(final JobExecutionContext context) throws Exception {
 
-        final MetadataUpdated updated = metadataUpdatedRepository.findByMetadataType(MetadataType.TRAVEL_TIME_MEDIANS.name());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.TRAVEL_TIME_MEDIANS_DATA.name());
 
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime from = getStartTime(updated, now);
@@ -38,11 +38,12 @@ public class TravelTimeMediansUpdateJob extends SimpleUpdateJob {
                 travelTimeUpdater.updateMedians(from.plusMinutes(minute));
             } catch (HttpServerErrorException e) {
                 // Request failed after retries. Skip this minute.
+                log.debug("HttpServerErrorException", e);
             }
         });
     }
 
-    public static ZonedDateTime getStartTime(final MetadataUpdated updated, final ZonedDateTime now) {
+    public static ZonedDateTime getStartTime(final DataUpdated updated, final ZonedDateTime now) {
 
         if (updated == null || updated.getUpdatedTime().isBefore(now.minusDays(1))) {
             // Data source stores data from last 24h hours

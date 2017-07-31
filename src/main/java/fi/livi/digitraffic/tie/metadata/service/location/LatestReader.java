@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 
 import org.apache.commons.codec.binary.StringUtils;
 
-import fi.livi.digitraffic.tie.metadata.model.MetadataType;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 
 public class LatestReader extends AbstractReader<Void> {
     private final MetadataVersions latestMetadataVersions = new MetadataVersions();
@@ -13,18 +13,18 @@ public class LatestReader extends AbstractReader<Void> {
 
     @Override
     protected Void convert(final String[] line) {
-        final MetadataType type = getMetadataType(line[0]);
+        final DataType type = getMetadataType(line[0]);
 
         latestMetadataVersions.addVersion(type, line[1], line[2]);
 
         return null;
     }
 
-    private MetadataType getMetadataType(final String type) {
+    private DataType getMetadataType(final String type) {
         if(StringUtils.equals(type, "csv")) {
-            return MetadataType.LOCATIONS;
+            return DataType.LOCATIONS_METADATA;
         } else if(StringUtils.equals(type, "dat")) {
-            return MetadataType.LOCATION_TYPES;
+            return DataType.LOCATION_TYPES_METADATA;
         }
 
         throw new IllegalArgumentException("Unknown metadatatype " + type);

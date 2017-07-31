@@ -16,14 +16,12 @@ public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jax
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        boolean val = supports(clazz) && super.canRead(clazz, mediaType);
-        return val;
+        return supports(clazz) && super.canRead(clazz, mediaType);
     }
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        boolean val = supports(clazz) && super.canWrite(clazz, mediaType);
-        return val;
+        return supports(clazz) && super.canWrite(clazz, mediaType);
     }
 
     @Override

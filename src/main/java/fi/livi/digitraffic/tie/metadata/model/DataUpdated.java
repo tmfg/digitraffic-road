@@ -15,27 +15,27 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @DynamicUpdate
-public class MetadataUpdated {
+public class DataUpdated {
     @Id
-    @GenericGenerator(name = "SEQ_METAD_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_METAD_UPDATED"))
-    @GeneratedValue(generator = "SEQ_METAD_UPDATED")
+    @GenericGenerator(name = "SEQ_DATA_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATA_UPDATED"))
+    @GeneratedValue(generator = "SEQ_DATA_UPDATED")
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private MetadataType metadataType;
+    private DataType dataType;
 
     @Column(name = "UPDATED")
     private ZonedDateTime updatedTime;
 
     private String version;
 
-    private MetadataUpdated() {
+    private DataUpdated() {
         // Empty for repository
     }
 
-    public MetadataUpdated(final MetadataType type, final ZonedDateTime updatedTime, final String version) {
-        setMetadataType(type);
+    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
+        setDataType(type);
         setUpdatedTime(updatedTime);
         setVersion(version);
     }
@@ -48,12 +48,12 @@ public class MetadataUpdated {
         this.id = id;
     }
 
-    public MetadataType getMetadataType() {
-        return metadataType;
+    public DataType getDataType() {
+        return dataType;
     }
 
-    public void setMetadataType(MetadataType metadataType) {
-        this.metadataType = metadataType;
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
 
     public ZonedDateTime getUpdatedTime() {
