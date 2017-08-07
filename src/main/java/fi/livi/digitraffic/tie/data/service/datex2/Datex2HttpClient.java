@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,55 +39,54 @@ public class Datex2HttpClient {
         this.url = url;
     }
 
-    public List<String> getDatex2MessagesFrom(final ZonedDateTime from) {
+    public List<Pair<String, Timestamp>> getDatex2MessagesFrom(final Timestamp from) {
         try {
             log.info("Read datex2 messages from " + from);
             final String html = getContent(url + autoindexQueryArguments);
 
-            final List<String> newFiles = getNewFiles(from, html);
+            final List<Pair<String, Timestamp>> newFiles = getNewFiles(from, html);
 
-            final List<String> urls = newFiles.parallelStream().map(f -> url + f).collect(Collectors.toList());
-
-            return getDatex2Messages(urls);
+            return getDatex2Messages(newFiles);
         } catch (IOException e) {
             log.error("Datex2s read failed", e);
         }
         return null;
     }
 
-    private List<String> getNewFiles(final ZonedDateTime from, final String html) {
+    private List<Pair<String, Timestamp>> getNewFiles(final Timestamp from, final String html) {
         final Matcher m = fileNamePattern.matcher(html);
-        final List<String> filenames = new ArrayList<>();
+        final List<Pair<String, Timestamp>> filenames = new ArrayList<>();
 
         while (m.find()) {
             final String filename = m.group(1);
-            final ZonedDateTime fileDate = parseDate(filename);
-            if (!isNewFile(from, fileDate)) { // Links in html are ordered by filename which contains file date
+            final Timestamp fileTimestamp = parseDate(filename);
+            if (!isNewFile(from, fileTimestamp)) { // Links in html are ordered by filename which contains file date
                 break;
             }
-            if (filename != null && !filenames.contains(filename)) {
-                filenames.add(filename);
+            if (filename != null && !filenames.stream().anyMatch(f -> f.getLeft().equals(filename))) {
+                filenames.add(Pair.of(filename, fileTimestamp));
             }
         }
         // Sort files from oldest to newest
         return filenames.stream().sorted().collect(Collectors.toList());
     }
 
-    private boolean isNewFile(final ZonedDateTime from, final ZonedDateTime fileDate) {
-        return from == null || (fileDate != null && from.isBefore(fileDate));
+    private boolean isNewFile(final Timestamp from, final Timestamp fileDate) {
+        return from == null || (fileDate != null && from.before(fileDate));
     }
 
-    private List<String> getDatex2Messages(final List<String> datex2MessageUrls) {
-        final List<String> messages = new ArrayList<>();
+    private List<Pair<String, Timestamp>> getDatex2Messages(final List<Pair<String, Timestamp>> filenames) {
+        final List<Pair<String, Timestamp>> messages = new ArrayList<>();
 
-        for (String datex2MessageUrl : datex2MessageUrls) {
+        for (Pair<String, Timestamp> filename : filenames) {
             try {
-                log.info("Reading Datex2 message: " + datex2MessageUrl);
+                final String datex2Url = url + filename.getLeft();
+                log.info("Reading Datex2 message: " + datex2Url);
 
-                final String content = getContent(datex2MessageUrl);
-                messages.add(content);
+                final String content = getContent(datex2Url);
+                messages.add(Pair.of(content, filename.getRight()));
             } catch (IOException e) {
-                log.error("Read content failed from " + datex2MessageUrl, e);
+                log.error("Read content failed from " + filename, e);
             }
         }
         return messages;
@@ -101,10 +100,10 @@ public class Datex2HttpClient {
         return new BufferedReader(new InputStreamReader(con.getInputStream())).lines().collect(Collectors.joining("\n"));
     }
 
-    private ZonedDateTime parseDate(final String filename) {
+    private Timestamp parseDate(final String filename) {
         try {
             final Date date = dateFormat.parse(filename);
-            return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            return new Timestamp(date.getTime());
         } catch (ParseException ex) {
             log.error("Unable to parse date: " + filename, ex);
         }

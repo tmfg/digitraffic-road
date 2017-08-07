@@ -7,7 +7,6 @@ import java.util.Collections;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import org.springframework.xml.transform.StringSource;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
@@ -127,8 +127,7 @@ public class Datex2DataServiceTest extends AbstractTest {
             object = ((JAXBElement) object).getValue();
         }
         D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
-        Pair<D2LogicalModel, String> pair = Pair.of(d2LogicalModel, datex2Content);
-        datex2DataService.updateDatex2Data(Collections.singletonList(pair));
+        datex2DataService.updateDatex2Data(Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel)));
     }
 
     private class Datex2Thread implements Runnable {

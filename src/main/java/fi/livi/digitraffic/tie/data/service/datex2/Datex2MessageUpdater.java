@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
-import java.time.ZonedDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
@@ -38,17 +37,15 @@ public class Datex2MessageUpdater {
     @Transactional
     public void updateDatex2Messages() {
 
-        final Datex2 latest = datex2Repository.getLatest();
+        final Timestamp latest = datex2Repository.getLatestImportTime();
 
-        final ZonedDateTime from = latest == null ? null : latest.getPublicationTime();
+        final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(latest);
 
-        final List<String> messages = datex2HttpClient.getDatex2MessagesFrom(from);
+        final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 
-        final ArrayList<Pair<D2LogicalModel, String>> unmarshalled = new ArrayList<>();
-
-        for (final String message : messages) {
-            final D2LogicalModel d2 = unmarshal(message);
-            unmarshalled.add(Pair.of(d2, message));
+        for (final Pair<String, Timestamp> message : messages) {
+            final D2LogicalModel d2 = unmarshal(message.getLeft());
+            unmarshalled.add(new Datex2MessageDto(message.getLeft(), message.getRight(), d2));
         }
         datex2DataService.updateDatex2Data(unmarshalled);
     }

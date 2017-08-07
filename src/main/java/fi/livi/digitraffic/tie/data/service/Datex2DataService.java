@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordValidyStatus;
 import fi.livi.digitraffic.tie.data.model.SituationRecordCommentI18n;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Comment;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
@@ -59,48 +60,24 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public int updateDatex2Data(final List<Pair<D2LogicalModel, String>> data) {
+    public int updateDatex2Data(List<Datex2MessageDto> data) {
 
-        int saved = 0;
-
-        for (final Pair<D2LogicalModel, String> pair : data) {
+        for (Datex2MessageDto message : data) {
 
             Datex2 datex2 = new Datex2();
-            datex2.setImportTime(ZonedDateTime.now());
-            datex2.setMessage(pair.getRight());
-
-            D2LogicalModel datex = pair.getLeft();
+            if (message.timestamp != null) {
+                datex2.setImportTime(ZonedDateTime.ofInstant(message.timestamp.toInstant(), ZoneId.systemDefault()));
+            } else {
+                datex2.setImportTime(ZonedDateTime.now());
+            }
+            datex2.setMessage(message.message);
+            D2LogicalModel datex = message.model;
 
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
-            final List<Datex2> d2 = findByPublicationTime(datex2.getPublicationTime());
-
-            // Prepare for a rare event in which two different messages have the same publication time and avoid duplicates
-            if (!d2.isEmpty()) {
-                final String situationIds = datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", "));
-
-                if (d2.stream().anyMatch(d -> d.getMessage().equals(datex2.getMessage()))) {
-                    log.info("Datex2 message with publication time {} and situation id(s) {} has already been persisted. Skipping.",
-                             datex2.getPublicationTime(), situationIds);
-                } else {
-                    log.info("Saving Datex2 message with existing publication time {}. Situation id(s) {}",
-                             datex2.getPublicationTime(), situationIds);
-                    datex2Repository.save(datex2);
-                    saved++;
-                }
-            } else {
-                datex2Repository.save(datex2);
-                saved++;
-            }
+            datex2Repository.save(datex2);
         }
-        log.info("Saved {} new Datex2 message(s)", saved);
-        return saved;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Datex2> findByPublicationTime(final ZonedDateTime publicationTime) {
-        // Publication time is a DATE field in DB so it doesn't contain fractions of a second.
-        return datex2Repository.findByPublicationTime(publicationTime.withNano(0));
+        return data.size();
     }
 
     private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {

@@ -18,11 +18,12 @@ import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @ConditionalOnProperty(name = "jms.datex2.enabled")
 @Configuration
-public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Pair<D2LogicalModel, String>> {
+public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Datex2MessageDto> {
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;
@@ -53,8 +54,8 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public JMSMessageListener<Pair<D2LogicalModel, String>> createJMSMessageListener() throws JAXBException {
-        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> handleData = datex2DataService::updateDatex2Data;
+    public JMSMessageListener<Datex2MessageDto> createJMSMessageListener() throws JAXBException {
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2DataService::updateDatex2Data;
         final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener(messageMarshaller, handleData,
