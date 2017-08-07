@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.io.StringReader;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,11 +60,9 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public int updateDatex2Data(final List<Pair<D2LogicalModel, String>> data) {
+    public int updateDatex2Data(List<Pair<D2LogicalModel, String>> data) {
 
-        int saved = 0;
-
-        for (final Pair<D2LogicalModel, String> pair : data) {
+        for (Pair<D2LogicalModel, String> pair : data) {
 
             Datex2 datex2 = new Datex2();
             datex2.setImportTime(ZonedDateTime.now());
@@ -73,37 +72,12 @@ public class Datex2DataService {
 
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
-            final List<Datex2> d2 = findByPublicationTime(datex2.getPublicationTime());
-
-            // Prepare for a rare event in which two different messages have the same publication time and avoid duplicates
-            if (!d2.isEmpty()) {
-                final String situationIds = datex2.getSituations().stream().map(Datex2Situation::getSituationId).collect(Collectors.joining(", "));
-
-                if (d2.stream().anyMatch(d -> d.getMessage().equals(datex2.getMessage()))) {
-                    log.info("Datex2 message with publication time {} and situation id(s) {} has already been persisted. Skipping.",
-                             datex2.getPublicationTime(), situationIds);
-                } else {
-                    log.info("Saving Datex2 message with existing publication time {}. Situation id(s) {}",
-                             datex2.getPublicationTime(), situationIds);
-                    datex2Repository.save(datex2);
-                    saved++;
-                }
-            } else {
-                datex2Repository.save(datex2);
-                saved++;
-            }
+            datex2Repository.save(datex2);
         }
-        log.info("Saved {} new Datex2 message(s)", saved);
-        return saved;
+        return data.size();
     }
 
-    @Transactional(readOnly = true)
-    public List<Datex2> findByPublicationTime(final ZonedDateTime publicationTime) {
-        // Publication time is a DATE field in DB so it doesn't contain fractions of a second.
-        return datex2Repository.findByPublicationTime(publicationTime.withNano(0));
-    }
-
-    private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
+    private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
         datex2.setPublicationTime(DateHelper.toZonedDateTimeWithoutMillis(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
@@ -112,7 +86,7 @@ public class Datex2DataService {
         }
     }
 
-    private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
+    private void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
         List<Situation> situations = situationPublication.getSituation();
         for (Situation situation : situations) {
             Datex2Situation d2Situation = new Datex2Situation();
@@ -125,13 +99,13 @@ public class Datex2DataService {
         }
     }
 
-    private static void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
+    private void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
         for (SituationRecord record : situationRecords) {
             Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
             d2Situation.addSituationRecord(d2SituationRecord);
             d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
 
-            // Only 1. comment seems to be valid
+            // Only first comment seems to be valid
             List<Comment> pc = record.getGeneralPublicComment();
             if (pc != null && !pc.isEmpty()) {
                 Comment comment = pc.get(0);
@@ -158,7 +132,7 @@ public class Datex2DataService {
      * @param value
      * @return
      */
-    private static List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
+    private List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
         if (value == null) {
             return Collections.emptyList();
         }
@@ -255,6 +229,7 @@ public class Datex2DataService {
     }
 
     public TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
+        StringReader sr = new StringReader(datex2Xml);
         try {
             Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
             if (object instanceof JAXBElement) {
@@ -274,5 +249,26 @@ public class Datex2DataService {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
         return null;
+    }
+
+    @Transactional
+    public void handleUnhandledDatex2Messages() {
+        log.info("Fetch unhandled Datex2 messages");
+        List<Datex2> unhandled = datex2Repository.findByPublicationTimeIsNull();
+
+        log.info("Handle {} unhandled Datex2 Messages", unhandled.size());
+        unhandled.forEach(datex2 -> {
+            try {
+                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2.getMessage(), datex2.getImportTime());
+                if (tsDatex2 != null) {
+                    parseAndAppendPayloadPublicationData(tsDatex2.getD2LogicalModel().getPayloadPublication(), datex2);
+                    datex2Repository.save(datex2);
+                }
+            } catch (Exception e) {
+                log.error("Handling unhandled Datex2 message failed", e);
+            }
+
+        });
+        log.info("Handled {} unhandled Datex2 Messages", unhandled.size());
     }
 }
