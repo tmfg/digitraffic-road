@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,7 +32,7 @@ public class Datex2HttpClient {
 
     private final String url;
     private final RestTemplate restTemplate;
-    private static final String autoindexQueryArguments = "?F=0&C=N&O=D";
+    private static final String AUTO_INDEX_QUERY_ARGUMENTS = "?F=0&C=N&O=D";
 
     @Autowired
     public Datex2HttpClient(@Value("${Datex2MessageUrl}") final String url,
@@ -42,7 +43,7 @@ public class Datex2HttpClient {
 
     public List<Pair<String, Timestamp>> getDatex2MessagesFrom(final Timestamp from) {
         log.info("Read datex2 messages from " + from);
-        final String html = restTemplate.getForObject(url + autoindexQueryArguments, String.class);
+        final String html = getContent(url + AUTO_INDEX_QUERY_ARGUMENTS);
 
         final List<Pair<String, Timestamp>> newFiles = getNewFiles(from, html);
 
@@ -64,7 +65,7 @@ public class Datex2HttpClient {
             }
         }
         // Sort files from oldest to newest
-        return filenames.stream().sorted().collect(Collectors.toList());
+        return filenames.stream().sorted(Comparator.comparing(Pair::getLeft)).collect(Collectors.toList());
     }
 
     private boolean isNewFile(final Timestamp from, final Timestamp fileDate) {
@@ -78,10 +79,21 @@ public class Datex2HttpClient {
             final String datex2Url = url + filename.getLeft();
             log.info("Reading Datex2 message: " + datex2Url);
 
-            final String content = restTemplate.getForObject(datex2Url, String.class);
+            final String content = getContent(datex2Url);
             messages.add(Pair.of(content, filename.getRight()));
         }
         return messages;
+    }
+
+    private String getContent(final String url) {
+        for (int triesLeft = 4; triesLeft >= 0; triesLeft--) {
+            try {
+                return restTemplate.getForObject(url, String.class);
+            } catch (Exception e) {
+                log.error("Failed to fetch content from {}. Tries left {}", url, triesLeft, e);
+            }
+        }
+        throw new RuntimeException("Failed to fetch content from " + url);
     }
 
     private Timestamp parseDate(final String filename) {
