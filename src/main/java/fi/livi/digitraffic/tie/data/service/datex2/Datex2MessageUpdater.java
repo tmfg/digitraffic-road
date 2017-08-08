@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -39,9 +40,9 @@ public class Datex2MessageUpdater {
     @Transactional
     public void updateDatex2Messages() {
 
-        final Timestamp latest = datex2Repository.getLatestImportTime();
+        final LocalDateTime latest = datex2Repository.getLatestImportTime();
 
-        final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(latest);
+        final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(Timestamp.valueOf(latest));
 
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 

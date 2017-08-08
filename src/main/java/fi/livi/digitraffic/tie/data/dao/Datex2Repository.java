@@ -19,13 +19,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2;
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
     @Query(value = "SELECT MAX(IMPORT_DATE) FROM DATEX2", nativeQuery = true)
-    Timestamp getLatestImportTime();
-
-    @Query(value =
-            "select max(datex2.import_date) as updated\n" +
-            "from datex2",
-            nativeQuery = true)
-    LocalDateTime getLatestMeasurementTime();
+    LocalDateTime getLatestImportTime();
 
     @Query(value =
             "SELECT d.*\n" +
