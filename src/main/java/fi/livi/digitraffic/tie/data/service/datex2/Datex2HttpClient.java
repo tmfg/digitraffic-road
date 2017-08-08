@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,13 +33,14 @@ public class Datex2HttpClient {
 
     private final String url;
     private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
     private static final String AUTO_INDEX_QUERY_ARGUMENTS = "?F=0&C=N&O=D";
 
     @Autowired
-    public Datex2HttpClient(@Value("${Datex2MessageUrl}") final String url,
-                            final RestTemplate restTemplate) {
+    public Datex2HttpClient(@Value("${Datex2MessageUrl}") final String url, final RestTemplate restTemplate, final RetryTemplate retryTemplate) {
         this.url = url;
         this.restTemplate = restTemplate;
+        this.retryTemplate = retryTemplate;
     }
 
     public List<Pair<String, Timestamp>> getDatex2MessagesFrom(final Timestamp from) {
@@ -86,14 +88,7 @@ public class Datex2HttpClient {
     }
 
     private String getContent(final String url) {
-        for (int triesLeft = 4; triesLeft >= 0; triesLeft--) {
-            try {
-                return restTemplate.getForObject(url, String.class);
-            } catch (Exception e) {
-                log.error("Failed to fetch content from {}. Tries left {}", url, triesLeft, e);
-            }
-        }
-        throw new RuntimeException("Failed to fetch content from " + url);
+        return retryTemplate.execute(context -> restTemplate.getForObject(url, String.class));
     }
 
     private Timestamp parseDate(final String filename) {
