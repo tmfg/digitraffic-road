@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,8 +64,8 @@ public class Datex2DataService {
         for (Datex2MessageDto message : data) {
 
             Datex2 datex2 = new Datex2();
-            if (message.timestamp != null) {
-                datex2.setImportTime(ZonedDateTime.ofInstant(message.timestamp.toInstant(), ZoneId.systemDefault()));
+            if (message.importTime != null) {
+                datex2.setImportTime(message.importTime);
             } else {
                 datex2.setImportTime(ZonedDateTime.now());
             }
