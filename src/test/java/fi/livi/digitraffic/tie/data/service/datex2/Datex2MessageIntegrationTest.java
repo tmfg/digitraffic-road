@@ -9,6 +9,7 @@ import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -35,9 +36,12 @@ public class Datex2MessageIntegrationTest extends AbstractTest {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private RetryTemplate retryTemplate;
+
     @Before
     public void before() throws IOException {
-        datex2HttpClient = new Datex2HttpClient("https://ava.liikennevirasto.fi/incidents/datex2/", restTemplate);
+        datex2HttpClient = new Datex2HttpClient("https://ava.liikennevirasto.fi/incidents/datex2/", restTemplate, retryTemplate);
         datex2MessageService = new Datex2MessageUpdater(datex2Repository, datex2HttpClient, jaxb2Marshaller, datex2DataService);
     }
 
