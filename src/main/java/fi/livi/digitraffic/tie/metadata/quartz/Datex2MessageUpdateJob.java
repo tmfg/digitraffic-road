@@ -14,6 +14,6 @@ public class Datex2MessageUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
-        datex2MessageUpdater.updateDatex2Messages();
+        datex2MessageUpdater.updateDatex2TrafficAlertMessages();
     }
 }

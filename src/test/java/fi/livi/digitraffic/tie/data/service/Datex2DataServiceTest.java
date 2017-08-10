@@ -74,7 +74,7 @@ public class Datex2DataServiceTest extends AbstractTest {
         findDatex2AndAssert(situationId1, true);
         findDatex2AndAssert(situationId2, true);
 
-        TrafficDisordersDatex2Response allActive = datex2DataService.findActiveDatex2Response();
+        TrafficDisordersDatex2Response allActive = datex2DataService.findActiveDatex2TrafficDisorders();
         Assert.assertTrue(allActive.getDisorder().size() == 1);
         SituationPublication active = getSituationPublication(allActive);
         Assert.assertTrue(active.getSituation().size() == 1);

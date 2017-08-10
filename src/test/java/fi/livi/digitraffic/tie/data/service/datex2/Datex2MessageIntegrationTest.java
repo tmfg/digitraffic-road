@@ -48,6 +48,6 @@ public class Datex2MessageIntegrationTest extends AbstractTest {
     @Test
     @Ignore(value = "For manual integration testing")
     public void updateDatex2MessagesSucceeds() {
-        datex2MessageService.updateDatex2Messages();
+        datex2MessageService.updateDatex2TrafficAlertMessages();
     }
 }

@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,9 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.xml.transform.StringSource;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.Datex2;
+import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.model.Datex2Situation;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordType;
@@ -47,35 +49,34 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.Validity;
 
 @Service
 public class Datex2DataService {
-
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
+
     private final Datex2Repository datex2Repository;
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public Datex2DataService(final Datex2Repository datex2Repository, Jaxb2Marshaller jaxb2Marshaller) throws JAXBException {
+    public Datex2DataService(final Datex2Repository datex2Repository, final Jaxb2Marshaller jaxb2Marshaller) {
         this.datex2Repository = datex2Repository;
         this.jaxb2Marshaller = jaxb2Marshaller;
     }
 
     @Transactional
-    public int updateDatex2Data(List<Datex2MessageDto> data) {
+    public int updateDatex2Data(final List<Datex2MessageDto> data) {
+        for (final Datex2MessageDto message : data) {
+            final Datex2 datex2 = new Datex2();
 
-        for (Datex2MessageDto message : data) {
-
-            Datex2 datex2 = new Datex2();
             if (message.importTime != null) {
                 datex2.setImportTime(message.importTime);
             } else {
                 datex2.setImportTime(ZonedDateTime.now());
             }
             datex2.setMessage(message.message);
-            D2LogicalModel datex = message.model;
 
+            final D2LogicalModel datex = message.model;
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
-
             datex2Repository.save(datex2);
         }
+
         return data.size();
     }
 
@@ -89,9 +90,10 @@ public class Datex2DataService {
     }
 
     private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
-        List<Situation> situations = situationPublication.getSituation();
-        for (Situation situation : situations) {
-            Datex2Situation d2Situation = new Datex2Situation();
+        final List<Situation> situations = situationPublication.getSituation();
+        for (final Situation situation : situations) {
+            final Datex2Situation d2Situation = new Datex2Situation();
+
             datex2.addSituation(d2Situation);
 
             d2Situation.setSituationId(situation.getId());
@@ -101,18 +103,19 @@ public class Datex2DataService {
         }
     }
 
-    private static void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
-        for (SituationRecord record : situationRecords) {
-            Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
+    private static void parseAndAppendSituationRecordData(final List<SituationRecord> situationRecords, final Datex2Situation d2Situation) {
+        for (final SituationRecord record : situationRecords) {
+            final Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
+
             d2Situation.addSituationRecord(d2SituationRecord);
             d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
 
             // Only first comment seems to be valid
-            List<Comment> pc = record.getGeneralPublicComment();
+            final List<Comment> pc = record.getGeneralPublicComment();
             if (pc != null && !pc.isEmpty()) {
-                Comment comment = pc.get(0);
-                MultilingualString.Values values = comment.getComment().getValues();
-                List<SituationRecordCommentI18n> comments = joinComments(values.getValue());
+                final Comment comment = pc.get(0);
+                final MultilingualString.Values values = comment.getComment().getValues();
+                final List<SituationRecordCommentI18n> comments = joinComments(values.getValue());
                 d2SituationRecord.setPublicComments(comments);
             }
 
@@ -121,9 +124,9 @@ public class Datex2DataService {
             d2SituationRecord.setVersionTime(DateHelper.toZonedDateTimeWithoutMillis(record.getSituationRecordVersionTime()));
             d2SituationRecord.setObservationTime(DateHelper.toZonedDateTimeWithoutMillis(record.getSituationRecordObservationTime()));
 
-            Validity validy = record.getValidity();
+            final Validity validy = record.getValidity();
             d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
-            OverallPeriod period = validy.getValidityTimeSpecification();
+            final OverallPeriod period = validy.getValidityTimeSpecification();
             d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTimeWithoutMillis(period.getOverallStartTime()));
             d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTimeWithoutMillis(period.getOverallEndTime()));
         }
@@ -134,13 +137,13 @@ public class Datex2DataService {
      * @param value
      * @return
      */
-    private static List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
+    private static List<SituationRecordCommentI18n> joinComments(final List<MultilingualStringValue> value) {
         if (value == null) {
             return Collections.emptyList();
         }
-        Map<String, SituationRecordCommentI18n> langToCommentMap = new HashMap<>();
-        for (MultilingualStringValue msv : value) {
-            String lang = msv.getLang();
+        final Map<String, SituationRecordCommentI18n> langToCommentMap = new HashMap<>();
+        for (final MultilingualStringValue msv : value) {
+            final String lang = msv.getLang();
             SituationRecordCommentI18n i18n = langToCommentMap.get(lang);
             if (i18n == null) {
                 i18n = new SituationRecordCommentI18n(lang);
@@ -156,30 +159,34 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public Datex2RootDataObjectDto findDatex2Data(final String situationId, final int year, final int month) {
+    public Datex2RootDataObjectDto findDatex2TrafficAlerts(final String situationId, final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime(TRAFFIC_DISORDER));
+
         return new Datex2RootDataObjectDto(
-                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month),
+                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory
+                    (TRAFFIC_DISORDER, year, month),
                 updated);
     }
 
     @Transactional(readOnly = true)
-    public Datex2RootDataObjectDto findActiveDatex2Data(boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+    public Datex2RootDataObjectDto findActiveDatex2TrafficDisorders(final boolean onlyUpdateInfo) {
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime(TRAFFIC_DISORDER));
+
         if (onlyUpdateInfo) {
             return new Datex2RootDataObjectDto(updated);
         } else {
             return new Datex2RootDataObjectDto(
-                    datex2Repository.findAllActive(),
+                    datex2Repository.findAllActive(TRAFFIC_DISORDER),
                     updated);
         }
     }
 
-    public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+    public Datex2RootDataObjectDto findAllDatex2TrafficDisordersBySituationId(final String situationId) {
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime(TRAFFIC_DISORDER));
+
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -191,18 +198,20 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findDatex2Responses(final String situationId, final int year, final int month) {
+    public TrafficDisordersDatex2Response findDatex2Responses(final Datex2MessageType messageType, final String situationId,
+        final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
         final List<Datex2> datex2s =
-                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month);
+                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(messageType,
+                    year, month);
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
 
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(String situationId) {
+    public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(final String situationId) {
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -211,17 +220,28 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findActiveDatex2Response() {
-        List<Datex2> allActive = datex2Repository.findAllActive();
+    public TrafficDisordersDatex2Response findActiveDatex2TrafficDisorders() {
+        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER);
         return convertToTrafficDisordersDatex2Response(allActive);
     }
 
+    @Transactional(readOnly = true)
+    public D2LogicalModel findActiveDatex2Roadworks() {
+        final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK);
+        return convertToD2LogicalModel(allActive);
+    }
+
+    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
+        // TODO
+        return new D2LogicalModel();
+    }
+
     private TrafficDisordersDatex2Response convertToTrafficDisordersDatex2Response(final List<Datex2> datex2s) {
-        List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
-        for (Datex2 datex2 : datex2s) {
-            String datex2Xml = datex2.getMessage();
+        final List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
+        for (final Datex2 datex2 : datex2s) {
+            final String datex2Xml = datex2.getMessage();
             if (!StringUtils.isBlank(datex2Xml)) {
-                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2Xml, datex2.getImportTime());
+                final TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2Xml, datex2.getImportTime());
                 if (tsDatex2 != null) {
                     timestampedTrafficDisorderDatex2s.add(tsDatex2);
                 }
@@ -232,23 +252,29 @@ public class Datex2DataService {
 
     public TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
         try {
-            Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
-            if (object instanceof JAXBElement) {
-                object = ((JAXBElement) object).getValue();
-            }
-            D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
-            ObservationTimeType published =
+            final D2LogicalModel d2LogicalModel = convertLogicalModel(datex2Xml);
+            final ObservationTimeType published =
                     new ObservationTimeType()
                             .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
                             .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
-            TimestampedTrafficDisorderDatex2 tsDatex2 =
+            final TimestampedTrafficDisorderDatex2 tsDatex2 =
                     new TimestampedTrafficDisorderDatex2()
                             .withD2LogicalModel(d2LogicalModel)
                             .withPublished(published);
             return tsDatex2;
-        } catch (XmlMappingException e) {
+        } catch (final XmlMappingException e) {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
+
         return null;
+    }
+
+    private D2LogicalModel convertLogicalModel(final String datex2Xml) {
+        Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
+        if (object instanceof JAXBElement) {
+            object = ((JAXBElement) object).getValue();
+        }
+
+        return (D2LogicalModel)object;
     }
 }

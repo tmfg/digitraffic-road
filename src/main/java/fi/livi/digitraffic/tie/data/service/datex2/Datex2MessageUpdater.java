@@ -17,12 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
+import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @Service
 public class Datex2MessageUpdater {
-
     private final Datex2Repository datex2Repository;
     private final Datex2HttpClient datex2HttpClient;
     private final Jaxb2Marshaller jaxb2Marshaller;
@@ -38,12 +38,9 @@ public class Datex2MessageUpdater {
     }
 
     @Transactional
-    public void updateDatex2Messages() {
-
-        final LocalDateTime latest = datex2Repository.getLatestImportTime();
-
+    public void updateDatex2TrafficAlertMessages() {
+        final LocalDateTime latest = datex2Repository.getLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER);
         final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(Timestamp.valueOf(latest));
-
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 
         for (final Pair<String, Timestamp> message : messages) {

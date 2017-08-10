@@ -50,25 +50,25 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
-        final Datex2RootDataObjectDto dto = datex2DataService.findActiveDatex2Data(false);
+        final Datex2RootDataObjectDto dto = datex2DataService.findActiveDatex2TrafficDisorders(false);
         final List<Datex2> datex2s = dto.getDatex2s();
 
         Assert.assertEquals(1, datex2s.size());
         Assert.assertTrue(datex2s.get(0).getSituations().get(0).getSituationId().equals("GUID50006936"));
 
-        final Datex2RootDataObjectDto bySituation1 = datex2DataService.findAllDatex2DataBySituationId("GUID50006936");
+        final Datex2RootDataObjectDto bySituation1 = datex2DataService.findAllDatex2TrafficDisordersBySituationId("GUID50006936");
         final List<Datex2> bySituationDatex2s = bySituation1.getDatex2s();
         Assert.assertEquals(1, bySituationDatex2s.size());
         Assert.assertTrue(bySituationDatex2s.get(0).getSituations().get(0).getSituationId().equals("GUID50006936"));
 
-        final Datex2RootDataObjectDto bySituation2 = datex2DataService.findAllDatex2DataBySituationId("GUID50006401");
+        final Datex2RootDataObjectDto bySituation2 = datex2DataService.findAllDatex2TrafficDisordersBySituationId("GUID50006401");
         final List<Datex2> bySituation2Datex2s = bySituation2.getDatex2s();
         Assert.assertEquals(3, bySituation2Datex2s.size());
         for (final Datex2 datex2 : bySituation2Datex2s) {
             datex2.getSituations().get(0).getSituationId().equals("GUID50006401");
         }
 
-        final Datex2RootDataObjectDto byTimeSituation2 = datex2DataService.findDatex2Data(null, 2016, 10);
+        final Datex2RootDataObjectDto byTimeSituation2 = datex2DataService.findDatex2TrafficAlerts(null, 2016, 10);
         final List<Datex2> byTimeSituation22Datex2s = byTimeSituation2.getDatex2s();
         Assert.assertEquals(6, byTimeSituation22Datex2s.size());
     }
