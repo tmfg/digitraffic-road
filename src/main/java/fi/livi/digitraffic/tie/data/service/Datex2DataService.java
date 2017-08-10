@@ -160,7 +160,7 @@ public class Datex2DataService {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         return new Datex2RootDataObjectDto(
                 situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month),
                 updated);
@@ -168,7 +168,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public Datex2RootDataObjectDto findActiveDatex2Data(boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         if (onlyUpdateInfo) {
             return new Datex2RootDataObjectDto(updated);
         } else {
@@ -179,7 +179,7 @@ public class Datex2DataService {
     }
 
     public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);

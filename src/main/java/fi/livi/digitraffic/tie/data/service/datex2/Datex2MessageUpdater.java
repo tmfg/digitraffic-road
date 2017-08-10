@@ -40,9 +40,11 @@ public class Datex2MessageUpdater {
     @Transactional
     public void updateDatex2Messages() {
 
-        final LocalDateTime latest = datex2Repository.getLatestImportTime();
+        final LocalDateTime latest = datex2Repository.findLatestImportTime();
 
-        final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(Timestamp.valueOf(latest));
+        final Timestamp from = latest == null ? null : Timestamp.valueOf(latest);
+
+        final List<Pair<String, Timestamp>> messages = datex2HttpClient.getDatex2MessagesFrom(from);
 
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 
