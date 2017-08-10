@@ -33,6 +33,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.Datex2MessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
@@ -41,7 +42,6 @@ import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusMetadataUpdateJo
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeLinkMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.UnhandledDatex2MessagesImportJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpdateJob;
 
@@ -156,11 +156,6 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean unhandledDatex2MessagesImportJobDetail() {
-        return createJobDetail(UnhandledDatex2MessagesImportJob.class);
-    }
-
-    @Bean
     public JobDetailFactoryBean travelTimeMediansUpdateJobDetail() {
         return createJobDetail(TravelTimeMediansUpdateJob.class);
     }
@@ -173,6 +168,11 @@ public class QuartzSchedulerConfig {
     @Bean
     public JobDetailFactoryBean travelTimeLinkMetadataUpdateJobDetail() {
         return createJobDetail(TravelTimeLinkMetadataUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean datex2MessageUpdateJobDetail() {
+        return createJobDetail(Datex2MessageUpdateJob.class);
     }
 
     @Bean
@@ -229,13 +229,6 @@ public class QuartzSchedulerConfig {
         return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
     }
 
-
-    @Bean
-    public SimpleTriggerFactoryBean unhandledDatex2MessagesImportJobTrigger(final JobDetail unhandledDatex2MessagesImportJobDetail,
-                                                                            @Value("${unhandledDatex2MessagesImportJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(unhandledDatex2MessagesImportJobDetail, frequency);
-    }
-
     @Bean
     public SimpleTriggerFactoryBean travelTimeMediansUpdateJobTrigger(final JobDetail travelTimeMediansUpdateJobDetail,
                                                                       @Value("${travelTimeMediansUpdateJob.frequency}") final long frequency) {
@@ -252,6 +245,12 @@ public class QuartzSchedulerConfig {
     public SimpleTriggerFactoryBean travelTimeLinkMetadataUpdateJobTrigger(final JobDetail travelTimeLinkMetadataUpdateJobDetail,
                                                                            @Value("${travelTimeLinkMetadataUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(travelTimeLinkMetadataUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean datex2MessageUpdateJobTrigger(final JobDetail datex2MessageUpdateJobDetail,
+                                                                  @Value("${datex2MessageUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(datex2MessageUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 
 public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerTest.class);
@@ -45,7 +44,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         datex2Repository.deleteAll();
 
         // Create listener
-        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
         final JMSMessageListener datexJmsMessageListener = new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
 
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
@@ -82,8 +81,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Delete old messages");
         datex2Repository.deleteAll();
 
-        final JMSMessageListener.JMSDataUpdater<Pair<D2LogicalModel, String>> dataUpdater = (data) -> datex2DataService.updateDatex2Data
-            (data);
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
 
         final JMSMessageListener datexJmsMessageListener =
                 new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
