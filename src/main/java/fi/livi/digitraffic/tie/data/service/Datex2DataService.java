@@ -61,7 +61,7 @@ public class Datex2DataService {
 
     @Transactional
     public void updateRoadworks(final Datex2MessageDto message) {
-        removeRoadworks();
+        //removeRoadworks();
         updateDatex2Data(Arrays.asList(message), ROADWORK);
     }
 
