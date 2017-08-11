@@ -27,7 +27,7 @@ public class Datex2HttpClient {
 
     // Old ftp format  InfoXML_2017-04-26-07-50-58-913.xml
     // New http format  Datex2_2017-04-26-07-51-04-245.xml
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("'Datex2_'yyyy-MM-dd-HH-mm-ss-SSS'.xml'");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("'Datex2_'yyyy-MM-dd-HH-mm-ss-SSS'.xml'");
 
     private static final Pattern fileNamePattern = Pattern.compile("href=\"(Datex2_[0-9-]*\\.xml)\"");
 
@@ -87,7 +87,7 @@ public class Datex2HttpClient {
         return messages;
     }
 
-    private String getContent(final String url) {
+    protected String getContent(final String url) {
         return retryTemplate.execute(context -> restTemplate.getForObject(url, String.class));
     }
 
