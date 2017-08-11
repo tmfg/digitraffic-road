@@ -73,7 +73,7 @@ public class CameraImageUpdateService {
 
             // Read the image
             byte[] image = null;
-            for (int readTries = 5; readTries > 0; readTries--) {
+            for (int readTries = 4; readTries >= 0; readTries--) {
                 try {
                     image = readImage(kuva.getUrl(), filename);
                     if (image.length > 0) {
@@ -94,7 +94,7 @@ public class CameraImageUpdateService {
 
             // Write the image
             boolean writtenSuccessfully = false;
-            for (int writeTries = 5; writeTries > 0; writeTries--) {
+            for (int writeTries = 4; writeTries >= 0; writeTries--) {
                 try {
                     writeImage(image, filename);
                     writtenSuccessfully = true;
@@ -139,21 +139,21 @@ public class CameraImageUpdateService {
             result = IOUtils.toByteArray(con.getInputStream());
         } catch (Exception e) {
             log.warn("Image read failed for {}", downloadImageUrl);
-            throw new RuntimeException(e);
+            throw e;
         }
         final byte[] data = result;
         log.info("Image read successfully. Size {} bytes", data.length);
         return data;
     }
 
-    private void writeImage(byte[] data, String filename) {
+    private void writeImage(byte[] data, String filename) throws IOException {
         try (final Session session = sftpSessionFactory.getSession()) {
             final String uploadPath = getImageFullPath(filename);
             log.info("Writing image to sftp server path {}", uploadPath);
             session.write(new ByteArrayInputStream(data), uploadPath);
         } catch (Exception e) {
             log.warn("Failed to write image to sftp server path {}", getImageFullPath(filename));
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
