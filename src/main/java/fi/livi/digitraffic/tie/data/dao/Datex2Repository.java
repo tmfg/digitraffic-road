@@ -19,7 +19,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "from datex2\n" +
             "where message_type = :messageType",
             nativeQuery = true)
-    LocalDateTime getLatestImportTime(@Param("messageType") final String messageType);
+    LocalDateTime findLatestImportTime(@Param("messageType") final String messageType);
 
     @Query(value =
             "SELECT d.*\n" +

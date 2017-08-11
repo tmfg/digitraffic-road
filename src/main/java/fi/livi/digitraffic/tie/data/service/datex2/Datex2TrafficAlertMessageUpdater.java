@@ -36,8 +36,9 @@ public class Datex2TrafficAlertMessageUpdater {
 
     @Transactional
     public void updateDatex2TrafficAlertMessages() {
-        final LocalDateTime latest = datex2Repository.getLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
-        final List<Pair<String, Timestamp>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(Timestamp.valueOf(latest));
+        final LocalDateTime latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
+        final Timestamp from = latest == null ? null : Timestamp.valueOf(latest);
+        final List<Pair<String, Timestamp>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(from);
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 
         for (final Pair<String, Timestamp> message : messages) {

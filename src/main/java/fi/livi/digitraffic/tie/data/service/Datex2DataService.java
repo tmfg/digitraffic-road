@@ -179,7 +179,7 @@ public class Datex2DataService {
         final ZonedDateTime updated = getLatestImportTime(TRAFFIC_DISORDER);
 
         return new Datex2RootDataObjectDto(
-                situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory
+                situationId != null ? datex2Repository.findHistoryBySituationId(situationId, year, month) : datex2Repository.findHistory
                     (TRAFFIC_DISORDER.name(), year, month),
                 updated);
     }
@@ -223,7 +223,7 @@ public class Datex2DataService {
     }
 
     public ZonedDateTime getLatestImportTime(final Datex2MessageType messageType) {
-        return DateHelper.toZonedDateTime(datex2Repository.getLatestImportTime(messageType.name()));
+        return DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime(messageType.name()));
     }
 
     @Transactional(readOnly = true)
