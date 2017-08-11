@@ -44,7 +44,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         datex2Repository.deleteAll();
 
         // Create listener
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateTrafficAlerts(data);
         final JMSMessageListener datexJmsMessageListener = new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
 
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
@@ -81,7 +81,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Delete old messages");
         datex2Repository.deleteAll();
 
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateTrafficAlerts(data);
 
         final JMSMessageListener datexJmsMessageListener =
                 new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);

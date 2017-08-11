@@ -127,7 +127,7 @@ public class Datex2DataServiceTest extends AbstractTest {
             object = ((JAXBElement) object).getValue();
         }
         D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
-        datex2DataService.updateDatex2Data(Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel)));
+        datex2DataService.updateTrafficAlerts(Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel)));
     }
 
     private class Datex2Thread implements Runnable {

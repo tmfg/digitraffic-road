@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.model.Datex2;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 
 @Repository
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
@@ -20,7 +19,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "from datex2\n" +
             "where message_type = :messageType",
             nativeQuery = true)
-    LocalDateTime getLatestImportTime(@Param("messageType") final Datex2MessageType messageType);
+    LocalDateTime getLatestImportTime(@Param("messageType") final String messageType);
 
     @Query(value =
             "SELECT d.*\n" +
@@ -38,16 +37,16 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
         "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
         "         WHERE d.message_type = :messageType\n" +
-            "       ) disorder\n" +
+            "       ) d2\n" +
             "  WHERE rnum = 1\n" +
-            "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
-            "             AND disorder.overall_end_time > sysdate)\n" +
+            "        AND (d2.validy_status <> 'SUSPENDED'\n" +
+            "             AND d2.overall_end_time > sysdate)\n" +
             // Skip old Datex2 messages of HÄTI system
-            "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
+            "        AND d2.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
             "order by d.publication_time, d.id",
             nativeQuery = true)
-    List<Datex2> findAllActive(@Param("messageType") final Datex2MessageType messageType);
+    List<Datex2> findAllActive(@Param("messageType") final String messageType);
 
     @Query(value =
             "SELECT d.*\n" +
@@ -57,7 +56,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "  AND d.message_type = :messageType",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findHistory(@Param("messageType") final Datex2MessageType messageType,
+    List<Datex2> findHistory(@Param("messageType") final String messageType,
                              @Param("year") final int year,
                              @Param("month") final int month);
 
@@ -75,7 +74,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             ")",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findHistory(@Param("situationId") final String situationId,
+    List<Datex2> findHistoryBySituationId(@Param("situationId") final String situationId,
                              @Param("year") final int year,
                              @Param("month") final int month);
 
@@ -95,4 +94,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            "FROM Datex2Situation situation\n" +
            "WHERE situation.situationId = :situationId")
     boolean existsWithSituationId(@Param("situationId") final String situationId);
+
+    @Query(value = "delete from datex2 where message_type='ROADWORK'", nativeQuery = true)
+    void deleteAllRoadworks();
 }

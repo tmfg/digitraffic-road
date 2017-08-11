@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.UUID;
-
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @ConditionalOnProperty(name = "jms.datex2.enabled")
 @Configuration
@@ -55,7 +52,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public JMSMessageListener<Datex2MessageDto> createJMSMessageListener() throws JAXBException {
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2DataService::updateDatex2Data;
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2DataService::updateTrafficAlerts;
         final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener(messageMarshaller, handleData,
