@@ -61,7 +61,7 @@ public class Datex2DataService {
 
     @Transactional
     public void updateRoadworks(final Datex2MessageDto message) {
-        //removeRoadworks();
+        removeRoadworks();
         updateDatex2Data(Arrays.asList(message), ROADWORK);
     }
 
@@ -200,7 +200,7 @@ public class Datex2DataService {
     public Datex2RootDataObjectDto findAllDatex2TrafficDisordersBySituationId(final String situationId) {
         final ZonedDateTime updated = getLatestImportTime(TRAFFIC_DISORDER);
 
-        final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_DISORDER.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -227,8 +227,9 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(final String situationId) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
+    public TrafficDisordersDatex2Response findAllDatex2ResponsesBySituationId(final Datex2MessageType messageType, final String
+        situationId) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, messageType.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }

@@ -25,7 +25,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(DataUpdatedControllerRestWebTest.class);
 
     @Autowired
-    DataController controller;
+    private DataController dataController;
 
     @Test
     public void testDataUpdatedExists() throws Exception {
@@ -39,7 +39,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
 
                 final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
                              MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                             field.get(controller) +
+                             field.get(dataController) +
                              "?" + DataController.LAST_UPDATED_PARAM + "=true";
 
                 log.info("Test url: " + url);

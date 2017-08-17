@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -85,16 +86,19 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            "  SELECT situation.datex2_id\n" +
            "  FROM datex2_situation situation\n" +
            "  WHERE situation.situation_id = :situationId\n" +
-           ")",
+           ")\n" +
+           "AND message_type = :messageType\n",
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="100"))
-    List<Datex2> findBySituationId(@Param("situationId") final String situationId);
+    List<Datex2> findBySituationIdAndMessageType(@Param("situationId") final String situationId, @Param("messageType") final String
+        messageType);
 
     @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM Datex2Situation situation\n" +
            "WHERE situation.situationId = :situationId")
     boolean existsWithSituationId(@Param("situationId") final String situationId);
 
+    @Modifying
     @Query(value = "delete from datex2 where message_type='ROADWORK'", nativeQuery = true)
     void deleteAllRoadworks();
 }

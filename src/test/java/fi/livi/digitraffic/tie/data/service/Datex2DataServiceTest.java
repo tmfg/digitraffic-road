@@ -19,6 +19,7 @@ import org.springframework.xml.transform.StringSource;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
+import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
@@ -58,7 +59,7 @@ public class Datex2DataServiceTest extends AbstractTest {
         Assert.assertTrue(datex2Repository.findAll().isEmpty());
 
         try {
-            datex2DataService.findAllDatex2ResponsesBySituationId(situationId1);
+            datex2DataService.findAllDatex2ResponsesBySituationId(Datex2MessageType.TRAFFIC_DISORDER, situationId1);
             Assert.fail("ObjectNotFoundException should be raised");
         } catch (ObjectNotFoundException onfe) {
             // OK
@@ -95,7 +96,8 @@ public class Datex2DataServiceTest extends AbstractTest {
 
     private TrafficDisordersDatex2Response findDatex2AndAssert(String situationId, boolean found) {
         try {
-            TrafficDisordersDatex2Response response = datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
+            TrafficDisordersDatex2Response response = datex2DataService.findAllDatex2ResponsesBySituationId(Datex2MessageType
+                .TRAFFIC_DISORDER, situationId);
             Assert.assertTrue(found);
             SituationPublication s = getSituationPublication(response);
             Assert.assertTrue(s.getSituation().get(0).getId().equals(situationId));
