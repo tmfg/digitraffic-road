@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
+import org.springframework.xml.transform.StringResult;
 import org.springframework.xml.transform.StringSource;
 
 @Component
@@ -21,5 +22,13 @@ public class StringToObjectMarshaller {
         }
 
         return (T)object;
+    }
+
+    public <T> String convertToString(final T object) {
+        final StringResult result = new StringResult();
+
+        jaxb2Marshaller.marshal(object, result);
+
+        return result.toString();
     }
 }

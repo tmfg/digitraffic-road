@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +20,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "where message_type = :messageType",
             nativeQuery = true)
     LocalDateTime findLatestImportTime(@Param("messageType") final String messageType);
-
+    
     @Query(value =
             "SELECT d.*\n" +
             "FROM datex2 d\n" +
@@ -98,7 +97,18 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            "WHERE situation.situationId = :situationId")
     boolean existsWithSituationId(@Param("situationId") final String situationId);
 
-    @Modifying
-    @Query(value = "delete from datex2 where message_type='ROADWORK'", nativeQuery = true)
-    void deleteAllRoadworks();
+    @Query(value = "SELECT situation_id, version_time\n" +
+        "    FROM (\n" +
+        "            -- Latest version_time of any record situation_id\n" +
+        "            SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC) AS rnum\n" +
+        "          , situation.situation_id\n" +
+        "          , record.version_time\n" +
+        "          , record.validy_status\n" +
+        "         FROM DATEX2 d\n" +
+        "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
+        "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
+        "         WHERE d.message_type = 'ROADWORK'\n" +
+        "         ) d2\n" +
+        "     WHERE rnum = 1", nativeQuery = true)
+    List<Object[]> listRoadworkSituationVersionTimes();
 }

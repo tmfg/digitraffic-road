@@ -3,9 +3,10 @@ package fi.livi.digitraffic.tie.data.service;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,13 +61,23 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public void updateRoadworks(final Datex2MessageDto message) {
-        removeRoadworks();
-        updateDatex2Data(Arrays.asList(message), ROADWORK);
+    public void updateRoadworks(final List<Datex2MessageDto> messages) {
+        updateDatex2Data(messages, ROADWORK);
     }
 
-    private void removeRoadworks() {
-        datex2Repository.deleteAllRoadworks();
+    public Map<String, LocalDateTime> listRoadworkSituationVersionTimes() {
+        final Map<String, LocalDateTime> map = new HashMap<>();
+
+        for (final Object[] o : datex2Repository.listRoadworkSituationVersionTimes()) {
+            final String situationId = (String) o[0];
+            final LocalDateTime versionTime = ((Timestamp)o[1]).toLocalDateTime();
+
+            if (map.put(situationId, versionTime) != null) {
+                throw new IllegalStateException("Duplicate key");
+            }
+        }
+
+        return map;
     }
 
     public int updateTrafficAlerts(final List<Datex2MessageDto> data) {

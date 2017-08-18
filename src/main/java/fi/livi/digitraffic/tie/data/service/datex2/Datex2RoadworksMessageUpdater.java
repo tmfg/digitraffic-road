@@ -1,11 +1,21 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.xml.bind.JAXBElement;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObjectFactory;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
 
 @Service
 public class Datex2RoadworksMessageUpdater {
@@ -29,9 +39,50 @@ public class Datex2RoadworksMessageUpdater {
         datex2DataService.updateRoadworks(convert(message));
     }
 
-    private Datex2MessageDto convert(final String message) {
+    private List<Datex2MessageDto> convert(final String message) {
         final D2LogicalModel model = stringToObjectMarshaller.convertToObject(message);
 
-        return new Datex2MessageDto(message, null, model);
+        return createModels(model);
+    }
+
+    private List<Datex2MessageDto> createModels(final D2LogicalModel main) {
+        final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
+
+        final Map<String, LocalDateTime> versionTimes = datex2DataService.listRoadworkSituationVersionTimes();
+
+        return sp.getSituation().stream()
+            .filter(s -> isNewSituation(versionTimes.get(s.getId()), s))
+            .map(s -> convert(sp, s))
+            .collect(Collectors.toList());
+    }
+
+    private static boolean isNewSituation(final LocalDateTime latestVersionTime, final Situation situation) {
+        // does any record have new version time?
+        return situation.getSituationRecord().stream().anyMatch(r -> isNewRecord(latestVersionTime, r));
+    }
+
+    private static boolean isNewRecord(final LocalDateTime latestVersionTime, final SituationRecord record) {
+        // different resolution, so remove fractions of second
+        final LocalDateTime vTime = record.getSituationRecordVersionTime().toGregorianCalendar().toZonedDateTime().toLocalDateTime().withNano(0);
+
+        return latestVersionTime == null || vTime.isAfter(latestVersionTime);
+    }
+
+    private Datex2MessageDto convert(final SituationPublication sp, final Situation situation) {
+        final D2LogicalModel d2 = new D2LogicalModel();
+        final SituationPublication newSp = new SituationPublication();
+
+        newSp.setPublicationTime(sp.getPublicationTime());
+        newSp.setPublicationCreator(sp.getPublicationCreator());
+        newSp.setLang(sp.getLang());
+
+
+        d2.setPayloadPublication(newSp);
+
+        newSp.getSituation().add(situation);
+
+        final JAXBElement<D2LogicalModel> element = new ObjectFactory().createD2LogicalModel(d2);
+
+        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(element), null, d2);
     }
 }

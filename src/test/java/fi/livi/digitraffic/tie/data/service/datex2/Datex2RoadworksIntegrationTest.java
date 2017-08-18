@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -22,6 +23,6 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
 
         messageUpdater.updateDatex2RoadworksMessages();
 
-        assertCollectionSize(1, datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
+        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()).size() > 1);
     }
 }
