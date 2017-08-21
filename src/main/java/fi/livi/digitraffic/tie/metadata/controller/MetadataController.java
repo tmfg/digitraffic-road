@@ -192,7 +192,7 @@ public class MetadataController {
 
     @ApiOperation("List available location versions")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations") })
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location versions") })
     public List<LocationVersion> locationVersions () {
         log.info(REQUEST_LOG_PREFIX + LOCATION_VERSIONS_PATH);
         return locationService.findLocationVersions();
