@@ -83,8 +83,8 @@ public class CameraImageUpdateService {
                             presetId, kuva.getUrl(), getImageFullPath(filename), readTries);
                     }
                 } catch (final Exception e) {
-                    log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception cause: {}.",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getCause());
+                    log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getMessage());
                 }
             }
             if (image == null) {
@@ -100,8 +100,8 @@ public class CameraImageUpdateService {
                     writtenSuccessfully = true;
                     break;
                 } catch (final Exception e) {
-                    log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception cause: {}.",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getCause());
+                    log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                        presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getMessage());
                 }
             }
             if (!writtenSuccessfully) {
