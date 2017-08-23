@@ -89,7 +89,6 @@ websocket.tms.enabled=true
 # Ie. quartz.CameraUpdateJob.enabled = false
 
 # Developer life improvements
-logging.file=digitraffic-metadata
 logging.level.root=INFO
 #logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
