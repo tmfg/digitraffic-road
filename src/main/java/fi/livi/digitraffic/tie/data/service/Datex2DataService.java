@@ -254,17 +254,9 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findActiveDatex2Roadworks() {
+    public TrafficDisordersDatex2Response findActiveDatex2Roadworks() {
         final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name());
-        return convertToD2LogicalModel(allActive);
-    }
-
-    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
-        return stringToObjectMarshaller.convertToObject(datex2s.get(0).getMessage());
-    }
-
-    private Situation parseSituation(final Datex2 datex2) {
-        return stringToObjectMarshaller.convertToObject(datex2.getMessage());
+        return convertToTrafficDisordersDatex2Response(allActive);
     }
 
     private TrafficDisordersDatex2Response convertToTrafficDisordersDatex2Response(final List<Datex2> datex2s) {

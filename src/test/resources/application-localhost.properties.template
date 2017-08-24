@@ -28,7 +28,8 @@ travelTimeMeasurementsUpdateJob.frequency=60000
 forecastSectionWeatherUpdateJob.frequency=900000
 locationsMetadataUpdateJob.frequency=86400000
 travelTimeLinkMetadataUpdateJob.frequency=86400000
-datex2MessageUpdateJob.frequency=180000
+datex2TrafficAlertMessageUpdateJob.frequency=180000
+datex2RoadworksMessageUpdateJob.frequency=14400000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam.url/

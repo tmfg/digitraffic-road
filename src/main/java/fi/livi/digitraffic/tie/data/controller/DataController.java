@@ -37,7 +37,6 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -319,7 +318,7 @@ public class DataController {
     @ApiOperation("Active roadwork Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
-    public D2LogicalModel roadWorksDatex2() {
+    public TrafficDisordersDatex2Response roadWorksDatex2() {
         log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH);
         return datex2DataService.findActiveDatex2Roadworks();
     }

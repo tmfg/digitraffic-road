@@ -75,14 +75,11 @@ public class Datex2RoadworksMessageUpdater {
         newSp.setPublicationTime(sp.getPublicationTime());
         newSp.setPublicationCreator(sp.getPublicationCreator());
         newSp.setLang(sp.getLang());
-
+        newSp.withSituation(situation);
 
         d2.setPayloadPublication(newSp);
 
-        newSp.getSituation().add(situation);
-
         final JAXBElement<D2LogicalModel> element = new ObjectFactory().createD2LogicalModel(d2);
-
         return new Datex2MessageDto(stringToObjectMarshaller.convertToString(element), null, d2);
     }
 }
