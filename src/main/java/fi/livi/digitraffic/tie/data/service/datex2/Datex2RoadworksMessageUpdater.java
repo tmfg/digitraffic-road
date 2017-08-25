@@ -52,7 +52,7 @@ public class Datex2RoadworksMessageUpdater {
 
         return sp.getSituation().stream()
             .filter(s -> isNewSituation(versionTimes.get(s.getId()), s))
-            .map(s -> convert(sp, s))
+            .map(s -> convert(main, sp, s))
             .collect(Collectors.toList());
     }
 
@@ -68,7 +68,7 @@ public class Datex2RoadworksMessageUpdater {
         return latestVersionTime == null || vTime.isAfter(latestVersionTime);
     }
 
-    private Datex2MessageDto convert(final SituationPublication sp, final Situation situation) {
+    private Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp, final Situation situation) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -77,6 +77,8 @@ public class Datex2RoadworksMessageUpdater {
         newSp.setLang(sp.getLang());
         newSp.withSituation(situation);
 
+        d2.setModelBaseVersion(main.getModelBaseVersion());
+        d2.setExchange(main.getExchange());
         d2.setPayloadPublication(newSp);
 
         final JAXBElement<D2LogicalModel> element = new ObjectFactory().createD2LogicalModel(d2);

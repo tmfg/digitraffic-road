@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Collections;
 import javax.xml.bind.JAXBElement;
@@ -14,7 +17,6 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
@@ -48,12 +50,12 @@ public class Datex2DataServiceTest extends AbstractTest {
         final String situationId2 = "GUID50006936";
 
         datex2Repository.deleteAll();
-        Assert.assertTrue(datex2Repository.findAll().isEmpty());
+        assertTrue(datex2Repository.findAll().isEmpty());
 
         try {
-            datex2DataService.findAllDatex2ResponsesBySituationId(Datex2MessageType.TRAFFIC_DISORDER, situationId1);
+            datex2DataService.findAllTrafficDisordersBySituationId(situationId1);
             Assert.fail("ObjectNotFoundException should be raised");
-        } catch (ObjectNotFoundException onfe) {
+        } catch (final ObjectNotFoundException onfe) {
             // OK
         }
 
@@ -67,22 +69,22 @@ public class Datex2DataServiceTest extends AbstractTest {
         findDatex2AndAssert(situationId1, true);
         findDatex2AndAssert(situationId2, true);
 
-        TrafficDisordersDatex2Response allActive = datex2DataService.findActiveDatex2TrafficDisorders();
+        TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders();
         assertCollectionSize(1, allActive.getDisorder());
         SituationPublication active = getSituationPublication(allActive);
         assertCollectionSize(1, active.getSituation());
-        Assert.assertTrue(active.getSituation().get(0).getId().equals(situationId2));
+        assertTrue(active.getSituation().get(0).getId().equals(situationId2));
     }
 
-    private TrafficDisordersDatex2Response findDatex2AndAssert(String situationId, boolean found) {
+    private TrafficDisordersDatex2Response findDatex2AndAssert(final String situationId, final boolean found) {
         try {
-            TrafficDisordersDatex2Response response = datex2DataService.findAllDatex2ResponsesBySituationId(Datex2MessageType
-                .TRAFFIC_DISORDER, situationId);
-            Assert.assertTrue(found);
-            SituationPublication s = getSituationPublication(response);
-            Assert.assertTrue(s.getSituation().get(0).getId().equals(situationId));
+            final TrafficDisordersDatex2Response response = datex2DataService.findAllTrafficDisordersBySituationId(situationId);
+            assertTrue(found);
+
+            final SituationPublication s = getSituationPublication(response);
+            assertEquals(situationId, s.getSituation().get(0).getId());
             return response;
-        } catch (ObjectNotFoundException onfe) {
+        } catch (final ObjectNotFoundException onfe) {
             // OK
             if (found) {
                 Assert.fail("Situation " + situationId + " should have found");
@@ -91,8 +93,8 @@ public class Datex2DataServiceTest extends AbstractTest {
         }
     }
 
-    private static SituationPublication getSituationPublication(TrafficDisordersDatex2Response response) {
-        Assert.assertTrue(response.getDisorder().size() == 1);
+    private static SituationPublication getSituationPublication(final TrafficDisordersDatex2Response response) {
+        assertTrue(response.getDisorder().size() == 1);
         return ((SituationPublication) response.getDisorder().get(0).getD2LogicalModel().getPayloadPublication());
     }
 
@@ -101,7 +103,7 @@ public class Datex2DataServiceTest extends AbstractTest {
         if (object instanceof JAXBElement) {
             object = ((JAXBElement) object).getValue();
         }
-        D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
+        final D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
         datex2UpdateService.updateTrafficAlerts(Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel)));
     }
 }

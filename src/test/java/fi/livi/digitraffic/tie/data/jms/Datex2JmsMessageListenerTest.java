@@ -1,17 +1,16 @@
 package fi.livi.digitraffic.tie.data.jms;
 
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -49,6 +48,9 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Delete all Datex2 messages");
         datex2Repository.deleteAll();
 
+        final String SITUATION_ID_1 = "GUID50006936";
+        final String SITUATION_ID_2 = "GUID50006401";
+
         // Create listener
         final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2UpdateService.updateTrafficAlerts(data);
         final JMSMessageListener datexJmsMessageListener = new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
@@ -56,23 +58,21 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
-        final Datex2RootDataObjectDto dto = datex2DataService.findActiveDatex2TrafficDisorders(false);
+        final Datex2RootDataObjectDto dto = datex2DataService.findActiveTrafficDisorders(false);
         final List<Datex2> datex2s = dto.getDatex2s();
 
         assertCollectionSize(1, datex2s);
-        Assert.assertTrue(datex2s.get(0).getSituations().get(0).getSituationId().equals("GUID50006936"));
+        assertEquals(SITUATION_ID_1, datex2s.get(0).getSituations().get(0).getSituationId());
 
-        final Datex2RootDataObjectDto bySituation1 = datex2DataService.findAllDatex2TrafficDisordersBySituationId("GUID50006936");
-        final List<Datex2> bySituationDatex2s = bySituation1.getDatex2s();
+        final List<Datex2> bySituationDatex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_1, TRAFFIC_DISORDER.name());
         assertCollectionSize(1, bySituationDatex2s);
-        assertEquals("GUID50006936", bySituationDatex2s.get(0).getSituations().get(0).getSituationId());
+        assertEquals(SITUATION_ID_1, bySituationDatex2s.get(0).getSituations().get(0).getSituationId());
 
-        final Datex2RootDataObjectDto bySituation2 = datex2DataService.findAllDatex2TrafficDisordersBySituationId("GUID50006401");
-        final List<Datex2> bySituation2Datex2s = bySituation2.getDatex2s();
+        final List<Datex2> bySituation2Datex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_2, TRAFFIC_DISORDER.name());
         assertCollectionSize(3, bySituation2Datex2s);
 
         for (final Datex2 datex2 : bySituation2Datex2s) {
-            assertEquals("GUID50006401", datex2.getSituations().get(0).getSituationId());
+            assertEquals(SITUATION_ID_2, datex2.getSituations().get(0).getSituationId());
         }
 
         final Datex2RootDataObjectDto byTimeSituation2 = datex2DataService.findDatex2TrafficAlerts(null, 2016, 10);

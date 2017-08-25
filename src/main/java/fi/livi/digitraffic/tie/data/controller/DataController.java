@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -37,6 +35,7 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -282,7 +281,7 @@ public class DataController {
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public TrafficDisordersDatex2Response trafficDisordersDatex2() {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH);
-        return datex2DataService.findActiveDatex2TrafficDisorders();
+        return datex2DataService.findActiveTrafficDisorders();
     }
 
     @ApiOperation("Traffic disorder Datex2 messages by situation id")
@@ -293,7 +292,7 @@ public class DataController {
             @ApiParam(value = "Situation id.", required = true)
             @PathVariable final String situationId) {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.findAllDatex2ResponsesBySituationId(TRAFFIC_DISORDER, situationId);
+        return datex2DataService.findAllTrafficDisordersBySituationId(situationId);
     }
 
     @ApiOperation("Traffic disorder Datex2 messages disorders history")
@@ -312,26 +311,26 @@ public class DataController {
             @RequestParam @Valid @Range(min = 1, max = 12)
             final int month) {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
-        return datex2DataService.findDatex2Responses(TRAFFIC_DISORDER, situationId, year, month);
+        return datex2DataService.findTrafficDisorders(situationId, year, month);
     }
 
     @ApiOperation("Active roadwork Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
-    public TrafficDisordersDatex2Response roadWorksDatex2() {
+    public RoadworksDatex2Response roadWorksDatex2() {
         log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH);
-        return datex2DataService.findActiveDatex2Roadworks();
+        return datex2DataService.findActiveRoadworks();
     }
 
     @ApiOperation("Roadwork Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 404, message = "Situation id not found") })
-    public TrafficDisordersDatex2Response roadworksDatex2BySituationId(
+    public RoadworksDatex2Response roadworksDatex2BySituationId(
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable final String situationId) {
         log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.findAllDatex2ResponsesBySituationId(ROADWORK, situationId);
+        return datex2DataService.findAllRoadworksBySituationId(situationId);
     }
 
     @ApiOperation("Roadwork Datex2 messages disorders history")
@@ -339,7 +338,7 @@ public class DataController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 400, message = "Invalid parameter"),
         @ApiResponse(code = 404, message = "Situation id not found") })
-    public TrafficDisordersDatex2Response roadworksDatex2OfHistory(
+    public RoadworksDatex2Response roadworksDatex2OfHistory(
         @ApiParam(value = "Situation id", required = false)
         @RequestParam(required = false)
         final String situationId,
@@ -350,7 +349,7 @@ public class DataController {
         @RequestParam @Valid @Range(min = 1, max = 12)
         final int month) {
         log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
-        return datex2DataService.findDatex2Responses(ROADWORK, situationId, year, month);
+        return datex2DataService.findRoadworks(situationId, year, month);
     }
 
 }
