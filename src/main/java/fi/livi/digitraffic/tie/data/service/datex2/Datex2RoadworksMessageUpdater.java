@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.service.Datex2DataService;
+import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObjectFactory;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
@@ -20,23 +20,23 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
 @Service
 public class Datex2RoadworksMessageUpdater {
     private final Datex2RoadworksHttpClient datex2RoadworksHttpClient;
-    private final Datex2DataService datex2DataService;
+    private final Datex2UpdateService datex2UpdateService;
 
     private final StringToObjectMarshaller stringToObjectMarshaller;
 
     @Autowired
-    public Datex2RoadworksMessageUpdater(final Datex2RoadworksHttpClient datex2RoadworksHttpClient,
-        final Datex2DataService datex2DataService, final StringToObjectMarshaller stringToObjectMarshaller) {
+    public Datex2RoadworksMessageUpdater(final Datex2RoadworksHttpClient datex2RoadworksHttpClient, final Datex2UpdateService datex2UpdateService,
+        final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
+        this.datex2UpdateService = datex2UpdateService;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
-        this.datex2DataService = datex2DataService;
     }
 
     @Transactional
     public void updateDatex2RoadworksMessages() {
         final String message = datex2RoadworksHttpClient.getRoadWorksMessage();
 
-        datex2DataService.updateRoadworks(convert(message));
+        datex2UpdateService.updateRoadworks(convert(message));
     }
 
     private List<Datex2MessageDto> convert(final String message) {
@@ -48,7 +48,7 @@ public class Datex2RoadworksMessageUpdater {
     private List<Datex2MessageDto> createModels(final D2LogicalModel main) {
         final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
 
-        final Map<String, LocalDateTime> versionTimes = datex2DataService.listRoadworkSituationVersionTimes();
+        final Map<String, LocalDateTime> versionTimes = datex2UpdateService.listRoadworkSituationVersionTimes();
 
         return sp.getSituation().stream()
             .filter(s -> isNewSituation(versionTimes.get(s.getId()), s))

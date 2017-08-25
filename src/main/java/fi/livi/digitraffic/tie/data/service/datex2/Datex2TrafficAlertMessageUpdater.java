@@ -14,24 +14,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
-import fi.livi.digitraffic.tie.data.service.Datex2DataService;
+import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @Service
 public class Datex2TrafficAlertMessageUpdater {
     private final Datex2Repository datex2Repository;
     private final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient;
-    private final Datex2DataService datex2DataService;
+    private final Datex2UpdateService datex2UpdateService;
 
     private final StringToObjectMarshaller stringToObjectMarshaller;
 
     @Autowired
     public Datex2TrafficAlertMessageUpdater(final Datex2Repository datex2Repository, final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient,
-        final Datex2DataService datex2DataService, final StringToObjectMarshaller stringToObjectMarshaller) {
+        final Datex2UpdateService datex2UpdateService, final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2Repository = datex2Repository;
         this.datex2TrafficAlertHttpClient = datex2TrafficAlertHttpClient;
+        this.datex2UpdateService = datex2UpdateService;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
-        this.datex2DataService = datex2DataService;
     }
 
     @Transactional
@@ -48,6 +48,6 @@ public class Datex2TrafficAlertMessageUpdater {
                                                   ZonedDateTime.ofInstant(message.getRight().toInstant(), ZoneId.systemDefault()),
                                                   d2));
         }
-        datex2DataService.updateTrafficAlerts(unmarshalled);
+        datex2UpdateService.updateTrafficAlerts(unmarshalled);
     }
 }
