@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.io.StringReader;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +12,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordValidyStatus;
 import fi.livi.digitraffic.tie.data.model.SituationRecordCommentI18n;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Comment;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
@@ -60,15 +59,18 @@ public class Datex2DataService {
     }
 
     @Transactional
-    public int updateDatex2Data(List<Pair<D2LogicalModel, String>> data) {
+    public int updateDatex2Data(List<Datex2MessageDto> data) {
 
-        for (Pair<D2LogicalModel, String> pair : data) {
+        for (Datex2MessageDto message : data) {
 
             Datex2 datex2 = new Datex2();
-            datex2.setImportTime(ZonedDateTime.now());
-            datex2.setMessage(pair.getRight());
-
-            D2LogicalModel datex = pair.getLeft();
+            if (message.importTime != null) {
+                datex2.setImportTime(message.importTime);
+            } else {
+                datex2.setImportTime(ZonedDateTime.now());
+            }
+            datex2.setMessage(message.message);
+            D2LogicalModel datex = message.model;
 
             parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
 
@@ -77,7 +79,7 @@ public class Datex2DataService {
         return data.size();
     }
 
-    private void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
+    private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
         datex2.setPublicationTime(DateHelper.toZonedDateTimeWithoutMillis(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
@@ -86,7 +88,7 @@ public class Datex2DataService {
         }
     }
 
-    private void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
+    private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
         List<Situation> situations = situationPublication.getSituation();
         for (Situation situation : situations) {
             Datex2Situation d2Situation = new Datex2Situation();
@@ -99,7 +101,7 @@ public class Datex2DataService {
         }
     }
 
-    private void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
+    private static void parseAndAppendSituationRecordData(List<SituationRecord> situationRecords, Datex2Situation d2Situation) {
         for (SituationRecord record : situationRecords) {
             Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
             d2Situation.addSituationRecord(d2SituationRecord);
@@ -132,7 +134,7 @@ public class Datex2DataService {
      * @param value
      * @return
      */
-    private List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
+    private static List<SituationRecordCommentI18n> joinComments(List<MultilingualStringValue> value) {
         if (value == null) {
             return Collections.emptyList();
         }
@@ -158,7 +160,7 @@ public class Datex2DataService {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         return new Datex2RootDataObjectDto(
                 situationId != null ? datex2Repository.findHistory(situationId, year, month) : datex2Repository.findHistory(year, month),
                 updated);
@@ -166,7 +168,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public Datex2RootDataObjectDto findActiveDatex2Data(boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         if (onlyUpdateInfo) {
             return new Datex2RootDataObjectDto(updated);
         } else {
@@ -177,7 +179,7 @@ public class Datex2DataService {
     }
 
     public Datex2RootDataObjectDto findAllDatex2DataBySituationId(String situationId) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.getLatestMeasurementTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime());
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -229,7 +231,6 @@ public class Datex2DataService {
     }
 
     public TimestampedTrafficDisorderDatex2 unMarshallDatex2Message(final String datex2Xml, final ZonedDateTime importTime) {
-        StringReader sr = new StringReader(datex2Xml);
         try {
             Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Xml));
             if (object instanceof JAXBElement) {
@@ -249,26 +250,5 @@ public class Datex2DataService {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
         return null;
-    }
-
-    @Transactional
-    public void handleUnhandledDatex2Messages() {
-        log.info("Fetch unhandled Datex2 messages");
-        List<Datex2> unhandled = datex2Repository.findByPublicationTimeIsNull();
-
-        log.info("Handle {} unhandled Datex2 Messages", unhandled.size());
-        unhandled.forEach(datex2 -> {
-            try {
-                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2.getMessage(), datex2.getImportTime());
-                if (tsDatex2 != null) {
-                    parseAndAppendPayloadPublicationData(tsDatex2.getD2LogicalModel().getPayloadPublication(), datex2);
-                    datex2Repository.save(datex2);
-                }
-            } catch (Exception e) {
-                log.error("Handling unhandled Datex2 message failed", e);
-            }
-
-        });
-        log.info("Handled {} unhandled Datex2 Messages", unhandled.size());
     }
 }

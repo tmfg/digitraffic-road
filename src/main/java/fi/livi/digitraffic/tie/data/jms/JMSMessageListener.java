@@ -29,9 +29,8 @@ public class JMSMessageListener<K> implements MessageListener {
         List<K> unmarshalMessage(final Message message) throws JMSException;
     }
 
-    private static final int QUEUE_SIZE_WARNING_LIMIT = 200;
-    private static final int QUEUE_SIZE_ERROR_LIMIT = 1000;
-    private static final int QUEUE_MAXIMUM_SIZE = 10000;
+    private static final int QUEUE_SIZE_WARNING_LIMIT = 5000;
+    private static final int QUEUE_SIZE_OVERFLOW_LIMIT = 10000;
 
     protected final Logger log;
 
@@ -116,21 +115,18 @@ public class JMSMessageListener<K> implements MessageListener {
 
             int queueToDrain = messageQueue.size();
             if ( queueToDrain <= 0 ) {
-                log.info("JMS message queue was empty");
                 return;
-            } else if ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
-                log.warn("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_MAXIMUM_SIZE );
+            } else if (queueToDrain > QUEUE_SIZE_OVERFLOW_LIMIT) {
+                log.error("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_SIZE_OVERFLOW_LIMIT);
                 int trashed = 0;
-                while ( queueToDrain > QUEUE_MAXIMUM_SIZE ) {
+                while (queueToDrain > QUEUE_SIZE_OVERFLOW_LIMIT) {
                     messageQueue.poll();
                     queueToDrain--;
                     trashed++;
                 }
                 log.warn("JMS message queue size decreased by {} messages by trashing to size {}", trashed, messageQueue.size());
-            } else if ( queueToDrain > QUEUE_SIZE_ERROR_LIMIT ) {
-                log.error("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_ERROR_LIMIT);
-            } else if ( queueToDrain > QUEUE_SIZE_WARNING_LIMIT ) {
-                log.warn("JMS message queue size {} exceeds warning limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT );
+            } else if (queueToDrain > QUEUE_SIZE_WARNING_LIMIT) {
+                log.warn("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
             } else {
                 log.info("JMS message queue size {}", queueToDrain );
             }

@@ -5,7 +5,7 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
@@ -154,9 +154,11 @@ public class DataController {
             @PathVariable
             final long id,
             @ApiParam(value = "Year (>2014)", required = true)
+            @Min(2015) @Max(9999)
             @RequestParam
             final int year,
             @ApiParam(value = "Month (1-12)", required = true)
+            @Range(min = 1, max = 12)
             @RequestParam
             final int month) {
         log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DATA_PATH + "/" + id + "?year=" + year + "&month=" + month);
@@ -303,10 +305,10 @@ public class DataController {
             @RequestParam(required = false)
             final String situationId,
             @ApiParam(value = "Year (>2014)", required = true)
-            @RequestParam @Valid @Min(2014)
+            @RequestParam @Min(2015) @Max(9999)
             final int year,
             @ApiParam(value = "Month (1-12)", required = true)
-            @RequestParam @Valid @Range(min = 1, max = 12)
+            @RequestParam @Range(min = 1, max = 12)
             final int month) {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
         return datex2DataService.findDatex2Responses(situationId, year, month);

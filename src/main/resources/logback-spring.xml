@@ -29,7 +29,7 @@
         <file>metadata-jms-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>metadata-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>92</maxHistory>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
