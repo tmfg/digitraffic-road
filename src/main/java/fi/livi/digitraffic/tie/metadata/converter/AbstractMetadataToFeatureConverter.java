@@ -56,7 +56,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));
     }
 
-    private static Point getETRS89CoordinatesPoint(RoadStation rs) {
+    public static Point getETRS89CoordinatesPoint(RoadStation rs) {
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             if (rs.getAltitude() != null) {
                 return new Point(

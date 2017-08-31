@@ -21,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationsDatex2Response;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
+import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
@@ -67,6 +69,13 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
         this.roadAddressRepository = roadAddressRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public TmsStationsDatex2Response findAllPublishableTmsStationsAsDatex2(final boolean onlyUpdateInfo, final TmsState tmsState) {
+        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
+
+        return new TmsStationsDatex2Response().withD2LogicalModel(TmsStationMetadata2Datex2Converter.convert(stations));
     }
 
     @Transactional(readOnly = true)
