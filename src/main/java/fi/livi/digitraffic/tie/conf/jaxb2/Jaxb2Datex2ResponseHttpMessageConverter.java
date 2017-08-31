@@ -13,9 +13,9 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationsDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
-public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
+public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
 
-    private static final Logger log = LoggerFactory.getLogger(Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(Jaxb2Datex2ResponseHttpMessageConverter.class);
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
