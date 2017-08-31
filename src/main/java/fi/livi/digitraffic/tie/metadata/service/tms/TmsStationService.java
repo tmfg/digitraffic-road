@@ -53,6 +53,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
     private final RoadAddressRepository roadAddressRepository;
+    private final TmsStationMetadata2Datex2Converter tmsStationMetadata2Datex2Converter;
     private ZonedDateTime metadataLastChecked;
 
     @Autowired
@@ -61,7 +62,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                              final RoadStationService roadStationService,
                              final RoadDistrictService roadDistrictService,
                              final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
-                             final RoadAddressRepository roadAddressRepository) {
+                             final RoadAddressRepository roadAddressRepository,
+                             final TmsStationMetadata2Datex2Converter tmsStationMetadata2Datex2Converter) {
         super(log);
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
@@ -69,13 +71,14 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
         this.roadAddressRepository = roadAddressRepository;
+        this.tmsStationMetadata2Datex2Converter = tmsStationMetadata2Datex2Converter;
     }
 
     @Transactional(readOnly = true)
     public TmsStationsDatex2Response findAllPublishableTmsStationsAsDatex2(final boolean onlyUpdateInfo, final TmsState tmsState) {
         final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
 
-        return new TmsStationsDatex2Response().withD2LogicalModel(TmsStationMetadata2Datex2Converter.convert(stations));
+        return new TmsStationsDatex2Response().withD2LogicalModel(tmsStationMetadata2Datex2Converter.convert(stations));
     }
 
     @Transactional(readOnly = true)
