@@ -9,6 +9,19 @@
         </encoder>
     </appender>
 
+
+    <appender name="FILE_ELK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <file>metadata-elk.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>metadata-elk.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
         <file>metadata-daily.log</file>
@@ -100,6 +113,7 @@
 
     <root level="INFO" additivity="false">
         <appender-ref ref="FILE" />
+        <appender-ref ref="FILE_ELK" />
 
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
