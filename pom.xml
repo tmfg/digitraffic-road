@@ -22,6 +22,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     </properties>
 
     <!-- Download OJDBC7.jar, ons.jar and ucp.jar and install drivers to local repo
@@ -33,9 +34,6 @@
     </repositories>
 
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
-    <properties>
-        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
