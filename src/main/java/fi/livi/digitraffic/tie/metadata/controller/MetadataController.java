@@ -117,9 +117,6 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationsDatex2Response tmsStationsDatex2(
-        @ApiParam("If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated,
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
@@ -127,7 +124,7 @@ public class MetadataController {
 
         final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
 
-        return tmsStationService.findAllPublishableTmsStationsAsDatex2(lastUpdated, state);
+        return tmsStationService.findAllPublishableTmsStationsAsDatex2(state);
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
