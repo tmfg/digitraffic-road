@@ -49,12 +49,13 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MeasurementSiteRecord getMeasurementSiteRecord(final TmsStation station) {
 
-        fi.livi.digitraffic.tie.metadata.geojson.Point point = AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
+        final fi.livi.digitraffic.tie.metadata.geojson.Point point =
+            AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
 
         return new MeasurementSiteRecord()
             .withId(Long.toString(station.getNaturalId()))
-            .withMeasurementSiteName(singleValueString(station.getName()))
             .withVersion("1")
+            .withMeasurementSiteName(getName(station))
             .withMeasurementSiteLocation(
                 new Point().withPointByCoordinates(
                     new PointByCoordinates().withPointCoordinates(new PointCoordinates()
@@ -62,9 +63,16 @@ public class TmsStationMetadata2Datex2Converter {
                                                                       .withLatitude(point.getLatitude().floatValue()))));
     }
 
-    private static MultilingualString singleValueString(final String str) {
-        return new MultilingualString().withValues(new MultilingualString.Values().withValue(new MultilingualStringValue()
-                                                                                                 .withLang("fi")
-                                                                                                 .withValue(str)));
+    private static MultilingualString getName(final TmsStation station) {
+        return new MultilingualString().withValues(new MultilingualString.Values()
+                                                       .withValue(new MultilingualStringValue()
+                                                                      .withLang("fi")
+                                                                      .withValue(station.getRoadStation().getNameFi()))
+                                                       .withValue(new MultilingualStringValue()
+                                                                      .withLang("sv")
+                                                                      .withValue(station.getRoadStation().getNameSv()))
+                                                       .withValue(new MultilingualStringValue()
+                                                                      .withLang("en")
+                                                                      .withValue(station.getRoadStation().getNameEn())));
     }
 }
