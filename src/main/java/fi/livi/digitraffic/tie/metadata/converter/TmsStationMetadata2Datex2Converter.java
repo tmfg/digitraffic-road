@@ -17,7 +17,6 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Point;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.PointByCoordinates;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.PointCoordinates;
-import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Component
@@ -50,8 +49,7 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MeasurementSiteRecord getMeasurementSiteRecord(final TmsStation station) {
 
-        final fi.livi.digitraffic.tie.metadata.geojson.Point point = CoordinateConverter.convertFromETRS89ToWGS84(
-            AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation()));
+        fi.livi.digitraffic.tie.metadata.geojson.Point point = AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
 
         return new MeasurementSiteRecord()
             .withId(Long.toString(station.getNaturalId()))
