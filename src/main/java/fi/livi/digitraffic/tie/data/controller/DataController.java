@@ -35,6 +35,7 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -56,6 +57,7 @@ public class DataController {
 
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TMS_DATA_PATH = "/tms-data";
+    public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String WEATHER_DATA_PATH = "/weather-data";
 
     // Fluency
@@ -229,6 +231,14 @@ public class DataController {
             boolean lastUpdated) {
         log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return tmsDataService.findPublishableTmsData(lastUpdated);
+    }
+
+    @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE })
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data") })
+    public TmsDataDatex2Response tmsDataDatex2() {
+        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + TMS_DATA_DATEX2_PATH);
+        return tmsDataService.findPublishableTmsDataDatex2();
     }
 
     @ApiOperation("Current data of TMS station (Traffic Measurement System / LAM)")

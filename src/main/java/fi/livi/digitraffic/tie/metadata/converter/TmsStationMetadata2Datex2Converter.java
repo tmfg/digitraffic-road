@@ -22,6 +22,10 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 @Component
 public class TmsStationMetadata2Datex2Converter {
 
+    public static final String MEASUREMENT_SITE_TABLE_REFERENCE = "TMS-measurement-site-table";
+    public static final String MEASUREMENT_SITE_TABLE_VERSION = "1";
+    public static final String MEASUREMENT_SITE_VERSION = "1";
+
     private final InformationStatusEnum informationStatus;
 
     public TmsStationMetadata2Datex2Converter(@Value("${spring.profiles.active}") final String profile) {
@@ -31,7 +35,7 @@ public class TmsStationMetadata2Datex2Converter {
     public D2LogicalModel convert(final List<TmsStation> stations) {
 
         final MeasurementSiteTable dtMeasurementSiteTable =
-            new MeasurementSiteTable().withId("TMS-measurement-site-table").withVersion("1");
+            new MeasurementSiteTable().withId(MEASUREMENT_SITE_TABLE_REFERENCE).withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
         final D2LogicalModel model = new D2LogicalModel().withPayloadPublication(
             new MeasurementSiteTablePublication()
@@ -54,7 +58,7 @@ public class TmsStationMetadata2Datex2Converter {
 
         return new MeasurementSiteRecord()
             .withId(Long.toString(station.getNaturalId()))
-            .withVersion("1")
+            .withVersion(MEASUREMENT_SITE_VERSION)
             .withMeasurementSiteName(getName(station))
             .withMeasurementSiteLocation(
                 new Point().withPointByCoordinates(
