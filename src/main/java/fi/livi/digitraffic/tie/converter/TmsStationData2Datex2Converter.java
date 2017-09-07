@@ -74,16 +74,14 @@ public class TmsStationData2Datex2Converter {
                                               .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_VERSION))
             .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(station.getMeasuredTime()));
 
-        int index = 0;
         for (final SensorValueDto sensorValue : station.getSensorValues()) {
 
             final BasicData data = getBasicData(sensorValue);
 
             if (data != null) {
                 siteMeasurements.withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
-                                                       .withIndex(index)
+                                                       .withIndex(sensorValue.getSensorValueId().intValue())
                                                        .withMeasuredValue(new MeasuredValue().withBasicData(data)));
-                index++;
             } else {
                 skipped.compute(sensorValue.getSensorNameFi(), (k, v) -> v == null ? 1 : v + 1);
             }
