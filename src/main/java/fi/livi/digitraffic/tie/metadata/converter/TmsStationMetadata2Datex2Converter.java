@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 @Component
 public class TmsStationMetadata2Datex2Converter {
 
-    public static final String MEASUREMENT_SITE_TABLE_REFERENCE = "TMSMeasurementSiteTable";
+    public static final String MEASUREMENT_SITE_TABLE_REFERENCE = "DigitrafficFI";
     public static final String MEASUREMENT_SITE_TABLE_VERSION = "1";
     public static final String MEASUREMENT_SITE_VERSION = "1";
 
