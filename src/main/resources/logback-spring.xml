@@ -10,13 +10,13 @@
     </appender>
 
 
-    <appender name="FILE_ELK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="FILE_LOGSTASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>info</level>
         </filter>
-        <file>metadata-elk.log</file>
+        <file>metadata-logstash.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-elk.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>metadata-logstash.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
@@ -69,30 +69,36 @@
     <!-- TMS and weather sensors data -->
     <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- JMS message listener -->
     <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- JMS message configuration -->
     <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- Camera presets images -->
     <logger name="fi.livi.digitraffic.tie.data.service.CameraImageUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- Camera presets data -->
     <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="false">
         <appender-ref ref="FILE_JMS" />
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- debugging log -->
@@ -113,7 +119,7 @@
 
     <root level="INFO" additivity="false">
         <appender-ref ref="FILE" />
-        <appender-ref ref="FILE_ELK" />
+        <appender-ref ref="FILE_LOGSTASH" />
 
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
