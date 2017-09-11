@@ -53,7 +53,7 @@ public class Datex2DataServiceTest extends AbstractTest {
         assertTrue(datex2Repository.findAll().isEmpty());
 
         try {
-            datex2DataService.findAllTrafficDisordersBySituationId(situationId1);
+            datex2DataService.getAllTrafficDisordersBySituationId(situationId1);
             Assert.fail("ObjectNotFoundException should be raised");
         } catch (final ObjectNotFoundException onfe) {
             // OK
@@ -78,7 +78,7 @@ public class Datex2DataServiceTest extends AbstractTest {
 
     private TrafficDisordersDatex2Response findDatex2AndAssert(final String situationId, final boolean found) {
         try {
-            final TrafficDisordersDatex2Response response = datex2DataService.findAllTrafficDisordersBySituationId(situationId);
+            final TrafficDisordersDatex2Response response = datex2DataService.getAllTrafficDisordersBySituationId(situationId);
             assertTrue(found);
 
             final SituationPublication s = getSituationPublication(response);

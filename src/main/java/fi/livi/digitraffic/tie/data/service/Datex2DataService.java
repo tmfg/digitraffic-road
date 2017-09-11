@@ -98,7 +98,7 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public RoadworksDatex2Response findAllRoadworksBySituationId(final String situationId) {
+    public RoadworksDatex2Response getAllRoadworksBySituationId(final String situationId) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, ROADWORK.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -107,7 +107,7 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findAllTrafficDisordersBySituationId(final
+    public TrafficDisordersDatex2Response getAllTrafficDisordersBySituationId(final
     String situationId) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_DISORDER.name());
         if (datex2s.isEmpty()) {

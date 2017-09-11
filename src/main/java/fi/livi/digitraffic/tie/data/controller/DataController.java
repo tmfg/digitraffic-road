@@ -292,7 +292,7 @@ public class DataController {
             @ApiParam(value = "Situation id.", required = true)
             @PathVariable final String situationId) {
         log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.findAllTrafficDisordersBySituationId(situationId);
+        return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
     }
 
     @ApiOperation("Traffic disorder Datex2 messages disorders history")
@@ -330,7 +330,7 @@ public class DataController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable final String situationId) {
         log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.findAllRoadworksBySituationId(situationId);
+        return datex2DataService.getAllRoadworksBySituationId(situationId);
     }
 
     @ApiOperation("Roadwork Datex2 messages disorders history")

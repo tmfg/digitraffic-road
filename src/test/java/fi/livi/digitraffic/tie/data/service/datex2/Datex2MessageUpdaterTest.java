@@ -35,7 +35,7 @@ public class Datex2MessageUpdaterTest extends AbstractTest {
     private MockRestServiceServer server;
 
     @Autowired
-    private RestTemplate restTemplate;// = new RestTemplate();
+    private RestTemplate restTemplate;
 
     private final String datex2Url = "Datex2Url";
 
