@@ -9,10 +9,10 @@ spring.datasource.password=<password>
 # Format : user:password, one by line or separated by comma
 javamelody.authorized-users = username:password
 
-# Lotju-test v2 soap api
-metadata.server.address.tms=<https://LOTJU/LAMMetatiedot/v2>
-metadata.server.address.camera=<https://LOTJU/KameraPerustiedot/v2>
-metadata.server.address.weather=<https://LOTJU/TiesaaPerustiedot/v2>
+# Lotju-test v3 soap api
+metadata.server.address.tms=https://testioag.liikennevirasto.fi/LOTJU/LAMMetatiedot/v3
+metadata.server.address.camera=https://testioag.liikennevirasto.fi/LOTJU/KameraPerustiedot/v3
+metadata.server.address.weather=https://testioag.liikennevirasto.fi/LOTJU/TiesaaPerustiedot/v3
 
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
