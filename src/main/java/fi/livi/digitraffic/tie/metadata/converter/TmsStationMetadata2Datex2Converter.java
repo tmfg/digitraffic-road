@@ -14,8 +14,10 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.HeaderInformation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.InformationStatusEnum;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.InternationalIdentifier;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSiteRecord;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSiteRecordIndexMeasurementSpecificCharacteristics;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSiteTable;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSpecificCharacteristics;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualString;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Point;
@@ -27,6 +29,7 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 @Component
 public class TmsStationMetadata2Datex2Converter {
 
+    public static final String MEASUREMENT_SITE_TABLE_IDENTIFICATION = "DigitrafficFI";
     public static final String MEASUREMENT_SITE_TABLE_VERSION = "1";
     public static final String MEASUREMENT_SITE_RECORD_VERSION = "1";
 
@@ -47,23 +50,22 @@ public class TmsStationMetadata2Datex2Converter {
             .withExchange(new Exchange().withSupplierIdentification(new InternationalIdentifier().withCountry(CountryEnum.FI).withNationalIdentifier("FI")))
             .withPayloadPublication(measurementSiteTablePublication);
 
-        long measurementSiteTableId = 0;
+        final MeasurementSiteTable siteTable =
+            new MeasurementSiteTable()
+                .withId(MEASUREMENT_SITE_TABLE_IDENTIFICATION)
+                .withMeasurementSiteTableIdentification(MEASUREMENT_SITE_TABLE_IDENTIFICATION)
+                .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
+
         for (final TmsStation station : stations) {
-            final MeasurementSiteTable stationTable =
-                new MeasurementSiteTable()
-                    .withId(Long.toString(measurementSiteTableId))
-                    .withMeasurementSiteTableIdentification(Long.toString(station.getNaturalId()))
-                    .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
             final List<RoadStationSensor> sensors =
                 station.getRoadStation().getRoadStationSensors().stream().sorted(RoadStationSensor::compareTo).collect(Collectors.toList());
 
             for (final RoadStationSensor sensor : sensors) {
-                stationTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor));
+                siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor));
             }
-            measurementSiteTablePublication.getMeasurementSiteTable().add(stationTable);
-            measurementSiteTableId++;
         }
+        measurementSiteTablePublication.getMeasurementSiteTable().add(siteTable);
 
         return model;
     }
@@ -73,16 +75,32 @@ public class TmsStationMetadata2Datex2Converter {
         final fi.livi.digitraffic.tie.metadata.geojson.Point point =
             AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
 
-        return new MeasurementSiteRecord()
-            .withId(Long.toString(sensor.getId()))
-            .withMeasurementSiteIdentification(Long.toString(sensor.getNaturalId()))
-            .withVersion(MEASUREMENT_SITE_RECORD_VERSION)
-            .withMeasurementSiteName(getName(sensor))
-            .withMeasurementSiteLocation(
-                new Point().withPointByCoordinates(
-                    new PointByCoordinates().withPointCoordinates(new PointCoordinates()
-                                                                      .withLongitude(point != null && point.getLongitude() != null ? point.getLongitude().floatValue() : 0)
-                                                                      .withLatitude(point != null && point.getLatitude() != null ? point.getLatitude().floatValue() : 0))));
+        final MeasurementSiteRecord measurementSiteRecord =
+            new MeasurementSiteRecord()
+                .withId(Long.toString(sensor.getId()))
+                .withMeasurementSiteIdentification(getMeasurementSiteReference(station, sensor))
+                .withVersion(MEASUREMENT_SITE_RECORD_VERSION)
+                .withMeasurementSiteName(getName(sensor))
+                .withMeasurementSiteLocation(
+                    new Point().withPointByCoordinates(
+                        new PointByCoordinates().withPointCoordinates(
+                            new PointCoordinates()
+                                .withLongitude(point != null && point.getLongitude() != null ? point.getLongitude().floatValue() : 0)
+                                .withLatitude(point != null && point.getLatitude() != null ? point.getLatitude().floatValue() : 0))));
+
+        if (sensor.getAccuracy() != null) {
+            measurementSiteRecord.withMeasurementSpecificCharacteristics(
+                new MeasurementSiteRecordIndexMeasurementSpecificCharacteristics()
+                    .withIndex(1)
+                    .withMeasurementSpecificCharacteristics(
+                        new MeasurementSpecificCharacteristics()
+                            .withAccuracy(sensor.getAccuracy() != null ? sensor.getAccuracy().floatValue() : 0)));
+        }
+        return measurementSiteRecord;
+    }
+
+    public static String getMeasurementSiteReference(final TmsStation station, final RoadStationSensor sensor) {
+        return Long.toString(station.getNaturalId()) + "-" + Long.toString(sensor.getNaturalId());
     }
 
     private static MultilingualString getName(final RoadStationSensor sensor) {

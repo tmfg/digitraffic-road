@@ -16,9 +16,12 @@ import fi.livi.digitraffic.tie.data.dto.tms.TmsStationDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.BasicData;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.CountryEnum;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.Exchange;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.HeaderInformation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.InformationStatusEnum;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.InternationalIdentifier;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasuredValue;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.MeasurementSiteRecordVersionedReference;
@@ -53,17 +56,44 @@ public class TmsStationData2Datex2Converter {
                                            .withConfidentiality(ConfidentialityValueEnum.NO_RESTRICTION)
                                            .withInformationStatus(informationStatus))
                 .withMeasurementSiteTableReference(new MeasurementSiteTableVersionedReference()
-                                                       .withId(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_TABLE_REFERENCE)
+                                                       .withId(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_TABLE_IDENTIFICATION)
                                                        .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_TABLE_VERSION));
 
         for (final TmsStationDto station : data.getTmsStations()) {
-            publication.withSiteMeasurements(getSiteMeasurements(station, skippedSensorValues));
+            for (SensorValueDto sensorValue : station.getSensorValues()) {
+                publication.withSiteMeasurements(getSiteMeasurement(station, sensorValue, skippedSensorValues));
+            }
         }
 
         skippedSensorValues.forEach((k, v) -> log.warn("Skipping unsupported sensor while building datex2 message. SensorName: {}, " +
                                                        "skipped sensor values: {}", k, v));
 
-        return new D2LogicalModel().withPayloadPublication(publication);
+        return new D2LogicalModel()
+            .withPayloadPublication(publication)
+            .withExchange(new Exchange().withSupplierIdentification(new InternationalIdentifier().withCountry(CountryEnum.FI).withNationalIdentifier("FI")));
+    }
+
+    private SiteMeasurements getSiteMeasurement(final TmsStationDto station, final SensorValueDto sensorValue, final HashMap<String, Long> skipped) {
+
+        final BasicData data = getBasicData(sensorValue);
+
+        if (data != null) {
+            return new SiteMeasurements()
+                .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
+                                                  .withId(getMeasurementSiteReference(station, sensorValue))
+                                                  .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_RECORD_VERSION))
+                .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(station.getMeasuredTime()))
+                .withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
+                                       .withIndex(1) // Only one measurement per sensor
+                                       .withMeasuredValue(new MeasuredValue().withBasicData(data)));
+        } else {
+            skipped.compute(sensorValue.getSensorNameFi(), (k, v) -> v == null ? 1 : v + 1);
+        }
+        return null;
+    }
+
+    private static String getMeasurementSiteReference(final TmsStationDto station, final SensorValueDto sensorValue) {
+        return Long.toString(station.getTmsStationNaturalId()) + "-" + Long.toString(sensorValue.getSensorNaturalId());
     }
 
     private static SiteMeasurements getSiteMeasurements(final TmsStationDto station, final HashMap<String, Long> skipped) {
@@ -71,7 +101,7 @@ public class TmsStationData2Datex2Converter {
         final SiteMeasurements siteMeasurements = new SiteMeasurements()
             .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
                                               .withId(Long.toString(station.getTmsStationNaturalId()))
-                                              .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_VERSION))
+                                              .withVersion("1"))
             .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(station.getMeasuredTime()));
 
         for (final SensorValueDto sensorValue : station.getSensorValues()) {
