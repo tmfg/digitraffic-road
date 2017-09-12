@@ -9,8 +9,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,27 +50,22 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnControllersEnabled
 public class DataController {
-    private static final Logger log = LoggerFactory.getLogger(DataController.class);
-
-    public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String TMS_DATA_PATH = "/tms-data";
-    public static final String WEATHER_DATA_PATH = "/weather-data";
+    static final String CAMERA_DATA_PATH = "/camera-data";
+    static final String TMS_DATA_PATH = "/tms-data";
+    static final String WEATHER_DATA_PATH = "/weather-data";
 
     // Fluency
-    public static final String FLUENCY_CURRENT_PATH = "/fluency-current";
-    public static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
-    public static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
+    static final String FLUENCY_CURRENT_PATH = "/fluency-current";
+    static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
+    static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
 
-    public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
+    static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
-//    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
+    private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
 
-    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+    private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
-    public static final String LAST_UPDATED_PARAM = "lastUpdated";
-
-    private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
+    static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private final TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
@@ -109,7 +102,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
@@ -120,7 +112,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "/" + id);
         return trafficFluencyService.listCurrentTrafficFluencyData(id);
     }
 
@@ -131,7 +122,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
@@ -142,7 +132,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "/" + id);
         return dayDataService.listPreviousDayHistoryData(id);
     }
 
@@ -161,7 +150,6 @@ public class DataController {
             @Range(min = 1, max = 12)
             @RequestParam
             final int month) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DATA_PATH + "/" + id + "?year=" + year + "&month=" + month);
         return dayDataService.listHistoryData(id, year, month);
     }
 
@@ -172,7 +160,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
     }
 
@@ -183,7 +170,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/link/" + id);
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(id);
     }
 
@@ -194,7 +180,6 @@ public class DataController {
             @ApiParam(value = "TMS station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/tms/" + id);
         return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
     }
 
@@ -205,7 +190,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return cameraDataService.findPublishableCameraStationsData(lastUpdated);
     }
 
@@ -216,7 +200,6 @@ public class DataController {
             @ApiParam(value = "Camera id", required = true)
             @PathVariable
             final String id) {
-        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "/" + id);
         return cameraDataService.findPublishableCameraStationsData(id);
     }
 
@@ -227,7 +210,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return tmsDataService.findPublishableTmsData(lastUpdated);
     }
 
@@ -238,7 +220,6 @@ public class DataController {
             @ApiParam(value = "TMS Station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "/" + id);
         return tmsDataService.findPublishableTmsData(id);
     }
 
@@ -249,7 +230,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return weatherService.findPublishableWeatherData(lastUpdated);
     }
 
@@ -260,7 +240,6 @@ public class DataController {
             @ApiParam(value = "Weather Station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
         return weatherService.findPublishableWeatherData(id);
     }
 
@@ -271,7 +250,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
         return forecastSectionDataService.getForecastSectionWeatherData(lastUpdated);
     }
 
@@ -279,7 +257,6 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2() {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH);
         return datex2DataService.findActiveDatex2Response();
     }
 
@@ -291,7 +268,6 @@ public class DataController {
             @ApiParam(value = "Situation id.", required = true)
             @PathVariable
             String situationId) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "/" + situationId);
         return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
     }
 
@@ -301,7 +277,7 @@ public class DataController {
                             @ApiResponse(code = 400, message = "Invalid parameter"),
                             @ApiResponse(code = 404, message = "Situation id not found") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2OfHistory(
-            @ApiParam(value = "Situation id", required = false)
+            @ApiParam(value = "Situation id")
             @RequestParam(required = false)
             final String situationId,
             @ApiParam(value = "Year (>2014)", required = true)
@@ -310,7 +286,6 @@ public class DataController {
             @ApiParam(value = "Month (1-12)", required = true)
             @RequestParam @Range(min = 1, max = 12)
             final int month) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
         return datex2DataService.findDatex2Responses(situationId, year, month);
     }
 }
