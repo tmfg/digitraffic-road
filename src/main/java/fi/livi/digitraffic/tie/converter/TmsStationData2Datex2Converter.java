@@ -96,30 +96,6 @@ public class TmsStationData2Datex2Converter {
         return Long.toString(station.getTmsStationNaturalId()) + "-" + Long.toString(sensorValue.getSensorNaturalId());
     }
 
-    private static SiteMeasurements getSiteMeasurements(final TmsStationDto station, final HashMap<String, Long> skipped) {
-
-        final SiteMeasurements siteMeasurements = new SiteMeasurements()
-            .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
-                                              .withId(Long.toString(station.getTmsStationNaturalId()))
-                                              .withVersion("1"))
-            .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(station.getMeasuredTime()));
-
-        for (final SensorValueDto sensorValue : station.getSensorValues()) {
-
-            final BasicData data = getBasicData(sensorValue);
-
-            if (data != null) {
-                siteMeasurements.withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
-                                                       .withIndex(sensorValue.getSensorValueId().intValue())
-                                                       .withMeasuredValue(new MeasuredValue().withBasicData(data)));
-            } else {
-                skipped.compute(sensorValue.getSensorNameFi(), (k, v) -> v == null ? 1 : v + 1);
-            }
-        }
-
-        return siteMeasurements;
-    }
-
     private static BasicData getBasicData(final SensorValueDto sensorValue) {
         final String sensorName = sensorValue.getSensorNameFi();
 
