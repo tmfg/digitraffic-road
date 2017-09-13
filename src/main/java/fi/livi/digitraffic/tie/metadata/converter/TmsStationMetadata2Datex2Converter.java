@@ -77,7 +77,7 @@ public class TmsStationMetadata2Datex2Converter {
 
         final MeasurementSiteRecord measurementSiteRecord =
             new MeasurementSiteRecord()
-                .withId(Long.toString(sensor.getId()))
+                .withId(getMeasurementSiteReference(station, sensor))
                 .withMeasurementSiteIdentification(getMeasurementSiteReference(station, sensor))
                 .withVersion(MEASUREMENT_SITE_RECORD_VERSION)
                 .withMeasurementSiteName(getName(sensor))
