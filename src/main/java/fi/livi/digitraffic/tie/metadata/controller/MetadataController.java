@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationsDatex2Response;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
@@ -53,7 +51,6 @@ public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(MetadataController.class);
 
     public static final String TMS_STATIONS_PATH = "/tms-stations";
-    public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_STATIONS_TMS_NUMBER_PATH = TMS_STATIONS_PATH + "/tms-number";
     public static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
     public static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
@@ -111,20 +108,6 @@ public class MetadataController {
         final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
 
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
-    }
-
-    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
-    public TmsStationsDatex2Response tmsStationsDatex2(
-        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
-        @RequestParam(value = "state", required = false, defaultValue = "active")
-        final String stateString) {
-        log.info(REQUEST_LOG_PREFIX + TMS_STATIONS_DATEX2_PATH);
-
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
-
-        return tmsStationService.findAllPublishableTmsStationsAsDatex2(state);
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")

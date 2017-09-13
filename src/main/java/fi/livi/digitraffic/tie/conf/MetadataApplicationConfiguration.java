@@ -38,6 +38,7 @@ import oracle.ucp.jdbc.PoolDataSourceFactory;
 public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
+    public static final String API_BETA_BASE_PATH = "/api/beta";
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_PLAIN_WEBSOCKETS_PART_PATH = "/plain-websockets";
