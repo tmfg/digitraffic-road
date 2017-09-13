@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>metadata</artifactId>
-    <version>1.10.0</version>
+    <version>1.11.0</version>
     <packaging>jar</packaging>
 
     <name>dt-metadata</name>
@@ -22,6 +22,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     </properties>
 
     <!-- Download OJDBC7.jar, ons.jar and ucp.jar and install drivers to local repo
@@ -31,6 +32,28 @@
     <repositories>
         <!-- PLACEHOLDER -->
     </repositories>
+
+    <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${ch.qos.logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${ch.qos.logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-access</artifactId>
+                <version>${ch.qos.logback.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
 
     <dependencies>
         <dependency>
@@ -223,6 +246,13 @@
             <groupId>org.osgeo</groupId>
             <artifactId>proj4j</artifactId>
             <version>0.1.0</version>
+        </dependency>
+
+        <!-- Logging in JSON format for ELK-stack -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>4.11</version>
         </dependency>
 
         <!-- JavaMelody -->
