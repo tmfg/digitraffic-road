@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationsDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
 public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
@@ -30,7 +30,7 @@ public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHtt
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return Arrays.asList(TrafficDisordersDatex2Response.class, TmsStationsDatex2Response.class, TmsDataDatex2Response.class).contains(clazz);
+        return Arrays.asList(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class, TmsDataDatex2Response.class).contains(clazz);
     }
 
     @Override

@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationsDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,7 +47,7 @@ public class BetaController {
     @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
-    public TmsStationsDatex2Response tmsStationsDatex2(
+    public TmsStationDatex2Response tmsStationsDatex2(
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
