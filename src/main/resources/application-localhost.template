@@ -1,20 +1,23 @@
 # Http-server port
 server.port = 9010
 
-# Datasource Vagrant 11g Oracle datasource
-spring.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
+# Datasource
+spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
 spring.datasource.username=<username>
 spring.datasource.password=<password>
 
 # Format : user:password, one by line or separated by comma
 javamelody.authorized-users = username:password
 
-# Lotju v3 soap api
+# Lotju-test v3 soap api
 metadata.server.address.tms=https://testioag.liikennevirasto.fi/LOTJU/LAMMetatiedot/v3
 metadata.server.address.camera=https://testioag.liikennevirasto.fi/LOTJU/KameraPerustiedot/v3
 metadata.server.address.weather=https://testioag.liikennevirasto.fi/LOTJU/TiesaaPerustiedot/v3
 
-# Metadata update frequencies in ms
+# Road conditions api
+roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
+
+# Metadata update frequencies in ms, 43200000 ms = 12 h
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
@@ -39,13 +42,9 @@ camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_
 camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
 camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 
-# Road conditions api
-roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
-
-# birch.nctr.co.uk
-traveltime.PKS.medians.url=https://birch.nctr.co.uk.PUPPUA/xml/pks_mtp_ss.xml
-traveltime.PKS.individual.url=https://birch.nctr.co.uk.PUPPUA/xml/pks_mtp_obs.xml
-traveltime.PKS.metadata.url=https://birch.nctr.co.uk.PUPPUA/xml/pks_static12.xml
+traveltime.PKS.medians.url=https://birch.nctr.co.uk/xml/pks_mtp_ss.xml
+traveltime.PKS.individual.url=https://birch.nctr.co.uk/xml/pks_mtp_obs.xml
+traveltime.PKS.metadata.url=https://birch.nctr.co.uk/xml/pks_static12.xml
 traveltime.PKS.username=
 traveltime.PKS.password=
 
@@ -53,26 +52,26 @@ Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 
 # JMS settings
 
-# Sonja
+# JMS Sonic 2013 8.6.0
 jms.connectionUrls=tcp://ip:port,tcp://ip:port
 jms.userId=<username>
 jms.password=<password>
 
-# Sonja for datex2
-jms.datex2.connectionUrls=
-jms.datex2.userId=
-jms.datex2.password=
+# Old sonic test for datex2
+jms.datex2.connectionUrls=tcp://ip:port,tcp://ip:port
+jms.datex2.userId=<password>
+jms.datex2.password=<password>
 
-# JMS topics
+# JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-controllers.enabled=false
+# controllers.enabled=false
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=true
@@ -81,16 +80,16 @@ quartz.enabled=true
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false
-jms.datex2.enabled=false
+jms.datex2.enabled=true
 
-# Websocket stream of TMS sensor values, enabled only for web-app
-websocket.tms.enabled=false
+# Websocket stream of LAM sensor values
+websocket.tms.enabled=true
 
-# TMC locations url
-metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
+# Disable jobs. Format: quartz.{jobClassName}.enabled = false
+# Ie. quartz.CameraUpdateJob.enabled = false
 
 # Developer life improvements
-#logging.level.root=INFO
+logging.level.root=INFO
 #logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

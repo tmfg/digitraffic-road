@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jaxb2;
 
+import java.util.Arrays;
+
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 
@@ -8,11 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
-public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
+public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
 
-    private static final Logger log = LoggerFactory.getLogger(Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(Jaxb2Datex2ResponseHttpMessageConverter.class);
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
@@ -26,7 +30,7 @@ public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jax
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return clazz.equals(TrafficDisordersDatex2Response.class);
+        return Arrays.asList(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class, TmsDataDatex2Response.class).contains(clazz);
     }
 
     @Override
