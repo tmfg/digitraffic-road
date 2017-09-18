@@ -44,7 +44,7 @@ public class BetaController {
         this.tmsDataService = tmsDataService;
     }
 
-    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationDatex2Response tmsStationsDatex2(
@@ -58,7 +58,7 @@ public class BetaController {
     }
 
 
-    @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
+    @ApiOperation("Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data") })
     public TmsDataDatex2Response tmsDataDatex2() {
