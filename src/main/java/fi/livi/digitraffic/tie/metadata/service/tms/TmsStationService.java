@@ -21,10 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
-import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
@@ -53,7 +51,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
     private final RoadAddressRepository roadAddressRepository;
-    private final TmsStationMetadata2Datex2Converter tmsStationMetadata2Datex2Converter;
     private ZonedDateTime metadataLastChecked;
 
     @Autowired
@@ -62,8 +59,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                              final RoadStationService roadStationService,
                              final RoadDistrictService roadDistrictService,
                              final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
-                             final RoadAddressRepository roadAddressRepository,
-                             final TmsStationMetadata2Datex2Converter tmsStationMetadata2Datex2Converter) {
+                             final RoadAddressRepository roadAddressRepository) {
         super(log);
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
@@ -71,15 +67,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
         this.roadAddressRepository = roadAddressRepository;
-        this.tmsStationMetadata2Datex2Converter = tmsStationMetadata2Datex2Converter;
-    }
-
-    @Transactional(readOnly = true)
-    public TmsStationDatex2Response findAllPublishableTmsStationsAsDatex2(final TmsState tmsState) {
-        final List<TmsStation> stations = findStations(false, tmsState);
-
-        return new TmsStationDatex2Response().withD2LogicalModel(tmsStationMetadata2Datex2Converter.convert(stations,
-                                                                                                            getMetadataLastUpdated()));
     }
 
     @Transactional(readOnly = true)
@@ -330,7 +317,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     }
 
-    private ZonedDateTime getMetadataLastUpdated() {
+    public ZonedDateTime getMetadataLastUpdated() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA);
         return getNewest(sensorsUpdated, stationsUpdated);
