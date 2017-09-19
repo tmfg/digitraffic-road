@@ -78,7 +78,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     public TmsStationDatex2Response findAllPublishableTmsStationsAsDatex2(final TmsState tmsState) {
         final List<TmsStation> stations = findStations(false, tmsState);
 
-        return new TmsStationDatex2Response().withD2LogicalModel(tmsStationMetadata2Datex2Converter.convert(stations));
+        return new TmsStationDatex2Response().withD2LogicalModel(tmsStationMetadata2Datex2Converter.convert(stations,
+                                                                                                            getMetadataLastUpdated()));
     }
 
     @Transactional(readOnly = true)

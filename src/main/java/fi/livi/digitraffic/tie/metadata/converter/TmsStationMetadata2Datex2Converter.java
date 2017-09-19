@@ -1,11 +1,13 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.ConfidentialityValueEnum;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.CountryEnum;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
@@ -39,12 +41,18 @@ public class TmsStationMetadata2Datex2Converter {
         this.informationStatus = profile.equals("koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
     }
 
-    public D2LogicalModel convert(final List<TmsStation> stations) {
+    public D2LogicalModel convert(final List<TmsStation> stations, final ZonedDateTime metadataLastUpdated) {
 
-        final MeasurementSiteTablePublication measurementSiteTablePublication = new MeasurementSiteTablePublication()
-            .withHeaderInformation(new HeaderInformation()
-                                       .withConfidentiality(ConfidentialityValueEnum.NO_RESTRICTION)
-                                       .withInformationStatus(informationStatus));
+        final MeasurementSiteTablePublication measurementSiteTablePublication =
+            new MeasurementSiteTablePublication()
+                .withPublicationTime(DateHelper.toXMLGregorianCalendar(metadataLastUpdated))
+                .withPublicationCreator(new InternationalIdentifier()
+                                            .withCountry(CountryEnum.FI)
+                                            .withNationalIdentifier("FI"))
+                .withLang("Finnish")
+                .withHeaderInformation(new HeaderInformation()
+                                           .withConfidentiality(ConfidentialityValueEnum.NO_RESTRICTION)
+                                           .withInformationStatus(informationStatus));
 
         final D2LogicalModel model = new D2LogicalModel()
             .withExchange(new Exchange().withSupplierIdentification(new InternationalIdentifier().withCountry(CountryEnum.FI).withNationalIdentifier("FI")))
@@ -77,8 +85,8 @@ public class TmsStationMetadata2Datex2Converter {
 
         final MeasurementSiteRecord measurementSiteRecord =
             new MeasurementSiteRecord()
-                .withId(getMeasurementSiteReference(station, sensor))
-                .withMeasurementSiteIdentification(getMeasurementSiteReference(station, sensor))
+                .withId(getMeasurementSiteReference(station.getNaturalId(), sensor.getNaturalId()))
+                .withMeasurementSiteIdentification(getMeasurementSiteReference(station.getNaturalId(), sensor.getNaturalId()))
                 .withVersion(MEASUREMENT_SITE_RECORD_VERSION)
                 .withMeasurementSiteName(getName(sensor))
                 .withMeasurementSiteLocation(
@@ -99,8 +107,8 @@ public class TmsStationMetadata2Datex2Converter {
         return measurementSiteRecord;
     }
 
-    public static String getMeasurementSiteReference(final TmsStation station, final RoadStationSensor sensor) {
-        return Long.toString(station.getNaturalId()) + "-" + Long.toString(sensor.getNaturalId());
+    public static String getMeasurementSiteReference(final Long stationNaturalId, final Long sensorNaturalId) {
+        return String.format("%d-%d", stationNaturalId, sensorNaturalId);
     }
 
     private static MultilingualString getName(final RoadStationSensor sensor) {
