@@ -53,7 +53,7 @@ public class JavaMelodyConfiguration implements ServletContextInitializer {
         final MonitoringFilter filter = new MonitoringFilter();
         javaMelody.setFilter(filter);
         javaMelody.setAsyncSupported(true);
-        javaMelody.setName("JavaMelody");
+        javaMelody.setName("net.bull.javamelody.MetaMelody");
         javaMelody.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 
         // see the list of parameters:

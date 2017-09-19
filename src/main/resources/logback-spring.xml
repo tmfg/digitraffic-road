@@ -116,11 +116,11 @@
     </logger>
 
     <!-- debugging log -->
-    <logger name="javamelody" additivity="true">
+    <logger name="net.bull.javamelody" additivity="true">
         <level value="ERROR" />
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
-    <logger name="javamelody" additivity="false">
+    <logger name="net.bull.javamelody" additivity="false">
         <appender-ref ref="NULL" />
     </logger>
 
