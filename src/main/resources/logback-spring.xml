@@ -9,6 +9,7 @@
         </encoder>
     </appender>
 
+    <appender name="NULL" class="ch.qos.logback.core.helpers.NOPAppender" />
 
     <appender name="FILE_LOGSTASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -115,12 +116,12 @@
     </logger>
 
     <!-- debugging log -->
-    <logger name="net.bull.javamelody" additivity="false">
+    <logger name="javamelody" additivity="true">
         <level value="ERROR" />
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
-    <logger name="net.bull.javamelody" additivity="false">
-        <level value="INFO" />
+    <logger name="javamelody" additivity="false">
+        <appender-ref ref="NULL" />
     </logger>
 
     <!-- PerformanceMonitorAspect log -->
