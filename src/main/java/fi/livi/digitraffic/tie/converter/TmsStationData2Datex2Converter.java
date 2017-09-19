@@ -52,6 +52,11 @@ public class TmsStationData2Datex2Converter {
 
         final MeasuredDataPublication publication =
             new MeasuredDataPublication()
+                .withPublicationTime(DateHelper.toXMLGregorianCalendar(data.getDataUpdatedTime()))
+                .withPublicationCreator(new InternationalIdentifier()
+                                            .withCountry(CountryEnum.FI)
+                                            .withNationalIdentifier("FI"))
+                .withLang("Finnish")
                 .withHeaderInformation(new HeaderInformation()
                                            .withConfidentiality(ConfidentialityValueEnum.NO_RESTRICTION)
                                            .withInformationStatus(informationStatus))
@@ -60,7 +65,7 @@ public class TmsStationData2Datex2Converter {
                                                        .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_TABLE_VERSION));
 
         for (final TmsStationDto station : data.getTmsStations()) {
-            for (SensorValueDto sensorValue : station.getSensorValues()) {
+            for (final SensorValueDto sensorValue : station.getSensorValues()) {
                 publication.withSiteMeasurements(getSiteMeasurement(station, sensorValue, skippedSensorValues));
             }
         }
@@ -80,7 +85,7 @@ public class TmsStationData2Datex2Converter {
         if (data != null) {
             return new SiteMeasurements()
                 .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
-                                                  .withId(getMeasurementSiteReference(station, sensorValue))
+                                                  .withId(TmsStationMetadata2Datex2Converter.getMeasurementSiteReference(station.getTmsStationNaturalId(), sensorValue.getSensorNaturalId()))
                                                   .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_RECORD_VERSION))
                 .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(station.getMeasuredTime()))
                 .withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
@@ -90,10 +95,6 @@ public class TmsStationData2Datex2Converter {
             skipped.compute(sensorValue.getSensorNameFi(), (k, v) -> v == null ? 1 : v + 1);
         }
         return null;
-    }
-
-    private static String getMeasurementSiteReference(final TmsStationDto station, final SensorValueDto sensorValue) {
-        return Long.toString(station.getTmsStationNaturalId()) + "-" + Long.toString(sensorValue.getSensorNaturalId());
     }
 
     private static BasicData getBasicData(final SensorValueDto sensorValue) {
