@@ -67,54 +67,68 @@
     </appender>
 
     <!-- TMS and weather sensors data -->
-    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
+
     <!-- JMS message listener -->
-    <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.data.jms" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.jms" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- JMS message configuration -->
-    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
-    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- Camera presets images -->
-    <logger name="fi.livi.digitraffic.tie.data.service.CameraImageUpdateService" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.data.service.CameraImageUpdateService" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.service.CameraImageUpdateService" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- Camera presets data -->
-    <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="true">
         <appender-ref ref="FILE_JMS" />
+    </logger>
+    <logger name="fi.livi.digitraffic.tie.data.service.CameraDataUpdateService" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <!-- debugging log -->
     <logger name="net.bull.javamelody" additivity="false">
         <level value="ERROR" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
+        <appender-ref ref="FILE_LOGSTASH" />
+    </logger>
+    <logger name="net.bull.javamelody" additivity="false">
+        <level value="INFO" />
     </logger>
 
     <!-- PerformanceMonitorAspect log -->
-    <logger name="PerformanceMonitor" additivity="false">
+    <logger name="PerformanceMonitor" additivity="true">
         <appender-ref ref="FILE_PERFORMANCE_MONITOR" />
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
+    </logger>
+    <logger name="PerformanceMonitor" additivity="false">
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <root level="INFO" additivity="false">
