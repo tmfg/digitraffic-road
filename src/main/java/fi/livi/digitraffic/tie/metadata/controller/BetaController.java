@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -34,13 +34,13 @@ public class BetaController {
 
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
 
-    private final TmsStationService tmsStationService;
+    private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataService tmsDataService;
 
     @Autowired
-    public BetaController(final TmsStationService tmsStationService,
+    public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataService tmsDataService) {
-        this.tmsStationService = tmsStationService;
+        this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataService = tmsDataService;
     }
 
@@ -54,7 +54,7 @@ public class BetaController {
 
         final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
 
-        return tmsStationService.findAllPublishableTmsStationsAsDatex2(state);
+        return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(state);
     }
 
 
