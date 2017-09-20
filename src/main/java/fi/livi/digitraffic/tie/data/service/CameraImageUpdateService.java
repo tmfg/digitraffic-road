@@ -22,6 +22,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @Service
@@ -53,75 +54,79 @@ public class CameraImageUpdateService {
     @Transactional(readOnly = true)
     public long deleteAllImagesForNonPublishablePresets() {
         List<String> presetIdsToDelete = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
-        return presetIdsToDelete.stream().filter(presetId -> deleteImageQuietly(getPresetImageName(presetId))).count();
+        return presetIdsToDelete.stream().filter(presetId -> deleteImage(getPresetImageName(presetId))).count();
     }
 
     @Transactional
     public boolean handleKuva(final Kuva kuva) {
+        boolean rval;
 
         log.info("Handling {}", ToStringHelper.toString(kuva));
+
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
 
-        // Update preset attributes
-        updateCameraPreset(cameraPreset, kuva);
-
-        // Download image from http-server and upload it to sftp-server
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
-        if (isPublicCameraPreset(cameraPreset)) {
-
-            // Read the image
-            byte[] image = null;
-            for (int readTries = 4; readTries >= 0; readTries--) {
-                try {
-                    image = readImage(kuva.getUrl(), filename);
-                    if (image.length > 0) {
-                        break;
-                    } else {
-                        log.warn("Reading image for presetId {} from {} to sftp server path {} returned 0 bytes. {} tries left.",
-                            presetId, kuva.getUrl(), getImageFullPath(filename), readTries);
-                    }
-                } catch (final Exception e) {
-                    log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getMessage());
-                }
-            }
-            if (image == null) {
-                log.error("Reading image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
-                return false;
-            }
-
-            // Write the image
-            boolean writtenSuccessfully = false;
-            for (int writeTries = 4; writeTries >= 0; writeTries--) {
-                try {
-                    writeImage(image, filename);
-                    writtenSuccessfully = true;
-                    break;
-                } catch (final Exception e) {
-                    log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getMessage());
-                }
-            }
-            if (!writtenSuccessfully) {
-                log.error("Writing image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
-                return false;
-            }
-            return true;
-        } else {
-
-            // Delete the image
-            if (cameraPreset == null) {
-                log.info("Could not update non existing camera preset for kuva {}", ToStringHelper.toString(kuva));
-                log.info("Deleting missing preset's {} remote image {}", presetId, getImageFullPath(filename));
-            } else {
-                log.info("Deleting hidden preset's {} remote image {}", presetId, getImageFullPath(filename));
-            }
-
-            return deleteImageQuietly(filename);
+        if (cameraPreset != null) {
+            rval = saveKuva(kuva, presetId, filename);
+        }
+        else {
+            rval = deleteKuva(presetId, filename);
         }
 
+        updateCameraPreset(cameraPreset, kuva);
+
+        return rval;
+    }
+
+    private boolean deleteKuva(String presetId, String filename) {
+
+        log.info("Deleting preset's {} remote image {}. The image is not publishable or preset was not included in previous run of {}", presetId, getImageFullPath(filename),
+            CameraMetadataUpdateJob.class.getName());
+
+        return deleteImage(filename);
+    }
+
+    private boolean saveKuva(Kuva kuva, String presetId, String filename) {
+        // Read the image
+        byte[] image = null;
+        for (int readTries = 4; readTries >= 0; readTries--) {
+            try {
+                image = readImage(kuva.getUrl(), filename);
+                if (image.length > 0) {
+                    break;
+                } else {
+                    log.warn("Reading image for presetId {} from {} to sftp server path {} returned 0 bytes. {} tries left.",
+                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries);
+                }
+            } catch (final Exception e) {
+                log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                    presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getMessage());
+            }
+        }
+        if (image == null) {
+            log.error("Reading image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
+            return false;
+        }
+
+        // Write the image
+        boolean writtenSuccessfully = false;
+        for (int writeTries = 4; writeTries >= 0; writeTries--) {
+            try {
+                writeImage(image, filename);
+                writtenSuccessfully = true;
+                break;
+            } catch (final Exception e) {
+                log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                    presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getMessage());
+            }
+        }
+        if (!writtenSuccessfully) {
+            log.error("Writing image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
+            return false;
+        }
+        return true;
     }
 
     private static boolean isPublicCameraPreset(final CameraPreset cameraPreset) {
@@ -165,7 +170,7 @@ public class CameraImageUpdateService {
         }
     }
 
-    private boolean deleteImageQuietly(final String deleteImageFileName) {
+    private boolean deleteImage(final String deleteImageFileName) {
         try (final Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath) ) {
