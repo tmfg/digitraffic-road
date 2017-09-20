@@ -91,6 +91,7 @@ public class LotjuWeatherStationMetadataService {
         @Override
         public Integer call() throws Exception {
             final List<TiesaaLaskennallinenAnturiVO> anturis = lotjuWeatherStationClient.getTiesaaAsemanLaskennallisetAnturit(tiesaaAsemaLotjuId);
+            // FIXME DPO-311 Tässä muokataan rinnakkain Map:ia, joka ei ole threadsafe.
             tiesaaAnturisMappedByRwsLotjuId.put(tiesaaAsemaLotjuId, anturis);
             return anturis.size();
         }

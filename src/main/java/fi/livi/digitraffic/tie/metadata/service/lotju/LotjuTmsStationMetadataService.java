@@ -52,7 +52,7 @@ public class LotjuTmsStationMetadataService {
 
         StopWatch start = StopWatch.createStarted();
 
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
         CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
         for (final Long tmsLotjuId : tmsLotjuIds) {
@@ -94,6 +94,7 @@ public class LotjuTmsStationMetadataService {
         @Override
         public Integer call() throws Exception {
             final List<LamLaskennallinenAnturiVO> anturis = lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId);
+            // FIXME DPO-311 Tässä muokataan rinnakkain Map:ia, joka ei ole threadsafe.
             currentLamAnturisMappedByTmsLotjuId.put(tmsLotjuId, anturis);
             return anturis.size();
         }

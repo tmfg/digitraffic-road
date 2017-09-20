@@ -47,7 +47,7 @@ public class LotjuCameraStationMetadataService {
 
         StopWatch start = StopWatch.createStarted();
         final AtomicInteger countEsiasentos = new AtomicInteger();
-        ExecutorService executor = Executors.newFixedThreadPool(3 );
+        ExecutorService executor = Executors.newFixedThreadPool(1 );
         CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
         for (final KameraVO kamera : kamerat) {
@@ -106,8 +106,10 @@ public class LotjuCameraStationMetadataService {
                         Pair<KameraVO, List<EsiasentoVO>> kameraPair = lotjuIdToKameraAndEsiasentoMap.get(kamera.getId());
                         if (kameraPair == null) {
                             kameraPair = Pair.of(kamera, new ArrayList<EsiasentoVO>());
+                            // FIXME DPO-311 Tässä muokataan rinnakkain Map:ia, joka ei ole threadsafe.
                             lotjuIdToKameraAndEsiasentoMap.put(kamera.getId(), kameraPair);
                         }
+                        // FIXME DPO-311 Tässä muokataan rinnakkain ArrayList:ia, joka ei ole thread safe
                         kameraPair.getRight().add(esiasento);
                     } else {
                         log.error("Invalid cameraPresetId for {} and {}",
