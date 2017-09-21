@@ -35,6 +35,11 @@ public class TmsStationDatex2Service {
             tmsStationMetadata2Datex2Converter.convert(stations,tmsStationService.getMetadataLastUpdated()));
     }
 
+    @Transactional(readOnly = true)
+    public List<TmsStation> findAllPublishableTmsStations() {
+        return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+    }
+
     private List<TmsStation> findStations(final TmsState tmsState) {
 
         switch(tmsState) {

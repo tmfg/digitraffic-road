@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.converter.TmsStationData2Datex2Converter;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsStationDto;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
@@ -27,24 +25,14 @@ public class TmsDataService {
     private final TmsStationService tmsStationService;
     private final RoadStationSensorService roadStationSensorService;
     private final RoadStationRepository roadStationRepository;
-    private final TmsStationData2Datex2Converter tmsStationData2Datex2Converter;
 
     @Autowired
     public TmsDataService(final TmsStationService tmsStationService,
                           final RoadStationSensorService roadStationSensorService,
-                          final RoadStationRepository roadStationRepository,
-                          final TmsStationData2Datex2Converter tmsStationData2Datex2Converter) {
+                          final RoadStationRepository roadStationRepository) {
         this.tmsStationService = tmsStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationRepository = roadStationRepository;
-        this.tmsStationData2Datex2Converter = tmsStationData2Datex2Converter;
-    }
-
-    @Transactional(readOnly = true)
-    public TmsDataDatex2Response findPublishableTmsDataDatex2() {
-        final TmsRootDataObjectDto tmsData = findPublishableTmsData(false);
-
-        return new TmsDataDatex2Response().withD2LogicalModel(tmsStationData2Datex2Converter.convert(tmsData));
     }
 
     @Transactional(readOnly = true)

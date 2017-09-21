@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
-import fi.livi.digitraffic.tie.data.service.TmsDataService;
+import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
@@ -35,13 +35,13 @@ public class BetaController {
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
-    private final TmsDataService tmsDataService;
+    private final TmsDataDatex2Service tmsDataDatex2Service;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
-                          final TmsDataService tmsDataService) {
+                          final TmsDataDatex2Service tmsDataDatex2Service) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
-        this.tmsDataService = tmsDataService;
+        this.tmsDataDatex2Service = tmsDataDatex2Service;
     }
 
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
@@ -62,6 +62,6 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of TMS Station data") })
     public TmsDataDatex2Response tmsDataDatex2() {
-        return tmsDataService.findPublishableTmsDataDatex2();
+        return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 }
