@@ -72,7 +72,7 @@ public class CameraImageUpdateService {
             rval = saveKuva(kuva, presetId, filename);
         }
         else {
-            rval = deleteKuva(presetId, filename);
+            rval = deleteKuva(kuva, presetId, filename);
         }
 
         updateCameraPreset(cameraPreset, kuva);
@@ -80,10 +80,10 @@ public class CameraImageUpdateService {
         return rval;
     }
 
-    private boolean deleteKuva(String presetId, String filename) {
+    private boolean deleteKuva(Kuva kuva, String presetId, String filename) {
 
-        log.info("Deleting preset's {} remote image {}. The image is not publishable or preset was not included in previous run of {}", presetId, getImageFullPath(filename),
-            CameraMetadataUpdateJob.class.getName());
+        log.info("Deleting preset's {} remote image {}. The image is not publishable or preset was not included in previous run of {}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
+            CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
 
         return deleteImage(filename);
     }
