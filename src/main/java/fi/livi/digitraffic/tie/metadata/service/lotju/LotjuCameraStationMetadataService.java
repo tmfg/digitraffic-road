@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -38,31 +39,28 @@ public class LotjuCameraStationMetadataService {
 
     public Map<Long, Pair<KameraVO, List<EsiasentoVO>>> getLotjuIdToKameraAndEsiasentoMap() {
 
-        final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId = new HashMap<>();
+        final ConcurrentMap<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId = new ConcurrentHashMap<>();
 
         log.info("Fetch Kameras");
         final List<KameraVO> kamerat = lotjuCameraStationClient.getKameras();
         log.info("Fetched {} Kameras", kamerat.size());
         log.info("Fetch Esiasentos for Kameras");
 
-        StopWatch start = StopWatch.createStarted();
-        final AtomicInteger countEsiasentos = new AtomicInteger();
-        ExecutorService executor = Executors.newFixedThreadPool(3 );
-        CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+        final StopWatch start = StopWatch.createStarted();
+        final ExecutorService executor = Executors.newFixedThreadPool(1 );
+        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
         for (final KameraVO kamera : kamerat) {
             completionService.submit(new EsiasentoFetcher(kamera, kameraAndEsiasentosPairMappedByKameraLotjuId));
         }
 
+        final AtomicInteger countEsiasentos = new AtomicInteger();
+        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
         kamerat.forEach(c -> {
             try {
-                Future<Integer> f = completionService.take();
+                final Future<Integer> f = completionService.take();
                 countEsiasentos.addAndGet(f.get());
-            } catch (InterruptedException e) {
-                log.error("Error while fetching esiasentos", e);
-                executor.shutdownNow();
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 log.error("Error while fetching esiasentos", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
@@ -78,16 +76,16 @@ public class LotjuCameraStationMetadataService {
         return lotjuCameraStationClient.getKameras();
     }
 
-    private List<EsiasentoVO> getEsiasentos(Long kameraId) {
+    private List<EsiasentoVO> getEsiasentos(final Long kameraId) {
         return lotjuCameraStationClient.getEsiasentos(kameraId);
     }
 
     private class EsiasentoFetcher implements Callable<Integer> {
 
         private final KameraVO kamera;
-        private final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentoMap;
+        private final ConcurrentMap<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentoMap;
 
-        public EsiasentoFetcher(KameraVO kamera, final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId) {
+        EsiasentoFetcher(final KameraVO kamera, final ConcurrentMap<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId) {
             this.kamera = kamera;
             this.lotjuIdToKameraAndEsiasentoMap = kameraAndEsiasentosPairMappedByKameraLotjuId;
         }
@@ -103,11 +101,8 @@ public class LotjuCameraStationMetadataService {
                     final String presetId = CameraHelper.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());
 
                     if (CameraHelper.validatePresetId(presetId)) {
-                        Pair<KameraVO, List<EsiasentoVO>> kameraPair = lotjuIdToKameraAndEsiasentoMap.get(kamera.getId());
-                        if (kameraPair == null) {
-                            kameraPair = Pair.of(kamera, new ArrayList<EsiasentoVO>());
-                            lotjuIdToKameraAndEsiasentoMap.put(kamera.getId(), kameraPair);
-                        }
+                        final Pair<KameraVO, List<EsiasentoVO>> kameraPair = lotjuIdToKameraAndEsiasentoMap
+                            .computeIfAbsent(kamera.getId(), k -> Pair.of(kamera, new CopyOnWriteArrayList<>()));
                         kameraPair.getRight().add(esiasento);
                     } else {
                         log.error("Invalid cameraPresetId for {} and {}",
@@ -118,7 +113,7 @@ public class LotjuCameraStationMetadataService {
                 return esiasennot.size();
             }
 
-            log.error("Cannot update " + ToStringHelper.toString(kamera) + " is invalid: has null vanhaId");
+            log.error("Cannot update {}. It has null vanhaId", ToStringHelper.toString(kamera));
             return 0;
         }
     }
