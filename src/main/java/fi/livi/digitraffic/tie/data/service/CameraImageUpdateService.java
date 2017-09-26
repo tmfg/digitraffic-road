@@ -34,6 +34,7 @@ public class CameraImageUpdateService {
     private final int readTimeout;
     private final CameraPresetService cameraPresetService;
     private final SessionFactory sftpSessionFactory;
+    private int retryDelayMs;
 
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
@@ -43,12 +44,15 @@ public class CameraImageUpdateService {
                              @Value("${camera-image-uploader.http.readTimeout}")
                              final int readTimeout,
                              final CameraPresetService cameraPresetService,
-                             final SessionFactory sftpSessionFactory) {
+                             final SessionFactory sftpSessionFactory,
+                             @Value("${camera-image-uploader.retry.delay.ms}")
+                             final int retryDelayMs) {
         this.sftpUploadFolder = sftpUploadFolder;
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
         this.cameraPresetService = cameraPresetService;
         this.sftpSessionFactory = sftpSessionFactory;
+        this.retryDelayMs = retryDelayMs;
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +108,11 @@ public class CameraImageUpdateService {
                 log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
                     presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getMessage());
             }
+            try {
+                Thread.sleep(retryDelayMs);
+            } catch (InterruptedException e) {
+                throw new Error(e);
+            }
         }
         if (image == null) {
             log.error("Reading image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
@@ -120,6 +129,11 @@ public class CameraImageUpdateService {
             } catch (final Exception e) {
                 log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
                     presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getMessage());
+            }
+            try {
+                Thread.sleep(retryDelayMs);
+            } catch (InterruptedException e) {
+                throw new Error(e);
             }
         }
         if (!writtenSuccessfully) {
