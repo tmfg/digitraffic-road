@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -37,38 +38,30 @@ public class LotjuTmsStationMetadataService {
         return lotjuTmsStationMetadataClient.getLamAsemas();
     }
 
-    private List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
-        return lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(lamAsemaLotjuId);
-    }
-
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         return lotjuTmsStationMetadataClient.getAllLamLaskennallinenAnturis();
     }
 
 //    TODO @PerformanceMonitor(maxErroExcecutionTime = , maxWarnExcecutionTime = )
-    public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(Set<Long> tmsLotjuIds) {
-        final Map<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new HashMap<>();
-        final AtomicInteger countAnturis = new AtomicInteger();
+    public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
+        final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new ConcurrentHashMap<>();
 
-        StopWatch start = StopWatch.createStarted();
+        final ExecutorService executor = Executors.newFixedThreadPool(1);
+        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
-        ExecutorService executor = Executors.newFixedThreadPool(3);
-        CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
-
+        final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
             completionService.submit(new LaskennallinenanturiFetcher(tmsLotjuId, lamAnturisMappedByTmsLotjuId));
         }
 
+        final AtomicInteger countAnturis = new AtomicInteger();
+        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
         tmsLotjuIds.forEach(id -> {
             try {
-                Future<Integer> f = completionService.take();
+                final Future<Integer> f = completionService.take();
                 countAnturis.addAndGet(f.get());
                 log.debug("Got {} anturis", f.get());
-            } catch (InterruptedException e) {
-                log.error("Error while fetching LamLaskennallinenAnturis", e);
-                executor.shutdownNow();
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamLaskennallinenAnturis", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
@@ -83,10 +76,10 @@ public class LotjuTmsStationMetadataService {
 
     private class LaskennallinenanturiFetcher implements Callable<Integer> {
 
-        private Long tmsLotjuId;
-        private Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId;
+        private final Long tmsLotjuId;
+        private final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId;
 
-        public LaskennallinenanturiFetcher(Long tmsLotjuId, final Map<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId) {
+        public LaskennallinenanturiFetcher(final Long tmsLotjuId, final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId) {
             this.tmsLotjuId = tmsLotjuId;
             this.currentLamAnturisMappedByTmsLotjuId = currentLamAnturisMappedByTmsLotjuId;
         }

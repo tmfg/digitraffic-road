@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jaxb2;
 
+import java.util.Arrays;
 import java.util.Set;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
@@ -11,30 +12,34 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 
 import com.google.common.collect.Sets;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
-public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
-    private static final Logger log = LoggerFactory.getLogger(Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter.class);
+public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
+    private static final Logger log = LoggerFactory.getLogger(Jaxb2Datex2ResponseHttpMessageConverter.class);
 
-    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(TrafficDisordersDatex2Response.class, RoadworksDatex2Response.class);
+    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class,
+        TmsDataDatex2Response.class, RoadworksDatex2Response.class);
+
 
     @Override
-    public boolean canRead(final Class<?> clazz, final MediaType mediaType) {
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return supports(clazz) && super.canRead(clazz, mediaType);
     }
 
     @Override
-    public boolean canWrite(final Class<?> clazz, final MediaType mediaType) {
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return supports(clazz) && super.canWrite(clazz, mediaType);
     }
 
     @Override
-    protected boolean supports(final Class<?> clazz) {
+    protected boolean supports(Class<?> clazz) {
         return SUPPORTED.contains(clazz);
     }
 
     @Override
-    protected void customizeMarshaller(final Marshaller marshaller) {
+    protected void customizeMarshaller(Marshaller marshaller) {
         super.customizeMarshaller(marshaller);
         try {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -43,7 +48,7 @@ public class Jaxb2TrafficDisordersDatex2ResponseHttpMessageConverter extends Jax
                     "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIIResponseSchema_1_0.xsd " +
                     "http://datex2.eu/schema/2/2_0 " +
                     "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
-        } catch (final PropertyException e) {
+        } catch (PropertyException e) {
             log.error("setProperty failed", e);
         }
     }

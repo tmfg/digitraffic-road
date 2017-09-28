@@ -5,12 +5,10 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +33,6 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,29 +50,22 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnControllersEnabled
 public class DataController {
-    private static final Logger log = LoggerFactory.getLogger(DataController.class);
-
-    public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String TMS_DATA_PATH = "/tms-data";
-    public static final String WEATHER_DATA_PATH = "/weather-data";
+    static final String CAMERA_DATA_PATH = "/camera-data";
+    static final String TMS_DATA_PATH = "/tms-data";
+    static final String WEATHER_DATA_PATH = "/weather-data";
 
     // Fluency
-    public static final String FLUENCY_CURRENT_PATH = "/fluency-current";
-    public static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
-    public static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
+    static final String FLUENCY_CURRENT_PATH = "/fluency-current";
+    static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
+    static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
 
-    public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
+    static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
-//    public static final String TRAFFIC_DISORDERS_JSON_PATH = "/traffic-disorders-simple";
+    private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
 
-    public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
+    private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
-    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
-
-    public static final String LAST_UPDATED_PARAM = "lastUpdated";
-
-    private static final String REQUEST_LOG_PREFIX = "Data REST request path: ";
+    static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private final TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
@@ -112,7 +102,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
     }
 
@@ -123,7 +112,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_CURRENT_PATH + "/" + id);
         return trafficFluencyService.listCurrentTrafficFluencyData(id);
     }
 
@@ -134,7 +122,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return dayDataService.listPreviousDayHistoryData(lastUpdated);
     }
 
@@ -145,7 +132,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DAY_DATA_PATH + "/" + id);
         return dayDataService.listPreviousDayHistoryData(id);
     }
 
@@ -157,12 +143,13 @@ public class DataController {
             @PathVariable
             final long id,
             @ApiParam(value = "Year (>2014)", required = true)
+            @Min(2015) @Max(9999)
             @RequestParam
             final int year,
             @ApiParam(value = "Month (1-12)", required = true)
+            @Range(min = 1, max = 12)
             @RequestParam
             final int month) {
-        log.info(REQUEST_LOG_PREFIX + FLUENCY_HISTORY_DATA_PATH + "/" + id + "?year=" + year + "&month=" + month);
         return dayDataService.listHistoryData(id, year, month);
     }
 
@@ -173,7 +160,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
     }
 
@@ -184,7 +170,6 @@ public class DataController {
             @ApiParam(value = "Link id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/link/" + id);
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(id);
     }
 
@@ -195,7 +180,6 @@ public class DataController {
             @ApiParam(value = "TMS station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + FREE_FLOW_SPEEDS_PATH + "/tms/" + id);
         return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
     }
 
@@ -206,7 +190,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return cameraDataService.findPublishableCameraStationsData(lastUpdated);
     }
 
@@ -217,7 +200,6 @@ public class DataController {
             @ApiParam(value = "Camera id", required = true)
             @PathVariable
             final String id) {
-        log.info(REQUEST_LOG_PREFIX + CAMERA_DATA_PATH + "/" + id);
         return cameraDataService.findPublishableCameraStationsData(id);
     }
 
@@ -228,7 +210,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return tmsDataService.findPublishableTmsData(lastUpdated);
     }
 
@@ -239,7 +220,6 @@ public class DataController {
             @ApiParam(value = "TMS Station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + TMS_DATA_PATH + "/" + id);
         return tmsDataService.findPublishableTmsData(id);
     }
 
@@ -250,7 +230,6 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "?" + LAST_UPDATED_PARAM + "=" + lastUpdated);
         return weatherService.findPublishableWeatherData(lastUpdated);
     }
 
@@ -261,7 +240,6 @@ public class DataController {
             @ApiParam(value = "Weather Station id", required = true)
             @PathVariable
             final long id) {
-        log.info(REQUEST_LOG_PREFIX + WEATHER_DATA_PATH + "/" + id);
         return weatherService.findPublishableWeatherData(id);
     }
 
@@ -272,16 +250,14 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        log.info(REQUEST_LOG_PREFIX + FORECAST_SECTION_WEATHER_DATA_PATH);
         return forecastSectionDataService.getForecastSectionWeatherData(lastUpdated);
     }
 
     @ApiOperation("Active traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2() {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH);
-        return datex2DataService.findActiveTrafficDisorders();
+        return datex2DataService.findActiveDatex2Response();
     }
 
     @ApiOperation("Traffic disorder Datex2 messages by situation id")
@@ -290,9 +266,9 @@ public class DataController {
                             @ApiResponse(code = 404, message = "Situation id not found") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2BySituationId(
             @ApiParam(value = "Situation id.", required = true)
-            @PathVariable final String situationId) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
+            @PathVariable
+            String situationId) {
+        return datex2DataService.findAllDatex2ResponsesBySituationId(situationId);
     }
 
     @ApiOperation("Traffic disorder Datex2 messages disorders history")
@@ -301,55 +277,15 @@ public class DataController {
                             @ApiResponse(code = 400, message = "Invalid parameter"),
                             @ApiResponse(code = 404, message = "Situation id not found") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2OfHistory(
-            @ApiParam(value = "Situation id", required = false)
+            @ApiParam(value = "Situation id")
             @RequestParam(required = false)
             final String situationId,
             @ApiParam(value = "Year (>2014)", required = true)
-            @RequestParam @Valid @Min(2014)
+            @RequestParam @Min(2015) @Max(9999)
             final int year,
             @ApiParam(value = "Month (1-12)", required = true)
-            @RequestParam @Valid @Range(min = 1, max = 12)
+            @RequestParam @Range(min = 1, max = 12)
             final int month) {
-        log.info(REQUEST_LOG_PREFIX + TRAFFIC_DISORDERS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
-        return datex2DataService.findTrafficDisorders(situationId, year, month);
+        return datex2DataService.findDatex2Responses(situationId, year, month);
     }
-
-    @ApiOperation("Active roadwork Datex2 messages")
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
-    public RoadworksDatex2Response roadWorksDatex2() {
-        log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH);
-        return datex2DataService.findActiveRoadworks();
-    }
-
-    @ApiOperation("Roadwork Datex2 messages by situation id")
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-        @ApiResponse(code = 404, message = "Situation id not found") })
-    public RoadworksDatex2Response roadworksDatex2BySituationId(
-        @ApiParam(value = "Situation id.", required = true)
-        @PathVariable final String situationId) {
-        log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH + "/" + situationId);
-        return datex2DataService.getAllRoadworksBySituationId(situationId);
-    }
-
-    @ApiOperation("Roadwork Datex2 messages disorders history")
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
-        @ApiResponse(code = 400, message = "Invalid parameter"),
-        @ApiResponse(code = 404, message = "Situation id not found") })
-    public RoadworksDatex2Response roadworksDatex2OfHistory(
-        @ApiParam(value = "Situation id", required = false)
-        @RequestParam(required = false)
-        final String situationId,
-        @ApiParam(value = "Year (>2014)", required = true)
-        @RequestParam @Valid @Min(2014)
-        final int year,
-        @ApiParam(value = "Month (1-12)", required = true)
-        @RequestParam @Valid @Range(min = 1, max = 12)
-        final int month) {
-        log.info(REQUEST_LOG_PREFIX + ROADWORKS_DATEX2_PATH + "?situationId=" + situationId + "&year=" + year + "&month=" + month);
-        return datex2DataService.findRoadworks(situationId, year, month);
-    }
-
 }

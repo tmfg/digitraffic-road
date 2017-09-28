@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -43,27 +44,22 @@ public class LotjuWeatherStationMetadataService {
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
         log.info("Fetching TiesaaLaskennallinenAnturis for {} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
 
-        final Map<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId = new HashMap<>();
+        final ConcurrentMap<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId = new ConcurrentHashMap<>();
 
-        StopWatch start = StopWatch.createStarted();
-        ExecutorService executor = Executors.newFixedThreadPool(1 );
-        CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+        final StopWatch start = StopWatch.createStarted();
+        final ExecutorService executor = Executors.newFixedThreadPool(1 );
+        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
-        tiesaaAsemaLotjuIds.forEach(id -> {
-            completionService.submit(new LaskennallisetAnturitFetcher(id, tiesaaAnturisMappedByRwsLotjuId));
-        });
+        tiesaaAsemaLotjuIds.forEach(id -> completionService.submit(new LaskennallisetAnturitFetcher(id, tiesaaAnturisMappedByRwsLotjuId)));
 
         final AtomicInteger countAnturis = new AtomicInteger();
+        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
         tiesaaAsemaLotjuIds.forEach(c -> {
             try {
-                Future<Integer> f = completionService.take();
+                final Future<Integer> f = completionService.take();
                 countAnturis.addAndGet(f.get());
-            } catch (InterruptedException e) {
-                log.error("Error while fetching esiasentos", e);
-                executor.shutdownNow();
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                log.error("Error while fetching esiasentos", e);
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Error while fetching Anturits", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -83,7 +79,7 @@ public class LotjuWeatherStationMetadataService {
         private final Long tiesaaAsemaLotjuId;
         private final Map<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId;
 
-        public LaskennallisetAnturitFetcher(Long tiesaaAsemaLotjuId, final Map<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId) {
+        public LaskennallisetAnturitFetcher(final Long tiesaaAsemaLotjuId, final Map<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId) {
             this.tiesaaAsemaLotjuId = tiesaaAsemaLotjuId;
             this.tiesaaAnturisMappedByRwsLotjuId = tiesaaAnturisMappedByRwsLotjuId;
         }
