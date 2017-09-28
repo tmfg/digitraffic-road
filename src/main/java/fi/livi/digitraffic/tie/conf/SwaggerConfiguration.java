@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
 import static com.google.common.base.Predicates.or;
+import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -47,18 +48,12 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket metadataApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("metadata-api")
-                .directModelSubstitute(ZonedDateTime.class, String.class)
-                .directModelSubstitute(LocalDateTime.class, String.class)
-                .directModelSubstitute(LocalDate.class, String.class)
-                .directModelSubstitute(Date.class, String.class)
-                .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
-                .apiInfo(metadataApiInfoService.getApiInfo())
-                .select()
-                .paths(getMetadataApiPaths())
-                .build()
-                .useDefaultResponseMessages(false);
+        return getDocket("metadata-api", getMetadataApiPaths());
+    }
+
+    @Bean
+    public Docket betaApi() {
+        return getDocket("metadata-api-beta", regex(API_BETA_BASE_PATH + "/*.*"));
     }
 
     @Bean
@@ -72,6 +67,21 @@ public class SwaggerConfiguration {
             false,        // enableJsonEditor      => true | false
             true,         // showRequestHeaders    => true | false
             60000L);      // requestTimeout => in milliseconds, defaults to null (uses jquery xh timeout)
+    }
+
+    private Docket getDocket(final String groupName, Predicate<String> apiPaths) {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .groupName(groupName)
+            .directModelSubstitute(ZonedDateTime.class, String.class)
+            .directModelSubstitute(LocalDateTime.class, String.class)
+            .directModelSubstitute(LocalDate.class, String.class)
+            .directModelSubstitute(Date.class, String.class)
+            .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+            .apiInfo(metadataApiInfoService.getApiInfo())
+            .select()
+            .paths(apiPaths)
+            .build()
+            .useDefaultResponseMessages(false);
     }
 
     /**
