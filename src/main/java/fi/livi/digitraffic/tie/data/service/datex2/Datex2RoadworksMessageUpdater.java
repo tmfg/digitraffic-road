@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ public class Datex2RoadworksMessageUpdater {
     private final Datex2UpdateService datex2UpdateService;
 
     private final StringToObjectMarshaller stringToObjectMarshaller;
+
+    private static final Logger log = LoggerFactory.getLogger(Datex2RoadworksMessageUpdater.class);
 
     @Autowired
     public Datex2RoadworksMessageUpdater(final Datex2RoadworksHttpClient datex2RoadworksHttpClient, final Datex2UpdateService datex2UpdateService,
@@ -49,6 +53,10 @@ public class Datex2RoadworksMessageUpdater {
         final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
 
         final Map<String, LocalDateTime> versionTimes = datex2UpdateService.listRoadworkSituationVersionTimes();
+        final long updatedCount = sp.getSituation().stream().filter(s -> isNewSituation(versionTimes.get(s.getId()), s)).count();
+        final long newCount = sp.getSituation().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
+
+        log.info("Updated {} situations, {} new situations", updatedCount, newCount);
 
         return sp.getSituation().stream()
             .filter(s -> isNewSituation(versionTimes.get(s.getId()), s))
