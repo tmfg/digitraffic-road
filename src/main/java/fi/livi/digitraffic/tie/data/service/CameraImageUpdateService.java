@@ -9,10 +9,13 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,7 @@ public class CameraImageUpdateService {
                              @Value("${camera-image-uploader.http.readTimeout}")
                              final int readTimeout,
                              final CameraPresetService cameraPresetService,
+                             @Qualifier("sftpSessionFactory")
                              final SessionFactory sftpSessionFactory,
                              @Value("${camera-image-uploader.retry.delay.ms}")
                              final int retryDelayMs) {
@@ -166,12 +170,13 @@ public class CameraImageUpdateService {
     }
 
     private void writeImage(byte[] data, String filename) throws IOException {
+        final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
-            final String uploadPath = getImageFullPath(filename);
-            log.info("Writing image to sftp server path {}", uploadPath);
+            log.info("Writing image to sftp server path {} started", uploadPath);
             session.write(new ByteArrayInputStream(data), uploadPath);
+            log.info("Writing image to sftp server path {} ended successfully", uploadPath);
         } catch (Exception e) {
-            log.warn("Failed to write image to sftp server path {}", getImageFullPath(filename));
+            log.warn("Failed to write image to sftp server path {}. Most specific cause message {}. Stack trace: {}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
