@@ -255,13 +255,13 @@
             <version>4.11</version>
         </dependency>
 
-        <!-- JavaMelody -->
+        <!-- JavaMelody
         <dependency>
             <groupId>net.bull.javamelody</groupId>
             <artifactId>javamelody-core</artifactId>
             <version>1.67.0</version>
         </dependency>
-
+ -->
         <!-- test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
