@@ -141,6 +141,10 @@
         <springProfile name="localhost">
             <appender-ref ref="CONSOLE" />
         </springProfile>
+
+        <springProfile name="virtualbox">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
     </root>
 
 </configuration>
