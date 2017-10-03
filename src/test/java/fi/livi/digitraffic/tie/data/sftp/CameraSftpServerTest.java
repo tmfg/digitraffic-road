@@ -59,7 +59,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     private static final int TEST_UPLOADS = 10;
 
     @Autowired
-    private SessionFactory sftpSessionFactory;
+    private SessionFactory  sftpSessionFactory;
 
     @Autowired
     private CameraDataUpdateService cameraDataUpdateService;

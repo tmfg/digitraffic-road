@@ -4,6 +4,11 @@ METADATA_PATH=$BASEDIR/..
 
 ip='127.0.0.1' #$(docker-machine ip $DOCKER_MACHINE_NAME)
 
+# Set permissions suitable for sftp private host keys.
+chmod og-rw $METADATA_PATH/src/test/resources/sftp/ssh_host_ed25519_key
+chmod og-rw $METADATA_PATH/src/test/resources/sftp/ssh_host_rsa_key
+chmod og-rw $METADATA_PATH/src/test/resources/sftp/client_id_rsa
+
 docker run -d --rm \
     --name sftp_server \
     -v $METADATA_PATH/src/test/resources/sftp/client_id_rsa.pub:/home/digitraffic/.ssh/keys/id_rsa.pub:ro \
