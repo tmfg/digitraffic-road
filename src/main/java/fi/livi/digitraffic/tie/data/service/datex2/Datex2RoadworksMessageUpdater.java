@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObjectFactory;
@@ -23,6 +24,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
 public class Datex2RoadworksMessageUpdater {
     private final Datex2RoadworksHttpClient datex2RoadworksHttpClient;
     private final Datex2UpdateService datex2UpdateService;
+    private final Datex2Repository datex2Repository;
 
     private final StringToObjectMarshaller stringToObjectMarshaller;
 
@@ -30,15 +32,18 @@ public class Datex2RoadworksMessageUpdater {
 
     @Autowired
     public Datex2RoadworksMessageUpdater(final Datex2RoadworksHttpClient datex2RoadworksHttpClient, final Datex2UpdateService datex2UpdateService,
-        final StringToObjectMarshaller stringToObjectMarshaller) {
+        final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
         this.datex2UpdateService = datex2UpdateService;
+        this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
     }
 
     @Transactional
     public void updateDatex2RoadworksMessages() {
         final String message = datex2RoadworksHttpClient.getRoadWorksMessage();
+
+        datex2Repository.removeAllRoadworks();
 
         datex2UpdateService.updateRoadworks(convert(message));
     }
