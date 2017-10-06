@@ -25,9 +25,10 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
                              @Param("month") final int month);
 
     @Query(name = "find_history_by_situation_id")
-    List<Datex2> findHistoryBySituationId(@Param("situationId") final String situationId,
-                             @Param("year") final int year,
-                             @Param("month") final int month);
+    List<Datex2> findHistoryBySituationId(@Param("messageType") final String messageType,
+                                          @Param("situationId") final String situationId,
+                                          @Param("year") final int year,
+                                          @Param("month") final int month);
 
     @Query(name = "find_by_situation_id_and_message_type")
     List<Datex2> findBySituationIdAndMessageType(@Param("situationId") final String situationId, @Param("messageType") final String

@@ -43,19 +43,6 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public Datex2RootDataObjectDto findDatex2TrafficAlerts(final String situationId, final int year, final int month) {
-        if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
-            throw new ObjectNotFoundException("Datex2", situationId);
-        }
-        final ZonedDateTime updated = findLatestImportTime(TRAFFIC_DISORDER);
-
-        return new Datex2RootDataObjectDto(
-                situationId != null ? datex2Repository.findHistoryBySituationId(situationId, year, month) : datex2Repository.findHistory
-                    (TRAFFIC_DISORDER.name(), year, month),
-                updated);
-    }
-
-    @Transactional(readOnly = true)
     public Datex2RootDataObjectDto findActiveTrafficDisorders(final boolean onlyUpdateInfo) {
         final ZonedDateTime updated = findLatestImportTime(TRAFFIC_DISORDER);
 
@@ -89,7 +76,7 @@ public class Datex2DataService {
         }
 
         return situationId != null
-            ? datex2Repository.findHistory(situationId, year, month)
+            ? datex2Repository.findHistoryBySituationId(messageType.name(), situationId, year, month)
             : datex2Repository.findHistory(messageType.name(), year, month);
     }
 

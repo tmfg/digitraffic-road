@@ -76,6 +76,7 @@
                 AND situation.situation_id = :situationId
                 AND d.publication_time >= TRUNC(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'), 'MONTH')
                 AND d.publication_time < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1
+                AND d.message_type = :messageType
             )
           ]]>
         </query>

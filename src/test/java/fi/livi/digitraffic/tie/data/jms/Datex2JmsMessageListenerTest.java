@@ -27,6 +27,8 @@ import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
 public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerTest.class);
@@ -75,8 +77,8 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
             assertEquals(SITUATION_ID_2, datex2.getSituations().get(0).getSituationId());
         }
 
-        final Datex2RootDataObjectDto byTimeSituation2 = datex2DataService.findDatex2TrafficAlerts(null, 2016, 10);
-        final List<Datex2> byTimeSituation22Datex2s = byTimeSituation2.getDatex2s();
+        final TrafficDisordersDatex2Response byTimeSituation2 = datex2DataService.findTrafficDisorders(null, 2016, 10);
+        final List<TimestampedTrafficDisorderDatex2> byTimeSituation22Datex2s = byTimeSituation2.getDisorder();
         assertCollectionSize(6, byTimeSituation22Datex2s);
     }
 
