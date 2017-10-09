@@ -87,6 +87,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         return defaultSftpSessionFactory;
     }
 
+    // TODO Explain why the name is set?
     @Bean(name = "sftpSessionFactory")
     public CachingSessionFactory<ChannelSftp.LsEntry> getCachingSessionFactory() throws IOException {
         log.info("Init CachingSessionFactory for sftp with poolSize {} and sessionWaitTimeout {}", poolSize, sessionWaitTimeout);

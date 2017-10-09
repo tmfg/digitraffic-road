@@ -51,7 +51,7 @@ public class CameraDataUpdateService {
             futures.add(jobThreadPool.submit(task));
         });
 
-        while ( futures.parallelStream().anyMatch(f -> !f.isDone()) ) {
+        while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
