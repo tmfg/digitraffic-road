@@ -99,18 +99,18 @@ public class CameraImageUpdateService {
     private boolean saveKuva(Kuva kuva, String presetId, String filename) {
         // Read the image
         byte[] image = null;
-        for (int readTries = 4; readTries >= 0; readTries--) {
+        for (int readTries = 3; readTries > 0; readTries--) {
             try {
                 image = readImage(kuva.getUrl(), filename);
                 if (image.length > 0) {
                     break;
                 } else {
                     log.warn("Reading image for presetId {} from {} to sftp server path {} returned 0 bytes. {} tries left.",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries);
+                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1);
                 }
             } catch (final Exception e) {
                 log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
-                    presetId, kuva.getUrl(), getImageFullPath(filename), readTries, e.getMessage());
+                    presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
@@ -125,14 +125,14 @@ public class CameraImageUpdateService {
 
         // Write the image
         boolean writtenSuccessfully = false;
-        for (int writeTries = 4; writeTries >= 0; writeTries--) {
+        for (int writeTries = 3; writeTries > 0; writeTries--) {
             try {
                 writeImage(image, filename);
                 writtenSuccessfully = true;
                 break;
             } catch (final Exception e) {
                 log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
-                    presetId, kuva.getUrl(), getImageFullPath(filename), writeTries, e.getMessage());
+                    presetId, kuva.getUrl(), getImageFullPath(filename), writeTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
