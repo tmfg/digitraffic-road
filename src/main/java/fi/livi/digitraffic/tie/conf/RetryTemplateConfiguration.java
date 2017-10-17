@@ -11,10 +11,10 @@ public class RetryTemplateConfiguration {
 
     @Bean
     public RetryTemplate retryTemplate() {
+        final RetryTemplate retryTemplate = new RetryTemplate();
+
         final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
         retryPolicy.setMaxAttempts(5);
-
-        final RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(retryPolicy);
 
         final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
