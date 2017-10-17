@@ -25,7 +25,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturi
 public class TmsStationsSensorsUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationsSensorsUpdater.class);
 
-    private RoadStationSensorService roadStationSensorService;
+    private final RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
     private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
@@ -54,10 +54,10 @@ public class TmsStationsSensorsUpdater {
 
         final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
 
-        log.info("Fetching LamLaskennallinenAnturis for " + tmsLotjuIds.size() + " LamAsemas");
+        log.info("Fetching LamLaskennallinenAnturis for {} LamAsemas", tmsLotjuIds.size());
 
         final AtomicInteger counter = new AtomicInteger();
-        Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
+        final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
                 lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
         log.info("Fetched {} LamLaskennallinenAnturis for {} LamAsemas", counter, tmsLotjuIds.size());
@@ -69,7 +69,7 @@ public class TmsStationsSensorsUpdater {
             if (anturis != null) {
                 stationAnturisPairs.add(Pair.of(tmsStation, anturis));
             } else {
-                log.info("No anturis for " + tmsStation);
+                log.info("No anturis for {}", tmsStation);
                 stationAnturisPairs.add(Pair.of(tmsStation, Collections.emptyList()));
             }
         });
@@ -88,18 +88,17 @@ public class TmsStationsSensorsUpdater {
         int countAdded = 0;
         int countRemoved = 0;
 
-        for (Pair<TmsStation, List<LamLaskennallinenAnturiVO>> pair : stationAnturisPairs) {
+        for (final Pair<TmsStation, List<LamLaskennallinenAnturiVO>> pair : stationAnturisPairs) {
             final TmsStation tms = pair.getKey();
             final List<LamLaskennallinenAnturiVO> anturis = pair.getRight();
             try {
                 final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-                Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
+                final Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
                     RoadStationType.TMS_STATION,
                     sensorslotjuIds);
                 countRemoved += deletedInserted.getLeft();
                 countAdded += deletedInserted.getRight();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
                 log.info("Anturis {}", anturis);
                 throw e;
             }
