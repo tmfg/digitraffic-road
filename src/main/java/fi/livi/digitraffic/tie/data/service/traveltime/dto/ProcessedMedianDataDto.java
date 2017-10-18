@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.data.service.traveltime.dto;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class ProcessedMedianDataDto {
 
     public final Long linkId;
@@ -35,11 +37,15 @@ public class ProcessedMedianDataDto {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ", link=" + linkId
-                + ", periodEnd=" + periodEnd
-                + ", link natural id=" + linkNaturalId + ", median="
-                + medianTravelTime + ", nobs=" + nobs
-                + ", avgspeed=" + averageSpeed + ", ratio="
-                + ratioToFreeFlowSpeed + ", fluency=" + fluencyClassNumber;
+        return new ToStringBuilder(this)
+            .append("linkId", linkId)
+            .append("linkNaturalId", linkNaturalId)
+            .append("periodEnd", periodEnd)
+            .append("medianTravelTime", medianTravelTime)
+            .append("nobs", nobs)
+            .append("averageSpeed", averageSpeed)
+            .append("ratioToFreeFlowSpeed", ratioToFreeFlowSpeed)
+            .append("fluencyClassNumber", fluencyClassNumber)
+            .toString();
     }
 }

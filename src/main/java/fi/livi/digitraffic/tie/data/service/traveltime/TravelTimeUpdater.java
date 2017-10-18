@@ -64,28 +64,20 @@ public class TravelTimeUpdater {
             return;
         }
 
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> nonObsoleteLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        log.info("Valid PKS links in database {}", validLinks.size());
+        log.info("Non obsolete PKS links in database {}", nonObsoleteLinks.size());
 
-        final Set<Long> validLinkNaturalIds = validLinks.keySet();
+        logMissingLinks(data.measurements.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
-        final List<Long> linkIdsForMissingLinks = data.measurements.stream().filter(m -> !validLinkNaturalIds.contains(m.linkNaturalId))
-                                                                            .map(m -> m.linkNaturalId)
-                                                                            .collect(Collectors.toList());
-
-        if (!linkIdsForMissingLinks.isEmpty()) {
-            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
-        }
-
-        List<TravelTimeMeasurementLinkDto> measurementsForValidLinks =
-                                                    data.measurements.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
+        final List<TravelTimeMeasurementLinkDto> measurementsForNonObsoleteLinks =
+                                                    data.measurements.stream().filter(m -> nonObsoleteLinks.keySet().contains(m.linkNaturalId))
                                                                               .collect(Collectors.toList());
 
-        List<ProcessedMeasurementDataDto> processed =
+        final List<ProcessedMeasurementDataDto> processed =
                 TravelTimePostProcessor.processMeasurements(new TravelTimeMeasurementsDto(data.periodStart,
                                                                                           data.duration,
-                                                                                          measurementsForValidLinks), validLinks);
+                                                                                          measurementsForNonObsoleteLinks), nonObsoleteLinks);
 
         travelTimeRepository.insertMeasurementData(processed);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
@@ -107,34 +99,36 @@ public class TravelTimeUpdater {
             return;
         }
 
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> nonObsoleteLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        final Set<Long> validLinkNaturalIds = validLinks.keySet();
+        logMissingLinks(data.medians.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
-        final List<Long> linkIdsForMissingLinks = data.medians.stream().filter(m -> !validLinkNaturalIds.contains(m.linkNaturalId))
-                                                                       .map(m -> m.linkNaturalId)
-                                                                       .collect(Collectors.toList());
-
-        if (!linkIdsForMissingLinks.isEmpty()) {
-            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
-        }
-
-        final List<TravelTimeMedianDto> mediansForValidLinks =
-                                                    data.medians.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
+        final List<TravelTimeMedianDto> mediansForNonObsoleteLinks =
+                                                    data.medians.stream().filter(m -> nonObsoleteLinks.keySet().contains(m.linkNaturalId))
                                                                          .collect(Collectors.toList());
 
-        List<ProcessedMedianDataDto> processedMedians = travelTimePostProcessor.processMedians(new TravelTimeMediansDto(data.periodStart,
-                                                                                                                        data.duration,
-                                                                                                                        data.supplier,
-                                                                                                                        data.service,
-                                                                                                                        data.creationTime,
-                                                                                                                        data.lastStaticDataUpdate,
-                                                                                                                        mediansForValidLinks), validLinks);
+        final List<ProcessedMedianDataDto> processedMedians = travelTimePostProcessor.processMedians(
+            new TravelTimeMediansDto(data.periodStart,
+                                     data.duration,
+                                     data.supplier,
+                                     data.service,
+                                     data.creationTime,
+                                     data.lastStaticDataUpdate,
+                                     mediansForNonObsoleteLinks), nonObsoleteLinks);
 
         travelTimeRepository.insertMedianData(processedMedians);
         travelTimeRepository.updateLatestMedianData(processedMedians);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
 
         log.info("Processed and saved PKS medians for {} links", processedMedians.size());
+    }
+
+    private void logMissingLinks(final Set<Long> naturalIds, final Set<Long> nonObsoleteLinkNaturalIds) {
+        final Set<Long> missingLinks = naturalIds.stream().filter(naturalId -> !nonObsoleteLinkNaturalIds.contains(naturalId))
+                                                          .collect(Collectors.toSet());
+
+        if (!missingLinks.isEmpty()) {
+            log.info("following links have data but no link in db: {}", missingLinks);
+        }
     }
 }
