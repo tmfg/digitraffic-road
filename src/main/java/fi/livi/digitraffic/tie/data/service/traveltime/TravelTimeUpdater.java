@@ -128,7 +128,7 @@ public class TravelTimeUpdater {
                                                           .collect(Collectors.toSet());
 
         if (!missingLinks.isEmpty()) {
-            log.info("following links have data but no link in db: {}", missingLinks);
+            log.warn("following links have data but no link in db: {}", missingLinks);
         }
     }
 }
