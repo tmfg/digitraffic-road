@@ -71,7 +71,7 @@ public class TravelTimeUpdater {
         logMissingLinks(data.measurements.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
         final List<TravelTimeMeasurementLinkDto> measurementsForNonObsoleteLinks =
-                                                    data.measurements.stream().filter(m -> nonObsoleteLinks.keySet().contains(m.linkNaturalId))
+                                                    data.measurements.stream().filter(m -> nonObsoleteLinks.containsKey(m.linkNaturalId))
                                                                               .collect(Collectors.toList());
 
         final List<ProcessedMeasurementDataDto> processed =
