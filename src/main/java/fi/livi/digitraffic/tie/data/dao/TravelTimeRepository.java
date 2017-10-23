@@ -50,25 +50,6 @@ public class TravelTimeRepository {
         + "m.ratio_to_free_flow_speed = static_values.ratio_to_free_flow_speed, "
         + "m.nobs = static_values.nobs";
 
-    private static final String INSERT_MEDIAN_SQL =
-          "MERGE INTO JOURNEYTIME_MEDIAN m "
-        + "USING ("
-        + "SELECT ? end_timestamp, "
-        + "? median_travel_time, "
-        + "? average_speed, "
-        + "? ratio_to_free_flow_speed, "
-        + "? link_id, "
-        + "? nobs "
-        + "FROM dual) static_values "
-        + "ON (m.link_id = static_values.link_id AND m.end_timestamp = static_values.end_timestamp) "
-        + "WHEN NOT MATCHED THEN "
-        + "INSERT (m.id, m.end_timestamp, m.median_travel_time, "
-        + "m.average_speed, m.ratio_to_free_flow_speed, m.link_id, m.nobs) "
-        + "VALUES (seq_journeytime_median.nextval, "
-        + "static_values.end_timestamp, static_values.median_travel_time, "
-        + "static_values.average_speed, static_values.ratio_to_free_flow_speed, "
-        + "static_values.link_id, static_values.nobs)";
-
     /*
      * Updates all latest medians that are not in an alert state (sets alert
     * start to null). Remove alerts only from links having enough observations.
@@ -92,21 +73,16 @@ public class TravelTimeRepository {
         this.trafficFluencyService = trafficFluencyService;
     }
 
-    /**
-     * Insert individual measurements to JOURNEYTIME_MEASUREMENT
-     */
     public void insertMeasurementData(final List<ProcessedMeasurementDataDto> measurementDatas) {
 
         jdbcTemplate.batchUpdate("INSERT INTO JOURNEYTIME_MEASUREMENT (ID, END_TIMESTAMP, TRAVEL_TIME, LINK_ID) "
                                  + "VALUES (seq_journeytime_measurement.nextval, ?, ?, ?) ", new MeasurementBatchSetter(measurementDatas));
     }
 
-    /**
-     * Insert processed median data (avg speeds etc) to JOURNEYTIME_MEDIAN table
-     */
     public void insertMedianData(final List<ProcessedMedianDataDto> medians) {
 
-        jdbcTemplate.batchUpdate(INSERT_MEDIAN_SQL, new MedianBatchSetter(medians));
+        jdbcTemplate.batchUpdate("INSERT INTO JOURNEYTIME_MEDIAN (id, end_timestamp, median_travel_time, average_speed, ratio_to_free_flow_speed, link_id, nobs) " +
+                                 "VALUES(seq_journeytime_median.nextval, ?, ?, ?, ?, ?, ?)", new MedianBatchSetter(medians));
     }
 
     public void updateLatestMedianData(final List<ProcessedMedianDataDto> medians) {
@@ -115,9 +91,6 @@ public class TravelTimeRepository {
         jdbcTemplate.update(UPDATE_NEW_ALERTS, trafficFluencyService.getAlertThreshold(), NOBS_FILTERING_LIMIT);
     }
 
-    /**
-     * Batch setter for JOURNEYTIME_MEASUREMENT table sql
-     */
     private class MeasurementBatchSetter implements BatchPreparedStatementSetter {
 
         private List<ProcessedMeasurementDataDto> measurementDatas;
@@ -139,9 +112,6 @@ public class TravelTimeRepository {
         }
     }
 
-    /**
-     * Batch setter for JOURNEYTIME_MEDIAN table sql
-     */
     private static class MedianBatchSetter implements BatchPreparedStatementSetter {
 
         private static final Logger log = LoggerFactory.getLogger(MedianBatchSetter.class);
