@@ -161,7 +161,6 @@ public class CameraImageUpdateService {
             con.setReadTimeout(readTimeout);
             result = IOUtils.toByteArray(con.getInputStream());
         } catch (Exception e) {
-            log.warn("Image read failed for {}", downloadImageUrl);
             throw e;
         }
         final byte[] data = result;
