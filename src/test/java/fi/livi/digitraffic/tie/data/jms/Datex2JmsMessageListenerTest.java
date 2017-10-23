@@ -10,14 +10,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
@@ -71,29 +69,6 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final Datex2RootDataObjectDto byTimeSituation2 = datex2DataService.findDatex2Data(null, 2016, 10);
         final List<Datex2> byTimeSituation22Datex2s = byTimeSituation2.getDatex2s();
         Assert.assertEquals(6, byTimeSituation22Datex2s.size());
-    }
-
-    // Just for data importing for testing
-    @Ignore
-    @Test
-    @Rollback(value = false)
-    public void testImportData() throws JAXBException, DatatypeConfigurationException, IOException {
-        log.info("Delete old messages");
-        datex2Repository.deleteAll();
-
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2DataService.updateDatex2Data(data);
-
-        final JMSMessageListener datexJmsMessageListener =
-                new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
-
-        log.info("Read Datex2 messages from filesystem");
-//        Resource[] datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-        final List<Resource> datex2Resources = loadResources("file:/Users/jouniso/tyo/digitraffic/Data/datex2/formatted/ftp.tiehallinto" +
-            ".fi/incidents/datex2/InfoXML*.xml");
-
-        readAndSendMessages(datex2Resources, datexJmsMessageListener, true);
-
-        log.info("Persist changes");
     }
 
     private static void readAndSendMessages(final List<Resource> datex2Resources, final JMSMessageListener messageListener,
