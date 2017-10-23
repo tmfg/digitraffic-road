@@ -104,7 +104,7 @@ public class TravelTimeUpdater {
         logMissingLinks(data.medians.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
         final List<TravelTimeMedianDto> mediansForNonObsoleteLinks =
-                                                    data.medians.stream().filter(m -> nonObsoleteLinks.keySet().contains(m.linkNaturalId))
+                                                    data.medians.stream().filter(m -> nonObsoleteLinks.containsKey(m.linkNaturalId))
                                                                          .collect(Collectors.toList());
 
         final List<ProcessedMedianDataDto> processedMedians = travelTimePostProcessor.processMedians(
