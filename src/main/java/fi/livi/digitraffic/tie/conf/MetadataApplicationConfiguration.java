@@ -142,18 +142,4 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:swagger-ui.html");
     }
-
-    @Bean
-    public RetryTemplate retryTemplate() {
-        final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(5);
-
-        final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-        backOffPolicy.setBackOffPeriod(200); // 0.5 seconds
-
-        final RetryTemplate template = new RetryTemplate();
-        template.setRetryPolicy(retryPolicy);
-        template.setBackOffPolicy(backOffPolicy);
-        return template;
-    }
 }
