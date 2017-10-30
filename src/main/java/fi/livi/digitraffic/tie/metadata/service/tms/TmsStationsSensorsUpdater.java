@@ -54,13 +54,13 @@ public class TmsStationsSensorsUpdater {
 
         final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
 
-        log.info("Fetching LamLaskennallinenAnturis for {} LamAsemas", tmsLotjuIds.size());
+        log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
         final AtomicInteger counter = new AtomicInteger();
         final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
                 lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
-        log.info("Fetched {} LamLaskennallinenAnturis for {} LamAsemas", counter, tmsLotjuIds.size());
+        log.info("fetchedCount={} LamLaskennallinenAnturis for tmsCount={} LamAsemas", counter, tmsLotjuIds.size());
 
 
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
@@ -99,13 +99,13 @@ public class TmsStationsSensorsUpdater {
                 countRemoved += deletedInserted.getLeft();
                 countAdded += deletedInserted.getRight();
             } catch (final Exception e) {
-                log.info("Anturis {}", anturis);
+                log.info("Anturis anturisCount={}", anturis);
                 throw e;
             }
         }
 
-        log.info("Sensor removed from road stations {}", countRemoved);
-        log.info("Sensor added to road stations {}", countAdded);
+        log.info("Sensor removed from road stations countRemoved={}", countRemoved);
+        log.info("Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
     }

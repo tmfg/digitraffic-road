@@ -90,7 +90,8 @@ public class CameraImageUpdateService {
 
     private boolean deleteKuva(Kuva kuva, String presetId, String filename) {
 
-        log.info("Deleting preset's {} remote image {}. The image is not publishable or preset was not included in previous run of {}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
+        log.info("Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
+                "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
             CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
 
         return deleteImage(filename);
@@ -105,11 +106,11 @@ public class CameraImageUpdateService {
                 if (image.length > 0) {
                     break;
                 } else {
-                    log.warn("Reading image for presetId {} from {} to sftp server path {} returned 0 bytes. {} tries left.",
+                    log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes. triesLeft={} .",
                         presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1);
                 }
             } catch (final Exception e) {
-                log.warn("Reading image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={} . exceptionMessage={} .",
                     presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1, e.getMessage());
             }
             try {
@@ -131,7 +132,7 @@ public class CameraImageUpdateService {
                 writtenSuccessfully = true;
                 break;
             } catch (final Exception e) {
-                log.warn("Writing image for presetId {} from {} to sftp server path {} failed. {} tries left. Exception message: {}.",
+                log.warn("Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={}. exceptionMessage={}.",
                     presetId, kuva.getUrl(), getImageFullPath(filename), writeTries - 1, e.getMessage());
             }
             try {
@@ -152,7 +153,7 @@ public class CameraImageUpdateService {
     }
 
     private byte[] readImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
-        log.info("Read image {} ({})", downloadImageUrl, uploadImageFileName);
+        log.info("Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
         byte[] result;
         try {
             final URL url = new URL(downloadImageUrl);
@@ -164,18 +165,18 @@ public class CameraImageUpdateService {
             throw e;
         }
         final byte[] data = result;
-        log.info("Image read successfully. Size {} bytes", data.length);
+        log.info("Image read successfully. imageSizeBytes={} bytes", data.length);
         return data;
     }
 
     private void writeImage(byte[] data, String filename) throws IOException {
         final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
-            log.info("Writing image to sftp server path {} started", uploadPath);
+            log.info("Writing image to sftpServerPath={} started", uploadPath);
             session.write(new ByteArrayInputStream(data), uploadPath);
-            log.info("Writing image to sftp server path {} ended successfully", uploadPath);
+            log.info("Writing image to sftpServerPath={} ended successfully", uploadPath);
         } catch (Exception e) {
-            log.warn("Failed to write image to sftp server path {}. Most specific cause message {}. Stack trace: {}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
+            log.warn("Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
@@ -192,13 +193,13 @@ public class CameraImageUpdateService {
         try (final Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath) ) {
-                log.info("Delete image {}", imageRemotePath);
+                log.info("Delete imagePath={}", imageRemotePath);
                 session.remove(imageRemotePath);
                 return true;
             }
             return false;
         } catch (IOException e) {
-            log.error("Failed to remove remote file {}", getImageFullPath(deleteImageFileName));
+            log.error("Failed to remove remote file deleteImageFileName={}", getImageFullPath(deleteImageFileName));
             return false;
         }
     }

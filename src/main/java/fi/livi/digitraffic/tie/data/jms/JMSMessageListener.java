@@ -51,7 +51,7 @@ public class JMSMessageListener<K> implements MessageListener {
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
-        log.info("{} JMSMessageListener initialized with drainScheduled: {}", log.getName(), drainScheduled);
+        log.info("name={} JMSMessageListener initialized with drainScheduled={}", log.getName(), drainScheduled);
     }
 
     public boolean isDrainScheduled() {
@@ -117,18 +117,18 @@ public class JMSMessageListener<K> implements MessageListener {
             if ( queueToDrain <= 0 ) {
                 return;
             } else if (queueToDrain > QUEUE_SIZE_OVERFLOW_LIMIT) {
-                log.error("JMS message queue size {} exceeds maximum size {}", queueToDrain, QUEUE_SIZE_OVERFLOW_LIMIT);
+                log.error("JMS message queue size queueToDrainSize={} exceeds maximum size queueOverflowLimitSize={}", queueToDrain, QUEUE_SIZE_OVERFLOW_LIMIT);
                 int trashed = 0;
                 while (queueToDrain > QUEUE_SIZE_OVERFLOW_LIMIT) {
                     messageQueue.poll();
                     queueToDrain--;
                     trashed++;
                 }
-                log.warn("JMS message queue size decreased by {} messages by trashing to size {}", trashed, messageQueue.size());
+                log.warn("JMS message queue size decreased by trashedCount={} messages by trashing to size messageQueueSizeAfter={}", trashed, messageQueue.size());
             } else if (queueToDrain > QUEUE_SIZE_WARNING_LIMIT) {
-                log.warn("JMS message queue size {} exceeds error limit {}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
+                log.warn("JMS message queue size queueToDrain={} exceeds error limit queueWarningLimitSize={}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
             } else {
-                log.info("JMS message queue size {}", queueToDrain );
+                log.info("JMS message queue size queueToDrainSize={}", queueToDrain );
             }
 
             // Allocate array with current message queue size and drain same amount of messages
@@ -146,11 +146,11 @@ public class JMSMessageListener<K> implements MessageListener {
             }
 
             if ( counter > 0 && !shutdownCalled.get() ) {
-                log.info("JMS message queue drained {} of {} messages. Next update data to db.", counter, queueToDrain);
+                log.info("JMS message queue drainedCount={} of queueToDrain={} messages. Next update data to db.", counter, queueToDrain);
                 messageDrainedCounter.addAndGet(counter);
                 final int updated = dataUpdater.updateData(targetList);
                 dbRowsUpdatedCounter.addAndGet(updated);
-                log.info("JMS message queue draining and updating of {} messages ({} db rows) took {} ms", counter, updated, start.getTime());
+                log.info("JMS message queue draining and updating of counter={} messages ( updated={} db rows) tookMs{}", counter, updated, start.getTime());
             }
         } else {
             log.info("drainQueueInternal: Shutdown called");

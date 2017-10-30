@@ -56,17 +56,17 @@ public class TravelTimeUpdater {
         TravelTimeMeasurementsDto data = travelTimeClient.getMeasurements(from);
 
         if (data != null && data.measurements != null) {
-            log.info("Fetched PKS individual measurements for {} links. Period start {} and duration {}",
+            log.info("Fetched PKS individual measurementsCount={} links. Period startDate={} and duration={}",
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
-            log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time measurement data was empty @ updateDataUpdatedDate={}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
             return;
         }
 
         final Map<Long, LinkFastLaneDto> nonObsoleteLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        log.info("Non obsolete PKS links in database {}", nonObsoleteLinks.size());
+        log.info("nonObsoleteLinksCount={}", nonObsoleteLinks.size());
 
         logMissingLinks(data.measurements.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
@@ -82,7 +82,7 @@ public class TravelTimeUpdater {
         travelTimeRepository.insertMeasurementData(processed);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
 
-        log.info("Processed and saved PKS measurements for {} links", processed.size());
+        log.info("Processed and saved PKS measurements for processedCount{} links", processed.size());
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
@@ -92,9 +92,9 @@ public class TravelTimeUpdater {
         final TravelTimeMediansDto data = travelTimeClient.getMedians(from);
 
         if (data != null && data.medians != null) {
-            log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
+            log.info("Fetched PKS medians for linkCount={} links. Period start={} and duration={}", data.medians.size(), data.periodStart, data.duration);
         } else {
-            log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time median data was empty @ updateDataUpdatedDate={}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
             return;
         }
@@ -120,7 +120,7 @@ public class TravelTimeUpdater {
         travelTimeRepository.updateLatestMedianData(processedMedians);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
 
-        log.info("Processed and saved PKS medians for {} links", processedMedians.size());
+        log.info("Processed and saved PKS medians for processedMediansCount={} links", processedMedians.size());
     }
 
     private void logMissingLinks(final Set<Long> naturalIds, final Set<Long> nonObsoleteLinkNaturalIds) {

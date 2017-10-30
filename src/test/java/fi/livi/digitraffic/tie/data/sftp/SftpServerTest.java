@@ -43,7 +43,7 @@ public class SftpServerTest extends AbstractSftpTest {
 
         final String testFileContents = "some file contents";
         String uploadedFileName = "uploadFile";
-        log.info("Upload file {} with content {}", uploadedFileName, testFileContents);
+        log.info("Upload file={} with content={}", uploadedFileName, testFileContents);
         session.write(new ByteArrayInputStream(testFileContents.getBytes()), uploadedFileName);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -52,7 +52,7 @@ public class SftpServerTest extends AbstractSftpTest {
 
         String fileData = out.toString(UTF_8.toString());
 
-        log.info("Downloaded file {} with content {}", uploadedFileName, fileData);
+        log.info("Downloaded file={} with content={}", uploadedFileName, fileData);
 
         assertEquals("Read file contents not equal with written content", testFileContents, fileData);
 
@@ -64,7 +64,7 @@ public class SftpServerTest extends AbstractSftpTest {
 
         HashSet<Session> sessions = new HashSet<>();
         while(sessions.size() < poolSize+1) {
-            log.info("Get session {}", sessions.size()+1);
+            log.info("Get sessionCount={}", sessions.size()+1);
             if (sessions.size() < poolSize) {
                 sessions.add(this.sftpSessionFactory.getSession());
             } else {
@@ -78,7 +78,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 } catch (MessagingException e) {
                     fail = true;
                     time.stop();
-                    log.info("Timeout took {} ms", time.getTime());
+                    log.info("Timeout tookMs={}", time.getTime());
                     assertTrue(time.getTime() >= sessionWaitTimeout);
                     assertTrue(time.getTime() <= sessionWaitTimeout+100);
                 }
@@ -94,7 +94,7 @@ public class SftpServerTest extends AbstractSftpTest {
 
         HashSet<Session> newSessions = new HashSet<>();
         while(newSessions.size() < poolSize) {
-            log.info("Get new session {}", newSessions.size()+1);
+            log.info("Get new sessionCount={}", newSessions.size()+1);
             newSessions.add(this.sftpSessionFactory.getSession());
         }
         // relase sessions to pool
@@ -109,7 +109,7 @@ public class SftpServerTest extends AbstractSftpTest {
 
         HashSet<Session> cachedSessions = new HashSet<>();
         while(cachedSessions.size() < poolSize) {
-            log.info("Get cached session {}", cachedSessions.size()+1);
+            log.info("Get cached sessionCount={}", cachedSessions.size()+1);
             cachedSessions.add(this.sftpSessionFactory.getSession());
         }
         Set<Session> cachedRealSessions = new HashSet<>();

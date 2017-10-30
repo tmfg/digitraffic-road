@@ -155,12 +155,12 @@ public class Datex2DataServiceTest extends AbstractTest {
                     if ( d2 == null ) {
                         throw new RuntimeException("Datex2 response can't be null!");
                     }
-                    log.info(name + "{}: {}", name, i);
+                    log.info("name={} i={}", name, i);
                 }
                 success = true;
             } finally {
                 running = false;
-                log.info("{} exiting with success status {}", name, success);
+                log.info("name={} exiting with success status={}", name, success);
             }
         }
 

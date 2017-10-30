@@ -12,7 +12,7 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
         if ( StringUtils.isNotBlank(serverAddress) &&
              StringUtils.containsNone(serverAddress, '$', '{', '}') ) {
-            log.info("Init {} with server address {}", getClass().getSimpleName(), serverAddress);
+            log.info("Init name={} with server address={}", getClass().getSimpleName(), serverAddress);
             setDefaultUri(serverAddress);
             setMarshaller(marshaller);
             setUnmarshaller(marshaller);
@@ -22,7 +22,7 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
             sender.setReadTimeout(30000);
             setMessageSender(sender);
         } else {
-            log.warn("Not setting up bean: {} because server address ({}) property was not set.", getClass().getSimpleName(), serverAddress);
+            log.warn("Not setting up beanName={} because server addressProperty={} was not set.", getClass().getSimpleName(), serverAddress);
         }
     }
 }

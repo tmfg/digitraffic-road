@@ -121,7 +121,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             final int updated = sensorDataUpdateService.updateWeatherData(data);
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            log.info("handleData took {} ms", sw.getTime());
+            log.info("handleData tookMs={}", sw.getTime());
             return updated;
         };
 
@@ -192,7 +192,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
             }
 
-            log.info("Data generation took {} ms", sw.getTime());
+            log.info("Data generation tookMs={}", sw.getTime());
             StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += swHandle.getTime();
@@ -210,8 +210,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 e.printStackTrace();
             }
         }
-        log.info("End with arvo {}", arvo);
-        log.info("Handle weather data total took {} ms and max was {} ms {}",
+        log.info("End with arvo={}", arvo);
+        log.info("Handle weather data total tookMs={} and max was maxMs={} result={}",
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
         // Assert sensor values are updated to db

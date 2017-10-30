@@ -155,7 +155,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            log.info("handleData took {} ms", sw.getTime());
+            log.info("handleData tookMs={}", sw.getTime());
             return updated;
         };
         final JMSMessageListener tmsJmsMessageListener = new JMSMessageListener(new TmsMessageMarshaller(),
@@ -222,7 +222,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
             }
 
-            log.info("Data generation took {} ms", sw.getTime());
+            log.info("Data generation tookMs{}", sw.getTime());
             final StopWatch swHandle = StopWatch.createStarted();
 
             tmsJmsMessageListener.drainQueueScheduled();
@@ -241,8 +241,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             }
         }
 
-        log.info("End with arvo {}", arvo);
-        log.info("Handle tms data total took {} ms and max was {} ms {}",
+        log.info("End with arvo={}", arvo);
+        log.info("Handle tms data total tookMs{} and maxMs{} result={}",
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         log.info("Check data validy");
@@ -284,7 +284,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
-        log.info("lastUpdated {} vs {}", lastUpdated, LocalDateTime.now().minusMinutes(2));
+        log.info("lastUpdated={} vs now={}", lastUpdated, LocalDateTime.now().minusMinutes(2));
         assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);

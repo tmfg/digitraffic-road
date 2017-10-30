@@ -42,7 +42,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         log.info("Fetching TiesaaAsemas");
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
-        log.info("Fetched {} TiesaaAsemas", response.getValue().getTiesaaAsema().size());
+        log.info("roadStationFetchedCount={} TiesaaAsemas", response.getValue().getTiesaaAsema().size());
         return response.getValue().getTiesaaAsema();
     }
 

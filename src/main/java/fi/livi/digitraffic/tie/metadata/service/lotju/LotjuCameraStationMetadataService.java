@@ -41,10 +41,10 @@ public class LotjuCameraStationMetadataService {
 
         final ConcurrentMap<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId = new ConcurrentHashMap<>();
 
-        log.info("Fetch Kameras");
+        log.info("Fetch Cameras");
         final List<KameraVO> kamerat = lotjuCameraStationClient.getKameras();
-        log.info("Fetched {} Kameras", kamerat.size());
-        log.info("Fetch Esiasentos for Kameras");
+        log.info("cameraFetchedCount={} Cameras", kamerat.size());
+        log.info("Fetch Presets for Cameras");
 
         final StopWatch start = StopWatch.createStarted();
         final ExecutorService executor = Executors.newFixedThreadPool(1 );
@@ -68,7 +68,7 @@ public class LotjuCameraStationMetadataService {
         });
         executor.shutdown();
 
-        log.info("Fetched {} Esiasentos for {} Kameras, took {} ms", countEsiasentos.get(), kameraAndEsiasentosPairMappedByKameraLotjuId.size(), start.getTime());
+        log.info("presetFetchedCount={} Esiasentos for cameraCount={} Cameras, tookMs={}", countEsiasentos.get(), kameraAndEsiasentosPairMappedByKameraLotjuId.size(), start.getTime());
         return kameraAndEsiasentosPairMappedByKameraLotjuId;
     }
 

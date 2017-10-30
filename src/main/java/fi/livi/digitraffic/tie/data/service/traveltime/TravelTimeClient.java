@@ -75,7 +75,7 @@ public class TravelTimeClient {
 
         final String startTimeUtc = getDateString(from);
         final String url = mediansUrl + "?starttime=" + startTimeUtc;
-        log.info("Fetching travel time medians from: {}", url);
+        log.info("Fetching travel time medians from: url={}", url);
 
         return (TravelTimeMediansDto) getTravelTimeData(url, TravelTimeMediansDto.class);
     }
@@ -85,7 +85,7 @@ public class TravelTimeClient {
 
         final String startTimeUtc = getDateString(from);
         final String url = individualMeasurementUrl + "?starttime=" + startTimeUtc;
-        log.info("Fetching travel time individual measurements from: {}", url);
+        log.info("Fetching travel time individual measurements from: url={}", url);
 
         return (TravelTimeMeasurementsDto) getTravelTimeData(url, TravelTimeMeasurementsDto.class);
     }
@@ -93,7 +93,7 @@ public class TravelTimeClient {
     @Retryable
     public LinkMetadataDto getLinkMetadata() {
 
-        log.info("Fetching travel time link metadata from: {}", metadataUrl);
+        log.info("Fetching travel time link metadata from: url={}", metadataUrl);
 
         return (LinkMetadataDto) getTravelTimeData(metadataUrl, LinkMetadataDto.class);
     }

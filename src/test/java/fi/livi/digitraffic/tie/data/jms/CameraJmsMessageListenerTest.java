@@ -98,7 +98,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
 
         final Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
-        log.info("All camera presets size {}", cameraPresets.size());
+        log.info("All camera presets size cameraPresetsCount={}", cameraPresets.size());
 
         int missingMin = 1000 - nonObsoleteCameraPresets.size();
         final Iterator<CameraPreset> iter = cameraPresets.values().iterator();
@@ -135,7 +135,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
         log.info("Using weathercam.importDir:{}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
-        log.info("Mock server port: {}", port);
+        log.info("Mock server port={}", port);
 
         createHttpResponseStubFor(1 + IMAGE_SUFFIX);
         createHttpResponseStubFor(2 + IMAGE_SUFFIX);
@@ -158,7 +158,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            log.info("handleData took {} ms", start.getTime());
+            log.info("handleData tookMs={}", start.getTime());
             return updated;
         };
 

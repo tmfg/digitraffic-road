@@ -53,9 +53,9 @@ public class LockingServiceTest extends AbstractTest {
         Long prev = null;
         for (Long start: lockStarts) {
             if (prev != null) {
-                log.info("START: {} DIFF {} s", start, (double)(start-prev)/1000.0);
+                log.info("START={} DIFF={} s", start, (double)(start-prev)/1000.0);
             } else {
-                log.info("START: {}", start);
+                log.info("START={}", start);
             }
             prev = start;
         }
