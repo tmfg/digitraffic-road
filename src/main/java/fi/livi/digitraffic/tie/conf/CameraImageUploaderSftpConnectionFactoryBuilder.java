@@ -82,7 +82,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(knownHostsPath));
         defaultSftpSessionFactory.setAllowUnknownKeys(allowUnknownKeys);
         defaultSftpSessionFactory.setTimeout(connectionTimeout);
-        log.info("Initialized DefaultSftpSessionFactory host:{}, port:{}, privateKey:{}, user:{}, knownHostsPath:{}, allowUnknownKeys;{}",
+        log.info("Initialized DefaultSftpSessionFactory host={}, port={}, privateKey={}, user={}, knownHostsPath={}, allowUnknownKeys={}",
                  host, port, resolveResourceAbsolutePath(privateKeyPath), user, resolveResourceAbsolutePath(knownHostsPath), allowUnknownKeys);
         return defaultSftpSessionFactory;
     }
@@ -90,25 +90,25 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     // TODO Explain why the name is set?
     @Bean(name = "sftpSessionFactory")
     public CachingSessionFactory<ChannelSftp.LsEntry> getCachingSessionFactory() throws IOException {
-        log.info("Init CachingSessionFactory for sftp with poolSize {} and sessionWaitTimeout {}", poolSize, sessionWaitTimeout);
+        log.info("Init CachingSessionFactory for sftp with poolSize={} and sessionWaitTimeoutMs={}", poolSize, sessionWaitTimeout);
         CachingSessionFactory<ChannelSftp.LsEntry> cachingSessionFactory = new CachingSessionFactory<>(getDefaultSftpSessionFactory(), poolSize);
         cachingSessionFactory.setSessionWaitTimeout(sessionWaitTimeout);
         return cachingSessionFactory;
     }
 
     private Resource getPrivateKey() throws IOException {
-        log.info("Load private key {}", privateKeyPath);
+        log.info("Load private keyPath={}", privateKeyPath);
         String absolutePath = resolveResourceAbsolutePath(privateKeyPath);
         return loadResource(absolutePath);
     }
 
     private Resource loadResource(String resourcePath) {
-        log.info("Load resource {}", resourcePath);
+        log.info("Load resource resourcePath={}", resourcePath);
         if (resourcePath.contains("classpath:")) {
             return resourceLoader.getResource(resourcePath);
         } else {
             FileSystemResource fsRes = new FileSystemResource(resourcePath.replace("file:", ""));
-            log.info("Resource path {}", fsRes.getPath());
+            log.info("Resource path resourcePath={}", fsRes.getPath());
             return fsRes;
         }
     }
@@ -120,10 +120,10 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
             final Resource rootResource = resourceLoader.getResource(folderLocation);
             final String rootPath = rootResource.getFile().getAbsolutePath();
             final String absolutePath = rootPath + File.separator + fileName;
-            log.info("Resolved resource {} to {}", resource, absolutePath);
+            log.info("Resolved resource resource={} to absolutePath={}", resource, absolutePath);
             return absolutePath;
         } catch (Exception e) {
-            log.error("Could not resolve resource " + resource +" absolute path");
+            log.error("Could not resolve resource=" + resource +" absolute path");
             throw e;
         }
     }

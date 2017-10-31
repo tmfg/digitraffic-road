@@ -72,7 +72,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             if (rs != null) {
                 cameraPreset.setRoadStation(rs);
-                log.info("Fixed {} missing RoadStation with exiting {}", cameraPreset, rs);
+                log.info("Fixed cameraPreset={} missing RoadStation with exiting {}", cameraPreset, rs);
             } else {
                 rs = new RoadStation(RoadStationType.CAMERA_STATION);
                 rs.setName("GENERATED");
@@ -141,8 +141,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             }
         }
 
-        log.info("Obsoleted {} camera presets", obsoleted);
-        log.info("Fixed {} camera presets without lotjuId", updated);
+        log.info("obsoletedCameraPresets={} camera presets", obsoleted);
+        log.info("fixedCameraPresets={} camera presets without lotjuId", updated);
 
         return updated > 0 || obsoleted > 0;
     }
@@ -230,7 +230,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         final String presetId = CameraHelper.convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {
-            log.warn("Update camera preset (id: {}, presetId: {}) cameraId from {} to {}",
+            log.warn("Update camera preset ( toId={}, toPresetId={} ) toCameraId={} cameraId={}",
                 to.getId(), to.getPresetId(), to.getCameraId(), cameraId);
             log.debug("Old preset: {}", ToStringBuilder.reflectionToString(to));
             log.debug("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
@@ -243,7 +243,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             log.info("New kamera: {}", ToStringBuilder.reflectionToString(kameraFrom));
             log.info("New esiasento: {}", ToStringBuilder.reflectionToString(esiasentoFrom));
             if (!isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila())) {
-                log.warn("Update: CameraPresetId doesn't match old: {} vs new {}", to.getPresetId(), presetId);
+                log.warn("Update: CameraPresetId doesn't match toPresetId={} vs new presetId={}", to.getPresetId(), presetId);
             }
         }
         to.setPresetId(presetId);
@@ -275,7 +275,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getNearestWeatherStation().getLotjuId())) {
                 final WeatherStation nearestWs = weatherStationService.findWeatherStationByLotjuId(tsaLotjuId);
                 if(nearestWs == null && !isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila())) {
-                    log.error("Could not set set nearest Weather Station for cameraPreset {}. Weather station with lotjuId {} not found.",
+                    log.error("Could not set set nearest Weather Station for cameraPresetId={}. Weather station with lotjuId={} not found.",
                               to.getPresetId(), tsaLotjuId);
                 }
                 to.setNearestWeatherStation(nearestWs);

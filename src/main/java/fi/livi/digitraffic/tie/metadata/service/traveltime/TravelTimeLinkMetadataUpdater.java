@@ -110,7 +110,7 @@ public class TravelTimeLinkMetadataUpdater {
                                            site.coordinatesKkj3.x, site.coordinatesKkj3.y,
                                            coordinatesWgs84.getLeft(), coordinatesWgs84.getRight());
             } else {
-                log.error("Skipping Site with natural id {}. Could not parse roadSectionNumber or roadSectionBeginDistance from roadRegisterAddress {}",
+                log.error("Skipping Site with naturalId={}. Could not parse roadSectionNumber or roadSectionBeginDistance from roadRegisterAddress={}",
                           site.number, site.roadRegisterAddress);
             }
         }
@@ -155,9 +155,9 @@ public class TravelTimeLinkMetadataUpdater {
                     direction = 2;
                 }
 
-                log.info("Creating or updating link (naturalId): {} with values: startSite.roadNumber: {}, startRoadSectionNumber: {}, endSite.roadNumber: {}, " +
-                         "endRoadSectionNumber: {}, name: {}, length: {}, direction: {}, startRoadAddressDistance: {}, endRoadAddressDistance: {}, " +
-                         "special: {}, obsolete: false, obsoleteDate: null",
+                log.info("Creating or updating link naturalId={} with values startSiteRoadNumber={} startRoadSectionNumber={} endSiteRoadNumber={} " +
+                         "endRoadSectionNumber={} name={} length={} direction={} startRoadAddressDistance={} endRoadAddressDistance={} " +
+                         "special={} obsolete=false obsoleteDate=null",
                          linkData.linkNumber, startSite.roadNumber, startRoadSectionNumber, endSite.roadNumber, endRoadSectionNumber,
                          getName(linkData.names, "fi", LinkDto.class, linkData.linkNumber), length, direction,
                          startRoadAddressDistance, endRoadAddressDistance, special);
@@ -180,7 +180,7 @@ public class TravelTimeLinkMetadataUpdater {
 
                 linkDao.createOrUpdateLinkDirection(linkData.linkNumber, linkData.directionIndex);
             } else {
-                log.error("Skipping link with invalid road address. Link naturalId: {}, startSite: {}, endSite: {}",
+                log.error("Skipping link with invalid road address. Link naturalId={}, startSite={}, endSite={}",
                           linkData.linkNumber, startSite.toString(), endSite.toString());
             }
         }
@@ -189,7 +189,7 @@ public class TravelTimeLinkMetadataUpdater {
     private static String getName(final List<NameDto> names, final String language, final Class clazz, final Number id) {
         final Optional<String> name = names.stream().filter(n -> n.language.equals(language)).map(n -> n.text).findFirst();
         if (!name.isPresent()) {
-            log.warn("{} with naturalId {} is missing name in {} language", clazz.getSimpleName(), id, language);
+            log.warn("clazz={} with naturalId={} is missing name in language={}", clazz.getSimpleName(), id, language);
             return "";
         }
         return name.get();

@@ -41,7 +41,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
-        log.info("Fetched {} Kameras took {} ms", response.getValue().getKamerat().size(), start.getTime());
+        log.info("cameraFetchedCount={} Cameras tookMs={}", response.getValue().getKamerat().size(), start.getTime());
         return response.getValue().getKamerat();
     }
 

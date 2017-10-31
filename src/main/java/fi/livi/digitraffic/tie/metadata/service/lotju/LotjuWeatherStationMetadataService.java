@@ -42,7 +42,7 @@ public class LotjuWeatherStationMetadataService {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 100000)
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
-        log.info("Fetching TiesaaLaskennallinenAnturis for {} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
+        log.info("Fetching TiesaaLaskennallinenAnturis for roadWeatherStationCount={} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
 
         final ConcurrentMap<Long, List<TiesaaLaskennallinenAnturiVO>> tiesaaAnturisMappedByRwsLotjuId = new ConcurrentHashMap<>();
 
@@ -66,7 +66,7 @@ public class LotjuWeatherStationMetadataService {
         });
         executor.shutdown();
 
-        log.info("Fetched {} Anturits, took {} ms", countAnturis, start.getTime());
+        log.info("Fetched sensorsCount={} Anturits, tookMs={}", countAnturis, start.getTime());
         return tiesaaAnturisMappedByRwsLotjuId;
     }
 

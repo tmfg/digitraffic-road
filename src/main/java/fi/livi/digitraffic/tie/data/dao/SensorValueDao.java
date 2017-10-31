@@ -106,7 +106,7 @@ public class SensorValueDao {
                 }
             }
         }
-        log.info("Update {} allowed and skipped {} not allowed tms sensor values", updateCount, notAllowed);
+        log.info("updateCount={} allowed and skipped notAllowedCount={} not allowed tms sensor values", updateCount, notAllowed);
         return batchData;
     }
 
@@ -127,7 +127,7 @@ public class SensorValueDao {
                 }
             }
         }
-        log.info("Update {} allowed and skipped {} not allowed weather sensor values", updateCount, notAllowed);
+        log.info("updateCount={} allowed and skipped notAllowedCount={} not allowed weather sensor values", updateCount, notAllowed);
         return (Map<String, Object>[])batchData.toArray(((Map[])new HashMap[0]));
     }
 

@@ -62,7 +62,7 @@ public class LocationReader extends AbstractReader<Location> {
         }
 
          if(!component.startsWith(GEOCODE_FIN_CODE)) {
-             log.error("invalid geocode:{}", component);
+             log.error("invalid geocode={}", component);
              return null;
          }
 
