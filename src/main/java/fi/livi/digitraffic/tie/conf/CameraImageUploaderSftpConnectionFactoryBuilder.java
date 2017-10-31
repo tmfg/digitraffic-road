@@ -82,7 +82,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(knownHostsPath));
         defaultSftpSessionFactory.setAllowUnknownKeys(allowUnknownKeys);
         defaultSftpSessionFactory.setTimeout(connectionTimeout);
-        log.info("Initialized DefaultSftpSessionFactory host:{}, port:{}, privateKey:{}, user:{}, knownHostsPath:{}, allowUnknownKeys;{}",
+        log.info("Initialized DefaultSftpSessionFactory host={}, port={}, privateKey={}, user={}, knownHostsPath={}, allowUnknownKeys={}",
                  host, port, resolveResourceAbsolutePath(privateKeyPath), user, resolveResourceAbsolutePath(knownHostsPath), allowUnknownKeys);
         return defaultSftpSessionFactory;
     }

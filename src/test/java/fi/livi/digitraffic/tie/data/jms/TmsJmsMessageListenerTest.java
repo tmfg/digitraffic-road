@@ -222,7 +222,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
             }
 
-            log.info("Data generation tookMs{}", sw.getTime());
+            log.info("Data generation tookMs={}", sw.getTime());
             final StopWatch swHandle = StopWatch.createStarted();
 
             tmsJmsMessageListener.drainQueueScheduled();
@@ -242,7 +242,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         }
 
         log.info("End with arvo={}", arvo);
-        log.info("Handle tms data total tookMs{} and maxMs{} result={}",
+        log.info("Handle tms data total tookMs={} and maxMs={} result={}",
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         log.info("Check data validy");

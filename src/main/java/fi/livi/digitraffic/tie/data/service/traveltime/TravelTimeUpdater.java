@@ -82,7 +82,7 @@ public class TravelTimeUpdater {
         travelTimeRepository.insertMeasurementData(processed);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
 
-        log.info("Processed and saved PKS measurements for processedCount{} links", processed.size());
+        log.info("Processed and saved PKS measurements for processedCount={} links", processed.size());
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

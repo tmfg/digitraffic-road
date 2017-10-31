@@ -131,7 +131,7 @@ public class LockingServiceTest extends AbstractTest {
             while (counter < LOCK_COUNT) {
                 boolean locked = lockingService.acquireLock(lock, instanceId, LOCK_EXPIRATION_S);
                 if (locked) {
-                    log.info("Acquired Lock [{}] for: [{}]", lock, instanceId);
+                    log.info("Acquired Lock=[{}] for instanceId=[{}]", lock, instanceId);
                     lockStarts.add(System.currentTimeMillis());
                     lockerInstanceIds.add(instanceId);
                     counter++;

@@ -133,7 +133,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
-        log.info("Using weathercam.importDir:{}", testFolder.getRoot().getPath());
+        log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
         log.info("Mock server port={}", port);
 

@@ -70,7 +70,7 @@ public class TmsStationData2Datex2Converter {
                              sensorValues.forEach(value -> publication.withSiteMeasurements(getSiteMeasurement(station, value, skippedSensorValues))));
 
         skippedSensorValues.forEach((k, v) -> log.warn("Skipping unsupported sensor while building datex2 message. sensorName={}, " +
-                                                       "skipped sensor value: sensorValue{}", k, v));
+                                                       "skipped sensor value: sensorValue={}", k, v));
 
         return new D2LogicalModel()
             .withPayloadPublication(publication)

@@ -138,7 +138,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             count++;
             final int imageNumber = (count % 5)+1;
 
-            log.info("Load image resource=={}{} for presetId={}", imageNumber, RESOURCE_IMAGE_SUFFIX, cp.getPresetId());
+            log.info("Load image resource={}{} for presetId={}", imageNumber, RESOURCE_IMAGE_SUFFIX, cp.getPresetId());
             final Resource resource = resourceLoader.getResource("classpath:" + IMAGE_DIR + imageNumber + RESOURCE_IMAGE_SUFFIX);
             final File imageFile = resource.getFile();
             final byte[] bytes = FileUtils.readFileToByteArray(imageFile);
