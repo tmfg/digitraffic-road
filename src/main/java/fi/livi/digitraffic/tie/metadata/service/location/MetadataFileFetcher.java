@@ -48,7 +48,7 @@ public class MetadataFileFetcher {
         final URL url = getLatestUrl();
         final LatestReader reader = new LatestReader();
 
-        log.info("reading latest from {}", url);
+        log.info("reading latest from url={}", url);
 
         try {
             reader.read(url);

@@ -58,7 +58,7 @@ public class LocationMetadataUpdater {
                 removeTempFiles(paths);
                 stopWatch.stop();
 
-                log.info("Locations and locationtypes updated, took {} millis", stopWatch.getTime());
+                log.info("Locations and locationtypes updated, tookMs={}", stopWatch.getTime());
             } else {
                 log.info("No need to update locations or locationtypes");
             }
@@ -91,7 +91,7 @@ public class LocationMetadataUpdater {
 
     private static boolean needUpdate(final MetadataVersions.MetadataVersion newVersion, final String currentVersion) {
         if(!StringUtils.equals(newVersion.version, currentVersion)) {
-            log.info("Versions differ, old versions {}, new version {}, must be updated", currentVersion, newVersion.version);
+            log.info("Versions differ, oldVersion={}, newVersion={}, must be updated", currentVersion, newVersion.version);
 
             return true;
         }

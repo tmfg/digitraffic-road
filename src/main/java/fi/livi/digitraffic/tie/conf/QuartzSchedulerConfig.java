@@ -77,11 +77,11 @@ public class QuartzSchedulerConfig {
                     try {
                         // If trigger is missing but job exists in db, the trigger will not be created. Delete the job to recreate it and the trigger again.
                         if (scheduler.checkExists(t.getJobKey()) && !scheduler.checkExists(t.getKey()) && Key.DEFAULT_GROUP.equals(t.getKey().getGroup())) {
-                            log.info("Delete orphan job {}", t.getJobKey());
+                            log.info("Delete orphan job={}", t.getJobKey());
                             scheduler.deleteJob(t.getJobKey());
                         }
                     } catch (SchedulerException e) {
-                        log.error("Deleting job " + t.getJobKey() + " with missing trigger failed", e);
+                        log.error("Deleting job=" + t.getJobKey() + " with missing trigger failed", e);
                     }
                 });
                 return scheduler;
@@ -98,7 +98,7 @@ public class QuartzSchedulerConfig {
 
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
-            triggers.forEach(triggerBean -> log.info("Schedule trigger {}", triggerBean.getJobKey()));
+            triggers.forEach(triggerBean -> log.info("Schedule trigger={}", triggerBean.getJobKey()));
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
         return factory;
@@ -288,7 +288,7 @@ public class QuartzSchedulerConfig {
             // Delay first execution 5 seconds
             factoryBean.setStartDelay(5000L);
         }
-        log.info("Created Trigger for {} enabled {}", jobName, jobEnabled);
+        log.info("Created Trigger for jobName={} enabled={}", jobName, jobEnabled);
         return factoryBean;
     }
 }

@@ -72,11 +72,11 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             }
         }
 
-        log.info("Obsoleted {} RoadStationSensors", obsoleted);
-        log.info("Updated {} RoadStationSensors", updated);
-        log.info("Inserted {} RoadStationSensors", inserted);
+        log.info("Obsoleted={} RoadStationSensors", obsoleted);
+        log.info("Updated={} RoadStationSensors", updated);
+        log.info("Inserted={} RoadStationSensors", inserted);
         if (!invalid.isEmpty()) {
-            log.warn("Invalid TMS sensors from lotju {}", invalid.size());
+            log.warn("Invalid TMS sensors from lotju invalidCount={}", invalid.size());
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;

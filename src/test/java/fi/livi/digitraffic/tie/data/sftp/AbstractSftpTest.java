@@ -82,7 +82,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     @Before
     public void initSftpServer() throws IOException {
-        log.info("Init Sftp Server with temporary root folder {}", testFolder.getRoot());
+        log.info("Init Sftp Server with temporary root folder={}", testFolder.getRoot());
         httpPort = wireMockRule.port();
 
         testSftpServer = SshServer.setUpDefaultServer();
@@ -116,12 +116,12 @@ public abstract class AbstractSftpTest extends AbstractTest {
     }
 
     public SimpleGeneratorHostKeyProvider getOrCreateKeyPairProvider() throws IOException {
-        log.info("Load or generate private key {}", idRsaPrivatePath);
+        log.info("Load or generate private key={}", idRsaPrivatePath);
 
         String filePath = resolveResourceFilePath(idRsaPrivatePath);
 
         File file = new File(filePath);
-        log.info("Private Key absolute path {}", file.getAbsolutePath());
+        log.info("Private Key absolute path={}", file.getAbsolutePath());
 
         boolean generate = !file.exists();
         SimpleGeneratorHostKeyProvider kpProvider = new SimpleGeneratorHostKeyProvider(file);

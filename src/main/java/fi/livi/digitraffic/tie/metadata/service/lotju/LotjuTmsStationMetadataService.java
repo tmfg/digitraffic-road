@@ -69,7 +69,7 @@ public class LotjuTmsStationMetadataService {
         });
         executor.shutdown();
 
-        log.info("Fetched {} LamLaskennallinenAnturis for {} LAMAsemas, took {} ms",
+        log.info("lamFetchedCount={} LamLaskennallinenAnturis for lamStationCount={} LAMAsemas, tookMs={}",
                 countAnturis.get(), lamAnturisMappedByTmsLotjuId.size(), start.getTime());
         return lamAnturisMappedByTmsLotjuId;
     }

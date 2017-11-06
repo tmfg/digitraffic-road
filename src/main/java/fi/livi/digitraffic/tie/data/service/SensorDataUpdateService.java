@@ -53,11 +53,11 @@ public class SensorDataUpdateService {
         final Collection<LAMRealtimeProtos.Lam> filtered = filterNewestLamValues(data);
 
         if (data.size()-filtered.size() > 0) {
-            log.info("Filtered {} tms station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+            log.info("filtered={} tms station messages of original count={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
         final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds);
         stopWatch.stop();
-        log.info("Update tms sensors data for {} sensors of {} stations took {} ms", rows, filtered.size(), stopWatch.getTime());
+        log.info("Update tms sensors data for rows={} sensors of filteredCount={} stations tookMs={}", rows, filtered.size(), stopWatch.getTime());
         return rows;
     }
 
@@ -72,11 +72,11 @@ public class SensorDataUpdateService {
         final Collection<Tiesaa> filtered = filterNewestTiesaaValues(data);
 
         if (data.size()-filtered.size() > 0) {
-            log.info("Filtered {} weather station messages of original {} -> {} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+            log.info("filtered={} weather station messages of original dataCount={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
         final int rows = sensorValueDao.updateWeatherSensorData(filtered, allowedWeatherSensorLotjuIds);
         stopWatch.stop();
-        log.info("Update weather sensors data for {} sensors of {} stations took {} ms", rows, filtered.size(), stopWatch.getTime());
+        log.info("Update weather sensors data for rows={} sensors of filteredCount={} stations tookMs={}", rows, filtered.size(), stopWatch.getTime());
         return rows;
     }
 

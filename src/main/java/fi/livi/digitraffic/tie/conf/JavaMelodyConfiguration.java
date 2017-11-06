@@ -72,7 +72,7 @@ public class JavaMelodyConfiguration implements ServletContextInitializer {
         } else {
             storageDirectory = new FileSystemResource("").getFile().getAbsolutePath() + File.separator + javamelodyStorageDirectory;
         }
-        log.info("Set JavaMelody storage directory to {}", storageDirectory);
+        log.info("Set JavaMelody storage directory to storageDirectory={}", storageDirectory);
         javaMelody.addInitParameter(Parameter.STORAGE_DIRECTORY.getCode(), storageDirectory);
 
         // https://github.com/javamelody/javamelody/wiki/UserGuide#13-batch-jobs-if-quartz

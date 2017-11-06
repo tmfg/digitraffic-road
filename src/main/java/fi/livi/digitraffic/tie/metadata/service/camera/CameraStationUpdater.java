@@ -89,7 +89,7 @@ public class CameraStationUpdater {
         }
 
         if (invalidCount > 0) {
-            log.error("Found {} invalid Kameras from LOTJU", invalidCount);
+            log.error("invalidCount={} invalid Kameras from LOTJU", invalidCount);
         }
 
         // camera presets in database, but not in server
@@ -98,11 +98,11 @@ public class CameraStationUpdater {
         long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
         long nonOsoletedRoadStations = cameraPresetService.nonObsoleteCameraRoadStationsWithPublishablePresets();
 
-        log.info("Obsoleted {} CameraPresets that are not active", obsoletePresets);
-        log.info("Obsoleted {} Camera RoadStations without active presets", obsoletedRoadStations);
-        log.info("Non obsoleted {} Camera RoadStations with active presets", nonOsoletedRoadStations);
-        log.info("Updated {} CameraPresets", updated);
-        log.info("Inserted {} CameraPresets", inserted);
+        log.info("obsoletedCameraPresetsCount={} CameraPresets that are not active", obsoletePresets);
+        log.info("obsoletedRoadStationsCount={} Camera RoadStations without active presets", obsoletedRoadStations);
+        log.info("nonObsoletedCameraRoadStationsCount={} Camera RoadStations with active presets", nonOsoletedRoadStations);
+        log.info("updatedCameraPresetsCount={} CameraPresets", updated);
+        log.info("insertedCameraPresetsCount={} CameraPresets", inserted);
 
         return obsoletePresets > 0 || obsoletedRoadStations > 0 || nonOsoletedRoadStations > 0 || updated > 0 || inserted > 0;
     }
