@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,9 +117,14 @@ public class TravelTimeUpdater {
                                      data.lastStaticDataUpdate,
                                      mediansForNonObsoleteLinks), nonObsoleteLinks);
 
-        travelTimeRepository.insertMedianData(processedMedians);
-        travelTimeRepository.updateLatestMedianData(processedMedians);
-        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
+        try {
+            travelTimeRepository.insertMedianData(processedMedians);
+            travelTimeRepository.updateLatestMedianData(processedMedians);
+        } catch (DuplicateKeyException e) {
+            log.warn("Trying to insert duplicate medians. periodStart={}", from); // Avoid daylight saving time problems during autumn
+        } finally {
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from); // Skip this period when trying to add a duplicates
+        }
 
         log.info("Processed and saved PKS medians for processedMediansCount={} links", processedMedians.size());
     }

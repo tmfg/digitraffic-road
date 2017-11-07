@@ -71,7 +71,7 @@ public class DefaultExceptionHandler {
         final String message = exception.getConstraintViolations().stream().map(v -> getViolationMessage(v)).collect(Collectors.joining
             (","));
 
-        log.info("Constraint violation. uri={}, queryString={}, message={}",
+        log.info("Constraint violation. uri={}, queryString={}, errorMessage={}",
                  request.getRequest().getRequestURI(), request.getRequest().getQueryString(), message);
 
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),

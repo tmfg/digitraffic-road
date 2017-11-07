@@ -67,7 +67,7 @@ public class CameraImageUpdateService {
 
     @Transactional
     public boolean handleKuva(final Kuva kuva) {
-        boolean rval;
+        boolean success;
 
         log.info("Handling {}", ToStringHelper.toString(kuva));
 
@@ -77,15 +77,17 @@ public class CameraImageUpdateService {
         final String filename = getPresetImageName(presetId);
 
         if (cameraPreset != null) {
-            rval = saveKuva(kuva, presetId, filename);
+            success = transferKuva(kuva, presetId, filename);
         }
         else {
-            rval = deleteKuva(kuva, presetId, filename);
+            success = deleteKuva(kuva, presetId, filename);
         }
 
-        updateCameraPreset(cameraPreset, kuva);
+        if (success) {
+            updateCameraPreset(cameraPreset, kuva);
+        }
 
-        return rval;
+        return success;
     }
 
     private boolean deleteKuva(Kuva kuva, String presetId, String filename) {
@@ -97,7 +99,7 @@ public class CameraImageUpdateService {
         return deleteImage(filename);
     }
 
-    private boolean saveKuva(Kuva kuva, String presetId, String filename) {
+    private boolean transferKuva(Kuva kuva, String presetId, String filename) {
         // Read the image
         byte[] image = null;
         for (int readTries = 3; readTries > 0; readTries--) {
