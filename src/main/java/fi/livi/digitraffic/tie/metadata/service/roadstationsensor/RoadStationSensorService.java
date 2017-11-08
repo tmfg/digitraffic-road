@@ -311,8 +311,8 @@ public class RoadStationSensorService {
         // Obsolete not found sensors
         final long obsoleted = obsoleteSensors(currentSensorsMappedByNaturalId.values());
 
-        log.info("Obsoleted {} {} RoadStationSensor", obsoleted, roadStationType);
-        log.info("Fixed {} {} RoadStationSensor without lotjuId", updated, roadStationType);
+        log.info("obsoletedCount={} roadStationType={} RoadStationSensor", obsoleted, roadStationType);
+        log.info("fixedCount={} roadStationType={} RoadStationSensor without lotjuId", updated, roadStationType);
 
         return obsoleted > 0 || updated > 0;
     }

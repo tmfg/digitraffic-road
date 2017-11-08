@@ -5,6 +5,7 @@
 # Nämä tiedostot sisältävät salaisuuksia. Ignore.
 /src/test/resources/application-test.properties
 /src/main/resources/application-localhost.properties
+/src/main/resources/application-virtualbox.properties
 /src/test/resources/application-localhost.properties
 
 # Käännösartifaktit

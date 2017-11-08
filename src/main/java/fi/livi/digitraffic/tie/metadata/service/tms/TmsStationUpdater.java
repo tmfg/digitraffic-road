@@ -84,11 +84,11 @@ public class TmsStationUpdater {
         }
 
 
-        log.info("Obsoleted {} TmsStations", obsoleted);
-        log.info("Updated {} TmsStations", updated);
-        log.info("Inserted {} TmsStations", inserted);
+        log.info("Obsoleted={} TmsStations", obsoleted);
+        log.info("Updated={} TmsStations", updated);
+        log.info("Inserted={} TmsStations", inserted);
         if (!invalid.isEmpty()) {
-            log.warn("Invalid WeatherStations from lotju {}", invalid.size());
+            log.warn("Invalid WeatherStations from lotju invalidCount={}", invalid.size());
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0 || fixed > 0;

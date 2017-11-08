@@ -51,7 +51,7 @@ public class CameraDataUpdateService {
             futures.add(jobThreadPool.submit(task));
         });
 
-        while ( futures.parallelStream().anyMatch(f -> !f.isDone()) ) {
+        while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
@@ -66,7 +66,7 @@ public class CameraDataUpdateService {
                 }
             }).count();
 
-        log.info("Updating success for {} weather camera images of {} took {} ms", updateCount, futures.size(), start.getTime());
+        log.info("Updating success for updateCount={} weather camera images of futuresCount={} tookMs={}", updateCount, futures.size(), start.getTime());
         return (int) updateCount;
     }
 
@@ -107,7 +107,7 @@ public class CameraDataUpdateService {
             try {
                 return future.get(timeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
-                log.error("ImageUpdateTasks failed to complete for {} before timeout {} ms", presetId, timeout);
+                log.error("ImageUpdateTasks failed to complete for presetId={} before timeoutMs={} ms", presetId, timeout);
             } catch (Exception e) {
                 log.error("ImageUpdateTasks failed to complete for " + presetId + " with exception", e);
             } finally {

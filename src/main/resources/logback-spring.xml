@@ -90,7 +90,7 @@
     </logger>
     <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
         <appender-ref ref="NULL" />
-        <!--<appender-ref ref="FILE_LOGSTASH" />-->
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="true">
@@ -131,7 +131,7 @@
     </logger>
     <logger name="PerformanceMonitor" additivity="false">
         <appender-ref ref="NULL" />
-        <!-- <appender-ref ref="FILE_LOGSTASH" /> -->
+        <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
     <root level="INFO" additivity="false">
@@ -139,6 +139,10 @@
         <appender-ref ref="FILE_LOGSTASH" />
 
         <springProfile name="localhost">
+            <appender-ref ref="CONSOLE" />
+        </springProfile>
+
+        <springProfile name="virtualbox">
             <appender-ref ref="CONSOLE" />
         </springProfile>
     </root>

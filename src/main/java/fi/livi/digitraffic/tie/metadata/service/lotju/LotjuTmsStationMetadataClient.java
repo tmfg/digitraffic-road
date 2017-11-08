@@ -44,7 +44,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         log.info("Fetching LamAsemas");
         final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
-        log.info("Fetched {} LamAsemas", response.getValue().getAsemat().size());
+        log.info("lamFetchedCount={} LamAsemas", response.getValue().getAsemat().size());
         return response.getValue().getAsemat();
     }
 
@@ -66,7 +66,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
-        log.info("Fetched {} LAMLaskennallisetAnturis", response.getValue().getLaskennallinenAnturi().size());
+        log.info("lamFetchedCount={} LAMLaskennallisetAnturis", response.getValue().getLaskennallinenAnturi().size());
         return response.getValue().getLaskennallinenAnturi();
     }
 

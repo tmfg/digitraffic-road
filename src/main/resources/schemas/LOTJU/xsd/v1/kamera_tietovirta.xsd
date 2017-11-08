@@ -1,0 +1,27 @@
+<xs:schema version="1.0" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="kuva">
+        <xs:complexType>
+            <xs:attribute type="xs:long" name="kameraId"/>
+            <xs:attribute type="xs:long" name="esiasentoId"/>
+            <xs:attribute type="xs:dateTime" name="aika"/>
+            <xs:attribute type="xs:long" name="ttl"/>
+            <xs:attribute type="xs:string" name="url"/>
+            <xs:attribute type="xs:boolean" name="julkinen"/>
+            
+            <xs:attribute type="xs:string" name="xKoordinaatti"/>
+            <xs:attribute type="xs:string" name="yKoordinaatti"/>
+            <xs:attribute type="xs:string" name="zKoordinaatti"/>
+            <xs:attribute type="xs:string" name="nimi"/>
+            
+            <xs:attribute type="xs:integer" name="tienumero"/>
+            <xs:attribute type="xs:integer" name="tieosa"/>
+            <xs:attribute type="xs:integer" name="etaisyysTieosanAlusta"/>
+            <xs:attribute type="xs:integer" name="ajorata"/>
+            <xs:attribute type="xs:integer" name="puoli"/>
+            
+            <xs:attribute type="xs:string" name="asemanNimi"/>
+            <xs:attribute type="xs:string" name="esiasennonNimi"/>
+            <xs:attribute type="xs:string" name="liviId"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

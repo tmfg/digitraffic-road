@@ -88,11 +88,11 @@ public class WeatherStationUpdater  {
             }
         }
 
-        log.info("Obsoleted {} WeatherStations", obsoleted);
-        log.info("Updated {} WeatherStations", updated);
-        log.info("Inserted {} WeatherStations", inserted);
+        log.info("weatherStationsObsoletedCount={} WeatherStations", obsoleted);
+        log.info("weatherStationsUpdatedCount={} WeatherStations", updated);
+        log.info("weatherStationsInserted={} WeatherStations", inserted);
         if (!invalid.isEmpty()) {
-            log.warn("Invalid WeatherStations from lotju {}", invalid.size());
+            log.warn("invalidWeatherStationsFromLotjuCount={}", invalid.size());
         }
         return obsoleted > 0 || inserted > 0 || updated > 0;
     }

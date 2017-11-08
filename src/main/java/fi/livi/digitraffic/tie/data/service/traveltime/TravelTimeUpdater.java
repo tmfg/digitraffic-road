@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,41 +57,33 @@ public class TravelTimeUpdater {
         TravelTimeMeasurementsDto data = travelTimeClient.getMeasurements(from);
 
         if (data != null && data.measurements != null) {
-            log.info("Fetched PKS individual measurements for {} links. Period start {} and duration {}",
+            log.info("Fetched PKS individual measurementsCount={} links. Period startDate={} and duration={}",
                      data.measurements.size(), data.periodStart, data.duration);
         } else {
-            log.warn("Travel time measurement data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time measurement data was empty @ updateDataUpdatedDate={}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
             return;
         }
 
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> nonObsoleteLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        log.info("Valid PKS links in database {}", validLinks.size());
+        log.info("nonObsoleteLinksCount={}", nonObsoleteLinks.size());
 
-        final Set<Long> validLinkNaturalIds = validLinks.keySet();
+        logMissingLinks(data.measurements.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
-        final List<Long> linkIdsForMissingLinks = data.measurements.stream().filter(m -> !validLinkNaturalIds.contains(m.linkNaturalId))
-                                                                            .map(m -> m.linkNaturalId)
-                                                                            .collect(Collectors.toList());
-
-        if (!linkIdsForMissingLinks.isEmpty()) {
-            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
-        }
-
-        List<TravelTimeMeasurementLinkDto> measurementsForValidLinks =
-                                                    data.measurements.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
+        final List<TravelTimeMeasurementLinkDto> measurementsForNonObsoleteLinks =
+                                                    data.measurements.stream().filter(m -> nonObsoleteLinks.containsKey(m.linkNaturalId))
                                                                               .collect(Collectors.toList());
 
-        List<ProcessedMeasurementDataDto> processed =
+        final List<ProcessedMeasurementDataDto> processed =
                 TravelTimePostProcessor.processMeasurements(new TravelTimeMeasurementsDto(data.periodStart,
                                                                                           data.duration,
-                                                                                          measurementsForValidLinks), validLinks);
+                                                                                          measurementsForNonObsoleteLinks), nonObsoleteLinks);
 
         travelTimeRepository.insertMeasurementData(processed);
         dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEASUREMENTS_DATA, from);
 
-        log.info("Processed and saved PKS measurements for {} links", processed.size());
+        log.info("Processed and saved PKS measurements for processedCount={} links", processed.size());
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
@@ -100,41 +93,48 @@ public class TravelTimeUpdater {
         final TravelTimeMediansDto data = travelTimeClient.getMedians(from);
 
         if (data != null && data.medians != null) {
-            log.info("Fetched PKS medians for {} links. Period start {} and duration {}", data.medians.size(), data.periodStart, data.duration);
+            log.info("Fetched PKS medians for linkCount={} links. Period start={} and duration={}", data.medians.size(), data.periodStart, data.duration);
         } else {
-            log.warn("Travel time median data was empty @ {}", from.format(DateTimeFormatter.ISO_DATE_TIME));
+            log.warn("Travel time median data was empty @ updateDataUpdatedDate={}", from.format(DateTimeFormatter.ISO_DATE_TIME));
             dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
             return;
         }
 
-        final Map<Long, LinkFastLaneDto> validLinks = linkFastLaneRepository.findNonObsoleteLinks();
+        final Map<Long, LinkFastLaneDto> nonObsoleteLinks = linkFastLaneRepository.findNonObsoleteLinks();
 
-        final Set<Long> validLinkNaturalIds = validLinks.keySet();
+        logMissingLinks(data.medians.stream().map(m -> m.linkNaturalId).collect(Collectors.toSet()), nonObsoleteLinks.keySet());
 
-        final List<Long> linkIdsForMissingLinks = data.medians.stream().filter(m -> !validLinkNaturalIds.contains(m.linkNaturalId))
-                                                                       .map(m -> m.linkNaturalId)
-                                                                       .collect(Collectors.toList());
-
-        if (!linkIdsForMissingLinks.isEmpty()) {
-            log.info("following links have data but no link in db: {}", linkIdsForMissingLinks);
-        }
-
-        final List<TravelTimeMedianDto> mediansForValidLinks =
-                                                    data.medians.stream().filter(m -> validLinkNaturalIds.contains(m.linkNaturalId))
+        final List<TravelTimeMedianDto> mediansForNonObsoleteLinks =
+                                                    data.medians.stream().filter(m -> nonObsoleteLinks.containsKey(m.linkNaturalId))
                                                                          .collect(Collectors.toList());
 
-        List<ProcessedMedianDataDto> processedMedians = travelTimePostProcessor.processMedians(new TravelTimeMediansDto(data.periodStart,
-                                                                                                                        data.duration,
-                                                                                                                        data.supplier,
-                                                                                                                        data.service,
-                                                                                                                        data.creationTime,
-                                                                                                                        data.lastStaticDataUpdate,
-                                                                                                                        mediansForValidLinks), validLinks);
+        final List<ProcessedMedianDataDto> processedMedians = travelTimePostProcessor.processMedians(
+            new TravelTimeMediansDto(data.periodStart,
+                                     data.duration,
+                                     data.supplier,
+                                     data.service,
+                                     data.creationTime,
+                                     data.lastStaticDataUpdate,
+                                     mediansForNonObsoleteLinks), nonObsoleteLinks);
 
-        travelTimeRepository.insertMedianData(processedMedians);
-        travelTimeRepository.updateLatestMedianData(processedMedians);
-        dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from);
+        try {
+            travelTimeRepository.insertMedianData(processedMedians);
+            travelTimeRepository.updateLatestMedianData(processedMedians);
+        } catch (DuplicateKeyException e) {
+            log.warn("Trying to insert duplicate medians. periodStart={}", from); // Avoid daylight saving time problems during autumn
+        } finally {
+            dataStatusService.updateDataUpdated(DataType.TRAVEL_TIME_MEDIANS_DATA, from); // Skip this period when trying to add a duplicates
+        }
 
-        log.info("Processed and saved PKS medians for {} links", processedMedians.size());
+        log.info("Processed and saved PKS medians for processedMediansCount={} links", processedMedians.size());
+    }
+
+    private void logMissingLinks(final Set<Long> naturalIds, final Set<Long> nonObsoleteLinkNaturalIds) {
+        final Set<Long> missingLinks = naturalIds.stream().filter(naturalId -> !nonObsoleteLinkNaturalIds.contains(naturalId))
+                                                          .collect(Collectors.toSet());
+
+        if (!missingLinks.isEmpty()) {
+            log.warn("following links have data but no link in db: {}", missingLinks);
+        }
     }
 }

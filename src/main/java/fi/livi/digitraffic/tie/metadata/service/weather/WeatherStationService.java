@@ -96,7 +96,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
             }
         }
         if (updated > 0) {
-            log.info("Fixed null lotjuIds for {} weather stations", updated);
+            log.info("Fixed null lotjuIds for updatedCount={} weather stations", updated);
         }
     }
 

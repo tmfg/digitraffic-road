@@ -20,6 +20,6 @@ public class WeatherStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
             dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         }
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
-        log.info("Updated {} weather stations statuses", wsCount);
+        log.info("weatherStationsStatusUpdatedCount={}", wsCount);
     }
 }

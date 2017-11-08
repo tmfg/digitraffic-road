@@ -45,7 +45,7 @@ public class WeatherStationMetadataUpdateJob extends SimpleUpdateJob {
         }
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
 
-        log.info("UpdateRoadStationSensors took: {} ms, updateWeatherStations took: {} ms, updateWeatherStationsSensors took: {} ms",
+        log.info("UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateWeatherStations took: stationsTimeMs={} ms, updateWeatherStationsSensors took: stationsSensorsTimeMs={} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensors.getTime());
     }
 }

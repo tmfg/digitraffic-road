@@ -185,7 +185,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             }
         }
         if (updated > 0) {
-            log.info("Fixed null lotjuIds for {} tms stations", updated);
+            log.info("Fixed null lotjuIds for updatedCount={} tms stations", updated);
         }
         return updated;
     }
@@ -225,7 +225,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 
-            log.info("Created new {}", newTms);
+            log.info("Created new newTmsCount={}", newTms);
             return UpdateStatus.INSERTED;
         }
     }
@@ -284,7 +284,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         if (roadNaturalId != null && roadSectionNaturalId != null) {
             to.setRoadDistrict(roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId));
             if (to.getRoadDistrict() == null && !isPermanentlyDeletedKeruunTila(from.getKeruunTila())) {
-                log.warn("Could not find RoadDistrict with roadSectionNaturalId: {}, roadNaturalId: {} for {}",
+                log.warn("Could not find RoadDistrict with roadSectionNaturalId={}, roadNaturalId={} for {}",
                          roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(from));
             }
         } else {

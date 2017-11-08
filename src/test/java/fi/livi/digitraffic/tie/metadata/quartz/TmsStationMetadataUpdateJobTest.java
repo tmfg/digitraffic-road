@@ -162,8 +162,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         List<Long> sensorsInitial = before1.getProperties().getStationSensors();
         List<Long> sensorsAfter = after1.getProperties().getStationSensors();
 
-        log.info("SensorsInitial {}", sensorsInitial);
-        log.info("SensorsAfter {}", sensorsAfter);
+        log.info("sensorsInitial={}", sensorsInitial);
+        log.info("sensorsAfter={}", sensorsAfter);
 
         Assert.assertTrue(sensorsInitial.contains(5116L));
         Assert.assertTrue(sensorsInitial.contains(5119L));
