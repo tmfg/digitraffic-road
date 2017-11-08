@@ -64,14 +64,14 @@ jms.datex2.password=<password>
 
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-# controllers.enabled=false
+controllers.enabled=true
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=true
@@ -80,7 +80,7 @@ quartz.enabled=true
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false
-jms.datex2.enabled=true
+jms.datex2.enabled=false
 
 # Websocket stream of LAM sensor values
 websocket.tms.enabled=true
