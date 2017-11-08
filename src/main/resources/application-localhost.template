@@ -52,15 +52,15 @@ Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 
 # JMS settings
 
-# JMS Sonic 2013 8.6.0
-jms.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.userId=<username>
-jms.password=<password>
+# New test Sonic 2013 8.6.0
+jms.connectionUrls=
+jms.userId=
+jms.password=
 
 # Old sonic test for datex2
-jms.datex2.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.datex2.userId=<password>
-jms.datex2.password=<password>
+jms.datex2.connectionUrls=
+jms.datex2.userId=
+jms.datex2.password=
 
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
@@ -90,6 +90,6 @@ websocket.tms.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO
-#logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
