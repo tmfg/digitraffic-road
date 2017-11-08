@@ -57,11 +57,6 @@ jms.connectionUrls=
 jms.userId=
 jms.password=
 
-# Old sonic test for datex2
-jms.datex2.connectionUrls=
-jms.datex2.userId=
-jms.datex2.password=
-
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
