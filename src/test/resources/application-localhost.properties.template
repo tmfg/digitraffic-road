@@ -2,9 +2,9 @@
 server.port = 9000
 
 # Datasource
-spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
-spring.datasource.username=<username>
-spring.datasource.password=<password>
+spring.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
+spring.datasource.username=
+spring.datasource.password=
 
 # Format : user:password, one by line or separated by comma
 javamelody.authorized-users = username:password
@@ -23,15 +23,13 @@ tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
-travelTimeMediansUpdateJob.frequency=60000
-travelTimeMeasurementsUpdateJob.frequency=60000
-forecastSectionWeatherUpdateJob.frequency=900000
+forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 travelTimeLinkMetadataUpdateJob.frequency=86400000
 datex2MessageUpdateJob.frequency=180000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam.url/
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
@@ -54,37 +52,44 @@ Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 
 # JMS settings
 
-# Sonic JMS 8.6.0
-jms.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.userId=<username>
-jms.password=<password>
+# New test Sonic 2013 8.6.0
+jms.connectionUrls=
+jms.userId=
+jms.password=
 
-# JMS topics
-jms.weather.inQueue=<weather-topic>
-jms.tms.inQueue=<tms-topic>
-jms.camera.inQueue=<camera-topic>
-jms.datex2.inQueue=<datex2-topic>
+# Old sonic test for datex2
+jms.datex2.connectionUrls=
+jms.datex2.userId=digitraffic
+jms.datex2.password=digitrafficxx
+
+# JMS queues
+jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
+jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
+jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-#controllers.enabled=false
+controllers.enabled=false
 
 # Is metadata updates on. Should be true only for daemon process.
-#quartz.enabled=true
+quartz.enabled=false
 
 # JMS queue enabled/disabled (Only daemond should have these enabled)
-#jms.weather.enabled=false
-#jms.tms.enabled=false
-#jms.camera.enabled=false
-#jms.datex2.enabled=true
+jms.weather.enabled=false
+jms.tms.enabled=false
+jms.camera.enabled=false
+jms.datex2.enabled=false
 
-# Websocket stream of TMS sensor values
-#websocket.tms.enabled=true
+# Websocket stream of LAM sensor values
+websocket.tms.enabled=false
 
-# Developer life improvements
+# Disable jobs. Format: quartz.{jobClassName}.enabled = false
+# Ie. quartz.CameraUpdateJob.enabled = false
+
 logging.file=digitraffic-metadata
 logging.level.root=INFO
-#logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

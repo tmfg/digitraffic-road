@@ -92,6 +92,34 @@ public class TravelTimeUpdaterTest extends AbstractTest {
     }
 
     @Test
+    public void skipDuplicateMediansSucceeds() throws IOException {
+
+        List<LinkMeasurementDataDto> medianTravelTimes =
+            dayDataRepository.getAllMedianTravelTimesForLink(6, requestStartTime.getYear(), requestStartTime.getMonthValue());
+        assertEquals(0, medianTravelTimes.size());
+
+        server.expect(MockRestRequestMatchers.requestTo(expectedUri))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+            .andRespond(MockRestResponseCreators.withSuccess(getMediansResponse(), MediaType.APPLICATION_XML));
+
+        travelTimeUpdater.updateMedians(requestStartTime);
+        server.verify();
+
+        server.reset();
+
+        server.expect(MockRestRequestMatchers.requestTo(expectedUri))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+            .andRespond(MockRestResponseCreators.withSuccess(getMediansResponse(), MediaType.APPLICATION_XML));
+
+        travelTimeUpdater.updateMedians(requestStartTime);
+        server.verify();
+
+        medianTravelTimes = dayDataRepository.getAllMedianTravelTimesForLink(6, requestStartTime.getYear(), requestStartTime.getMonthValue());
+
+        assertEquals(1, medianTravelTimes.size());
+    }
+
+    @Test
     public void updateLatestMediansSucceeds() throws IOException {
 
         server.expect(MockRestRequestMatchers.requestTo(expectedUri))
