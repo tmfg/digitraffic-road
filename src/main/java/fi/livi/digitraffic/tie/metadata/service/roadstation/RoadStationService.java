@@ -115,8 +115,8 @@ public class RoadStationService {
             return false;
         }
         if (from.getVanhaId() == null) {
-            log.warn("method=updateRoadStation incoming LamAsema vanhaId is null. fromId={} fromNimiFI={} toNaturalId={} toId={}",
-                     from.getId(), from.getNimiFi().replaceAll("\\s", "_"), rs.getNaturalId(), rs.getId());
+            log.warn("method=updateRoadStation incoming LamAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
         return AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs);
@@ -129,8 +129,8 @@ public class RoadStationService {
             return false;
         }
         if (from.getVanhaId() == null) {
-            log.warn("method=updateRoadStation incoming TiesaaAsema vanhaId is null. fromId={} fromNimiFI={} toNaturalId={} toId={}",
-                     from.getId(), from.getNimiFi().replaceAll("\\s", "_"), rs.getNaturalId(), rs.getId());
+            log.warn("method=updateRoadStation incoming TiesaaAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
         return AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
@@ -143,8 +143,8 @@ public class RoadStationService {
             return false;
         }
         if (from.getVanhaId() == null) {
-            log.warn("method=updateRoadStation incoming Kamera vanhaId is null. fromId={} fromNimiFI={} toNaturalId={} toId={}",
-                     from.getId(), from.getNimiFi().replaceAll("\\s", "_"), rs.getNaturalId(), rs.getId());
+            log.warn("method=updateRoadStation incoming Kamera vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
         return AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
