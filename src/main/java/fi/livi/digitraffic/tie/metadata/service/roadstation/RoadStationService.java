@@ -111,19 +111,43 @@ public class RoadStationService {
     @Transactional
     public boolean updateRoadStation(LamAsemaVO from) {
         RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
-        return rs != null && AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        if (rs == null) { // Ei löydy kannnasta
+            return false;
+        }
+        if (from.getVanhaId() == null) {
+            log.warn("method=updateRoadStation incoming LamAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
+            return false;
+        }
+        return AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs);
     }
 
     @Transactional
     public boolean updateRoadStation(TiesaaAsemaVO from) {
         RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
-        return rs != null && AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        if (rs == null) { // Ei löydy kannnasta
+            return false;
+        }
+        if (from.getVanhaId() == null) {
+            log.warn("method=updateRoadStation incoming TiesaaAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
+            return false;
+        }
+        return AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
     }
 
     @Transactional
     public boolean updateRoadStation(KameraVO from) {
         RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
-        return rs != null && AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        if (rs == null) { // Ei löydy kannnasta
+            return false;
+        }
+        if (from.getVanhaId() == null) {
+            log.warn("method=updateRoadStation incoming Kamera vanhaId is null. fromId={} toNaturalId={} toId={}",
+                     from.getId(), rs.getNaturalId(), rs.getId());
+            return false;
+        }
+        return AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
     }
 
     @Transactional
