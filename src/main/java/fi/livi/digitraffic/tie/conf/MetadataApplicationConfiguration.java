@@ -78,12 +78,16 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setValidateConnectionOnBorrow(true);
 
         /* ****************************************************************************************************
-         * Settings below come from:
+         * Settings below based on:
          * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CHDEHFHE
          */
-        dataSource.setInitialPoolSize(5);
+        /* https://review.solita.fi/cru/CR-4219#c52811
+         * initial max ja min kaikki samaan arvoon. Yhteyden avaus on raskas operaatio, mitä halutaan välttää. Kuudennen rinnakkaisen yhteyden
+         * tarvitsemishetkellää kanta on todennäköisesti kuormitettuna ja haluamme välttää yhteyden avaamisesta aiheutuvaa ylimääräistä kuormaa.
+         */
+        dataSource.setInitialPoolSize(20);
         dataSource.setMaxPoolSize(20);
-        dataSource.setMinPoolSize(5);
+        dataSource.setMinPoolSize(20);
         /*
          * See:
          * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHEDJDC
