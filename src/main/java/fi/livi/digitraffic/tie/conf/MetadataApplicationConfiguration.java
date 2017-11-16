@@ -95,25 +95,13 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * The cache size should be set to the number of distinct statements the application issues to the database.
          */
         dataSource.setMaxStatements(10);
-        /*
-        * See:
-        * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHDDFCI
-        *
-        * Times are in seconds
-        * The maximum connection reuse count allows connections to be gracefully closed and removed
-           from the connection pool after a connection has been borrowed a specific number of times. */
-        dataSource.setMaxConnectionReuseCount(100);
-        /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
-         * has been in use for a specific amount of time. The timer for this property starts when a connection is physically created.
-         * Borrowed connections are closed only after they are returned to the pool and the reuse time has been exceeded. */
-        dataSource.setMaxConnectionReuseTime(300);
         /* The abandoned connection timeout enables borrowed connections to be reclaimed back into the connection pool after a connection
            has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
         dataSource.setAbandonedConnectionTimeout(60);
         /* The time-to-live connection timeout enables borrowed connections to remain borrowed for a specific amount of time before the
            connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
            that are otherwise lost on maintaining connections longer than their expected usage. */
-        dataSource.setTimeToLiveConnectionTimeout(600);
+        dataSource.setTimeToLiveConnectionTimeout(480);
         /* **************************************************************************************************** */
 
         return dataSource;
