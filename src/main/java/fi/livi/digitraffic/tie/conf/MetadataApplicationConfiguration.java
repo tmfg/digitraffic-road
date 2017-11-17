@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,9 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String RETRY_OPERATION = "operation";
 
     private final ConfigurableApplicationContext applicationContext;
+
+    @Value("ci.datasource.maxIdleTime")
+    private Integer MAX_IDLE_TIME;
 
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
@@ -106,6 +110,17 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
          * that are otherwise lost on maintaining connections longer than their expected usage. */
         dataSource.setTimeToLiveConnectionTimeout(480);
+        /*
+         * Our integration tests will overload test db unless we set up maxIdleTime
+         * or something something...
+         *
+         * Do not set in production environment
+         *
+         */
+        if(MAX_IDLE_TIME != null) {
+            dataSource.setMaxIdleTime(MAX_IDLE_TIME);
+        }
+
         /* **************************************************************************************************** */
 
         return dataSource;
