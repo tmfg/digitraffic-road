@@ -45,8 +45,8 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     private final ConfigurableApplicationContext applicationContext;
 
-    @Value("${ci.datasource.maxIdleTime:0}")
-    private Integer MAX_IDLE_TIME;
+    @Value("${ci.datasource.poolSize:20}")
+    private Integer POOL_SIZE;
 
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
@@ -92,10 +92,13 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * https://review.solita.fi/cru/CR-4219#c52811
          * initial max ja min kaikki samaan arvoon. Yhteyden avaus on raskas operaatio, mitä halutaan välttää. Kuudennen rinnakkaisen yhteyden
          * tarvitsemishetkellää kanta on todennäköisesti kuormitettuna ja haluamme välttää yhteyden avaamisesta aiheutuvaa ylimääräistä kuormaa.
+         *
+         * Mutta koska meidän CI-pannuilla ei ole juhlavaa määrää conneja,
+         * on ci-buildeissa tälle pienempi arvo. Default on tuolla POOL_SIZE muuttujassa.
          */
-        dataSource.setInitialPoolSize(20);
-        dataSource.setMaxPoolSize(20);
-        dataSource.setMinPoolSize(20);
+        dataSource.setInitialPoolSize(POOL_SIZE);
+        dataSource.setMaxPoolSize(POOL_SIZE);
+        dataSource.setMinPoolSize(POOL_SIZE);
         /*
          * See:
          * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHEDJDC
@@ -110,17 +113,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
          * that are otherwise lost on maintaining connections longer than their expected usage. */
         dataSource.setTimeToLiveConnectionTimeout(480);
-        /*
-         * Our integration tests will overload test db unless we set up maxIdleTime
-         * or something something...
-         *
-         * Do not set in production environment
-         *
-         */
-        if(MAX_IDLE_TIME > 0) {
-            dataSource.setMaxIdleTime(MAX_IDLE_TIME);
-        }
-
         /* **************************************************************************************************** */
 
         return dataSource;
