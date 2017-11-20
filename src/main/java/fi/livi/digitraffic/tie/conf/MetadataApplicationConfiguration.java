@@ -45,7 +45,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     private final ConfigurableApplicationContext applicationContext;
 
-    @Value("${ci.datasource.maxIdleTime:0}")
+    @Value("ci.datasource.maxIdleTime")
     private Integer MAX_IDLE_TIME;
 
     @Autowired
@@ -117,7 +117,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * Do not set in production environment
          *
          */
-        if(MAX_IDLE_TIME > 0) {
+        if(MAX_IDLE_TIME != null) {
             dataSource.setMaxIdleTime(MAX_IDLE_TIME);
         }
 
