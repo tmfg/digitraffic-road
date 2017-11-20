@@ -114,6 +114,11 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
            connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
            that are otherwise lost on maintaining connections longer than their expected usage. */
         dataSource.setTimeToLiveConnectionTimeout(600);
+        /* The inactive connection timeout specifies how long an available connection can remain idle before it is closed and removed from the pool.
+           This timeout property is only applicable to available connections and does not affect borrowed connections. This property helps conserve
+           resources that are otherwise lost on maintaining connections that are no longer being used. The inactive connection timeout
+           (together with the maximum pool size) allows a connection pool to grow and shrink as application load changes. */
+        dataSource.setInactiveConnectionTimeout(60);
         /* **************************************************************************************************** */
 
         return dataSource;
