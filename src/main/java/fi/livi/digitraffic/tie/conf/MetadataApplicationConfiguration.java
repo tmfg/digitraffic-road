@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -69,45 +72,34 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
-        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        /*
-         * https://docs.oracle.com/cd/E11882_01/java.112/e16548/fstconfo.htm#JJDBC26000
-         */
         dataSource.setFastConnectionFailoverEnabled(true);
-        /*
-         * https://docs.oracle.com/cd/E18283_01/java.112/e12265/connect.htm#CHDIDJGH
-         */
-        dataSource.setValidateConnectionOnBorrow(true);
-
-        /* ****************************************************************************************************
-         * Settings below based on:
-         * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CHDEHFHE
-         */
-
-        /*
-         * https://review.solita.fi/cru/CR-4219#c52811
-         * initial max ja min kaikki samaan arvoon. Yhteyden avaus on raskas operaatio, mitä halutaan välttää. Kuudennen rinnakkaisen yhteyden
-         * tarvitsemishetkellää kanta on todennäköisesti kuormitettuna ja haluamme välttää yhteyden avaamisesta aiheutuvaa ylimääräistä kuormaa.
-         */
-        dataSource.setInitialPoolSize(20);
+        dataSource.setInitialPoolSize(5);
         dataSource.setMaxPoolSize(20);
-        dataSource.setMinPoolSize(20);
-        /*
-         * See:
-         * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHEDJDC
-         *
-         * The cache size should be set to the number of distinct statements the application issues to the database.
-         */
-        dataSource.setMaxStatements(25);
+        dataSource.setMinPoolSize(5);
+        dataSource.setMaxIdleTime(5);
+        dataSource.setValidateConnectionOnBorrow(true);
+        dataSource.setMaxStatements(10);
+        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+        /* Times are in seconds */
+        /* The maximum connection reuse count allows connections to be gracefully closed and removed
+           from the connection pool after a connection has been borrowed a specific number of times. */
+        dataSource.setMaxConnectionReuseCount(100);
+        /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
+         * has been in use for a specific amount of time. The timer for this property starts when a connection is physically created.
+         * Borrowed connections are closed only after they are returned to the pool and the reuse time has been exceeded. */
+        dataSource.setMaxConnectionReuseTime(300);
         /* The abandoned connection timeout enables borrowed connections to be reclaimed back into the connection pool after a connection
-         * has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
+           has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
         dataSource.setAbandonedConnectionTimeout(60);
         /* The time-to-live connection timeout enables borrowed connections to remain borrowed for a specific amount of time before the
-         * connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
-         * that are otherwise lost on maintaining connections longer than their expected usage. */
-        dataSource.setTimeToLiveConnectionTimeout(480);
-        /* **************************************************************************************************** */
-
+           connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
+           that are otherwise lost on maintaining connections longer than their expected usage. */
+        dataSource.setTimeToLiveConnectionTimeout(600);
+        /* The inactive connection timeout specifies how long an available connection can remain idle before it is closed and removed from the pool.
+           This timeout property is only applicable to available connections and does not affect borrowed connections. This property helps conserve
+           resources that are otherwise lost on maintaining connections that are no longer being used. The inactive connection timeout
+           (together with the maximum pool size) allows a connection pool to grow and shrink as application load changes. */
+        dataSource.setInactiveConnectionTimeout(60);
         return dataSource;
     }
 
