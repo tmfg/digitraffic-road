@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -69,34 +72,16 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
-        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        /* Starting from Oracle Database 11g Release 2 (11.2), this feature has been deprecated
-         * https://docs.oracle.com/cd/E11882_01/java.112/e16548/fstconfo.htm#JJDBC26000
-         * Here we use it for unknown reason. */
         dataSource.setFastConnectionFailoverEnabled(true);
-        // https://docs.oracle.com/cd/E18283_01/java.112/e12265/connect.htm#CHDIDJGH
-        dataSource.setValidateConnectionOnBorrow(true);
-
-        /* ****************************************************************************************************
-         * Settings below come from:
-         * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CHDEHFHE
-         */
         dataSource.setInitialPoolSize(5);
         dataSource.setMaxPoolSize(20);
         dataSource.setMinPoolSize(5);
-        /*
-         * See:
-         * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHEDJDC
-         *
-         * The cache size should be set to the number of distinct statements the application issues to the database.
-         */
+        dataSource.setMaxIdleTime(5);
+        dataSource.setValidateConnectionOnBorrow(true);
         dataSource.setMaxStatements(10);
-        /*
-        * See:
-        * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHDDFCI
-        *
-        * Times are in seconds
-        * The maximum connection reuse count allows connections to be gracefully closed and removed
+        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+        /* Times are in seconds */
+        /* The maximum connection reuse count allows connections to be gracefully closed and removed
            from the connection pool after a connection has been borrowed a specific number of times. */
         dataSource.setMaxConnectionReuseCount(100);
         /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
@@ -115,8 +100,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
            resources that are otherwise lost on maintaining connections that are no longer being used. The inactive connection timeout
            (together with the maximum pool size) allows a connection pool to grow and shrink as application load changes. */
         dataSource.setInactiveConnectionTimeout(60);
-        /* **************************************************************************************************** */
-
         return dataSource;
     }
 
