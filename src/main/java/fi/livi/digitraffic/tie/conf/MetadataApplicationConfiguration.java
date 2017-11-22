@@ -41,12 +41,14 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_PLAIN_WEBSOCKETS_PART_PATH = "/plain-websockets";
 
-    public static final String RETRY_OPERATION = "operation";
-
     private final ConfigurableApplicationContext applicationContext;
 
-    @Value("${ci.datasource.poolSize:20}")
-    private Integer POOL_SIZE;
+    @Value("${ci.datasource.initialPoolSize:20}")
+    private Integer INITIAL_POOL_SIZE;
+    @Value("${ci.datasource.minPoolSize:20}")
+    private Integer MIN_POOL_SIZE;
+    @Value("${ci.datasource.maxPoolSize:20}")
+    private Integer MAX_POOL_SIZE;
 
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
@@ -96,9 +98,10 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
          * Mutta koska meidän CI-pannuilla ei ole juhlavaa määrää conneja,
          * on ci-buildeissa tälle pienempi arvo. Default on tuolla POOL_SIZE muuttujassa.
          */
-        dataSource.setInitialPoolSize(POOL_SIZE);
-        dataSource.setMaxPoolSize(POOL_SIZE);
-        dataSource.setMinPoolSize(POOL_SIZE);
+        dataSource.setInitialPoolSize(INITIAL_POOL_SIZE);
+        dataSource.setMaxPoolSize(MAX_POOL_SIZE);
+        dataSource.setMinPoolSize(MIN_POOL_SIZE);
+
         /*
          * See:
          * https://docs.oracle.com/cd/B28359_01/java.111/e10788/optimize.htm#CFHEDJDC
