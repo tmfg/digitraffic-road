@@ -22,7 +22,7 @@ import progress.message.jclient.QueueConnectionFactory;
 @ConditionalOnProperty(name = "jms.tms.enabled")
 @Configuration
 public class TmsRealtimeJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
-    private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsRealtimeJMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;
     private final SensorDataUpdateService sensorDataUpdateService;
@@ -38,7 +38,7 @@ public class TmsRealtimeJMSListenerConfiguration extends AbstractJMSListenerConf
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
-                                          TmsJMSListenerConfiguration.class.getSimpleName(),
+                                          TmsRealtimeJMSListenerConfiguration.class.getSimpleName(),
                                           UUID.randomUUID().toString());
     }
 
