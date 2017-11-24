@@ -58,7 +58,7 @@ public class SensorDataUpdateService {
         final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds);
         stopWatch.stop();
         log.info("Update tms sensors data for rows={} sensors of filteredCount={} stations . isRealtime={} tookMs={}",
-                 rows, filtered.size(), data.size() > 0 ? data.stream().anyMatch(l -> l.getIsRealtime()) : "emptyData", stopWatch.getTime());
+                 rows, filtered.size(), data.stream().anyMatch(lam -> lam.getIsRealtime()), stopWatch.getTime());
         return rows;
     }
 
