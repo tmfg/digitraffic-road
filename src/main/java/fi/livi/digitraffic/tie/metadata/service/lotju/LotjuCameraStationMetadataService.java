@@ -43,7 +43,7 @@ public class LotjuCameraStationMetadataService {
 
         log.info("Fetch Cameras");
         final List<KameraVO> kamerat = lotjuCameraStationClient.getKameras();
-        log.info("cameraFetchedCount={} Cameras", kamerat.size());
+        log.info("method=getLotjuIdToKameraAndEsiasentoMap cameraFetchedCount={} Cameras", kamerat.size());
         log.info("Fetch Presets for Cameras");
 
         final StopWatch start = StopWatch.createStarted();
