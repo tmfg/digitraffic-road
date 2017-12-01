@@ -48,10 +48,9 @@ public class SensorValueDao {
             "                           , dst.updated = sysdate\n" +
             "                           , dst.time_window_start = :timeWindowStart\n" +
             "                           , dst.time_window_end = :timeWindowEnd\n" +
-            "     WHERE (dst.value != :value\n" +
+            "     WHERE dst.value != :value\n" +
             "     OR dst.time_window_start is null\n" +
-            "     OR dst.time_window_start != :timeWindowStart)\n" +
-            "     AND dst.measured < :measured \n" +
+            "     OR dst.time_window_start != :timeWindowStart\n" +
             "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
             "     VALUES (SEQ_SENSOR_VALUE.nextval\n" +
             "           , src.road_station_id\n" +

@@ -59,8 +59,7 @@ jms.password=
 
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic
-jms.tms.realtime.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
