@@ -31,8 +31,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
     private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
 
     @Test
-    public void testUpdateKameras() {
-
+    public void updateKameras() {
         lotjuKameraPerustiedotServiceMock.initDataAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset

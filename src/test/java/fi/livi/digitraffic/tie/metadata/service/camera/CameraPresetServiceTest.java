@@ -16,7 +16,7 @@ public class CameraPresetServiceTest extends AbstractTest {
     private CameraPresetService cameraPresetService;
 
     @Test
-    public void testFindAll() {
+    public void findAll() {
         final Map<Long, CameraPreset> all = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
         assertTrue(all.size() > 0);
     }
