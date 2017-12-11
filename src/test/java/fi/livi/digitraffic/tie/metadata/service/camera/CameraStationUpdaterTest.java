@@ -12,7 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMockEndpoint;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.Julkisuus;
@@ -24,8 +24,7 @@ public class CameraStationUpdaterTest extends AbstractTest {
     private CameraStationUpdater cameraStationUpdater;
 
     @Autowired
-    private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
-
+    private LotjuKameraPerustiedotServiceMockEndpoint lotjuKameraPerustiedotServiceMock;
 
     @Test
     @Transactional
@@ -51,6 +50,8 @@ public class CameraStationUpdaterTest extends AbstractTest {
 
     private List<EsiasentoVO> createEsiasentoList() {
         final EsiasentoVO e1 = new EsiasentoVO();
+
+        // vaihdetaan esiasentojen suuntaa päittäin, jolloin niiden id:t muuttuu
 
         e1.setKameraId(121);
         e1.setId(1663L);
