@@ -59,7 +59,7 @@ public class Datex2RoadworksMessageUpdater {
         final long updatedCount = sp.getSituation().stream().filter(s -> isNewSituation(versionTimes.get(s.getId()), s)).count();
         final long newCount = sp.getSituation().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
-        log.info("situations.updated={}, situations.new={}", updatedCount, newCount);
+        log.info("situations.updated={} situations.new={}", updatedCount, newCount);
 
         return sp.getSituation().stream()
             .filter(s -> isNewSituation(versionTimes.get(s.getId()), s))
