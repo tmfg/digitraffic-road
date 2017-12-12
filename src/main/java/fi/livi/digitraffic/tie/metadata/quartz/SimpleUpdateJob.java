@@ -20,9 +20,8 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
         try {
             doExecute(context);
         } catch(final Exception e) {
-            log.error("Exception executing jobName={}", jobName, e);
+            log.error("Exception executing jobName=" + jobName, e);
         }
-
 
         stopWatch.stop();
 

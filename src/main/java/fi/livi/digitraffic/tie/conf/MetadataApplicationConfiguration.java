@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -43,9 +41,14 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_PLAIN_WEBSOCKETS_PART_PATH = "/plain-websockets";
 
-    public static final String RETRY_OPERATION = "operation";
-
     private final ConfigurableApplicationContext applicationContext;
+
+    @Value("${ci.datasource.initialPoolSize:1}")
+    private Integer INITIAL_POOL_SIZE;
+    @Value("${ci.datasource.minPoolSize:1}")
+    private Integer MIN_POOL_SIZE;
+    @Value("${ci.datasource.maxPoolSize:20}")
+    private Integer MAX_POOL_SIZE;
 
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
@@ -66,40 +69,25 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
      * @return
      * @throws SQLException
      */
+    @SuppressWarnings("Duplicates")
     @Bean
     public DataSource dataSource(final DataSourceProperties properties) throws SQLException {
         final PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
-        dataSource.setFastConnectionFailoverEnabled(true);
-        dataSource.setInitialPoolSize(5);
-        dataSource.setMaxPoolSize(20);
-        dataSource.setMinPoolSize(5);
-        dataSource.setMaxIdleTime(5);
-        dataSource.setValidateConnectionOnBorrow(true);
-        dataSource.setMaxStatements(10);
         dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        /* Times are in seconds */
-        /* The maximum connection reuse count allows connections to be gracefully closed and removed
-           from the connection pool after a connection has been borrowed a specific number of times. */
-        dataSource.setMaxConnectionReuseCount(100);
-        /* The maximum connection reuse time allows connections to be gracefully closed and removed from the pool after a connection
-         * has been in use for a specific amount of time. The timer for this property starts when a connection is physically created.
-         * Borrowed connections are closed only after they are returned to the pool and the reuse time has been exceeded. */
-        dataSource.setMaxConnectionReuseTime(300);
-        /* The abandoned connection timeout enables borrowed connections to be reclaimed back into the connection pool after a connection
-           has not been used for a specific amount of time. Abandonment is determined by monitoring calls to the database. */
+        final String DPO_365_SOCKET_READ_TIMEOUT_FIX = "50000";
+        dataSource.setConnectionProperty("oracle.jdbc.ReadTimeout", DPO_365_SOCKET_READ_TIMEOUT_FIX);
+        dataSource.setFastConnectionFailoverEnabled(true);
+        dataSource.setValidateConnectionOnBorrow(true);
+        dataSource.setSQLForValidateConnection("select 1 from dual"); // DPO-365 try to fix "IO Error: Socket closed" errors.
+        dataSource.setInitialPoolSize(INITIAL_POOL_SIZE);
+        dataSource.setMaxPoolSize(MAX_POOL_SIZE);
+        dataSource.setMinPoolSize(MIN_POOL_SIZE);
+        dataSource.setMaxStatements(25);
         dataSource.setAbandonedConnectionTimeout(60);
-        /* The time-to-live connection timeout enables borrowed connections to remain borrowed for a specific amount of time before the
-           connection is reclaimed by the pool. This timeout feature helps maximize connection reuse and helps conserve systems resources
-           that are otherwise lost on maintaining connections longer than their expected usage. */
-        dataSource.setTimeToLiveConnectionTimeout(600);
-        /* The inactive connection timeout specifies how long an available connection can remain idle before it is closed and removed from the pool.
-           This timeout property is only applicable to available connections and does not affect borrowed connections. This property helps conserve
-           resources that are otherwise lost on maintaining connections that are no longer being used. The inactive connection timeout
-           (together with the maximum pool size) allows a connection pool to grow and shrink as application load changes. */
-        dataSource.setInactiveConnectionTimeout(60);
+        dataSource.setTimeToLiveConnectionTimeout(480);
         return dataSource;
     }
 

@@ -10,9 +10,9 @@ spring.datasource.password=<password>
 javamelody.authorized-users = username:password
 
 # Lotju-test v3 soap api
-metadata.server.address.tms=https://testioag.liikennevirasto.fi/LOTJU/LAMMetatiedot/v3
-metadata.server.address.camera=https://testioag.liikennevirasto.fi/LOTJU/KameraPerustiedot/v3
-metadata.server.address.weather=https://testioag.liikennevirasto.fi/LOTJU/TiesaaPerustiedot/v3
+metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3
+metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v3
+metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v3
 
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
@@ -53,26 +53,21 @@ Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 
 # JMS settings
 
-# JMS Sonic 2013 8.6.0
-jms.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.userId=<username>
-jms.password=<password>
-
-# Old sonic test for datex2
-jms.datex2.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.datex2.userId=<password>
-jms.datex2.password=<password>
+# New test Sonic 2013 8.6.0
+jms.connectionUrls=
+jms.userId=
+jms.password=
 
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-# controllers.enabled=false
+controllers.enabled=true
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=true
@@ -81,7 +76,7 @@ quartz.enabled=true
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false
-jms.datex2.enabled=true
+jms.datex2.enabled=false
 
 # Websocket stream of LAM sensor values
 websocket.tms.enabled=true
@@ -91,6 +86,6 @@ websocket.tms.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO
-#logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

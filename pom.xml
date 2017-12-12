@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>metadata</artifactId>
-    <version>1.11.0</version>
+    <version>1.18.0</version>
     <packaging>jar</packaging>
 
     <name>dt-metadata</name>
@@ -428,17 +428,17 @@
                                 <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/TiesaaMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/TiesaaMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                                 <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/LAMMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/20161006/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                             </wsdlOptions>
@@ -471,15 +471,15 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <xsdOptions>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/tiesaa_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/tiesaa_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.tiesaa</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/lam_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/lam_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.lam</packagename>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/20161006/xsd/v1/kamera_tietovirta.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
                                 </xsdOption>
                                 <xsdOption>

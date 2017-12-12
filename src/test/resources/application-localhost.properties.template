@@ -2,17 +2,17 @@
 server.port = 9000
 
 # Datasource
-spring.datasource.url=jdbc:oracle:thin:@<HOST:localhost>:<PORT:1521>:<SID:XE>
-spring.datasource.username=<username>
-spring.datasource.password=<password>
+spring.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
+spring.datasource.username=
+spring.datasource.password=
 
 # Format : user:password, one by line or separated by comma
 javamelody.authorized-users = username:password
 
-# Lotju-test v2 soap api
-metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot
-metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot
-metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot
+# Lotju-test v3 soap api
+metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3
+metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v3
+metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v3
 
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
@@ -23,22 +23,20 @@ tmsStationUpdateJob.frequency=43200000
 weatherStationUpdateJob.frequency=43200000
 roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
+forecastSectionWeatherUpdateJob.frequency=300000
+locationsMetadataUpdateJob.frequency=86400000
 travelTimeMediansUpdateJob.frequency=60000
 travelTimeMeasurementsUpdateJob.frequency=60000
-forecastSectionWeatherUpdateJob.frequency=900000
-locationsMetadataUpdateJob.frequency=86400000
 travelTimeLinkMetadataUpdateJob.frequency=86400000
 datex2TrafficAlertMessageUpdateJob.frequency=180000
 datex2RoadworksMessageUpdateJob.frequency=3600000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam.url/
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
 camera-image-uploader.sftp.port = 2232
-camera-image-uploader.sftp.poolSize = 5
-camera-image-uploader.sftp.sessionWaitTimeout = 5000
 camera-image-uploader.sftp.user = digitraffic
 camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_known_hosts
 camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
@@ -56,36 +54,38 @@ Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 # JMS settings
 
 # Sonic JMS 8.6.0
-jms.connectionUrls=tcp://ip:port,tcp://ip:port
-jms.userId=<username>
-jms.password=<password>
+jms.connectionUrls=
+jms.userId=
+jms.password=
 
-# JMS topics
-jms.weather.inQueue=<weather-topic>
-jms.tms.inQueue=<tms-topic>
-jms.camera.inQueue=<camera-topic>
-jms.datex2.inQueue=<datex2-topic>
+# JMS queues
+jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.OutTopic
+jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
+jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-#controllers.enabled=false
+controllers.enabled=true
 
 # Is metadata updates on. Should be true only for daemon process.
-#quartz.enabled=true
+quartz.enabled=false
 
 # JMS queue enabled/disabled (Only daemond should have these enabled)
-#jms.weather.enabled=false
-#jms.tms.enabled=false
-#jms.camera.enabled=false
-#jms.datex2.enabled=true
+jms.weather.enabled=false
+jms.tms.enabled=false
+jms.camera.enabled=false
+jms.datex2.enabled=false
 
-# Websocket stream of TMS sensor values
-#websocket.tms.enabled=true
+# Websocket stream of TMS sensor values, enabled only for web-app
+websocket.tms.enabled=false
+
+# Disable jobs. Format: quartz.{jobClassName}.enabled = false
+# Ie. quartz.CameraUpdateJob.enabled = false
 
 # Developer life improvements
-logging.file=digitraffic-metadata
 logging.level.root=INFO
-#logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

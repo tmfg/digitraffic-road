@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -60,9 +61,9 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
     }
 
     @Test
-    @Rollback
+    @Commit
     public void updateMessagesWithRealData() {
-        assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
+        //assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
 
         messageUpdater.updateDatex2RoadworksMessages();
 
