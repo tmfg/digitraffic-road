@@ -43,7 +43,7 @@ Download Oracle JDBC driver and add it to your local Maven repository.
 
 ### Running the application
 
-    $ mvn spring-boot:run -Dspring.profiles.active=localhost
+    $ mvn spring-boot:run -Drun.profiles=localhost # localhost is default, you may leave it out :)
 
 Or build the JAR file with:
 

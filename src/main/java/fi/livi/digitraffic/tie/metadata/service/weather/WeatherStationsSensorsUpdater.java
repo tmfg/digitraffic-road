@@ -64,7 +64,7 @@ public class WeatherStationsSensorsUpdater {
             stationAnturisPair.add(Pair.of(weatherStation, anturis));
         });
 
-        log.info("RoadStation not found for {} TiesaaLaskennallinenAnturis", currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.size());
+        log.info("RoadStation not found for rsNotFoundCount={} TiesaaLaskennallinenAnturis", currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.size());
 
         // Update sensors of road stations
         final boolean updateStaticDataStatus =
@@ -92,8 +92,8 @@ public class WeatherStationsSensorsUpdater {
             countAdded += deletedInserted.getRight();
         }
 
-        log.info("Sensor removed from road stations {}", countRemoved);
-        log.info("Sensor added to road stations {}", countAdded);
+        log.info("Sensor removed from road stations countRemoved={}", countRemoved);
+        log.info("Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
     }

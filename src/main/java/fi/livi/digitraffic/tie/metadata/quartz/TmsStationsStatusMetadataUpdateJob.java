@@ -20,6 +20,6 @@ public class TmsStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
             dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
         }
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
-        log.info("Updated {} TMS stations statuses", tmsCount);
+        log.info("Updated={} TMS stations statuses", tmsCount);
     }
 }

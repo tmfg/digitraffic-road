@@ -1,0 +1,22 @@
+<xs:schema version="1.0" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="tiesaa">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" type="xs:long" name="asemaId"/>
+                <xs:element minOccurs="1" type="xs:dateTime" name="aika"/>
+                <xs:element name="anturit">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="anturi" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:attribute type="xs:long" name="laskennallinenAnturiId" use="required"/>
+                                    <xs:attribute type="xs:float" name="arvo" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

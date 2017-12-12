@@ -59,7 +59,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     private static final int TEST_UPLOADS = 10;
 
     @Autowired
-    private SessionFactory sftpSessionFactory;
+    private SessionFactory  sftpSessionFactory;
 
     @Autowired
     private CameraDataUpdateService cameraDataUpdateService;
@@ -138,7 +138,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             count++;
             final int imageNumber = (count % 5)+1;
 
-            log.info("Load image resource {}{} for preset {}", imageNumber, RESOURCE_IMAGE_SUFFIX, cp.getPresetId());
+            log.info("Load image resource={}{} for presetId={}", imageNumber, RESOURCE_IMAGE_SUFFIX, cp.getPresetId());
             final Resource resource = resourceLoader.getResource("classpath:" + IMAGE_DIR + imageNumber + RESOURCE_IMAGE_SUFFIX);
             final File imageFile = resource.getFile();
             final byte[] bytes = FileUtils.readFileToByteArray(imageFile);
@@ -147,7 +147,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
             // Upload missing presets images to server
             if (cp.getPresetId().startsWith("X")) {
-                log.info("Write image to sftp that should be deleted by update {}", getSftpPath(kuva));
+                log.info("Write image to sftp that should be deleted by update sftpPath={}", getSftpPath(kuva));
                 session.write(new ByteArrayInputStream(bytes), getSftpPath(kuva));
                 Session otherSession = this.sftpSessionFactory.getSession();
                 assertTrue("Image not found on sftp server", otherSession.exists(getSftpPath(kuva)));
@@ -173,12 +173,12 @@ public class CameraSftpServerTest extends AbstractSftpTest {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    log.info("Read preset {} image back from server from path {}", kuva.getEsiasentoId(), filePath);
+                    log.info("Read presetId={} image back from server from path={}", kuva.getEsiasentoId(), filePath);
                     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                         session.read(filePath, out);
                         byte[] initialData = imageFilesMap.get(kuva.getNimi());
                         byte[] readData = out.toByteArray();
-                        Assert.assertArrayEquals("Preset " + kuva.getNimi() + " image data read from sever is not equal with initial content",
+                        Assert.assertArrayEquals("presetId=" + kuva.getNimi() + " image data read from sever is not equal with initial content",
                                 initialData, readData);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -300,7 +300,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     private void createHttpResponseStubFor(final String presetId, final byte[] data, final int httpResponseDelay) {
         imageFilesMap.put(presetId, data);
         final String url = getImageUrlPath(presetId);
-        log.info("Create mock with url {}", url);
+        log.info("Create mock with url={}", url);
         stubFor(get(urlEqualTo(getImageUrlPath(presetId)))
                 .willReturn(aResponse().withBody(data)
                         .withHeader("Content-Type", "image/jpeg")

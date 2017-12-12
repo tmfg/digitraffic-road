@@ -72,11 +72,11 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
             }
         }
 
-        log.info("Obsoleted {} RoadStationSensors", obsoleted);
-        log.info("Updated {} RoadStationSensors", updated);
-        log.info("Inserted {} RoadStationSensors", inserted);
+        log.info("roadStationSensorsObsoleted={}", obsoleted);
+        log.info("roadStationSensorsUpdated={}", updated);
+        log.info("roadStationSensorsInserted={}", inserted);
         if (!invalid.isEmpty()) {
-            log.warn("Invalid weather sensors from lotju {}", invalid.size());
+            log.warn("invalidWeatherSensorsFromLotjuCount={}", invalid.size());
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;

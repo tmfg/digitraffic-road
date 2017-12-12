@@ -111,7 +111,7 @@ public class PerformanceMonitorAspect {
         }
 
         return StringUtils.truncate(builder.toString(), 1000) +
-               String.format(" invocation time was %s s", decimalFormat.format(executionTimeSeconds));
+               String.format(" invocation time was invocationTimeSec=%s", decimalFormat.format(executionTimeSeconds));
     }
 
     private void buildValueToString(final StringBuilder builder, final Object value) {
