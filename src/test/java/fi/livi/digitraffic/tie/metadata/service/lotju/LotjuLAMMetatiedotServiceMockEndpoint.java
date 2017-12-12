@@ -27,10 +27,10 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ObjectFactory;
 
 
-public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint implements LAMMetatiedotEndpoint {
+public class LotjuLAMMetatiedotServiceMockEndpoint extends LotjuServiceEndpoint implements LAMMetatiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceEndpoint.class);
-    private static LotjuLAMMetatiedotServiceEndpoint instance;
+    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceMockEndpoint.class);
+    private static LotjuLAMMetatiedotServiceMockEndpoint instance;
 
     private List<LamAsemaVO> initialLamAsemas;
     private List<LamAsemaVO> afterChangeLamAsemas;
@@ -40,15 +40,15 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
     private final Map<Long, List<LamLaskennallinenAnturiVO>> afterChangeLamAsemasAnturisMap = new HashMap<>();
 
 
-    public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+    public static LotjuLAMMetatiedotServiceMockEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                                                 final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
+            instance = new LotjuLAMMetatiedotServiceMockEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+    private LotjuLAMMetatiedotServiceMockEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                               final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV3.SERVICE, jaxb2Marshaller);
     }

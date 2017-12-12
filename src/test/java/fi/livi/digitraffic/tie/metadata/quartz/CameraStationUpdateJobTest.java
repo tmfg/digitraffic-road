@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMockEndpoint;
 
 public class CameraStationUpdateJobTest extends AbstractTest {
 
@@ -28,11 +28,10 @@ public class CameraStationUpdateJobTest extends AbstractTest {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
+    private LotjuKameraPerustiedotServiceMockEndpoint lotjuKameraPerustiedotServiceMock;
 
     @Test
-    public void testUpdateKameras() {
-
+    public void updateKameras() {
         lotjuKameraPerustiedotServiceMock.initDataAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
