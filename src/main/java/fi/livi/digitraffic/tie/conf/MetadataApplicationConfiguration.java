@@ -77,7 +77,7 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setPassword(properties.getPassword());
         dataSource.setURL(properties.getUrl());
         dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        final String DPO_365_SOCKET_READ_TIMEOUT_FIX = "50000";
+        final String DPO_365_SOCKET_READ_TIMEOUT_FIX = "120000";
         dataSource.setConnectionProperty("oracle.jdbc.ReadTimeout", DPO_365_SOCKET_READ_TIMEOUT_FIX);
         dataSource.setFastConnectionFailoverEnabled(true);
         dataSource.setValidateConnectionOnBorrow(true);
