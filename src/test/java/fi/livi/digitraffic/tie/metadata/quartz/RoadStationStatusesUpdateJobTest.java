@@ -12,9 +12,9 @@ import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceMockEndpoint;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceMockEndpoint;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceMockEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpoint;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
@@ -29,13 +29,13 @@ public class RoadStationStatusesUpdateJobTest extends AbstractTest {
     private RoadStationStatusUpdater roadStationStatusUpdater;
 
     @Autowired
-    private LotjuTiesaaPerustiedotServiceMockEndpoint lotjuTiesaaPerustiedotServiceMock;
+    private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
 
     @Autowired
-    private LotjuKameraPerustiedotServiceMockEndpoint lotjuKameraPerustiedotServiceMock;
+    private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
 
     @Autowired
-    private LotjuLAMMetatiedotServiceMockEndpoint lotjuLAMMetatiedotServiceMock;
+    private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
 
     @Autowired
     private TmsStationUpdater tmsStationUpdater;
