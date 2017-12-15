@@ -40,6 +40,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
@@ -51,6 +52,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
+@TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class CameraSftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);
 
@@ -234,7 +236,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         log.info("Created {}" , cpWithDelay);
 
         Kuva kuva = createKuvaDataAndHttpStub(cpNoDelay, "Image content".getBytes(), 0);
-        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 10000);
+        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 600);
 
         long updated = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuva));
         Assert.assertTrue("Timeout should not have happened and one image should have been updated",updated == 1L);
