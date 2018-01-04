@@ -39,9 +39,6 @@ import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeLinkMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMeasurementsUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TravelTimeMediansUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpdateJob;
 
@@ -156,21 +153,6 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean travelTimeMediansUpdateJobDetail() {
-        return createJobDetail(TravelTimeMediansUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean travelTimeMeasurementsUpdateJobDetail() {
-        return createJobDetail(TravelTimeMeasurementsUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean travelTimeLinkMetadataUpdateJobDetail() {
-        return createJobDetail(TravelTimeLinkMetadataUpdateJob.class);
-    }
-
-    @Bean
     public JobDetailFactoryBean datex2MessageUpdateJobDetail() {
         return createJobDetail(Datex2MessageUpdateJob.class);
     }
@@ -227,24 +209,6 @@ public class QuartzSchedulerConfig {
     public SimpleTriggerFactoryBean forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail,
                                                                            @Value("${forecastSectionWeatherUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean travelTimeMediansUpdateJobTrigger(final JobDetail travelTimeMediansUpdateJobDetail,
-                                                                      @Value("${travelTimeMediansUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(travelTimeMediansUpdateJobDetail, frequency);
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean travelTimeMeasurementsUpdateJobTrigger(final JobDetail travelTimeMeasurementsUpdateJobDetail,
-                                                                           @Value("${travelTimeMeasurementsUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(travelTimeMeasurementsUpdateJobDetail, frequency);
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean travelTimeLinkMetadataUpdateJobTrigger(final JobDetail travelTimeLinkMetadataUpdateJobDetail,
-                                                                           @Value("${travelTimeLinkMetadataUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(travelTimeLinkMetadataUpdateJobDetail, frequency);
     }
 
     @Bean

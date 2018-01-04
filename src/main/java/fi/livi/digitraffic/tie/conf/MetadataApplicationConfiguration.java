@@ -1,14 +1,9 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +21,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
-import oracle.ucp.jdbc.PoolDataSource;
-import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 @Configuration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
@@ -43,13 +36,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     private final ConfigurableApplicationContext applicationContext;
 
-    @Value("${ci.datasource.initialPoolSize:1}")
-    private Integer INITIAL_POOL_SIZE;
-    @Value("${ci.datasource.minPoolSize:1}")
-    private Integer MIN_POOL_SIZE;
-    @Value("${ci.datasource.maxPoolSize:20}")
-    private Integer MAX_POOL_SIZE;
-
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
         Assert.notNull(applicationContext);
@@ -60,35 +46,6 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new Jaxb2Datex2ResponseHttpMessageConverter());
         super.configureMessageConverters(converters);
-    }
-
-    /**
-     * Initialize OracleDataSource manually because datasource property spring.datasource.type=oracle.jdbc.pool.OracleDataSource
-     * is not correctly handled by spring https://github.com/spring-projects/spring-boot/issues/6027#issuecomment-221582708
-     * @param properties
-     * @return
-     * @throws SQLException
-     */
-    @SuppressWarnings("Duplicates")
-    @Bean
-    public DataSource dataSource(final DataSourceProperties properties) throws SQLException {
-        final PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource();
-        dataSource.setUser(properties.getUsername());
-        dataSource.setPassword(properties.getPassword());
-        dataSource.setURL(properties.getUrl());
-        dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-        final String DPO_365_SOCKET_READ_TIMEOUT_FIX = "50000";
-        dataSource.setConnectionProperty("oracle.jdbc.ReadTimeout", DPO_365_SOCKET_READ_TIMEOUT_FIX);
-        dataSource.setFastConnectionFailoverEnabled(true);
-        dataSource.setValidateConnectionOnBorrow(true);
-        dataSource.setSQLForValidateConnection("select 1 from dual"); // DPO-365 try to fix "IO Error: Socket closed" errors.
-        dataSource.setInitialPoolSize(INITIAL_POOL_SIZE);
-        dataSource.setMaxPoolSize(MAX_POOL_SIZE);
-        dataSource.setMinPoolSize(MIN_POOL_SIZE);
-        dataSource.setMaxStatements(25);
-        dataSource.setAbandonedConnectionTimeout(60);
-        dataSource.setTimeToLiveConnectionTimeout(480);
-        return dataSource;
     }
 
     @Bean

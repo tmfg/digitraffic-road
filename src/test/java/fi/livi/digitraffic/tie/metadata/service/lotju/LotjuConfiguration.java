@@ -10,30 +10,30 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 public class LotjuConfiguration {
 
     @Bean
-    public LotjuKameraPerustiedotServiceMockEndpoint lotjuKameraPerustiedotServiceEndpoint(
+    public LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceEndpoint(
             @Value("${metadata.server.address.camera}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuKameraPerustiedotServiceMockEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuKameraPerustiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
     @Bean
-    public LotjuLAMMetatiedotServiceMockEndpoint lotjuLAMMetatiedotServiceEndpoint(
+    public LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceEndpoint(
             @Value("${metadata.server.address.tms}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuLAMMetatiedotServiceMockEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuLAMMetatiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
     @Bean
-    public LotjuTiesaaPerustiedotServiceMockEndpoint lotjuTiesaaPerustiedotServiceEndpoint(
+    public LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceEndpoint(
             @Value("${metadata.server.address.weather}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuTiesaaPerustiedotServiceMockEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuTiesaaPerustiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
 }
