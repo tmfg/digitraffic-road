@@ -45,7 +45,7 @@ public class RoadStationStatusUpdater {
                     updated++;
                 }
             } catch (Exception e) {
-                    log.error("method=updateTmsStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                    log.error("method=updateTmsStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
         }
@@ -64,7 +64,7 @@ public class RoadStationStatusUpdater {
                 updated++;
             }
             } catch (Exception e) {
-                log.error("method=updateWeatherStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                log.error("method=updateWeatherStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
         }
@@ -83,7 +83,7 @@ public class RoadStationStatusUpdater {
                     updated++;
                 }
             } catch (Exception e) {
-                log.error("method=updateCameraStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                log.error("method=updateCameraStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
         };
