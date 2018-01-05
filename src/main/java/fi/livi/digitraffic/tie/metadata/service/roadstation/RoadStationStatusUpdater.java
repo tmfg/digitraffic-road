@@ -45,7 +45,7 @@ public class RoadStationStatusUpdater {
                     updated++;
                 }
             } catch (Exception e) {
-                log.warn("method=updateTmsStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                    log.error("method=updateTmsStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
                 throw e;
             }
         }
