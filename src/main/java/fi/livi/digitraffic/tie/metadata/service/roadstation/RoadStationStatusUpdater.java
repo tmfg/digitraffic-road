@@ -40,8 +40,13 @@ public class RoadStationStatusUpdater {
 
         int updated = 0;
         for(LamAsemaVO from : allLams) {
-            if (roadStationService.updateRoadStation(from)) {
-                updated++;
+            try {
+                if (roadStationService.updateRoadStation(from)) {
+                    updated++;
+                }
+            } catch (Exception e) {
+                log.warn("method=updateTmsStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                throw e;
             }
         }
         return updated;
@@ -54,8 +59,13 @@ public class RoadStationStatusUpdater {
 
         int updated = 0;
         for (TiesaaAsemaVO from : allTiesaaAsemas) {
+            try {
             if (roadStationService.updateRoadStation(from)) {
                 updated++;
+            }
+            } catch (Exception e) {
+                log.error("method=updateWeatherStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                throw e;
             }
         }
         return updated;
@@ -68,8 +78,13 @@ public class RoadStationStatusUpdater {
 
         int updated = 0;
         for (KameraVO from : allKameras) {
-            if (roadStationService.updateRoadStation(from)) {
-                updated++;
+            try {
+                if (roadStationService.updateRoadStation(from)) {
+                    updated++;
+                }
+            } catch (Exception e) {
+                log.error("method=updateCameraStationsStatuses : Updating roadstation nimiFi={} lotjuId={} naturalId={} failed", from.getNimiFi(), from.getId(), from.getVanhaId());
+                throw e;
             }
         };
         return updated;
