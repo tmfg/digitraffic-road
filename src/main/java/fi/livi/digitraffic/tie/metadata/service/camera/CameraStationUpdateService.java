@@ -285,7 +285,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         }
 
         // Update RoadStation
-        return updateRoadStationAttributes(kameraFrom, to.getRoadStation()) ||
-            hash != HashCodeBuilder.reflectionHashCode(to);
+        try {
+            return updateRoadStationAttributes(kameraFrom, to.getRoadStation()) ||
+                hash != HashCodeBuilder.reflectionHashCode(to);
+        } catch (Exception e) {
+            log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
+                kameraFrom.getNimiFi(), kameraFrom.getId(), kameraFrom.getVanhaId(), kameraFrom.getKeruunTila());
+            throw e;
+        }
     }
 }
