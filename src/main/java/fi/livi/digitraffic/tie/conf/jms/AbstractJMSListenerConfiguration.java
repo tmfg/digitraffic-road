@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -163,7 +165,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
             }
 
-            createSessionAndConsumer(jmsParameters.getJmsQueueKey(), queueConnection);
+            createSessionAndConsumer(jmsParameters.getJmsQueueKeys(), queueConnection);
 
             log.info("Connection initialized");
 
@@ -175,15 +177,20 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         }
     }
 
-    private Session createSessionAndConsumer(String jmsQueueKey, QueueConnection queueConnection) throws JMSException, JAXBException {
-        final boolean drainScheduled = isQueueTopic(jmsQueueKey);
+    private Session createSessionAndConsumer(List<String> jmsQueueKeys, QueueConnection queueConnection) throws JMSException, JAXBException {
+        final boolean drainScheduled = isQueueTopic(jmsQueueKeys);
         final Session session = drainScheduled ?
                           queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE) : // ACKNOWLEDGE automatically when message received
                           queueConnection.createSession(false,
                                   progress.message.jclient.Session.SINGLE_MESSAGE_ACKNOWLEDGE); // ACKNOWLEDGE after successful handling
 
-        final MessageConsumer consumer = session.createConsumer(createDestination(jmsQueueKey));
-        consumer.setMessageListener(getJMSMessageListener());
+        final JMSMessageListener<K> jmsMessageListener = getJMSMessageListener();
+
+        for (final String jmsQueueKey : jmsQueueKeys) {
+            final MessageConsumer consumer = session.createConsumer(createDestination(jmsQueueKey));
+            consumer.setMessageListener(jmsMessageListener);
+        }
+
         return session;
     }
 
@@ -206,12 +213,12 @@ public abstract class AbstractJMSListenerConfiguration<K> {
      * In case of QUEUE it is private queue and notification of handling should be sent after successful
      * handling of message ie. after saving to db. After that it will be removed from server.
      */
-    public static boolean isQueueTopic(String jmsQueueKey) {
-        return jmsQueueKey.startsWith("topic://");
+    public static boolean isQueueTopic(final List<String> jmsQueueKeys) {
+        return jmsQueueKeys.stream().allMatch(key -> key.startsWith("topic://"));
     }
 
     protected Destination createDestination(String jmsQueueKey) throws JMSException {
-        final boolean topic = isQueueTopic(jmsQueueKey);
+        final boolean topic = isQueueTopic(Collections.singletonList(jmsQueueKey));
         final String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
         return topic ? new Topic(jmsQueue) : new Queue(jmsQueue);
     }
@@ -235,15 +242,15 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         private final String jmsUserId;
         private final String jmsPassword;
         private final String lockInstanceId;
-        private final String jmsQueueKey;
+        private final List<String> jmsQueueKeys;
         private final String lockInstanceName;
 
-        public JMSParameters(final String jmsQueueKey,
+        public JMSParameters(final List<String> jmsQueueKeys,
                              final String jmsUserId,
                              final String jmsPassword,
                              final String lockInstanceName,
                              final String lockInstanceId) {
-            this.jmsQueueKey = jmsQueueKey;
+            this.jmsQueueKeys = jmsQueueKeys;
             this.jmsUserId = jmsUserId;
             this.jmsPassword = jmsPassword;
             this.lockInstanceName = lockInstanceName;
@@ -267,8 +274,8 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             return ToStringHelper.toStringFull(this, "jmsPassword");
         }
 
-        public String getJmsQueueKey() {
-            return jmsQueueKey;
+        public List<String> getJmsQueueKeys() {
+            return jmsQueueKeys;
         }
 
         public String getLockInstanceName() {

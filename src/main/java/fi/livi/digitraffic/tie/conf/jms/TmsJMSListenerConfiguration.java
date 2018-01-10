@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
@@ -30,14 +31,14 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     @Autowired
     public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
                                        @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                       @Value("${jms.tms.inQueue}") final String jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
+                                       @Value("#{'${jms.tms.inQueue}'.split(',')}") final List<String> jmsQueueKeys, final SensorDataUpdateService sensorDataUpdateService,
                                        final LockingService lockingService) {
 
         super(connectionFactory,
               lockingService,
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
-        jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
+        jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           TmsJMSListenerConfiguration.class.getSimpleName(),
                                           UUID.randomUUID().toString());
     }
@@ -53,7 +54,7 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
         final TmsMessageMarshaller messageMarshaller = new TmsMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
                                         log);
     }
 }

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
@@ -32,7 +33,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     @Autowired
     public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
                                           @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                          @Value("${jms.camera.inQueue}") final String jmsQueueKey, final CameraDataUpdateService cameraDataUpdateService,
+                                          @Value("#{'${jms.camera.inQueue}'.split(',')}")final List<String> jmsQueueKeys, final CameraDataUpdateService cameraDataUpdateService,
                                           final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
         super(connectionFactory,
               lockingService,
@@ -40,7 +41,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         this.cameraDataUpdateService = cameraDataUpdateService;
         this.jaxb2Marshaller = jaxb2Marshaller;
 
-        jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
+        jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           CameraJMSListenerConfiguration.class.getSimpleName(),
                                           UUID.randomUUID().toString());
     }
@@ -63,7 +64,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         final TextMessageMarshaller messageMarshaller = new TextMessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
                                         log);
     }
 }
