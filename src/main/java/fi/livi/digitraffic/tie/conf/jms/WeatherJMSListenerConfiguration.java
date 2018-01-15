@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
@@ -32,7 +33,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     @Autowired
     public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
                                            @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                           @Value("${jms.weather.inQueue}") final String jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
+                                           @Value("#{'${jms.weather.inQueue}'.split(',')}") final List<String> jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
                                            LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) {
 
         super(connectionFactory,
@@ -57,7 +58,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
         final TextMessageMarshaller textMessageMarshaller = new TextMessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener<>(textMessageMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKey()),
+                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
                                         log);
     }
 }
