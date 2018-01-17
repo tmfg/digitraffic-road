@@ -10,8 +10,6 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,24 +88,6 @@ public class DataController {
         this.cameraDataService = cameraDataService;
         this.forecastSectionDataService = forecastSectionDataService;
         this.datex2DataService = datex2DataService;
-    }
-
-    // DPO-403 Jari pyysi poistamaan nämä neljä rajapintaa.
-    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fluencyCurrent() {
-        return ResponseEntity.status(HttpStatus.GONE).body(null);
-    }
-    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fluencyCurrentById() {
-        return ResponseEntity.status(HttpStatus.GONE).body(null);
-    }
-    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fluencyHistoryPreviousDay() {
-        return ResponseEntity.status(HttpStatus.GONE).body(null);
-    }
-    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fluencyHistoryPreviousDayById() {
-        return ResponseEntity.status(HttpStatus.GONE).body(null);
     }
 
     @ApiOperation("History data of link for given month")
