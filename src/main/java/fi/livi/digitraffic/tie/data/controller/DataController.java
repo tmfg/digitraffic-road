@@ -10,6 +10,8 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +25,6 @@ import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.trafficfluency.TrafficFluencyRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
@@ -31,7 +32,6 @@ import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
-import fi.livi.digitraffic.tie.data.service.TrafficFluencyService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import io.swagger.annotations.Api;
@@ -67,7 +67,6 @@ public class DataController {
 
     static final String LAST_UPDATED_PARAM = "lastUpdated";
 
-    private final TrafficFluencyService trafficFluencyService;
     private final DayDataService dayDataService;
     private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
@@ -77,15 +76,13 @@ public class DataController {
     private final Datex2DataService datex2DataService;
 
     @Autowired
-    public DataController(final TrafficFluencyService trafficFluencyService,
-                          final DayDataService dayDataService,
+    public DataController(final DayDataService dayDataService,
                           final TmsDataService tmsDataService,
                           final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
                           final ForecastSectionDataService forecastSectionDataService,
                           final Datex2DataService datex2DataService) {
-        this.trafficFluencyService = trafficFluencyService;
         this.dayDataService = dayDataService;
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
@@ -95,44 +92,22 @@ public class DataController {
         this.datex2DataService = datex2DataService;
     }
 
-    @ApiOperation("Current fluency data of links including journey times")
+    // DPO-403 Jari pyysi poistamaan nämä neljä rajapintaa.
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data") })
-    public TrafficFluencyRootDataObjectDto fluencyCurrent(
-            @ApiParam("If parameter is given result will only contain update status.")
-            @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
-            boolean lastUpdated) {
-        return trafficFluencyService.listCurrentTrafficFluencyData(lastUpdated);
+    public ResponseEntity fluencyCurrent() {
+        return ResponseEntity.status(HttpStatus.GONE).body(null);
     }
-
-    @ApiOperation("Current fluency data of link including journey times")
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_CURRENT_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of current fluency data") })
-    public TrafficFluencyRootDataObjectDto fluencyCurrentById(
-            @ApiParam(value = "Link id", required = true)
-            @PathVariable
-            final long id) {
-        return trafficFluencyService.listCurrentTrafficFluencyData(id);
+    public ResponseEntity fluencyCurrentById() {
+        return ResponseEntity.status(HttpStatus.GONE).body(null);
     }
-
-    @ApiOperation("History data of links for previous day")
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data") })
-    public HistoryRootDataObjectDto fluencyHistoryPreviousDay(
-            @ApiParam("If parameter is given result will only contain update status.")
-            @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
-            boolean lastUpdated) {
-        return dayDataService.listPreviousDayHistoryData(lastUpdated);
+    public ResponseEntity fluencyHistoryPreviousDay() {
+        return ResponseEntity.status(HttpStatus.GONE).body(null);
     }
-
-    @ApiOperation("History data of link for previous day")
     @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DAY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of history data") })
-    public HistoryRootDataObjectDto fluencyHistoryPreviousDayById(
-            @ApiParam(value = "Link id", required = true)
-            @PathVariable
-            final long id) {
-        return dayDataService.listPreviousDayHistoryData(id);
+    public ResponseEntity fluencyHistoryPreviousDayById() {
+        return ResponseEntity.status(HttpStatus.GONE).body(null);
     }
 
     @ApiOperation("History data of link for given month")

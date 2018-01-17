@@ -14,25 +14,6 @@ import fi.livi.digitraffic.tie.data.dto.daydata.LinkMeasurementDataDto;
 
 @Repository
 public interface DayDataRepository extends org.springframework.data.repository.Repository<LinkMeasurementDataDto, Long> {
-    @Query(value =
-            "SELECT ROWNUM\n" +
-            "     , (M.END_TIMESTAMP - TRUNC(M.END_TIMESTAMP)) * 1440 AS MINUTE\n" +
-            "     , M.MEDIAN_TRAVEL_TIME\n" +
-            "     , M.AVERAGE_SPEED\n" +
-            "     , FC.CODE AS FLUENCY_CLASS\n" +
-            "     , L.NATURAL_ID AS LINK_ID\n" +
-            "     , M.END_TIMESTAMP AS MEASURED_TIME\n" +
-            "FROM JOURNEYTIME_MEDIAN M\n" +
-            "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-            "INNER JOIN FLUENCY_CLASS FC ON M.RATIO_TO_FREE_FLOW_SPEED >= FC.LOWER_LIMIT\n" +
-            "                           AND M.RATIO_TO_FREE_FLOW_SPEED < NVL(FC.UPPER_LIMIT, 10)\n" +
-            "WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +
-            "  AND M.END_TIMESTAMP < (TRUNC(SYSDATE))\n" +
-            "  AND L.OBSOLETE = 0\n" +
-            "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
-            nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LinkMeasurementDataDto> listAllMedianTravelTimesForPreviousDay();
 
     @Query(value = "select * from(\n" +
         "SELECT M.END_TIMESTAMP AS UPDATED\n" +
@@ -46,27 +27,6 @@ public interface DayDataRepository extends org.springframework.data.repository.R
         "where rownum=1",
             nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
-
-    @Query(value =
-            "SELECT ROWNUM\n" +
-            "     , (M.END_TIMESTAMP - TRUNC(M.END_TIMESTAMP)) * 1440 AS MINUTE\n" +
-            "     , M.MEDIAN_TRAVEL_TIME\n" +
-            "     , M.AVERAGE_SPEED\n" +
-            "     , FC.CODE AS FLUENCY_CLASS\n" +
-            "     , L.NATURAL_ID AS LINK_ID\n" +
-            "     , M.END_TIMESTAMP AS MEASURED_TIME\n" +
-            "FROM JOURNEYTIME_MEDIAN M\n" +
-            "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-            "INNER JOIN FLUENCY_CLASS FC ON M.RATIO_TO_FREE_FLOW_SPEED >= FC.LOWER_LIMIT\n" +
-            "                           AND M.RATIO_TO_FREE_FLOW_SPEED < NVL(FC.UPPER_LIMIT, 10)\n" +
-            "WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +
-            "  AND M.END_TIMESTAMP < (TRUNC(SYSDATE))\n" +
-            "  AND L.OBSOLETE = 0\n" +
-            "  AND L.NATURAL_ID = ?1\n" +
-            "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
-            nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LinkMeasurementDataDto> getAllMedianTravelTimesForLinkPreviousDay(final long linkId);
 
     @Query(value =
             "SELECT ROWNUM\n" +
