@@ -3,7 +3,10 @@ package fi.livi.digitraffic.tie.conf;
 import java.util.List;
 import java.util.Locale;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +22,9 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
@@ -87,4 +93,29 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:swagger-ui.html");
     }
+
+    @SuppressWarnings("Duplicates")
+    @Bean
+    public DataSource datasource(final @Value("${metadata.datasource.url}") String url,
+                                 final @Value("${metadata.datasource.username}") String username,
+                                 final @Value("${metadata.datasource.password}") String password,
+                                 final @Value("${metadata.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+
+        config.setMaximumPoolSize(maximumPoolSize);
+
+        config.setMaxLifetime(570000);
+        config.setIdleTimeout(500000);
+        config.setConnectionTimeout(60000);
+
+        // Auto commit must be true for Quartz
+        config.setAutoCommit(true);
+
+        return new HikariDataSource(config);
+    }
+
 }
