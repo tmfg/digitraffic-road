@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -154,37 +153,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             }
         }
         session.close();
-    }
-
-    @Test
-    public void testUpdateCameraDataToSftp() throws Exception {
-
-        cameraDataUpdateService.updateCameraData(kuvas);
-
-        try (final Session session = this.sftpSessionFactory.getSession()) {
-
-            kuvas.forEach(kuva -> {
-                String filePath = getSftpPath(kuva);
-                if (kuva.getNimi().startsWith("X")) {
-                    try {
-                        Assert.assertFalse("Image should have been deleted from sftp server", session.exists(getSftpPath(kuva)));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    log.info("Read presetId={} image back from server from path={}", kuva.getEsiasentoId(), filePath);
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                        session.read(filePath, out);
-                        byte[] initialData = imageFilesMap.get(kuva.getNimi());
-                        byte[] readData = out.toByteArray();
-                        Assert.assertArrayEquals("presetId=" + kuva.getNimi() + " image data read from sever is not equal with initial content",
-                                initialData, readData);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        }
     }
 
     @Test
