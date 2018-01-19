@@ -29,8 +29,7 @@ public class ForeignKeyIndexTest extends AbstractTest {
                 "from (\n" +
                 "  select a.table_name\n" +
                 "       , a.constraint_name\n" +
-                "       , listagg(b.column_name, ' ' ) \n" +
-                "          within group (order by column_name) cols\n" +
+                "       , string_agg(b.column_name, ' ' order by column_name) cols\n" +
                 "      from user_constraints a, user_cons_columns b\n" +
                 "     where a.constraint_name = b.constraint_name\n" +
                 "       and a.constraint_type = 'R'\n" +
@@ -41,8 +40,7 @@ public class ForeignKeyIndexTest extends AbstractTest {
                 "  select table_name\n" +
                 "       , index_name\n" +
                 "       , cr\n" +
-                "       , listagg(column_name, ' ' ) \n" +
-                "          within group (order by column_name) cols\n" +
+                "       , string_agg(column_name, ' ' order by column_name) cols\n" +
                 "    from (\n" +
                 "        select table_name\n" +
                 "             , index_name\n" +
