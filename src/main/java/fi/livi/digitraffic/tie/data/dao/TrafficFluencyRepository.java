@@ -16,7 +16,7 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
            "SELECT max(M.END_TIMESTAMP) AS MEASURED_TIME\n" +
            "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
            "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-           "WHERE L.OBSOLETE = 0",
+           "WHERE L.OBSOLETE = false",
            nativeQuery = true)
     LocalDateTime getLatestMeasurementTime();
 
@@ -30,7 +30,7 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
             "     , L.NATURAL_ID AS LINK_NATURAL_ID\n" +
             "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
             "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-            "WHERE L.OBSOLETE = 0 \n" +
+            "WHERE L.OBSOLETE = false\n" +
             "ORDER BY L.NATURAL_ID",
             nativeQuery = true)
     List<LatestMedianDataDto> findLatestMediansForNonObsoleteLinks();
@@ -45,10 +45,9 @@ public interface TrafficFluencyRepository extends JpaRepository<LatestMedianData
             "     , L.NATURAL_ID AS LINK_NATURAL_ID\n" +
             "FROM LATEST_JOURNEYTIME_MEDIAN M\n" +
             "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
-            "WHERE L.OBSOLETE = 0 \n" +
+            "WHERE L.OBSOLETE = false\n" +
             "  AND L.NATURAL_ID = ?1\n" +
             "ORDER BY L.NATURAL_ID",
             nativeQuery = true)
     List<LatestMedianDataDto> findLatestMediansForLink(final long linkId);
-
 }

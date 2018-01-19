@@ -93,7 +93,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
 
     @Modifying(clearAutomatically = true)
     @Query(value =
-            "INSERT INTO ROAD_STATION_SENSORS DST (ROAD_STATION_ID, ROAD_STATION_SENSOR_ID)\n" +
+            "INSERT INTO ROAD_STATION_SENSORS (ROAD_STATION_ID, ROAD_STATION_SENSOR_ID)\n" +
             "  SELECT RS.ID AS ROAD_STATION_ID\n" +
             "       , SENSOR.ID AS ROAD_STATION_SENSOR_ID\n" +
             "  FROM ROAD_STATION_SENSOR SENSOR, ROAD_STATION RS\n" +

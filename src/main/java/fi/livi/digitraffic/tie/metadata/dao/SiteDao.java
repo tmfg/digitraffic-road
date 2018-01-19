@@ -53,6 +53,6 @@ public class SiteDao {
     }
 
     public void makeNonObsoleteSitesObsolete() {
-        jdbcTemplate.update("UPDATE SITE SET obsolete_date = sysdate WHERE obsolete_date IS NULL", Collections.emptyMap());
+        jdbcTemplate.update("UPDATE SITE SET obsolete_date = current_timestamp WHERE obsolete_date IS NULL", Collections.emptyMap());
     }
 }

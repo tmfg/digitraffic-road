@@ -21,7 +21,7 @@ public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowS
             "       END AS FREE_FLOW_SPEED\n" +
             "FROM LINK L\n" +
             "INNER JOIN ROAD_DISTRICT RD ON L.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE L.OBSOLETE = 0",
+            "WHERE L.OBSOLETE = false",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<LinkFreeFlowSpeedDto> listAllLinkFreeFlowSpeeds();
@@ -34,7 +34,7 @@ public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowS
             "       END AS FREE_FLOW_SPEED\n" +
             "FROM LINK L\n" +
             "INNER JOIN ROAD_DISTRICT RD ON L.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE L.OBSOLETE = 0\n" +
+            "WHERE L.OBSOLETE = false\n" +
             "  AND L.NATURAL_ID = ?1",
            nativeQuery = true)
 
@@ -45,7 +45,7 @@ public interface LinkFreeFlowSpeedRepository extends JpaRepository<LinkFreeFlowS
            "SELECT CASE WHEN count(*) > 0 THEN 1 ELSE 0 END\n" +
            "FROM LINK L\n" +
            "WHERE L.NATURAL_ID = ?1\n" +
-           "  AND L.OBSOLETE = 0",
+           "  AND L.OBSOLETE = false",
            nativeQuery = true)
     int linkExists(final long linkNaturalId);
 }

@@ -48,7 +48,7 @@ public class LinkDao {
                 "start_road_section_id = (select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber), " +
                 "end_road_section_id = (select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :endRoadNumber) and natural_id = :endRoadSectionNumber), " +
                 "road_district_id = (select road_district_id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber), " +
-                "special = :special, obsolete = 0, obsolete_date = null " +
+                "special = :special, obsolete = false, obsolete_date = null " +
             "WHEN NOT MATCHED THEN " +
             "INSERT (id, natural_id, name, name_sv, name_en, length, direction, start_road_address_distance, end_road_address_distance," +
                     "start_road_section_id, end_road_section_id, road_district_id, " +
@@ -58,7 +58,7 @@ public class LinkDao {
                     "(select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber)," +
                     "(select id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :endRoadNumber) and natural_id = :endRoadSectionNumber)," +
                     "(select road_district_id from ROAD_SECTION where road_id = (select id from ROAD where natural_id = :startRoadNumber) and natural_id = :startRoadSectionNumber)," +
-                    ":special, 0, null, null, null)",
+                    ":special, false, null, null, null)",
             args);
     }
 
@@ -93,6 +93,6 @@ public class LinkDao {
     }
 
     public void makeNonObsoleteLinksObsolete() {
-        jdbcTemplate.update("UPDATE LINK SET obsolete_date = sysdate WHERE obsolete_date IS NULL", Collections.emptyMap());
+        jdbcTemplate.update("UPDATE LINK SET obsolete_date = current_timestamp WHERE obsolete_date IS NULL", Collections.emptyMap());
     }
 }

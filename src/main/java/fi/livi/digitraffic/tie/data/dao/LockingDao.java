@@ -21,36 +21,26 @@ public class LockingDao {
      * If instance doesn't have the lock but lock exists
      * then checks if previous lock has expired and updates the lock-row.
      */
-    private static final String MERGE =
-            "MERGE INTO LOCKING_TABLE dst\n" +
-            "  USING (\n" +
-            "    SELECT :lockName as LOCK_NAME\n" +
-            "         , :instanceId INSTANCE_ID\n" +
-            "         , sysdate LOCK_LOCKED\n" +
-            "         , sysdate + NUMTODSINTERVAL(:expirationSeconds, 'SECOND') LOCK_EXPIRES\n" +
-            "    FROM DUAL\n" +
-            "  ) src ON (dst.LOCK_NAME = src.LOCK_NAME)\n" +
-            "  WHEN MATCHED THEN\n" +
-            "    UPDATE SET dst.INSTANCE_ID = src.INSTANCE_ID\n" +
-            "             , dst.LOCK_LOCKED = src.LOCK_LOCKED \n" +
-            "             , dst.LOCK_EXPIRES = src.LOCK_EXPIRES\n" +
-            "    WHERE dst.INSTANCE_ID = src.INSTANCE_ID OR " +
-            "          dst.LOCK_EXPIRES < sysdate\n" +
-            "  WHEN NOT MATCHED THEN\n" +
-            "    INSERT (dst.LOCK_NAME, dst.INSTANCE_ID, dst.LOCK_LOCKED, dst.LOCK_EXPIRES)\n" +
-            "    VALUES (src.LOCK_NAME, src.INSTANCE_ID, src.LOCK_LOCKED, src.LOCK_EXPIRES)";
+    private static final String MERGE = "insert into locking_table(lock_name, instance_id, lock_locked, lock_expires)\n" +
+        "VALUES (:lockName, :instanceId, current_timestamp, current_timestamp + :expirationSeconds::integer * interval '1 second')\n" +
+        "ON CONFLICT (lock_name)\n" +
+        "DO UPDATE SET\n" +
+        "   instance_id = :instanceId,\n" +
+        "   lock_locked = current_timestamp,\n" +
+        "   lock_expires = current_timestamp + :expirationSeconds::integer * interval '1 second'\n" +
+        "where locking_table.instance_id = :instanceId OR locking_table.lock_expires < current_timestamp";
+
+    private static final String RELEASE =
+        "DELETE FROM LOCKING_TABLE LT\n" +
+            "WHERE LT.LOCK_NAME = :lockName\n" +
+            "  AND LT.INSTANCE_ID = :instanceId";
 
     private static final String SELECT =
-            "SELECT LOCK_NAME\n" +
+        "SELECT LOCK_NAME\n" +
             "FROM LOCKING_TABLE LT\n" +
             "WHERE LT.LOCK_NAME = :lockName\n" +
             "  AND LT.INSTANCE_ID = :instanceId\n" +
-            "  AND LT.LOCK_EXPIRES > sysdate";
-
-    private static final String RELEASE =
-            "DELETE FROM LOCKING_TABLE\n" +
-            "WHERE LOCK_NAME = :lockName\n" +
-            "  AND INSTANCE_ID = :instanceId";
+            "  AND LT.LOCK_EXPIRES > current_timestamp";
 
     @Autowired
     public LockingDao(final NamedParameterJdbcTemplate jdbcTemplate) {

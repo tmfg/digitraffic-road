@@ -58,7 +58,7 @@ public class SensorValueDao {
             "           , src.road_station_sensor_id\n" +
             "           , :value\n" +
             "           , :measured\n" +
-            "           , sysdate\n" + // updated
+            "           , current_timestamp\n" + // updated
             "           , :timeWindowStart\n" +
             "           , :timeWindowEnd)\n" +
             "     WHERE src.road_station_id IS NOT NULL\n" +

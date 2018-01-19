@@ -25,7 +25,7 @@ public class StaticDataStatusDao {
         final Session session = entityManager.unwrap(Session.class);
 
         if(updateStaticDataStatus || session.isDirty()) {
-            session.createSQLQuery("update static_data_status set " + type.getUpdateField() + " = current_date").executeUpdate();
+            session.createSQLQuery("update static_data_status set " + type.getUpdateField() + " = current_timestamp").executeUpdate();
         }
     }
 }

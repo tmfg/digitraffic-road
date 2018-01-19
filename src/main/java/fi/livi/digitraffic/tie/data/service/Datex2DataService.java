@@ -212,16 +212,16 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveDatex2Response() {
-        List<Datex2> allActive = datex2Repository.findAllActive();
+        final List<Datex2> allActive = datex2Repository.findAllActive();
         return convertToTrafficDisordersDatex2Response(allActive);
     }
 
     private TrafficDisordersDatex2Response convertToTrafficDisordersDatex2Response(final List<Datex2> datex2s) {
-        List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
-        for (Datex2 datex2 : datex2s) {
-            String datex2Xml = datex2.getMessage();
+        final List<TimestampedTrafficDisorderDatex2> timestampedTrafficDisorderDatex2s = new ArrayList<>();
+        for (final Datex2 datex2 : datex2s) {
+            final String datex2Xml = datex2.getMessage();
             if (!StringUtils.isBlank(datex2Xml)) {
-                TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2Xml, datex2.getImportTime());
+                final TimestampedTrafficDisorderDatex2 tsDatex2 = unMarshallDatex2Message(datex2Xml, datex2.getImportTime());
                 if (tsDatex2 != null) {
                     timestampedTrafficDisorderDatex2s.add(tsDatex2);
                 }

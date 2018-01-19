@@ -26,9 +26,9 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
             "INNER JOIN FLUENCY_CLASS FC ON M.RATIO_TO_FREE_FLOW_SPEED >= FC.LOWER_LIMIT\n" +
             "                           AND M.RATIO_TO_FREE_FLOW_SPEED < NVL(FC.UPPER_LIMIT, 10)\n" +
-            "WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +
-            "  AND M.END_TIMESTAMP < (TRUNC(SYSDATE))\n" +
-            "  AND L.OBSOLETE = 0\n" +
+            "WHERE M.END_TIMESTAMP >= (current_date -1)\n" +
+            "  AND M.END_TIMESTAMP < (current_date)\n" +
+            "  AND L.OBSOLETE = false\n" +
             "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -41,7 +41,7 @@ public interface DayDataRepository extends org.springframework.data.repository.R
         "   select 0\n" +
         "     from LINK L\n" +
         "    WHERE M.LINK_ID = L.ID \n" +
-        "      AND L.OBSOLETE = 0)\n" +
+        "      AND L.OBSOLETE = false)\n" +
         "  order by M.END_TIMESTAMP desc)\n" +
         "where rownum=1",
             nativeQuery = true)
@@ -59,9 +59,9 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             "INNER JOIN LINK L ON M.LINK_ID = L.ID\n" +
             "INNER JOIN FLUENCY_CLASS FC ON M.RATIO_TO_FREE_FLOW_SPEED >= FC.LOWER_LIMIT\n" +
             "                           AND M.RATIO_TO_FREE_FLOW_SPEED < NVL(FC.UPPER_LIMIT, 10)\n" +
-            "WHERE M.END_TIMESTAMP >= (TRUNC(SYSDATE) -1)\n" +
-            "  AND M.END_TIMESTAMP < (TRUNC(SYSDATE))\n" +
-            "  AND L.OBSOLETE = 0\n" +
+            "WHERE M.END_TIMESTAMP >= (current_date -1)\n" +
+            "  AND M.END_TIMESTAMP < (current_date)\n" +
+            "  AND L.OBSOLETE = false\n" +
             "  AND L.NATURAL_ID = ?1\n" +
             "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
             nativeQuery = true)
@@ -82,7 +82,7 @@ public interface DayDataRepository extends org.springframework.data.repository.R
             "                           AND M.RATIO_TO_FREE_FLOW_SPEED < NVL(FC.UPPER_LIMIT, 10)\n" +
             "WHERE M.END_TIMESTAMP >= TRUNC(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'), 'MONTH')\n" +
             "  AND M.END_TIMESTAMP < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1\n" +
-            "  AND L.OBSOLETE = 0\n" +
+            "  AND L.OBSOLETE = false\n" +
             "  AND L.NATURAL_ID = :linkId\n" +
             "ORDER BY L.NATURAL_ID, M.END_TIMESTAMP",
             nativeQuery = true)

@@ -55,7 +55,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @Query(value =
            "SELECT CP.PRESET_ID\n" +
            "FROM CAMERA_PRESET CP\n" +
-           "WHERE PUBLISHABLE = 0",
+           "WHERE PUBLISHABLE = false",
            nativeQuery = true)
     List<String> findAllNotPublishableCameraPresetsPresetIds();
 
@@ -77,31 +77,31 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     @Modifying(clearAutomatically = true)
     @Query(value =
-               "UPDATE ROAD_STATION RS\n" +
-               "SET RS.OBSOLETE = 0\n" +
-               "  , RS.OBSOLETE_DATE = NULL\n" +
-               "WHERE RS.ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
-               "  AND RS.OBSOLETE_DATE IS NOT NULL\n" +
+               "UPDATE ROAD_STATION\n" +
+               "SET OBSOLETE = false\n" +
+               "  , OBSOLETE_DATE = NULL\n" +
+               "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
+               "  AND OBSOLETE_DATE IS NOT NULL\n" +
                "  AND EXISTS(\n" +
                "    SELECT NULL\n" +
                "    FROM CAMERA_PRESET CP\n" +
-               "    WHERE CP.PUBLISHABLE = 1\n" +
-               "      AND CP.ROAD_STATION_ID = RS.ID\n" +
+               "    WHERE CP.PUBLISHABLE = true\n" +
+               "      AND CP.ROAD_STATION_ID = ROAD_STATION.ID\n" +
                ")", nativeQuery = true)
     int nonObsoleteCameraRoadStationsWithPublishablePresets();
 
     @Modifying(clearAutomatically = true)
     @Query(value =
-               "UPDATE ROAD_STATION RS\n" +
-               "SET RS.OBSOLETE = 1\n" +
-               "  , RS.OBSOLETE_DATE = sysdate\n" +
-               "WHERE RS.ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
-               "  AND RS.OBSOLETE_DATE IS NULL\n" +
+               "UPDATE ROAD_STATION\n" +
+               "SET OBSOLETE = true\n" +
+               "  , OBSOLETE_DATE = current_timestamp\n" +
+               "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
+               "  AND OBSOLETE_DATE IS NULL\n" +
                "  AND NOT EXISTS(\n" +
                "    SELECT NULL\n" +
                "    FROM CAMERA_PRESET CP\n" +
-               "    WHERE CP.PUBLISHABLE = 1\n" +
-               "      AND CP.ROAD_STATION_ID = RS.ID\n" +
+               "    WHERE CP.PUBLISHABLE = true\n" +
+               "      AND CP.ROAD_STATION_ID = ROAD_STATION.ID\n" +
                ")", nativeQuery = true)
     int obsoleteCameraRoadStationsWithoutPublishablePresets();
 

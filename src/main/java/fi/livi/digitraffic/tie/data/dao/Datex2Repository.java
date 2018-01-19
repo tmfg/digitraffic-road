@@ -1,10 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,14 +29,14 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "           , d.publication_time\n" +
             "           , d.id AS datex2_id\n" +
             "           , record.validy_status\n" +
-            "           , nvl(record.overall_end_time, TO_DATE('9999', 'yyyy')) overall_end_time\n" +
+            "           , coalesce(record.overall_end_time, TO_DATE('9999', 'yyyy')) overall_end_time\n" +
             "         FROM DATEX2 d\n" +
             "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
             "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
             "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
             "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
-            "             AND disorder.overall_end_time > sysdate)\n" +
+            "             AND disorder.overall_end_time > current_timestamp)\n" +
             // Skip old Datex2 messages of HÄTI system
             "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
@@ -88,7 +85,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     List<Datex2> findBySituationId(@Param("situationId") final String situationId);
 
     List<Datex2> findByPublicationTimeIsNull();
-
 
     @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM Datex2Situation situation\n" +
