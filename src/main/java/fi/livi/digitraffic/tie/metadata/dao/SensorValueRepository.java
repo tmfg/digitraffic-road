@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.QueryHint;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -15,18 +16,11 @@ import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 
 @Repository
 public interface SensorValueRepository extends JpaRepository<SensorValue, Long> {
-
-    @Query(value =
-           "SELECT sv\n" +
-           "FROM SensorValue sv\n" +
-           "WHERE sv.roadStation.naturalId = ?1\n" +
-           "  AND sv.roadStationSensor.roadStationType = ?2")
-    List<SensorValue> findSensorvaluesByRoadStationNaturalId(final long roadStationNaturalId, final RoadStationType roadStationType);
-
+    @EntityGraph(attributePaths = {"roadStation", "roadStationSensor"})
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<SensorValue> findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(final List<Long> tmsLotjuIds, final RoadStationType roadStationType);
 
-    @Query(value =
+    @Query(
            "SELECT max(sv.updated)\n" +
            "FROM SensorValue sv\n" +
            "WHERE sv.roadStation.roadStationType = ?1")

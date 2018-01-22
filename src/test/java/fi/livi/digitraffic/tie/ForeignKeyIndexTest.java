@@ -22,57 +22,54 @@ public class ForeignKeyIndexTest extends AbstractTest {
 
     @Test
     public void testForeignKeysHaveIndex() {
-        String sql =
-                "select c.table_name\n" +
-                "     , c.constraint_name\n" +
-                "     , c.cols\n" +
-                "from (\n" +
+        final String sql =
+            "with constraints as (\n" +
                 "  select a.table_name\n" +
                 "       , a.constraint_name\n" +
                 "       , string_agg(b.column_name, ' ' order by column_name) cols\n" +
-                "      from user_constraints a, user_cons_columns b\n" +
+                "      from information_schema.table_constraints a, information_schema.key_column_usage b\n" +
                 "     where a.constraint_name = b.constraint_name\n" +
-                "       and a.constraint_type = 'R'\n" +
+                "       and a.constraint_type = 'FOREIGN KEY'\n" +
                 "  group by a.table_name, a.constraint_name\n" +
-                " ) c\n" +
-                " left outer join\n" +
-                " (\n" +
-                "  select table_name\n" +
-                "       , index_name\n" +
-                "       , cr\n" +
-                "       , string_agg(column_name, ' ' order by column_name) cols\n" +
-                "    from (\n" +
-                "        select table_name\n" +
-                "             , index_name\n" +
-                "             , column_position\n" +
-                "             , column_name\n" +
-                "             , connect_by_root(column_name) cr\n" +
-                "          from user_ind_columns\n" +
-                "       connect by prior column_position-1 = column_position\n" +
-                "              and prior index_name = index_name\n" +
-                "         )\n" +
-                "    group by table_name, index_name, cr\n" +
-                ") i on c.cols = i.cols and c.table_name = i.table_name\n" +
-                "\n" +
-                "where i.index_name is null\n" +
-                "order by table_name, cols";
+                " ), indexes as (\n" +
+                "select\n" +
+                "    t.relname as table_name,\n" +
+                "    i.relname as index_name,\n" +
+                "    array_to_string(array_agg(a.attname order by a.attname), ' ') as cols\n" +
+                "from\n" +
+                "    pg_class t,\n" +
+                "    pg_class i,\n" +
+                "    pg_index ix,\n" +
+                "    pg_attribute a\n" +
+                "where\n" +
+                "    t.oid = ix.indrelid\n" +
+                "    and i.oid = ix.indexrelid\n" +
+                "    and a.attrelid = t.oid\n" +
+                "    and a.attnum = ANY(ix.indkey)\n" +
+                "    and t.relkind = 'r'\n" +
+                "group by\n" + "    t.relname,\n" + "    i.relname\n" +
+                "order by\n" + "    t.relname,\n" + "    i.relname\n" +
+                ")\n" +
+                "select * from constraints\n" +
+                "where not exists(select * from indexes where indexes.cols like '' || constraints.cols || '%');\n";
 
-        List<Map<String, Object>> foreignKeysWithoutIndex =
+
+        final List<Map<String, Object>> foreignKeysWithoutIndex =
                 jdbcTemplate.queryForList(sql)
                         .stream()
                         .filter(fk -> !fk.get("CONSTRAINT_NAME").toString().matches(IGNORED_CONSTRAINT_NAMES_REGEX))
                         .collect(Collectors.toList());
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        for (Map<String, Object> stringObjectMap : foreignKeysWithoutIndex) {
+        for (final Map<String, Object> stringObjectMap : foreignKeysWithoutIndex) {
             sb.append("CREATE INDEX ");
             sb.append(StringUtils.substring(stringObjectMap.get("CONSTRAINT_NAME").toString(), 0, 28));
             sb.append("_I ON ");
             sb.append(stringObjectMap.get("TABLE_NAME"));
             sb.append(" (");
             sb.append(StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
-            sb.append(") TABLESPACE STP_IDX; -- ");
+            sb.append("); -- ");
             sb.append(stringObjectMap);
             sb.append("\n");
         }
