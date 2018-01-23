@@ -17,8 +17,8 @@
             socket.onerror = function (event) {
                 console.info("onError: ", event);
             };
-            socket.onclose = function (p1) {
-                console.info("onClose: ", p1)
+            socket.onclose = function (event) {
+                console.info("onClose: ", event)
             };
         }
         function addMessage(message) {
