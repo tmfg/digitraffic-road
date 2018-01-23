@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Test client for TMS sensor values</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.0.3/sockjs.min.js"></script>
+
+    <script>
+        function connect() {
+            var url = "ws://localhost:9010/api/v1/plain-websockets/tmsdata/{id}";
+            var socket = new WebSocket(url);
+            socket.onopen = function (event) {
+                console.info("onOpen: ", event);
+            };
+            socket.onmessage = function(message) {
+                addMessage(message);
+            };
+            socket.onerror = function (event) {
+                console.info("onError: ", event);
+            };
+            socket.onclose = function (p1) {
+                console.info("onClose: ", p1)
+            };
+        }
+        function addMessage(message) {
+            var text = convert(message);
+            $(".messages").append(text);
+            $(".messages").append('\n');
+        }
+        function convert(message) {
+            return JSON.stringify(JSON.parse(message.data));
+        }
+        connect();
+    </script>
+</head>
+<body>
+<b>All messages:</b>
+<pre class="messages"></pre>
+</body>
+</html>
