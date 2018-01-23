@@ -43,13 +43,13 @@ public class SingleTmsDataWebsocketEndpoint {
             log.info("method=onOpen Invalid WebSocket pathParameter={} closing connection", roadStationNaturalId);
             CloseReason reason = new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "Invalid path parameter '" + roadStationNaturalId +"'");
             session.close(reason);
-            return;
-        }
-        synchronized (sessions) {
-            if(!sessions.containsKey(roadStationNaturalId)) {
-                sessions.put(roadStationNaturalId, new HashSet<>());
+        } else {
+            synchronized (sessions) {
+                if(!sessions.containsKey(roadStationNaturalId)) {
+                    sessions.put(roadStationNaturalId, new HashSet<>());
+                }
+                sessions.get(roadStationNaturalId).add(session);
             }
-            sessions.get(roadStationNaturalId).add(session);
         }
     }
 
