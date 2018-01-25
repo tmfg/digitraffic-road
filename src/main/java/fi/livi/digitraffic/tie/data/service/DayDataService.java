@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,46 +30,12 @@ public class DayDataService {
     }
 
     @Transactional(readOnly = true)
-    public HistoryRootDataObjectDto listPreviousDayHistoryData(final boolean onlyUpdateInfo) {
-
-        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
-
-        if (onlyUpdateInfo) {
-            // If there is no data for previous day, return update time before previousday
-            if (updated == null) {
-                updated = ZonedDateTime.now().minusDays(2).with(LocalTime.MAX);
-            }
-            return new HistoryRootDataObjectDto(updated);
-
-        } else {
-
-            final List<LinkMeasurementDataDto> linkData = dayDataRepository.listAllMedianTravelTimesForPreviousDay();
-
-            return new HistoryRootDataObjectDto(
-                    convertToDayDataData(linkData),
-                    updated);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public HistoryRootDataObjectDto listPreviousDayHistoryData(long linkId) {
-        if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
+    public HistoryRootDataObjectDto listHistoryData(final long linkId, final int year, final int month) {
+        if (linkFreeFlowSpeedRepository.linkExists(linkId) != 1) {
             throw new ObjectNotFoundException("Link", linkId);
         }
-        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
-        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLinkPreviousDay(linkId);
-        return new HistoryRootDataObjectDto(
-                convertToDayDataData(linkData),
-                updated);
-    }
-
-    @Transactional(readOnly = true)
-    public HistoryRootDataObjectDto listHistoryData(long linkId, int year, int month) {
-        if (1 != linkFreeFlowSpeedRepository.linkExists(linkId)) {
-            throw new ObjectNotFoundException("Link", linkId);
-        }
-        ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
-        List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId, year, month);
+        final ZonedDateTime updated = DateHelper.toZonedDateTime(dayDataRepository.getLatestMeasurementTime());
+        final List<LinkMeasurementDataDto> linkData = dayDataRepository.getAllMedianTravelTimesForLink(linkId, year, month);
         return new HistoryRootDataObjectDto(
                 convertToDayDataData(linkData),
                 updated);

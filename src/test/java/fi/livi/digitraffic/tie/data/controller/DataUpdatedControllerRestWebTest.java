@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.Matchers;
@@ -31,11 +33,15 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     public void testDataUpdatedExists() throws Exception {
 
         final Field[] fields = FieldUtils.getAllFields(DataController.class);
+        final Set<String> ignoreThese = new HashSet<>();
+        ignoreThese.add("FLUENCY_CURRENT_PATH");
+        ignoreThese.add("FLUENCY_HISTORY_DATA_PATH");
+        ignoreThese.add("FLUENCY_HISTORY_DAY_DATA_PATH");
+        ignoreThese.add("FORECAST_SECTION_WEATHER_DATA_PATH");
+        ignoreThese.add("TRAFFIC_DISORDERS_DATEX2_PATH");
+
         for (final Field field : fields) {
-            if ( field.getName().endsWith("_PATH")
-                 && !field.getName().equals("FLUENCY_HISTORY_DATA_PATH")
-                 && !field.getName().equals("TRAFFIC_DISORDERS_DATEX2_PATH")
-                 && !field.getName().equals("FORECAST_SECTION_WEATHER_DATA_PATH")) {
+            if ( field.getName().endsWith("_PATH") && !ignoreThese.contains(field.getName()) ) {
 
                 final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
                              MetadataApplicationConfiguration.API_DATA_PART_PATH +
