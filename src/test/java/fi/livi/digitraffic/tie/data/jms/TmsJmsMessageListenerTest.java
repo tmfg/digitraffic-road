@@ -2,9 +2,6 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -17,18 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -55,7 +48,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     static {
         try {
             datatypeFactory = DatatypeFactory.newInstance();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -79,60 +72,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-
-    @Before
-    public void initData() throws JAXBException {
-        if (!TestTransaction.isActive()) {
-            TestTransaction.start();
-        }
-
-        log.info("Add available sensors for TMS Stations");
-        final String merge =
-                "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
-                "USING (\n" +
-                "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
-                "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
-                "  WHERE S.OBSOLETE = 0\n" +
-                "    AND S.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
-                "    AND EXISTS (\n" +
-                "      SELECT NULL\n" +
-                "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
-                "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
-                "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
-                "   )\n" +
-                "   AND RS.ROAD_STATION_TYPE = 'TMS_STATION'\n" +
-                "   AND RS.OBSOLETE_DATE IS NULL\n" +
-                ") SRC\n" +
-                "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
-                "WHEN NOT MATCHED THEN INSERT (TGT.ROAD_STATION_ID, TGT.ROAD_STATION_SENSOR_ID)\n" +
-                "     VALUES (SRC.ROAD_STATION_ID, SRC.ROAD_STATION_SENSOR_ID)";
-        jdbcTemplate.execute(merge);
-
-        log.info("Commit changes");
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        assertFalse(TestTransaction.isActive());
-        log.info("Commit done");
-        // Now we have stations with sensors and lotjuid:s that we can update
-    }
-
-    public static BytesMessage createBytesMessage(final LAMRealtimeProtos.Lam lam) throws JMSException, IOException {
-        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
-        lam.writeDelimitedTo(bous);
-        final byte[] lamBytes = bous.toByteArray();
-
-        final BytesMessage bytesMessage = mock(BytesMessage.class);
-
-        when(bytesMessage.getBodyLength()).thenReturn((long)lamBytes.length);
-        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
-            final byte[] bytes = (byte[]) invocation.getArguments()[0];
-            System.arraycopy(lamBytes, 0, bytes, 0, lamBytes.length);
-
-            return lamBytes.length;
-        });
-
-        return bytesMessage;
-    }
 
         /**
          * Send some data bursts to jms handler and test performance of database updates.

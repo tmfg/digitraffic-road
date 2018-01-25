@@ -48,7 +48,7 @@ public class SensorValueDao {
         "conflict (road_station_id, road_station_sensor_id)\n" +
         "do update set value = :value\n" +
         "                , measured = :measured\n" +
-        "                , updated = current_date\n" +
+        "                , updated = current_timestamp\n" +
         "                , time_window_start = :timeWindowStart\n" +
         "                , time_window_end = :timeWindowEnd\n" +
         "WHERE (sensor_value.value != :value\n" +

@@ -45,7 +45,7 @@ public class SensorValue {
     private RoadStationSensor roadStationSensor;
 
     @JsonIgnore
-    ZonedDateTime updated;
+    private ZonedDateTime updated;
 
     @Column(name = "TIME_WINDOW_START")
     private ZonedDateTime timeWindowStart;
