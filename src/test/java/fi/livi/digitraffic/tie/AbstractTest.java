@@ -6,13 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,5 +64,12 @@ public abstract class AbstractTest {
         final Resource datex2Resource = loadResource(resourcePattern);
 
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
+    }
+
+    protected void assertCollectionSize(final Collection<?> collection, final int expectedSize) {
+        final int collectionSize = collection.size();
+
+        Assert.assertTrue(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize),
+            collectionSize == expectedSize);
     }
 }

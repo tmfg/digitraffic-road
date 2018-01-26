@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.metadata.controller.TmsState.REMOVED;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,31 +21,35 @@ public class TmsStationServiceTest extends AbstractTest {
     @Test
     public void findAllPublishableTmsStationsAsFeatureCollection() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
-        Assert.assertTrue(stations.getFeatures().size() > 0);
+
+        assertCollectionSize(stations.getFeatures(), 493);
     }
 
     @Test
     public void findPermanentlyRemovedStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, REMOVED);
-        Assert.assertTrue(stations.getFeatures().size() == 0);
+
+        assertCollectionSize(stations.getFeatures(), 45);
     }
 
     @Test
     public void findAllStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ALL);
-        Assert.assertTrue(stations.getFeatures().size() > 0);
+
+        assertCollectionSize(stations.getFeatures(), 538);
     }
 
     @Test
     public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
-        Assert.assertTrue(stations.size() > 0);
+
+        assertCollectionSize(stations.entrySet(), 545);
     }
 
     @Test
     public void findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsByMappedByLotjuId();
-        Assert.assertTrue(stations.size() > 0);
-    }
 
+        assertCollectionSize(stations.entrySet(), 545);
+    }
 }

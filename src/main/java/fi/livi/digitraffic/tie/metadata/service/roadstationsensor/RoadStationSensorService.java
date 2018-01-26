@@ -92,7 +92,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType roadStationType) {
+    public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalseAndAllowed(roadStationType);
     }
 
