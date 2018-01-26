@@ -66,7 +66,7 @@ public abstract class AbstractTest {
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 
-    protected void assertCollectionSize(final Collection<?> collection, final int expectedSize) {
+    protected void assertCollectionSize(final int expectedSize, final Collection<?> collection) {
         final int collectionSize = collection.size();
 
         Assert.assertTrue(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize),
@@ -74,6 +74,6 @@ public abstract class AbstractTest {
     }
 
     protected void assertEmpty(final Collection<?> col) {
-        assertCollectionSize(col, 0);
+        assertCollectionSize(0, col);
     }
 }

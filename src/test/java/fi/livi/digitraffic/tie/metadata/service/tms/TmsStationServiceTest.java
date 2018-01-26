@@ -22,34 +22,34 @@ public class TmsStationServiceTest extends AbstractTest {
     public void findAllPublishableTmsStationsAsFeatureCollection() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
 
-        assertCollectionSize(stations.getFeatures(), 493);
+        assertCollectionSize(494, stations.getFeatures());
     }
 
     @Test
     public void findPermanentlyRemovedStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, REMOVED);
 
-        assertCollectionSize(stations.getFeatures(), 45);
+        assertCollectionSize(45, stations.getFeatures());
     }
 
     @Test
     public void findAllStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ALL);
 
-        assertCollectionSize(stations.getFeatures(), 538);
+        assertCollectionSize(538, stations.getFeatures());
     }
 
     @Test
     public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
 
-        assertCollectionSize(stations.entrySet(), 545);
+        assertCollectionSize(545, stations.entrySet(),);
     }
 
     @Test
     public void findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsByMappedByLotjuId();
 
-        assertCollectionSize(stations.entrySet(), 545);
+        assertCollectionSize(545, stations.entrySet());
     }
 }
