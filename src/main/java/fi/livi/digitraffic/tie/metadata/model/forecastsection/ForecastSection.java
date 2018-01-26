@@ -109,7 +109,7 @@ public class ForecastSection {
     private RoadSection endRoadSection;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
-    @OrderBy(value = "forecastSectionCoordinatesPK.orderNumber")
+    @OrderBy("forecastSectionCoordinatesPK.orderNumber")
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -119,13 +119,14 @@ public class ForecastSection {
     public ForecastSection() {
     }
 
-    public ForecastSection(String naturalId, String description) {
+    public ForecastSection(final String naturalId, final String description) {
         this.naturalId = naturalId;
         this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
         this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
         this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
         this.description = description;
         this.forecastSectionCoordinates = new ArrayList<>();
+        this.forecastSectionWeatherList = new ArrayList<>();
         this.obsoleteDate = null;
     }
 
