@@ -72,4 +72,8 @@ public abstract class AbstractTest {
         Assert.assertTrue(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize),
             collectionSize == expectedSize);
     }
+
+    protected void assertEmpty(final Collection<?> col) {
+        assertCollectionSize(col, 0);
+    }
 }

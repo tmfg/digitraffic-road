@@ -22,7 +22,15 @@ roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000
 forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
+<<<<<<< HEAD
 datex2MessageUpdateJob.frequency=180000
+=======
+travelTimeMediansUpdateJob.frequency=60000
+travelTimeMeasurementsUpdateJob.frequency=60000
+travelTimeLinkMetadataUpdateJob.frequency=86400000
+datex2TrafficAlertMessageUpdateJob.frequency=180000
+datex2RoadworksMessageUpdateJob.frequency=3600000
+>>>>>>> remotes/origin/DPO-227_roadworks
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/

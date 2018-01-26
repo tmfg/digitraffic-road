@@ -28,7 +28,6 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
 public class LotjuCameraStationMetadataService {
-
     private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataService.class);
     private final LotjuCameraStationMetadataClient lotjuCameraStationClient;
 
@@ -38,13 +37,11 @@ public class LotjuCameraStationMetadataService {
     }
 
     public Map<Long, Pair<KameraVO, List<EsiasentoVO>>> getLotjuIdToKameraAndEsiasentoMap() {
-
         final ConcurrentMap<Long, Pair<KameraVO, List<EsiasentoVO>>> kameraAndEsiasentosPairMappedByKameraLotjuId = new ConcurrentHashMap<>();
 
         log.info("Fetch Cameras");
         final List<KameraVO> kamerat = lotjuCameraStationClient.getKameras();
         log.info("method=getLotjuIdToKameraAndEsiasentoMap cameraFetchedCount={} Cameras", kamerat.size());
-        log.info("Fetch Presets for Cameras");
 
         final StopWatch start = StopWatch.createStarted();
         final ExecutorService executor = Executors.newFixedThreadPool(1 );
