@@ -25,7 +25,7 @@ public enum Datex2SituationRecordValidyStatus {
 
     private final String value;
 
-    Datex2SituationRecordValidyStatus(final String value) {
+    Datex2SituationRecordValidyStatus(String value) {
         this.value = value;
     }
 
@@ -33,8 +33,8 @@ public enum Datex2SituationRecordValidyStatus {
         return value;
     }
 
-    public static Datex2SituationRecordValidyStatus fromValue(final String value) {
-        return valueOf(value);
+    public static Datex2SituationRecordValidyStatus fromValue(String value) {
+        return Datex2SituationRecordValidyStatus.valueOf(value);
     }
 
 

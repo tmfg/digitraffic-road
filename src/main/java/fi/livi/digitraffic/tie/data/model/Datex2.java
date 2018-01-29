@@ -7,8 +7,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -27,7 +25,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "Datex2", description = "Datex2-message")
+@ApiModel(value = "Datex2", description = "Traffic disorders")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @DynamicUpdate
@@ -51,11 +49,6 @@ public class Datex2 {
     @NotNull
     private String message;
 
-    @JsonIgnore
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private Datex2MessageType messageType;
-
     @ApiModelProperty(value = "Message publication " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
     private ZonedDateTime publicationTime;
 
@@ -77,7 +70,7 @@ public class Datex2 {
         return message;
     }
 
-    public void setMessage(final String message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -85,7 +78,7 @@ public class Datex2 {
         return importTime;
     }
 
-    public void setImportTime(final ZonedDateTime importTime) {
+    public void setImportTime(ZonedDateTime importTime) {
         this.importTime = importTime;
     }
 
@@ -94,7 +87,7 @@ public class Datex2 {
     }
 
 
-    public void setPublicationTime(final ZonedDateTime publicationTime) {
+    public void setPublicationTime(ZonedDateTime publicationTime) {
         this.publicationTime = publicationTime;
     }
 
@@ -102,23 +95,15 @@ public class Datex2 {
         return situations;
     }
 
-    public void setSituations(final List<Datex2Situation> situations) {
+    public void setSituations(List<Datex2Situation> situations) {
         this.situations = situations;
     }
 
-    public void addSituation(final Datex2Situation situation) {
+    public void addSituation(Datex2Situation situation) {
         if (this.situations == null) {
             this.situations = new ArrayList<>();
         }
         situations.add(situation);
         situation.setDatex2(this);
-    }
-
-    public Datex2MessageType getMessageType() {
-        return messageType;
-    }
-
-    public void setMessageType(final Datex2MessageType messageType) {
-        this.messageType = messageType;
     }
 }

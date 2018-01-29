@@ -18,13 +18,6 @@
             <xsd:element maxOccurs="1" name="d2LogicalModel" type="D2LogicalModel:D2LogicalModel"/>
         </xsd:sequence>
     </xsd:complexType>
-    <xsd:complexType name="TimestampedRoadworkDatex2">
-        <xsd:sequence>
-            <xsd:element name="published" type="dt:ObservationTimeType"/>
-            <xsd:element maxOccurs="1" name="d2LogicalModel" type="D2LogicalModel:D2LogicalModel"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="ObservationTimeType">
         <xsd:sequence>
             <xsd:element name="utc" type="xsd:dateTime"/>
@@ -35,13 +28,6 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element maxOccurs="unbounded" minOccurs="0" name="disorder" type="dt:TimestampedTrafficDisorderDatex2"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="RoadworksDatex2Response">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element maxOccurs="unbounded" minOccurs="0" name="roadwork" type="dt:TimestampedRoadworkDatex2"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>

@@ -9,12 +9,15 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
@@ -23,32 +26,46 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
+import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 
-@TestPropertySource(properties = "Datex2MessageUrl=Datex2Url")
 public class Datex2MessageUpdaterTest extends AbstractTest {
-    @Autowired
-    private Datex2TrafficAlertMessageUpdater messageUpdater;
+
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    private Datex2MessageUpdater datex2MessageUpdater;
+
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    private Datex2HttpClient datex2HttpClient;
 
     @Autowired
     private Datex2Repository datex2Repository;
 
-    private MockRestServiceServer server;
+    @Autowired
+    private Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private Datex2DataService datex2DataService;
+
+    @Autowired
+    private RetryTemplate retryTemplate;
+
+    private MockRestServiceServer server;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     private final String datex2Url = "Datex2Url";
 
     @Before
     public void before() {
         datex2Repository.deleteAll();
-
+        datex2HttpClient = new Datex2HttpClient(datex2Url, restTemplate, retryTemplate);
+        datex2MessageUpdater = new Datex2MessageUpdater(datex2Repository, datex2HttpClient, jaxb2Marshaller, datex2DataService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
     @Test
     @Rollback
     public void updateDatex2MessagesSucceeds() throws IOException {
+
         server.expect(MockRestRequestMatchers.requestTo(datex2Url + "?F=0&C=N&O=D"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/datex2FileList1.html"), MediaType.TEXT_HTML));
@@ -57,7 +74,7 @@ public class Datex2MessageUpdaterTest extends AbstractTest {
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml"), MediaType.APPLICATION_XML));
 
-        messageUpdater.updateDatex2TrafficAlertMessages();
+        datex2MessageUpdater.updateDatex2Messages();
         server.verify();
 
         List<Datex2> datex2s = datex2Repository.findAll();
@@ -81,7 +98,7 @@ public class Datex2MessageUpdaterTest extends AbstractTest {
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-16-10-01-680.xml"), MediaType.APPLICATION_XML));
 
-        messageUpdater.updateDatex2TrafficAlertMessages();
+        datex2MessageUpdater.updateDatex2Messages();
         server.verify();
 
         datex2s = datex2Repository.findAll(new Sort(Sort.Direction.ASC, "importTime"));

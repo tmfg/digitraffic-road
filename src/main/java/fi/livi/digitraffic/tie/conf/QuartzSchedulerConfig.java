@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.quartz.JobDetail;
@@ -32,8 +33,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.Datex2MessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
@@ -153,13 +153,8 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean datex2TrafficAlertMessageUpdateJobDetail() {
-        return createJobDetail(Datex2TrafficAlertMessageUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean datex2RoadworksMessageUpdateJobDetail() {
-        return createJobDetail(Datex2RoadworksMessageUpdateJob.class);
+    public JobDetailFactoryBean datex2MessageUpdateJobDetail() {
+        return createJobDetail(Datex2MessageUpdateJob.class);
     }
 
     @Bean
@@ -217,15 +212,9 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJobDetail,
-                                                                  @Value("${datex2TrafficAlertMessageUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(datex2TrafficAlertMessageUpdateJobDetail, frequency);
-    }
-
-    @Bean
-    public SimpleTriggerFactoryBean datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJobDetail,
-        @Value("${datex2RoadworksMessageUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(datex2RoadworksMessageUpdateJobDetail, frequency);
+    public SimpleTriggerFactoryBean datex2MessageUpdateJobTrigger(final JobDetail datex2MessageUpdateJobDetail,
+                                                                  @Value("${datex2MessageUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(datex2MessageUpdateJobDetail, frequency);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
