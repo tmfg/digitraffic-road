@@ -61,6 +61,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
     }
 
     @Test
+    @Commit
     public void updateMessagesWithRealData() {
         //assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
 
