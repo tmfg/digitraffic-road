@@ -32,6 +32,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     private static final Set<String> excludedOperations = Sets.newSet(
         "FLUENCY_CURRENT_PATH",
         "FLUENCY_HISTORY_DATA_PATH",
+        "FLUENCY_HISTORY_DAY_DATA_PATH",
         "TRAFFIC_DISORDERS_DATEX2_PATH",
         "FORECAST_SECTION_WEATHER_DATA_PATH",
         "ROADWORKS_DATEX2_PATH");
