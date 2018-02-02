@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
@@ -16,7 +15,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
-import fi.livi.digitraffic.tie.data.service.Datex2DataService;
+import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 
@@ -26,20 +25,20 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;
-    private final Datex2DataService datex2DataService;
+    private final Datex2UpdateService datex2UpdateService;
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
     public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}") final String jmsConnectionUrls,
                                           @Value("${jms.datex2.userId}") final String jmsUserId,
                                           @Value("${jms.datex2.password}") final String jmsPassword,
-                                          @Value("#{'${jms.datex2.inQueue}'.split(',')}")  final List<String> jmsQueueKeys, final Datex2DataService datex2DataService,
+                                          @Value("#{'${jms.datex2.inQueue}'.split(',')}")  final List<String> jmsQueueKeys, final Datex2UpdateService datex2UpdateService,
                                           final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller) throws JMSException {
 
         super(JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
               lockingService,
               log);
-        this.datex2DataService = datex2DataService;
+        this.datex2UpdateService = datex2UpdateService;
         this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
@@ -54,7 +53,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
     @Override
     public JMSMessageListener<Datex2MessageDto> createJMSMessageListener() throws JAXBException {
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2DataService::updateDatex2Data;
+        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2UpdateService::updateTrafficAlerts;
         final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener(messageMarshaller, handleData,
