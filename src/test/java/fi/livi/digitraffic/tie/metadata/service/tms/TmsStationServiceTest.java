@@ -43,7 +43,7 @@ public class TmsStationServiceTest extends AbstractTest {
     public void findAllTmsStationsMappedByByTmsNaturalId() {
         final Map<Long, TmsStation> stations = tmsStationService.findAllTmsStationsMappedByByTmsNaturalId();
 
-        assertCollectionSize(545, stations.entrySet(),);
+        assertCollectionSize(545, stations.entrySet());
     }
 
     @Test
