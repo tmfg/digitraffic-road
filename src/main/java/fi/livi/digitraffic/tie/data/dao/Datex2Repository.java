@@ -38,7 +38,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     boolean existsWithSituationId(@Param("situationId") final String situationId);
 
     @Query(name = "list_roadworks_situation_version_times")
-    List<Object[]> listRoadworkSituationVersionTimes();
+    List<Object[]> listDatex2SituationVersionTimes(@Param("messageType") final String messageType);
 
     @Query(value = "delete from datex2 where message_type = 'ROADWORK'", nativeQuery = true)
     @Modifying

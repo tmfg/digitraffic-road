@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -25,7 +24,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 
 public class Datex2RoadworksIntegrationTest extends AbstractTest {
     @Autowired
-    private Datex2RoadworksMessageUpdater messageUpdater;
+    private Datex2SimpleMessageUpdater messageUpdater;
 
     @Autowired
     private Datex2Repository datex2Repository;
