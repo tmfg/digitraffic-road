@@ -66,6 +66,13 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public WeightLimitationDatex2Response findWeightLimitations(final String situationId, final int year, final int month) {
+        final List<Datex2> datex2s = findDatex2Messages(WEIGHT_LIMITATION, situationId, year, month);
+
+        return convertToWeightLimitationDatex2Response(datex2s);
+    }
+
+    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findTrafficDisorders(final String situationId, final int year, final int month) {
         final List<Datex2> datex2s = findDatex2Messages(TRAFFIC_DISORDER, situationId, year, month);
 
@@ -94,6 +101,15 @@ public class Datex2DataService {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
         return convertToRoadworksDatex2Response(datex2s);
+    }
+
+    @Transactional(readOnly = true)
+    public WeightLimitationDatex2Response getAllWeightLimitationsBySituationId(final String situationId) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, WEIGHT_LIMITATION.name());
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToWeightLimitationDatex2Response(datex2s);
     }
 
     @Transactional(readOnly = true)

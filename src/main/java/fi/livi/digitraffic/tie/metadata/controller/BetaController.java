@@ -91,7 +91,7 @@ public class BetaController {
         return datex2DataService.getAllRoadworksBySituationId(situationId);
     }
 
-    @ApiOperation("Roadwork Datex2 messages disorders history")
+    @ApiOperation("Roadwork Datex2 messages history")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                     @ApiResponse(code = 400, message = "Invalid parameter"),
@@ -115,4 +115,33 @@ public class BetaController {
     public WeightLimitationDatex2Response weightLimitationsDatex2() {
         return datex2DataService.findActiveWeightLimitations();
     }
+
+    @ApiOperation("Weight limitatio Datex2 messages by situation id")
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_LIMTATIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight limitations"),
+        @ApiResponse(code = 404, message = "Situation id not found") })
+    public WeightLimitationDatex2Response weightLimitationsDatex2BySituationId(
+        @ApiParam(value = "Situation id.", required = true)
+        @PathVariable final String situationId) {
+        return datex2DataService.getAllWeightLimitationsBySituationId(situationId);
+    }
+
+    @ApiOperation("Weight limitation Datex2 messages history")
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_LIMTATIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight limitations"),
+        @ApiResponse(code = 400, message = "Invalid parameter"),
+        @ApiResponse(code = 404, message = "Situation id not found")})
+    public WeightLimitationDatex2Response weightLimitationsDatex2OfHistory(
+        @ApiParam(value = "Situation id", required = false)
+        @RequestParam(required = false)
+        final String situationId,
+        @ApiParam(value = "Year (>2014)", required = true)
+        @RequestParam @Valid @Min(2014)
+        final int year,
+        @ApiParam(value = "Month (1-12)", required = true)
+        @RequestParam @Valid @Range(min = 1, max = 12)
+        final int month) {
+        return datex2DataService.findWeightLimitations(situationId, year, month);
+    }
+
 }
