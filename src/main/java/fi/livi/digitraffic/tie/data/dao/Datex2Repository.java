@@ -77,7 +77,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
                                           @Param("month") final int month);
 
     @Query(value =
-        "SELECT d.*n" +
+        "SELECT d.*\n" +
         "FROM datex2 d\n" +
         "WHERE d.id in (\n" +
         "    SELECT situation.datex2_id\n" +
