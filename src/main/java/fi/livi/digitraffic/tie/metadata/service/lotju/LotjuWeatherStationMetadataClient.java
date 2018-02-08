@@ -38,10 +38,12 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     List<TiesaaAsemaVO> getTiesaaAsemmas() {
+        log.info("Fetching TiesaaAsemas from " + getWebServiceTemplate().getDefaultUri());
+
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
-        log.info("Fetching TiesaaAsemas");
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
+
         log.info("roadStationFetchedCount={} TiesaaAsemas", response.getValue().getTiesaaAsema().size());
         return response.getValue().getTiesaaAsema();
     }
@@ -49,12 +51,12 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
+        log.info("Fetching all LaskennallisetAnturit from " + getWebServiceTemplate().getDefaultUri());
 
-        log.info("Fetching all LaskennallisetAnturit");
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
-
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+
         return response.getValue().getLaskennallinenAnturi();
     }
 
@@ -63,9 +65,11 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
         request.setId(tiesaaAsemaLotjuId);
+
         final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response =
                 (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
                         getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+
         return response.getValue().getLaskennallinenAnturi();
     }
 
