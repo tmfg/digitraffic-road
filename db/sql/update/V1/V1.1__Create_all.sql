@@ -98,14 +98,6 @@ NO CYCLE;
 
 
 
-CREATE SEQUENCE seq_lam_station_data
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
-
 CREATE SEQUENCE seq_latest_journeytime_median
 INCREMENT BY 1
 MAXVALUE 9223372036854775807
@@ -296,20 +288,6 @@ OIDS=FALSE
 
 
 
-CREATE TABLE IF NOT EXISTS direction(
-natural_id NUMERIC(10,0) NOT NULL,
-name_fi CHARACTER VARYING(256),
-name_sv CHARACTER VARYING(256),
-name_en CHARACTER VARYING(256),
-rdi CHARACTER VARYING(1),
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE
-)
-WITH (
-OIDS=FALSE
-);
-
-
-
 CREATE TABLE IF NOT EXISTS forecast_condition_reason(
 forecast_section_id NUMERIC(10,0) NOT NULL,
 forecast_name CHARACTER VARYING(3) NOT NULL,
@@ -399,22 +377,6 @@ direction_1_municipality CHARACTER VARYING(200),
 direction_1_municipality_code NUMERIC(10,0),
 direction_2_municipality CHARACTER VARYING(200),
 direction_2_municipality_code NUMERIC(10,0)
-)
-WITH (
-OIDS=FALSE
-);
-
-
-
-CREATE TABLE IF NOT EXISTS lam_station_data(
-id NUMERIC(10,0) NOT NULL,
-measured TIMESTAMP(0) WITHOUT TIME ZONE,
-traffic_volume_1 DOUBLE PRECISION,
-traffic_volume_2 DOUBLE PRECISION,
-average_speed_1 NUMERIC(7,3),
-average_speed_2 NUMERIC(7,3),
-last_modified TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-lam_station_id NUMERIC(10,0) NOT NULL
 )
 WITH (
 OIDS=FALSE
@@ -661,24 +623,6 @@ WITH (
 OIDS=FALSE
 );
 
-
-
-CREATE TABLE IF NOT EXISTS site(
-natural_id NUMERIC(10,0) NOT NULL,
-name_fi CHARACTER VARYING(256),
-name_sv CHARACTER VARYING(256),
-name_en CHARACTER VARYING(256),
-road_section_id NUMERIC(10,0),
-road_section_begin_distance NUMERIC(38,0),
-x_coord_kkj3 NUMERIC(38,0),
-y_coord_kkj3 NUMERIC(38,0),
-longitude_wgs84 NUMERIC(6,3),
-latitude_wgs84 NUMERIC(6,3),
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE
-)
-WITH (
-OIDS=FALSE
-);
 
 
 
@@ -994,11 +938,6 @@ USING BTREE (sensor_value ASC);
 
 
 
-CREATE INDEX site_road_section_fk_i
-ON site
-USING BTREE (road_section_id ASC);
-
-
 
 CREATE INDEX situation_record_comment_fk_i
 ON situation_record_comment_i18n
@@ -1067,10 +1006,6 @@ ADD CONSTRAINT datex2_situation_record_pk PRIMARY KEY (id);
 
 
 
-ALTER TABLE direction
-ADD CONSTRAINT direction_pk PRIMARY KEY (natural_id);
-
-
 
 ALTER TABLE forecast_condition_reason
 ADD CONSTRAINT foresecweather_reason_pk PRIMARY KEY (forecast_section_id, forecast_name);
@@ -1104,16 +1039,6 @@ ADD CONSTRAINT lam_station_pk PRIMARY KEY (id);
 
 ALTER TABLE lam_station
 ADD CONSTRAINT lam_station_uk2 UNIQUE (road_station_id, obsolete, obsolete_date);
-
-
-
-ALTER TABLE lam_station_data
-ADD CONSTRAINT lam_station_data_pk PRIMARY KEY (id);
-
-
-
-ALTER TABLE lam_station_data
-ADD CONSTRAINT lam_station_data_uk1 UNIQUE (lam_station_id);
 
 
 
@@ -1221,10 +1146,6 @@ ADD CONSTRAINT sensor_value_uk1 UNIQUE (road_station_sensor_id, road_station_id)
 ALTER TABLE sensor_value_description
 ADD CONSTRAINT svd_pk PRIMARY KEY (sensor_id, sensor_value);
 
-
-
-ALTER TABLE site
-ADD CONSTRAINT site_pk PRIMARY KEY (natural_id);
 
 
 
@@ -1335,12 +1256,6 @@ ON DELETE NO ACTION;
 
 
 
-ALTER TABLE lam_station_data
-ADD CONSTRAINT lam_station_data_fk FOREIGN KEY (lam_station_id)
-REFERENCES lam_station (id)
-ON DELETE NO ACTION;
-
-
 ALTER TABLE location
 ADD CONSTRAINT loc_area_fk FOREIGN KEY (version, area_ref)
 REFERENCES location (version, location_code)
@@ -1430,12 +1345,6 @@ ADD CONSTRAINT svd_sensor_fk FOREIGN KEY (sensor_id)
 REFERENCES road_station_sensor (id)
 ON DELETE NO ACTION;
 
-
-
-ALTER TABLE site
-ADD CONSTRAINT site_road_section_fk FOREIGN KEY (road_section_id)
-REFERENCES road_section (id)
-ON DELETE NO ACTION;
 
 
 

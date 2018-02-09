@@ -23,6 +23,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+        <jackson.dataformat.version>2.9.4</jackson.dataformat.version>
+        <hikaricp.version>2.7.7</hikaricp.version>
     </properties>
 
     <!-- Download OJDBC7.jar, ons.jar and ucp.jar and install drivers to local repo
@@ -153,18 +155,18 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.5</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.9.3</version>
+            <version>${jackson.dataformat.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
-            <version>2.9.3</version>
+            <version>${jackson.dataformat.version}</version>
         </dependency>
 
         <!-- Swagger2 JSON API specification generation-->
@@ -202,7 +204,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.4</version>
+            <version>${hikaricp.version}</version>
         </dependency>
 
         <dependency>
