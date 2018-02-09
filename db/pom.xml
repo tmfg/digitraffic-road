@@ -7,33 +7,25 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-
     <name>ci-db</name>
     <description>Digitraffic ci-db</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <flyway.version>5.0.7</flyway.version>
+        <postgresql.driver.version>42.1.4</postgresql.driver.version>
     </properties>
-
-
-    <!-- Download OJDBC7.jar and install driver to local repo
-     $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 \
-     -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
-     OR add repository below that contains OJDBC-driver -->
-    <repositories>
-        <!-- PLACEHOLDER -->
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.1.4</version>
+            <version>${postgresql.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>4.0.3</version>
+            <version>${flyway.version}</version>
         </dependency>
     </dependencies>
 
@@ -51,7 +43,7 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>4.0.3</version>
+                <version>${flyway.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -95,11 +87,11 @@
                                 <artifactItem>
                                     <groupId>org.postgresql</groupId>
                                     <artifactId>postgresql</artifactId>
-                                    <version>42.1.4</version>
+                                    <version>${postgresql.driver.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.basedir}/src/main/resources/drivers</outputDirectory>
-                                    <destFileName>postgresql-42.1.4.jar</destFileName>
+                                    <destFileName>postgresql-${postgresql.driver.version}.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <overWriteReleases>false</overWriteReleases>

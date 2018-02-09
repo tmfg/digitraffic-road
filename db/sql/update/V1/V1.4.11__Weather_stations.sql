@@ -881,4 +881,4 @@ insert into weather_station(id, weather_station_type, road_station_id, lotju_id,
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1244,'ROSA',7264,1563,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1245,'ROSA',7265,1565,true);
 
-alter sequence seq_weather_station restart with 1268;
+alter sequence seq_road_weather_station restart with 1268;
