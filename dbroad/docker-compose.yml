@@ -18,7 +18,8 @@ services:
       - "./sql:/sql"
       - "~/.m2:/root/.m2"
     links:
-      - 'db:db'
+      - "db:db"
+    command: ["./wait-for-postgres.sh", "db", "road", "road", "road", "./init-db.sh"]
 
   adminer:
     image: adminer
