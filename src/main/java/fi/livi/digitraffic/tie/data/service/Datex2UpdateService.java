@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_LIMITATION;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -49,10 +50,10 @@ public class Datex2UpdateService {
         this.datex2Repository = datex2Repository;
     }
 
-    public Map<String, LocalDateTime> listRoadworkSituationVersionTimes() {
+    public Map<String, LocalDateTime> listDatex2SituationVersionTimes(final Datex2MessageType messageType) {
         final Map<String, LocalDateTime> map = new HashMap<>();
 
-        for (final Object[] o : datex2Repository.listRoadworkSituationVersionTimes()) {
+        for (final Object[] o : datex2Repository.listDatex2SituationVersionTimes(messageType.name())) {
             final String situationId = (String) o[0];
             final LocalDateTime versionTime = ((Timestamp)o[1]).toLocalDateTime();
 
@@ -64,13 +65,18 @@ public class Datex2UpdateService {
         return map;
     }
 
+    public int updateTrafficAlerts(final List<Datex2MessageDto> data) {
+        return updateDatex2Data(data, TRAFFIC_DISORDER);
+    }
+
     @Transactional
     public void updateRoadworks(final List<Datex2MessageDto> messages) {
         updateDatex2Data(messages, ROADWORK);
     }
 
-    public int updateTrafficAlerts(final List<Datex2MessageDto> data) {
-        return updateDatex2Data(data, TRAFFIC_DISORDER);
+    @Transactional
+    public int updateWeightLimitations(final List<Datex2MessageDto> data) {
+        return updateDatex2Data(data, WEIGHT_LIMITATION);
     }
 
     private int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {

@@ -10,30 +10,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class Datex2RoadworksHttpClient {
-    private static final Logger log = LoggerFactory.getLogger(Datex2RoadworksHttpClient.class);
+public class Datex2WeightLimitationsHttpClient {
+    private static final Logger log = LoggerFactory.getLogger(Datex2WeightLimitationsHttpClient.class);
 
     private final String url;
     private final RestTemplate restTemplate;
     private final RetryTemplate retryTemplate;
 
     @Autowired
-    public Datex2RoadworksHttpClient(@Value("${datex2.roadworks.url}") final String url, final RestTemplate restTemplate, final
-    RetryTemplate retryTemplate) {
+    public Datex2WeightLimitationsHttpClient(@Value("${datex2.weight.limitations.url}") final String url, final RestTemplate restTemplate,
+        final RetryTemplate retryTemplate) {
         this.url = url;
         this.restTemplate = restTemplate;
         this.retryTemplate = retryTemplate;
     }
 
-    public String getRoadWorksMessage() {
-        log.info("Read datex2 roadworks message");
+    public String getWeightLimitationsMessage() {
+        log.info("Read datex2 weight limitations message");
 
         final StopWatch sw = StopWatch.createStarted();
 
         try {
             return retryTemplate.execute(context -> restTemplate.getForObject(url, String.class));
         } finally {
-            log.info("Datex2 roadworks tookMs={}", sw.getTime());
+            log.info("Datex2 limitations tookMs={}", sw.getTime());
         }
     }
+
 }

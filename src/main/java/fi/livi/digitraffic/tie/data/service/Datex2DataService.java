@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_LIMITATION;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -27,7 +28,9 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObservationTimeType;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedRoadworkDatex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedWeightLimitationDatex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightLimitationDatex2Response;
 
 @Service
 public class Datex2DataService {
@@ -63,6 +66,13 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public WeightLimitationDatex2Response findWeightLimitations(final String situationId, final int year, final int month) {
+        final List<Datex2> datex2s = findDatex2Messages(WEIGHT_LIMITATION, situationId, year, month);
+
+        return convertToWeightLimitationDatex2Response(datex2s);
+    }
+
+    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findTrafficDisorders(final String situationId, final int year, final int month) {
         final List<Datex2> datex2s = findDatex2Messages(TRAFFIC_DISORDER, situationId, year, month);
 
@@ -94,6 +104,15 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public WeightLimitationDatex2Response getAllWeightLimitationsBySituationId(final String situationId) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, WEIGHT_LIMITATION.name());
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToWeightLimitationDatex2Response(datex2s);
+    }
+
+    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response getAllTrafficDisordersBySituationId(final
     String situationId) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_DISORDER.name());
@@ -114,6 +133,20 @@ public class Datex2DataService {
     public RoadworksDatex2Response findActiveRoadworks() {
         final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name());
         return convertToRoadworksDatex2Response(allActive);
+    }
+
+    @Transactional(readOnly = true)
+    public WeightLimitationDatex2Response findActiveWeightLimitations() {
+        final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_LIMITATION.name());
+        return convertToWeightLimitationDatex2Response(allActive);
+    }
+
+    private WeightLimitationDatex2Response convertToWeightLimitationDatex2Response(final List<Datex2> list) {
+        final List<TimestampedWeightLimitationDatex2> roadworks = list.stream()
+            .map(d2 -> unmarshallWeightLimitation(d2.getMessage(), d2.getImportTime()))
+            .collect(Collectors.toList());
+
+        return new WeightLimitationDatex2Response().withLimitation(roadworks);
     }
 
     private RoadworksDatex2Response convertToRoadworksDatex2Response(final List<Datex2> list) {
@@ -166,6 +199,25 @@ public class Datex2DataService {
                     .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
             final TimestampedRoadworkDatex2 tsDatex2 =
                 new TimestampedRoadworkDatex2()
+                    .withD2LogicalModel(d2LogicalModel)
+                    .withPublished(published);
+            return tsDatex2;
+        } catch (final XmlMappingException e) {
+            log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
+        }
+
+        return null;
+    }
+
+    private TimestampedWeightLimitationDatex2 unmarshallWeightLimitation(final String datex2Xml, final ZonedDateTime importTime) {
+        try {
+            final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
+            final ObservationTimeType published =
+                new ObservationTimeType()
+                    .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
+                    .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
+            final TimestampedWeightLimitationDatex2 tsDatex2 =
+                new TimestampedWeightLimitationDatex2()
                     .withD2LogicalModel(d2LogicalModel)
                     .withPublished(published);
             return tsDatex2;
