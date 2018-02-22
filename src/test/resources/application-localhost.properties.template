@@ -75,6 +75,8 @@ websocket.tms.enabled=false
 # TMC locations url
 metadata.tmc.url = https://ava.liikennevirasto.fi/tmc/noncertified/
 
+datex2.roadworks.url=https://ava.liikennevirasto.fi/roadworks/roadworks_d2.xml
+
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
 # Ie. quartz.CameraUpdateJob.enabled = false
 
