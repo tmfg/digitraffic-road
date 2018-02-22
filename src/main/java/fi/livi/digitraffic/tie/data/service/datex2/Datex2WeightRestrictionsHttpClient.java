@@ -10,22 +10,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class Datex2WeightLimitationsHttpClient {
-    private static final Logger log = LoggerFactory.getLogger(Datex2WeightLimitationsHttpClient.class);
+public class Datex2WeightRestrictionsHttpClient {
+    private static final Logger log = LoggerFactory.getLogger(Datex2WeightRestrictionsHttpClient.class);
 
     private final String url;
     private final RestTemplate restTemplate;
     private final RetryTemplate retryTemplate;
 
     @Autowired
-    public Datex2WeightLimitationsHttpClient(@Value("${datex2.weight.limitations.url}") final String url, final RestTemplate restTemplate,
+    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.limitations.url}") final String url, final RestTemplate restTemplate,
         final RetryTemplate retryTemplate) {
         this.url = url;
         this.restTemplate = restTemplate;
         this.retryTemplate = retryTemplate;
     }
 
-    public String getWeightLimitationsMessage() {
+    public String getWeightRestrictionsMessage() {
         log.info("Read datex2 weight limitations message");
 
         final StopWatch sw = StopWatch.createStarted();
