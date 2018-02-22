@@ -23,7 +23,6 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
             log.error("Exception executing jobName=" + jobName, e);
         }
 
-
         stopWatch.stop();
 
         log.info("Quartz jobName={} end (took jobTimeMs={} ms)", jobName, stopWatch.getTime());
