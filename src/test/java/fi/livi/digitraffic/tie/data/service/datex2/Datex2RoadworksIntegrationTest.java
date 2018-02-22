@@ -5,13 +5,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -52,7 +52,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
 
     private String getRoadworks(final ZonedDateTime versionTime) throws IOException {
         final String xml = readResourceContent("classpath:roadworks/roadworks_GUID50013753.xml");
-        final LocalDateTime endTime = LocalDateTime.now().plusDays(1);
+        final ZonedDateTime endTime = ZonedDateTime.now().plusDays(1);
 
         return xml
             .replace("%ENDTIME%", endTime.format(FORMATTER))
@@ -60,8 +60,9 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
     }
 
     @Test
+    @Ignore
     public void updateMessagesWithRealData() {
-        //assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
+        assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
 
         messageUpdater.updateDatex2RoadworksMessages();
 
