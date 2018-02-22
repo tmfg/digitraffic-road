@@ -18,8 +18,8 @@ public class Datex2WeightRestrictionsHttpClient {
     private final RetryTemplate retryTemplate;
 
     @Autowired
-    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.limitations.url}") final String url, final RestTemplate restTemplate,
-        final RetryTemplate retryTemplate) {
+    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.restrictions.url}") final String url,
+        final RestTemplate restTemplate, final RetryTemplate retryTemplate) {
         this.url = url;
         this.restTemplate = restTemplate;
         this.retryTemplate = retryTemplate;
