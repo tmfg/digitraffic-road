@@ -16,9 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+
+import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @Component
 public class Datex2TrafficAlertHttpClient {
@@ -27,19 +28,16 @@ public class Datex2TrafficAlertHttpClient {
     // Old ftp format  InfoXML_2017-04-26-07-50-58-913.xml
     // New http format  Datex2_2017-04-26-07-51-04-245.xml
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("'Datex2_'yyyy-MM-dd-HH-mm-ss-SSS'.xml'");
-
     private static final Pattern fileNamePattern = Pattern.compile("href=\"(Datex2_[0-9-]*\\.xml)\"");
-
-    private final String url;
-    private final RestTemplate restTemplate;
-    private final RetryTemplate retryTemplate;
     private static final String AUTO_INDEX_QUERY_ARGUMENTS = "?F=0&C=N&O=D";
 
+    private final String url;
+    private final FileGetService fileGetService;
+
     @Autowired
-    public Datex2TrafficAlertHttpClient(@Value("${Datex2MessageUrl}") final String url, final RestTemplate restTemplate, final RetryTemplate retryTemplate) {
+    public Datex2TrafficAlertHttpClient(@Value("${Datex2MessageUrl}") final String url, final FileGetService fileGetService) {
         this.url = url;
-        this.restTemplate = restTemplate;
-        this.retryTemplate = retryTemplate;
+        this.fileGetService = fileGetService;
     }
 
     public List<Pair<String, Timestamp>> getTrafficAlertMessages(final Timestamp from) {
@@ -50,6 +48,10 @@ public class Datex2TrafficAlertHttpClient {
         final List<Pair<String, Timestamp>> newFiles = getNewFiles(from, html);
 
         return getDatex2Messages(newFiles);
+    }
+
+    private String getContent(final String url) {
+        return fileGetService.getFile(Datex2MessageType.TRAFFIC_DISORDER.name(), url, String.class);
     }
 
     private List<Pair<String, Timestamp>> getNewFiles(final Timestamp from, final String html) {
@@ -87,9 +89,6 @@ public class Datex2TrafficAlertHttpClient {
         return messages;
     }
 
-    protected String getContent(final String url) {
-        return retryTemplate.execute(context -> restTemplate.getForObject(url, String.class));
-    }
 
     private Timestamp parseDate(final String filename) {
         try {
