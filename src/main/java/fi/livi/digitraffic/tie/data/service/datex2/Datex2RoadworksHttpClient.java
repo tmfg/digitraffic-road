@@ -26,8 +26,6 @@ public class Datex2RoadworksHttpClient {
     }
 
     public String getRoadWorksMessage() {
-        log.info("Read datex2 roadworks message");
-
         final StopWatch sw = StopWatch.createStarted();
 
         try {

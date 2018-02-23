@@ -99,7 +99,7 @@
         <hint name="org.hibernate.fetchSize" value="1000" />
     </named-native-query>
 
-    <named-native-query name="list_roadworks_situation_version_times">
+    <named-native-query name="list_datex2_situation_version_times">
         <query>
             SELECT situation_id, version_time
             FROM (

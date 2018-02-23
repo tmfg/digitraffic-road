@@ -26,8 +26,6 @@ public class Datex2WeightRestrictionsHttpClient {
     }
 
     public String getWeightRestrictionsMessage() {
-        log.info("Read datex2 weight limitations message");
-
         final StopWatch sw = StopWatch.createStarted();
 
         try {
