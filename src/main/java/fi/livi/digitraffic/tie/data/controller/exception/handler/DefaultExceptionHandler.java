@@ -14,6 +14,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -122,6 +123,17 @@ public class DefaultExceptionHandler {
         // Return null because connection is closed and it's impossible to return anything to client.
         // If something is returned it will cause another exception and that we don't want that to happen.
         return null;
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleMethodNotSupportedException(final Exception exception, final ServletWebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
+                                                      HttpStatus.METHOD_NOT_ALLOWED.value(),
+                                                      HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
+                                                      "Method not allowed",
+                                                      request.getRequest().getRequestURI()),
+                                    HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(Exception.class)
