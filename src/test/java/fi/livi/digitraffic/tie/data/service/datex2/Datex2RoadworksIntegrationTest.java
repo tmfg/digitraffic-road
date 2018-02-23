@@ -5,13 +5,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,6 +53,36 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
         datex2Repository.deleteAll();
     }
 
+    private void assertCountAndVersionTime(final int count, final ZonedDateTime versionTime) {
+        final List<Datex2> roadWorks = datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name());
+
+        assertCollectionSize(count, roadWorks);
+        assertVersionTime(roadWorks.get(0), versionTime);
+    }
+
+    private static void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
+        assertEquals(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
+    }
+
+    private String getRoadworks(final ZonedDateTime versionTime) throws IOException {
+        final String xml = readResourceContent("classpath:roadworks/roadworks_GUID50013753.xml");
+        final ZonedDateTime endTime = ZonedDateTime.now().plusDays(1);
+
+        return xml
+            .replace("%ENDTIME%", endTime.format(FORMATTER))
+            .replace("%VERSIONTIME%", versionTime.format(FORMATTER));
+    }
+
+    @Test
+    @Ignore
+    public void updateMessagesWithRealData() {
+        //assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
+
+        messageUpdater.updateDatex2RoadworksMessages();
+
+        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()).size() > 1);
+    }
+
     @Test
     @Rollback
     public void updateWithChangedTimestamp() throws IOException, InterruptedException {
@@ -70,25 +101,5 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
         when(datex2RoadworksHttpClient.getRoadWorksMessage()).thenReturn(getRoadworks(versionTime));
         messageUpdater.updateDatex2RoadworksMessages();
         assertCountAndVersionTime(1, versionTime);
-    }
-
-    private void assertCountAndVersionTime(final int count, final ZonedDateTime versionTime) {
-        final List<Datex2> roadWorks = datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name());
-
-        assertCollectionSize(count, roadWorks);
-        assertVersionTime(roadWorks.get(0), versionTime);
-    }
-
-    private static void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
-        assertEquals(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
-    }
-
-    private String getRoadworks(final ZonedDateTime versionTime) throws IOException {
-        final String xml = readResourceContent("classpath:roadworks/roadworks_GUID50013753.xml");
-        final LocalDateTime endTime = LocalDateTime.now().plusDays(1);
-
-        return xml
-            .replace("%ENDTIME%", endTime.format(FORMATTER))
-            .replace("%VERSIONTIME%", versionTime.format(FORMATTER));
     }
 }

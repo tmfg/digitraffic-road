@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_LIMITATION;
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -75,8 +75,8 @@ public class Datex2UpdateService {
     }
 
     @Transactional
-    public int updateWeightLimitations(final List<Datex2MessageDto> data) {
-        return updateDatex2Data(data, WEIGHT_LIMITATION);
+    public int updateWeightRestrictions(final List<Datex2MessageDto> data) {
+        return updateDatex2Data(data, WEIGHT_RESTRICTION);
     }
 
     private int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {

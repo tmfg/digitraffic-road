@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
 
 @Service
 public class Datex2SimpleMessageUpdater {
-    private final Datex2WeightLimitationsHttpClient datex2WeightLimitationsHttpClient;
+    private final Datex2WeightRestrictionsHttpClient datex2WeightRestrictionsHttpClient;
     private final Datex2RoadworksHttpClient datex2RoadworksHttpClient;
 
     private final Datex2UpdateService datex2UpdateService;
@@ -32,9 +32,9 @@ public class Datex2SimpleMessageUpdater {
     private static final Logger log = LoggerFactory.getLogger(Datex2SimpleMessageUpdater.class);
 
     @Autowired
-    public Datex2SimpleMessageUpdater(final Datex2WeightLimitationsHttpClient datex2WeightLimitationsHttpClient, final Datex2RoadworksHttpClient datex2RoadworksHttpClient, final Datex2UpdateService datex2UpdateService,
+    public Datex2SimpleMessageUpdater(final Datex2WeightRestrictionsHttpClient datex2WeightRestrictionsHttpClient, final Datex2RoadworksHttpClient datex2RoadworksHttpClient, final Datex2UpdateService datex2UpdateService,
         final StringToObjectMarshaller stringToObjectMarshaller) {
-        this.datex2WeightLimitationsHttpClient = datex2WeightLimitationsHttpClient;
+        this.datex2WeightRestrictionsHttpClient = datex2WeightRestrictionsHttpClient;
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
         this.datex2UpdateService = datex2UpdateService;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
@@ -48,10 +48,10 @@ public class Datex2SimpleMessageUpdater {
     }
 
     @Transactional
-    public void updateDatex2WeightLimitationsMessages() {
-        final String message = datex2WeightLimitationsHttpClient.getWeightLimitationsMessage();
+    public void updateDatex2WeightRestrictionMessages() {
+        final String message = datex2WeightRestrictionsHttpClient.getWeightRestrictionsMessage();
 
-        datex2UpdateService.updateWeightLimitations(convert(message, Datex2MessageType.WEIGHT_LIMITATION));
+        datex2UpdateService.updateWeightRestrictions(convert(message, Datex2MessageType.WEIGHT_RESTRICTION));
     }
 
     private List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType) {
