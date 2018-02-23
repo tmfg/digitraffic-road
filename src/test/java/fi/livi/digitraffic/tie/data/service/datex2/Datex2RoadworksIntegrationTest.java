@@ -25,7 +25,6 @@ import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 
 public class Datex2RoadworksIntegrationTest extends AbstractTest {
-    @Autowired
     private Datex2SimpleMessageUpdater messageUpdater;
 
     @Autowired
