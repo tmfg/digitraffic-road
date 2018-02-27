@@ -8,17 +8,17 @@ import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @Component
-public class Datex2RoadworksHttpClient {
+public class Datex2WeightRestrictionsHttpClient {
     private final String url;
     private final FileGetService fileGetService;
 
     @Autowired
-    public Datex2RoadworksHttpClient(@Value("${datex2.roadworks.url}") final String url, final FileGetService fileGetService) {
+    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.restrictions.url}") final String url, final FileGetService fileGetService) {
         this.url = url;
         this.fileGetService = fileGetService;
     }
 
-    public String getRoadWorksMessage() {
-        return fileGetService.getFile(Datex2MessageType.ROADWORK.name(), url, String.class);
+    public String getWeightRestrictionsMessage() {
+        return fileGetService.getFile(Datex2MessageType.WEIGHT_RESTRICTION.name(), url, String.class);
     }
 }

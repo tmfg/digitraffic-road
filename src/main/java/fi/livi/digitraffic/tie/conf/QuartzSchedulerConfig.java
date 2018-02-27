@@ -34,6 +34,7 @@ import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.Datex2WeightRestrictionsMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
@@ -163,6 +164,11 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean datex2WeightRestrictionsMessageUpdateJobDetail() {
+        return createJobDetail(Datex2WeightRestrictionsMessageUpdateJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
                                                                    @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
@@ -227,6 +233,13 @@ public class QuartzSchedulerConfig {
         @Value("${datex2RoadworksMessageUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(datex2RoadworksMessageUpdateJobDetail, frequency);
     }
+
+    @Bean
+    public SimpleTriggerFactoryBean datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJobDetail,
+        @Value("${datex2WeightRestrictionsMessageUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(datex2WeightRestrictionsMessageUpdateJobDetail, frequency);
+    }
+
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
         final JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();

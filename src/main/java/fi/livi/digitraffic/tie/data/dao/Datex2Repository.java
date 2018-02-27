@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -37,10 +36,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     @Query(name = "exists_with_situation_id")
     boolean existsWithSituationId(@Param("situationId") final String situationId);
 
-    @Query(name = "list_roadworks_situation_version_times")
-    List<Object[]> listRoadworkSituationVersionTimes();
-
-    @Query(value = "delete from datex2 where message_type = 'ROADWORK'", nativeQuery = true)
-    @Modifying
-    void removeAllRoadworks();
+    @Query(name = "list_datex2_situation_version_times")
+    List<Object[]> listDatex2SituationVersionTimes(@Param("messageType") final String messageType);
 }

@@ -24,7 +24,7 @@ forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 datex2TrafficAlertMessageUpdateJob.frequency=180000
 datex2RoadworksMessageUpdateJob.frequency=3600000
-
+datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
@@ -80,8 +80,6 @@ websocket.tms.enabled=true
 
 # TMC locations url
 metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
-
-datex2.roadworks.url=https://ava.liikennevirasto.fi/roadworks/roadworks_d2.xml
 
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
 # Ie. quartz.CameraUpdateJob.enabled = false
