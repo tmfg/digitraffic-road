@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 public class DataController {
     static final String CAMERA_DATA_PATH = "/camera-data";
     static final String TMS_DATA_PATH = "/tms-data";

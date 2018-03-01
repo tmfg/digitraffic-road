@@ -4,6 +4,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.util.Assert;
@@ -12,11 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 
 @RestController
 @RequestMapping("/error")
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 public class SimpleErrorController implements ErrorController {
     private final ErrorAttributes errorAttributes;
 

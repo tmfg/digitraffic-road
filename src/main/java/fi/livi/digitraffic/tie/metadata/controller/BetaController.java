@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @Validated
 @RequestMapping(MetadataApplicationConfiguration.API_BETA_BASE_PATH)
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
