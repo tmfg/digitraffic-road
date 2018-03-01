@@ -16,7 +16,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 @EnableTransactionManagement
 @EnableRetry
-public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
+public class MetadataApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_BETA_BASE_PATH = "/api/beta";
@@ -38,14 +38,12 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
     public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
-        Assert.notNull(applicationContext);
         this.applicationContext = applicationContext;
     }
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new Jaxb2Datex2ResponseHttpMessageConverter());
-        super.configureMessageConverters(converters);
     }
 
     @Bean

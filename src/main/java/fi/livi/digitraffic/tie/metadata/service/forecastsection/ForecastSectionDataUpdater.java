@@ -52,7 +52,7 @@ public class ForecastSectionDataUpdater {
 
         updateForecastSectionWeatherData(weatherDataByNaturalId, forecastSectionsByNaturalId);
 
-        forecastSectionRepository.save(forecastSectionsByNaturalId.values());
+        forecastSectionRepository.saveAll(forecastSectionsByNaturalId.values());
         forecastSectionRepository.flush();
 
         return Timestamp.from(data.messageTimestamp.toInstant());

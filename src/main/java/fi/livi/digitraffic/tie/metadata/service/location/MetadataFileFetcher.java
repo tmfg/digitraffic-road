@@ -105,12 +105,16 @@ public class MetadataFileFetcher {
             final File entryDestination = Files.createTempFile(destinationName, null).toFile();
             final ZipEntry e = findEntry(z, entryName);
             final InputStream is = z.getInputStream(e);
-            final OutputStream os = new FileOutputStream(entryDestination);
 
-            IOUtils.copy(is, os);
-            IOUtils.closeQuietly(os);
+            doCopy(is, entryDestination);
 
             return entryDestination.toPath();
+        }
+    }
+
+    private void doCopy(final InputStream is, final File entryDestination) throws IOException {
+        try(final OutputStream os = new FileOutputStream(entryDestination)) {
+            IOUtils.copy(is, os);
         }
     }
 
