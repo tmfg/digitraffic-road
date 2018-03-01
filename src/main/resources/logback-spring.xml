@@ -116,15 +116,6 @@
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
-    <!-- debugging log -->
-    <logger name="net.bull.javamelody" additivity="true">
-        <level value="ERROR" />
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-    <logger name="net.bull.javamelody" additivity="false">
-        <appender-ref ref="NULL" />
-    </logger>
-
     <!-- PerformanceMonitorAspect log -->
     <logger name="PerformanceMonitor" additivity="true">
         <appender-ref ref="FILE_PERFORMANCE_MONITOR" />

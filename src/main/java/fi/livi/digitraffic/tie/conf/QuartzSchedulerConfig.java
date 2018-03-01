@@ -90,9 +90,6 @@ public class QuartzSchedulerConfig {
         factory.setJobFactory(jobFactory);
         factory.setQuartzProperties(quartzProperties());
 
-        // https://github.com/javamelody/javamelody/wiki/UserGuide#13-batch-jobs-if-quartz
-        factory.setExposeSchedulerInRepository(true);
-
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
             triggers.forEach(triggerBean -> log.info("Schedule trigger={}", triggerBean.getJobKey()));
