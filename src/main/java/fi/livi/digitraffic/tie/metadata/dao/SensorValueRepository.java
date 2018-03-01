@@ -1,8 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -24,5 +23,5 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
            "SELECT max(sv.updated)\n" +
            "FROM SensorValue sv\n" +
            "WHERE sv.roadStation.roadStationType = ?1")
-    LocalDateTime getLastUpdated(final RoadStationType roadStationType);
+    Instant getLastUpdated(final RoadStationType roadStationType);
 }

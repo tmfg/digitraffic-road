@@ -9,14 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
-import fi.livi.digitraffic.tie.metadata.dao.StaticDataStatusDao;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 
-/**
- * Used by old daemon. Should be removed after old daemon is eol.
- */
-@Deprecated
 @Service
 public class DataStatusService {
     private static final Logger log = LoggerFactory.getLogger(DataStatusService.class);
@@ -33,25 +28,13 @@ public class DataStatusService {
         StaticStatusType(final String updateField) {
             this.updateField = updateField;
         }
-
-        public String getUpdateField() {
-            return updateField;
-        }
     }
 
-    private final StaticDataStatusDao staticDataStatusDao;
     private final DataUpdatedRepository dataUpdatedRepository;
 
     @Autowired
-    public DataStatusService(final StaticDataStatusDao staticDataStatusDao,
-                             final DataUpdatedRepository dataUpdatedRepository) {
-        this.staticDataStatusDao = staticDataStatusDao;
+    public DataStatusService(final DataUpdatedRepository dataUpdatedRepository) {
         this.dataUpdatedRepository = dataUpdatedRepository;
-    }
-
-    @Transactional
-    public void updateStaticDataStatus(final StaticStatusType type, final boolean updateStaticDataStatus) {
-        staticDataStatusDao.updateStaticDataStatus(type, updateStaticDataStatus);
     }
 
     @Transactional
@@ -62,7 +45,8 @@ public class DataStatusService {
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
-        log.info("Update DataUpdated, type: " + dataType + ", version: " + version);
+        log.info("Update DataUpdated, type={}, version={}", dataType, version);
+
         if (updated == null) {
             dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
         } else {
@@ -72,9 +56,10 @@ public class DataStatusService {
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, ZonedDateTime updated) {
-        DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType.name());
-        log.info("Update DataUpdated, type: " + dataType + ", updated: " + updated);
+    public void updateDataUpdated(final DataType dataType, final ZonedDateTime updated) {
+        final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType.name());
+        log.info("Update DataUpdated, type={}, updated={}", dataType, updated);
+
         if (dataUpdated == null) {
             dataUpdatedRepository.save(new DataUpdated(dataType, updated, null));
         } else {
@@ -84,7 +69,7 @@ public class DataStatusService {
 
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTimeByDataType(final DataType dataType) {
-        DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
         return updated != null ? updated.getUpdatedTime() : null;
     }
 }

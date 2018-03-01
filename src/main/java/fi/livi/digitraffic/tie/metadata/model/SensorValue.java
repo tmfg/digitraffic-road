@@ -59,7 +59,7 @@ public class SensorValue {
     protected SensorValue() {
     }
 
-    public SensorValue(RoadStation roadStation, RoadStationSensor roadStationSensor, double value, ZonedDateTime sensorValueMeasured) {
+    public SensorValue(final RoadStation roadStation, final RoadStationSensor roadStationSensor, final double value, final ZonedDateTime sensorValueMeasured) {
         this.roadStation = roadStation;
         this.roadStationSensor = roadStationSensor;
         this.value = value;

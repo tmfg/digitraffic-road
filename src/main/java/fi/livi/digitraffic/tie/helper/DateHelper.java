@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static java.time.ZoneOffset.UTC;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -70,6 +72,10 @@ public final class DateHelper {
             return ZonedDateTime.of(toLocalDateTime(calendar), ZoneId.systemDefault());
         }
         return null;
+    }
+
+    public static ZonedDateTime toZonedDateTime(final Instant instant) {
+        return instant == null ? null : instant.atZone(UTC);
     }
 
     public static ZonedDateTime toZonedDateTime(final LocalDateTime localDateTime) {

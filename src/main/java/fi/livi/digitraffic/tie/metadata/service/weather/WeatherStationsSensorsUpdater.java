@@ -22,7 +22,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class WeatherStationsSensorsUpdater {
-
     private static Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
@@ -67,9 +66,7 @@ public class WeatherStationsSensorsUpdater {
         log.info("RoadStation not found for rsNotFoundCount={} TiesaaLaskennallinenAnturis", currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.size());
 
         // Update sensors of road stations
-        final boolean updateStaticDataStatus =
-                updateSensorsOfWeatherStations(stationAnturisPair);
-        updateRoadWeatherSensorStaticDataStatus(updateStaticDataStatus);
+        final boolean updateStaticDataStatus = updateSensorsOfWeatherStations(stationAnturisPair);
 
         log.info("Update WeatherStations RoadStationSensors end");
         return updateStaticDataStatus;
@@ -96,9 +93,5 @@ public class WeatherStationsSensorsUpdater {
         log.info("Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
-    }
-
-    private void updateRoadWeatherSensorStaticDataStatus(final boolean updateStaticDataStatus) {
-        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER_SENSOR, updateStaticDataStatus);
     }
 }

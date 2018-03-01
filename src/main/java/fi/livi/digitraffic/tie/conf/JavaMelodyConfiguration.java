@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.File;
-
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ import net.bull.javamelody.SpringDataSourceBeanPostProcessor;
  * @See https://github.com/javamelody/javamelody/wiki/UserGuide
  */
 @ConditionalOnProperty(name = "javamelody.enabled")
-@Configuration
+//@Configuration
 public class JavaMelodyConfiguration implements ServletContextInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(JavaMelodyConfiguration.class);
