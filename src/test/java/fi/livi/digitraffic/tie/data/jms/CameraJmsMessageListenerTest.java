@@ -10,14 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -251,20 +250,20 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
         log.info("Check data validy");
 
-        Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
+        final Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
-        for (Pair<Kuva, String> pair : data) {
-            Kuva kuva = pair.getLeft();
-            String presetId = CameraHelper.resolvePresetId(kuva);
+        for (final Pair<Kuva, String> pair : data) {
+            final Kuva kuva = pair.getLeft();
+            final String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
-            byte[] dst = readCameraDataFromSftp(presetId);
-            byte[] src = imageFilesMap.get(kuva.getLiviId() + IMAGE_SUFFIX);
+            final byte[] dst = readCameraDataFromSftp(presetId);
+            final byte[] src = imageFilesMap.get(kuva.getLiviId() + IMAGE_SUFFIX);
             Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
             // Check preset updated to db against kuva
-            CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAika());
-            LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
+            final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
+            final ZonedDateTime kuvaTaken = DateHelper.toZonedDateTime(kuva.getAika());
+            final ZonedDateTime presetPictureLastModified = preset.getPictureLastModified();
             Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
         }
         log.info("Data is valid");
@@ -272,24 +271,25 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 handleDataTotalTime <= maxHandleTime);
     }
 
-    private byte[] readCameraDataFromSftp(String presetId) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Session s = sftpSessionFactory.getSession();
-        s.read(getSftpPath(presetId), out);
-        s.close();
-        return out.toByteArray();
+    private byte[] readCameraDataFromSftp(final String presetId) throws IOException {
+        try(final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            final Session s = sftpSessionFactory.getSession();
+            s.read(getSftpPath(presetId), out);
+
+            return out.toByteArray();
+        }
     }
 
     String getImportDir() {
         return testFolder.getRoot().getPath();
     }
 
-    private byte[] readCameraDataFromDisk(String presetId) throws IOException {
+    private byte[] readCameraDataFromDisk(final String presetId) throws IOException {
         final File imageFile = new File(getImportDir() + "/" + presetId + ".jpg");
         return FileUtils.readFileToByteArray(imageFile);
     }
 
-    private void createHttpResponseStubFor(String kuva) throws IOException {
+    private void createHttpResponseStubFor(final String kuva) throws IOException {
         log.info("Create mock with url: " + REQUEST_PATH + kuva);
         stubFor(get(urlEqualTo(REQUEST_PATH + kuva))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuva))

@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,12 +48,12 @@ public class Datex2UpdateService {
         this.datex2Repository = datex2Repository;
     }
 
-    public Map<String, LocalDateTime> listRoadworkSituationVersionTimes() {
-        final Map<String, LocalDateTime> map = new HashMap<>();
+    public Map<String, ZonedDateTime> listRoadworkSituationVersionTimes() {
+        final Map<String, ZonedDateTime> map = new HashMap<>();
 
         for (final Object[] o : datex2Repository.listRoadworkSituationVersionTimes()) {
             final String situationId = (String) o[0];
-            final LocalDateTime versionTime = ((Timestamp)o[1]).toLocalDateTime();
+            final ZonedDateTime versionTime = DateHelper.toZonedDateTime(((Timestamp)o[1]).toInstant());
 
             if (map.put(situationId, versionTime) != null) {
                 throw new IllegalStateException("Duplicate key");

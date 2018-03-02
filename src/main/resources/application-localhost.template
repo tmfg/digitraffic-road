@@ -69,7 +69,7 @@ spring.main.web-application-type=none
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=true
 
-# JMS queue enabled/disabled (Only daemond should have these enabled)
+# JMS queue enabled/disabled (Only daemon should have these enabled)
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false

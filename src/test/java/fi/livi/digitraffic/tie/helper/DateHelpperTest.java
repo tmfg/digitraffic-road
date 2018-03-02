@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -20,14 +18,17 @@ import fi.livi.digitraffic.tie.AbstractTest;
 public class DateHelpperTest extends AbstractTest {
 
     @Test
-    public void testZonedDateTimeToDate() throws DatatypeConfigurationException {
-        GregorianCalendar c = GregorianCalendar.from((ZonedDateTime.parse("2016-01-22T10:00:00Z")));
-        LocalDateTime winterLocalDateTime = DateHelper.toLocalDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
-        Assert.assertEquals("2016-01-22T12:00:00", ISO_LOCAL_DATE_TIME.format(winterLocalDateTime));
+    public void XMLGregorianCalendarToZonedDateTime() throws DatatypeConfigurationException {
+        final String DATE_STRING_1 = "2016-01-22T10:00:00+02:00";
+        final String DATE_STRING_2 = "2016-06-22T10:10:01.102+03:00";
 
-        c = GregorianCalendar.from((ZonedDateTime.parse("2016-06-22T10:10:01.102Z")));
-        LocalDateTime summerLocalDateTime = DateHelper.toLocalDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
-        Assert.assertEquals("2016-06-22T13:10:01.102", ISO_LOCAL_DATE_TIME.format(summerLocalDateTime));
+        final GregorianCalendar wc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_1)));
+        final ZonedDateTime winterTime = DateHelper.toZonedDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(wc));
+        Assert.assertEquals(DATE_STRING_1, ISO_OFFSET_DATE_TIME.format(winterTime));
+
+        final GregorianCalendar sc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_2)));
+        final ZonedDateTime summerTime = DateHelper.toZonedDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(sc));
+        Assert.assertEquals(DATE_STRING_2, ISO_OFFSET_DATE_TIME.format(summerTime));
     }
 
 }

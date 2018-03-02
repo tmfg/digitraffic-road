@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -36,8 +36,8 @@ public class Datex2TrafficAlertMessageUpdater {
 
     @Transactional
     public void updateDatex2TrafficAlertMessages() {
-        final LocalDateTime latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
-        final Timestamp from = latest == null ? null : Timestamp.valueOf(latest);
+        final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
+        final Timestamp from = latest == null ? null : Timestamp.from(latest);
         final List<Pair<String, Timestamp>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(from);
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 

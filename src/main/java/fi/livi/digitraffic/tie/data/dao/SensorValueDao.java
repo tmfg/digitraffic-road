@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -139,8 +139,8 @@ public class SensorValueDao {
     }
 
     private static Map createArgsMap(final Tiesaa tiesaa, final Tiesaa.Anturit.Anturi anturi) {
-        final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
-        final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+        final ZonedDateTime sensorValueMeasured = DateHelper.toZonedDateTime(tiesaa.getAika());
+        final Timestamp measured = Timestamp.from(sensorValueMeasured.toInstant());
         final HashMap<String, Object> args = new HashMap<>();
 
         args.put("value", (double) anturi.getArvo());

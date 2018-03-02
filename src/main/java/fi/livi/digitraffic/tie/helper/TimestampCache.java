@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +12,8 @@ public class TimestampCache {
         Timestamp ts = cache.get(millis);
 
         if(ts == null) {
-            final LocalDateTime ldt = DateHelper.toLocalDateTime(millis);
-            ts = Timestamp.valueOf(ldt);
+            final Instant instant = Instant.ofEpochMilli(millis);
+            ts = Timestamp.from(instant);
 
             cache.put(millis, ts);
         }

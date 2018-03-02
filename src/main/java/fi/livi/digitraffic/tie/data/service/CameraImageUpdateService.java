@@ -185,7 +185,8 @@ public class CameraImageUpdateService {
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final Kuva kuva) {
         if (cameraPreset != null) {
-            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
+            final ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
+
             cameraPreset.setPublicExternal(kuva.isJulkinen());
             cameraPreset.setPictureLastModified(pictureTaken);
         }
