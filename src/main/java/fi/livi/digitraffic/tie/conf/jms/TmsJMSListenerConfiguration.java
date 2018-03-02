@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
@@ -18,7 +19,7 @@ import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
-//@ConditionalOnProperty(name = "jms.tms.enabled")
+@ConditionalOnProperty(name = "jms.tms.enabled")
 @Configuration
 public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
     private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
@@ -27,9 +28,11 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
-    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                       @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                       @Value("#{'${jms.tms.inQueue}'.split(',')}") final List<String> jmsQueueKeys, final SensorDataUpdateService sensorDataUpdateService,
+    public TmsJMSListenerConfiguration(final @Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                       final @Value("${jms.userId}") String jmsUserId,
+                                       final @Value("${jms.password}") String jmsPassword,
+                                       final @Value("#{'${jms.tms.inQueue}'.split(',')}") List<String> jmsQueueKeys,
+                                       final SensorDataUpdateService sensorDataUpdateService,
                                        final LockingService lockingService) {
 
         super(connectionFactory,
