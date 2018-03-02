@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Log message format -->
+        <encoder>
+            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern -->
+            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NULL" class="ch.qos.logback.core.helpers.NOPAppender" />
+
+    <!-- debugging log -->
+    <logger name="net.bull.javamelody" additivity="false">
+        <appender-ref ref="NULL" />
+    </logger>
+
+    <!-- PerformanceMonitorAspect log -->
+    <logger name="PerformanceMonitor" additivity="false">
+        <appender-ref ref="NULL" />
+    </logger>
+
+    <root level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>

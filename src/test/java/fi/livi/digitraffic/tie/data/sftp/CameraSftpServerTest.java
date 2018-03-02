@@ -8,13 +8,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +38,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
@@ -160,37 +156,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     }
 
     @Test
-    public void testUpdateCameraDataToSftp() throws Exception {
-
-        cameraDataUpdateService.updateCameraData(kuvas);
-
-        try (final Session session = this.sftpSessionFactory.getSession()) {
-
-            kuvas.forEach(kuva -> {
-                String filePath = getSftpPath(kuva);
-                if (kuva.getNimi().startsWith("X")) {
-                    try {
-                        Assert.assertFalse("Image should have been deleted from sftp server", session.exists(getSftpPath(kuva)));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    log.info("Read presetId={} image back from server from path={}", kuva.getEsiasentoId(), filePath);
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                        session.read(filePath, out);
-                        byte[] initialData = imageFilesMap.get(kuva.getNimi());
-                        byte[] readData = out.toByteArray();
-                        Assert.assertArrayEquals("presetId=" + kuva.getNimi() + " image data read from sever is not equal with initial content",
-                                initialData, readData);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        }
-    }
-
-    @Test
     public void testDeleteNotPublishableCameraImages() throws Exception {
 
         cameraDataUpdateService.updateCameraData(kuvas);
@@ -213,41 +178,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
         }
     }
-
-    @Test
-    public void testImageHandlingTimeout() throws Exception {
-
-        CameraPreset cpNoDelay = generateMissingDummyPreset();
-        cpNoDelay.setPublicExternal(true);
-        cpNoDelay.setPublicInternal(true);
-        cpNoDelay.setPresetId(cpNoDelay.getPresetId().replace("X", "C"));
-        cameraPresetService.save(cpNoDelay);
-
-        CameraPreset cpWithDelay = generateMissingDummyPreset();
-        cpWithDelay.setPublicExternal(true);
-        cpWithDelay.setPublicInternal(true);
-        cpWithDelay.setPresetId(cpWithDelay.getPresetId().replace("X", "C"));
-        cameraPresetService.save(cpWithDelay);
-
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-
-        log.info("Created {}" , cpNoDelay);
-        log.info("Created {}" , cpWithDelay);
-
-        Kuva kuva = createKuvaDataAndHttpStub(cpNoDelay, "Image content".getBytes(), 0);
-        Kuva kuvaWithTimeout = createKuvaDataAndHttpStub(cpWithDelay, "Image content".getBytes(), 600);
-
-        long updated = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuva));
-        Assert.assertTrue("Timeout should not have happened and one image should have been updated",updated == 1L);
-
-        long updatedWithTimeout = cameraDataUpdateService.updateCameraData(Collections.singletonList(kuvaWithTimeout));
-        Assert.assertTrue("Timeout should have happened and no images should have been updated",updatedWithTimeout == 0L);
-
-        long updatedWithAndWithoutTimeout = cameraDataUpdateService.updateCameraData(Arrays.asList(kuvaWithTimeout, kuva));
-        Assert.assertTrue("Timeout should happen only to other and one image should have been updated",updatedWithAndWithoutTimeout == 1L);
-    }
-
 
     private CameraPreset generateMissingDummyPreset() {
         CameraPreset cp = new CameraPreset();

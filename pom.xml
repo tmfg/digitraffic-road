@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>metadata</artifactId>
-    <version>1.21.1</version>
+    <version>1.25.0</version>
     <packaging>jar</packaging>
 
     <name>dt-metadata</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
+        <version>1.5.10.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -418,8 +418,12 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
+                            <defaultOptions>
+                                <extraargs>
+                                    <extraarg>-xjc-npa</extraarg>
+                                </extraargs>
+                            </defaultOptions>
                             <wsdlOptions>
-
                                 <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
@@ -435,7 +439,6 @@
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
-
                             </wsdlOptions>
                         </configuration>
                         <goals>
@@ -468,14 +471,23 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/tiesaa_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.tiesaa</packagename>
+                                    <extensionArgs>
+                                        <extensionArg>-npa</extensionArg>
+                                    </extensionArgs>
                                 </xsdOption>
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/lam_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.lam</packagename>
+                                    <extensionArgs>
+                                        <extensionArg>-npa</extensionArg>
+                                    </extensionArgs>
                                 </xsdOption>
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
+                                    <extensionArgs>
+                                        <extensionArg>-npa</extensionArg>
+                                    </extensionArgs>
                                 </xsdOption>
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_0.xsd</xsd>
@@ -486,6 +498,7 @@
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
                                         <extensionArg>-Xfluent-api</extensionArg>
+                                        <extensionArg>-npa</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
                             </xsdOptions>

@@ -33,25 +33,6 @@ public class DayDataServiceTest extends AbstractTest {
         jdbcTemplate.update("update journeytime_median set end_timestamp = end_timestamp - ?", days);
     }
 
-
-    @Test
-    public void testListPreviousDayHistoryDataAll() {
-        HistoryRootDataObjectDto history = dayDataService.listPreviousDayHistoryData(false);
-        Assert.assertTrue(!history.getLinks().isEmpty());
-        Assert.assertTrue(history.getLinks().get(0).getMeasuredTime() != null);
-        Assert.assertTrue(!history.getLinks().get(0).getLinkMeasurements().isEmpty());
-        Assert.assertTrue(history.getLinks().get(0).getLinkMeasurements().get(0).getMeasuredTime() != null);
-    }
-
-    @Test
-    public void testListPreviousDayHistoryData() {
-        HistoryRootDataObjectDto linkHistory = dayDataService.listPreviousDayHistoryData(4);
-        Assert.assertTrue(linkHistory.getLinks().size() == 1 );
-        Assert.assertTrue(linkHistory.getLinks().get(0).getMeasuredTime() != null);
-        Assert.assertTrue(!linkHistory.getLinks().get(0).getLinkMeasurements().isEmpty());
-        Assert.assertTrue(linkHistory.getLinks().get(0).getLinkMeasurements().get(0).getMeasuredTime() != null);
-    }
-
     @Test
     public void testLinkHistoryYearMonth() {
         HistoryRootDataObjectDto linkHistoryYearMonth = dayDataService.listHistoryData(4, yesterday.getYear(), yesterday.getMonthValue());

@@ -101,7 +101,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    FROM DATEX2 d\n" +
         "    INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
         "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
-        "    WHERE d.message_type = 'ROADWORK'\n" +
+        "    WHERE d.message_type = :messageType\n" +
         ") d2\n" +
         "WHERE rnum = 1",
         nativeQuery = true)

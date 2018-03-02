@@ -2,9 +2,9 @@
 server.port = 9000
 
 # Datasource
-spring.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
-spring.datasource.username=
-spring.datasource.password=
+metadata.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
+metadata.datasource.username=
+metadata.datasource.password=
 
 # Lotju-test v3 soap api
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3
@@ -48,8 +48,7 @@ jms.password=
 
 # JMS queues
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic
-jms.tms.realtime.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
+jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
@@ -69,6 +68,9 @@ jms.datex2.enabled=false
 
 # Websocket stream of TMS sensor values, enabled only for web-app
 websocket.tms.enabled=false
+
+# TMC locations url
+metadata.tmc.url = https://ava.liikennevirasto.fi/tmc/noncertified/
 
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
 # Ie. quartz.CameraUpdateJob.enabled = false
