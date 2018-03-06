@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
-import java.sql.Timestamp;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionDataUpdater;
 
@@ -19,9 +18,8 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
-        Timestamp messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
+        final Instant messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA,
-                                            ZonedDateTime.ofInstant(messageTimestamp.toInstant(), ZoneId.systemDefault()));
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA, DateHelper.toZonedDateTime(messageTimestamp));
     }
 }

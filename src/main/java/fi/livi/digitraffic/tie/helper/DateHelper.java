@@ -101,8 +101,4 @@ public final class DateHelper {
         }
         return null;
     }
-
-    public static LocalDateTime toLocalDateTime(final long aika) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(aika), ZoneId.systemDefault());
-    }
 }

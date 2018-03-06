@@ -1,9 +1,6 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
 @Service
@@ -37,16 +35,13 @@ public class Datex2TrafficAlertMessageUpdater {
     @Transactional
     public void updateDatex2TrafficAlertMessages() {
         final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
-        final Timestamp from = latest == null ? null : Timestamp.from(latest);
-        final List<Pair<String, Timestamp>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(from);
+        final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
 
-        for (final Pair<String, Timestamp> message : messages) {
+        for (final Pair<String, Instant> message : messages) {
             final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(message.getLeft());
 
-            unmarshalled.add(new Datex2MessageDto(message.getLeft(),
-                                                  ZonedDateTime.ofInstant(message.getRight().toInstant(), ZoneId.systemDefault()),
-                                                  d2));
+            unmarshalled.add(new Datex2MessageDto(message.getLeft(), DateHelper.toZonedDateTime(message.getRight()), d2));
         }
         datex2UpdateService.updateTrafficAlerts(unmarshalled);
     }
