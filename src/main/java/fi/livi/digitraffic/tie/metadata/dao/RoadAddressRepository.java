@@ -12,12 +12,4 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Repository
 public interface RoadAddressRepository extends JpaRepository<RoadAddress, Long>{
-
-    @Query(value =
-            "SELECT RA.*\n" +
-            "FROM ROAD_ADDRESS RA\n" +
-            "WHERE RA.ROAD_STATION_TYPE = :roadStationType",
-            nativeQuery = true)
-    List<RoadAddress> findByRoadStationType(@Param("roadStationType")
-                                            RoadStationType roadStationType);
 }

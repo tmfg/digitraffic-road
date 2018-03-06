@@ -150,10 +150,6 @@ public class CameraImageUpdateService {
         return true;
     }
 
-    private static boolean isPublicCameraPreset(final CameraPreset cameraPreset) {
-        return cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal();
-    }
-
     private byte[] readImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         log.info("Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
         byte[] result;

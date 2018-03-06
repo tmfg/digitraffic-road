@@ -314,7 +314,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         }
 
         return tmsStationMetadata2FeatureConverter.convert(station);
-
     }
 
     ZonedDateTime getMetadataLastUpdated() {

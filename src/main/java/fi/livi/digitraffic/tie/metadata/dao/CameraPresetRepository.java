@@ -68,13 +68,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     List<CameraPreset> findByRoadStation_LotjuId(final Long cameraLotjuId);
 
-    @Query(value =
-               "SELECT CP.LOTJU_ID\n" +
-               "FROM CAMERA_PRESET CP\n" +
-               "WHERE CP.LOTJU_ID IS NOT NULL",
-           nativeQuery = true)
-    Set<Long> findAllCameraPresetsLotjuIds();
-
     @Modifying(clearAutomatically = true)
     @Query(value =
                "UPDATE ROAD_STATION\n" +
