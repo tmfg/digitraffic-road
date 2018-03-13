@@ -1,0 +1,17 @@
+version: '2.0' # docker-compose version
+
+networks:
+  db_network:
+    external:
+      name: network
+
+services:
+  db:
+    image: postgres:9.6.6
+    restart: always
+    environment:
+      POSTGRES_USER: road
+      POSTGRES_PASSWORD: road
+      POSTGRES_DB: road
+    networks:
+      - db_network
