@@ -61,10 +61,10 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 # Services enabled/disabled
 
 # If set to false web web controllers are not activated. Should be false for daemon processes.
-controllers.enabled=true
+controllers.enabled=false
 
 # Is metadata updates on. Should be true only for daemon process.
-quartz.enabled=true
+quartz.enabled=false
 
 # JMS queue enabled/disabled (Only daemond should have these enabled)
 jms.weather.enabled=false
@@ -73,7 +73,7 @@ jms.camera.enabled=false
 jms.datex2.enabled=false
 
 # Websocket stream of TMS sensor values, enabled only for web-app
-websocket.tms.enabled=true
+websocket.tms.enabled=false
 
 # TMC locations url
 metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
@@ -83,6 +83,6 @@ metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
 
 # Developer life improvements
 logging.level.root=INFO
-logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
