@@ -500,6 +500,7 @@
                 </executions>
             </plugin>
 
+<!--
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -525,9 +526,9 @@
                     <prefix>git</prefix>
                     <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
                     <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
-                    <!-- false is default here, it prints some more information during the build -->
+                    &lt;!&ndash; false is default here, it prints some more information during the build &ndash;&gt;
                     <verbose>false</verbose>
-                    <!-- this is false by default, forces the plugin to generate the git.properties file -->
+                    &lt;!&ndash; this is false by default, forces the plugin to generate the git.properties file &ndash;&gt;
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <format>properties</format>
@@ -538,32 +539,33 @@
                     <skip>false</skip>
                     <runOnlyOnce>false</runOnlyOnce>
                     <excludeProperties>
-                      <!-- <excludeProperty>git.user.*</excludeProperty> -->
+                      &lt;!&ndash; <excludeProperty>git.user.*</excludeProperty> &ndash;&gt;
                     </excludeProperties>
                     <includeOnlyProperties>
-                      <!-- <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> -->
+                      &lt;!&ndash; <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> &ndash;&gt;
                     </includeOnlyProperties>
                     <useNativeGit>false</useNativeGit>
                     <abbrevLength>7</abbrevLength>
                     <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
-                        <!-- don't generate the describe property -->
+                        &lt;!&ndash; don't generate the describe property &ndash;&gt;
                         <skip>false</skip>
-                        <!-- if no tag was found "near" this commit, just print the commit's id instead, helpful when you always expect this field to be not-empty -->
+                        &lt;!&ndash; if no tag was found "near" this commit, just print the commit's id instead, helpful when you always expect this field to be not-empty &ndash;&gt;
                         <always>false</always>
-                        <!-- how many chars should be displayed as the commit object id? 7 is git's default, 0 has a special meaning (see end of this README.md), and 40 is the maximum value here -->
+                        &lt;!&ndash; how many chars should be displayed as the commit object id? 7 is git's default, 0 has a special meaning (see end of this README.md), and 40 is the maximum value here &ndash;&gt;
                         <abbrev>7</abbrev>
-                        <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
+                        &lt;!&ndash; when the build is triggered while the repo is in "dirty state", append this suffix &ndash;&gt;
                         <dirty>-dirty</dirty>
-                        <!-- Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. -->
+                        &lt;!&ndash; Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. &ndash;&gt;
                         <match>*</match>
-                        <!-- always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. The distance will always be 0 if you're "on" the tag. -->
+                        &lt;!&ndash; always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. The distance will always be 0 if you're "on" the tag. &ndash;&gt;
                         <forceLongFormat>false</forceLongFormat>
                     </gitDescribe>
                 </configuration>
 
             </plugin>
-            <!-- END OF GIT COMMIT ID PLUGIN CONFIGURATION -->
+            &lt;!&ndash; END OF GIT COMMIT ID PLUGIN CONFIGURATION &ndash;&gt;
+-->
 
         </plugins>
     </build>
