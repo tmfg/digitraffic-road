@@ -2,9 +2,9 @@
 server.port = 9000
 
 # Datasource
-metadata.datasource.url=jdbc:oracle:thin:@localhost:1521:XE
-metadata.datasource.username=
-metadata.datasource.password=
+road.datasource.url=jdbc:postgresql://localhost:54322/road
+road.datasource.username=road
+road.datasource.password=road
 
 # Lotju-test v3 soap api
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3

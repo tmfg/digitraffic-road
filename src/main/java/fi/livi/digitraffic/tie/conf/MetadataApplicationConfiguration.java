@@ -96,10 +96,10 @@ public class MetadataApplicationConfiguration extends WebMvcConfigurerAdapter {
 
     @SuppressWarnings("Duplicates")
     @Bean
-    public DataSource datasource(final @Value("${metadata.datasource.url}") String url,
-                                 final @Value("${metadata.datasource.username}") String username,
-                                 final @Value("${metadata.datasource.password}") String password,
-                                 final @Value("${metadata.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
+    public DataSource datasource(final @Value("${road.datasource.url}") String url,
+                                 final @Value("${road.datasource.username}") String username,
+                                 final @Value("${road.datasource.password}") String password,
+                                 final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
