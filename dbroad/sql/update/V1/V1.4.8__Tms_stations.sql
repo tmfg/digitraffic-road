@@ -44,16 +44,16 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(2980,161,'OLD_vt1_Sysimetsä',true,'2017-06-06 00:06:00',0,0,0,0,null,6583,62,'DSL_4',null,'Helsinki',91,'Turku',853);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(3000,307,'vt7_HaVa_LAM038601',false,null,0,0,0,0,100,6663,962,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
+values(3000,307,'vt7_Virolahti_Virojoki',false,null,0,0,0,0,103,6663,962,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(3001,308,'vt7_HaVa_LAM038501',false,null,0,0,0,0,100,6664,963,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
+values(3001,308,'vt7_Virolahti_Ravijoki',false,null,0,0,0,0,103,6664,963,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(3002,310,'vt7_HaVa_LAM038701',false,null,0,0,0,0,100,6665,964,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
+values(3002,310,'vt7_Virolahti_Vaalimaan_tunneli_itä',false,null,0,0,0,0,103,6665,964,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(3003,309,'vt7_HaVa_LAM038801',false,null,0,0,0,0,100,6666,982,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
+values(3003,309,'vt7_Virolahti_Vaalimaa',false,null,0,0,0,0,103,6666,982,'DSL_6',null,'Vaalimaa',1000,'Helsinki',91);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(3020,937,'kt77_Viitasaari_Taimoniemi',false,null,0,0,0,0,105,6703,1002,'DSL_6',null,'Siilinjärvi',749,'Viitasaari',931);
@@ -92,7 +92,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(341,1235,'vt8_Lapinkangas',false,null,93,94,87,86,107,227,423,'DSL_4',null,'Oulu',564,'Raahe',678);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(347,1241,'vt22_Maikkula',false,null,78,77,74,75,107,233,429,'DSL_4',null,'Kajaani',205,'Oulu',564);
+values(347,1241,'OLD_vt22_Maikkula',true,'2018-01-31 00:01:00',78,77,74,75,107,233,429,'DSL_4',null,'Kajaani',205,'Oulu',564);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(337,1231,'vt4_Kalimenoja',false,null,87,87,100,96,107,224,419,'DSL_4',null,'Kemi',240,'Oulu',564);
@@ -257,7 +257,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(314,1122,'vt13_Veteli',false,null,97,98,85,87,106,204,401,'DSL_4',null,'Kokkola',272,'Kyyjärvi',312);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(322,1201,'vt4_Oulu_Mäntylä',false,null,102,104,99,101,107,210,404,'DSL_4',null,'Oulu',564,'Kempele',244);
+values(322,1201,'OLD_vt4_Oulu_Mäntylä',true,'2018-02-28 00:02:00',102,104,99,101,107,210,404,'DSL_4',null,'Oulu',564,'Kempele',244);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(325,1204,'vt8_Raahe',false,null,58,56,67,64,107,213,407,'DSL_4',null,'Kalajoki',208,'Liminka',425);
@@ -416,7 +416,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(2866,303,'vt7_Hamina_Ruissalo',false,null,0,0,0,0,103,6071,140,'DSL_4',null,'Vaalimaa',1000,'Kotka',285);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(2867,305,'vt7_Hamina_Kolsila_itä',false,null,0,0,0,0,103,6072,142,'DSL_4',null,null,null,null,null);
+values(2867,305,'vt7_Hamina_Kolsila_itä',false,null,0,0,0,0,103,6072,142,'DSL_4',null,'Vaalimaa',1000,'Hamina',75);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(2868,423,'OLD_vt9_Längelmäki',true,'2016-11-08 00:11:00',0,0,0,0,105,6073,154,'DSL_4',null,'Jämsä',182,'Orivesi',562);
@@ -623,7 +623,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(138,253,'vt10_Satiaismäki',false,null,65,68,65,70,101,39,133,'DSL_4',null,'Hämeenlinna',109,'Turku',853);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(139,501,'st170_Siltakylä',false,null,85,86,83,84,103,40,196,'DSL_4',null,'Kotka',285,'Loviisa',434);
+values(139,501,'st170_Siltakylä',false,null,50,50,50,50,103,40,196,'DSL_4',null,'Kotka',285,'Loviisa',434);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(143,522,'vt6_Luumäki:kko',false,null,93,90,87,83,103,44,200,'DSL_4',null,'Lappeenranta',405,'Kouvola',286);
@@ -899,7 +899,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(339,1233,'kt88_Alpua',false,null,96,95,84,84,107,226,421,'DSL_4',null,'Raahe',678,'Pulkkila',617);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(343,1237,'vt4_Oulu',false,null,97,96,92,92,107,229,425,'DSL_4',null,'Kemi',240,'Kempele',244);
+values(343,1237,'OLD_vt4_Oulu',true,'2018-01-31 00:01:00',97,96,92,92,107,229,425,'DSL_4',null,'Kemi',240,'Kempele',244);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(344,1238,'vt4_Isko',false,null,105,101,103,98,107,230,426,'DSL_4',null,'Kemi',240,'Oulu',564);
@@ -914,7 +914,7 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(353,1248,'st815_Oulunsalo',false,null,63,64,63,63,107,239,435,'DSL_4',null,'Oulunsalo',567,'Oulu',564);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(355,1250,'vt4_Välkkylä',false,null,99,102,96,99,107,241,437,'DSL_4',null,'Kemi',240,'Jyväskylä',179);
+values(355,1250,'OLD_vt4_Välkkylä',true,'2018-01-31 00:01:00',99,102,96,99,107,241,437,'DSL_4',null,'Kemi',240,'Jyväskylä',179);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(358,1303,'kt75_Kankivaara',false,null,95,95,86,85,107,244,444,'DSL_4',null,'Kuhmo',290,'Nurmes',541);
@@ -1085,10 +1085,10 @@ insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_fr
 values(443,146,'st101_Länsi-Pakila',false,null,84,88,82,85,100,324,47,'DSL_6',null,null,1003,null,1015);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(444,147,'st101_Pakila',false,null,84,88,80,84,100,325,48,'DSL_4',null,'Itäkeskus',1003,'Tapiola',1015);
+values(444,147,'st101_Pakila',false,null,84,88,80,84,100,325,48,'DSL_4',null,null,1003,null,1015);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
-values(445,148,'st101_Pukinmäki',false,null,85,85,83,83,100,326,49,'DSL_4',null,'Itäkeskus',1003,'Tapiola',1015);
+values(445,148,'st101_Pukinmäki',false,null,85,85,83,83,100,326,49,'DSL_4',null,null,1003,null,1015);
 insert into lam_station(id, natural_id, name, obsolete, obsolete_date, summer_free_flow_speed_1, summer_free_flow_speed_2, winter_free_flow_speed_1, winter_free_flow_speed_2, road_district_id, road_station_id, lotju_id, lam_station_type, calculator_device_type, direction_1_municipality, direction_1_municipality_code, direction_2_municipality,
  direction_2_municipality_code)
 values(446,149,'st101_Malmi',false,null,80,83,78,79,100,327,50,'DSL_4',null,null,1003,null,1015);

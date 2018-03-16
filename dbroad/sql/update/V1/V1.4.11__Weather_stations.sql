@@ -852,6 +852,7 @@ insert into weather_station(id, weather_station_type, road_station_id, lotju_id,
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1143,'ROSA',7043,1444,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1144,'ROSA',7044,1445,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1163,'ROSA',7103,1463,false);
+insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1303,'ROSA',7503,1643,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (841,'ROSA',6343,1081,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (842,'ROSA',6344,1082,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (901,'E_18',6422,1141,false);
@@ -860,6 +861,7 @@ insert into weather_station(id, weather_station_type, road_station_id, lotju_id,
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1203,'ROSA',7223,1543,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1205,'ROSA',7225,1544,true);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1223,'ROSA',7243,1564,true);
+insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1283,'ROSA',7443,1623,true);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1083,'ROSA',6943,1392,true);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1263,'ROSA',7283,1566,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1264,'ROSA',7284,1584,false);
@@ -881,4 +883,4 @@ insert into weather_station(id, weather_station_type, road_station_id, lotju_id,
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1244,'ROSA',7264,1563,false);
 insert into weather_station(id, weather_station_type, road_station_id, lotju_id, master) values (1245,'ROSA',7265,1565,true);
 
-alter sequence seq_road_weather_station restart with 1268;
+alter sequence seq_road_weather_station restart with 1304;
