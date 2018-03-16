@@ -22,21 +22,21 @@ public class TmsStationServiceTest extends AbstractTest {
     public void findAllPublishableTmsStationsAsFeatureCollection() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
 
-        assertCollectionSize(494, stations.getFeatures());
+        assertCollectionSize(488, stations.getFeatures());
     }
 
     @Test
     public void findPermanentlyRemovedStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, REMOVED);
 
-        assertCollectionSize(45, stations.getFeatures());
+        assertCollectionSize(49, stations.getFeatures());
     }
 
     @Test
     public void findAllStations() {
         final TmsStationFeatureCollection stations = tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ALL);
 
-        assertCollectionSize(538, stations.getFeatures());
+        assertCollectionSize(537, stations.getFeatures());
     }
 
     @Test
