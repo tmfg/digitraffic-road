@@ -24,10 +24,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsStations[0].measuredTime", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
         ;
     }
 

@@ -50,11 +50,6 @@ public class DataController {
     static final String TMS_DATA_PATH = "/tms-data";
     static final String WEATHER_DATA_PATH = "/weather-data";
 
-    // Fluency
-    static final String FLUENCY_CURRENT_PATH = "/fluency-current";
-    static final String FLUENCY_HISTORY_DAY_DATA_PATH = "/fluency-history-previous-day";
-    static final String FLUENCY_HISTORY_DATA_PATH = "/fluency-history";
-
     static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
     private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";

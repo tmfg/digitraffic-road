@@ -59,7 +59,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     List<String> findAllNotPublishableCameraPresetsPresetIds();
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    @Query(value = "select rs.natural_id nearest_natural_id, ws.id weather_station_id\n" +
+    @Query(value = "select rs.natural_id nearestNaturalId, ws.id weatherStationId\n" +
         "from weather_station ws, road_station rs\n" +
         "where ws.id in (:wsIdList)\n" +
         "and ws.road_station_id = rs.id", nativeQuery = true)
