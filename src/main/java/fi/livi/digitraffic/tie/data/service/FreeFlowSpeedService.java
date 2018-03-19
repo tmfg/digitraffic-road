@@ -31,16 +31,14 @@ public class FreeFlowSpeedService {
 
     @Transactional(readOnly = true)
     public FreeFlowSpeedRootDataObjectDto listLinksPublicFreeFlowSpeeds(final boolean onlyUpdateInfo) {
-        final ZonedDateTime linkUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.LINK_FREE_FLOW_SPEEDS_DATA);
         final ZonedDateTime tmsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_FREE_FLOW_SPEEDS_DATA);
-        final ZonedDateTime updated = DateHelper.getNewest(linkUpdated, tmsUpdated);
 
         if (onlyUpdateInfo) {
-            return new FreeFlowSpeedRootDataObjectDto(updated);
+            return new FreeFlowSpeedRootDataObjectDto(tmsUpdated);
         } else {
             return new FreeFlowSpeedRootDataObjectDto(
                     tmsFreeFlowSpeedRepository.listAllPublicTmsFreeFlowSpeeds(),
-                    updated);
+                    tmsUpdated);
         }
     }
 

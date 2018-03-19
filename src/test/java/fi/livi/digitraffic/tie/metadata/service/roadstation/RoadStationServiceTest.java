@@ -24,13 +24,13 @@ public class RoadStationServiceTest extends AbstractTest {
     public void testFindAllCameras() {
         final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA_STATION);
 
-        assertCollectionSize(858, cameras);
+        assertCollectionSize(866, cameras);
     }
 
     @Test
     public void testFindAllWeatherStations() {
         final List<RoadStation> weatherStations = roadStationService.findByType(RoadStationType.WEATHER_STATION);
 
-        assertCollectionSize(878, weatherStations);
+        assertCollectionSize(880, weatherStations);
     }
 }
