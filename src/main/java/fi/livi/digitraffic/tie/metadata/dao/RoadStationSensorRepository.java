@@ -44,7 +44,8 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     RoadStationSensor findByRoadStationTypeAndLotjuId(final RoadStationType stationType, final Long sensorLotjuId);
 
     @Query(value =
-        "SELECT rs_sensors.road_station_id, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) AS sensors\n" +
+        "SELECT rs_sensors.road_station_id roadStationId, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) " +
+            "AS sensors\n" +
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
@@ -56,7 +57,8 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     List<StationSensors> listStationSensorsByType(@Param("stationType") final String stationType);
 
     @Query(value =
-        "SELECT rs_sensors.road_station_id, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) AS sensors\n" +
+        "SELECT rs_sensors.road_station_id roadStationId, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) " +
+            "AS sensors\n" +
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.QueryHint;
 
@@ -19,7 +19,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "from datex2\n" +
             "where message_type = :messageType",
             nativeQuery = true)
-    LocalDateTime findLatestImportTime(@Param("messageType") final String messageType);
+    Instant findLatestImportTime(@Param("messageType") final String messageType);
 
     @Query(value =
             "SELECT d.*\n" +

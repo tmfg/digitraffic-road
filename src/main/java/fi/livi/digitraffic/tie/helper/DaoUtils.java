@@ -1,14 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
 
 public class DaoUtils {
 
@@ -38,25 +31,5 @@ public class DaoUtils {
     public static <E extends Enum<E>> E findEnum(ResultSet rs, String columnName, Class<E> clazz) throws SQLException {
         String value = rs.getString(columnName);
         return rs.wasNull() ? null : E.valueOf(clazz, value);
-    }
-
-    public static LocalTime findLocalTime(ResultSet rs, String columnName) throws SQLException {
-        Time time = rs.getTime(columnName);
-        return rs.wasNull() ? null : time.toLocalTime();
-    }
-
-    public static ZonedDateTime findZonedDateTime(ResultSet rs, String columnName) throws SQLException {
-        String column = rs.getString(columnName);
-        return rs.wasNull() ? null : ZonedDateTime.parse(column);
-    }
-
-    public static LocalDateTime findLocalDateTime(ResultSet rs, String columnName) throws SQLException {
-        Timestamp timestamp = rs.getTimestamp(columnName);
-        return rs.wasNull() ? null : timestamp.toLocalDateTime();
-    }
-
-    public static LocalDate findLocalDate(ResultSet rs, String columnName) throws SQLException {
-        Date date = rs.getDate(columnName);
-        return rs.wasNull() ? null : date.toLocalDate();
     }
 }

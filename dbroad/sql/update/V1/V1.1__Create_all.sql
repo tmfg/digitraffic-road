@@ -50,14 +50,6 @@ NO CYCLE;
 
 
 
-CREATE SEQUENCE seq_fluency_class
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
-
 CREATE SEQUENCE seq_forecast_section
 INCREMENT BY 1
 MAXVALUE 9223372036854775807
@@ -66,39 +58,8 @@ NO CYCLE;
 
 
 
-CREATE SEQUENCE seq_journeytime_measurement
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
-
-CREATE SEQUENCE seq_journeytime_median
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
-
-CREATE SEQUENCE seq_journeytime_normal_value
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
 
 CREATE SEQUENCE seq_lam_station
-INCREMENT BY 1
-MAXVALUE 9223372036854775807
-MINVALUE 1
-NO CYCLE;
-
-
-
-CREATE SEQUENCE seq_latest_journeytime_median
 INCREMENT BY 1
 MAXVALUE 9223372036854775807
 MINVALUE 1
@@ -212,7 +173,7 @@ public_internal boolean NOT NULL DEFAULT true,
 preset_name_1 CHARACTER VARYING(800),
 preset_name_2 CHARACTER VARYING(800),
 nearest_roadstation_id NUMERIC(10,0),
-pic_last_modified TIMESTAMP(6) WITHOUT TIME ZONE,
+pic_last_modified TIMESTAMP(6) WITH TIME ZONE,
 preset_order NUMERIC(10,0),
 road_station_id NUMERIC(10,0),
 nearest_rd_weather_station_id NUMERIC(10,0),
@@ -225,7 +186,7 @@ resolution CHARACTER VARYING(200),
 camera_lotju_id NUMERIC(10,0),
 camera_type CHARACTER VARYING(100),
 camera_description CHARACTER VARYING(200),
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 publishable boolean
 )
 WITH (
@@ -237,7 +198,7 @@ OIDS=FALSE
 CREATE TABLE IF NOT EXISTS data_updated(
 id NUMERIC(10,0) NOT NULL,
 data_type CHARACTER VARYING(128) NOT NULL,
-updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+updated TIMESTAMP(0) WITH TIME ZONE NOT NULL,
 version CHARACTER VARYING(64)
 )
 WITH (
@@ -248,9 +209,9 @@ OIDS=FALSE
 
 CREATE TABLE IF NOT EXISTS datex2(
 id NUMERIC(10,0) NOT NULL,
-import_date TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+import_date TIMESTAMP(6) WITH TIME ZONE NOT NULL,
 message TEXT,
-publication_time TIMESTAMP(0) WITHOUT TIME ZONE
+publication_time TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -262,7 +223,7 @@ CREATE TABLE IF NOT EXISTS datex2_situation(
 id NUMERIC(10,0) NOT NULL,
 datex2_id NUMERIC(10,0) NOT NULL,
 situation_id CHARACTER VARYING(200) NOT NULL,
-version_time TIMESTAMP(0) WITHOUT TIME ZONE
+version_time TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -274,12 +235,12 @@ CREATE TABLE IF NOT EXISTS datex2_situation_record(
 id NUMERIC(10,0) NOT NULL,
 datex2_situation_id NUMERIC(10,0) NOT NULL,
 situation_record_id CHARACTER VARYING(200),
-creation_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-version_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-observation_time TIMESTAMP(0) WITHOUT TIME ZONE,
+creation_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+version_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+observation_time TIMESTAMP(0) WITH TIME ZONE,
 validy_status CHARACTER VARYING(200) NOT NULL,
-overall_start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-overall_end_time TIMESTAMP(0) WITHOUT TIME ZONE,
+overall_start_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+overall_end_time TIMESTAMP(0) WITH TIME ZONE,
 type CHARACTER VARYING(200) NOT NULL
 )
 WITH (
@@ -318,7 +279,7 @@ length NUMERIC(6,0),
 road_number CHARACTER VARYING(5),
 road_section_number CHARACTER VARYING(3),
 road_section_version_number CHARACTER VARYING(3),
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE
+obsolete_date TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -363,7 +324,7 @@ id NUMERIC(10,0) NOT NULL,
 natural_id NUMERIC(10,0) NOT NULL,
 name CHARACTER VARYING(200) NOT NULL,
 obsolete boolean NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 summer_free_flow_speed_1 NUMERIC(7,3) NOT NULL,
 summer_free_flow_speed_2 NUMERIC(7,3) NOT NULL,
 winter_free_flow_speed_1 NUMERIC(7,3) NOT NULL,
@@ -449,8 +410,8 @@ OIDS=FALSE
 CREATE TABLE IF NOT EXISTS locking_table(
 lock_name CHARACTER VARYING(40) NOT NULL,
 instance_id CHARACTER VARYING(80),
-lock_locked TIMESTAMP(0) WITHOUT TIME ZONE,
-lock_expires TIMESTAMP(0) WITHOUT TIME ZONE
+lock_locked TIMESTAMP(0) WITH TIME ZONE,
+lock_expires TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -462,7 +423,7 @@ CREATE TABLE IF NOT EXISTS road(
 id NUMERIC(10,0) NOT NULL,
 natural_id NUMERIC(10,0) NOT NULL,
 obsolete boolean NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 name CHARACTER VARYING(400)
 )
 WITH (
@@ -492,7 +453,7 @@ CREATE TABLE IF NOT EXISTS road_district(
 id NUMERIC(10,0) NOT NULL,
 name CHARACTER VARYING(200),
 obsolete boolean NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 natural_id NUMERIC(10,0) NOT NULL,
 speed_limit_season NUMERIC(1,0) NOT NULL
 )
@@ -510,7 +471,7 @@ begin_distance NUMERIC(10,0),
 end_distance NUMERIC(10,0),
 road_district_id NUMERIC(10,0) NOT NULL,
 road_id NUMERIC(10,0) NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE
+obsolete_date TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -524,7 +485,7 @@ natural_id NUMERIC(10,0) NOT NULL,
 name CHARACTER VARYING(200) NOT NULL,
 type NUMERIC(1,0) NOT NULL,
 obsolete boolean NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 name_fi CHARACTER VARYING(200),
 name_sv CHARACTER VARYING(200),
 name_en CHARACTER VARYING(200),
@@ -539,9 +500,9 @@ province_code CHARACTER VARYING(200),
 additional_information CHARACTER VARYING(200),
 road_address_id NUMERIC(10,0),
 livi_id CHARACTER VARYING(200),
-start_date TIMESTAMP(0) WITHOUT TIME ZONE,
-repair_maintenance_date TIMESTAMP(0) WITHOUT TIME ZONE,
-annual_maintenance_date TIMESTAMP(0) WITHOUT TIME ZONE,
+start_date TIMESTAMP(0) WITH TIME ZONE,
+repair_maintenance_date TIMESTAMP(0) WITH TIME ZONE,
+annual_maintenance_date TIMESTAMP(0) WITH TIME ZONE,
 state CHARACTER VARYING(200),
 location CHARACTER VARYING(200),
 country CHARACTER VARYING(200),
@@ -562,7 +523,7 @@ id NUMERIC(10,0) NOT NULL,
 natural_id NUMERIC(10,0) NOT NULL,
 name CHARACTER VARYING(200) NOT NULL,
 obsolete boolean NOT NULL,
-obsolete_date TIMESTAMP(0) WITHOUT TIME ZONE,
+obsolete_date TIMESTAMP(0) WITH TIME ZONE,
 lotju_id NUMERIC(10,0),
 description CHARACTER VARYING(200),
 name_fi CHARACTER VARYING(200),
@@ -600,12 +561,12 @@ OIDS=FALSE
 CREATE TABLE IF NOT EXISTS sensor_value(
 id NUMERIC(12,0) NOT NULL,
 value NUMERIC(10,2) NOT NULL,
-measured TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+measured TIMESTAMP(0) WITH TIME ZONE NOT NULL,
 road_station_sensor_id NUMERIC(10,0) NOT NULL,
 road_station_id NUMERIC(10,0) NOT NULL,
-updated TIMESTAMP(0) WITHOUT TIME ZONE,
-time_window_start TIMESTAMP(0) WITHOUT TIME ZONE,
-time_window_end TIMESTAMP(0) WITHOUT TIME ZONE
+updated TIMESTAMP(0) WITH TIME ZONE,
+time_window_start TIMESTAMP(0) WITH TIME ZONE,
+time_window_end TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -642,7 +603,7 @@ CREATE TABLE IF NOT EXISTS speed_limit_season_history(
 id NUMERIC(10,0) NOT NULL,
 new_speed_limit_season NUMERIC(1,0) NOT NULL,
 road_district_id NUMERIC(10,0) NOT NULL,
-changed TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+changed TIMESTAMP(0) WITH TIME ZONE NOT NULL
 )
 WITH (
 OIDS=FALSE
@@ -652,11 +613,11 @@ OIDS=FALSE
 
 CREATE TABLE IF NOT EXISTS static_data_status(
 id NUMERIC(10,0) NOT NULL,
-link_data_last_updated TIMESTAMP(0) WITHOUT TIME ZONE,
-lam_data_last_updated TIMESTAMP(0) WITHOUT TIME ZONE,
-rws_data_last_updated TIMESTAMP(0) WITHOUT TIME ZONE,
-camerapreset_data_last_updated TIMESTAMP(0) WITHOUT TIME ZONE,
-rw_sensor_data_last_updated TIMESTAMP(0) WITHOUT TIME ZONE
+link_data_last_updated TIMESTAMP(0) WITH TIME ZONE,
+lam_data_last_updated TIMESTAMP(0) WITH TIME ZONE,
+rws_data_last_updated TIMESTAMP(0) WITH TIME ZONE,
+camerapreset_data_last_updated TIMESTAMP(0) WITH TIME ZONE,
+rw_sensor_data_last_updated TIMESTAMP(0) WITH TIME ZONE
 )
 WITH (
 OIDS=FALSE
@@ -1370,65 +1331,6 @@ ON DELETE NO ACTION;
 
 
 -- ------------ Write CREATE-FUNCTION-stage scripts -----------
-
-CREATE OR REPLACE FUNCTION date_to_seconds_from_daystart(IN d TIMESTAMP WITHOUT TIME ZONE)
-RETURNS DOUBLE PRECISION
-AS
-$BODY$
-DECLARE
-    seconds DOUBLE PRECISION;
-BEGIN
-    seconds := TO_CHAR(d, 'SSSSS')::NUMERIC;
-    RETURN seconds;
-END;
-$BODY$
-LANGUAGE  plpgsql;
-
-
-
-CREATE OR REPLACE FUNCTION floor_minutes(IN d TIMESTAMP WITHOUT TIME ZONE, IN resolution DOUBLE PRECISION)
-RETURNS TIMESTAMP WITHOUT TIME ZONE
-AS
-$BODY$
-DECLARE
-    ret TIMESTAMP(0) WITHOUT TIME ZONE;
-BEGIN
-    ret := (aws_oracle_ext.TRUNC(d, 'HH24') + ((TO_CHAR(d, 'mi')::NUMERIC - MOD(TO_CHAR(d, 'mi'), resolution)) / (24 * 60)::NUMERIC || ' days')::INTERVAL);
-    RETURN ret;
-END;
-$BODY$
-LANGUAGE  plpgsql;
-
-
-
-CREATE OR REPLACE FUNCTION map_to_normal_value_date(IN sourcedate TIMESTAMP WITHOUT TIME ZONE)
-RETURNS TIMESTAMP WITHOUT TIME ZONE
-AS
-$BODY$
-DECLARE
-    ret TIMESTAMP(0) WITHOUT TIME ZONE;
-BEGIN
-    ret := (TO_DATE('2007/01/01/00:00', 'yyyy/mm/dd/HH24:MI') + ((MOD(TO_CHAR(sourcedate, 'J')::NUMERIC, 7) + 1)::NUMERIC || ' days')::INTERVAL - (1::NUMERIC || ' days')::INTERVAL + (aws_oracle_ext.TRUNC(sourcedate, 'MI') - aws_oracle_ext.TRUNC(sourcedate)));
-    RETURN ret;
-END;
-$BODY$
-LANGUAGE  plpgsql;
-
-
-
-CREATE OR REPLACE FUNCTION rowgenerator(IN start_num DOUBLE PRECISION, IN end_num DOUBLE PRECISION)
-RETURNS SETOF numbertable_type
-AS
-$BODY$
-BEGIN
-    FOR i IN start_num..end_num LOOP
-        RETURN NEXT ARRAY[i];
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE  plpgsql;
-
 
 
 CREATE OR REPLACE FUNCTION f_trigger_vc$camera_preset()

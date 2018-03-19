@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.dto.freeflowspeed;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Immutable;
@@ -20,26 +21,25 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FreeFlowSpeedRootDataObjectDto extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "Free flow speeds for links")
-    private final List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds;
+    @ApiModelProperty(value = "Free flow speeds for links(deprecated)")
+    private final List<String> linkFreeFlowSpeeds;
 
     @ApiModelProperty(value = "Free flow speeds for TMS stations")
     @JsonProperty(value = "tmsFreeFlowSpeeds")
     private final List<TmsFreeFlowSpeedDto> tmsFreeFlowSpeeds;
 
-    public FreeFlowSpeedRootDataObjectDto(final List<LinkFreeFlowSpeedDto> linkFreeFlowSpeeds,
-                                          final List<TmsFreeFlowSpeedDto> tmsFreeFlowSpeeds,
+    public FreeFlowSpeedRootDataObjectDto(final List<TmsFreeFlowSpeedDto> tmsFreeFlowSpeeds,
                                           final ZonedDateTime updated) {
         super(updated);
-        this.linkFreeFlowSpeeds = linkFreeFlowSpeeds;
+        this.linkFreeFlowSpeeds = Collections.emptyList();
         this.tmsFreeFlowSpeeds = tmsFreeFlowSpeeds;
     }
 
     public FreeFlowSpeedRootDataObjectDto(final ZonedDateTime updated) {
-        this(null, null, updated);
+        this(null,  updated);
     }
 
-    public List<LinkFreeFlowSpeedDto> getLinkFreeFlowSpeeds() {
+    public List<String> getLinkFreeFlowSpeeds() {
         return linkFreeFlowSpeeds;
     }
 

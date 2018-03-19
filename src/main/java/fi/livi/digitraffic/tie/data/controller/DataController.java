@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.daydata.HistoryRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
@@ -46,7 +45,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 public class DataController {
     static final String CAMERA_DATA_PATH = "/camera-data";
     static final String TMS_DATA_PATH = "/tms-data";
@@ -66,6 +65,7 @@ public class DataController {
     static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private final DayDataService dayDataService;
+
     private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
@@ -90,24 +90,6 @@ public class DataController {
         this.datex2DataService = datex2DataService;
     }
 
-    @ApiOperation("History data of link for given month")
-    @RequestMapping(method = RequestMethod.GET, path = FLUENCY_HISTORY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of history data"))
-    public HistoryRootDataObjectDto fluencyHistoryById(
-            @ApiParam(value = "Link id", required = true)
-            @PathVariable
-            final long id,
-            @ApiParam(value = "Year (>2014)", required = true)
-            @Min(2015) @Max(9999)
-            @RequestParam
-            final int year,
-            @ApiParam(value = "Month (1-12)", required = true)
-            @Range(min = 1, max = 12)
-            @RequestParam
-            final int month) {
-        return dayDataService.listHistoryData(id, year, month);
-    }
-
     @ApiOperation("Current free flow speeds")
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
@@ -116,16 +98,6 @@ public class DataController {
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
-    }
-
-    @ApiOperation("Current free flow speeds of link")
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/link/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
-    public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfLinkById(
-            @ApiParam(value = "Link id", required = true)
-            @PathVariable
-            final long id) {
-        return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(id);
     }
 
     @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM)")

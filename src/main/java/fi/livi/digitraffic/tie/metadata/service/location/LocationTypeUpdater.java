@@ -20,7 +20,7 @@ public class LocationTypeUpdater {
         final LocationTypeReader locationTypeReader = new LocationTypeReader(version);
         final List<LocationType> newTypes = locationTypeReader.read(path);
 
-        locationTypeRepository.save(newTypes);
+        locationTypeRepository.saveAll(newTypes);
 
         return newTypes;
     }

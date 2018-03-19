@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -24,17 +23,13 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 public class CameraStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
-    private final DataStatusService dataStatusService;
     private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
 
     @Autowired
-    public CameraStationUpdater(final DataStatusService dataStatusService,
-                                final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
-                                final CameraStationUpdateService cameraStationUpdateService,
-                                final CameraPresetService cameraPresetService) {
-        this.dataStatusService = dataStatusService;
+    public CameraStationUpdater(final LotjuCameraStationMetadataService lotjuCameraStationMetadataService, final CameraStationUpdateService cameraStationUpdateService,
+        final CameraPresetService cameraPresetService) {
         this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
@@ -43,24 +38,19 @@ public class CameraStationUpdater {
     public boolean updateCameras() {
         log.info("Update Cameras start");
 
-        Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
+        final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
             lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
 
         final boolean fixedRoadStations = cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
         final boolean fixedPresets = cameraStationUpdateService.fixPresetsWithoutLotjuIds(lotjuIdToKameraAndEsiasentos);
         final boolean updatedCameras = updateCamerasAndPresets(lotjuIdToKameraAndEsiasentos);
         final boolean updated = fixedRoadStations || fixedPresets || updatedCameras;
-        updateStaticDataStatus(updated);
+
         log.info("UpdateCameras end");
         return updated;
     }
 
-    private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
-        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.CAMERA_PRESET, updateStaticDataStatus);
-    }
-
     public boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {
-
         final Set<Long> presetsLotjuIdsNotToObsolete = new HashSet<>();
         int updated = 0;
         int inserted = 0;

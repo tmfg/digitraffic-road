@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -165,7 +164,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "       and allowed.road_station_type = s.road_station_type\n" +
            "  )",
            nativeQuery = true)
-    LocalDateTime getLatestMeasurementTime(@Param("stationTypeId")
+    Instant getLatestMeasurementTime(@Param("stationTypeId")
                                            final int stationTypeId,
                                            @Param("timeLimitInMinutes")
                                            final int timeLimitInMinutes);

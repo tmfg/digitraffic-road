@@ -60,13 +60,13 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
-# If set to false web web controllers are not activated. Should be false for daemon processes.
-controllers.enabled=false
+# Web application type.  Should be none for daemon process
+spring.main.web-application-type=none
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=false
 
-# JMS queue enabled/disabled (Only daemond should have these enabled)
+# JMS queue enabled/disabled (Only daemon should have these enabled)
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false

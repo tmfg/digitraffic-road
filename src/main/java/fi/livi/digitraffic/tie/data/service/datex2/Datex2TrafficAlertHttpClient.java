@@ -1,11 +1,10 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +26,8 @@ public class Datex2TrafficAlertHttpClient {
 
     // Old ftp format  InfoXML_2017-04-26-07-50-58-913.xml
     // New http format  Datex2_2017-04-26-07-51-04-245.xml
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("'Datex2_'yyyy-MM-dd-HH-mm-ss-SSS'.xml'");
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("'Datex2_'yyyy-MM-dd-HH-mm-ss-SSS'.xml'");
+
     private static final Pattern fileNamePattern = Pattern.compile("href=\"(Datex2_[0-9-]*\\.xml)\"");
     private static final String AUTO_INDEX_QUERY_ARGUMENTS = "?F=0&C=N&O=D";
 
@@ -40,12 +40,12 @@ public class Datex2TrafficAlertHttpClient {
         this.fileGetService = fileGetService;
     }
 
-    public List<Pair<String, Timestamp>> getTrafficAlertMessages(final Timestamp from) {
+    public List<Pair<String, Instant>> getTrafficAlertMessages(final Instant from) {
         log.info("Read datex2 traffic alert messages from {}", from);
 
         final String html = getContent(url + AUTO_INDEX_QUERY_ARGUMENTS);
 
-        final List<Pair<String, Timestamp>> newFiles = getNewFiles(from, html);
+        final List<Pair<String, Instant>> newFiles = getNewFiles(from, html);
 
         return getDatex2Messages(newFiles);
     }
@@ -54,13 +54,13 @@ public class Datex2TrafficAlertHttpClient {
         return fileGetService.getFile(Datex2MessageType.TRAFFIC_DISORDER.name(), url, String.class);
     }
 
-    private List<Pair<String, Timestamp>> getNewFiles(final Timestamp from, final String html) {
+    private List<Pair<String, Instant>> getNewFiles(final Instant from, final String html) {
         final Matcher m = fileNamePattern.matcher(html);
-        final List<Pair<String, Timestamp>> filenames = new ArrayList<>();
+        final List<Pair<String, Instant>> filenames = new ArrayList<>();
 
         while (m.find()) {
             final String filename = m.group(1);
-            final Timestamp fileTimestamp = parseDate(filename);
+            final Instant fileTimestamp = parseDate(filename);
             if (!isNewFile(from, fileTimestamp)) { // Links in html are ordered by filename which contains file date
                 break;
             }
@@ -72,14 +72,14 @@ public class Datex2TrafficAlertHttpClient {
         return filenames.stream().sorted(Comparator.comparing(Pair::getLeft)).collect(Collectors.toList());
     }
 
-    private boolean isNewFile(final Timestamp from, final Timestamp fileDate) {
-        return from == null || (fileDate != null && from.before(fileDate));
+    private boolean isNewFile(final Instant from, final Instant fileDate) {
+        return from == null || (fileDate != null && from.isBefore(fileDate));
     }
 
-    private List<Pair<String, Timestamp>> getDatex2Messages(final List<Pair<String, Timestamp>> filenames) {
-        final List<Pair<String, Timestamp>> messages = new ArrayList<>();
+    private List<Pair<String, Instant>> getDatex2Messages(final List<Pair<String, Instant>> filenames) {
+        final List<Pair<String, Instant>> messages = new ArrayList<>();
 
-        for (final Pair<String, Timestamp> filename : filenames) {
+        for (final Pair<String, Instant> filename : filenames) {
             final String datex2Url = url + filename.getLeft();
             log.info("Reading Datex2 message: {}", datex2Url);
 
@@ -90,11 +90,10 @@ public class Datex2TrafficAlertHttpClient {
     }
 
 
-    private Timestamp parseDate(final String filename) {
+    private Instant parseDate(final String filename) {
         try {
-            final Date date = dateFormat.parse(filename);
-            return new Timestamp(date.getTime());
-        } catch (ParseException ex) {
+            return TimeFromFilenameParser.parseDate(filename);
+        } catch (final DateTimeParseException ex) {
             log.error("Unable to parse date: " + filename, ex);
         }
         return null;

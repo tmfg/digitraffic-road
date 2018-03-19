@@ -30,14 +30,14 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuWeatherStationMetadataClient(Jaxb2Marshaller marshaller,
-                                             @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
+    public LotjuWeatherStationMetadataClient(final Jaxb2Marshaller marshaller,
+                                             final @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
         super(marshaller, weatherMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaAsemaVO> getTiesaaAsemmas() {
+    public List<TiesaaAsemaVO> getTiesaaAsemmas() {
         log.info("Fetching TiesaaAsemas from " + getWebServiceTemplate().getDefaultUri());
 
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
@@ -50,7 +50,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
+    public List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
         log.info("Fetching all LaskennallisetAnturit from " + getWebServiceTemplate().getDefaultUri());
 
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
@@ -62,7 +62,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
+    public List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
         request.setId(tiesaaAsemaLotjuId);
 
