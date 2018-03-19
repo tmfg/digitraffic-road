@@ -25,7 +25,6 @@ import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
-import fi.livi.digitraffic.tie.data.service.DayDataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
@@ -64,8 +63,6 @@ public class DataController {
 
     static final String LAST_UPDATED_PARAM = "lastUpdated";
 
-    private final DayDataService dayDataService;
-
     private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
@@ -74,14 +71,12 @@ public class DataController {
     private final Datex2DataService datex2DataService;
 
     @Autowired
-    public DataController(final DayDataService dayDataService,
-                          final TmsDataService tmsDataService,
+    public DataController(final TmsDataService tmsDataService,
                           final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
                           final ForecastSectionDataService forecastSectionDataService,
                           final Datex2DataService datex2DataService) {
-        this.dayDataService = dayDataService;
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
