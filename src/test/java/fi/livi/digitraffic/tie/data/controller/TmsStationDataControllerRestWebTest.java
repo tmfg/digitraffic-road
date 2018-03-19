@@ -35,7 +35,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
     public void testTmsDataRestApiById() throws Exception {
         mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
                 MetadataApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.TMS_DATA_PATH + "/-23001"))
+                DataController.TMS_DATA_PATH + "/23801"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
