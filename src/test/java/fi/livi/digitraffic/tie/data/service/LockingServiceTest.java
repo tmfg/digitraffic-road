@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,8 +23,8 @@ public class LockingServiceTest extends AbstractTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
 
-    private ArrayList<Long> lockStarts = new ArrayList<>();
-    private ArrayList<String> lockerInstanceIds  = new ArrayList<>();
+    private List<Long> lockStarts = new CopyOnWriteArrayList<>();
+    private List<String> lockerInstanceIds  = new CopyOnWriteArrayList<>();
 
     @Autowired
     private LockingService lockingService;
@@ -33,13 +35,14 @@ public class LockingServiceTest extends AbstractTest {
     private static final int LOCK_COUNT = 3;
     private static final int THREAD_COUNT = 2;
 
+    private static final int LOCKING_TIME_EXTRA = 10; // how long it takes after obtaining lock to get timestamp?
 
     @Test()
     public void testMultipleInstancesLocking() {
+        Double d;
+        final ExecutorService pool = Executors.newFixedThreadPool(THREAD_COUNT);
+        final Collection<Future<?>> futures = new ArrayList<>();
 
-        ExecutorService pool = Executors.newFixedThreadPool(THREAD_COUNT);
-
-        Collection<Future<?>> futures = new ArrayList<>();
         for (int i = 1; i <= THREAD_COUNT; i++) {
             futures.add(pool.submit(new Locker(LOCK, String.valueOf(i))));
         }
@@ -74,16 +77,24 @@ public class LockingServiceTest extends AbstractTest {
         for (Long start: lockStarts) {
             if (prevStart != null) {
                 // Check that locks won't overlap
-                Assert.assertTrue("", start >= prevStart + LOCK_EXPIRATION_S * 1000);
-                Assert.assertTrue(start <= prevStart + (LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000);
+                assertNoOverlap(start, prevStart);
             }
             prevStart = start;
         }
     }
 
+    private void assertNoOverlap(final Long start, final Long prevStart) {
+        final long startLimit = prevStart + LOCK_EXPIRATION_S * 1000 - LOCKING_TIME_EXTRA;
+        Assert.assertTrue(String.format("start %d should be ge than %d", start, startLimit),
+            start >= startLimit);
+
+        final long endLimit = prevStart + (LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000;
+        Assert.assertTrue(String.format("Start %d should be le than %d", start, endLimit),
+            start <= endLimit);
+    }
+
     @Test
     public void testLockingExpirationFast() {
-
         final String LOCK_NAME_1 = "Lock1";
         final String INSTANCE_ID_1 = "1";
         final int EXPIRATION_SECONDS = 5;
@@ -116,7 +127,6 @@ public class LockingServiceTest extends AbstractTest {
     }
 
     private class Locker implements Runnable {
-
         private final String lock;
         private final String instanceId;
 
@@ -129,10 +139,11 @@ public class LockingServiceTest extends AbstractTest {
         public void run() {
             int counter = 0;
             while (counter < LOCK_COUNT) {
-                boolean locked = lockingService.acquireLock(lock, instanceId, LOCK_EXPIRATION_S);
+                final boolean locked = lockingService.acquireLock(lock, instanceId, LOCK_EXPIRATION_S);
+                final long timestamp = System.currentTimeMillis();
                 if (locked) {
                     log.info("Acquired Lock=[{}] for instanceId=[{}]", lock, instanceId);
-                    lockStarts.add(System.currentTimeMillis());
+                    lockStarts.add(timestamp);
                     lockerInstanceIds.add(instanceId);
                     counter++;
                     // Sleep little more than exipration so another thread should get lock

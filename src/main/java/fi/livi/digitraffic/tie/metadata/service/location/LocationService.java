@@ -59,7 +59,7 @@ public class LocationService {
     private LocationVersion getLocationVersion(final String version) {
         final LocationVersion locationVersion = isLatestVersion(version) ?
                                                 locationVersionRepository.findLatestVersion() :
-                                                locationVersionRepository.findById(version).get();
+                                                locationVersionRepository.findById(version).orElse(null);
 
         if(locationVersion == null) {
             throw new ObjectNotFoundException(LocationVersion.class, version);

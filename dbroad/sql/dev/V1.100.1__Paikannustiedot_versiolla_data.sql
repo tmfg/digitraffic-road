@@ -1,4 +1,4 @@
-insert into location_version(version, updated) values ('1.0', current_timestamp - - interval '1 days');
+insert into location_version(version, updated) values ('1.0', current_timestamp - interval '1 days');
 insert into location_version(version, updated) values ('1.1', current_timestamp);
 
 insert into location_type(version, type_code, description_en, description_fi) values ('1.1', 'L1.0', 'Road', 'Tie');
