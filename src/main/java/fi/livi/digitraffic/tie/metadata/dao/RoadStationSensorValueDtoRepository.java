@@ -84,7 +84,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "  and rs.publishable = true\n" +
             "  and s.obsolete = false\n" +
             "  and sv.measured > (\n" +
-            "    select max(sensv.measured) - :timeLimitInMinutes * interval '1 MINUTE')\n" +
+            "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 MINUTE')\n" +
             "    from sensor_value sensv\n" +
             "    where sensv.road_station_id = sv.road_station_id\n" +
             "  )\n" +
