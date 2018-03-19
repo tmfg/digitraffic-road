@@ -55,7 +55,7 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 # Services enabled/disabled
 
 # Web application type.  Should be none for daemon process
-spring.main.web-application-type=none
+spring.main.web-application-type=servlet
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=false

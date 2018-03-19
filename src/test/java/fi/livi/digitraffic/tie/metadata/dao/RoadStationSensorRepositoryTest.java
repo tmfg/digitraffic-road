@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,25 @@ public class RoadStationSensorRepositoryTest extends AbstractTest {
     private RoadStationSensorRepository roadStationSensorRepository;
 
     @Test
-    public void test() {
-        RoadStationSensor result =
-            roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, -18L);
-        Assert.assertTrue(result != null);
-        Assert.assertTrue(result.getSensorValueDescriptions().size() == 7);
+    public void notFound() {
+        final RoadStationSensor result = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, -18L);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void foundWithSensors() {
+        final RoadStationSensor result = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, 22L);
+
+        assertNotNull(result);
+        assertCollectionSize(7, result.getSensorValueDescriptions());
+    }
+
+    @Test
+    public void foundWithoutSensorDescriptions() {
+        final RoadStationSensor result = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, 18L);
+
+        assertNotNull(result);
+        assertEmpty(result.getSensorValueDescriptions());
     }
 }
