@@ -1,16 +1,25 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.MetadataApplication;
 
-public class LockingDaoTest extends AbstractTest {
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = MetadataApplication.class,
+    properties = { "config.test=true" },
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class LockingDaoTest {
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 
     private static final String LOCK_NAME_1 = "Lock1";
@@ -26,22 +35,26 @@ public class LockingDaoTest extends AbstractTest {
     public void testLockingAfterExpiration() {
 
         // Acquire 1. lock
-        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
+        boolean locked1 = acquireLock(LOCK_NAME_1, INSTANCE_ID_1);
         long locked1Time = System.currentTimeMillis();
         Assert.assertTrue(locked1);
+        logLockingTime(LOCK_NAME_1, true, locked1Time, System.currentTimeMillis());
 
         // Another lock can be acquired
-        boolean locked2 = lockingDao.acquireLock(LOCK_NAME_2, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        boolean locked2 = acquireLock(LOCK_NAME_2, INSTANCE_ID_2);
         Assert.assertTrue(locked2);
+        logLockingTime(LOCK_NAME_2, true, locked1Time, System.currentTimeMillis());
 
         // Try to acquire 1. lock again
-        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        boolean locked1Second = acquireLock(LOCK_NAME_1, INSTANCE_ID_2);
         Assert.assertFalse(locked1Second);
+        logLockingTime(LOCK_NAME_1, false, locked1Time, System.currentTimeMillis());
 
         while (!locked1Second) {
-            locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+            locked1Second = acquireLock(LOCK_NAME_1, INSTANCE_ID_2);
             long now = System.currentTimeMillis();
-            log.info("LOCK_NAME_1 acquired: " + locked1Second + ", time from locking " +  (double)(now-locked1Time)/1000.0 + " seconds" );
+            logLockingTime(LOCK_NAME_1, locked1Second, locked1Time, now);
+
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {
                 Assert.assertFalse("Lock acquired before expiration", locked1Second);
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
@@ -55,10 +68,17 @@ public class LockingDaoTest extends AbstractTest {
         }
     }
 
+    @Transactional
+    private boolean acquireLock(final String lockName, final String instanceId) {
+        return lockingDao.acquireLock(lockName, instanceId, EXPIRATION_SECONDS);
+    }
+
+    private void logLockingTime(final String lockName, final boolean locked, final long lockedTime, final long now) {
+        log.info("{} acquired: {}, time from locking {} seconds", lockName, locked, (double)(now-lockedTime)/1000.0);
+    }
 
     @Test
     public void testLockingAndRelasing() {
-
         StopWatch start = StopWatch.createStarted();
         // Acquire 1. lock
         boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);

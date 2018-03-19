@@ -21,8 +21,5 @@ public class FreeFlowSpeedServiceTest extends AbstractTest {
 
         Assert.assertNotNull(object.getTmsFreeFlowSpeeds());
         Assert.assertTrue(object.getTmsFreeFlowSpeeds().size() > 0);
-
-        Assert.assertNotNull(object.getLinkFreeFlowSpeeds());
-        Assert.assertTrue(object.getLinkFreeFlowSpeeds().size() > 0);
     }
 }
