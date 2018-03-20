@@ -36,6 +36,8 @@ camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_
 camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
 camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
 camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
+camera-image-uploader.sftp.poolSize = 5
+camera-image-uploader.sftp.sessionWaitTimeout = 5000
 
 Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
 

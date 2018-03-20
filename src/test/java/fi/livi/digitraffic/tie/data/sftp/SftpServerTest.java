@@ -31,15 +31,14 @@ public class SftpServerTest extends AbstractSftpTest {
     private SessionFactory sftpSessionFactory;
 
     @Value("${camera-image-uploader.sftp.poolSize}")
-    Integer poolSize;
+    private Integer poolSize;
 
     @Value("${camera-image-uploader.sftp.sessionWaitTimeout}")
-    Long sessionWaitTimeout;
+    private Long sessionWaitTimeout;
 
     @Test
     public void testPutAndGetFile() throws Exception {
-
-        Session session = sftpSessionFactory.getSession();
+        final Session session = sftpSessionFactory.getSession();
 
         final String testFileContents = "some file contents";
         String uploadedFileName = "uploadFile";
@@ -61,8 +60,8 @@ public class SftpServerTest extends AbstractSftpTest {
 
     @Test
     public void testSessionCachingPoolLimit() {
+        final HashSet<Session> sessions = new HashSet<>();
 
-        HashSet<Session> sessions = new HashSet<>();
         while(sessions.size() < poolSize+1) {
             log.info("Get sessionCount={}", sessions.size()+1);
             if (sessions.size() < poolSize) {
@@ -91,8 +90,8 @@ public class SftpServerTest extends AbstractSftpTest {
 
     @Test
     public void testSessionCaching() {
+        final HashSet<Session> newSessions = new HashSet<>();
 
-        HashSet<Session> newSessions = new HashSet<>();
         while(newSessions.size() < poolSize) {
             log.info("Get new sessionCount={}", newSessions.size()+1);
             newSessions.add(this.sftpSessionFactory.getSession());
