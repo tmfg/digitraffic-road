@@ -63,13 +63,6 @@ public final class DateHelper {
         return instant == null ? null : instant.atZone(UTC);
     }
 
-    public static LocalDateTime toLocalDateTime(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        }
-        return null;
-    }
-
     public static Date toDate(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
             return Date.from(zonedDateTime.toInstant());
