@@ -93,8 +93,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             i--;
         }
 
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
-        log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
+        final List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
+        log.info("Non obsolete CameraPresets before:{}", nonObsoleteCameraPresets.size());
 
         final Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
         log.info("All camera presets size cameraPresetsCount={}", cameraPresets.size());
@@ -103,8 +103,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         final Iterator<CameraPreset> iter = cameraPresets.values().iterator();
 
         while (missingMin > 0 && iter.hasNext()) {
-            CameraPreset cp = iter.next();
-            RoadStation rs = cp.getRoadStation();
+            final CameraPreset cp = iter.next();
+            final RoadStation rs = cp.getRoadStation();
+
             if (!rs.isPublishable() || !cp.isPublishable()) {
                 missingMin--;
             }
@@ -120,8 +121,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         }
         entityManager.flush();
         entityManager.clear();
-        nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
-        log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
+
+        log.info("Non obsolete CameraPresets for testing {}", cameraPresetService.findAllPublishableCameraPresets());
     }
 
     /**
@@ -264,7 +265,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
             final ZonedDateTime kuvaTaken = DateHelper.toZonedDateTime(kuva.getAika());
             final ZonedDateTime presetPictureLastModified = preset.getPictureLastModified();
-            Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
+
+            assertTimesEqual(kuvaTaken, presetPictureLastModified);
         }
         log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms",

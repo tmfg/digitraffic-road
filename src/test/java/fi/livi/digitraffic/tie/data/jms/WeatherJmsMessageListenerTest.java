@@ -46,7 +46,6 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
     @Autowired
@@ -63,42 +62,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
-
-    @Before
-    public void initData() throws JAXBException {
-        log.info("Add available sensors for weather stations");
-        if (!TestTransaction.isActive()) {
-            TestTransaction.start();
-        }
-
-        final String merge =
-                "MERGE INTO ROAD_STATION_SENSORS TGT\n" +
-                "USING (\n" +
-                "  SELECT RS.ID ROAD_STATION_ID, S.ID ROAD_STATION_SENSOR_ID\n" +
-                "  FROM ROAD_STATION_SENSOR S, ROAD_STATION RS\n" +
-                "  WHERE S.OBSOLETE = 0\n" +
-                "    AND S.ROAD_STATION_TYPE = 'WEATHER_STATION'\n" +
-                "    AND EXISTS (\n" +
-                "      SELECT NULL\n" +
-                "      FROM ALLOWED_ROAD_STATION_SENSOR ALLOWED\n" +
-                "      WHERE ALLOWED.NATURAL_ID = S.NATURAL_ID\n" +
-                "        AND ALLOWED.ROAD_STATION_TYPE = S.ROAD_STATION_TYPE\n" +
-                "   )\n" +
-                "   AND RS.ROAD_STATION_TYPE = 'WEATHER_STATION'\n" +
-                "   AND RS.OBSOLETE_DATE IS NULL\n" +
-                ") SRC\n" +
-                "ON (SRC.ROAD_STATION_ID = TGT.ROAD_STATION_ID AND SRC.ROAD_STATION_SENSOR_ID = TGT.ROAD_STATION_SENSOR_ID)\n" +
-                "WHEN NOT MATCHED THEN INSERT (TGT.ROAD_STATION_ID, TGT.ROAD_STATION_SENSOR_ID)\n" +
-                "     VALUES (SRC.ROAD_STATION_ID, SRC.ROAD_STATION_SENSOR_ID)";
-        jdbcTemplate.execute(merge);
-
-        log.info("Commit changes");
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        assertFalse(TestTransaction.isActive());
-        log.info("Commit done");
-    }
-
+    
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws JAXBException
