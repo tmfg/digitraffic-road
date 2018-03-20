@@ -33,22 +33,21 @@ public class LockingDaoTest {
 
     @Test
     public void testLockingAfterExpiration() {
-
         // Acquire 1. lock
-        boolean locked1 = acquireLock(LOCK_NAME_1, INSTANCE_ID_1);
+        final boolean locked1 = acquireLock(LOCK_NAME_1, INSTANCE_ID_1);
         long locked1Time = System.currentTimeMillis();
+        logLockingTime(LOCK_NAME_1, locked1, locked1Time, System.currentTimeMillis());
         Assert.assertTrue(locked1);
-        logLockingTime(LOCK_NAME_1, true, locked1Time, System.currentTimeMillis());
 
         // Another lock can be acquired
-        boolean locked2 = acquireLock(LOCK_NAME_2, INSTANCE_ID_2);
+        final boolean locked2 = acquireLock(LOCK_NAME_2, INSTANCE_ID_2);
+        logLockingTime(LOCK_NAME_2, locked2, locked1Time, System.currentTimeMillis());
         Assert.assertTrue(locked2);
-        logLockingTime(LOCK_NAME_2, true, locked1Time, System.currentTimeMillis());
 
         // Try to acquire 1. lock again
         boolean locked1Second = acquireLock(LOCK_NAME_1, INSTANCE_ID_2);
+        logLockingTime(LOCK_NAME_1, locked1Second, locked1Time, System.currentTimeMillis());
         Assert.assertFalse(locked1Second);
-        logLockingTime(LOCK_NAME_1, false, locked1Time, System.currentTimeMillis());
 
         while (!locked1Second) {
             locked1Second = acquireLock(LOCK_NAME_1, INSTANCE_ID_2);

@@ -49,11 +49,11 @@ public class Datex2MessageUpdaterTest extends AbstractTest {
     @Test
     @Rollback
     public void updateDatex2MessagesSucceeds() throws IOException {
-        server.expect(MockRestRequestMatchers.requestTo(datex2Url + "?F=0&C=N&O=D"))
+        server.expect(MockRestRequestMatchers.requestTo("/" + datex2Url + "?F=0&C=N&O=D"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/datex2FileList1.html"), MediaType.TEXT_HTML));
 
-        server.expect(MockRestRequestMatchers.requestTo(datex2Url + "Datex2_2017-08-10-15-59-34-896.xml"))
+        server.expect(MockRestRequestMatchers.requestTo("/" + datex2Url + "Datex2_2017-08-10-15-59-34-896.xml"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml"), MediaType.APPLICATION_XML));
 
@@ -69,15 +69,15 @@ public class Datex2MessageUpdaterTest extends AbstractTest {
 
         server = MockRestServiceServer.createServer(restTemplate);
 
-        server.expect(MockRestRequestMatchers.requestTo(datex2Url + "?F=0&C=N&O=D"))
+        server.expect(MockRestRequestMatchers.requestTo("/" + datex2Url + "?F=0&C=N&O=D"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/datex2FileList2.html"), MediaType.TEXT_HTML));
 
-        server.expect(MockRestRequestMatchers.requestTo(datex2Url + "Datex2_2017-08-10-16-08-32-976.xml"))
+        server.expect(MockRestRequestMatchers.requestTo("/" + datex2Url + "Datex2_2017-08-10-16-08-32-976.xml"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-16-08-32-976.xml"), MediaType.APPLICATION_XML));
 
-        server.expect(MockRestRequestMatchers.requestTo(datex2Url + "Datex2_2017-08-10-16-10-01-680.xml"))
+        server.expect(MockRestRequestMatchers.requestTo("/" + datex2Url + "Datex2_2017-08-10-16-10-01-680.xml"))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-16-10-01-680.xml"), MediaType.APPLICATION_XML));
 

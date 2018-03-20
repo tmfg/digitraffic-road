@@ -59,8 +59,8 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
         assertVersionTime(roadWorks.get(0), versionTime);
     }
 
-    private static void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
-        assertEquals(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
+    private void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
+        assertTimesEqual(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
     }
 
     private String getRoadworks(final ZonedDateTime versionTime) throws IOException {

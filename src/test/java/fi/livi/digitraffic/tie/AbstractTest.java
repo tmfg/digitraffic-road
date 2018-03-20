@@ -1,9 +1,12 @@
 package fi.livi.digitraffic.tie;
 
+import static java.time.ZoneOffset.UTC;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,14 +69,31 @@ public abstract class AbstractTest {
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 
-    protected void assertCollectionSize(final int expectedSize, final Collection<?> collection) {
+    protected static void assertCollectionSize(final int expectedSize, final Collection<?> collection) {
         final int collectionSize = collection.size();
 
         Assert.assertTrue(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize),
             collectionSize == expectedSize);
     }
 
-    protected void assertEmpty(final Collection<?> col) {
+    protected static void assertEmpty(final Collection<?> col) {
         assertCollectionSize(0, col);
+    }
+
+    protected static void assertTimesEqual(final ZonedDateTime t1, final ZonedDateTime t2) {
+        if(t1 == null && t2 == null) return;
+
+        if(t1 == null && t2 != null) {
+            Assert.fail("was asserted to be null, was not");
+        }
+
+        if(t1 != null && t2 == null) {
+            Assert.fail("given value was null");
+        }
+
+        final ZonedDateTime tz1 = t1.withZoneSameInstant(UTC);
+        final ZonedDateTime tz2 = t2.withZoneSameInstant(UTC);
+
+        Assert.assertEquals(tz1, tz2);
     }
 }
