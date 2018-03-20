@@ -4,12 +4,14 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -29,7 +31,16 @@ public class LockingDaoTest {
     private static final String INSTANCE_ID_2 = "2";
 
     @Autowired
+    protected JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private LockingDao lockingDao;
+
+    @Before
+    @Transactional
+    public void removeLocks() {
+        jdbcTemplate.execute("delete from locking_table");
+    }
 
     @Test
     public void testLockingAfterExpiration() {
@@ -78,20 +89,20 @@ public class LockingDaoTest {
 
     @Test
     public void testLockingAndRelasing() {
-        StopWatch start = StopWatch.createStarted();
+        final StopWatch start = StopWatch.createStarted();
         // Acquire 1. lock
-        boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
+        final boolean locked1 = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_1, EXPIRATION_SECONDS);
         Assert.assertTrue(locked1);
 
         // Try to acquire 1. lock again with other instance
-        boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        final boolean locked1Second = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertFalse(locked1Second);
 
         // release lock
         lockingDao.releaseLock(LOCK_NAME_1, INSTANCE_ID_1);
 
         // Try to acquire 1. lock again
-        boolean locked1Third = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
+        final boolean locked1Third = lockingDao.acquireLock(LOCK_NAME_1, INSTANCE_ID_2, EXPIRATION_SECONDS);
         Assert.assertTrue(locked1Third);
         Assert.assertTrue("Test must be run under 5 seconds", start.getTime() < 5000L);
     }
