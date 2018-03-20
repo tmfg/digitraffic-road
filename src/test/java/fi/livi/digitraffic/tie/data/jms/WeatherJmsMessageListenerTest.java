@@ -62,7 +62,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
-    
+
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws JAXBException

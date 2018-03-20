@@ -52,7 +52,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     @Query(value =
         "SELECT d.*\n" +
         "FROM datex2 d\n" +
-        "WHERE d.publication_time >= TRUNC(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'), 'MONTH')\n" +
+        "WHERE d.publication_time >= date_trunc('month', TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'))\n" +
         "AND d.publication_time < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1\n" +
         "AND d.message_type = :messageType\n", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -67,7 +67,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    SELECT NULL FROM datex2_situation situation\n" +
         "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
         "    WHERE situation.datex2_id = d.id\n" + "                AND situation.situation_id = :situationId\n" +
-        "    AND d.publication_time >= TRUNC(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'), 'MONTH')\n" +
+        "    AND d.publication_time >= date_trunc('month'. TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'))\n" +
         "    AND d.publication_time < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1\n" +
         "    AND d.message_type = :messageType\n" + "            )", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

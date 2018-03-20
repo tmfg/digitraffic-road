@@ -277,6 +277,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         try(final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             final Session s = sftpSessionFactory.getSession();
             s.read(getSftpPath(presetId), out);
+            s.close();
 
             return out.toByteArray();
         }

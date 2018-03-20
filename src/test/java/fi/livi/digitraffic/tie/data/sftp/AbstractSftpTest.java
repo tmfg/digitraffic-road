@@ -97,7 +97,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
         testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
         testSftpServer.start();
 
-        Session session = sftpSessionFactory.getSession();
+        final Session session = sftpSessionFactory.getSession();
         if (!session.exists(sftpUploadFolder)) {
             session.mkdir(sftpUploadFolder);
         }

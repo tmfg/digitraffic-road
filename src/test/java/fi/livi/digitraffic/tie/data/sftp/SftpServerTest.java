@@ -38,24 +38,23 @@ public class SftpServerTest extends AbstractSftpTest {
 
     @Test
     public void testPutAndGetFile() throws Exception {
-        final Session session = sftpSessionFactory.getSession();
+        try(final Session session = sftpSessionFactory.getSession()) {
+            final String testFileContents = "some file contents";
+            final String uploadedFileName = "uploadFile";
 
-        final String testFileContents = "some file contents";
-        String uploadedFileName = "uploadFile";
-        log.info("Upload file={} with content={}", uploadedFileName, testFileContents);
-        session.write(new ByteArrayInputStream(testFileContents.getBytes()), uploadedFileName);
+            log.info("Upload file={} with content={}", uploadedFileName, testFileContents);
+            session.write(new ByteArrayInputStream(testFileContents.getBytes()), uploadedFileName);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        log.info("Read file back from server");
-        session.read(uploadedFileName, out);
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            log.info("Read file back from server");
+            session.read(uploadedFileName, out);
 
-        String fileData = out.toString(UTF_8.toString());
+            final String fileData = out.toString(UTF_8.toString());
 
-        log.info("Downloaded file={} with content={}", uploadedFileName, fileData);
+            log.info("Downloaded file={} with content={}", uploadedFileName, fileData);
 
-        assertEquals("Read file contents not equal with written content", testFileContents, fileData);
-
-        session.close();
+            assertEquals("Read file contents not equal with written content", testFileContents, fileData);
+        }
     }
 
     @Test
@@ -74,7 +73,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 try {
                     Session session = this.sftpSessionFactory.getSession();
                     session.close();
-                } catch (MessagingException e) {
+                } catch (final MessagingException e) {
                     fail = true;
                     time.stop();
                     log.info("Timeout tookMs={}", time.getTime());
