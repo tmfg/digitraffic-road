@@ -15,9 +15,3 @@ services:
       POSTGRES_DB: road
     networks:
       - db_network
-
-  db-init:
-    build: .
-    links:
-      - "db:db"
-    command: ["./wait-for-postgres.sh", "db", "road", "road", "road"]

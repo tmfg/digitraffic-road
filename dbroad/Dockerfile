@@ -9,7 +9,7 @@ RUN \
     postgresql-client && \
   rm -rf /var/lib/apt/lists/*
 
-COPY flyway.conf /flyway.conf
-COPY pom.xml /pom.xml
-COPY wait-for-postgres.sh /wait-for-postgres.sh
-COPY init-db.sh /init-db.sh
+COPY files/flyway.conf /flyway.conf
+COPY files/pom.xml /pom.xml
+COPY files/wait-for-postgres.sh /wait-for-postgres.sh
+COPY files/init-db.sh /init-db.sh
