@@ -55,7 +55,7 @@ public class DefaultExceptionHandler {
         final String parameterName = exception.getParameterName();
         final String requiredType = exception.getParameterType();
 
-        log.info("Query parameter missing. uri={}, queryString={}, requiredName={], requiredType={}",
+        log.info("Query parameter missing. uri={}, queryString={}, requiredName={}, requiredType={}",
                 request.getRequest().getRequestURI(), request.getRequest().getQueryString(), parameterName, requiredType);
 
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),

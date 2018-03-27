@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.helper;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -52,8 +50,8 @@ public final class DateHelper {
                                 0,
                                 calendar.getTimezone());
                 return toZonedDateTime(calSeconds);
-            } catch (DatatypeConfigurationException e) {
-                throw new RuntimeException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
+            } catch (final DatatypeConfigurationException e) {
+                throw new IllegalArgumentException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
             }
         }
         return null;
