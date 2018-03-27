@@ -7,7 +7,7 @@ networks:
 
 services:
   db:
-    image: postgres:9.6.6
+    image: postgres:9.6.8
     restart: always
     environment:
       POSTGRES_USER: road
@@ -15,3 +15,9 @@ services:
       POSTGRES_DB: road
     networks:
       - db_network
+
+  db-init:
+    build: .
+    links:
+      - "db:db"
+    command: ["./wait-for-postgres.sh", "db", "road", "road", "road"]
