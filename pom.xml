@@ -309,42 +309,26 @@
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
                 <version>4.2.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>fi/livi/digitraffic/tie/domain/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/model/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/conf/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/aop/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.java</exclude>
+                        <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
+                        <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
+                        <exclude>fi/ely/lotju/lam/proto/**/*.class</exclude>
+                        <exclude>**/dto/**/*.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.4</version>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>5.0.4</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <formats>
-                        <format>xml</format>
-                    </formats>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotation>fi.livi.digitraffic.tie.annotation.CoverageIgnore</ignoreMethodAnnotation>
-                        <excludes>
-                            <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
             </plugin>
 
             <plugin>
