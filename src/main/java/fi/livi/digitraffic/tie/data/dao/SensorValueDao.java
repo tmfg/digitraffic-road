@@ -44,8 +44,7 @@ public class SensorValueDao {
         "value, measured, updated, time_window_start, time_window_end)\n" +
         "select nextval('seq_sensor_value'), upsert.road_station_id, " +
         "upsert.road_station_sensor_id, :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd from upsert\n" +
-        "on " +
-        "conflict (road_station_id, road_station_sensor_id)\n" +
+        "on conflict (road_station_id, road_station_sensor_id)\n" +
         "do update set value = :value\n" +
         "                , measured = :measured\n" +
         "                , updated = current_timestamp\n" +
