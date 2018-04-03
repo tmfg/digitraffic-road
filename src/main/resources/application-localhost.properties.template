@@ -2,7 +2,7 @@
 server.port = 9010
 
 # Datasource
-road.datasource.url=jdbc:pgsql://localhost:54322/road
+road.datasource.url=jdbc:postgresql://localhost:54322/road
 road.datasource.username=road
 road.datasource.password=road
 
