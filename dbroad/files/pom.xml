@@ -13,14 +13,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flyway.version>5.0.7</flyway.version>
-        <postgresql.driver.version>42.2.1</postgresql.driver.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.driver.version}</version>
+            <groupId>com.impossibl.pgjdbc-ng</groupId>
+            <artifactId>pgjdbc-ng</artifactId>
+            <version>0.7.1</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
