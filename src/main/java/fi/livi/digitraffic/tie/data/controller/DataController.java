@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -31,7 +32,10 @@ import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightRestrictionsDatex2Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -59,9 +63,12 @@ public class DataController {
 
     static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
-
     private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+
+    // datex2
+    private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
+    public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
+    public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
 
     static final String LAST_UPDATED_PARAM = "lastUpdated";
 
@@ -241,5 +248,75 @@ public class DataController {
             @RequestParam @Range(min = 1, max = 12)
             final int month) {
         return datex2DataService.findTrafficDisorders(situationId, year, month);
+    }
+
+    @ApiOperation("Active roadwork Datex2 messages")
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
+    public RoadworksDatex2Response roadWorksDatex2() {
+        return datex2DataService.findActiveRoadworks();
+    }
+
+    @ApiOperation("Roadwork Datex2 messages by situation id")
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+        @ApiResponse(code = 404, message = "Situation id not found") })
+    public RoadworksDatex2Response roadworksDatex2BySituationId(
+        @ApiParam(value = "Situation id.", required = true)
+        @PathVariable final String situationId) {
+        return datex2DataService.getAllRoadworksBySituationId(situationId);
+    }
+
+    @ApiOperation("Roadwork Datex2 messages history")
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
+        @ApiResponse(code = 400, message = "Invalid parameter"),
+        @ApiResponse(code = 404, message = "Situation id not found")})
+    public RoadworksDatex2Response roadworksDatex2OfHistory(
+        @ApiParam(value = "Situation id", required = false)
+        @RequestParam(required = false)
+        final String situationId,
+        @ApiParam(value = "Year (>2014)", required = true)
+        @RequestParam @Valid @Min(2014)
+        final int year,
+        @ApiParam(value = "Month (1-12)", required = true)
+        @RequestParam @Valid @Range(min = 1, max = 12)
+        final int month) {
+        return datex2DataService.findRoadworks(situationId, year, month);
+    }
+
+    @ApiOperation("Active weight restrictions Datex2 messages")
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"))
+    public WeightRestrictionsDatex2Response weightRestrictionsDatex2() {
+        return datex2DataService.findActiveWeightRestrictions();
+    }
+
+    @ApiOperation("Weight restrictions Datex2 messages by situation id")
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
+        @ApiResponse(code = 404, message = "Situation id not found") })
+    public WeightRestrictionsDatex2Response weightRestrictionsDatex2BySituationId(
+        @ApiParam(value = "Situation id.", required = true)
+        @PathVariable final String situationId) {
+        return datex2DataService.getAllWeightRestrictionsBySituationId(situationId);
+    }
+
+    @ApiOperation("Weight restriction Datex2 messages history")
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
+        @ApiResponse(code = 400, message = "Invalid parameter"),
+        @ApiResponse(code = 404, message = "Situation id not found")})
+    public WeightRestrictionsDatex2Response weightRestrictionsDatex2OfHistory(
+        @ApiParam(value = "Situation id", required = false)
+        @RequestParam(required = false)
+        final String situationId,
+        @ApiParam(value = "Year (>2014)", required = true)
+        @RequestParam @Valid @Min(2014)
+        final int year,
+        @ApiParam(value = "Month (1-12)", required = true)
+        @RequestParam @Valid @Range(min = 1, max = 12)
+        final int month) {
+        return datex2DataService.findWeightRestrictions(situationId, year, month);
     }
 }
