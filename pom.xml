@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fi.fta.digitraffic</groupId>
-    <artifactId>road</artifactId>
-    <version>1.25.0</version>
+    <artifactId>metadata</artifactId>
+    <version>1.26.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
