@@ -20,6 +20,7 @@ import fi.livi.digitraffic.tie.data.websocket.StatusEncoder;
 import fi.livi.digitraffic.tie.data.websocket.StatusMessage;
 import fi.livi.digitraffic.tie.data.websocket.TmsEncoder;
 import fi.livi.digitraffic.tie.data.websocket.TmsMessage;
+import fi.livi.digitraffic.tie.data.websocket.TmsWebsocketStatistics;
 
 @ConditionalOnProperty(name = "websocket.tms.enabled")
 @ServerEndpoint(value = RoadApplicationConfiguration.API_V1_BASE_PATH + RoadApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata",
@@ -47,6 +48,8 @@ public class TmsDataWebsocketEndpoint {
 
     public static void sendMessage(final TmsMessage message) {
         synchronized (sessions) {
+            TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.TMS, sessions.size());
+
             WebsocketEndpoint.sendMessage(log, message, sessions);
         }
     }

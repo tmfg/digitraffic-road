@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.data.websocket.StatusEncoder;
 import fi.livi.digitraffic.tie.data.websocket.StatusMessage;
 import fi.livi.digitraffic.tie.data.websocket.TmsEncoder;
 import fi.livi.digitraffic.tie.data.websocket.TmsMessage;
+import fi.livi.digitraffic.tie.data.websocket.TmsWebsocketStatistics;
 
 @ConditionalOnProperty(name = "websocket.tms.enabled")
 @ServerEndpoint(value = RoadApplicationConfiguration.API_V1_BASE_PATH + RoadApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata/{id}",
@@ -65,11 +66,11 @@ public class SingleTmsDataWebsocketEndpoint {
 
     public static void sendMessage(final TmsMessage message) {
         synchronized (sessions) {
-            removeClosedSessions();
             final Set<Session> sessionSet = sessions.get(Long.toString(message.sensorValue.getRoadStationNaturalId()));
 
-            if(sessionSet != null) {
-                log.debug("sessions: {}", sessionSet.size());
+            if (sessionSet != null) {
+                TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS, sessionSet.size());
+
                 WebsocketEndpoint.sendMessage(log, message, sessionSet);
             }
         }
@@ -77,14 +78,7 @@ public class SingleTmsDataWebsocketEndpoint {
 
     public static void sendStatus() {
         synchronized (sessions) {
-            removeClosedSessions();
             WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
-        }
-    }
-
-    private static void removeClosedSessions() {
-        for (Set<Session> sSet : sessions.values()) {
-            sSet.removeIf(s -> !s.isOpen());
         }
     }
 }
