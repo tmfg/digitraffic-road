@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.data.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
@@ -54,9 +55,21 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
             log.info("Test url: " + url);
             mockMvc.perform(get(url))
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                    .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()));
+                    .andExpect(mvcResult -> {
+                        String contentType = mvcResult.getResponse().getContentType();
+
+                        AssertionErrors.assertTrue("Content type not set", contentType != null);
+
+                        MatcherAssert.assertThat(MediaType.valueOf(contentType), Matchers.anyOf(
+                            Matchers.is(MediaType.APPLICATION_JSON_UTF8),
+                            Matchers.is(MediaType.APPLICATION_XML)));
+
+                        if (Matchers.is(MediaType.APPLICATION_JSON_UTF8).matches(MediaType.valueOf(contentType))) {
+                            jsonPath("$.dataUpdatedTime", Matchers.notNullValue()).match(mvcResult);
+                        }
+                    });
         }
+
     }
 
     private boolean filter(final Field f) {
