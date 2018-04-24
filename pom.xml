@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>metadata</artifactId>
-    <version>1.26.0</version>
+    <version>1.27.0</version>
     <packaging>jar</packaging>
 
     <name>dt-metadata</name>
