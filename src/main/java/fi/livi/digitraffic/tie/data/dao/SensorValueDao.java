@@ -16,9 +16,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
-import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @Repository
@@ -70,7 +71,7 @@ public class SensorValueDao {
         return batchUpdate(MERGE_STATEMENT, batchData.toArray(new Map[0]));
     }
 
-    public int updateWeatherSensorData(final Collection<Tiesaa> data, final Set<Long> allowedWeatherSensorLotjuIds) {
+    public int updateWeatherSensorData(final Collection<TiesaaProtos.TiesaaMittatieto> data, final Set<Long> allowedWeatherSensorLotjuIds) {
         final Map<String, Object>[] batchData = appendTiesaaBatchData(data, allowedWeatherSensorLotjuIds);
 
         return batchUpdate(MERGE_STATEMENT, batchData);
@@ -103,14 +104,16 @@ public class SensorValueDao {
         return batchData;
     }
 
-    private static Map<String, Object>[] appendTiesaaBatchData(final Collection<Tiesaa> tiesaas,
+    private static Map<String, Object>[] appendTiesaaBatchData(final Collection<TiesaaProtos.TiesaaMittatieto> tiesaas,
                                                                final Set<Long> allowedWeatherSensorLotjuIds) {
         int updateCount = 0;
         int notAllowed = 0;
         final ArrayList<Map> batchData = new ArrayList<>();
-        for (final Tiesaa tiesaa : tiesaas) {
-            final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
-            for (final Tiesaa.Anturit.Anturi anturi : anturit) {
+
+        for (final TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
+            final List<TiesaaProtos.TiesaaMittatieto.Anturi> anturit = tiesaa.getAnturiList();
+
+            for (final TiesaaProtos.TiesaaMittatieto.Anturi anturi : anturit) {
                 if (allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
                     batchData.add(createArgsMap(tiesaa, anturi));
                     updateCount++;
@@ -138,12 +141,12 @@ public class SensorValueDao {
         return args;
     }
 
-    private static Map createArgsMap(final Tiesaa tiesaa, final Tiesaa.Anturit.Anturi anturi) {
-        final ZonedDateTime sensorValueMeasured = DateHelper.toZonedDateTime(tiesaa.getAika());
-        final Timestamp measured = Timestamp.from(sensorValueMeasured.toInstant());
+    private static Map createArgsMap(final TiesaaProtos.TiesaaMittatieto tiesaa, final TiesaaProtos.TiesaaMittatieto.Anturi anturi) {
+        final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
+        final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
         final HashMap<String, Object> args = new HashMap<>();
 
-        args.put("value", (double) anturi.getArvo());
+        args.put("value", NumberConverter.convertAnturiValueToDouble(anturi.getArvo()));
         args.put("measured", measured);
         args.put("rsLotjuId", tiesaa.getAsemaId());
         args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());

@@ -22,9 +22,9 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
@@ -39,6 +39,9 @@ public class CameraImageUpdateService {
     private final CameraPresetService cameraPresetService;
     private final SessionFactory sftpSessionFactory;
     private int retryDelayMs;
+
+    @Value("${camera-image-download.url}")
+    private String camera_url;
 
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
@@ -67,7 +70,7 @@ public class CameraImageUpdateService {
     }
 
     @Transactional
-    public boolean handleKuva(final Kuva kuva) {
+    public boolean handleKuva(final KuvaProtos.Kuva kuva) {
         boolean success;
 
         log.info("Handling {}", ToStringHelper.toString(kuva));
@@ -91,7 +94,7 @@ public class CameraImageUpdateService {
         return success;
     }
 
-    private boolean deleteKuva(Kuva kuva, String presetId, String filename) {
+    private boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
 
         log.info("Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
                 "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
@@ -100,21 +103,21 @@ public class CameraImageUpdateService {
         return deleteImage(filename);
     }
 
-    private boolean transferKuva(Kuva kuva, String presetId, String filename) {
+    private boolean transferKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
         // Read the image
         byte[] image = null;
         for (int readTries = 3; readTries > 0; readTries--) {
             try {
-                image = readImage(kuva.getUrl(), filename);
+                image = readImage(createCameraDownloadUrl(kuva), filename);
                 if (image.length > 0) {
                     break;
                 } else {
                     log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes. triesLeft={} .",
-                        presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1);
+                        presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1);
                 }
             } catch (final Exception e) {
                 log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={} . exceptionMessage={} .",
-                    presetId, kuva.getUrl(), getImageFullPath(filename), readTries - 1, e.getMessage());
+                    presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
@@ -136,7 +139,7 @@ public class CameraImageUpdateService {
                 break;
             } catch (final Exception e) {
                 log.warn("Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={}. exceptionMessage={}.",
-                    presetId, kuva.getUrl(), getImageFullPath(filename), writeTries - 1, e.getMessage());
+                    presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), writeTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
@@ -180,11 +183,10 @@ public class CameraImageUpdateService {
         }
     }
 
-    private static void updateCameraPreset(final CameraPreset cameraPreset, final Kuva kuva) {
+    private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         if (cameraPreset != null) {
-            final ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(kuva.getAika());
-
-            cameraPreset.setPublicExternal(kuva.isJulkinen());
+            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(DateHelper.toLocalDateTime(kuva.getAikaleima()));
+            cameraPreset.setPublicExternal(kuva.getJulkinen());
             cameraPreset.setPictureLastModified(pictureTaken);
         }
     }
@@ -204,7 +206,7 @@ public class CameraImageUpdateService {
         }
     }
 
-    public static String resolvePresetIdFrom(final CameraPreset cameraPreset, final Kuva kuva) {
+    public static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         return cameraPreset != null ? cameraPreset.getPresetId() : kuva.getNimi().substring(0, 8);
     }
 
@@ -214,5 +216,14 @@ public class CameraImageUpdateService {
 
     private String getImageFullPath(final String imageFileName) {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
+    }
+
+    public String createCameraDownloadUrl(KuvaProtos.Kuva kuva) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(camera_url);
+        builder.append(kuva.getKuvaId());
+
+        return builder.toString();
     }
 }
