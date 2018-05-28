@@ -78,7 +78,7 @@ public class CameraDataUpdateService {
 
                 if ( currentKamera == null || currentKamera.getAikaleima() < kuva.getAikaleima()) {
                     if (currentKamera != null) {
-                        log.info("Replace " + currentKamera.getAikaleima() + " with " + kuva.getAikaleima());
+                        log.info("Replace {} with {}", currentKamera.getAikaleima(), kuva.getAikaleima());
                     }
                     kuvaMappedByPresetLotjuId.put(kuva.getEsiasentoId(), kuva);
                 }
