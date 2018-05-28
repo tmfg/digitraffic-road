@@ -2,10 +2,14 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +17,11 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -29,14 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.xml.transform.StringResult;
 
+import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
+import fi.livi.digitraffic.tie.data.jms.marshaller.WeatherMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
-import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
+import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
@@ -61,11 +62,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
-
     @Before
-    public void initData() throws JAXBException {
+    public void initData() {
         log.info("Add available sensors for weather stations");
         if (!TestTransaction.isActive()) {
             TestTransaction.start();
@@ -99,17 +97,34 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         log.info("Commit done");
     }
 
+    public static BytesMessage createBytesMessage(final TiesaaProtos.TiesaaMittatieto tiesaa) throws JMSException, IOException {
+        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
+        tiesaa.writeDelimitedTo(bous);
+        final byte[] tiesaaBytes = bous.toByteArray();
+
+        final BytesMessage bytesMessage = mock(BytesMessage.class);
+
+        when(bytesMessage.getBodyLength()).thenReturn((long)tiesaaBytes.length);
+        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
+            final byte[] bytes = (byte[]) invocation.getArguments()[0];
+            System.arraycopy(tiesaaBytes, 0, bytes, 0, tiesaaBytes.length);
+            return tiesaaBytes.length;
+        });
+
+        return bytesMessage;
+    }
+
     /**
      * Send some data bursts to jms handler and test performance of database updates.
-     * @throws JAXBException
-     * @throws DatatypeConfigurationException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test
-    public void test1PerformanceForReceivedMessages() throws JAXBException, DatatypeConfigurationException {
+    public void test1PerformanceForReceivedMessages() throws JMSException, IOException {
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
             .findAllPublishableWeatherStationsMappedByLotjuId();
 
-        final JMSMessageListener.JMSDataUpdater<Tiesaa> dataUpdater = (data) -> {
+        final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater = (data) -> {
             final StopWatch sw = StopWatch.createStarted();
 
             if (TestTransaction.isActive()) {
@@ -125,12 +140,10 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             return updated;
         };
 
-        final JMSMessageListener<Tiesaa> jmsMessageListener = new JMSMessageListener(new TextMessageMarshaller(jaxb2Marshaller),
+        final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener = new JMSMessageListener(new WeatherMessageMarshaller(),
             dataUpdater, true, log);
 
-        final DatatypeFactory df = DatatypeFactory.newInstance();
-        final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        final XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
+        Instant time = Instant.now();
 
         // Generate update-data
         final float minX = 0.0f;
@@ -147,7 +160,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         final long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
-        final List<Pair<Tiesaa, String>> data = new ArrayList<>();
+        final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
+
         while(testBurstsLeft > 0) {
             testBurstsLeft--;
 
@@ -160,32 +174,34 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
                 final WeatherStation currentStation = stationsIter.next();
 
-                final Tiesaa tiesaa = new Tiesaa();
-                data.add(Pair.of(tiesaa, null));
+                final TiesaaProtos.TiesaaMittatieto.Builder tiesaaMittatietoBuilder = TiesaaProtos.TiesaaMittatieto.newBuilder();
 
-                tiesaa.setAsemaId(currentStation.getLotjuId());
-                tiesaa.setAika((XMLGregorianCalendar) xgcal.clone());
-                final Tiesaa.Anturit tiesaaAnturit = new Tiesaa.Anturit();
-                tiesaa.setAnturit(tiesaaAnturit);
-                final List<Tiesaa.Anturit.Anturi> anturit = tiesaaAnturit.getAnturi();
+                tiesaaMittatietoBuilder.setAsemaId(currentStation.getLotjuId());
+                tiesaaMittatietoBuilder.setAika(time.toEpochMilli());
+
                 for (final RoadStationSensor availableSensor : availableSensors) {
-                    final Tiesaa.Anturit.Anturi anturi = new Tiesaa.Anturit.Anturi();
-                    anturit.add(anturi);
+                    final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
-                    anturi.setArvo(arvo);
+                    anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(arvo));
+
                     // Increase value for every sensor to validate correct updates
                     arvo = arvo + 0.1f;
-                    anturi.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-                    if (anturit.size() >= 30) {
+                    anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
+
+                    tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
+
+                    if (tiesaaMittatietoBuilder.getAnturiList().size() >= 30) {
                         break;
                     }
                 }
 
-                xgcal.add(df.newDuration(1000));
+                TiesaaProtos.TiesaaMittatieto tiesaa = tiesaaMittatietoBuilder.build();
 
-                final StringResult result = new StringResult();
-                jaxb2Marshaller.marshal(tiesaa, result);
-                jmsMessageListener.onMessage(createTextMessage(result.toString(), "Tiesaa " + currentStation.getLotjuId()));
+                data.add(tiesaa);
+
+                time = time.plusMillis(1000);
+
+                jmsMessageListener.onMessage(createBytesMessage(tiesaa));
 
                 if (data.size() >= 100 || weatherStationsWithLotjuId.size() <= data.size()) {
                     break;
@@ -215,17 +231,16 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
         // Assert sensor values are updated to db
-        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getLeft().getAsemaId()).collect(Collectors.toList());
+        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
         final Map<Long, List<SensorValue>> valuesMap =
                     roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
-        for (final Pair<Tiesaa, String> pair : data) {
-            final Tiesaa tiesaa = pair.getLeft();
+        for (final TiesaaProtos.TiesaaMittatieto tiesaa : data) {
             final long asemaLotjuId = tiesaa.getAsemaId();
             final List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
-            final List<Tiesaa.Anturit.Anturi> anturit = tiesaa.getAnturit().getAnturi();
+            final List<TiesaaProtos.TiesaaMittatieto.Anturi> anturit = tiesaa.getAnturiList();
 
-            for (final Tiesaa.Anturit.Anturi anturi : anturit) {
+            for (final TiesaaProtos.TiesaaMittatieto.Anturi anturi : anturit) {
                 final Optional<SensorValue> found =
                         sensorValues
                                 .stream()
@@ -233,7 +248,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                                 .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
                                 .findFirst();
                 assertTrue(found.isPresent());
-                Assert.assertEquals(found.get().getValue(), (double) anturi.getArvo(), 0.05d);
+
+                Assert.assertEquals(found.get().getValue(), NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), 0.05d);
             }
         }
         log.info("Data is valid");

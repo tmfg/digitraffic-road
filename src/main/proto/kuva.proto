@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package kamera;
+
+option java_package = "fi.ely.lotju.kamera.proto";
+option java_outer_classname = "KuvaProtos";
+
+message Kuva {
+    required int64 kamera_id = 1;
+    required int64 esiasento_id = 2;
+    required int64 kuva_id = 3;
+    required int64 aikaleima = 4;
+    required string nimi = 5;
+    required string esiasennon_nimi = 6;
+    required bool julkinen = 7;
+    required string aseman_nimi = 8;
+    optional string liviId = 9;
+    optional int32 tienumero = 10;
+    optional int32 tieosa = 11;
+    optional int32 etaisyys_tieosan_alusta = 12;
+    optional int32 ajorata = 13;
+    optional int32 puoli = 14;
+    optional string x_koordinaatti = 15;
+    optional string y_koordinaatti = 16;
+    optional string z_koordinaatti = 17;
+    optional int64 ttl = 18;
+}
