@@ -30,8 +30,8 @@ weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # Binary Kuva.proto url
 camera-image-download.url = http://localhost:62859/kamerakuva/
-
-camera-image-download.test.port = 1234
+# Valid only for test
+camera-image-download.test.port = 62859
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
