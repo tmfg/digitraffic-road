@@ -60,7 +60,6 @@ public abstract class AbstractSftpTest extends AbstractTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
-    //@Value("${camera-image-download.test.port}")
     protected Integer testPort = 62859;
 
     // NOTE! Rules uses fixed port. see DPO-489
