@@ -26,10 +26,8 @@ datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
-# Binary Kuva.proto url
+# Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
 camera-image-download.url = http://localhost:62859/kamerakuva/
-
-camera-image-download.test.port =
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
