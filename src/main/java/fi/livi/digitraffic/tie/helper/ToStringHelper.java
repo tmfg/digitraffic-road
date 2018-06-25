@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
 import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
@@ -189,25 +188,6 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String toString(final KuvaProtos.Kuva kuva) {
-        final StringBuffer sb = createStartSb(kuva);
-
-        JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
-        JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
-        JSON_STYLE.append(sb, "esiasennonNimi", kuva.getEsiasennonNimi(), true);
-        JSON_STYLE.append(sb, "esiasentoId", kuva.getEsiasentoId());
-        JSON_STYLE.append(sb, "kameraId", kuva.getKameraId());
-        JSON_STYLE.append(sb, "aika", kuva.getAikaleima(), true);
-        JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
-        JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
-        JSON_STYLE.append(sb, "tieosa", kuva.getJulkinen());
-        //JSON_STYLE.append(sb, "url", CameraHelper.createCameraUrl(kuva), true);
-        removeLastFieldSeparatorFromEnd(sb);
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Deprecated
     public static String toString(final Kuva kuva) {
         final StringBuffer sb = createStartSb(kuva);
         JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
