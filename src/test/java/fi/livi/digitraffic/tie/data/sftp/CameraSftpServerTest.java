@@ -200,8 +200,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         kuva.setJulkinen(true);
         kuva.setKameraId(Long.parseLong(cp.getCameraId().substring(1)));
         kuva.setLiviId("" + RandomUtils.nextLong(0, 99999));
-        kuva.setKuvaId(RandomUtils.nextLong(0, 99999));
-
         if (cp.getRoadStation().getRoadAddress() != null) {
             kuva.setTienumero(cp.getRoadStation().getRoadAddress().getRoadNumber());
             kuva.setTieosa(cp.getRoadStation().getRoadAddress().getRoadSection());
