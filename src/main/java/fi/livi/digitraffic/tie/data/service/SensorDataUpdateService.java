@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
+import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
@@ -68,9 +68,9 @@ public class SensorDataUpdateService {
      * @return count of updated db rows
      */
     @Transactional
-    public int updateWeatherData(final List<TiesaaProtos.TiesaaMittatieto> data) {
+    public int updateWeatherData(final Collection<Tiesaa> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<TiesaaProtos.TiesaaMittatieto> filtered = filterNewestTiesaaValues(data);
+        final Collection<Tiesaa> filtered = filterNewestTiesaaValues(data);
 
         if (data.size()-filtered.size() > 0) {
             log.info("filtered={} weather station messages of original dataCount={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
@@ -87,7 +87,7 @@ public class SensorDataUpdateService {
 
         for (final LAMRealtimeProtos.Lam lam : data) {
             final LAMRealtimeProtos.Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
-            if (currentLam == null || lam.getAika() > currentLam.getAika()) {
+            if (currentLam == null || lam.getAika() < currentLam.getAika()) {
                 if (currentLam != null) {
                     log.debug("Replace lam " + currentLam.getAika() + " with " + lam.getAika());
                 }
@@ -97,14 +97,13 @@ public class SensorDataUpdateService {
         return tmsMapByLamStationLotjuId.values();
     }
 
-    private static Collection<TiesaaProtos.TiesaaMittatieto> filterNewestTiesaaValues(final List<TiesaaProtos.TiesaaMittatieto> data) {
+    private static Collection<Tiesaa> filterNewestTiesaaValues(final Collection<Tiesaa> data) {
         // Collect newest data per station
-        final HashMap<Long, TiesaaProtos.TiesaaMittatieto> tiesaaMapByTmsStationLotjuId = new HashMap<>();
+        final HashMap<Long, Tiesaa> tiesaaMapByTmsStationLotjuId = new HashMap<>();
 
-        for (final TiesaaProtos.TiesaaMittatieto tiesaaCandidate : data) {
-            final TiesaaProtos.TiesaaMittatieto currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
-
-            if (currentTiesaa == null || currentTiesaa.getAika() < tiesaaCandidate.getAika()) {
+        for (final Tiesaa tiesaaCandidate : data) {
+            Tiesaa currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
+            if (currentTiesaa == null || tiesaaCandidate.getAika().toGregorianCalendar().after(currentTiesaa.getAika().toGregorianCalendar())) {
                 if (currentTiesaa != null) {
                     log.debug("Replace tiesaa " + currentTiesaa.getAika() + " with " + tiesaaCandidate.getAika());
                 }

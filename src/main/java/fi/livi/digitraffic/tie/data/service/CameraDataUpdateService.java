@@ -20,8 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
 @Service
 public class CameraDataUpdateService {
@@ -41,8 +41,9 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    public int updateCameraData(final List<KuvaProtos.Kuva> data) throws SQLException {
-        final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
+    public int updateCameraData(final List<Kuva> data) throws SQLException {
+
+        final Collection<Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
         final StopWatch start = StopWatch.createStarted();
 
@@ -70,21 +71,20 @@ public class CameraDataUpdateService {
         return (int) updateCount;
     }
 
-    private Collection<KuvaProtos.Kuva> filterLatest(final List<KuvaProtos.Kuva> data) {
+    private Collection<Kuva> filterLatest(final List<Kuva> data) {
         // Collect newest kuva per preset
-        final HashMap<Long, KuvaProtos.Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
+        final HashMap<Long, Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.forEach(kuva -> {
-            if (kuva.hasEsiasentoId()) {
-                KuvaProtos.Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
-
-                if ( currentKamera == null || currentKamera.getAikaleima() < kuva.getAikaleima()) {
+            if (kuva.getEsiasentoId() != null) {
+                Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
+                if ( currentKamera == null || kuva.getAika().compare(currentKamera.getAika()) > 0 ) {
                     if (currentKamera != null) {
-                        log.info("Replace {} with {}", currentKamera.getAikaleima(), kuva.getAikaleima());
+                        log.info("Replace " + currentKamera.getAika() + " with " + kuva.getAika());
                     }
                     kuvaMappedByPresetLotjuId.put(kuva.getEsiasentoId(), kuva);
                 }
             } else {
-                log.warn("Kuva esiasentoId is not set: {}", ToStringHelper.toString(kuva));
+                log.warn("Kuva esiasentoId is null: {}", ToStringHelper.toString(kuva));
             }
         });
         return kuvaMappedByPresetLotjuId.values();
@@ -96,7 +96,7 @@ public class CameraDataUpdateService {
         protected final long timeout;
         protected final ImageUpdateTask task;
 
-        public UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
+        public UpdateJobManager(final Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateService);
         }
@@ -122,10 +122,10 @@ public class CameraDataUpdateService {
 
     private static class ImageUpdateTask implements Callable<Boolean> {
 
-        private final KuvaProtos.Kuva kuva;
+        private final Kuva kuva;
         private final CameraImageUpdateService cameraImageUpdateService;
 
-        public ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
+        public ImageUpdateTask(final Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
             this.kuva = kuva;
             this.cameraImageUpdateService = cameraImageUpdateService;
         }

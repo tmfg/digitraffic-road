@@ -39,8 +39,8 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
 public abstract class AbstractSftpTest extends AbstractTest {
 
@@ -60,11 +60,8 @@ public abstract class AbstractSftpTest extends AbstractTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
-    @Value("${camera-image-download.test.port}")
-    protected Integer testPort;
-
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort != null ? testPort : 62859));
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
     protected int httpPort;
 
@@ -221,7 +218,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
         }
     }
 
-    protected String getSftpPath(final KuvaProtos.Kuva kuva) {
+    protected String getSftpPath(final Kuva kuva) {
         return getSftpPath(kuva.getNimi());
     }
 

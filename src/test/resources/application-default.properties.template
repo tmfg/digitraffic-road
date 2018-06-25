@@ -28,11 +28,6 @@ datex2RoadworksMessageUpdateJob.frequency=3600000
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
-# Binary Kuva.proto url
-camera-image-download.url = http://localhost:62859/kamerakuva/
-
-camera-image-download.test.port = 1234
-
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost
 camera-image-uploader.sftp.port = 2232
@@ -52,9 +47,9 @@ jms.userId=
 jms.password=
 
 # JMS queues
-jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
+jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.OutTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
-jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
+jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
