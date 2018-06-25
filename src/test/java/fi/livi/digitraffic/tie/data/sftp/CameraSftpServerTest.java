@@ -71,7 +71,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
-    //private Map<String, byte[]> imageFilesMap = new HashMap<>();
+    private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
     private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
 
@@ -200,7 +200,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         kuva.setJulkinen(true);
         kuva.setKameraId(Long.parseLong(cp.getCameraId().substring(1)));
         kuva.setLiviId("" + RandomUtils.nextLong(0, 99999));
-        kuva.setKuvaId(Long.parseLong(cp.getPresetId().substring(1)));
+        kuva.setKuvaId(RandomUtils.nextLong(0, 99999));
 
         if (cp.getRoadStation().getRoadAddress() != null) {
             kuva.setTienumero(cp.getRoadStation().getRoadAddress().getRoadNumber());
@@ -211,17 +211,17 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         kuva.setYKoordinaatti("23456.78");
 
         if (data != null) {
-            createHttpResponseStubFor(Long.parseLong(cp.getPresetId().substring(1)), data, httpResponseDelay);
+            createHttpResponseStubFor(cp.getPresetId(), data, httpResponseDelay);
         }
 
         return kuva.build();
     }
 
-    private void createHttpResponseStubFor(final Long imageId, final byte[] data, final int httpResponseDelay) {
-        //imageFilesMap.put(presetId, data);
-        final String url = getImageUrlPath(imageId);
+    private void createHttpResponseStubFor(final String presetId, final byte[] data, final int httpResponseDelay) {
+        imageFilesMap.put(presetId, data);
+        final String url = getImageUrlPath(presetId);
         log.info("Create mock with url={}", url);
-        stubFor(get(urlEqualTo(getImageUrlPath(imageId)))
+        stubFor(get(urlEqualTo(getImageUrlPath(presetId)))
                 .willReturn(aResponse().withBody(data)
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)
