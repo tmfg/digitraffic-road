@@ -192,16 +192,15 @@ public class ToStringHelper {
     public static String toString(final KuvaProtos.Kuva kuva) {
         final StringBuffer sb = createStartSb(kuva);
 
-        JSON_STYLE.append(sb, "kuvaId", kuva.getKuvaId(), true);
-        JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
         JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
+        JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
         JSON_STYLE.append(sb, "esiasennonNimi", kuva.getEsiasennonNimi(), true);
         JSON_STYLE.append(sb, "esiasentoId", kuva.getEsiasentoId());
         JSON_STYLE.append(sb, "kameraId", kuva.getKameraId());
         JSON_STYLE.append(sb, "aika", kuva.getAikaleima(), true);
         JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
         JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
-        JSON_STYLE.append(sb, "julkinen", kuva.getJulkinen());
+        JSON_STYLE.append(sb, "tieosa", kuva.getJulkinen());
         //JSON_STYLE.append(sb, "url", CameraHelper.createCameraUrl(kuva), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
@@ -219,7 +218,7 @@ public class ToStringHelper {
         JSON_STYLE.append(sb, "aika", kuva.getAika(), true);
         JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
         JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
-        JSON_STYLE.append(sb, "julkinen", kuva.isJulkinen());
+        JSON_STYLE.append(sb, "tieosa", kuva.isJulkinen());
         JSON_STYLE.append(sb, "url", kuva.getUrl(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");

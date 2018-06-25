@@ -229,7 +229,11 @@ public abstract class AbstractSftpTest extends AbstractTest {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + presetId + ".jpg";
     }
 
-    protected String getImageUrlPath(final Long imageId) {
-        return REQUEST_PATH + imageId;
+    protected String getImageUrl(final String presetId) {
+        return "http://localhost:" + httpPort + getImageUrlPath(presetId);
+    }
+
+    protected String getImageUrlPath(final String presetId) {
+        return REQUEST_PATH + presetId + ".jpg";
     }
 }
