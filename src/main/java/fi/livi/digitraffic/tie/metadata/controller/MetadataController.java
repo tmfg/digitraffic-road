@@ -116,7 +116,7 @@ public class MetadataController {
     @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-                        @ApiResponse(code = 404, message = "Vessel metadata not found") })
+                        @ApiResponse(code = 404, message = "Road number not found") })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
@@ -131,7 +131,7 @@ public class MetadataController {
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-                        @ApiResponse(code = 404, message = "Vessel metadata not found") })
+                        @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
         return tmsStationService.getTmsStationByRoadStationId(id);
