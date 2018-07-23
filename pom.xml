@@ -26,6 +26,10 @@
         <jackson.dataformat.version>2.9.6</jackson.dataformat.version>
     </properties>
 
+    <repositories>
+        <!-- PLACEHOLDER -->
+    </repositories>
+
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
     <dependencyManagement>
         <dependencies>
