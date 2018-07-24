@@ -50,20 +50,20 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataController {
-    static final String CAMERA_DATA_PATH = "/camera-data";
-    static final String TMS_DATA_PATH = "/tms-data";
-    static final String WEATHER_DATA_PATH = "/weather-data";
+    public static final String CAMERA_DATA_PATH = "/camera-data";
+    public static final String TMS_DATA_PATH = "/tms-data";
+    public static final String WEATHER_DATA_PATH = "/weather-data";
 
-    static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
+    public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
     private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
     // datex2
-    private static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
+    public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
 
-    static final String LAST_UPDATED_PARAM = "lastUpdated";
+    public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
     private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
