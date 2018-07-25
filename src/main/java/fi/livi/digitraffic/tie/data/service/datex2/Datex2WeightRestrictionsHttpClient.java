@@ -13,7 +13,8 @@ public class Datex2WeightRestrictionsHttpClient {
     private final FileGetService fileGetService;
 
     @Autowired
-    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.restrictions.url}") final String url, final FileGetService fileGetService) {
+    public Datex2WeightRestrictionsHttpClient(@Value("${datex2.weight.restrictions.url:}") final String url, final FileGetService
+        fileGetService) {
         this.url = url;
         this.fileGetService = fileGetService;
     }

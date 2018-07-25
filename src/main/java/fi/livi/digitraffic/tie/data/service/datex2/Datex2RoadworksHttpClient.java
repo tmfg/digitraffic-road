@@ -13,7 +13,7 @@ public class Datex2RoadworksHttpClient {
     private final FileGetService fileGetService;
 
     @Autowired
-    public Datex2RoadworksHttpClient(@Value("${datex2.roadworks.url}") final String url, final FileGetService fileGetService) {
+    public Datex2RoadworksHttpClient(@Value("${datex2.roadworks.url:}") final String url, final FileGetService fileGetService) {
         this.url = url;
         this.fileGetService = fileGetService;
     }
