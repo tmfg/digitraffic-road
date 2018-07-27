@@ -33,7 +33,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     private final Long sessionWaitTimeout;
     private final Integer connectionTimeout;
     private final ResourceLoader resourceLoader;
-    
+
     @Autowired
     public CameraImageUploaderSftpConnectionFactoryBuilder(
             @Value("${camera-image-uploader.sftp.host}")
@@ -90,10 +90,15 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     // TODO Explain why the name is set?
     @Bean(name = "sftpSessionFactory")
     public CachingSessionFactory<ChannelSftp.LsEntry> getCachingSessionFactory() throws IOException {
-        log.info("Init CachingSessionFactory for sftp with poolSize={} and sessionWaitTimeoutMs={}", poolSize, sessionWaitTimeout);
-        CachingSessionFactory<ChannelSftp.LsEntry> cachingSessionFactory = new CachingSessionFactory<>(getDefaultSftpSessionFactory(), poolSize);
-        cachingSessionFactory.setSessionWaitTimeout(sessionWaitTimeout);
-        return cachingSessionFactory;
+        try {
+            log.info("Init CachingSessionFactory for sftp with poolSize={} and sessionWaitTimeoutMs={}", poolSize, sessionWaitTimeout);
+            CachingSessionFactory<ChannelSftp.LsEntry> cachingSessionFactory = new CachingSessionFactory<>(getDefaultSftpSessionFactory(),
+                poolSize);
+            cachingSessionFactory.setSessionWaitTimeout(sessionWaitTimeout);
+            return cachingSessionFactory;
+        } catch(final Exception e) {
+            log.error("error initializing", e);
+        }
     }
 
     private Resource getPrivateKey() throws IOException {
