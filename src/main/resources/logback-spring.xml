@@ -15,19 +15,20 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>info</level>
         </filter>
-        <file>metadata-logstash.log</file>
+        <file>logs/road-${appType}-logstash.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-logstash.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-logstash.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
         </rollingPolicy>
+
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-daily.log</file>
+        <file>road-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -40,9 +41,9 @@
     <!-- JMS message logging in separate file -->
     <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-jms-daily.log</file>
+        <file>road-jms-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -55,9 +56,9 @@
     <!-- PerformanceMonitor messages logging in separate file -->
     <appender name="FILE_PERFORMANCE_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-performance-daily.log</file>
+        <file>road-performance-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
