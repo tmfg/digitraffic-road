@@ -99,6 +99,8 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
         } catch(final Exception e) {
             log.error("error initializing", e);
         }
+
+        return null;
     }
 
     private Resource getPrivateKey() throws IOException {
