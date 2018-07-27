@@ -27,9 +27,9 @@
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>road-daily.log</file>
+        <file>logs/road-${appType}-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -42,7 +42,7 @@
     <!-- JMS message logging in separate file -->
     <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>road-jms-daily.log</file>
+        <file>logs/road-jms-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>road-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>14</maxHistory>
@@ -57,9 +57,9 @@
     <!-- PerformanceMonitor messages logging in separate file -->
     <appender name="FILE_PERFORMANCE_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>road-performance-daily.log</file>
+        <file>logs/road-performance-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
