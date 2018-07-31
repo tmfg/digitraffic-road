@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 
 public class MetadataVersions {
     private final Map<DataType, MetadataVersion> versionMap = new EnumMap<DataType, MetadataVersion>(DataType.class);
-    
+
     public void addVersion(final DataType type, final String filename, final String version) {
         versionMap.put(type, new MetadataVersion(filename, version));
     }
