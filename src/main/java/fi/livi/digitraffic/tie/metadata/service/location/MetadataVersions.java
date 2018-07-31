@@ -12,12 +12,8 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 
 public class MetadataVersions {
     private final Map<DataType, MetadataVersion> versionMap = new EnumMap<DataType, MetadataVersion>(DataType.class);
-
-    private static final Logger log = LoggerFactory.getLogger(LocationMetadataUpdater.class);
-
+    
     public void addVersion(final DataType type, final String filename, final String version) {
-        log.info("adding type {} version {} filename  {}", type.name(), version, filename);
-
         versionMap.put(type, new MetadataVersion(filename, version));
     }
 

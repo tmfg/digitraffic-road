@@ -69,8 +69,8 @@ public class Datex2TrafficAlertHttpClient {
                 filenames.add(Pair.of(filename, fileTimestamp));
             }
         }
-        // Sort files from oldest to newest, and limit to 100
-        return filenames.stream().sorted(Comparator.comparing(Pair::getLeft)).limit(100).collect(Collectors.toList());
+        // Sort files from oldest to newest, and limit to 1000
+        return filenames.stream().sorted(Comparator.comparing(Pair::getLeft)).limit(1000).collect(Collectors.toList());
     }
 
     private boolean isNewFile(final Instant from, final Instant fileDate) {
