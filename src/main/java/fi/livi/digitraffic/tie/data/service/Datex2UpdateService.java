@@ -49,10 +49,10 @@ public class Datex2UpdateService {
         this.datex2Repository = datex2Repository;
     }
 
-    public Map<String, ZonedDateTime> listRoadworkSituationVersionTimes() {
+    public Map<String, ZonedDateTime> listSituationVersionTimes(final Datex2MessageType messageType) {
         final Map<String, ZonedDateTime> map = new HashMap<>();
 
-        for (final Object[] o : datex2Repository.listDatex2SituationVersionTimes(ROADWORK.name())) {
+        for (final Object[] o : datex2Repository.listDatex2SituationVersionTimes(messageType.name())) {
             final String situationId = (String) o[0];
             final ZonedDateTime versionTime = DateHelper.toZonedDateTime(((Timestamp)o[1]).toInstant());
 

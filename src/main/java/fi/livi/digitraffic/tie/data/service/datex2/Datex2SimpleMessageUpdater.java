@@ -63,7 +63,7 @@ public class Datex2SimpleMessageUpdater {
     private List<Datex2MessageDto> createModels(final D2LogicalModel main, final Datex2MessageType messageType) {
         final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
 
-        final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listRoadworkSituationVersionTimes();
+        final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
         final long updatedCount = sp.getSituation().stream().filter(s -> isNewSituation(versionTimes.get(s.getId()), s)).count();
         final long newCount = sp.getSituation().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
@@ -82,7 +82,7 @@ public class Datex2SimpleMessageUpdater {
 
     private static boolean isNewRecord(final ZonedDateTime latestVersionTime, final SituationRecord record) {
         // different resolution, so remove fractions of second
-        final ZonedDateTime vTime = record.getSituationRecordVersionTime().toGregorianCalendar().toZonedDateTime();
+        final ZonedDateTime vTime = record.getSituationRecordVersionTime().toGregorianCalendar().toZonedDateTime().withNano(0);
 
         return latestVersionTime == null || vTime.isAfter(latestVersionTime);
     }

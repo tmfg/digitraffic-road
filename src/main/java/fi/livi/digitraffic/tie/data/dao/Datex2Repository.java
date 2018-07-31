@@ -105,5 +105,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         ") d2\n" +
         "WHERE rnum = 1",
         nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Object[]> listDatex2SituationVersionTimes(@Param("messageType") final String messageType);
 }
