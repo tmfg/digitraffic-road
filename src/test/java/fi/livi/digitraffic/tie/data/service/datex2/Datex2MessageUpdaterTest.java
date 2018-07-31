@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 
-@TestPropertySource(properties = "Datex2MessageUrl=Datex2Url")
+@TestPropertySource(properties = "datex2.traffic.alerts.url=Datex2Url")
 public class Datex2MessageUpdaterTest extends AbstractTest {
     @Autowired
     private Datex2TrafficAlertMessageUpdater messageUpdater;

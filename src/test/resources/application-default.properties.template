@@ -39,8 +39,6 @@ camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 camera-image-uploader.sftp.poolSize = 5
 camera-image-uploader.sftp.sessionWaitTimeout = 5000
 
-Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
-
 # JMS settings
 
 # Sonic JMS 8.6.0

@@ -38,8 +38,6 @@ camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
 
-Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
-
 # JMS settings
 
 # Sonja

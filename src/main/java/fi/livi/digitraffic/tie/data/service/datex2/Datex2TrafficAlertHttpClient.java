@@ -35,7 +35,8 @@ public class Datex2TrafficAlertHttpClient {
     private final FileGetService fileGetService;
 
     @Autowired
-    public Datex2TrafficAlertHttpClient(@Value("${Datex2MessageUrl}") final String url, final FileGetService fileGetService) {
+    public Datex2TrafficAlertHttpClient(@Value("${datex2.traffic.alerts.url}") final String url, final FileGetService
+        fileGetService) {
         this.url = url;
         this.fileGetService = fileGetService;
     }

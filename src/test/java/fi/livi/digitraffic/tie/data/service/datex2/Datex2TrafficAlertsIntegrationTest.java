@@ -9,7 +9,7 @@ import org.springframework.test.context.TestPropertySource;
 import fi.livi.digitraffic.tie.AbstractTest;
 
 @ContextConfiguration
-@TestPropertySource(properties = "Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/")
+@TestPropertySource(properties = "datex2.traffic.alerts.url=https://ava.liikennevirasto.fi/incidents/datex2/")
 public class Datex2TrafficAlertsIntegrationTest extends AbstractTest {
     @Autowired
     private Datex2TrafficAlertMessageUpdater datex2TrafficAlertMessageUpdater;
