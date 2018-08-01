@@ -49,7 +49,8 @@ public class MetadataApplicationConfiguration implements WebMvcConfigurer {
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(new Jaxb2Datex2ResponseHttpMessageConverter());
+        // put first
+        converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter());
     }
 
     @Bean
