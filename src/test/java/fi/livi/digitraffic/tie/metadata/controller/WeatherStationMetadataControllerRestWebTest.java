@@ -12,15 +12,15 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
 
     @Test
     public void testWeatherStationMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.WEATHER_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))

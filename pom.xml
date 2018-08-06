@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fi.fta.digitraffic</groupId>
-    <artifactId>metadata</artifactId>
+    <artifactId>road</artifactId>
     <version>1.25.0</version>
     <packaging>jar</packaging>
 
-    <name>dt-metadata</name>
-    <description>Digitraffic Metadata</description>
+    <name>dt-road</name>
+    <description>Digitraffic Road</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -340,42 +340,14 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>fi.livi.digitraffic.tie.MetadataApplication</mainClass>
+                            <mainClass>fi.livi.digitraffic.tie.RoadApplication</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
+                            <RoadApplication-Version>${project.version}</RoadApplication-Version>
                         </manifestEntries>
                     </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>fi.livi.digitraffic.tie.MetadataApplication</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <executable>true</executable>
                 </configuration>
             </plugin>
 

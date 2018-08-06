@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.websocket.StatusEncoder;
 import fi.livi.digitraffic.tie.data.websocket.StatusMessage;
 import fi.livi.digitraffic.tie.data.websocket.TmsEncoder;
 import fi.livi.digitraffic.tie.data.websocket.TmsMessage;
 
 @ConditionalOnProperty(name = "websocket.tms.enabled")
-@ServerEndpoint(value = MetadataApplicationConfiguration.API_V1_BASE_PATH + MetadataApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata/{id}",
+@ServerEndpoint(value = RoadApplicationConfiguration.API_V1_BASE_PATH + RoadApplicationConfiguration.API_PLAIN_WEBSOCKETS_PART_PATH + "/tmsdata/{id}",
                 encoders = { TmsEncoder.class, StatusEncoder.class})
 @Component
 public class SingleTmsDataWebsocketEndpoint {

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 /**
  * Test that every data-api has working last update query
@@ -45,8 +45,8 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
        final List<Field> fields = Stream.of(fieldArray).filter(this::filter).collect(Collectors.toList());
 
         for(final Field field : fields) {
-            final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                         MetadataApplicationConfiguration.API_DATA_PART_PATH +
+            final String url = RoadApplicationConfiguration.API_V1_BASE_PATH +
+                         RoadApplicationConfiguration.API_DATA_PART_PATH +
                          field.get(dataController) +
                          "?" + DataController.LAST_UPDATED_PARAM + "=true";
 

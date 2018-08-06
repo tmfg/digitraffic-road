@@ -10,9 +10,9 @@ import fi.livi.digitraffic.tie.annotation.CoverageIgnore;
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
-public class MetadataApplication {
+public class RoadApplication {
     @CoverageIgnore
     public static void main(final String[] args) {
-        SpringApplication.run(MetadataApplication.class, args);
+        SpringApplication.run(RoadApplication.class, args);
     }
 }

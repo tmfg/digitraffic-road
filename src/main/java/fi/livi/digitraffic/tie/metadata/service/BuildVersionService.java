@@ -20,8 +20,8 @@ public class BuildVersionService {
     private static final String GIT_REVISION_HASH  = "git.commit.id.describe-short";
 
     public String getAppVersion() {
-        if (Manifests.exists("MetadataApplication-Version")) {
-            return "1.0"; //Manifests.read("MetadataApplication-Version");
+        if (Manifests.exists("RoadApplication-Version")) {
+            return Manifests.read("RoadApplication-Version");
         }
         return "DEV-BUILD";
     }

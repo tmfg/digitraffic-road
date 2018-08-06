@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
 @EnableTransactionManagement
 @EnableRetry
-public class MetadataApplicationConfiguration implements WebMvcConfigurer {
+public class RoadApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_BETA_BASE_PATH = "/api/beta";
@@ -43,7 +43,7 @@ public class MetadataApplicationConfiguration implements WebMvcConfigurer {
     private final ConfigurableApplicationContext applicationContext;
 
     @Autowired
-    public MetadataApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
+    public RoadApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

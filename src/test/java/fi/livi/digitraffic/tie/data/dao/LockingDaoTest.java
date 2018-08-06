@@ -14,11 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.MetadataApplication;
+import fi.livi.digitraffic.tie.RoadApplication;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = MetadataApplication.class,
+@SpringBootTest(classes = RoadApplication.class,
     properties = { "config.test=true" },
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LockingDaoTest {

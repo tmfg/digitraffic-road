@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = MetadataApplication.class,
+@SpringBootTest(classes = RoadApplication.class,
                 properties = { "config.test=true" },
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
