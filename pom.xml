@@ -345,7 +345,9 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
                             <RoadApplication-Version>${project.version}</RoadApplication-Version>
+                            <RoadApplication-Build>${buildNumber}</RoadApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
