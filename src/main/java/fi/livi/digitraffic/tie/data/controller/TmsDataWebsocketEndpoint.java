@@ -34,11 +34,15 @@ public class TmsDataWebsocketEndpoint {
     @OnOpen
     public void onOpen(final Session session) {
         sessions.add(session);
+
+        updateWebsocketCount();
     }
 
     @OnClose
     public void onClose(final Session session) {
         sessions.remove(session);
+
+        updateWebsocketCount();
     }
 
     @OnError
@@ -58,5 +62,9 @@ public class TmsDataWebsocketEndpoint {
         synchronized (sessions) {
             WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions);
         }
+    }
+
+    private static void updateWebsocketCount() {
+        TmsWebsocketStatistics.sentTmsWebsocketCount(TmsWebsocketStatistics.WebsocketType.TMS, sessions.size());
     }
 }

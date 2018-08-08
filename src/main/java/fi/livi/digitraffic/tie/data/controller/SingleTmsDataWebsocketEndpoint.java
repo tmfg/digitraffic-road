@@ -46,10 +46,12 @@ public class SingleTmsDataWebsocketEndpoint {
             session.close(reason);
         } else {
             synchronized (sessions) {
-                if(!sessions.containsKey(roadStationNaturalId)) {
+                if (!sessions.containsKey(roadStationNaturalId)) {
                     sessions.put(roadStationNaturalId, new HashSet<>());
                 }
                 sessions.get(roadStationNaturalId).add(session);
+
+                updateWebsocketCount(sessions.get(roadStationNaturalId).size());
             }
         }
     }
@@ -60,6 +62,8 @@ public class SingleTmsDataWebsocketEndpoint {
             final Set<Session> set = sessions.get(roadStationNaturalId);
             if (set != null) {
                 set.remove(session);
+
+                updateWebsocketCount(set.size());
             }
         }
     }
@@ -80,5 +84,9 @@ public class SingleTmsDataWebsocketEndpoint {
         synchronized (sessions) {
             WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
         }
+    }
+
+    private static void updateWebsocketCount(final int size) {
+        TmsWebsocketStatistics.sentTmsWebsocketCount(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS, size);
     }
 }
