@@ -35,14 +35,14 @@ public class TmsDataWebsocketEndpoint {
     public void onOpen(final Session session) {
         sessions.add(session);
 
-        updateWebsocketCount();
+        updateWebsocketStatistics(0);
     }
 
     @OnClose
     public void onClose(final Session session) {
         sessions.remove(session);
 
-        updateWebsocketCount();
+        updateWebsocketStatistics(0);
     }
 
     @OnError
@@ -52,7 +52,7 @@ public class TmsDataWebsocketEndpoint {
 
     public static void sendMessage(final TmsMessage message) {
         synchronized (sessions) {
-            TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.TMS, sessions.size());
+            updateWebsocketStatistics(sessions.size());
 
             WebsocketEndpoint.sendMessage(log, message, sessions);
         }
@@ -64,7 +64,9 @@ public class TmsDataWebsocketEndpoint {
         }
     }
 
-    private static void updateWebsocketCount() {
-        TmsWebsocketStatistics.sentTmsWebsocketCount(TmsWebsocketStatistics.WebsocketType.TMS, sessions.size());
+    private static void updateWebsocketStatistics(final int messageCount) {
+        TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.TMS,
+            sessions.size(),
+            messageCount);
     }
 }

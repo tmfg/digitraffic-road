@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.websocket.CloseReason;
@@ -37,6 +38,8 @@ public class SingleTmsDataWebsocketEndpoint {
 
     private static final Map<String, Set<Session>> sessions = Collections.synchronizedMap(new HashMap<>());
 
+    private static final AtomicInteger sessionsCount = new AtomicInteger();
+
     @OnOpen
     public void onOpen(final Session session, @PathParam("id") final String roadStationNaturalId) throws IOException {
 
@@ -51,7 +54,9 @@ public class SingleTmsDataWebsocketEndpoint {
                 }
                 sessions.get(roadStationNaturalId).add(session);
 
-                updateWebsocketCount(sessions.get(roadStationNaturalId).size());
+                sessionsCount.incrementAndGet();
+
+                updateWebsocketStatistics(0);
             }
         }
     }
@@ -63,7 +68,9 @@ public class SingleTmsDataWebsocketEndpoint {
             if (set != null) {
                 set.remove(session);
 
-                updateWebsocketCount(set.size());
+                sessionsCount.decrementAndGet();
+
+                updateWebsocketStatistics(0);
             }
         }
     }
@@ -73,7 +80,7 @@ public class SingleTmsDataWebsocketEndpoint {
             final Set<Session> sessionSet = sessions.get(Long.toString(message.sensorValue.getRoadStationNaturalId()));
 
             if (sessionSet != null) {
-                TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS, sessionSet.size());
+                updateWebsocketStatistics(sessionSet.size());
 
                 WebsocketEndpoint.sendMessage(log, message, sessionSet);
             }
@@ -86,7 +93,9 @@ public class SingleTmsDataWebsocketEndpoint {
         }
     }
 
-    private static void updateWebsocketCount(final int size) {
-        TmsWebsocketStatistics.sentTmsWebsocketCount(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS, size);
+    private static void updateWebsocketStatistics(final int messageCount) {
+        TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS,
+            sessionsCount.get(),
+            messageCount);
     }
 }

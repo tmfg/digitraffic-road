@@ -29,19 +29,11 @@ public class TmsWebsocketStatistics {
             sentStatisticsMap.put(websocketType, new SentStatistics(sentStatistics != null ? sentStatistics.sessions : 0, 0));
         }
     }
-
-    public static synchronized void sentTmsWebsocketCount(final WebsocketType type, final int sessions) {
+    
+    public static synchronized void sentTmsWebsocketStatistics(final WebsocketType type, final int sessions, final int messages) {
         final SentStatistics ss = sentStatisticsMap.get(type);
 
-        final SentStatistics newSs = new SentStatistics(sessions, ss == null ? 0 : ss.messages);
-
-        sentStatisticsMap.put(type, newSs);
-    }
-
-    public static synchronized void sentTmsWebsocketStatistics(final WebsocketType type, final int sessions) {
-        final SentStatistics ss = sentStatisticsMap.get(type);
-
-        final SentStatistics newSs = new SentStatistics(sessions, ss == null ? sessions : ss.messages + sessions);
+        final SentStatistics newSs = new SentStatistics(sessions, ss == null ? messages : ss.messages + messages);
 
         sentStatisticsMap.put(type, newSs);
     }
