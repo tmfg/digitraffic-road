@@ -53,7 +53,8 @@ public class SensorValueDao {
         "WHERE (sensor_value.value != :value\n" +
         "     OR sensor_value.time_window_start is null\n" +
         "     OR sensor_value.time_window_start != :timeWindowStart)\n" +
-        "     AND sensor_value.measured < :measured";
+        "     AND sensor_value.measured < :measured\n" +
+        "     AND upsert.road_station_sensor_id is not null";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
