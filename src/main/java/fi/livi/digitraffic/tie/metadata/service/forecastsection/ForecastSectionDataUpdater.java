@@ -60,13 +60,13 @@ public class ForecastSectionDataUpdater {
     private void updateForecastSectionWeatherData(final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, final Map<String, ForecastSection> forecastSectionsByNaturalId) {
         for (final Map.Entry<String, ForecastSection> fs : forecastSectionsByNaturalId.entrySet()) {
             final ForecastSection forecastSection = fs.getValue();
-            final List<ForecastSectionWeather> forecastsToAdd = new ArrayList<>();
-
-            final ForecastSectionWeatherDto weatherData = weatherDataByNaturalId.get(fs.getKey());
 
             if(forecastSection.getForecastSectionWeatherList() == null) {
                 continue;
             }
+
+            final List<ForecastSectionWeather> forecastsToAdd = new ArrayList<>();
+            final ForecastSectionWeatherDto weatherData = weatherDataByNaturalId.get(fs.getKey());
 
             // Update observation for forecast section
             final ForecastSectionWeather observation = forecastSection.getForecastSectionWeatherList() == null ? null :
