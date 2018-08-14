@@ -4,29 +4,29 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,16 +36,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.xml.transform.StringResult;
 
-import fi.livi.digitraffic.tie.data.jms.marshaller.TextMessageMarshaller;
+import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -72,11 +70,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
-    @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
-
     @Before
-    public void initData() throws IOException, JAXBException {
+    public void initData() throws IOException {
 
         // Creates also new road stations so run before generating lotjuIds
         cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
@@ -128,22 +123,22 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws IOException
-     * @throws JAXBException
+     * @throws JMSException
      * @throws DatatypeConfigurationException
      */
     @Test
-    public void testPerformanceForReceivedMessages() throws IOException, JAXBException, DatatypeConfigurationException {
+    public void testPerformanceForReceivedMessages() throws IOException, JMSException, DatatypeConfigurationException {
         log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
         log.info("Mock server port={}", port);
 
-        createHttpResponseStubFor(1 + IMAGE_SUFFIX);
-        createHttpResponseStubFor(2 + IMAGE_SUFFIX);
-        createHttpResponseStubFor(3 + IMAGE_SUFFIX);
-        createHttpResponseStubFor(4 + IMAGE_SUFFIX);
-        createHttpResponseStubFor(5 + IMAGE_SUFFIX);
+        createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(3);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(4);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(5);// + IMAGE_SUFFIX);
 
-        final JMSMessageListener.JMSDataUpdater<Kuva> dataUpdater = (data) -> {
+        final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = (data) -> {
             final StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
@@ -162,12 +157,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             return updated;
         };
 
-        final JMSMessageListener<Kuva> cameraJmsMessageListener =
-                new JMSMessageListener<Kuva>(new TextMessageMarshaller(jaxb2Marshaller), dataUpdater, true, log);
+        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener = new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
 
-        final DatatypeFactory df = DatatypeFactory.newInstance();
-        final GregorianCalendar gcal = (GregorianCalendar) GregorianCalendar.getInstance();
-        final XMLGregorianCalendar xgcal = df.newXMLGregorianCalendar(gcal);
+        Instant time = Instant.now();
 
         // Generate update-data
         final List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
@@ -176,7 +168,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         long maxHandleTime = testBurstsLeft * 2000;
-        final List<Pair<Kuva, String>> data = new ArrayList<>(presets.size());
+        final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
         while (testBurstsLeft > 0) {
@@ -185,37 +177,38 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             sw.start();
 
             data.clear();
-            while (true && presetIterator.hasNext()) {
+            while (presetIterator.hasNext()) {
                 CameraPreset preset = presetIterator.next();
 
                 // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
                 int kuvaIndex = RandomUtils.nextInt(1, 6);
-                Kuva kuva = new Kuva();
-                kuva.setEsiasentoId(preset.getLotjuId());
-                kuva.setKameraId(preset.getCameraLotjuId());
-                kuva.setNimi(preset.getPresetId() + "1234.jpg");
-                kuva.setAika((XMLGregorianCalendar) xgcal.clone());
-                kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
-                kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-                kuva.setEtaisyysTieosanAlusta(BigInteger.valueOf(RandomUtils.nextLong(0, 99999)));
-                kuva.setJulkinen(true);
-                kuva.setLiviId("" + kuvaIndex);
+
+                KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
+                kuvaBuilder.setEsiasentoId(preset.getLotjuId());
+                kuvaBuilder.setKameraId(preset.getCameraLotjuId());
+                kuvaBuilder.setNimi(preset.getPresetId() + "1234.jpg");
+                kuvaBuilder.setAikaleima(time.toEpochMilli());
+                kuvaBuilder.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
+                kuvaBuilder.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
+                kuvaBuilder.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
+                kuvaBuilder.setJulkinen(true);
+                kuvaBuilder.setLiviId("" + kuvaIndex);
+                kuvaBuilder.setKuvaId(kuvaIndex);
+
                 if (preset.getRoadStation().getRoadAddress() != null) {
-                    kuva.setTienumero(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadNumber()));
-                    kuva.setTieosa(BigInteger.valueOf(preset.getRoadStation().getRoadAddress().getRoadSection()));
+                    kuvaBuilder.setTienumero(preset.getRoadStation().getRoadAddress().getRoadNumber());
+                    kuvaBuilder.setTieosa(preset.getRoadStation().getRoadAddress().getRoadSection());
                 }
-                kuva.setUrl("http://localhost:" + httpPort + REQUEST_PATH + kuvaIndex + IMAGE_SUFFIX);
-                kuva.setXKoordinaatti("12345.67");
-                kuva.setYKoordinaatti("23456.78");
+                //kuvaBuilder.setUrl("http://localhost:" + httpPort + REQUEST_PATH + kuvaIndex + IMAGE_SUFFIX);
+                kuvaBuilder.setXKoordinaatti("12345.67");
+                kuvaBuilder.setYKoordinaatti("23456.78");
 
-                data.add(Pair.of(kuva, null));
-                xgcal.add(df.newDuration(1000));
+                KuvaProtos.Kuva kuva = kuvaBuilder.build();
+                data.add(kuva);
 
-                final StringResult result = new StringResult();
-                jaxb2Marshaller.marshal(kuva, result);
+                time = time.plusMillis(1000);
 
-                cameraJmsMessageListener.onMessage(
-                        AbstractJmsMessageListenerTest.createTextMessage(result.toString(), "Kuva " + preset.getPresetId()));
+                cameraJmsMessageListener.onMessage(createBytesMessage(kuva));
 
                 if (data.size() >= 25) {
                     break;
@@ -253,17 +246,16 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
         Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
-        for (Pair<Kuva, String> pair : data) {
-            Kuva kuva = pair.getLeft();
+        for (KuvaProtos.Kuva kuva : data) {
             String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
             byte[] dst = readCameraDataFromSftp(presetId);
-            byte[] src = imageFilesMap.get(kuva.getLiviId() + IMAGE_SUFFIX);
+            byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
             Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAika());
+            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAikaleima());
             LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
             Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
         }
@@ -289,11 +281,29 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         return FileUtils.readFileToByteArray(imageFile);
     }
 
-    private void createHttpResponseStubFor(String kuva) throws IOException {
-        log.info("Create mock with url: " + REQUEST_PATH + kuva);
-        stubFor(get(urlEqualTo(REQUEST_PATH + kuva))
-                .willReturn(aResponse().withBody(imageFilesMap.get(kuva))
+    private void createHttpResponseStubFor(int kuvaId) throws IOException {
+        log.info("Create mock with url: " + REQUEST_PATH + kuvaId);
+        stubFor(get(urlEqualTo(REQUEST_PATH + kuvaId))
+                .willReturn(aResponse().withBody(imageFilesMap.get(kuvaId + IMAGE_SUFFIX))
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)));
+    }
+
+    public static BytesMessage createBytesMessage(final KuvaProtos.Kuva kuva) throws JMSException, IOException {
+        final org.apache.commons.io.output.ByteArrayOutputStream bous = new org.apache.commons.io.output.ByteArrayOutputStream(0);
+        kuva.writeDelimitedTo(bous);
+        final byte[] kuvaBytes = bous.toByteArray();
+
+        final BytesMessage bytesMessage = mock(BytesMessage.class);
+
+        when(bytesMessage.getBodyLength()).thenReturn((long)kuvaBytes.length);
+        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
+            final byte[] bytes = (byte[]) invocation.getArguments()[0];
+            System.arraycopy(kuvaBytes, 0, bytes, 0, kuvaBytes.length);
+
+            return kuvaBytes.length;
+        });
+
+        return bytesMessage;
     }
 }
