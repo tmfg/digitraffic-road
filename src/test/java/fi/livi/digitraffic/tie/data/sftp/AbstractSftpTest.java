@@ -60,11 +60,11 @@ public abstract class AbstractSftpTest extends AbstractTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
-    @Value("${camera-image-download.test.port}")
-    protected Integer testPort;
+    protected Integer testPort = 62859;
 
+    // NOTE! Rules uses fixed port. see DPO-489
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort != null ? testPort : 62859));
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort));
 
     protected int httpPort;
 
@@ -85,7 +85,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     @Before
     public void initSftpServer() throws IOException {
-        log.info("Init Sftp Server with temporary root folder={}", testFolder.getRoot());
+        log.info("Init Sftp Server with temporary root folder={}, port={}", testFolder.getRoot(), wireMockRule.port());
         httpPort = wireMockRule.port();
 
         testSftpServer = SshServer.setUpDefaultServer();
