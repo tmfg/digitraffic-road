@@ -107,16 +107,16 @@ public class CameraImageUpdateService {
         byte[] image = null;
         for (int readTries = 3; readTries > 0; readTries--) {
             try {
-                image = readImage(createCameraDownloadUrl(kuva), filename);
+                image = readImage(getCameraDownloadUrl(kuva), filename);
                 if (image.length > 0) {
                     break;
                 } else {
                     log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes. triesLeft={} .",
-                        presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1);
+                        presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1);
                 }
             } catch (final Exception e) {
                 log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={} . exceptionMessage={} .",
-                    presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1, e.getMessage());
+                    presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
@@ -138,7 +138,7 @@ public class CameraImageUpdateService {
                 break;
             } catch (final Exception e) {
                 log.warn("Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={}. exceptionMessage={}.",
-                    presetId, createCameraDownloadUrl(kuva), getImageFullPath(filename), writeTries - 1, e.getMessage());
+                    presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), writeTries - 1, e.getMessage());
             }
             try {
                 Thread.sleep(retryDelayMs);
@@ -221,12 +221,7 @@ public class CameraImageUpdateService {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
 
-    public String createCameraDownloadUrl(KuvaProtos.Kuva kuva) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(camera_url);
-        builder.append(kuva.getKuvaId());
-
-        return builder.toString();
+    private String getCameraDownloadUrl(final KuvaProtos.Kuva kuva) {
+        return StringUtils.appendIfMissing(camera_url, "/") + kuva.getKuvaId();
     }
 }
