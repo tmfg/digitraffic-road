@@ -20,7 +20,6 @@ import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 import com.jcraft.jsch.ChannelSftp;
 
 @Configuration
-@ConditionalOnNotWebApplication
 public class CameraImageUploaderSftpConnectionFactoryBuilder {
     private static final Logger log = LoggerFactory.getLogger(CameraImageUploaderSftpConnectionFactoryBuilder.class);
 
