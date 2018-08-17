@@ -1,4 +1,5 @@
 delete from forecast_section_coordinates;
+delete from forecast_condition_reason;
 delete from forecast_section_weather;
 delete from forecast_section;
 
