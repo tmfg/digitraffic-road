@@ -24,7 +24,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
 @Service
-@ConditionalOnNotWebApplication
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
