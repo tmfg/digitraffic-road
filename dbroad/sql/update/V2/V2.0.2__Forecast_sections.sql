@@ -1,6 +1,6 @@
-delete from forecast_section_coordinates;
-delete from forecast_section_weather;
-delete from forecast_section;
+delete forecast_section_coordinates;
+delete forecast_section_weather;
+delete forecast_section;
 
 insert into forecast_section(id,natural_id,road_id,description,start_road_section_id,start_distance,end_road_section_id,end_distance,length) values(seq_forecast_section.nextval, '00001_001_000_0', (select id from road where natural_id=1),'Vt 1: Helsinki - Kehä III', (select id from road_section where road_id=(select id from road where natural_id=1) and natural_id=1), 0, (select id from road_section where road_id=(select id from road where natural_id=1) and natural_id=5), 6769, 19765);
 insert into forecast_section(id,natural_id,road_id,description,start_road_section_id,start_distance,end_road_section_id,end_distance,length) values(seq_forecast_section.nextval, '00001_006_000_0', (select id from road where natural_id=1),'Vt 1: Kehä III - Nummela', (select id from road_section where road_id=(select id from road where natural_id=1) and natural_id=6), 0, (select id from road_section where road_id=(select id from road where natural_id=1) and natural_id=8), 5559, 18159);
