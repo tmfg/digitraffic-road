@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -224,7 +223,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
-        log.info("lastUpdated={} vs now={}", lastUpdated, LocalDateTime.now().minusMinutes(2));
+        log.info("lastUpdated={} vs now={}", lastUpdated, ZonedDateTime.now().minusMinutes(2));
         assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);

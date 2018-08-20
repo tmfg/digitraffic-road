@@ -4,7 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
@@ -185,9 +185,8 @@ public class CameraImageUpdateService {
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         if (cameraPreset != null) {
-            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(DateHelper.toLocalDateTime(kuva.getAikaleima()));
             cameraPreset.setPublicExternal(kuva.getJulkinen());
-            cameraPreset.setPictureLastModified(pictureTaken);
+            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTime(Instant.ofEpochMilli(kuva.getAikaleima())));
         }
     }
 

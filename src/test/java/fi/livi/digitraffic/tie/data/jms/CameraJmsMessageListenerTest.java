@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -256,8 +255,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAikaleima());
-            LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
+            Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
+            Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
+
             Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
         }
         log.info("Data is valid");
