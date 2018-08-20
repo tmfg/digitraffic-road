@@ -61,6 +61,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
+    /**
     @Before
     public void initData() {
         log.info("Add available sensors for weather stations");
@@ -95,6 +96,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         assertFalse(TestTransaction.isActive());
         log.info("Commit done");
     }
+    */
 
     public static BytesMessage createBytesMessage(final TiesaaProtos.TiesaaMittatieto tiesaa) throws JMSException, IOException {
         final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);

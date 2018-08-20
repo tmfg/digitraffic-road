@@ -1,20 +1,11 @@
 package fi.livi.digitraffic.tie.data.jms;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
 import java.util.Enumeration;
 
-import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.AbstractTest;
 
 public abstract class AbstractJmsMessageListenerTest extends AbstractTest {
@@ -257,23 +248,4 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractTest {
             }
         };
     }
-
-    public static BytesMessage createBytesMessage(final LAMRealtimeProtos.Lam lam) throws JMSException, IOException {
-        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
-        lam.writeDelimitedTo(bous);
-        final byte[] lamBytes = bous.toByteArray();
-
-        final BytesMessage bytesMessage = mock(BytesMessage.class);
-
-        when(bytesMessage.getBodyLength()).thenReturn((long)lamBytes.length);
-        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
-            final byte[] bytes = (byte[]) invocation.getArguments()[0];
-            System.arraycopy(lamBytes, 0, bytes, 0, lamBytes.length);
-
-            return lamBytes.length;
-        });
-
-        return bytesMessage;
-    }
-
 }

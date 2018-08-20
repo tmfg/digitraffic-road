@@ -2,6 +2,9 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -13,12 +16,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -228,5 +234,23 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());
+    }
+
+    public static BytesMessage createBytesMessage(final LAMRealtimeProtos.Lam lam) throws JMSException, IOException {
+        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
+        lam.writeDelimitedTo(bous);
+        final byte[] lamBytes = bous.toByteArray();
+
+        final BytesMessage bytesMessage = mock(BytesMessage.class);
+
+        when(bytesMessage.getBodyLength()).thenReturn((long)lamBytes.length);
+        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
+            final byte[] bytes = (byte[]) invocation.getArguments()[0];
+            System.arraycopy(lamBytes, 0, bytes, 0, lamBytes.length);
+
+            return lamBytes.length;
+        });
+
+        return bytesMessage;
     }
 }
