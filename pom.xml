@@ -317,10 +317,11 @@
                         <exclude>fi/livi/digitraffic/tie/conf/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/aop/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.java</exclude>
+                        <exclude>fi/ely/lotju/**/proto/*.java</exclude>
+                        <exclude>**/dto/**/*.java</exclude>
+                        
                         <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
                         <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
-                        <exclude>fi/ely/lotju/**/proto/*.class</exclude>
-                        <exclude>**/dto/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
