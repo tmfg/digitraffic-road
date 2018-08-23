@@ -255,6 +255,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
+
             Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
             Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
 
