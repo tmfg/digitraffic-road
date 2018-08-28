@@ -3,13 +3,13 @@ package fi.livi.digitraffic.tie.helper;
 import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
+import fi.livi.digitraffic.tie.lotju.xsd.lam.Lam;
+import fi.livi.digitraffic.tie.lotju.xsd.tiesaa.Tiesaa;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -17,7 +17,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
 
 /**
- * Provides helper functions to stringify objects for logging
+ * Provides helpper functions to stringify objects for logging
  */
 public class ToStringHelper {
     private static final String LOTJU_ID = "lotjuId";
@@ -127,13 +127,11 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String toString(final TiesaaProtos.TiesaaMittatieto tiesaa) {
+    public static String  toString(final Tiesaa tiesaa) {
         final StringBuffer sb = createStartSb(tiesaa);
-
         JSON_STYLE.append(sb, "asemaId", tiesaa.getAsemaId());
-
-        if (tiesaa.getAika() != 0) {
-            JSON_STYLE.append(sb, "aika", Instant.ofEpochMilli(tiesaa.getAika()), true);
+        if (tiesaa.getAika() != null) {
+            JSON_STYLE.append(sb, "aika", tiesaa.getAika().toGregorianCalendar().toZonedDateTime().toLocalDate(), true);
         } else {
             JSON_STYLE.append(sb, "aika", "null", true);
         }
@@ -141,15 +139,13 @@ public class ToStringHelper {
         sb.append("anturit: [");
 
         boolean first = true;
-
-        for (TiesaaProtos.TiesaaMittatieto.Anturi anturi : tiesaa.getAnturiList()) {
+        for (Tiesaa.Anturit.Anturi anturi : tiesaa.getAnturit().getAnturi()) {
             if (!first) {
                 sb.append(", ");
             }
-
             sb.append("{");
             JSON_STYLE.append(sb, "laskennallinenAnturiId", anturi.getLaskennallinenAnturiId(), true);
-            JSON_STYLE.append(sb, "arvo", NumberConverter.convertAnturiValueToDouble(anturi.getArvo()));
+            JSON_STYLE.append(sb, "arvo", anturi.getArvo());
             sb.append("}");
             first = false;
         }
@@ -162,12 +158,11 @@ public class ToStringHelper {
         return sb.toString();
     }
 
-    public static String toString(final LAMRealtimeProtos.Lam lam) {
+    public static String toString(final Lam lam) {
         final StringBuffer sb = createStartSb(lam);
         JSON_STYLE.append(sb, "asemaId", lam.getAsemaId());
-
-        if (lam.getAika() != 0) {
-            JSON_STYLE.append(sb, "aika", Instant.ofEpochMilli(lam.getAika()), true);
+        if (lam.getAika() != null) {
+            JSON_STYLE.append(sb, "aika", lam.getAika().toGregorianCalendar().toZonedDateTime().toLocalDate(), true);
         } else {
             JSON_STYLE.append(sb, "aika", "null", true);
         }
@@ -175,7 +170,7 @@ public class ToStringHelper {
         sb.append("anturit: [");
 
         boolean first = true;
-        for (final LAMRealtimeProtos.Lam.Anturi anturi : lam.getAnturiList()) {
+        for (final Lam.Anturit.Anturi anturi : lam.getAnturit().getAnturi()) {
             if (!first) {
                 sb.append(", ");
             }
@@ -208,6 +203,24 @@ public class ToStringHelper {
         JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
         JSON_STYLE.append(sb, "julkinen", kuva.getJulkinen());
         //JSON_STYLE.append(sb, "url", CameraHelper.createCameraUrl(kuva), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Deprecated
+    public static String toString(final Kuva kuva) {
+        final StringBuffer sb = createStartSb(kuva);
+        JSON_STYLE.append(sb, "asemanNimi", kuva.getAsemanNimi(), true);
+        JSON_STYLE.append(sb, "nimi", kuva.getNimi(), true);
+        JSON_STYLE.append(sb, "esiasennonNimi", kuva.getEsiasennonNimi(), true);
+        JSON_STYLE.append(sb, "esiasentoId", kuva.getEsiasentoId());
+        JSON_STYLE.append(sb, "kameraId", kuva.getKameraId());
+        JSON_STYLE.append(sb, "aika", kuva.getAika(), true);
+        JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
+        JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
+        JSON_STYLE.append(sb, "julkinen", kuva.isJulkinen());
+        JSON_STYLE.append(sb, "url", kuva.getUrl(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
         return sb.toString();
