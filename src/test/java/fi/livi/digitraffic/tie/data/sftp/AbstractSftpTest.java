@@ -39,8 +39,8 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
+import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
 
 public abstract class AbstractSftpTest extends AbstractTest {
 
@@ -60,8 +60,11 @@ public abstract class AbstractSftpTest extends AbstractTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
+    protected Integer testPort = 62859;
+
+    // NOTE! Rules uses fixed port. see DPO-489
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort));
 
     protected int httpPort;
 
@@ -82,7 +85,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
     @Before
     public void initSftpServer() throws IOException {
-        log.info("Init Sftp Server with temporary root folder={}", testFolder.getRoot());
+        log.info("Init Sftp Server with temporary root folder={}, port={}", testFolder.getRoot(), wireMockRule.port());
         httpPort = wireMockRule.port();
 
         testSftpServer = SshServer.setUpDefaultServer();
@@ -218,7 +221,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
         }
     }
 
-    protected String getSftpPath(final Kuva kuva) {
+    protected String getSftpPath(final KuvaProtos.Kuva kuva) {
         return getSftpPath(kuva.getNimi());
     }
 
@@ -226,11 +229,7 @@ public abstract class AbstractSftpTest extends AbstractTest {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + presetId + ".jpg";
     }
 
-    protected String getImageUrl(final String presetId) {
-        return "http://localhost:" + httpPort + getImageUrlPath(presetId);
-    }
-
-    protected String getImageUrlPath(final String presetId) {
-        return REQUEST_PATH + presetId + ".jpg";
+    protected String getImageUrlPath(final Long imageId) {
+        return REQUEST_PATH + imageId;
     }
 }

@@ -5,17 +5,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.tie.lotju.xsd.kamera.Kuva;
+import fi.ely.lotju.kamera.proto.KuvaProtos;
 
 public class CameraHelper {
 
     private static final Pattern cameraPresetIdPattern = Pattern.compile("^C[0-9]{7}$");
 
     private CameraHelper() {}
-
-    public static String resolvePresetId(final Kuva kuva) {
-        return kuva.getNimi().substring(0, 8);
-    }
 
     public static String convertVanhaIdToKameraId(final Integer vanhaId) {
         return StringUtils.leftPad(vanhaId.toString(), 6, "C00000");
@@ -45,5 +41,9 @@ public class CameraHelper {
 
     public static String getDirectionFromPresetId(final String presetId) {
         return StringUtils.substring(presetId, -2);
+    }
+
+    public static String resolvePresetId(final KuvaProtos.Kuva kuva) {
+        return kuva.getNimi().substring(0, 8);
     }
 }
