@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnExpression("'${config.test}' != 'true'")
+@ConditionalOnExpression("'${controllers.enabled}' != 'false' and '${config.test}' != 'true'")
 public class TmsWebsocketStatistics {
     private static final Logger log = LoggerFactory.getLogger(TmsWebsocketStatistics.class);
 
@@ -29,11 +29,11 @@ public class TmsWebsocketStatistics {
             sentStatisticsMap.put(websocketType, new SentStatistics(sentStatistics != null ? sentStatistics.sessions : 0, 0));
         }
     }
-
-    public static synchronized void sentTmsWebsocketStatistics(final WebsocketType type, final int sessions) {
+    
+    public static synchronized void sentTmsWebsocketStatistics(final WebsocketType type, final int sessions, final int messages) {
         final SentStatistics ss = sentStatisticsMap.get(type);
 
-        final SentStatistics newSs = new SentStatistics(sessions, ss == null ? sessions : ss.messages + sessions);
+        final SentStatistics newSs = new SentStatistics(sessions, ss == null ? messages : ss.messages + messages);
 
         sentStatisticsMap.put(type, newSs);
     }
