@@ -21,9 +21,6 @@ public class MetadataMarshallerConfiguration {
                 "fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29",
                 "fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06",
                 // From xsds generated classes
-                "fi.livi.digitraffic.tie.lotju.xsd.kamera",
-                "fi.livi.digitraffic.tie.lotju.xsd.lam",
-                "fi.livi.digitraffic.tie.lotju.xsd.tiesaa",
                 "fi.livi.digitraffic.tie.lotju.xsd.datex2");
         return marshaller;
     }
