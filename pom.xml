@@ -468,27 +468,6 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <xsdOptions>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/tiesaa_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.tiesaa</packagename>
-                                    <extensionArgs>
-                                        <extensionArg>-npa</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/lam_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.lam</packagename>
-                                    <extensionArgs>
-                                        <extensionArg>-npa</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v1/kamera_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.kamera</packagename>
-                                    <extensionArgs>
-                                        <extensionArg>-npa</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_0.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
                                     <extensionArgs>
