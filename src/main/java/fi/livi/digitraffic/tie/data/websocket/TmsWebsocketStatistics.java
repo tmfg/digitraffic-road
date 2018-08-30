@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnExpression("'${controllers.enabled}' != 'false' and '${config.test}' != 'true'")
+@ConditionalOnExpression("'${app.type}' != 'daemon' and '${config.test}' != 'true'")
 public class TmsWebsocketStatistics {
     private static final Logger log = LoggerFactory.getLogger(TmsWebsocketStatistics.class);
 
