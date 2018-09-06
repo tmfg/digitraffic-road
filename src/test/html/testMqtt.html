@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Testiclient for mqtt tms-messages</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+
+    <script>
+
+        var lines = [];
+
+        function connect() {
+            console.log('trying to connect...');
+
+            client = new Paho.MQTT.Client("tie-aws-mqtt-test.digitraffic.fi", 9001, '');
+            // empty client_id, server will generate one
+
+            client.onConnectionLost = function (response) {
+                console.info('Collection lost:' + response.errorMessage);
+            }
+            client.onMessageArrived = function(message) {
+                addMessage(JSON.parse(message.payloadString));
+
+                updateList();
+            };
+
+            client.connect({onSuccess:onConnect});
+        }
+
+        function onConnect() {
+            console.info('Connection open');
+            client.subscribe("tms/#");
+        }
+
+        function addMessage(message) {
+            var text = JSON.stringify(message);
+
+            if (lines.length > 100) {
+                lines.shift();
+            }
+
+            lines.push(text);
+        }
+
+        function updateList() {
+            $(".messages").html(lines.join('<br/>'));
+        }
+
+        connect();
+    </script>
+</head>
+<body>
+Messages:
+<div class="messages" />
+</body>
+</html>
