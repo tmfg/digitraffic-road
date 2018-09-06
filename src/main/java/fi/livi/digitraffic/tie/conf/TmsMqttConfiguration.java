@@ -45,6 +45,12 @@ public class TmsMqttConfiguration {
         this.vesselGateway = vesselGateway;
         this.roadStationSensorService = roadStationSensorService;
         this.objectMapper = objectMapper;
+
+        lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
+
+        if (lastUpdated == null) {
+            lastUpdated = ZonedDateTime.now();
+        }
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
