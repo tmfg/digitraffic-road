@@ -313,7 +313,7 @@
             <plugin>
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
-                <version>4.2.0</version>
+                <version>4.2.1</version>
                 <configuration>
                     <excludes>
                         <exclude>fi/livi/digitraffic/tie/domain/**/*.java</exclude>
@@ -324,7 +324,7 @@
                         <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.java</exclude>
                         <exclude>fi/ely/lotju/**/proto/*.java</exclude>
                         <exclude>**/dto/**/*.java</exclude>
-                        
+
                         <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
                         <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
                     </excludes>
@@ -332,11 +332,11 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.4</version>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>3.3.1</version>
             </plugin>
-
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
