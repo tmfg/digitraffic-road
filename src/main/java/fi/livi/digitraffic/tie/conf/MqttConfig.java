@@ -25,7 +25,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 @EnableIntegration
 @IntegrationComponentScan
 public class MqttConfig {
-    private final String clientId = "marine_updater_" + MqttClient.generateClientId();
+    private final String clientId = "road_updater_" + MqttClient.generateClientId();
 
     @Bean
     public MqttPahoClientFactory mqttClientFactory(
@@ -57,7 +57,7 @@ public class MqttConfig {
     }
 
     @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel", defaultRequestTimeout = "2000", defaultReplyTimeout = "2000")
-    public interface VesselGateway {
+    public interface MqttGateway {
         // Paho does not support concurrency, all calls to this must be synchronized!
         void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
     }
