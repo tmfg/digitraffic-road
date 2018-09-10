@@ -26,7 +26,7 @@
     </properties>
 
     <!-- Download OJDBC7.jar, ons.jar and ucp.jar and install drivers to local repo
-         $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=<name> \
+         $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 \
          -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=<filename>
          OR add repository below that contains the drivers -->
     <repositories>
