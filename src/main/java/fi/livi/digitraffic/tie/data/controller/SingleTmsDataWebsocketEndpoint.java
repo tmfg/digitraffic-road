@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.websocket.CloseReason;
@@ -37,6 +38,8 @@ public class SingleTmsDataWebsocketEndpoint {
 
     private static final Map<String, Set<Session>> sessions = Collections.synchronizedMap(new HashMap<>());
 
+    private static final AtomicInteger sessionsCount = new AtomicInteger();
+
     @OnOpen
     public void onOpen(final Session session, @PathParam("id") final String roadStationNaturalId) throws IOException {
 
@@ -46,10 +49,14 @@ public class SingleTmsDataWebsocketEndpoint {
             session.close(reason);
         } else {
             synchronized (sessions) {
-                if(!sessions.containsKey(roadStationNaturalId)) {
+                if (!sessions.containsKey(roadStationNaturalId)) {
                     sessions.put(roadStationNaturalId, new HashSet<>());
                 }
                 sessions.get(roadStationNaturalId).add(session);
+
+                sessionsCount.incrementAndGet();
+
+                updateWebsocketStatistics(0);
             }
         }
     }
@@ -60,6 +67,10 @@ public class SingleTmsDataWebsocketEndpoint {
             final Set<Session> set = sessions.get(roadStationNaturalId);
             if (set != null) {
                 set.remove(session);
+
+                sessionsCount.decrementAndGet();
+
+                updateWebsocketStatistics(0);
             }
         }
     }
@@ -69,7 +80,7 @@ public class SingleTmsDataWebsocketEndpoint {
             final Set<Session> sessionSet = sessions.get(Long.toString(message.sensorValue.getRoadStationNaturalId()));
 
             if (sessionSet != null) {
-                TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS, sessionSet.size());
+                updateWebsocketStatistics(sessionSet.size());
 
                 WebsocketEndpoint.sendMessage(log, message, sessionSet);
             }
@@ -80,5 +91,11 @@ public class SingleTmsDataWebsocketEndpoint {
         synchronized (sessions) {
             WebsocketEndpoint.sendMessage(log, StatusMessage.OK, sessions.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
         }
+    }
+
+    private static void updateWebsocketStatistics(final int messageCount) {
+        TmsWebsocketStatistics.sentTmsWebsocketStatistics(TmsWebsocketStatistics.WebsocketType.SINGLE_TMS,
+            sessionsCount.get(),
+            messageCount);
     }
 }

@@ -28,13 +28,15 @@ If you want to disable some jobs, it can be done by adding following line to app
 
 Download Oracle JDBC driver and add it to your local Maven repository.
 
-    $ mvn install:install-file -DgroupId=oracle -DartifactId=ojdbc7 \
+    $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 \
       -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
 
 **Or** add Maven repository that contains OJDBC-driver to project's pom.xml inside repositories-tag.
 
 
 ### Build project
+
+Before building application with tests enabled install test db for it! (**See ci-db -project.**)
 
     $ mvn clean install
     
