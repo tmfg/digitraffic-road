@@ -24,9 +24,9 @@ public abstract class AbstractMqttSensorConfiguration {
     private final String messageTopic;
 
     private ZonedDateTime lastUpdated;
-    private MqttRelayService.StatisticsType StatisticsType;
-    private int counter = 0;
-    private int emptyDataCounter = 0;
+    private ZonedDateTime lastError;
+    private MqttRelayService.StatisticsType statisticsType;
+    private int messageCounter = 0;
 
     public AbstractMqttSensorConfiguration(final MqttRelayService mqttRelay,
                                            final RoadStationSensorService roadStationSensorService,
@@ -46,9 +46,9 @@ public abstract class AbstractMqttSensorConfiguration {
         this.logger = logger;
 
         if (roadStationType == RoadStationType.TMS_STATION) {
-            StatisticsType = MqttRelayService.StatisticsType.TMS;
+            statisticsType = MqttRelayService.StatisticsType.TMS;
         } else {
-            StatisticsType = MqttRelayService.StatisticsType.WEATHER;
+            statisticsType = MqttRelayService.StatisticsType.WEATHER;
         }
 
         lastUpdated = roadStationSensorService.getSensorValueLastUpdated(roadStationType);
@@ -62,27 +62,21 @@ public abstract class AbstractMqttSensorConfiguration {
     public abstract void pollData();
 
     protected void handleData() {
-        counter++;
+        messageCounter++;
 
         final List<SensorValueDto> data = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
             lastUpdated,
             roadStationType);
 
-        if (data.isEmpty()) {
-            emptyDataCounter++;
-        } else {
-            emptyDataCounter = 0;
-        }
-
         // Listeners are notified every 10th time
-        if (counter >= 10) {
+        if (messageCounter >= 10) {
             try {
-                mqttRelay.sendMqttMessage(statusTopic, emptyDataCounter < 10 ? MqttRelayService.statusOK : MqttRelayService.statusNOCONTENT);
+                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(new StatusMessage(lastUpdated, lastError, "Ok", statisticsType.toString())));
             } catch (Exception e) {
                 logger.error("error sending status", e);
             }
 
-            counter = 0;
+            messageCounter = 0;
         }
 
         final AtomicInteger messagesCount = new AtomicInteger(0);
@@ -96,11 +90,44 @@ public abstract class AbstractMqttSensorConfiguration {
                     objectMapper.writeValueAsString(sensorValueDto));
 
                 messagesCount.incrementAndGet();
+
+                lastError = null;
             } catch (Exception e) {
+                lastError = ZonedDateTime.now();
                 logger.error("error sending message", e);
             }
         });
 
-        mqttRelay.sentMqttStatistics(StatisticsType, messagesCount.get());
+        mqttRelay.sentMqttStatistics(statisticsType, messagesCount.get());
+    }
+
+    protected class StatusMessage {
+        private final ZonedDateTime lastUpdated;
+        private final ZonedDateTime lastError;
+        private final String status;
+        private final String type;
+
+        public StatusMessage(final ZonedDateTime lastUpdated, final ZonedDateTime lastError, final String status, final String type) {
+            this.lastUpdated = lastUpdated;
+            this.lastError = lastError;
+            this.status = status;
+            this.type = type;
+        }
+
+        public ZonedDateTime getLastUpdated() {
+            return lastUpdated;
+        }
+
+        public ZonedDateTime getLastError() {
+            return lastError;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getType() {
+            return type;
+        }
     }
 }
