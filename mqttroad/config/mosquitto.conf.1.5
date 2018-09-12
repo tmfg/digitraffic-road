@@ -1,0 +1,34 @@
+pid_file /var/run/mosquitto.pid
+
+user mosquitto
+
+log_dest stdout
+
+log_type all
+
+max_inflight_messages 10000
+max_queued_messages 10000
+
+persistence false
+per_listener_settings true
+
+# mqqt for outside users
+listener 1883
+protocol mqtt
+password_file /mqtt/config/mosquitto.passwd
+acl_file /mqtt/config/mosquitto.acl.updater
+allow_anonymous true
+
+# websocket for outside users
+listener 9001
+protocol websockets
+password_file /mqtt/config/mosquitto.passwd
+acl_file /mqtt/config/mosquitto.acl.updater
+allow_anonymous true
+
+# mqqt for updater
+listener 1884
+protocol mqtt
+password_file /mqtt/config/mosquitto.passwd
+acl_file /mqtt/config/mosquitto.acl.updater
+allow_anonymous false
