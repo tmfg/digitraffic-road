@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataSer
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 @Service
 public class RoadStationStatusUpdater {
@@ -86,7 +86,7 @@ public class RoadStationStatusUpdater {
                 log.error("method=updateCameraStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
-        };
+        }
         return updated;
     }
 }

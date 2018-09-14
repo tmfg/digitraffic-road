@@ -45,7 +45,7 @@ public enum CollectionStatus {
         return null;
     }
 
-    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.KeruunTILA keruunTila) {
+    public static CollectionStatus convertKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.KeruunTILA keruunTila) {
         if (keruunTila != null) {
             return getStatus(keruunTila.value());
         }
@@ -74,7 +74,7 @@ public enum CollectionStatus {
     public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.KeruunTILA keruunTila) {
         return KeruunTILA.POISTETTU_PYSYVASTI.name().equals(keruunTila.name());
     }
-    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.KeruunTILA keruunTila) {
+    public static boolean isPermanentlyDeletedKeruunTila(final fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.KeruunTILA keruunTila) {
         return KeruunTILA.POISTETTU_PYSYVASTI.name().equals(keruunTila.name());
     }
 

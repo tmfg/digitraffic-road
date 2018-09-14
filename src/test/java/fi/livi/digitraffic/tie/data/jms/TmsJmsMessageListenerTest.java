@@ -285,7 +285,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
         log.info("lastUpdated={} vs now={}", lastUpdated, LocalDateTime.now().minusMinutes(2));
-        assertTrue("LastUpdated not fresh " + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
+        assertTrue("LastUpdated not fresh " + lastUpdated + " < " + ZonedDateTime.now().minusMinutes(2), lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());

@@ -1,5 +1,6 @@
-<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2016/10/06">
+<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2017/05/02">
     <ns2:tiesaaAsema>
+        <id>33</id>
         <kuvaus>GPRS</kuvaus>
         <nimi>OLD_vt1_Leppäkorpi_R</nimi>
         <korkeus>0</korkeus>
@@ -9,10 +10,9 @@
             <etaisyysTieosanAlusta>4066</etaisyysTieosanAlusta>
             <tienumero>1</tienumero>
             <tieosa>16</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>259</tieosoiteId>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <julkinen>true</julkinen>
         <keruuVali>300</keruuVali>
         <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
         <kunta>Lohja</kunta>
@@ -22,95 +22,121 @@
         <nimiEn>Road 1; Nummi-Pusula, Leppäkorp</nimiEn>
         <nimiFi>Tie 1; Nummi-Pusula, Leppäkorpi</nimiFi>
         <nimiSe>Väg 1; Nummi-Pusula, Alkärr</nimiSe>
+        <synkronoituTierekisteriin>false</synkronoituTierekisteriin>
         <vanhaId>1033</vanhaId>
-        <julkinen>true</julkinen>
+        <master>false</master>
         <tyyppi>OLD</tyyppi>
-        <id>33</id>
     </ns2:tiesaaAsema>
     <ns2:tiesaaAsema>
-        <kuvaus>GPRS</kuvaus>
-        <nimi>vt3_Pirkkola_RR</nimi>
+        <id>34</id>
+        <kuvaus>Päivitetty RWS200 asemaksi  syksy 2016.</kuvaus>
+        <nimi>vt3_Pirkkola_11</nimi>
         <korkeus>1</korkeus>
-        <latitudi>6678801</latitudi>
-        <longitudi>383970</longitudi>
+        <latitudi>6678739</latitudi>
+        <longitudi>384008</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>5915</etaisyysTieosanAlusta>
+            <ajorata>2</ajorata>
+            <etaisyysTieosanAlusta>4716</etaisyysTieosanAlusta>
+            <puoli>2</puoli>
+            <tienHoitoluokka>1</tienHoitoluokka>
             <tienumero>3</tienumero>
             <tieosa>101</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
+            <urakkaAlue>Vantaa 14-19</urakkaAlue>
+            <urakkaAlueKoodi>131</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>260</tieosoiteId>
-        <keruuVali>600</keruuVali>
+        <alkamisPaiva>1997-01-01T00:00:00+02:00</alkamisPaiva>
+        <asemanTila>OK</asemanTila>
+        <julkinen>true</julkinen>
+        <keruuVali>300</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
+        <korjaushuolto>2016-03-04T10:01:15+02:00</korjaushuolto>
         <kunta>Helsinki</kunta>
         <kuntaKoodi>91</kuntaKoodi>
+        <liviId>Livi1090284</liviId>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
         <nimiEn>Road 3 Helsinki, Kirkkola</nimiEn>
         <nimiFi>Tie 3 Helsinki, Kirkkola</nimiFi>
-        <nimiSe>Väg 3 Helsingfors, Kyrka</nimiSe>
+        <nimiSe>Väg 3 Helsingfors, Kritas</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
         <vanhaId>1034</vanhaId>
-        <lisakuvaus>Helsinki, Kirkkola</lisakuvaus>
+        <vuosihuolto>2018-09-04T00:00:00+03:00</vuosihuolto>
+        <lisakuvaus>Helsinki, Pirkkola</lisakuvaus>
+        <master>true</master>
         <tyyppi>ROSA</tyyppi>
-        <id>34</id>
     </ns2:tiesaaAsema>
     <ns2:tiesaaAsema>
-        <kuvaus>LAN käyttöön 12/2008</kuvaus>
-        <nimi>kt50_Askisto_R</nimi>
+        <id>35</id>
+        <kuvaus>Muutettu RWS200 asemaksi lokakuun alussa 2017</kuvaus>
+        <nimi>kt50_Vantaa_Askisto_1</nimi>
         <korkeus>0</korkeus>
-        <latitudi>6683658</latitudi>
+        <latitudi>6683660</latitudi>
         <longitudi>376661</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>4000</etaisyysTieosanAlusta>
+            <ajorata>2</ajorata>
+            <etaisyysTieosanAlusta>3888</etaisyysTieosanAlusta>
+            <puoli>2</puoli>
+            <tienHoitoluokka>1</tienHoitoluokka>
             <tienumero>50</tienumero>
             <tieosa>4</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
+            <urakkaAlue>Espoo 14-19</urakkaAlue>
+            <urakkaAlueKoodi>130</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>261</tieosoiteId>
+        <alkamisPaiva>1997-10-01T00:00:00+03:00</alkamisPaiva>
+        <asemanTila>KORJAUS_KESKEYTETTY</asemanTila>
+        <julkinen>true</julkinen>
         <keruuVali>300</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
+        <korjaushuolto>2017-03-22T11:47:02+02:00</korjaushuolto>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
+        <liviId>Livi1090125</liviId>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
         <nimiEn>Road 50 Vantaa, Askisto</nimiEn>
         <nimiFi>Tie 50 Vantaa, Askisto</nimiFi>
         <nimiSe>Väg 50 Vanda, Askis</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
         <vanhaId>1035</vanhaId>
-        <julkinen>true</julkinen>
-        <lisakuvaus>Vantaa, Askisto</lisakuvaus>
+        <vuosihuolto>2018-09-04T00:00:00+03:00</vuosihuolto>
+        <master>true</master>
         <tyyppi>ROSA</tyyppi>
-        <id>35</id>
     </ns2:tiesaaAsema>
     <ns2:tiesaaAsema>
-        <kuvaus>GRPS v.1997, ohjaa älykästä valaistusta</kuvaus>
-        <nimi>kt45_Ilola_R</nimi>
+        <id>36</id>
+        <kuvaus>Päivitetty RWS200 asemaksi 30.10.2016      ohjaa älykästä valaistusta</kuvaus>
+        <nimi>kt45_Ilola_1</nimi>
         <korkeus>0</korkeus>
-        <latitudi>6688807</latitudi>
-        <longitudi>389404</longitudi>
+        <latitudi>6688797</latitudi>
+        <longitudi>389378</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>3200</etaisyysTieosanAlusta>
+            <ajorata>1</ajorata>
+            <etaisyysTieosanAlusta>3864</etaisyysTieosanAlusta>
+            <puoli>1</puoli>
+            <tienHoitoluokka>1</tienHoitoluokka>
             <tienumero>45</tienumero>
             <tieosa>3</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
+            <urakkaAlue>Vantaa 14-19</urakkaAlue>
+            <urakkaAlueKoodi>131</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>262</tieosoiteId>
-        <keruuVali>600</keruuVali>
+        <alkamisPaiva>1997-10-01T00:00:00+03:00</alkamisPaiva>
+        <asemanTila>OK</asemanTila>
+        <julkinen>true</julkinen>
+        <keruuVali>300</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
+        <korjaushuolto>2018-01-15T12:29:16+02:00</korjaushuolto>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
+        <liviId>Livi1090129</liviId>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
         <nimiEn>Road 45 Vantaa, Ilola</nimiEn>
         <nimiFi>Tie 45 Vantaa, Ilola</nimiFi>
         <nimiSe>Väg 45 Vanda, Gladas</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
         <vanhaId>1036</vanhaId>
-        <julkinen>true</julkinen>
-        <lisakuvaus>Vantaa, Ilola</lisakuvaus>
+        <vuosihuolto>2018-08-22T00:00:00+03:00</vuosihuolto>
+        <master>true</master>
         <tyyppi>ROSA</tyyppi>
-        <id>36</id>
     </ns2:tiesaaAsema>
 </ns2:HaeKaikkiTiesaaAsematResponse>

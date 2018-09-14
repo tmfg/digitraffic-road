@@ -48,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class RoadStationSensorService {
@@ -335,7 +335,7 @@ public class RoadStationSensorService {
         }
         to.setNameFi(from.getNimi());
         to.setShortNameFi(from.getLyhytNimi());
-        to.setDescription(from.getKuvaus());
+        to.setDescriptionFi(from.getKuvaus());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(DataValidityHelper.nullifyUnknownValue(from.getYksikko()));
 
@@ -356,7 +356,12 @@ public class RoadStationSensorService {
         }
         to.setNameFi(from.getNimi());
         to.setShortNameFi(from.getLyhytNimi());
-        to.setDescription(from.getKuvaus());
+        to.setPresentationNameFi(from.getEsitysnimiFi());
+        to.setPresentationNameSv(from.getEsitysnimiSe());
+        to.setPresentationNameEn(from.getEsitysnimiEn());
+        to.setDescriptionFi(from.getKuvausFi());
+        to.setDescriptionSv(from.getKuvausSe());
+        to.setDescriptionEn(from.getKuvausEn());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(from.getYksikko());
 

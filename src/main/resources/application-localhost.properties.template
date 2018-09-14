@@ -12,7 +12,7 @@ javamelody.authorized-users = username:password
 # Lotju v3 soap api
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v3
-metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v3
+metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 
 # Metadata update frequencies in ms
 cameraStationUpdateJob.frequency=43200000

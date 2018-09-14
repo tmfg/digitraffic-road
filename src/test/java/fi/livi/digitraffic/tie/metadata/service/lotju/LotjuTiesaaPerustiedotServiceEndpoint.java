@@ -12,19 +12,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.AnturiSanomaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaHakuparametrit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaPerustiedotV3;
+import fi.ely.lotju.tiesaa.meta.service.ws.v4.TiesaaPerustiedotEndpointImplService;
+import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.AnturiSanomaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ArvoVastaavuusVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaHakuparametrit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaPerustiedotEndpoint;
 
 public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements TiesaaPerustiedotEndpoint {
 
@@ -49,7 +50,7 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
                                                   final Jaxb2Marshaller jaxb2Marshaller) {
-        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotV3.SERVICE, jaxb2Marshaller);
+        super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller);
     }
 
     @Override
@@ -63,14 +64,14 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
             setInitialLaskennallisetAnturis(readKaikkiLaskennallisetAnturit("lotju/tiesaa/HaeKaikkiLaskennallisetAnturitResponse.xml"));
             setAfterChangeLaskennallisetAnturis(readKaikkiLaskennallisetAnturit("lotju/tiesaa/HaeKaikkiLaskennallisetAnturitResponseChanged.xml"));
 
-            appendTiesaaAnturis(33, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse33.xml"), initialTiesaaAnturisMap,
+            appendTiesaaAnturis(33, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanLaskennallisetAnturitResponse33.xml"), initialTiesaaAnturisMap,
                     afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(34, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse34.xml"), initialTiesaaAnturisMap,
+            appendTiesaaAnturis(34, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanLaskennallisetAnturitResponse34.xml"), initialTiesaaAnturisMap,
                     afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(35, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse35.xml"), initialTiesaaAnturisMap,
+            appendTiesaaAnturis(35, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanLaskennallisetAnturitResponse35.xml"), initialTiesaaAnturisMap,
                     afterChangeTiesaaAnturisMap);
-            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36.xml"), initialTiesaaAnturisMap);
-            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
+            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanLaskennallisetAnturitResponse36.xml"), initialTiesaaAnturisMap);
+            appendTiesaaAnturis(36, readTiesaaAnturis("lotju/tiesaa/HaeTiesaaAsemanLaskennallisetAnturitResponse36Changed.xml"), afterChangeTiesaaAnturisMap);
         }
         setStateAfterChange(false);
     }
@@ -92,6 +93,7 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private List<TiesaaAsemaVO> readTiesaaAsemas(final String filePath) {
         final HaeKaikkiTiesaaAsematResponse responseValue = (HaeKaikkiTiesaaAsematResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        // Tests that there isn't any forbidden fields included in test data
         for ( final TiesaaAsemaVO k : responseValue.getTiesaaAsema() ) {
             Assert.assertNull(k.getAliasemaId());
             Assert.assertNull(k.getAnturiliitantaHuoltotarranMerkinnat());
@@ -99,6 +101,8 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
             Assert.assertNull(k.getAnturiliitantaValmistusviikko());
             Assert.assertNull(k.getAnturiliitantaValmistusvuosi());
             Assert.assertNull(k.getAnturiliitantayksikko());
+            Assert.assertNull(k.isAntureillaPutkitukset());
+            Assert.assertNull(k.isAntureillaKaapelikaivo());
             Assert.assertNull(k.getIp());
             Assert.assertNull(k.getKaapelikaivonKunto());
             Assert.assertNull(k.getKehikko());
@@ -113,17 +117,12 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
             Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
-            Assert.assertNull(k.getAlkamisPaiva());
-            Assert.assertNull(k.getAsemanTila());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());
-            Assert.assertNull(k.getKorjaushuolto());
             Assert.assertNull(k.getLaitekaappiId());
-            Assert.assertNull(k.getLiviId());
             Assert.assertNull(k.getOhjelmistoversio());
             Assert.assertNull(k.getPaattymisPaiva());
             Assert.assertNull(k.getTakuunPaattymisPvm());
-            Assert.assertNull(k.getVuosihuolto());
             Assert.assertNull(k.getVerkkolaiteId());
             Assert.assertNull(k.getYhdyskaytava());
             Assert.assertNull(k.getYhteysTapa());

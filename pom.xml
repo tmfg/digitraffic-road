@@ -426,15 +426,15 @@
                                 <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
                                 <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/TiesaaMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v4/TiesaaPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
 
-                                <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices -->
+                                <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices v5 -->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/LAMMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
-                                <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras -->
+                                <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras v6/v7-->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
