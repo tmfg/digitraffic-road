@@ -159,7 +159,9 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // DPO-567 obsolete all presets that are missing from data. presetLotjuIds might change once in a while so we want to get rid of ghosts.
         final List<Long> presetLotjuIds = esiasentos.stream().map(e -> e.getId()).collect(Collectors.toList());
-        cameraPresetService.obsoleteMissingCameraPresetsForCamera(kamera.getId(), presetLotjuIds);
+        if (!presetLotjuIds.isEmpty()) {
+            cameraPresetService.obsoleteMissingCameraPresetsForCamera(kamera.getId(), presetLotjuIds);
+        }
 
         for (EsiasentoVO esiasento : esiasentos) {
 
