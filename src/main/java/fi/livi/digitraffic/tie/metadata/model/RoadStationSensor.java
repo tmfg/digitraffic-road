@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -104,6 +105,16 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     @ApiModelProperty(value = "Presentation name for sensor [en]")
     private String presentationNameEn;
+
+    @JsonIgnore
+    private boolean isPublic;
+
+    /**
+     * This value is calculated by db so it's value is not
+     * reliable if entity is modified after fetch from db.
+     */
+    @Column(updatable = false, insertable = false) // virtual column
+    private boolean publishable;
 
     public Long getId() {
         return id;
@@ -293,5 +304,14 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
 
     public String getPresentationNameEn() {
         return presentationNameEn;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    @JsonIgnore
+    public boolean isPublic() {
+        return isPublic;
     }
 }

@@ -81,62 +81,34 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 1).getProperties().getCollectionStatus());
         assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 310).getProperties().getCollectionStatus());
 
-        /*
-        <id>310</id>
-            <kuvaus>Liikennemittausasema</kuvaus> -> Liikennemittausasema 1
-            <nimi>L_vt5_Iisalmi</nimi> -> L_vt5_Idensalmi
-            <korkeus>0</korkeus> -> 1
-            <latitudi>7048448</latitudi> -> 7048449
-            <longitudi>512364</longitudi> -> 512365
-            <tieosoite>
-            <etaisyysTieosanAlusta>4750</etaisyysTieosanAlusta> -> 3750
-            <tienumero>5</tienumero>
-            <tieosa>217</tieosa>
-            </tieosoite>
-            <tieosoiteId>24</tieosoiteId>
-            <keruuVali>300</keruuVali> -> 200
-            <keruunTila>KERUUSSA</keruunTila>
-            <maakunta>Pohjois-Savo</maakunta> -> Pohjois-Savvoo
-            <maakuntaKoodi>11</maakuntaKoodi>
-            <nimiEn>Road 5 Iisalmi</nimiEn> -> Road 5 Idensalmi
-            <nimiFi>Tie 5 Iisalmi</nimiFi> -> Tie 5 Idensalmi
-            <nimiSe>Väg 5 Idensalmi</nimiSe>
-            <vanhaId>23826</vanhaId>
-            <suunta1Kunta>Kajaani</suunta1Kunta> -> Kajaaniin
-            <suunta1KuntaKoodi>205</suunta1KuntaKoodi>
-            <suunta2Kunta>Kuopio</suunta2Kunta> -> Kuopioon
-            <suunta2KuntaKoodi>297</suunta2KuntaKoodi>
-            <tyyppi>DSL</tyyppi>
-        */
         final TmsStationFeature before = findWithLotjuId(allInitial, 310);
         final TmsStationFeature after = findWithLotjuId(allAfterChange, 310);
 
-        assertEquals("L_vt5_Iisalmi", before.getProperties().getName());
-        assertEquals("L_vt5_Idensalmi", after.getProperties().getName());
+        assertEquals("vt5_Iisalmi", before.getProperties().getName());
+        assertEquals("vt5_Iidensalmi", after.getProperties().getName());
 
-        assertEquals(512364.0, before.getProperties().getLongitudeETRS89(), 0.001);
-        assertEquals(512365.0, after.getProperties().getLongitudeETRS89(), 0.001);
-        assertEquals(7048448.0, before.getProperties().getLatitudeETRS89(), 0.001);
-        assertEquals(7048449.0, after.getProperties().getLatitudeETRS89(), 0.001);
+        // For conversions https://www.retkikartta.fi/
+        assertEquals(512504.0, before.getProperties().getLongitudeETRS89(), 0.001);
+        assertEquals(522504.0, after.getProperties().getLongitudeETRS89(), 0.001);
+        assertEquals(7048771.0, before.getProperties().getLatitudeETRS89(), 0.001);
+        assertEquals(7148771.0, after.getProperties().getLatitudeETRS89(), 0.001);
         assertEquals(0.0, before.getProperties().getAltitudeETRS89(), 0.001);
         assertEquals(1.0, after.getProperties().getAltitudeETRS89(), 0.001);
-        assertEquals(0.0, before.getProperties().getAltitudeETRS89(), 0.001);
-        assertEquals(1.0, after.getProperties().getAltitudeETRS89(), 0.001);
 
-        assertEquals(27.24890844195089, before.getGeometry().getLongitude(), 0.00000000000001);
-        assertEquals(27.248928651749267, after.getGeometry().getLongitude(), 0.00000000000001);
+        assertEquals(27.25177, before.getGeometry().getLongitude(), 0.00005);
+        assertEquals(27.46787, after.getGeometry().getLongitude(), 0.00005);
 
-        assertEquals(63.56393711859063, before.getGeometry().getLatitude(), 0.00000000000001);
-        assertEquals(63.56394605816233, after.getGeometry().getLatitude(), 0.00000000000001);
+        assertEquals(63.56682, before.getGeometry().getLatitude(), 0.00005);
+        assertEquals(64.46370, after.getGeometry().getLatitude(), 0.00005);
 
-        assertEquals(0.0, before.getGeometry().getAltitude(), 0.00000000000001);
-        assertEquals(1.0, after.getGeometry().getAltitude(), 0.00000000000001);
+        assertEquals(0.0, before.getGeometry().getAltitude(), 0.00005);
+        assertEquals(1.0, after.getGeometry().getAltitude(), 0.00005);
 
         assertEquals((Integer) 4750, before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
-        assertEquals((Integer) 3750, after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
+        assertEquals((Integer) 4751, after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
 
         assertEquals((Integer) 300, before.getProperties().getCollectionInterval());
-        assertEquals((Integer) 200, after.getProperties().getCollectionInterval());
+        assertEquals((Integer) 301, after.getProperties().getCollectionInterval());
 
         assertEquals("Pohjois-Savo", before.getProperties().getProvince());
         assertEquals("Pohjois-Savvoo", after.getProperties().getProvince());
@@ -171,7 +143,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         Assert.assertFalse(sensorsInitial.contains(5125L));
 
         Assert.assertTrue(sensorsAfter.contains(5116L));
-        Assert.assertTrue(sensorsAfter.contains(5119L));
+        Assert.assertFalse(sensorsAfter.contains(5119L)); // public false
         Assert.assertFalse(sensorsAfter.contains(5122L));
         Assert.assertTrue(sensorsAfter.contains(5125L));
 

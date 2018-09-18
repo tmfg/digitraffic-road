@@ -39,6 +39,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "where rs.type = :stationTypeId\n" +
             "  and rs.publishable = 1\n" +
             "  and s.obsolete = 0\n" +
+            "  and s.is_public = 1\n" +
             "  and sv.measured > (\n" +
             "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
             "    from sensor_value sensv\n" +
@@ -84,6 +85,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "  and rs.natural_id = :stationNaturalId\n" +
             "  and rs.publishable = 1\n" +
             "  and s.obsolete = 0\n" +
+            "  and s.is_public = 1\n" +
             "  and sv.measured > (\n" +
             "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
             "    from sensor_value sensv\n" +
@@ -130,6 +132,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "where rs.type = :stationTypeId\n" +
                    "  and rs.obsolete = 0\n" +
                    "  and rs.publishable = 1\n" +
+                   "  and s.is_public = 1\n" +
                    "  and sv.updated > :afterDate\n" +
                    "  and exists (\n" +
                    "     select null\n" +
@@ -153,6 +156,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "where rs.type = :stationTypeId\n" +
            "  and rs.publishable = 1\n" +
            "  and s.obsolete = 0\n" +
+           "  and s.is_public = 1\n" +
            "  and sv.measured > (\n" +
            "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
            "    from sensor_value sensv\n" +

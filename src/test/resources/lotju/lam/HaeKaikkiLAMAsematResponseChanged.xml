@@ -1,37 +1,49 @@
-<ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2016/10/06">
+<ns2:HaeKaikkiLAMAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2018/03/12">
     <ns2:asemat>
-        <kuvaus>Liikennemittausasema - Porvoo</kuvaus>
-        <nimi>L_vt7_Rita</nimi>
+        <id>1</id>
+        <kuvaus>Liikennemittausasema</kuvaus>
+        <nimi>vt7_Rita</nimi>
         <korkeus>0</korkeus>
-        <latitudi>6698688</latitudi>
-        <longitudi>427927</longitudi>
+        <latitudi>6698571</latitudi>
+        <longitudi>427830</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>1050</etaisyysTieosanAlusta>
+            <ajorata>1</ajorata>
+            <etaisyysTieosanAlusta>950</etaisyysTieosanAlusta>
+            <puoli>2</puoli>
+            <tienHoitoluokka>2</tienHoitoluokka>
             <tienumero>7</tienumero>
             <tieosa>10</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
+            <urakkaAlue>Porvoo 15 -20</urakkaAlue>
+            <urakkaAlueKoodi>133</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>443</tieosoiteId>
+        <alkamisPaiva>2001-11-07T00:00:00+02:00</alkamisPaiva>
+        <asemanSijainti>tulossa ip 172.30.156.148 14000</asemanSijainti>
+        <asemanTila>OK</asemanTila>
+        <hankeId>LAM23001</hankeId>
+        <julkinen>true</julkinen>
         <keruuVali>0</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
         <kunta>Porvoo</kunta>
         <kuntaKoodi>638</kuntaKoodi>
+        <liviId>Livi968639</liviId>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
         <nimiEn>Road 7 Porvoo, Rita</nimiEn>
         <nimiFi>Tie 7 Porvoo, Rita</nimiFi>
         <nimiSe>Väg 7 Borgå, Rita</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
         <vanhaId>23001</vanhaId>
-        <suunta1KuntaKoodi>1004</suunta1KuntaKoodi>
+        <kayttotarkoitus>reaaliaika</kayttotarkoitus>
+        <suunta1Kunta>Kotka</suunta1Kunta>
+        <suunta1KuntaKoodi>285</suunta1KuntaKoodi>
         <suunta2Kunta>Helsinki</suunta2Kunta>
         <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
-        <tyyppi>DSL</tyyppi>
-        <id>1</id>
+        <tyyppi>DSL_4</tyyppi>
     </ns2:asemat>
     <ns2:asemat>
+        <id>2</id>
         <kuvaus>Liikennemittausasema</kuvaus>
-        <nimi>OLD_L_vt7_Rita2</nimi>
+        <nimi>OLD_vt7_Rita2</nimi>
         <korkeus>0</korkeus>
         <latitudi>6699599</latitudi>
         <longitudi>431619</longitudi>
@@ -39,71 +51,93 @@
             <etaisyysTieosanAlusta>3000</etaisyysTieosanAlusta>
             <tienumero>7</tienumero>
             <tieosa>11</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>54</tieosoiteId>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <julkinen>true</julkinen>
         <keruuVali>300</keruuVali>
         <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <synkronoituTierekisteriin>false</synkronoituTierekisteriin>
         <vanhaId>23002</vanhaId>
+        <kayttotarkoitus>ajantasa</kayttotarkoitus>
         <suunta1KuntaKoodi>1004</suunta1KuntaKoodi>
         <suunta2Kunta>Helsinki</suunta2Kunta>
         <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
-        <tyyppi>DSL</tyyppi>
-        <id>2</id>
+        <tyyppi>OLD</tyyppi>
     </ns2:asemat>
     <ns2:asemat>
+        <id>310</id>
         <kuvaus>Liikennemittausasema 1</kuvaus>
-        <nimi>L_vt5_Idensalmi</nimi>
+        <nimi>vt5_Iidensalmi</nimi>
         <korkeus>1</korkeus>
-        <latitudi>7048449</latitudi>
-        <longitudi>512365</longitudi>
+        <latitudi>7148771</latitudi>
+        <longitudi>522504</longitudi>
         <tieosoite>
-            <etaisyysTieosanAlusta>3750</etaisyysTieosanAlusta>
+            <ajorata>0</ajorata>
+            <etaisyysTieosanAlusta>4751</etaisyysTieosanAlusta>
+            <puoli>2</puoli>
+            <tienHoitoluokka>2</tienHoitoluokka>
             <tienumero>5</tienumero>
             <tieosa>217</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
+            <urakkaAlue>Iisalmi 14-19</urakkaAlue>
+            <urakkaAlueKoodi>833</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>24</tieosoiteId>
-        <keruuVali>200</keruuVali>
+        <alkamisPaiva>1999-08-03T00:00:00+03:00</alkamisPaiva>
+        <asemanTila>OK</asemanTila>
+        <julkinen>true</julkinen>
+        <keruuVali>301</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
+        <korjaushuolto>2017-08-07T14:43:14+03:00</korjaushuolto>
+        <kunta>Iisalmi</kunta>
+        <kuntaKoodi>140</kuntaKoodi>
+        <liviId>Livi152847</liviId>
         <maakunta>Pohjois-Savvoo</maakunta>
         <maakuntaKoodi>11</maakuntaKoodi>
         <nimiEn>Road 5 Idensalmi</nimiEn>
         <nimiFi>Tie 5 Idensalmi</nimiFi>
         <nimiSe>Väg 5 Idensalmi</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
         <vanhaId>23826</vanhaId>
+        <vuosihuolto>2017-10-05T00:00:00+03:00</vuosihuolto>
+        <kayttotarkoitus>ajantasa</kayttotarkoitus>
         <suunta1Kunta>Kajaaniin</suunta1Kunta>
         <suunta1KuntaKoodi>205</suunta1KuntaKoodi>
         <suunta2Kunta>Kuopioon</suunta2Kunta>
         <suunta2KuntaKoodi>297</suunta2KuntaKoodi>
-        <tyyppi>DSL</tyyppi>
-        <id>310</id>
+        <tyyppi>DSL_4</tyyppi>
     </ns2:asemat>
     <ns2:asemat>
-        <nimi>L_vt3_Klaukkalantie</nimi>
+        <id>581</id>
+        <nimi>vt3_Klaukkalantie</nimi>
         <korkeus>0</korkeus>
-        <latitudi>6692906</latitudi>
-        <longitudi>379098</longitudi>
+        <latitudi>6692919</latitudi>
+        <longitudi>379105</longitudi>
         <tieosoite>
             <etaisyysTieosanAlusta>0</etaisyysTieosanAlusta>
+            <puoli>1</puoli>
             <tienumero>3</tienumero>
             <tieosa>104</tieosa>
-            <urakkaAlue>Helsinki 1-10</urakkaAlue>
-            <urakkaAlueKoodi>1234</urakkaAlueKoodi>
         </tieosoite>
-        <tieosoiteId>581</tieosoiteId>
-        <keruuVali>300</keruuVali>
+        <alkamisPaiva>2015-08-07T00:00:00+03:00</alkamisPaiva>
+        <asemanTila>OK</asemanTila>
+        <hankeId>LAM010302</hankeId>
+        <julkinen>true</julkinen>
+        <keruuVali>0</keruuVali>
         <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <korjaushuolto>2017-01-17T13:09:45+02:00</korjaushuolto>
         <kunta>Vantaa</kunta>
         <kuntaKoodi>92</kuntaKoodi>
         <maakunta>Uusimaa</maakunta>
         <maakuntaKoodi>1</maakuntaKoodi>
-        <nimiFi>L_vt3_Klaukkalantie</nimiFi>
-        <vanhaId>24609</vanhaId>
-        <lisatietoja>Tulossa vt3 Keimola. Joho SAAri ysp / Raine Sallinen valtti</lisatietoja>
-        <tyyppi>DSL</tyyppi>
-        <id>581</id>
+        <nimiEn>Road 3 Klaukkalantie</nimiEn>
+        <nimiFi>Tie 3 Klaukkalantie</nimiFi>
+        <nimiSe>Väg 3 Klaukkalantie</nimiSe>
+        <synkronoituTierekisteriin>false</synkronoituTierekisteriin>
+        <vanhaId>23005</vanhaId>
+        <kayttotarkoitus>reaaliaika</kayttotarkoitus>
+        <suunta1Kunta>Hämeenlinna</suunta1Kunta>
+        <suunta1KuntaKoodi>109</suunta1KuntaKoodi>
+        <suunta2Kunta>Helsinki</suunta2Kunta>
+        <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
+        <tyyppi>DSL_4</tyyppi>
     </ns2:asemat>
 </ns2:HaeKaikkiLAMAsematResponse>

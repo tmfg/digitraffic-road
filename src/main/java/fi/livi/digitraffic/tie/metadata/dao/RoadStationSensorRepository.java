@@ -21,7 +21,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
 
     @Query("SELECT s\n" +
            "FROM RoadStationSensor s\n" +
-           "WHERE s.obsolete = false\n" +
+           "WHERE s.publishable = true\n" +
            "  AND s.roadStationType = ?1\n" +
            "  AND EXISTS (\n" +
            "     FROM AllowedRoadStationSensor allowed\n" +
@@ -30,7 +30,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
            "  )" +
            "ORDER BY s.naturalId")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<RoadStationSensor> findByRoadStationTypeAndObsoleteFalseAndAllowed(final RoadStationType roadStationType);
+    List<RoadStationSensor> findByRoadStationTypeAndPublishable(final RoadStationType roadStationType);
 
     @EntityGraph(attributePaths = {"sensorValueDescriptions"})
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
@@ -48,12 +48,12 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
-            "where sensor.obsolete_date is null\n" +
-            "and sensor.road_station_type = :stationType\n" +
+            "where sensor.publishable = 1\n" +
+            "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<StationSensors> listStationSensorsByType(@Param("stationType") final String stationType);
+    List<StationSensors> listStationPublishableSensorsByType(@Param("stationType") final String stationType);
 
     @Query(value =
         "SELECT rs_sensors.road_station_id, LISTAGG(sensor.natural_id, ',') WITHIN GROUP (ORDER BY sensor.natural_id) AS sensors\n" +
@@ -61,11 +61,11 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
             "where rs_sensors.road_station_id = :id\n" +
-            "and sensor.obsolete_date is null\n" +
-            "and sensor.road_station_type = :stationType\n" +
+            "  and sensor.publishable = 1\n" +
+            "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
-    List<StationSensors> getStationSensorsByIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
+    List<StationSensors> getStationPublishableSensorsByStationIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
         stationType);
 
 

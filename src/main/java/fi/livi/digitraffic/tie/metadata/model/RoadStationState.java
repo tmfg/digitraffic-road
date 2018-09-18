@@ -11,8 +11,6 @@ import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.VI
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi;
-
 public enum RoadStationState {
 
     OK(fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.OK.value()),
@@ -43,7 +41,14 @@ public enum RoadStationState {
         return null;
     }
 
-    public static RoadStationState convertAsemanTila(TilaTyyppi asemanTila) {
+    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi asemanTila) {
+        if (asemanTila != null) {
+            return getState(asemanTila.value());
+        }
+        return null;
+    }
+
+    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return getState(asemanTila.value());
         }

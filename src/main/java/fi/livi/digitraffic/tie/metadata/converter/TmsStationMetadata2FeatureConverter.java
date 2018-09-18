@@ -34,7 +34,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
 
     public TmsStationFeatureCollection convert(final List<TmsStation> stations, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
         final TmsStationFeatureCollection collection = new TmsStationFeatureCollection(lastUpdated, dataLastCheckedTime);
-        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(TMS_STATION_TYPE);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createPublishableSensorMap(TMS_STATION_TYPE);
 
         for(final TmsStation tms : stations) {
             try {
@@ -48,7 +48,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
     }
 
     public TmsStationFeature convert(final TmsStation tms) throws NonPublicRoadStationException {
-        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createSensorMap(tms.getRoadStationId(), TMS_STATION_TYPE);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createPublishableSensorMap(tms.getRoadStationId(), TMS_STATION_TYPE);
 
         return convert(sensorMap, tms);
     }

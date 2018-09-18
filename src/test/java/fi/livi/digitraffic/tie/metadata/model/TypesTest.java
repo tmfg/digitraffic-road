@@ -7,7 +7,7 @@ import org.springframework.util.Assert;
 
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraTyyppi;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaTyyppi;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaTyyppi;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaTyyppi;
 
 @RunWith(JUnit4.class)

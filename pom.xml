@@ -431,7 +431,7 @@
 
                                 <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices v5 -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v5/LAMMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras v6/v7-->

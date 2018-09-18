@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {

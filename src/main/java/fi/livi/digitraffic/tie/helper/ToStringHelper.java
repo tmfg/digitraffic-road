@@ -13,7 +13,7 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 /**

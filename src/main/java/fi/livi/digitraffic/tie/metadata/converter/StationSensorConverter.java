@@ -22,16 +22,16 @@ public class StationSensorConverter {
         this.roadStationSensorRepository = roadStationSensorRepository;
     }
 
-    public Map<Long, List<Long>> createSensorMap(final String type) {
-        final List<StationSensors> list = roadStationSensorRepository.listStationSensorsByType(type);
+    public Map<Long, List<Long>> createPublishableSensorMap(final String type) {
+        final List<StationSensors> list = roadStationSensorRepository.listStationPublishableSensorsByType(type);
 
         return createMap(list);
     }
 
-    public Map<Long, List<Long>> createSensorMap(final Long roadStationId, final String type) {
+    public Map<Long, List<Long>> createPublishableSensorMap(final Long roadStationId, final String type) {
         return roadStationId == null ?
             Collections.emptyMap() :
-            createMap(roadStationSensorRepository.getStationSensorsByIdAndType(roadStationId, type));
+            createMap(roadStationSensorRepository.getStationPublishableSensorsByStationIdAndType(roadStationId, type));
     }
 
     private static Map<Long, List<Long>> createMap(final List<StationSensors> sensors) {

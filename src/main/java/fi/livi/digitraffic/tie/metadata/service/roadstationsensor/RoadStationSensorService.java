@@ -47,7 +47,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
 
 @Service
@@ -93,7 +93,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType roadStationType) {
-        return roadStationSensorRepository.findByRoadStationTypeAndObsoleteFalseAndAllowed(roadStationType);
+        return roadStationSensorRepository.findByRoadStationTypeAndPublishable(roadStationType);
     }
 
     @Transactional(readOnly = true)
@@ -327,6 +327,7 @@ public class RoadStationSensorService {
         to.setRoadStationType(RoadStationType.TMS_STATION);
         to.setObsolete(false);
         to.setObsoleteDate(null);
+        to.setPublic(from.isJulkinen());
 
         to.setLotjuId(from.getId());
         to.setNaturalId(from.getVanhaId());
@@ -335,7 +336,12 @@ public class RoadStationSensorService {
         }
         to.setNameFi(from.getNimi());
         to.setShortNameFi(from.getLyhytNimi());
-        to.setDescriptionFi(from.getKuvaus());
+        to.setPresentationNameFi(from.getEsitysnimiFi());
+        to.setPresentationNameSv(from.getEsitysnimiSe());
+        to.setPresentationNameEn(from.getEsitysnimiEn());
+        to.setDescriptionFi(from.getKuvausFi());
+        to.setDescriptionEn(from.getKuvausEn());
+        to.setDescriptionSv(from.getKuvausSe());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(DataValidityHelper.nullifyUnknownValue(from.getYksikko()));
 
@@ -348,6 +354,7 @@ public class RoadStationSensorService {
         to.setRoadStationType(RoadStationType.WEATHER_STATION);
         to.setObsolete(false);
         to.setObsoleteDate(null);
+        to.setPublic(from.isJulkinen());
 
         to.setLotjuId(from.getId());
         to.setNaturalId(from.getVanhaId());
