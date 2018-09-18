@@ -157,6 +157,11 @@ public class CameraPresetService {
     }
 
     @Transactional
+    public void obsoleteMissingCameraPresetsForCamera(final long cameraLotjuId, final List<Long> presetLotjuIds) {
+        cameraPresetRepository.obsoleteMissingCameraPresetsForCamera(cameraLotjuId, presetLotjuIds);
+    }
+
+    @Transactional
     public int obsoletePresetsExcludingLotjuIds(Set<Long> presetsLotjuIdsNotToObsolete) {
 
         final CriteriaBuilder cb = createCriteriaBuilder();
