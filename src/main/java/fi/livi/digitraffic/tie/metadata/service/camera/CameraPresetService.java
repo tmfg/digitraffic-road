@@ -158,7 +158,11 @@ public class CameraPresetService {
 
     @Transactional
     public void obsoleteMissingCameraPresetsForCamera(final long cameraLotjuId, final List<Long> presetLotjuIds) {
-        cameraPresetRepository.obsoleteMissingCameraPresetsForCamera(cameraLotjuId, presetLotjuIds);
+        if (presetLotjuIds.isEmpty()) {
+            cameraPresetRepository.obsoleteAllCameraPresetsForCamera(cameraLotjuId);
+        } else {
+            cameraPresetRepository.obsoleteMissingCameraPresetsForCamera(cameraLotjuId, presetLotjuIds);
+        }
     }
 
     @Transactional
