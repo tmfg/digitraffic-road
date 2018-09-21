@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.conf.MqttConfig;
 
-@Service
+@Component
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
 public class MqttRelayService {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayService.class);
