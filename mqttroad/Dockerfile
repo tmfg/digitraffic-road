@@ -3,6 +3,7 @@ FROM debian:9.5-slim
 # copy config and repo keys and all
 COPY config /mqtt/config
 
+# install gnupg
 RUN apt-get update && apt-get -y install gnupg
 
 # install mosquitto repo and install mosquitto
