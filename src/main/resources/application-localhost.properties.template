@@ -24,19 +24,13 @@ datex2RoadworksMessageUpdateJob.frequency=3600000
 datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
-
-# Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
-camera-image-download.url = http://localhost:62859/kamerakuva/
+weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
 
 # SFTP settings for camera image upload
-camera-image-uploader.sftp.host = localhost
-camera-image-uploader.sftp.port = 2232
-camera-image-uploader.sftp.user = digitraffic
-camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_known_hosts
-camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
-camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
-camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
+camera-image-uploader.sftp.host = aineistot.liikennevirasto.fi
+camera-image-uploader.sftp.user = digitraffic-aws-test
+camera-image-uploader.sftp.privateKeyPassphrase = tyokaverisi-halusi-kiittaa
+camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
 
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
@@ -61,8 +55,11 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
+# daemon or web
+app.type=web
+
 # Web application type.  Should be none for daemon process
-spring.main.web-application-type=none
+spring.main.web-application-type=servlet
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=false
@@ -74,16 +71,7 @@ jms.camera.enabled=false
 jms.datex2.enabled=false
 
 # Websocket stream of TMS sensor values, enabled only for web-app
-websocket.tms.enabled=false
+websocket.tms.enabled=true
 
 # TMC locations url
 metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
-
-# Disable jobs. Format: quartz.{jobClassName}.enabled = false
-# Ie. quartz.CameraUpdateJob.enabled = false
-
-# Developer life improvements
-logging.level.root=INFO
-#logging.level.org.hibernate.SQL=DEBUG
-#logging.level.org.hibernate.type=TRACE
-#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
