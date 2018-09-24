@@ -75,6 +75,15 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
            nativeQuery = true)
     Set<Long> findAllCameraPresetsLotjuIds();
 
+    @Modifying
+    @Query(value = "UPDATE CAMERA_PRESET SET OBSOLETE_DATE = sysdate WHERE CAMERA_LOTJU_ID = :cameraLotjuId " +
+                   "AND LOTJU_ID NOT IN (:presetLotjuIds)", nativeQuery = true)
+    int obsoleteMissingCameraPresetsForCamera(@Param("cameraLotjuId") long cameraLotjuId, @Param("presetLotjuIds") List<Long> presetLotjuIds);
+
+    @Modifying
+    @Query(value = "UPDATE CAMERA_PRESET SET OBSOLETE_DATE = sysdate WHERE CAMERA_LOTJU_ID = :cameraLotjuId ", nativeQuery = true)
+    int obsoleteAllCameraPresetsForCamera(@Param("cameraLotjuId") long cameraLotjuId);
+
     @Modifying(clearAutomatically = true)
     @Query(value =
                "UPDATE ROAD_STATION RS\n" +

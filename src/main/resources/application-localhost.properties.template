@@ -81,6 +81,9 @@ jms.datex2.enabled=false
 # Websocket stream of TMS sensor values, enabled only for web-app
 websocket.tms.enabled=true
 
+datex2.roadworks.url=http://aineistot.vally.local/roadworks/roadworks_d2.xml
+datex2.weight.restrictions.url=http://aineistot.vally.local/painorajoitukset/painorajoitukset_d2.xml
+
 # TMC locations url
 metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
 
