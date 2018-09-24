@@ -56,12 +56,8 @@ public class TmsStationsSensorsUpdater {
 
         log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
-        final AtomicInteger counter = new AtomicInteger();
         final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
                 lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
-
-        log.info("fetchedCount={} LamLaskennallinenAnturis for tmsCount={} LamAsemas", counter, tmsLotjuIds.size());
-
 
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
         currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {

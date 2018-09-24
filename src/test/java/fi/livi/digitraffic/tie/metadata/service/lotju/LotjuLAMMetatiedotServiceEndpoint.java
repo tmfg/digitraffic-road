@@ -86,19 +86,21 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
             Assert.assertNull(k.getAkku());
             Assert.assertNull(k.getAkkuKayttoonottoVuosi());
             Assert.assertNull(k.getIp());
-            Assert.assertNull(k.getLaskinlaite());
             Assert.assertNull(k.getLaskinlaiteSarjanumero());
             Assert.assertNull(k.getLaskinlaiteToimituspvm());
             Assert.assertNull(k.getLatauslaite());
             Assert.assertNull(k.getLatauslaiteKayttoonottoVuosi());
             Assert.assertNull(k.getLiitantayksikko());
+            Assert.assertNull(k.getLisatietoja());
+            Assert.assertNull(k.getLisatieto());
+            Assert.assertNull(k.getPortti());
             Assert.assertNull(k.isRiittavanKokoinenHuoltolevike());
 
-            Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());
             Assert.assertNull(k.getLaitekaappiId());
+            Assert.assertNull(k.getLisatieto());
             Assert.assertNull(k.getOhjelmistoversio());
             Assert.assertNull(k.getPaattymisPaiva());
             Assert.assertNull(k.getTakuunPaattymisPvm());

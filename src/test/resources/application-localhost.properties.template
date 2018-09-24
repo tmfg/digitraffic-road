@@ -11,7 +11,7 @@ javamelody.authorized-users = username:password
 
 # Lotju-test SOAP APIs
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
-metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v3
+metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v6
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 
 # Road conditions api

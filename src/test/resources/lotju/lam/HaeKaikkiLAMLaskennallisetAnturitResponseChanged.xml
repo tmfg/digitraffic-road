@@ -11,6 +11,9 @@
         <r>0</r>
         <vanhaId>5116</vanhaId>
         <yksikko>kpl/h</yksikko>
+        <suunta>1</suunta>
+        <kaista>2</kaista>
+        <ajoneuvoluokka>KAIP</ajoneuvoluokka>
     </ns2:laskennallinenAnturi>
     <ns2:laskennallinenAnturi>
         <id>148</id>

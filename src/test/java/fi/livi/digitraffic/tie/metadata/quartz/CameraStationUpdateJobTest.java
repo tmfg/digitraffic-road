@@ -39,6 +39,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         cameraStationUpdater.updateCameras();
         final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
         // cameras with lotjuId 443 and 56 are in collection
+        allInitial.getFeatures().stream().forEach(c -> System.out.println(c.getProperties().getLotjuId()));
         assertEquals(2, allInitial.getFeatures().size());
         int countPresets = 0;
         for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
@@ -77,7 +78,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // lotjuId 443
         // C0852001 is not public
-        //assertNotNull(findWithPresetId(allInitial, "C0852001"));
+        assertNull(findWithPresetId(allInitial, "C0852001"));
         assertNotNull(findWithPresetId(allInitial, "C0852002"));
         assertNull(findWithPresetId(allInitial, "C0852009")); // preset not exists
         // lotjuId 121
@@ -119,8 +120,11 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         // 443 Kunta changed
         final CameraStationFeature beforeCam = findWithCameraId(allInitial, "C08520");
         final CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
-        assertEquals("Iidensalmi", beforeCam.getProperties().getMunicipality());
-        assertEquals("Iisalmi", afterCam.getProperties().getMunicipality());
+        assertEquals("Iisalmi", beforeCam.getProperties().getMunicipality());
+        assertEquals("Iidensalmi", afterCam.getProperties().getMunicipality());
+
+        assertEquals("keli", beforeCam.getProperties().getPurpose());
+        assertEquals("liikenne", afterCam.getProperties().getPurpose());
     }
 
     private CameraPresetDto findWithPresetId(final CameraStationFeatureCollection collection, final String presetId) {

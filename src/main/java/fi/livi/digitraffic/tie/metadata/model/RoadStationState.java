@@ -1,19 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.KORJAUS_KESKEYTETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.VIKAEPAILY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.VIKA_VAHVISTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUS_KESKEYTETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKAEPAILY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKA_VAHVISTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi;
+
 public enum RoadStationState {
 
-    OK(fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi.OK.value()),
+    OK(TilaTyyppi.OK.value()),
     OK_FAULT_DOUBT_CANCELLED(OK_VIKAEPAILY_PERUUTETTU.value()),
     FAULT_DOUBT(VIKAEPAILY.value()),
     FAULT_CONFIRMED(VIKA_VAHVISTETTU.value()),
@@ -34,7 +36,7 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState convertAsemanTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.TilaTyyppi asemanTila) {
+    public static RoadStationState convertAsemanTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return getState(asemanTila.value());
         }

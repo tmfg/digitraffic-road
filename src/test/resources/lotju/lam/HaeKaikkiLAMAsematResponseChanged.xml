@@ -39,6 +39,7 @@
         <suunta2Kunta>Helsinki</suunta2Kunta>
         <suunta2KuntaKoodi>91</suunta2KuntaKoodi>
         <tyyppi>DSL_4</tyyppi>
+        <kayttotarkoitus>ajantasa</kayttotarkoitus>
     </ns2:asemat>
     <ns2:asemat>
         <id>2</id>

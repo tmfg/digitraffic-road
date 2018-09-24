@@ -109,6 +109,19 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @JsonIgnore
     private boolean isPublic;
 
+    @ApiModelProperty(value = "Presentation name for sensor [en]")
+    @Enumerated(EnumType.STRING)
+    private VehicleClass vehicleClass;
+
+    @ApiModelProperty(value = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
+    private Integer lane;
+
+    @ApiModelProperty(value = "Preset direction " +
+        "(0 = Unknown direction. " +
+        "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
+        "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
+    private Integer direction;
+
     /**
      * This value is calculated by db so it's value is not
      * reliable if entity is modified after fetch from db.
@@ -313,5 +326,29 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @JsonIgnore
     public boolean isPublic() {
         return isPublic;
+    }
+
+    public void setVehicleClass(final VehicleClass vehicleClass) {
+        this.vehicleClass = vehicleClass;
+    }
+
+    public VehicleClass getVehicleClass() {
+        return vehicleClass;
+    }
+
+    public void setLane(final Integer lane) {
+        this.lane = lane;
+    }
+
+    public Integer getLane() {
+        return lane;
+    }
+
+    public void setDirection(final Integer direction) {
+        this.direction = direction;
+    }
+
+    public Integer getDirection() {
+        return direction;
     }
 }

@@ -62,6 +62,7 @@
         <lisakuvaus>Helsinki, Pirkkola</lisakuvaus>
         <master>true</master>
         <tyyppi>ROSA</tyyppi>
+        <lisakuvaus>Testing</lisakuvaus>
     </ns2:tiesaaAsema>
     <ns2:tiesaaAsema>
         <id>35</id>

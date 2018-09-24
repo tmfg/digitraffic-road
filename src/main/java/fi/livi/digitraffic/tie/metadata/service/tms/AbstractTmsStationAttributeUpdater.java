@@ -52,6 +52,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());
+        to.setPurpose(from.getKayttotarkoitus());
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;

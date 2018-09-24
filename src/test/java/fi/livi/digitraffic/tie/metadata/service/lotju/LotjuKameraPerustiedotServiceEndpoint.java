@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.ely.lotju.kamera.meta.service.ws.v6.KameraPerustiedotEndpointImplService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraKokoonpanoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotException;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraPerustiedotV3;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.VideopalvelinVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraKokoonpanoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraPerustiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraPerustiedotException;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements KameraPerustiedotEndpoint {
 
@@ -43,7 +43,7 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                                   final Jaxb2Marshaller jaxb2Marshaller) {
-        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotV3.SERVICE, jaxb2Marshaller);
+        super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller);
     }
 
     @Override
@@ -77,22 +77,21 @@ public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
 
     private List<KameraVO> readKameras(final String filePath) {
         final HaeKaikkiKameratResponse responseValue = (HaeKaikkiKameratResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        // Tests that there isn't any forbidden fields included in test data
         for ( final KameraVO k : responseValue.getKamerat() ) {
             Assert.assertEquals(0, k.getKokoonpanoId());
             Assert.assertEquals(0, k.getVideopalvelinId());
 
-            Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
-            Assert.assertNull(k.getAsemanTila());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());
             Assert.assertNull(k.getKorjaushuolto());
             Assert.assertNull(k.getLaitekaappiId());
-            Assert.assertNull(k.getLiviId());
+            Assert.assertNull(k.getLisatieto());
             Assert.assertNull(k.getOhjelmistoversio());
             Assert.assertNull(k.getPaattymisPaiva());
+            Assert.assertNull(k.getKuvaus());
             Assert.assertNull(k.getTakuunPaattymisPvm());
-            Assert.assertNull(k.getVuosihuolto());
             Assert.assertNull(k.getVerkkolaiteId());
             Assert.assertNull(k.getYhdyskaytava());
             Assert.assertNull(k.getYhteysTapa());

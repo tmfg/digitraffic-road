@@ -8,7 +8,7 @@ public enum CalculatorDeviceType {
     DSL_4_L("DSL_4L"),
     DSL_4_G("DSL_4G"),
     DSL_5("DSL_5"),
-    OTHER("OTHER");
+    OTHER("MUU");
 
     private final String value;
 

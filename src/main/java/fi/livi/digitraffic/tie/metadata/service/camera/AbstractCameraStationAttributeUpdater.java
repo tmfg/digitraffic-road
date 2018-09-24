@@ -10,9 +10,9 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.Julkisuus;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.Julkisuus;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
@@ -54,6 +54,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());
+        to.setPurpose(from.getKayttotarkoitus());
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;

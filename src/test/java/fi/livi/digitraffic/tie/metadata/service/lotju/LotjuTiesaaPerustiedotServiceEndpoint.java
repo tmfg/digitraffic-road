@@ -13,7 +13,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.ely.lotju.tiesaa.meta.service.ws.v4.TiesaaPerustiedotEndpointImplService;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.AnturiSanomaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ArvoVastaavuusVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturitResponse;
@@ -115,11 +114,11 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
             Assert.assertNull(k.getPutkienMateriaali());
             Assert.assertNull(k.getYmparistoKuvaus());
 
-            Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());
             Assert.assertNull(k.getLaitekaappiId());
+            Assert.assertNull(k.getLisatieto());
             Assert.assertNull(k.getOhjelmistoversio());
             Assert.assertNull(k.getPaattymisPaiva());
             Assert.assertNull(k.getTakuunPaattymisPvm());

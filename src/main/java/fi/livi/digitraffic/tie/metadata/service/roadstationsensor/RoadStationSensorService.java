@@ -45,6 +45,7 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
+import fi.livi.digitraffic.tie.metadata.model.VehicleClass;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
@@ -344,6 +345,9 @@ public class RoadStationSensorService {
         to.setDescriptionSv(from.getKuvausSe());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(DataValidityHelper.nullifyUnknownValue(from.getYksikko()));
+        to.setVehicleClass(VehicleClass.convertAjoneuvoluokka(from.getAjoneuvoluokka()));
+        to.setLane(from.getKaista());
+        to.setDirection(from.getSuunta());
 
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }

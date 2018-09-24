@@ -14,13 +14,13 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeEsiasennotKameranTunnuksella;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeKaikkiKamerat;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeEsiasennotKameranTunnuksella;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeKaikkiKamerat;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.ObjectFactory;
 
 @Service
 public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClient {

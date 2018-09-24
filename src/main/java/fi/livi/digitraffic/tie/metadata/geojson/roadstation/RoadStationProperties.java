@@ -84,6 +84,9 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Road station state")
     private RoadStationState state;
 
+    @ApiModelProperty(value = "Purpose of the road station")
+    private String purpose;
+
     @ApiModelProperty(value = "Road station coordinates (LONGITUDE, LATITUDE, ALTITUDE. Coordinates are in ETRS89 / ETRS-TM35FIN format. Altitude is optional and measured in metres.)" +
                               "Point's coordinates  (Coordinates in WGS84. Altitude is optional [m])", required = true)
     private List<Double> coordinatesETRS89 = new ArrayList<>(3);
@@ -238,6 +241,14 @@ public abstract class RoadStationProperties {
         return annualMaintenanceTime;
     }
 
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o)
@@ -268,6 +279,7 @@ public abstract class RoadStationProperties {
                 .append(repairMaintenanceTime, that.repairMaintenanceTime)
                 .append(annualMaintenanceTime, that.annualMaintenanceTime)
                 .append(coordinatesETRS89, that.coordinatesETRS89)
+                .append(purpose, that.purpose)
                 .isEquals();
     }
 
@@ -293,6 +305,7 @@ public abstract class RoadStationProperties {
                 .append(repairMaintenanceTime)
                 .append(annualMaintenanceTime)
                 .append(coordinatesETRS89)
+                .append(purpose)
                 .toHashCode();
     }
 

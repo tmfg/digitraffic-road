@@ -84,23 +84,6 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
     @Test
     public void testUpdateWeatherStations() {
 
-
-        /*
-        <id>34</id>
-            <nimi>vt3_Pirkkola_R</nimi> -> <nimi>vt3_Pirkkola_RR</nimi>
-            <keruunTila>POISTETTU_TILAPAISESTI</keruunTila> -> <keruunTila>KERUUSSA</keruunTila>
-            <lisakuvaus>Helsinki, Pirkkola</lisakuvaus> -> <lisakuvaus>Helsinki, Kirkkola</lisakuvaus>
-            <nimiEn>Road 3 Helsinki, Pirkkola</nimiEn> -> Kirkkola
-            <nimiFi>Tie 3 Helsinki, Pirkkola</nimiFi> -> Kirkkola
-            <nimiSe>Väg 3 Helsingfors, Britas</nimiSe> -> Kyrka
-            <etaisyysTieosanAlusta>4915</etaisyysTieosanAlusta> -> <etaisyysTieosanAlusta>5915</etaisyysTieosanAlusta>
-            <latitudi>6678800</latitudi> -> <latitudi>6678801</latitudi>
-            <longitudi>383971</longitudi> -> <longitudi>383970</longitudi>
-            <korkeus>0</korkeus> -> <korkeus>1</korkeus>
-
-        */
-
-
         Assert.assertNull(findWithLotjuId(allInitial, 33));
         Assert.assertNotNull(findWithLotjuId(allInitial, 34));
         Assert.assertNull(findWithLotjuId(allInitial, 35));

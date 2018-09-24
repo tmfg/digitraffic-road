@@ -436,7 +436,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras v6/v7-->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v3/KameraMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v6/KameraPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>

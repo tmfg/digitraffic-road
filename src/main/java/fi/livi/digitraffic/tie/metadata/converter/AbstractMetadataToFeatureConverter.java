@@ -54,6 +54,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.setLocation(roadStation.getLocation());
         properties.setState(roadStation.getState());
         properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));
+        properties.setPurpose(roadStation.getPurpose());
     }
 
     public static Point getETRS89CoordinatesPoint(RoadStation rs) {
