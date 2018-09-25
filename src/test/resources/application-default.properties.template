@@ -24,6 +24,7 @@ forecastSectionWeatherUpdateJob.frequency=300000
 locationsMetadataUpdateJob.frequency=86400000
 datex2TrafficAlertMessageUpdateJob.frequency=180000
 datex2RoadworksMessageUpdateJob.frequency=3600000
+datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
@@ -42,6 +43,8 @@ camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 camera-image-uploader.sftp.poolSize = 5
 camera-image-uploader.sftp.sessionWaitTimeout = 5000
 
+Datex2MessageUrl=https://ava.liikennevirasto.fi/incidents/datex2/
+
 # JMS settings
 
 # Sonic JMS 8.6.0
@@ -49,7 +52,12 @@ jms.connectionUrls=
 jms.userId=
 jms.password=
 
-# JMS queues
+# Sonja for datex2
+jms.datex2.connectionUrls=
+jms.datex2.userId=
+jms.datex2.password=
+
+# JMS topics
 jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
 jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
@@ -71,6 +79,9 @@ jms.datex2.enabled=false
 
 # Websocket stream of TMS sensor values, enabled only for web-app
 websocket.tms.enabled=false
+
+datex2.roadworks.url=http://ava.liikennevirasto.fi/roadworks/roadworks_d2.xml
+datex2.weight.restrictions.url=http://ava.liikennevirasto.fi/painorajoitukset/painorajoitukset_d2.xml
 
 # TMC locations url
 metadata.tmc.url = https://ava.liikennevirasto.fi/tmc/noncertified/
