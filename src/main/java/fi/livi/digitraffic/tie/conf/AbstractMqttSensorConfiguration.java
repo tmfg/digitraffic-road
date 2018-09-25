@@ -25,7 +25,6 @@ public abstract class AbstractMqttSensorConfiguration {
     private final String messageTopic;
     private final LockingService lockingService;
     private final String mqttClassName;
-    private final String callerInstanceId;
 
     private ZonedDateTime lastUpdated;
     private ZonedDateTime lastError;
@@ -41,8 +40,7 @@ public abstract class AbstractMqttSensorConfiguration {
                                            final String messageTopic,
                                            final Logger logger,
                                            final LockingService lockingService,
-                                           final String mqttClassName,
-                                           final String callerInstanceId) {
+                                           final String mqttClassName) {
 
         this.mqttRelay = mqttRelay;
         this.roadStationSensorService = roadStationSensorService;
@@ -53,7 +51,6 @@ public abstract class AbstractMqttSensorConfiguration {
         this.logger = logger;
         this.lockingService = lockingService;
         this.mqttClassName = mqttClassName;
-        this.callerInstanceId = callerInstanceId;
 
         if (roadStationType == RoadStationType.TMS_STATION) {
             statisticsType = MqttRelayService.StatisticsType.TMS;
@@ -73,7 +70,7 @@ public abstract class AbstractMqttSensorConfiguration {
 
     protected void handleData() {
 
-        final boolean lockAcquired = lockingService.acquireLock(mqttClassName, callerInstanceId, 60);
+        final boolean lockAcquired = lockingService.acquireLock(mqttClassName, 60);
 
         if (lockAcquired) {
 

@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,7 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
                                 final LockingService lockingService) {
 
         super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_STATUS_TOPIC, TMS_TOPIC, logger,
-              lockingService, TmsMqttConfiguration.class.getSimpleName(), UUID.randomUUID().toString());
+              lockingService, TmsMqttConfiguration.class.getSimpleName());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
