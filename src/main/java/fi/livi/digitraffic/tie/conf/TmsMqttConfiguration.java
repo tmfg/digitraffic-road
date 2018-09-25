@@ -32,7 +32,7 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
                                 final LockingService lockingService) {
 
         super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_STATUS_TOPIC, TMS_TOPIC, logger,
-              lockingService, WeatherMqttConfiguration.class.getSimpleName(), UUID.randomUUID().toString());
+              lockingService, TmsMqttConfiguration.class.getSimpleName(), UUID.randomUUID().toString());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
