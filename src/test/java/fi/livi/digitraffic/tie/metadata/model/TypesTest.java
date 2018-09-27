@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.springframework.util.Assert;
 
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.AjoneuvoluokkaTyyppi;
@@ -54,21 +53,21 @@ public class TypesTest {
     @Test
     public void testAllCameraRoadStationStates() {
         for (final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi tt : fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.values()) {
-            assertNotNull(RoadStationState.convertAsemanTila(tt));
+            assertNotNull(RoadStationState.fromTilaTyyppi(tt));
         }
     }
 
     @Test
     public void testAllTmsRoadStationStates() {
         for (final fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi tt : fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi.values()) {
-            assertNotNull(RoadStationState.convertAsemanTila(tt));
+            assertNotNull(RoadStationState.fromTilaTyyppi(tt));
         }
     }
 
     @Test
     public void testAllWeatherRoadStationStates() {
         for (final fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi tt : fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi.values()) {
-            assertNotNull(RoadStationState.convertAsemanTila(tt));
+            assertNotNull(RoadStationState.fromTilaTyyppi(tt));
         }
     }
 

@@ -36,28 +36,28 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState convertAsemanTila(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
-            return getState(asemanTila.value());
+            return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
-            return getState(asemanTila.value());
+            return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    public static RoadStationState convertAsemanTila(fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
-            return getState(asemanTila.value());
+            return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    private static RoadStationState getState(final String fiValue) {
+    private static RoadStationState fromValue(final String fiValue) {
         for (final RoadStationState state : RoadStationState.values()) {
             if (state.getFiValue().equals(fiValue)) {
                 return state;

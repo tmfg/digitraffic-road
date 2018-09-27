@@ -51,7 +51,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setStartDate(DateHelper.toZonedDateTimeWithoutMillis(from.getAlkamisPaiva()));
         to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getKorjaushuolto()));
         to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getVuosihuolto()));
-        to.setState(RoadStationState.convertAsemanTila(from.getAsemanTila()));
+        to.setState(RoadStationState.fromTilaTyyppi(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());
         to.setPurpose(from.getKayttotarkoitus());

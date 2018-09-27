@@ -97,8 +97,6 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
         final WeatherStationFeature before = findWithLotjuId(allInitial, 34);
         final WeatherStationFeature after = findWithLotjuId(allAfterChange, 34);
 
-        System.out.println(before.getProperties().getName());
-        System.out.println(after.getProperties().getName());
         assertEquals(before.getProperties().getName() + "1", after.getProperties().getName());
 
         assertEquals(after.getProperties().getCollectionStatus(), CollectionStatus.GATHERING);
