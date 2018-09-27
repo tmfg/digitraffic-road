@@ -23,7 +23,7 @@ public enum VehicleClass {
         this.fiValues = fiValues;
     }
 
-    public static VehicleClass convertAjoneuvoluokka(AjoneuvoluokkaTyyppi ajoneuvoluokka) {
+    public static VehicleClass fromAjoneuvoluokka(AjoneuvoluokkaTyyppi ajoneuvoluokka) {
         if (ajoneuvoluokka == null) {
             return null;
         }

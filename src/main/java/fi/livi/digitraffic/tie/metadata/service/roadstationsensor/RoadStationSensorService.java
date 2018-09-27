@@ -345,7 +345,7 @@ public class RoadStationSensorService {
         to.setDescriptionSv(from.getKuvausSe());
         to.setAccuracy(from.getTarkkuus());
         to.setUnit(DataValidityHelper.nullifyUnknownValue(from.getYksikko()));
-        to.setVehicleClass(VehicleClass.convertAjoneuvoluokka(from.getAjoneuvoluokka()));
+        to.setVehicleClass(VehicleClass.fromAjoneuvoluokka(from.getAjoneuvoluokka()));
         to.setLane(from.getKaista());
         to.setDirection(from.getSuunta());
 

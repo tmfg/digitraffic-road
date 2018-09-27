@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.model;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -88,8 +89,11 @@ public class TypesTest {
     @Test
     public void testAllVehiVehicleClasscleClassTypes() {
         for (final AjoneuvoluokkaTyyppi at : AjoneuvoluokkaTyyppi.values()) {
-            assertNotNull(VehicleClass.convertAjoneuvoluokka(at));
+            assertNotNull(VehicleClass.fromAjoneuvoluokka(at));
         }
+        Assert.assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.HA));
+        Assert.assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.PA));
+        Assert.assertEquals(VehicleClass.BUS, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.LA));
     }
 
 
