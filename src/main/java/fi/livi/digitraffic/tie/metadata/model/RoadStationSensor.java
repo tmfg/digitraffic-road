@@ -109,7 +109,7 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @JsonIgnore
     private boolean isPublic;
 
-    @ApiModelProperty(value = "Presentation name for sensor [en]")
+    @ApiModelProperty(value = "Vehicle class")
     @Enumerated(EnumType.STRING)
     private VehicleClass vehicleClass;
 
