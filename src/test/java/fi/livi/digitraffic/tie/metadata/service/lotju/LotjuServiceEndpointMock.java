@@ -17,9 +17,9 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
-public abstract class LotjuServiceEndpoint {
+public abstract class LotjuServiceEndpointMock {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuServiceEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuServiceEndpointMock.class);
     private final String metadataServerAddress;
     private final Class<?> metatiedotClass;
     private final QName serviceName;
@@ -30,8 +30,8 @@ public abstract class LotjuServiceEndpoint {
     protected final ResourceLoader resourceLoader;
     private boolean inited;
 
-    public LotjuServiceEndpoint(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
-                                final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller) {
+    public LotjuServiceEndpointMock(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
+                                    final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller) {
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
@@ -49,7 +49,7 @@ public abstract class LotjuServiceEndpoint {
      * Must be called before api-operations
      */
     protected void initService() {
-        log.info("Init LotjuServiceEndpoint with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
+        log.info("Init LotjuServiceEndpointMock with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
         final JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(metatiedotClass);
         svrFactory.setAddress(metadataServerAddress);

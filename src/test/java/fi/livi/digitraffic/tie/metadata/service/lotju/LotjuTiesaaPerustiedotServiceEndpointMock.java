@@ -26,10 +26,10 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaPerustiedotEndpoint;
 
-public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements TiesaaPerustiedotEndpoint {
+public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements TiesaaPerustiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuTiesaaPerustiedotServiceEndpoint.class);
-    private static LotjuTiesaaPerustiedotServiceEndpoint instance;
+    private static final Logger log = LoggerFactory.getLogger(LotjuTiesaaPerustiedotServiceEndpointMock.class);
+    private static LotjuTiesaaPerustiedotServiceEndpointMock instance;
 
     private List<TiesaaAsemaVO> initialTiesaaAsemas;
     private List<TiesaaAsemaVO> afterChangeTiesaaAsemas;
@@ -38,17 +38,17 @@ public class LotjuTiesaaPerustiedotServiceEndpoint extends LotjuServiceEndpoint 
     private List<TiesaaLaskennallinenAnturiVO> initialLaskennallisetAnturis;
     private List<TiesaaLaskennallinenAnturiVO> afterChangeLaskennallisetAnturis;
 
-    public static LotjuTiesaaPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera,
-                                                                    final ResourceLoader resourceLoader,
-                                                                    final Jaxb2Marshaller jaxb2Marshaller) {
+    public static LotjuTiesaaPerustiedotServiceEndpointMock getInstance(final String metadataServerAddressCamera,
+                                                                        final ResourceLoader resourceLoader,
+                                                                        final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuTiesaaPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
+            instance = new LotjuTiesaaPerustiedotServiceEndpointMock(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuTiesaaPerustiedotServiceEndpoint(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
-                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+    private LotjuTiesaaPerustiedotServiceEndpointMock(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
+                                                      final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class, TiesaaPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller);
     }
 

@@ -23,26 +23,26 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.ObjectFactory;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.VideopalvelinVO;
 
-public class LotjuKameraPerustiedotServiceEndpoint extends LotjuServiceEndpoint implements KameraPerustiedotEndpoint {
+public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements KameraPerustiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuKameraPerustiedotServiceEndpoint.class);
-    private static LotjuKameraPerustiedotServiceEndpoint instance;
+    private static final Logger log = LoggerFactory.getLogger(LotjuKameraPerustiedotServiceEndpointMock.class);
+    private static LotjuKameraPerustiedotServiceEndpointMock instance;
 
     private List<KameraVO> initialKameras;
     private List<KameraVO> afterChangeKameras;
     private Map<Long, List<EsiasentoVO>> initialEsiasentos = new HashMap<>();
     private Map<Long, List<EsiasentoVO>> afterChangeEsiasentos = new HashMap<>();
 
-    public static LotjuKameraPerustiedotServiceEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
-                                                                    final Jaxb2Marshaller jaxb2Marshaller) {
+    public static LotjuKameraPerustiedotServiceEndpointMock getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                                        final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuKameraPerustiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
+            instance = new LotjuKameraPerustiedotServiceEndpointMock(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuKameraPerustiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
-                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+    private LotjuKameraPerustiedotServiceEndpointMock(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                      final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class, KameraPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller);
     }
 

@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.VehicleClass;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -49,7 +49,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
     private RoadStationSensorService roadStationSensorService;
 
     @Autowired
-    private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
+    private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
 
     @Test
     public void testUpdateTmsStations() {
