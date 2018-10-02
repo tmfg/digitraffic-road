@@ -34,7 +34,7 @@ public class MqttConfig {
         @Value("${mqtt.server.password}")final String password) {
 
         final DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-        factory.getConnectionOptions().setServerURIs(ArrayUtils.toArray(serverUrl));
+        factory.getConnectionOptions().setServerURIs(serverUrl.split(","));
         factory.getConnectionOptions().setUserName(username);
         factory.getConnectionOptions().setPassword(password.toCharArray());
         factory.getConnectionOptions().setMaxInflight(10000);
