@@ -11,7 +11,7 @@
         function connect() {
             console.log('trying to connect...');
 
-            client = new Paho.MQTT.Client("tie-aws-mqtt-test.digitraffic.fi", 9001, '');
+            client = new Paho.MQTT.Client("", 61619, '');
             // empty client_id, server will generate one
 
             client.onConnectionLost = function (response) {
@@ -23,7 +23,12 @@
                 updateList();
             };
 
-            client.connect({onSuccess:onConnect});
+            client.connect({hosts:["b-97744bd8-ec30-4184-bd3f-3a9ee81f1ea3-1.mq.eu-west-1.amazonaws.com","b-97744bd8-ec30-4184-bd3f-3a9ee81f1ea3-2.mq.eu-west-1.amazonaws.com"],
+                ports:[61619,61619],
+                onSuccess:onConnect,
+                mqttVersion:4,
+                useSSL:true,
+                userName:"digitraffic", password:"digitrafficPassword"});
         }
 
         function onConnect() {
