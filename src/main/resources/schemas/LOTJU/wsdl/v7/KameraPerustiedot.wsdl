@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://v7.ws.service.meta.kamera.lotju.ely.fi/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/06/15" name="KameraPerustiedotEndpointImplService" targetNamespace="http://v7.ws.service.meta.kamera.lotju.ely.fi/">
+    <wsdl:import location="KameraPerustiedotEndpoint.wsdl" namespace="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/06/15"/>
+    <wsdl:binding name="KameraPerustiedotEndpointImplServiceSoapBinding" type="ns1:KameraPerustiedotEndpoint">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="HaeKaikkiVideopalvelimet">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiVideopalvelimet">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiVideopalvelimetResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKamera">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKamera">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKameraResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKaikkiKamerat">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiKamerat">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiKameratResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeEsiasennotKameranTunnuksella">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeEsiasennotKameranTunnuksella">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeEsiasennotKameranTunnuksellaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="MuuttaaEsiasennonJulkisuus">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="MuuttaaEsiasennonJulkisuus">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="MuuttaaEsiasennonJulkisuusResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKameratVideopalvelimenTunnuksella">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKameratVideopalvelimenTunnuksella">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKameratVideopalvelimenTunnuksellaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKokoonpanoKameranTunnuksella">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKokoonpanoKameranTunnuksella">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKokoonpanoKameranTunnuksellaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeEsiasento">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeEsiasento">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeEsiasentoResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HaeVideopalvelin">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeVideopalvelin">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeVideopalvelinResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="MuutaKameranJulkisuus">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="MuutaKameranJulkisuus">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="MuutaKameranJulkisuusResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="KameraPerustiedotException">
+                <soap:fault name="KameraPerustiedotException" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="KameraPerustiedotEndpointImplService">
+        <wsdl:port binding="tns:KameraPerustiedotEndpointImplServiceSoapBinding" name="KameraPerustiedotEndpointImplPort">
+            <soap:address location="http://172.30.42.36:9004/kamerameta/services/ws/KameraPerustiedot/v7"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

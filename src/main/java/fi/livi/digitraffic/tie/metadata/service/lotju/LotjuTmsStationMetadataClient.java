@@ -13,15 +13,15 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsemat;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsematResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeLAMAsemanLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeLAMAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsemat;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ObjectFactory;
 
 @Service
 public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {

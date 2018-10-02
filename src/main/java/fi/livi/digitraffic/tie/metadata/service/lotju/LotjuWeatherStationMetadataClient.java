@@ -13,15 +13,15 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiTiesaaAsemat;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeTiesaaAsemanLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsemat;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturit;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
 
 @Service
 public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClient {

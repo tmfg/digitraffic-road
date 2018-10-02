@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCol
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
@@ -44,7 +44,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
     private WeatherStationService weatherStationService;
 
     @Autowired
-    private LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceMock;
+    private LotjuTiesaaPerustiedotServiceEndpointMock lotjuTiesaaPerustiedotServiceMock;
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
@@ -84,23 +84,6 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
     @Test
     public void testUpdateWeatherStations() {
 
-
-        /*
-        <id>34</id>
-            <nimi>vt3_Pirkkola_R</nimi> -> <nimi>vt3_Pirkkola_RR</nimi>
-            <keruunTila>POISTETTU_TILAPAISESTI</keruunTila> -> <keruunTila>KERUUSSA</keruunTila>
-            <lisakuvaus>Helsinki, Pirkkola</lisakuvaus> -> <lisakuvaus>Helsinki, Kirkkola</lisakuvaus>
-            <nimiEn>Road 3 Helsinki, Pirkkola</nimiEn> -> Kirkkola
-            <nimiFi>Tie 3 Helsinki, Pirkkola</nimiFi> -> Kirkkola
-            <nimiSe>Väg 3 Helsingfors, Britas</nimiSe> -> Kyrka
-            <etaisyysTieosanAlusta>4915</etaisyysTieosanAlusta> -> <etaisyysTieosanAlusta>5915</etaisyysTieosanAlusta>
-            <latitudi>6678800</latitudi> -> <latitudi>6678801</latitudi>
-            <longitudi>383971</longitudi> -> <longitudi>383970</longitudi>
-            <korkeus>0</korkeus> -> <korkeus>1</korkeus>
-
-        */
-
-
         Assert.assertNull(findWithLotjuId(allInitial, 33));
         Assert.assertNotNull(findWithLotjuId(allInitial, 34));
         Assert.assertNull(findWithLotjuId(allInitial, 35));
@@ -114,7 +97,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
         final WeatherStationFeature before = findWithLotjuId(allInitial, 34);
         final WeatherStationFeature after = findWithLotjuId(allAfterChange, 34);
 
-        assertEquals(before.getProperties().getName() + "R", after.getProperties().getName());
+        assertEquals(before.getProperties().getName() + "1", after.getProperties().getName());
 
         assertEquals(after.getProperties().getCollectionStatus(), CollectionStatus.GATHERING);
 
@@ -123,17 +106,17 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
         assertEquals(before.getProperties().getNames().get("en"), "Road 3 Helsinki, Pirkkola");
 
         assertEquals(after.getProperties().getNames().get("fi"), "Tie 3 Helsinki, Kirkkola");
-        assertEquals(after.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Kyrka");
+        assertEquals(after.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Kritas");
         assertEquals(after.getProperties().getNames().get("en"), "Road 3 Helsinki, Kirkkola");
 
-        assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4915);
-        assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 5915);
+        assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4715);
+        assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4716);
 
-        assertEquals(before.getProperties().getLongitudeETRS89(), 383971.0, 0.01);
-        assertEquals(after.getProperties().getLongitudeETRS89(), 383970.0, 0.01);
+        assertEquals(before.getProperties().getLongitudeETRS89(), 384007.0, 0.01);
+        assertEquals(after.getProperties().getLongitudeETRS89(), 384008.0, 0.01);
 
-        assertEquals(before.getProperties().getLatitudeETRS89(), 6678800.0, 0.01);
-        assertEquals(after.getProperties().getLatitudeETRS89(), 6678801.0, 0.01);
+        assertEquals(before.getProperties().getLatitudeETRS89(), 6678738.0, 0.01);
+        assertEquals(after.getProperties().getLatitudeETRS89(), 6678739.0, 0.01);
 
         assertEquals(before.getProperties().getAltitudeETRS89(), 0.0, 0.01);
         assertEquals(after.getProperties().getAltitudeETRS89(), 1.0, 0.01);
@@ -144,8 +127,24 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
         final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1, true);
         final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1, false);
 
-        assertEquals("Ilman nopeus", sensorInitial.getDescription());
-        assertEquals("Ilman lampotila", sensorAfter.getDescription());
+
+        assertEquals("EsitysFi", sensorInitial.getPresentationNameFi());
+        assertEquals("EsitysFi2", sensorAfter.getPresentationNameFi());
+
+        assertEquals("EsitysSe", sensorInitial.getPresentationNameSv());
+        assertEquals("EsitysSe2", sensorAfter.getPresentationNameSv());
+
+        assertEquals("EsitysEn", sensorInitial.getPresentationNameEn());
+        assertEquals("EsitysEn2", sensorAfter.getPresentationNameEn());
+
+        assertEquals("Ilman nopeus", sensorInitial.getDescriptionFi());
+        assertEquals("Ilman lämpötila", sensorAfter.getDescriptionFi());
+
+        assertEquals("Luft hastighet", sensorInitial.getDescriptionSv());
+        assertEquals("Luft temperatur", sensorAfter.getDescriptionSv());
+
+        assertEquals("Air velocity", sensorInitial.getDescriptionEn());
+        assertEquals("Air temperature", sensorAfter.getDescriptionEn());
 
         assertEquals("°CC", sensorInitial.getUnit());
         assertEquals("°C", sensorAfter.getUnit());

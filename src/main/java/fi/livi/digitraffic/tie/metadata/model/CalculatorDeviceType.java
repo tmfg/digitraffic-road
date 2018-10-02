@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LaiteTyyppi;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LaiteTyyppi;
 
 public enum CalculatorDeviceType {
 
@@ -8,7 +8,7 @@ public enum CalculatorDeviceType {
     DSL_4_L("DSL_4L"),
     DSL_4_G("DSL_4G"),
     DSL_5("DSL_5"),
-    OTHER("OTHER");
+    OTHER("MUU");
 
     private final String value;
 

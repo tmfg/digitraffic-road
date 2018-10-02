@@ -1,38 +1,42 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2016/10/06">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/03/12">
     <ns2:esiasennot>
+        <id>509</id>
         <jarjestys>1</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>443</kameraId>
         <keruussa>true</keruussa>
         <kompressio>20</kompressio>
-        <nimiEsitys>Kiuruvedelle</nimiEsitys>
-        <nimiLaitteella>Kiuruvedelle</nimiLaitteella>
+        <nimiEsitys>Kalajoelle</nimiEsitys>
+        <nimiLaitteella>Kalajoki</nimiLaitteella>
         <resoluutio>1200x900</resoluutio>
         <suunta>3</suunta>
-        <id>509</id>
+        <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
+        <id>508</id>
         <jarjestys>2</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>443</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
         <nimiEsitys>Iisalmeen</nimiEsitys>
-        <nimiLaitteella>iisalmi</nimiLaitteella>
+        <nimiLaitteella>Iisalmi</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>1</suunta>
-        <id>508</id>
+        <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
-        <jarjestys>3</jarjestys>
+        <id>2801</id>
+        <jarjestys>2</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>443</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
-        <nimiEsitys>Järvelle</nimiEsitys>
-        <nimiLaitteella>Järvi</nimiLaitteella>
+        <nimiEsitys>tienpinta</nimiEsitys>
+        <nimiLaitteella>tienpinta</nimiLaitteella>
+        <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>9</suunta>
-        <id>123456789</id>
+        <viive>10</viive>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

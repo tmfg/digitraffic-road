@@ -7,33 +7,33 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 @Configuration
-public class LotjuConfiguration {
+public class LotjuMockConfiguration {
 
     @Bean
-    public LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceEndpoint(
+    public LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceEndpoint(
             @Value("${metadata.server.address.camera}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuKameraPerustiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuKameraPerustiedotServiceEndpointMock.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
     @Bean
-    public LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceEndpoint(
+    public LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceEndpoint(
             @Value("${metadata.server.address.tms}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuLAMMetatiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuLAMMetatiedotServiceEndpointMock.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
     @Bean
-    public LotjuTiesaaPerustiedotServiceEndpoint lotjuTiesaaPerustiedotServiceEndpoint(
+    public LotjuTiesaaPerustiedotServiceEndpointMock lotjuTiesaaPerustiedotServiceEndpoint(
             @Value("${metadata.server.address.weather}")
             final String metadataServerAddress,
             final ResourceLoader resourceLoader,
             final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuTiesaaPerustiedotServiceEndpoint.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
+        return LotjuTiesaaPerustiedotServiceEndpointMock.getInstance(metadataServerAddress, resourceLoader, jaxb2Marshaller);
     }
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,7 +31,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
-@JsonPropertyOrder(value = {"id", "name", "shortName", "description", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
+@JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
 public class RoadStationSensor implements Comparable<RoadStationSensor> {
@@ -67,7 +68,13 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     private LocalDate obsoleteDate;
 
     @ApiModelProperty(value = "Sensor description [fi]")
-    private String description;
+    private String descriptionFi;
+
+    @ApiModelProperty(value = "Sensor description [sv]")
+    private String descriptionSv;
+
+    @ApiModelProperty(value = "Sensor description [en]")
+    private String descriptionEn;
 
     @ApiModelProperty(value = "Sensor name [fi]")
     @JsonProperty(value = "name")
@@ -89,6 +96,38 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private RoadStationType roadStationType;
+
+    @ApiModelProperty(value = "Presentation name for sensor [fi]")
+    private String presentationNameFi;
+
+    @ApiModelProperty(value = "Presentation name for sensor [sv]")
+    private String presentationNameSv;
+
+    @ApiModelProperty(value = "Presentation name for sensor [en]")
+    private String presentationNameEn;
+
+    @JsonIgnore
+    private boolean isPublic;
+
+    @ApiModelProperty(value = "Vehicle class")
+    @Enumerated(EnumType.STRING)
+    private VehicleClass vehicleClass;
+
+    @ApiModelProperty(value = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
+    private Integer lane;
+
+    @ApiModelProperty(value = "Preset direction " +
+        "(0 = Unknown direction. " +
+        "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
+        "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
+    private Integer direction;
+
+    /**
+     * This value is calculated by db so it's value is not
+     * reliable if entity is modified after fetch from db.
+     */
+    @Column(updatable = false, insertable = false) // virtual column
+    private boolean publishable;
 
     public Long getId() {
         return id;
@@ -155,12 +194,33 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
         this.unit = unit;
     }
 
+    @ApiModelProperty(value = "Sensor description [fi]")
     public String getDescription() {
-        return description;
+        return getDescriptionFi();
     }
 
-    public void setDescription(final String description) {
-        this.description = description;
+    public String getDescriptionFi() {
+        return descriptionFi;
+    }
+
+    public void setDescriptionFi(final String description) {
+        this.descriptionFi = description;
+    }
+
+    public void setDescriptionSv(final String descriptionSv) {
+        this.descriptionSv = descriptionSv;
+    }
+
+    public String getDescriptionSv() {
+        return descriptionSv;
+    }
+
+    public void setDescriptionEn(final String descriptionEn) {
+        this.descriptionEn = descriptionEn;
+    }
+
+    public String getDescriptionEn() {
+        return descriptionEn;
     }
 
     public String getNameFi() {
@@ -231,7 +291,64 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
     }
 
     @Override
-    public int compareTo(RoadStationSensor o) {
+    public int compareTo(final RoadStationSensor o) {
         return Long.compare(getNaturalId(), o.getNaturalId());
+    }
+
+    public void setPresentationNameFi(final String presentationNameFi) {
+        this.presentationNameFi = presentationNameFi;
+    }
+
+    public String getPresentationNameFi() {
+        return presentationNameFi;
+    }
+
+    public void setPresentationNameSv(final String presentationNameSe) {
+        this.presentationNameSv = presentationNameSe;
+    }
+
+    public String getPresentationNameSv() {
+        return presentationNameSv;
+    }
+
+    public void setPresentationNameEn(final String presentationNameEn) {
+        this.presentationNameEn = presentationNameEn;
+    }
+
+    public String getPresentationNameEn() {
+        return presentationNameEn;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    @JsonIgnore
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setVehicleClass(final VehicleClass vehicleClass) {
+        this.vehicleClass = vehicleClass;
+    }
+
+    public VehicleClass getVehicleClass() {
+        return vehicleClass;
+    }
+
+    public void setLane(final Integer lane) {
+        this.lane = lane;
+    }
+
+    public Integer getLane() {
+        return lane;
+    }
+
+    public void setDirection(final Integer direction) {
+        this.direction = direction;
+    }
+
+    public Integer getDirection() {
+        return direction;
     }
 }

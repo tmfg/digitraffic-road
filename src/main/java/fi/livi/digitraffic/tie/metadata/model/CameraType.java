@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.KameraTyyppi;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraTyyppi;
 
 public enum CameraType {
 
@@ -11,7 +11,9 @@ public enum CameraType {
     ZAVIO,
     ENEO,
     BOSCH,
-    SONY;
+    SONY,
+    HIKVISION,
+    OLD;
 
     public static CameraType convertFromKameraTyyppi(final KameraTyyppi kameraTyyppi) {
         if (kameraTyyppi != null) {

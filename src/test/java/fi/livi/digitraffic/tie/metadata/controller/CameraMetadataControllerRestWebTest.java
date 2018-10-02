@@ -19,12 +19,12 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
-    private LotjuKameraPerustiedotServiceEndpoint lotjuKameraPerustiedotServiceMock;
+    private LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceMock;
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;

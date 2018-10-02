@@ -6,10 +6,10 @@ road.datasource.url=jdbc:postgresql://localhost:54322/road
 road.datasource.username=road
 road.datasource.password=road
 
-# Lotju-test v3 soap api
-metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v3
-metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v3
-metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v3
+# Lotju-test SOAP APIs
+metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
+metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v6
+metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 
 # Road conditions api
 roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
@@ -87,7 +87,19 @@ datex2.weight.restrictions.url=http://ava.liikennevirasto.fi/painorajoitukset/pa
 metadata.tmc.url = https://ava.liikennevirasto.fi/tmc/noncertified/
 
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
-# Ie. quartz.CameraUpdateJob.enabled = false
+# Ie. quartz.CameraMetadataUpdateJob.enabled = false
+# quartz.CameraMetadataUpdateJob.enabled = false
+# quartz.CameraStationsStatusMetadataUpdateJob.enabled = false
+# quartz.Datex2RoadworksMessageUpdateJob.enabled = false
+# quartz.Datex2TrafficAlertMessageUpdateJob.enabled = false
+# quartz.Datex2WeightRestrictionsMessageUpdateJob.enabled = false
+# quartz.ForecastSectionCoordinatesMetadataUpdateJob.enabled = false
+# quartz.ForecastSectionWeatherUpdateJob.enabled = false
+# quartz.LocationMetadataUpdateJob.enabled = false
+# quartz.TmsStationMetadataUpdateJob.enabled = false
+# quartz.TmsStationsStatusMetadataUpdateJob.enabled = false
+# quartz.WeatherStationMetadataUpdateJob.enabled = true
+# quartz.WeatherStationsStatusMetadataUpdateJob.enabled = false
 
 # Developer life improvements
 logging.level.root=INFO

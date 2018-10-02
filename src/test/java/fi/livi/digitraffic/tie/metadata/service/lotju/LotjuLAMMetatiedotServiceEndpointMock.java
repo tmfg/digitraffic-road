@@ -12,25 +12,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.ely.lotju.lam.meta.service.ws.v5.LAMMetatiedotEndpointImplService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29.LamAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMAsematResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeKaikkiLAMLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.HaeLAMAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LAMMetatiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LAMMetatiedotV3;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamAsemaLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ArvoVastaavuusVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LAMMetatiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ObjectFactory;
 
 
-public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint implements LAMMetatiedotEndpoint {
+public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointMock implements LAMMetatiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceEndpoint.class);
-    private static LotjuLAMMetatiedotServiceEndpoint instance;
+    private static final Logger log = LoggerFactory.getLogger(LotjuLAMMetatiedotServiceEndpointMock.class);
+    private static LotjuLAMMetatiedotServiceEndpointMock instance;
 
     private List<LamAsemaVO> initialLamAsemas;
     private List<LamAsemaVO> afterChangeLamAsemas;
@@ -40,17 +40,17 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
     private final Map<Long, List<LamLaskennallinenAnturiVO>> afterChangeLamAsemasAnturisMap = new HashMap<>();
 
 
-    public static LotjuLAMMetatiedotServiceEndpoint getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
-                                                                final Jaxb2Marshaller jaxb2Marshaller) {
+    public static LotjuLAMMetatiedotServiceEndpointMock getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                                    final Jaxb2Marshaller jaxb2Marshaller) {
         if (instance == null) {
-            instance = new LotjuLAMMetatiedotServiceEndpoint(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
+            instance = new LotjuLAMMetatiedotServiceEndpointMock(metadataServerAddressCamera, resourceLoader, jaxb2Marshaller);
         }
         return instance;
     }
 
-    private LotjuLAMMetatiedotServiceEndpoint(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
-                                              final Jaxb2Marshaller jaxb2Marshaller) {
-        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotV3.SERVICE, jaxb2Marshaller);
+    private LotjuLAMMetatiedotServiceEndpointMock(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
+                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+        super(resourceLoader, metadataServerAddressCamera, LAMMetatiedotEndpoint.class, LAMMetatiedotEndpointImplService.SERVICE, jaxb2Marshaller);
     }
 
     @Override
@@ -81,31 +81,29 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
 
     private List<LamAsemaVO> readLamAsemas(final String filePath) {
             final HaeKaikkiLAMAsematResponse responseValue = (HaeKaikkiLAMAsematResponse)readLotjuMetadataXml(filePath, ObjectFactory.class);
+        // Tarkistetaan, ettei testidatassa ole mukana julkaisemattomia kenttiä
         for ( final LamAsemaVO k : responseValue.getAsemat() ) {
             Assert.assertNull(k.getAkku());
             Assert.assertNull(k.getAkkuKayttoonottoVuosi());
             Assert.assertNull(k.getIp());
-            Assert.assertNull(k.getLaskinlaite());
             Assert.assertNull(k.getLaskinlaiteSarjanumero());
             Assert.assertNull(k.getLaskinlaiteToimituspvm());
             Assert.assertNull(k.getLatauslaite());
             Assert.assertNull(k.getLatauslaiteKayttoonottoVuosi());
             Assert.assertNull(k.getLiitantayksikko());
+            Assert.assertNull(k.getLisatietoja());
+            Assert.assertNull(k.getLisatieto());
+            Assert.assertNull(k.getPortti());
             Assert.assertNull(k.isRiittavanKokoinenHuoltolevike());
 
-            Assert.assertNull(k.getAikakatkaisu());
             Assert.assertNull(k.getAliverkonPeite());
-            Assert.assertNull(k.getAlkamisPaiva());
-            Assert.assertNull(k.getAsemanTila());
             Assert.assertNull(k.getHuoltolevikkeenEtaisyysAsemasta());
             Assert.assertNull(k.getHuoltoPuutteet());
-            Assert.assertNull(k.getKorjaushuolto());
             Assert.assertNull(k.getLaitekaappiId());
-            Assert.assertNull(k.getLiviId());
+            Assert.assertNull(k.getLisatieto());
             Assert.assertNull(k.getOhjelmistoversio());
             Assert.assertNull(k.getPaattymisPaiva());
             Assert.assertNull(k.getTakuunPaattymisPvm());
-            Assert.assertNull(k.getVuosihuolto());
             Assert.assertNull(k.getVerkkolaiteId());
             Assert.assertNull(k.getYhdyskaytava());
             Assert.assertNull(k.getYhteysTapa());
@@ -250,6 +248,11 @@ public class LotjuLAMMetatiedotServiceEndpoint extends LotjuServiceEndpoint impl
     @Override
     public List<LamAnturiVO> haeLAMAsemanAnturit(final Long id) {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
+    }
+
+    @Override
+    public void updateAsemaTilatieto(Long asemaId, String tieto) {
+        throw new NotImplementedException("updateAsemaTilatieto");
     }
 
     @Override

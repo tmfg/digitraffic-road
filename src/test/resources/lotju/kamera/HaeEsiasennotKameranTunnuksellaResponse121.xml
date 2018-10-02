@@ -1,28 +1,30 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2016/10/06">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/03/12">
     <ns2:esiasennot>
+        <id>1663</id>
         <jarjestys>1</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>121</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
         <nimiEsitys>Kotkaan</nimiEsitys>
-        <nimiLaitteella>Kotkaan</nimiLaitteella>
+        <nimiLaitteella>Kotka</nimiLaitteella>
         <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>1</suunta>
-        <id>1663</id>
+        <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
+        <id>1781</id>
         <jarjestys>2</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>121</kameraId>
         <keruussa>false</keruussa>
         <kompressio>30</kompressio>
         <nimiEsitys>Helsinkiin</nimiEsitys>
-        <nimiLaitteella>Helsinkiin</nimiLaitteella>
+        <nimiLaitteella>Helsinki</nimiLaitteella>
         <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>2</suunta>
-        <id>1781</id>
+        <viive>10</viive>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>
