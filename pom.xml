@@ -423,18 +423,17 @@
                                 </extraargs>
                             </defaultOptions>
                             <wsdlOptions>
-                                <!-- Tiesääasemien staattiset tiedot / The static information of road weather station -->
-                                <!-- Tiesääasemissa tarjolla olevat anturit / Available sensors of road weather station -->
+                                <!-- Tiesääasemien staattiset tiedot / The static information of the road weather stations -->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v4/TiesaaPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
 
-                                <!-- TMS-pisteiden staattiset tiedot / The static information of automatic measuring devices v5 -->
+                                <!-- LAM-pisteiden staattiset tiedot / The static information of the Traffic Flow Measurement System (TMS) -->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v5/LAMMetatiedot.wsdl</wsdl>
                                 </wsdlOption>
 
-                                <!-- Kelikameroiden staattiset tiedot / The static information of weather cameras v6/v7-->
+                                <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
                                     <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v6/KameraPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
