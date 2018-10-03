@@ -49,7 +49,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "FROM   road_station_sensor sensor\n" +
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
-            "where sensor.publishable = 1\n" +
+            "where sensor.publishable = true\n" +
             "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
@@ -63,7 +63,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
             "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
             "where rs_sensors.road_station_id = :id\n" +
-            "  and sensor.publishable = 1\n" +
+            "  and sensor.publishable = true\n" +
             "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
