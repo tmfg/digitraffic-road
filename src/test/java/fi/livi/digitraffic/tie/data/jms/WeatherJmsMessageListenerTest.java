@@ -209,6 +209,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
             }
 
+            sw.stop();
             log.info("Data generation tookMs={}", sw.getTime());
             StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
