@@ -40,6 +40,7 @@ import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
@@ -229,8 +230,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
-        log.info("lastUpdated={} vs now={}", lastUpdated, ZonedDateTime.now().minusMinutes(2));
-        assertTrue("LastUpdated not fresh " + lastUpdated + " < " + ZonedDateTime.now().minusMinutes(2) + lastUpdated, lastUpdated.isAfter(ZonedDateTime.now().minusMinutes(2)));
+        ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
+
+        log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
+        assertTrue("LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes, lastUpdated.isAfter(timeInPast2Minutes));
+
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());

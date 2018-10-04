@@ -127,7 +127,6 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
                    "                                            and svd.sensor_value = sv.value\n" +
                    "where rs.type = :stationTypeId\n" +
-                   "  and rs.obsolete = true\n" +
                    "  and rs.publishable = true\n" +
                    "  and s.publishable = true\n" +
                    "  and sv.updated > :afterDate\n" +
