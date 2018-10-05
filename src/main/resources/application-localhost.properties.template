@@ -6,6 +6,10 @@ road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts
 road.datasource.username=road
 road.datasource.password=road
 
+mqtt.server.url=tcp://address:port
+mqtt.server.username=
+mqtt.server.password=
+
 # Lotju SOAP APIs
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v6
@@ -32,12 +36,10 @@ camera-image-uploader.sftp.user = digitraffic-aws-test
 camera-image-uploader.sftp.privateKeyPassphrase = tyokaverisi-halusi-kiittaa
 camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
 
-# Road conditions api
-roadConditions.baseUrl=http://keli.foreca.fi/digitraffic/
-
 # JMS settings
 
 # Sonja
+jms.sonja.connection.enabled=false
 jms.connectionUrls=
 jms.userId=
 jms.password=
@@ -58,26 +60,22 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 # daemon or web
 app.type=web
 
-# Web application type.  Should be none for daemon process
+# Web application type. Should be none for daemon process
 spring.main.web-application-type=servlet
 
 # Is metadata updates on. Should be true only for daemon process.
 quartz.enabled=false
+
+# if set to false no messages are sent to mqtt.  Should be true for daemon process
+mqtt.enabled=true
+# Is TMS messages available. Should be true for daemon process
+mqtt.tms.enabled=true
 
 # JMS queue enabled/disabled (Only daemon should have these enabled)
 jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false
 jms.datex2.enabled=false
-
-# Websocket stream of TMS sensor values, enabled only for web-app
-websocket.tms.enabled=true
-
-datex2.roadworks.url=http://aineistot.vally.local/roadworks/roadworks_d2.xml
-datex2.weight.restrictions.url=http://aineistot.vally.local/painorajoitukset/painorajoitukset_d2.xml
-
-# TMC locations url
-metadata.tmc.url = http://aineistot.vally.local/tmc/noncertified/
 
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
 # Ie. quartz.CameraMetadataUpdateJob.enabled = false
