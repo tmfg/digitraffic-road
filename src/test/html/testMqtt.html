@@ -2,14 +2,14 @@
 <head>
     <title>Testiclient for mqtt tms-messages</title>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" ></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
 
     <script>
-
         var lines = [];
+        var messageCount = 0;
 
         function connect() {
-            console.log('trying to connect...');
+            console.log('trying to connect to road mqtt...');
 
             client = new Paho.MQTT.Client("", 61619, '');
             // empty client_id, server will generate one
@@ -18,17 +18,26 @@
                 console.info('Collection lost:' + response.errorMessage);
             }
             client.onMessageArrived = function(message) {
+                messageCount++;
+
                 addMessage(JSON.parse(message.payloadString));
 
                 updateList();
             };
 
-            client.connect({hosts:["b-97744bd8-ec30-4184-bd3f-3a9ee81f1ea3-1.mq.eu-west-1.amazonaws.com","b-97744bd8-ec30-4184-bd3f-3a9ee81f1ea3-2.mq.eu-west-1.amazonaws.com"],
+            client.connect({hosts:["b-faf6f5cf-184e-4d1d-8ba5-596d576fc87a-1.mq.eu-west-1.amazonaws.com","b-faf6f5cf-184e-4d1d-8ba5-596d576fc87a-2.mq.eu-west-1.amazonaws.com"],
                 ports:[61619,61619],
                 onSuccess:onConnect,
                 mqttVersion:4,
                 useSSL:true,
                 userName:"digitraffic", password:"digitrafficPassword"});
+
+            window.setInterval(logMessageCount, 60*1000);
+        }
+
+        function logMessageCount() {
+            console.info(Date.now() + ' ' + messageCount + ' messages per minute');
+            messageCount = 0;
         }
 
         function onConnect() {
