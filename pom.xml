@@ -440,6 +440,26 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.5.1</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/resources/schemas/HARJA</sourceDirectory>
+                    <targetPackage>fi.livi.digitraffic.tie.harja</targetPackage>
+                    <outputDirectory>${project.build.directory}/generated-sources/json</outputDirectory>
+                    <useCommonsLang3>true</useCommonsLang3>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal> generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 <!--
             <plugin>
                 <groupId>pl.project13.maven</groupId>
