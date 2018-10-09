@@ -95,4 +95,13 @@ public class WeatherStationProperties extends RoadStationProperties {
     public Boolean isMaster() {
         return master;
     }
+
+    /** This field is only for TMS and Camera -stations */
+    @JsonIgnore
+    @Override
+    public void setPurpose(final String purpose) {
+        if (purpose != null) {
+            throw new UnsupportedOperationException("Available only for TMS and Camera stations");
+        }
+    }
 }
