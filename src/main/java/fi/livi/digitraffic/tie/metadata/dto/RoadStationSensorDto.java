@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Road station sensor")
 @JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
-public class RoadStationSensorDto {
+public abstract class RoadStationSensorDto {
 
     @ApiModelProperty(value = "Sensor id", position = 1)
     @JsonProperty("id")
