@@ -51,7 +51,7 @@ public class MetadataController {
     private static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
     private static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
 
-    private static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
+    static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
     static final String CAMERA_STATIONS_PATH = "/camera-stations";
     static final String WEATHER_STATIONS_PATH = "/weather-stations";
     static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
