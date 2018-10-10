@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,17 +71,15 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testTmsStationSensorsMetadataRestApi() throws Exception {
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
             MetadataController.TMS_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].descriptionFi", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
-            .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
-            .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath());
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].lane", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].direction", anyOf(nullValue(), isA(String.class))));
     }
 }
