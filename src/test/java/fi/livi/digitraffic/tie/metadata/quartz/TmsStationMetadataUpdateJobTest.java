@@ -15,12 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationSensorDto;
+import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.VehicleClass;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
@@ -61,10 +60,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allInitial =
                 tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
-        RoadStationsSensorsMetadata allSensorsInitial =
-            roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.TMS_STATION, false);
-        // Detach form the session to prevent update affect these objects
-        allSensorsInitial.getRoadStationSensors().forEach(s -> entityManager.detach(s));
+        final TmsRoadStationsSensorsMetadata allSensorsInitial =
+            roadStationSensorService.findTmsRoadStationsSensorsMetadata(false);
 
         assertEquals(3, allInitial.getFeatures().size());
 
@@ -76,8 +73,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
         final TmsStationFeatureCollection allAfterChange =
                 tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
-        RoadStationsSensorsMetadata allSensorsAfterChange =
-            roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.TMS_STATION, false);
+        final TmsRoadStationsSensorsMetadata allSensorsAfterChange =
+            roadStationSensorService.findTmsRoadStationsSensorsMetadata(false);
         assertEquals(2, allAfterChange.getFeatures().size());
 
         assertNotNull(findWithLotjuId(allInitial, 1));
@@ -163,8 +160,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         Assert.assertFalse(sensorsAfter.contains(5122L));
         Assert.assertTrue(sensorsAfter.contains(5125L));
 
-        RoadStationSensor initialSensor = allSensorsInitial.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
-        RoadStationSensor afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        TmsRoadStationSensorDto initialSensor = allSensorsInitial.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         Assert.assertNull(initialSensor.getDirection());
         Assert.assertNull(initialSensor.getLane());
         Assert.assertNull(initialSensor.getVehicleClass());

@@ -78,7 +78,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[0].resolution", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].direction", isIn(directions)))
-                ;
+                .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)));
 
     }
 }
