@@ -62,6 +62,23 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.fi", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.sv", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)));
+                .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)));
+    }
+
+    @Test
+    public void testTmsStationSensorsMetadataRestApi() throws Exception {
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+            MetadataController.TMS_STATIONS_AVAILABLE_SENSORS_PATH))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(CONTENT_TYPE))
+            .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptionFi", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath());
     }
 }

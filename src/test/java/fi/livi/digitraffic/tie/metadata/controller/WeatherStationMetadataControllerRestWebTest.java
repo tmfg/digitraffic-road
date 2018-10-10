@@ -45,6 +45,22 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.stationSensors[0]", isA(Integer.class)))
-                ;
+                .andExpect(jsonPath("$.features[0].properties.purpose").doesNotHaveJsonPath());
+    }
+
+    @Test
+    public void testWeatherStationSensorsMetadataRestApi() throws Exception {
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+            MetadataController.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(CONTENT_TYPE))
+            .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptionFi", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotHaveJsonPath());
     }
 }
