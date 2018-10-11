@@ -49,7 +49,7 @@ public class UploadController {
     @ApiOperation("Posting real-time tracking information for a work machine from HARJA")
     @RequestMapping(method = RequestMethod.POST, path = HARJA_SEURANTA_TYOKONE_PATH)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of real-time tracking information for a work machine from HARJA"))
-    public ResponseEntity<Void> postHarjaSeuranta(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus, HttpServletResponse response)
+    public ResponseEntity<Void> postHarjaSeuranta(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
         log.info("Received JSON:\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
