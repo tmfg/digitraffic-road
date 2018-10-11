@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "maintenance", description = "Road Maintenance controller")
+@Api(tags = "maintenance", description = "Maintenance controller")
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_MAINTENANCE_PART_PATH)
