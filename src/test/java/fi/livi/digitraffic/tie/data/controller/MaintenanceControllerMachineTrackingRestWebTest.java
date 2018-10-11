@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 /**
  * Test that every data-api has working last update query
  */
-public class MaintenanceControllerMachineTrackintRestWebTest extends AbstractRestWebTest {
+public class MaintenanceControllerMachineTrackingRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testPostMachineTrackingDataOk() throws Exception {
