@@ -9,13 +9,10 @@ import org.springframework.http.MediaType;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
-/**
- * Test that every data-api has working last update query
- */
-public class MaintenanceControllerMachineTrackingRestWebTest extends AbstractRestWebTest {
+public class MaintenanceControllerTest extends AbstractRestWebTest {
 
     @Test
-    public void testPostWorkMachineTrackingDataOk() throws Exception {
+    public void postWorkMachineTrackingDataOk() throws Exception {
 
         final String jsonContent = readResourceContent("classpath:harja/seuranta.json");
 
