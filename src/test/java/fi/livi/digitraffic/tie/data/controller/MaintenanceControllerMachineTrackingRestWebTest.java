@@ -15,13 +15,13 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 public class MaintenanceControllerMachineTrackingRestWebTest extends AbstractRestWebTest {
 
     @Test
-    public void testPostMachineTrackingDataOk() throws Exception {
+    public void testPostWorkMachineTrackingDataOk() throws Exception {
 
         final String jsonContent = readResourceContent("classpath:harja/seuranta.json");
 
         mockMvc.perform(
             post(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                 RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.MAINTENANCE_TRACKING_MACHINE_PATH)
+                 RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.WORK_MACHINE_TRACKING_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonContent)
             )

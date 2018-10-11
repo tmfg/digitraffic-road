@@ -32,8 +32,7 @@ public class MaintenanceController {
 
     private static final Logger log = LoggerFactory.getLogger(MaintenanceController.class);
 
-    public static final String TRACKING_PATH = "/tracking";
-    public static final String MAINTENANCE_TRACKING_MACHINE_PATH = TRACKING_PATH + "/machine";
+    public static final String WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
 
     private final ObjectMapper objectMapper;
 
@@ -43,9 +42,9 @@ public class MaintenanceController {
     }
 
     @ApiOperation("Posting real-time tracking information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = MAINTENANCE_TRACKING_MACHINE_PATH)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of real-time tracking information for a work machine from HARJA"))
-    public ResponseEntity<Void> postMaintenanceTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
+    @RequestMapping(method = RequestMethod.POST, path = WORK_MACHINE_TRACKING_PATH)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful post of real-time tracking information for a work machine from HARJA"))
+    public ResponseEntity<Void> postWorkMachineTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
         log.info("Received JSON:\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
