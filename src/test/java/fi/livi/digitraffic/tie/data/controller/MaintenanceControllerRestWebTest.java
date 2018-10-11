@@ -12,16 +12,16 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 /**
  * Test that every data-api has working last update query
  */
-public class UploadControllerRestWebTest extends AbstractRestWebTest {
+public class MaintenanceControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
-    public void testPostHarjaSeurantaDataOk() throws Exception {
+    public void testPostMachineTrackingDataOk() throws Exception {
 
         final String jsonContent = readResourceContent("classpath:harja/seuranta.json");
 
         mockMvc.perform(
             post(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                 RoadApplicationConfiguration.API_UPLOAD_PART_PATH + UploadController.HARJA_SEURANTA_TYOKONE_PATH)
+                 RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.MAINTENANCE_TRACKING_MACHINE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonContent)
             )

@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_UPLOAD_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,31 +23,29 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "upload", description = "Upload data to Digitraffic service")
+@Api(tags = "maintenance", description = "Road Maintenance controller")
 @RestController
 @Validated
-@RequestMapping(API_V1_BASE_PATH + API_UPLOAD_PART_PATH)
+@RequestMapping(API_V1_BASE_PATH + API_MAINTENANCE_PART_PATH)
 @ConditionalOnWebApplication
-public class UploadController {
+public class MaintenanceController {
 
-    private static final Logger log = LoggerFactory.getLogger(UploadController.class);
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceController.class);
 
-    public static final String HARJA_PATH = "/harja";
-    public static final String HARJA_SEURANTA_TYOKONE_PATH = HARJA_PATH + "/seuranta/tyokone";
+    public static final String TRACKING_PATH = "/tracking";
+    public static final String MAINTENANCE_TRACKING_MACHINE_PATH = TRACKING_PATH + "/machine";
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public UploadController(final ObjectMapper objectMapper) {
+    public MaintenanceController(final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-
-
     @ApiOperation("Posting real-time tracking information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = HARJA_SEURANTA_TYOKONE_PATH)
+    @RequestMapping(method = RequestMethod.POST, path = MAINTENANCE_TRACKING_MACHINE_PATH)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of real-time tracking information for a work machine from HARJA"))
-    public ResponseEntity<Void> postHarjaSeuranta(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
+    public ResponseEntity<Void> postMaintenanceTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
         log.info("Received JSON:\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
