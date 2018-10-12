@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,10 +35,13 @@ public class MaintenanceController {
 
     public static final String WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
 
+    final private MaintenanceDataService maintenanceDataService;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MaintenanceController(final ObjectMapper objectMapper) {
+    public MaintenanceController(final MaintenanceDataService maintenanceDataService,
+                                 final ObjectMapper objectMapper) {
+        this.maintenanceDataService = maintenanceDataService;
         this.objectMapper = objectMapper;
     }
 
@@ -48,6 +52,8 @@ public class MaintenanceController {
         throws JsonProcessingException {
 
         log.info("Received JSON:\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
+
+        maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
 
         return ResponseEntity.ok().build();
     }

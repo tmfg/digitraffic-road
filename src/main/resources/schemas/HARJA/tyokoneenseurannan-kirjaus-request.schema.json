@@ -2,11 +2,13 @@
   "$schema": "http://json-schema.org/draft-03/schema#",
   "id": "urn:harja",
   "type": "object",
+  "javaInterfaces" : ["java.io.Serializable"],
   "additionalProperties": false,
   "properties": {
     "otsikko": {
       "id": "urn:harja/otsikko",
       "type": "object",
+      "javaInterfaces" : ["java.io.Serializable"],
       "additionalProperties": false,
       "$ref": "entities/otsikko.schema.json",
       "required": true
@@ -19,16 +21,19 @@
       "items": {
         "id": "http://example.com/item-schema",
         "type": "object",
+        "javaInterfaces" : ["java.io.Serializable"],
         "additionalProperties": false,
         "properties": {
           "havainto": {
             "id": "urn:harja/havainnot/0",
             "type": "object",
+            "javaInterfaces" : ["java.io.Serializable"],
             "required": true,
             "properties": {
               "tyokone": {
                 "id": "urn:harja/havainnot/0/tyokone",
                 "type": "object",
+                "javaInterfaces" : ["java.io.Serializable"],
                 "additionalProperties": false,
                 "required": true,
                 "properties": {
@@ -47,6 +52,7 @@
               "sijainti": {
                 "id": "urn:harja/havainnot/0/sijainti",
                 "type": "object",
+                "javaInterfaces" : ["java.io.Serializable"],
                 "additionalProperties": false,
                 "$ref": "entities/sijainti.schema.json",
                 "required": true

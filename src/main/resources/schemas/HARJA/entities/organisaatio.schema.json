@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-03/schema#",
   "id": "urn:harja",
   "type": "object",
+  "javaInterfaces" : ["java.io.Serializable"],
   "additionalProperties": false,
   "properties": {
     "nimi": {
