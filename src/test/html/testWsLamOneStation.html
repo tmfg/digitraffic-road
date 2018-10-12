@@ -1,34 +1,36 @@
 <html>
 <head>
-    <title>Testiclient for lam sensor values</title>
+    <title>Test arbitrary lam station web-socket</title>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" ></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.0.3/sockjs.min.js"></script>
 
     <script>
-        var lines = [];
+        const lines = [];
+        const arbitraryLamId = 23836;
+        let url;
 
         function connect() {
-//            var url = "ws://localhost:9010/api/v1/plain-websockets/tmsdata";
-            var url = "ws://tie-test.digitraffic.fi/api/v1/plain-websockets/tmsdata";
+//           url = "ws://localhost:9010/api/v1/plain-websockets/tmsdata/" + arbitraryLamId;
+            url = "ws://tie-legacy.digitraffic.fi/api/v1/plain-websockets/tmsdata/" + arbitraryLamId;
             console.log('trying to connect: ' + url);
 
-            var socket = new WebSocket(url);
+            const socket = new WebSocket(url);
 
             console.info('Socket is ' + socket.readyState);
 
             socket.onopen = function (event) {
                 console.info('Socket is open');
-            }
+            };
 
             socket.onmessage = function(message) {
                 console.info("data JSON: " + convert(message));
                 addMessage(message);
-                updateList();
+                updateList()
             };
         }
 
         function addMessage(message) {
-            var text = convert(message);
+            const text = convert(message);
 
             if (lines.length > 50) {
                 lines.shift();
@@ -46,10 +48,15 @@
         }
 
         connect();
+
+        $( document ).ready(function() {
+            $("#lamId").text(arbitraryLamId);
+        });
+
     </script>
 </head>
 <body>
-    <b>All messages:</b>
-    <pre style="color: #a6c52b" class="messages"></pre>
+    <b>Messages of lamStationId=<span id="lamId" >?lamId?</span>:</b>
+    <pre class="messages"></pre>
 </body>
 </html>
