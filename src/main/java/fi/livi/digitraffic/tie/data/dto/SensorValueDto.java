@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @Immutable
 @ApiModel(value = "SensorValue", description = "Sensor value")
-@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd"})
+@JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd", "measuredTime"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
 
@@ -72,6 +72,9 @@ public class SensorValueDto {
     /** Db's timestamp */
     @JsonIgnore
     private ZonedDateTime updatedTime;
+
+    @ApiModelProperty(value = "Measurement time", position = 5)
+    private ZonedDateTime measuredTime;
 
     public Long getRoadStationNaturalId() {
         return roadStationNaturalId;
@@ -147,6 +150,14 @@ public class SensorValueDto {
 
     public void setUpdatedTime(final ZonedDateTime updated) {
         this.updatedTime = updated;
+    }
+
+    public ZonedDateTime getMeasuredTime() {
+        return measuredTime;
+    }
+
+    public void setMeasuredTime(ZonedDateTime measuredTime) {
+        this.measuredTime = measuredTime;
     }
 
     public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
