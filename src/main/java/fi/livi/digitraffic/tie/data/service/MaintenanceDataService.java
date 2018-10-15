@@ -32,10 +32,5 @@ public class MaintenanceDataService {
 
         final WorkMachineTracking tracking = new WorkMachineTracking(tyokoneenseurannanKirjaus);
         workMachineTrackingRepository.save(tracking);
-        log.info(ToStringHelper.toStringFull(tracking));
-        //log.info(ToStringHelper.toStringFull(tracking));
-        //objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus);
-        //final WorkMachineTracking saved = workMachineTrackingRepository.getOne(tracking.getId());
-        //log.info(ToStringHelper.toStringFull(saved));
     }
 }

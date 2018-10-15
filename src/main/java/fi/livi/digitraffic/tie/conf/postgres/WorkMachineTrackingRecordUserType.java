@@ -19,10 +19,21 @@ import org.hibernate.usertype.UserType;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 public class WorkMachineTrackingRecordUserType implements UserType {
+
+    private final ObjectWriter writer;
+    private final ObjectReader reader;
+
+    public WorkMachineTrackingRecordUserType() {
+        final ObjectMapper mapper = new ObjectMapper();
+        writer = mapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
+        reader = mapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
+    }
 
     @Override
     public int[] sqlTypes() {
@@ -57,9 +68,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return null;
         }
         try {
-            // TODO change to use ObjectWriter and ObjectReader objects, which can be constructed by ObjectMapper
-            final ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(cellContent.getBytes("UTF-8"), returnedClass());
+            return reader.readValue(cellContent.getBytes("UTF-8"));
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
         }
@@ -75,9 +84,8 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return;
         }
         try {
-            final ObjectMapper mapper = new ObjectMapper();
             final StringWriter w = new StringWriter();
-            mapper.writeValue(w, value);
+            writer.writeValue(w, value);
             w.flush();
             ps.setObject(idx, w.toString(), Types.OTHER);
         } catch (final Exception ex) {
