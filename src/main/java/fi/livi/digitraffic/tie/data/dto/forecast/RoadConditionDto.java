@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class RoadConditionDto {
     private final String forecastName;
 
-    @ApiModelProperty("Observation or forecast time depending on type")
+    @ApiModelProperty("ObservationProperties or forecast time depending on type")
     private final ZonedDateTime time;
 
     @ApiModelProperty("Tells if there is daylight: true/false")

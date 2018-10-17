@@ -16,23 +16,39 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.conf.SpringContext;
+import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTrackingRecord;
 
 public class WorkMachineTrackingRecordUserType implements UserType {
 
-    private final ObjectWriter writer;
-    private final ObjectReader reader;
+    private static final Logger log = LoggerFactory.getLogger(WorkMachineTrackingRecordUserType.class);
+    private ObjectWriter writer;
+    private ObjectReader reader;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public WorkMachineTrackingRecordUserType() {
-        final ObjectMapper mapper = new ObjectMapper();
-        writer = mapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
-        reader = mapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
+    }
+
+    private void init() {
+        if (writer == null) {
+            final AutowireCapableBeanFactory beanFactory =
+                SpringContext.getAppContext().getAutowireCapableBeanFactory();
+            beanFactory.autowireBean(this);
+            writer = objectMapper.writerFor(WorkMachineTrackingRecord.class);
+            reader = objectMapper.readerFor(WorkMachineTrackingRecord.class);
+        }
     }
 
     @Override
@@ -41,8 +57,8 @@ public class WorkMachineTrackingRecordUserType implements UserType {
     }
 
     @Override
-    public Class<TyokoneenseurannanKirjausRequestSchema> returnedClass() {
-        return TyokoneenseurannanKirjausRequestSchema.class;
+    public Class<WorkMachineTrackingRecord> returnedClass() {
+        return WorkMachineTrackingRecord.class;
     }
 
     @Override
@@ -68,6 +84,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return null;
         }
         try {
+            init();
             return reader.readValue(cellContent.getBytes("UTF-8"));
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
@@ -84,6 +101,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return;
         }
         try {
+            init();
             final StringWriter w = new StringWriter();
             writer.writeValue(w, value);
             w.flush();

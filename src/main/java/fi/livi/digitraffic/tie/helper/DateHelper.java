@@ -61,6 +61,10 @@ public final class DateHelper {
         return instant == null ? null : instant.atZone(UTC);
     }
 
+    public static ZonedDateTime toZonedDateTime(final Date from) {
+        return from == null ? null : toZonedDateTime(from.toInstant());
+    }
+
     public static Date toDate(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
             return Date.from(zonedDateTime.toInstant());

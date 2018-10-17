@@ -2,6 +2,9 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 import io.swagger.annotations.Api;
@@ -58,5 +62,10 @@ public class MaintenanceController {
         return ResponseEntity.ok().build();
     }
 
-
+    @ApiOperation("Find all records")
+    @RequestMapping(method = RequestMethod.GET, path = WORK_MACHINE_TRACKING_PATH + "_get", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of tracking information for a work machines"))
+    public List<WorkMachineTracking> findAll() {
+        return maintenanceDataService.findAll();
+    }
 }

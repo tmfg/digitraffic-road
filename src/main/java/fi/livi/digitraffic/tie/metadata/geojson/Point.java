@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
-public class Point {
+public class Point implements Serializable {
 
     private static final int LONGITUDE_IDX = 0;
     private static final int LATITUDE_IDX = 1;
@@ -36,7 +37,7 @@ public class Point {
         setLatitude(latitude);
     }
 
-    public Point(final double longitude, final double latitude, final double altitude) {
+    public Point(final Double longitude, final Double latitude, final Double altitude) {
         this();
         setLongitude(longitude);
         setLatitude(latitude);
@@ -71,15 +72,15 @@ public class Point {
         return getCoordinates().get(LATITUDE_IDX);
     }
 
-    public void setLongitude(final double longitude) {
+    public void setLongitude(final Double longitude) {
         setCoordinate(LONGITUDE_IDX, longitude);
     }
 
-    public void setLatitude(final double latitude) {
+    public void setLatitude(final Double latitude) {
         setCoordinate(LATITUDE_IDX, latitude);
     }
 
-    public void setAltitude(final double altitude) {
+    public void setAltitude(final Double altitude) {
         setCoordinate(ALTITUDE_IDX, altitude);
     }
 
@@ -90,7 +91,10 @@ public class Point {
         return null;
     }
 
-    private void setCoordinate(int index, double coordinate) {
+    private void setCoordinate(int index, Double coordinate) {
+        if (coordinate == null) {
+            return;
+        }
         while (coordinates.size() <= index) {
             coordinates.add(null);
         }
