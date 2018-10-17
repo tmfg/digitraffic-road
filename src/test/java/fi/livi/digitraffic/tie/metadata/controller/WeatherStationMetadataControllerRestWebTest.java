@@ -56,6 +56,9 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description.fi", isA(String.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotExist())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotExist())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotExist());

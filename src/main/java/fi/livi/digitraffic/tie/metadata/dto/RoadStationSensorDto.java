@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.dto;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,15 +26,6 @@ public abstract class RoadStationSensorDto {
     @ApiModelProperty(value = "Unit of sensor value")
     private String unit;
 
-    @ApiModelProperty(value = "Sensor description [fi]")
-    private String descriptionFi;
-
-    @ApiModelProperty(value = "Sensor description [sv]")
-    private String descriptionSv;
-
-    @ApiModelProperty(value = "Sensor description [en]")
-    private String descriptionEn;
-
     @ApiModelProperty(value = "Sensor name [fi]")
     @JsonProperty(value = "name")
     private String nameFi;
@@ -47,14 +40,11 @@ public abstract class RoadStationSensorDto {
     @ApiModelProperty("Possible additional descriptions for sensor values")
     private List<SensorValueDescription> sensorValueDescriptions;
 
-    @ApiModelProperty(value = "Presentation name for sensor [fi]")
-    private String presentationNameFi;
+    @ApiModelProperty(value = "Map of descriptions [fi, sv, en]")
+    private Map<String, String> descriptions = new HashMap<>();
 
-    @ApiModelProperty(value = "Presentation name for sensor [sv]")
-    private String presentationNameSv;
-
-    @ApiModelProperty(value = "Presentation name for sensor [en]")
-    private String presentationNameEn;
+    @ApiModelProperty(value = "Map of presentation names [fi, sv, en]")
+    private Map<String, String> presentationNames = new HashMap<>();
 
     public RoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
                                 String nameFi, String shortNameFi, Integer accuracy,
@@ -63,16 +53,17 @@ public abstract class RoadStationSensorDto {
         this.naturalId = naturalId;
         this.name = name;
         this.unit = unit;
-        this.descriptionFi = descriptionFi;
-        this.descriptionSv = descriptionSv;
-        this.descriptionEn = descriptionEn;
         this.nameFi = nameFi;
         this.shortNameFi = shortNameFi;
         this.accuracy = accuracy;
         this.sensorValueDescriptions = sensorValueDescriptions;
-        this.presentationNameFi = presentationNameFi;
-        this.presentationNameSv = presentationNameSv;
-        this.presentationNameEn = presentationNameEn;
+        addPresentationName("fi", presentationNameFi);
+        addPresentationName("en", presentationNameEn);
+        addPresentationName("sv", presentationNameSv);
+        addDescription("fi", descriptionFi);
+        addDescription("en", descriptionEn);
+        addDescription("sv", descriptionSv);
+
     }
 
     public long getNaturalId() {
@@ -89,19 +80,7 @@ public abstract class RoadStationSensorDto {
 
     @ApiModelProperty(value = "Sensor description [fi]")
     public String getDescription() {
-        return getDescriptionFi();
-    }
-
-    public String getDescriptionFi() {
-        return descriptionFi;
-    }
-
-    public String getDescriptionSv() {
-        return descriptionSv;
-    }
-
-    public String getDescriptionEn() {
-        return descriptionEn;
+        return descriptions.get("fi");
     }
 
     public String getNameFi() {
@@ -120,16 +99,19 @@ public abstract class RoadStationSensorDto {
         return sensorValueDescriptions;
     }
 
-    public String getPresentationNameFi() {
-        return presentationNameFi;
+    public void addPresentationName(final String lang, final String name) {
+        this.presentationNames.put(lang, name);
     }
 
-    public String getPresentationNameSv() {
-        return presentationNameSv;
+    public void addDescription(final String lang, final String description) {
+        this.descriptions.put(lang, description);
     }
 
-    public String getPresentationNameEn() {
-        return presentationNameEn;
+    public Map<String, String> getDescriptions() {
+        return descriptions;
     }
 
+    public Map<String, String> getPresentationNames() {
+        return presentationNames;
+    }
 }
