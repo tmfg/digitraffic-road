@@ -10,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum PerformedTask {
 
     // TODO to English
-    ASFALTOINTI("asfaltointi"),
-    AURAUS_JA_SOHJONPOISTO("auraus ja sohjonpoisto"),
-    AURAUSVIITOITUS_JA_KINOSTIMET("aurausviitoitus ja kinostimet"),
-    HARJAUS("harjaus"),
-    JYRAYS("jyrays"),
-    KELINTARKASTUS("kelintarkastus"),
-    KONEELLINEN_NIITTO("koneellinen niitto"),
-    KONEELLINEN_VESAKONRAIVAUS("koneellinen vesakonraivaus"),
+    ASPHALTING("asfaltointi"),
+    SNOW_PLOWING_AND_SLUSH_REMOVAL("auraus ja sohjonpoisto"),
+    SNOW_PLOW_STICKS_JA_FENCE("aurausviitoitus ja kinostimet"),
+    SWEEPING("harjaus"),
+    ROLLING("jyrays"),
+    DRIVING_CONDITIONS_INSPECTION("kelintarkastus"),
+    MACHINERY_MOWING("koneellinen niitto"),
+    MACHINERY_VESAKONRAIVAUS("koneellinen vesakonraivaus"),
     KUUMENNUS("kuumennus"),
     L_JA_P_ALUEIDEN_PUHDISTUS("l- ja p-alueiden puhdistus"),
     LIIKENNEMERKKIEN_PUHDISTUS("liikennemerkkien puhdistus"),
