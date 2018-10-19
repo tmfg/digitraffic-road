@@ -77,8 +77,8 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", anyOf(nullValue(), isA(String.class))))
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass", anyOf(nullValue(), isA(String.class))))
             .andExpect(jsonPath("$.roadStationSensors[0].lane", anyOf(nullValue(), isA(String.class))))
             .andExpect(jsonPath("$.roadStationSensors[0].direction", anyOf(nullValue(), isA(String.class))));
