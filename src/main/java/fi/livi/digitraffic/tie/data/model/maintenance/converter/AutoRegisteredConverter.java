@@ -19,7 +19,7 @@ public abstract class AutoRegisteredConverter<S, T> implements Converter<S, T> {
         conversionService.addConverter(this);
     }
 
-    public <TT> TT convert(Object source, Class<TT> targetType) {
+    public <TT> TT convert(final Object source, final Class<TT> targetType) {
         return convert(source, targetType);
     }
 }
