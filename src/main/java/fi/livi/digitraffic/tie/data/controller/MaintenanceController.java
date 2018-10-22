@@ -62,11 +62,4 @@ public class MaintenanceController {
 
         return ResponseEntity.ok().build();
     }
-
-    @ApiOperation("Find all records")
-    @RequestMapping(method = RequestMethod.GET, path = WORK_MACHINE_TRACKING_PATH + "_get", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of tracking information for a work machines"))
-    public List<WorkMachineTracking> findAll() {
-        return maintenanceDataService.findAll();
-    }
 }
