@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
@@ -27,6 +28,17 @@ public class Point implements Serializable {
     @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters. Location accuracy is 1-100 metres.)",
                       required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
+
+    /**
+     * @param coordinates longitude, latitude, [altitude]
+     */
+    @JsonCreator
+    public Point(@JsonProperty("coordinates")
+                 final List<Double> coordinates) {
+        this(coordinates.get(LONGITUDE_IDX),
+             coordinates.get(LATITUDE_IDX),
+             coordinates.size() >= ALTITUDE_IDX + 1 ? coordinates.get(ALTITUDE_IDX) : null);
+    }
 
     public Point(final double longitude, final double latitude) {
         this(longitude, latitude, null);
