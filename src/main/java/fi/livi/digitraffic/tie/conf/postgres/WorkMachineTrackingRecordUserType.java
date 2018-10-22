@@ -41,14 +41,28 @@ public class WorkMachineTrackingRecordUserType implements UserType {
     public WorkMachineTrackingRecordUserType() {
     }
 
-    private void init() {
-        if (writer == null) {
+    private void initObjectReaderAndWriter() {
+        if (objectMapper == null) {
             final AutowireCapableBeanFactory beanFactory =
                 SpringContext.getAppContext().getAutowireCapableBeanFactory();
             beanFactory.autowireBean(this);
             writer = objectMapper.writerFor(WorkMachineTrackingRecord.class);
             reader = objectMapper.readerFor(WorkMachineTrackingRecord.class);
         }
+    }
+
+    private ObjectReader getReader() {
+        if (reader == null) {
+            initObjectReaderAndWriter();
+        }
+        return reader;
+    }
+
+    private ObjectWriter getWriter() {
+        if (writer == null) {
+            initObjectReaderAndWriter();
+        }
+        return writer;
     }
 
     @Override
@@ -84,12 +98,13 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return null;
         }
         try {
-            init();
-            return reader.readValue(cellContent.getBytes("UTF-8"));
+            return getReader().readValue(cellContent.getBytes("UTF-8"));
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
         }
     }
+
+
 
     @Override
     public void nullSafeSet(final PreparedStatement ps, final Object value, final int idx,
@@ -101,9 +116,8 @@ public class WorkMachineTrackingRecordUserType implements UserType {
             return;
         }
         try {
-            init();
             final StringWriter w = new StringWriter();
-            writer.writeValue(w, value);
+            getWriter().writeValue(w, value);
             w.flush();
             ps.setObject(idx, w.toString(), Types.OTHER);
         } catch (final Exception ex) {
