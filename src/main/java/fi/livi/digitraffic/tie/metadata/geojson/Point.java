@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -27,21 +28,17 @@ public class Point implements Serializable {
                       required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
 
-    public Point() {
-        coordinates = new ArrayList<>(3);
-    }
-
     public Point(final double longitude, final double latitude) {
-        this();
-        setLongitude(longitude);
-        setLatitude(latitude);
+        this(longitude, latitude, null);
     }
 
-    public Point(final Double longitude, final Double latitude, final Double altitude) {
-        this();
-        setLongitude(longitude);
-        setLatitude(latitude);
-        setAltitude(altitude);
+    public Point(final double longitude, final double latitude, final Double altitude) {
+        coordinates = Arrays.asList(new Double[ altitude == null ? 2 : 3 ]);
+        coordinates.set(LONGITUDE_IDX, longitude);
+        coordinates.set(LATITUDE_IDX, latitude);
+        if (altitude != null) {
+            coordinates.set(ALTITUDE_IDX, altitude);
+        }
     }
 
     public String getType() {
@@ -50,11 +47,6 @@ public class Point implements Serializable {
 
     public List<Double> getCoordinates() {
         return coordinates;
-    }
-
-    @JsonIgnore
-    public boolean hasAltitude() {
-        return getCoordinate(ALTITUDE_IDX) != null;
     }
 
     @JsonIgnore
@@ -69,19 +61,7 @@ public class Point implements Serializable {
 
     @JsonIgnore
     public Double getLatitude() {
-        return getCoordinates().get(LATITUDE_IDX);
-    }
-
-    public void setLongitude(final Double longitude) {
-        setCoordinate(LONGITUDE_IDX, longitude);
-    }
-
-    public void setLatitude(final Double latitude) {
-        setCoordinate(LATITUDE_IDX, latitude);
-    }
-
-    public void setAltitude(final Double altitude) {
-        setCoordinate(ALTITUDE_IDX, altitude);
+        return getCoordinate(LATITUDE_IDX);
     }
 
     private Double getCoordinate(int index) {
@@ -89,16 +69,6 @@ public class Point implements Serializable {
             return coordinates.get(index);
         }
         return null;
-    }
-
-    private void setCoordinate(int index, Double coordinate) {
-        if (coordinate == null) {
-            return;
-        }
-        while (coordinates.size() <= index) {
-            coordinates.add(null);
-        }
-        coordinates.set(index, coordinate);
     }
 
     @Override

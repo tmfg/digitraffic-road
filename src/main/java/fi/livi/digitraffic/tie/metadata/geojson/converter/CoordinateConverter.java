@@ -41,9 +41,7 @@ public class CoordinateConverter {
         ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
                                                  fromPoint.getLatitude());
         transformer.transform(from, to);
-        Point point = fromPoint.hasAltitude() ?
-                      new Point(to.x, to.y, fromPoint.getAltitude()) :
-                      new Point(to.x, to.y);
+        Point point = new Point(to.x, to.y, fromPoint.getAltitude());
 
         if (log.isDebugEnabled()) {
             log.debug("From: " + fromPoint + " to " + point);
