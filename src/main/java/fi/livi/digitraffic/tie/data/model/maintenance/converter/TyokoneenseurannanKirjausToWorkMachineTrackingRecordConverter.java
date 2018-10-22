@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 @Component
-public class TyokoneenseurannanKirjausToWorkMachineTrackingRecord
+public class TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter
     extends AutoRegisteredConverter<TyokoneenseurannanKirjausRequestSchema, WorkMachineTrackingRecord> {
 
     @Override
