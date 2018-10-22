@@ -2,27 +2,23 @@
   "$schema": "http://json-schema.org/draft-03/schema#",
   "id": "urn:harja",
   "type": "object",
-  "javaInterfaces" : ["java.io.Serializable"],
   "additionalProperties": false,
   "properties": {
     "koordinaatit": {
       "id": "urn:harja/koordinaattisijainti",
       "type": "object",
-      "javaInterfaces" : ["java.io.Serializable"],
       "additionalProperties": false,
       "$ref": "koordinaattisijainti.schema.json"
     },
     "tie": {
       "id": "urn:harja/tiesijainti",
       "type": "object",
-      "javaInterfaces" : ["java.io.Serializable"],
       "additionalProperties": false,
       "$ref": "tiesijainti.schema.json"
     },
     "linkki": {
       "id": "urn:harja/tiesijainti",
       "type": "object",
-      "javaInterfaces" : ["java.io.Serializable"],
       "additionalProperties": false,
       "$ref": "linkkisijainti.schema.json"
     }

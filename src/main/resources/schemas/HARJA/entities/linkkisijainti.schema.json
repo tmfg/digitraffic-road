@@ -2,7 +2,6 @@
   "$schema": "http://json-schema.org/draft-03/schema#",
   "id": "urn:harja/sijainti/linkki",
   "type": "object",
-  "javaInterfaces" : ["java.io.Serializable"],
   "additionalProperties": false,
   "properties": {
     "id": {
