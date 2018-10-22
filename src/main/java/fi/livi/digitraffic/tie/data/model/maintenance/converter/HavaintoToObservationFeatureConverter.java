@@ -23,7 +23,7 @@ public class HavaintoToObservationFeatureConverter extends AutoRegisteredConvert
                     new Point(coords.getX(), coords.getY(), coords.getZ()));
             tgt.setGeometry(point);
         }
-        tgt.setProperties(conversionService.convert(src, ObservationProperties.class));
+        tgt.setProperties(convert(src, ObservationProperties.class));
         return tgt;
     }
 }

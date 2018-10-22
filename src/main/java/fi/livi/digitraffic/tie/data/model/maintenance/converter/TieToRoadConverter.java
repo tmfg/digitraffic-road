@@ -20,7 +20,7 @@ public class TieToRoadConverter extends AutoRegisteredConverter<Tie, Road> {
             src.getLet(),
             src.getLosa(),
             src.getAjr(),
-            conversionService.convert(src.getKaista(), Lane.class),
+            convert(src.getKaista(), Lane.class),
             src.getPuoli(),
             DateHelper.toZonedDateTime(src.getAlkupvm()),
             DateHelper.toZonedDateTime(src.getLoppupvm()),

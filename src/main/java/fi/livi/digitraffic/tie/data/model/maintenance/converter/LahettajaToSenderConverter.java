@@ -13,6 +13,6 @@ public class LahettajaToSenderConverter extends AutoRegisteredConverter<Lahettaj
     public Sender convert(final Lahettaja src) {
         return new Sender(
             src.getJarjestelma(),
-            conversionService.convert(src.getOrganisaatio(), Organisation.class));
+            convert(src.getOrganisaatio(), Organisation.class));
     }
 }

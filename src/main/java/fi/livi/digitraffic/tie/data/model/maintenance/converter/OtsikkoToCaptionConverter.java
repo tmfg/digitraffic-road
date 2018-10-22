@@ -13,7 +13,7 @@ public class OtsikkoToCaptionConverter extends AutoRegisteredConverter<OtsikkoSc
     @Override
     public Caption convert(final OtsikkoSchema src) {
         return new Caption(
-            conversionService.convert(src.getLahettaja(), Sender.class),
+            convert(src.getLahettaja(), Sender.class),
             src.getViestintunniste() != null ? src.getViestintunniste().getId() : null,
             DateHelper.toZonedDateTime(src.getLahetysaika()));
     }

@@ -25,18 +25,18 @@ public class HavaintoToObservationPropertiesConverter extends AutoRegisteredConv
         tgt.setObservationTime(DateHelper.toZonedDateTime(src.getHavaintoaika()));
         tgt.setAdditionalProperties(src.getAdditionalProperties());
 
-        tgt.setWorkMachine(conversionService.convert(src.getTyokone(), WorkMachine.class));
+        tgt.setWorkMachine(convert(src.getTyokone(), WorkMachine.class));
 
         final SijaintiSchema sijainti = src.getSijainti();
         if (sijainti != null) {
-            tgt.setRoad(conversionService.convert(src.getSijainti().getTie(), Road.class));
-            tgt.setLink(conversionService.convert(src.getSijainti().getLinkki(), Link.class));
+            tgt.setRoad(convert(src.getSijainti().getTie(), Road.class));
+            tgt.setLink(convert(src.getSijainti().getLinkki(), Link.class));
         }
 
         tgt.setPerformedTasks(
             src.getSuoritettavatTehtavat() == null ?
                 null :
-                src.getSuoritettavatTehtavat().stream().map(tehtava -> conversionService.convert(tehtava, PerformedTask.class))
+                src.getSuoritettavatTehtavat().stream().map(tehtava -> convert(tehtava, PerformedTask.class))
                     .collect(Collectors.toList()));
 
         return tgt;

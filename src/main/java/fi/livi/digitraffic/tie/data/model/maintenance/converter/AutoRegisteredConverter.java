@@ -11,11 +11,15 @@ public abstract class AutoRegisteredConverter<S, T> implements Converter<S, T> {
 
     @Autowired
     @Qualifier("mvcConversionService")
-    protected GenericConversionService conversionService;
+    private GenericConversionService conversionService;
 
     @SuppressWarnings("unused")
     @PostConstruct
     private void register() {
         conversionService.addConverter(this);
+    }
+
+    public <TT> TT convert(Object source, Class<TT> targetType) {
+        return convert(source, targetType);
     }
 }

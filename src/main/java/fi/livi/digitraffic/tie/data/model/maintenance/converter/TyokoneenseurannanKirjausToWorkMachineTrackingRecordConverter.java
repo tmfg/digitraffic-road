@@ -18,12 +18,12 @@ public class TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter
     public WorkMachineTrackingRecord convert(final TyokoneenseurannanKirjausRequestSchema src) {
         final WorkMachineTrackingRecord tgt = new WorkMachineTrackingRecord();
 
-        tgt.setCaption(conversionService.convert(src.getOtsikko(), Caption.class));
+        tgt.setCaption(convert(src.getOtsikko(), Caption.class));
         tgt.setObservationFeatureCollection(
             new ObservationFeatureCollection(
                 src.getHavainnot() == null ?
                 null :
-                src.getHavainnot().stream().map(havainnot -> conversionService.convert(havainnot.getHavainto(), ObservationFeature.class))
+                src.getHavainnot().stream().map(havainnot -> convert(havainnot.getHavainto(), ObservationFeature.class))
                     .collect(Collectors.toList())));
 
         return tgt;
