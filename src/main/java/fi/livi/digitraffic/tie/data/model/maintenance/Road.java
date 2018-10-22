@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.json.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

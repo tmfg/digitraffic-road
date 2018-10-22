@@ -1,13 +1,13 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Caption;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.ObservationFeature;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.ObservationFeatureCollection;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTrackingRecord;
+import fi.livi.digitraffic.tie.data.model.maintenance.Caption;
+import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeature;
+import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeatureCollection;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 @Component

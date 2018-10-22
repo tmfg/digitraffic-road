@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 import io.swagger.annotations.Api;
@@ -37,7 +37,8 @@ public class MaintenanceController {
 
     private static final Logger log = LoggerFactory.getLogger(MaintenanceController.class);
 
-    public static final String WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
+    public static final String
+        WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
 
     final private MaintenanceDataService maintenanceDataService;
     private final ObjectMapper objectMapper;

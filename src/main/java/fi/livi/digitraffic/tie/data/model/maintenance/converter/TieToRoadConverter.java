@@ -1,9 +1,9 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Lane;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Road;
+import fi.livi.digitraffic.tie.data.model.maintenance.Lane;
+import fi.livi.digitraffic.tie.data.model.maintenance.Road;
 import fi.livi.digitraffic.tie.harja.entities.Tie;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 

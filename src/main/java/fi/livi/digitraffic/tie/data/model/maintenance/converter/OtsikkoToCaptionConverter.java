@@ -1,9 +1,9 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Caption;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Sender;
+import fi.livi.digitraffic.tie.data.model.maintenance.Caption;
+import fi.livi.digitraffic.tie.data.model.maintenance.Sender;
 import fi.livi.digitraffic.tie.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 

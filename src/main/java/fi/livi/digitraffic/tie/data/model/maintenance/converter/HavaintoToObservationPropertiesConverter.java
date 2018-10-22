@@ -1,14 +1,14 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Link;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.ObservationProperties;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.PerformedTask;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Road;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachine;
+import fi.livi.digitraffic.tie.data.model.maintenance.Link;
+import fi.livi.digitraffic.tie.data.model.maintenance.ObservationProperties;
+import fi.livi.digitraffic.tie.data.model.maintenance.PerformedTask;
+import fi.livi.digitraffic.tie.data.model.maintenance.Road;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachine;
 import fi.livi.digitraffic.tie.harja.Havainto;
 import fi.livi.digitraffic.tie.harja.entities.SijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;

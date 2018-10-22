@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachine;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachine;
 import fi.livi.digitraffic.tie.harja.Tyokone;
 
 @Component

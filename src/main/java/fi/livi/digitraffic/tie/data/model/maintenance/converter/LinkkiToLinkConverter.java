@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.Link;
+import fi.livi.digitraffic.tie.data.model.maintenance.Link;
 import fi.livi.digitraffic.tie.harja.entities.LinkkisijaintiSchema;
 
 @Component

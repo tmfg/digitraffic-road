@@ -1,9 +1,9 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.json.maintenance.ObservationFeature;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.ObservationProperties;
+import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeature;
+import fi.livi.digitraffic.tie.data.model.maintenance.ObservationProperties;
 import fi.livi.digitraffic.tie.harja.Havainto;
 import fi.livi.digitraffic.tie.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;

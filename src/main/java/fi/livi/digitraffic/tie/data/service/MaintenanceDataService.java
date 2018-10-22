@@ -14,8 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.data.dao.WorkMachineTrackingRepository;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.model.json.maintenance.WorkMachineTrackingRecord;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 @Service

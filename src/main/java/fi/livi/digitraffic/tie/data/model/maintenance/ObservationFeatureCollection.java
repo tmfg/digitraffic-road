@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.json.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance;
 
 import java.io.Serializable;
 import java.util.Collection;
