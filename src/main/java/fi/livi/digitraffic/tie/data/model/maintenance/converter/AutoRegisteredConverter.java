@@ -20,6 +20,6 @@ public abstract class AutoRegisteredConverter<S, T> implements Converter<S, T> {
     }
 
     public <TT> TT convert(final Object source, final Class<TT> targetType) {
-        return convert(source, targetType);
+        return conversionService.convert(source, targetType);
     }
 }
