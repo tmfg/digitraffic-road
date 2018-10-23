@@ -37,7 +37,7 @@ public class WorkMachineTrackingRecord implements Serializable {
         return caption;
     }
 
-    public void setCaption(Caption caption) {
+    public void setCaption(final Caption caption) {
         this.caption = caption;
     }
 

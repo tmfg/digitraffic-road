@@ -26,7 +26,7 @@ public class Organisation implements Serializable
     private String businessId;
 
     @JsonCreator
-    public Organisation(String name, String businessId) {
+    public Organisation(final String name, final String businessId) {
         this.name = name;
         this.businessId = businessId;
     }
@@ -35,7 +35,7 @@ public class Organisation implements Serializable
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -43,7 +43,7 @@ public class Organisation implements Serializable
         return businessId;
     }
 
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(final String businessId) {
         this.businessId = businessId;
     }
 

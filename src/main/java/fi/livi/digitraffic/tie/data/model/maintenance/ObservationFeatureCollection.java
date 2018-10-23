@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of Observations", value = "ObservationFeatureCollection")
 @JsonPropertyOrder({ "type", "features" })
-public class ObservationFeatureCollection implements Iterable<ObservationFeature>, Serializable {
+public class ObservationFeatureCollection implements Serializable {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
@@ -41,11 +41,6 @@ public class ObservationFeatureCollection implements Iterable<ObservationFeature
 
     public void addAll(final Collection<ObservationFeature> features) {
         this.features.addAll(features);
-    }
-
-    @Override
-    public Iterator<ObservationFeature> iterator() {
-        return features.iterator();
     }
 
     @Override

@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
     "mValue"
 })
 public class Link implements Serializable {
+
     @JsonProperty(required = true)
     private Integer id;
 
@@ -26,7 +27,7 @@ public class Link implements Serializable {
     private Integer mValue;
 
     @JsonCreator
-    public Link(Integer id, Integer mValue) {
+    public Link(final Integer id, final Integer mValue) {
         this.id = id;
         this.mValue = mValue;
     }

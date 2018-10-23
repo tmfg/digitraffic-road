@@ -28,7 +28,7 @@ public class WorkMachine implements Serializable
     private String type;
 
     @JsonCreator
-    public WorkMachine(Integer id, String type) {
+    public WorkMachine(final Integer id, final String type) {
         this.id = id;
         this.type = type;
     }
@@ -37,7 +37,7 @@ public class WorkMachine implements Serializable
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -45,7 +45,7 @@ public class WorkMachine implements Serializable
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 

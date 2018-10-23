@@ -33,7 +33,7 @@ public class Caption implements Serializable
     private ZonedDateTime sendingTime;
 
     @JsonCreator
-    public Caption(Sender sender, Integer messageIdentifier, ZonedDateTime sendingTime) {
+    public Caption(final Sender sender, final Integer messageIdentifier, final ZonedDateTime sendingTime) {
         this.sender = sender;
         this.messageIdentifier = messageIdentifier;
         this.sendingTime = sendingTime;

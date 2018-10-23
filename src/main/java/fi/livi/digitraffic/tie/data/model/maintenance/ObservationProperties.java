@@ -54,9 +54,9 @@ public class ObservationProperties implements Serializable {
     private final Map<String, Object> additionalProperties;
 
     @JsonCreator
-    public ObservationProperties(WorkMachine workMachine, Road road, Link link, Double direction, Integer contractId,
-                                 ZonedDateTime observationTime,
-                                 List<PerformedTask> performedTasks, Map<String, Object> additionalProperties) {
+    public ObservationProperties(final WorkMachine workMachine, final Road road, final Link link, final Double direction, final Integer contractId,
+                                 final ZonedDateTime observationTime, final List<PerformedTask> performedTasks,
+                                 final Map<String, Object> additionalProperties) {
         this.workMachine = workMachine;
         this.road = road;
         this.link = link;
@@ -71,7 +71,7 @@ public class ObservationProperties implements Serializable {
         return workMachine;
     }
 
-    public void setWorkMachine(WorkMachine workMachine) {
+    public void setWorkMachine(final WorkMachine workMachine) {
         this.workMachine = workMachine;
     }
 
@@ -79,7 +79,7 @@ public class ObservationProperties implements Serializable {
         return direction;
     }
 
-    public void setDirection(Double direction) {
+    public void setDirection(final Double direction) {
         this.direction = direction;
     }
 
@@ -87,7 +87,7 @@ public class ObservationProperties implements Serializable {
         return contractId;
     }
 
-    public void setContractId(Integer contractId) {
+    public void setContractId(final Integer contractId) {
         this.contractId = contractId;
     }
 
@@ -95,7 +95,7 @@ public class ObservationProperties implements Serializable {
         return observationTime;
     }
 
-    public void setObservationTime(ZonedDateTime observationTime) {
+    public void setObservationTime(final ZonedDateTime observationTime) {
         this.observationTime = observationTime;
     }
 
@@ -109,7 +109,7 @@ public class ObservationProperties implements Serializable {
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(final String name, final Object value) {
         this.additionalProperties.put(name, value);
     }
 
@@ -117,7 +117,7 @@ public class ObservationProperties implements Serializable {
         return road;
     }
 
-    public void setRoad(Road road) {
+    public void setRoad(final Road road) {
         this.road = road;
     }
 
@@ -125,7 +125,7 @@ public class ObservationProperties implements Serializable {
         return link;
     }
 
-    public void setLink(Link link) {
+    public void setLink(final Link link) {
         this.link = link;
     }
 

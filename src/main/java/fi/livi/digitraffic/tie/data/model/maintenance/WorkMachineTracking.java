@@ -44,7 +44,7 @@ public class WorkMachineTracking {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class WorkMachineTracking {
         return record;
     }
 
-    public void setRecord(WorkMachineTrackingRecord record) {
+    public void setRecord(final WorkMachineTrackingRecord record) {
         this.record = record;
     }
 

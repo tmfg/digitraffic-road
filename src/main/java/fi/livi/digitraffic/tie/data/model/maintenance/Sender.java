@@ -35,7 +35,7 @@ public class Sender implements Serializable
         return system;
     }
 
-    public void setSystem(String system) {
+    public void setSystem(final String system) {
         this.system = system;
     }
 
@@ -45,7 +45,7 @@ public class Sender implements Serializable
     }
 
     @JsonProperty("organisation")
-    public void setOrganisation(Organisation organisation) {
+    public void setOrganisation(final Organisation organisation) {
         this.organisation = organisation;
     }
 

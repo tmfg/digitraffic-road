@@ -96,7 +96,7 @@ public class Road implements Serializable
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -104,7 +104,7 @@ public class Road implements Serializable
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(final Integer number) {
         this.number = number;
     }
 
@@ -112,7 +112,7 @@ public class Road implements Serializable
         return startDistance;
     }
 
-    public void setStartDistance(Integer startDistance) {
+    public void setStartDistance(final Integer startDistance) {
         this.startDistance = startDistance;
     }
 
@@ -120,7 +120,7 @@ public class Road implements Serializable
         return startPart;
     }
 
-    public void setStartPart(Integer startPart) {
+    public void setStartPart(final Integer startPart) {
         this.startPart = startPart;
     }
 
@@ -128,7 +128,7 @@ public class Road implements Serializable
         return endDistance;
     }
 
-    public void setEndDistance(Integer endDistance) {
+    public void setEndDistance(final Integer endDistance) {
         this.endDistance = endDistance;
     }
 
@@ -136,7 +136,7 @@ public class Road implements Serializable
         return endPart;
     }
 
-    public void setEndPart(Integer endPart) {
+    public void setEndPart(final Integer endPart) {
         this.endPart = endPart;
     }
 
@@ -144,7 +144,7 @@ public class Road implements Serializable
         return carriageway;
     }
 
-    public void setCarriageway(Integer carriageway) {
+    public void setCarriageway(final Integer carriageway) {
         this.carriageway = carriageway;
     }
 
@@ -152,7 +152,7 @@ public class Road implements Serializable
         return lane;
     }
 
-    public void setLane(Lane lane) {
+    public void setLane(final Lane lane) {
         this.lane = lane;
     }
 
@@ -160,7 +160,7 @@ public class Road implements Serializable
         return side;
     }
 
-    public void setSide(Integer side) {
+    public void setSide(final Integer side) {
         this.side = side;
     }
 
@@ -168,7 +168,7 @@ public class Road implements Serializable
         return startDate;
     }
 
-    public void setStartDate(ZonedDateTime startDate) {
+    public void setStartDate(final ZonedDateTime startDate) {
         this.startDate = startDate;
     }
 
@@ -176,7 +176,7 @@ public class Road implements Serializable
         return endDate;
     }
 
-    public void setEndDate(ZonedDateTime endDate) {
+    public void setEndDate(final ZonedDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -184,7 +184,7 @@ public class Road implements Serializable
         return mapDate;
     }
 
-    public void setMapDate(ZonedDateTime mapDate) {
+    public void setMapDate(final ZonedDateTime mapDate) {
         this.mapDate = mapDate;
     }
 
@@ -194,7 +194,7 @@ public class Road implements Serializable
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(final String name, final Object value) {
         this.additionalProperties.put(name, value);
     }
 
