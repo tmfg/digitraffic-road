@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -18,26 +20,28 @@ public class HavaintoToObservationPropertiesConverter extends AutoRegisteredConv
 
     @Override
     public ObservationProperties convert(final Havainto src) {
-        ObservationProperties tgt = new ObservationProperties();
-
-        tgt.setContractId(src.getUrakkaid());
-        tgt.setDirection(src.getSuunta());
-        tgt.setObservationTime(DateHelper.toZonedDateTime(src.getHavaintoaika()));
-        tgt.setAdditionalProperties(src.getAdditionalProperties());
-
-        tgt.setWorkMachine(convert(src.getTyokone(), WorkMachine.class));
 
         final SijaintiSchema sijainti = src.getSijainti();
-        if (sijainti != null) {
-            tgt.setRoad(convert(src.getSijainti().getTie(), Road.class));
-            tgt.setLink(convert(src.getSijainti().getLinkki(), Link.class));
-        }
 
-        tgt.setPerformedTasks(
+        final Road road = sijainti != null ? convert(sijainti.getTie(), Road.class) : null;
+        final Link link = sijainti != null ? convert(sijainti.getLinkki(), Link.class) : null;
+
+        final List<PerformedTask> performedTasks =
             src.getSuoritettavatTehtavat() == null ?
                 null :
                 src.getSuoritettavatTehtavat().stream().map(tehtava -> convert(tehtava, PerformedTask.class))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+
+        ObservationProperties tgt =
+            new ObservationProperties(
+                convert(src.getTyokone(), WorkMachine.class),
+                road,
+                link,
+                src.getSuunta(),
+                src.getUrakkaid(),
+                DateHelper.toZonedDateTime(src.getHavaintoaika()),
+                performedTasks,
+                src.getAdditionalProperties());
 
         return tgt;
     }

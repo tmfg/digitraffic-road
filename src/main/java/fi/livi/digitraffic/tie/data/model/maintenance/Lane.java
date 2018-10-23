@@ -37,7 +37,7 @@ public enum Lane {
         }
     }
 
-    private Lane(String value) {
+    private Lane(final String value) {
         this.value = value;
     }
 
@@ -52,7 +52,7 @@ public enum Lane {
     }
 
     @JsonCreator
-    public static Lane fromValue(String value) {
+    public static Lane fromValue(final String value) {
         Lane constant = CONSTANTS.get(value);
         if (constant == null) {
             throw new IllegalArgumentException(value);

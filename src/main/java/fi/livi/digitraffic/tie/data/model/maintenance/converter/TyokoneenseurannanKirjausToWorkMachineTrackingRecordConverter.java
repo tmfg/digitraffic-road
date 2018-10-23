@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -16,16 +17,13 @@ public class TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter
 
     @Override
     public WorkMachineTrackingRecord convert(final TyokoneenseurannanKirjausRequestSchema src) {
-        final WorkMachineTrackingRecord tgt = new WorkMachineTrackingRecord();
 
-        tgt.setCaption(convert(src.getOtsikko(), Caption.class));
-        tgt.setObservationFeatureCollection(
-            new ObservationFeatureCollection(
-                src.getHavainnot() == null ?
-                null :
+        final ObservationFeatureCollection ofc = new ObservationFeatureCollection(
+            src.getHavainnot() == null ?
+                Collections.emptyList() :
                 src.getHavainnot().stream().map(havainnot -> convert(havainnot.getHavainto(), ObservationFeature.class))
-                    .collect(Collectors.toList())));
+                    .collect(Collectors.toList()));
 
-        return tgt;
+        return new WorkMachineTrackingRecord(convert(src.getOtsikko(), Caption.class), ofc);
     }
 }

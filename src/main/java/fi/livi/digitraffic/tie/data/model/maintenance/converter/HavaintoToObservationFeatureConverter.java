@@ -14,16 +14,21 @@ public class HavaintoToObservationFeatureConverter extends AutoRegisteredConvert
 
     @Override
     public ObservationFeature convert(final Havainto src) {
-        final ObservationFeature tgt = new ObservationFeature();
 
-        if (src.getSijainti() != null && src.getSijainti().getKoordinaatit() != null) {
-            KoordinaattisijaintiSchema coords = src.getSijainti().getKoordinaatit();
-            final Point point =
-                CoordinateConverter.convertFromETRS89ToWGS84(
-                    new Point(coords.getX(), coords.getY(), coords.getZ()));
-            tgt.setGeometry(point);
-        }
-        tgt.setProperties(convert(src, ObservationProperties.class));
+        Point point = resolveGeometry(src);
+
+        final ObservationFeature tgt =
+            new ObservationFeature(point,
+                                   convert(src, ObservationProperties.class));
         return tgt;
+    }
+
+    private Point resolveGeometry(Havainto src) {
+        if (src.getSijainti() != null && src.getSijainti().getKoordinaatit() != null) {
+            final KoordinaattisijaintiSchema coords = src.getSijainti().getKoordinaatit();
+            return CoordinateConverter.convertFromETRS89ToWGS84(
+                new Point(coords.getX(), coords.getY(), coords.getZ()));
+        }
+        return null;
     }
 }

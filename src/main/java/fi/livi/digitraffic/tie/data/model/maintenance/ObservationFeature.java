@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -30,9 +31,15 @@ public class ObservationFeature implements Feature, Serializable {
 
     @ApiModelProperty(value = "TMS station properties", required = true, position = 4)
     @JsonPropertyOrder(value = "4")
-    private ObservationProperties properties = new ObservationProperties();
+    private ObservationProperties properties;
 
-    public ObservationFeature() {
+    @JsonCreator
+    public ObservationFeature(final Point geometry, final ObservationProperties properties) {
+        this.geometry = geometry;
+        if (properties == null) {
+            throw new IllegalArgumentException("ObservationProperties cannot be null");
+        }
+        this.properties = properties;
     }
 
     public String getType() {

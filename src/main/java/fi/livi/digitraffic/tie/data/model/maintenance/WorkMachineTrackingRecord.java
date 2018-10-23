@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -22,8 +23,15 @@ public class WorkMachineTrackingRecord implements Serializable {
     @JsonProperty("caption")
     private Caption caption;
 
-    @JsonProperty(value = "observationProperties", required = true)
+    @JsonProperty(required = true)
     private ObservationFeatureCollection observationFeatureCollection;
+
+    @JsonCreator
+    public WorkMachineTrackingRecord(final Caption caption,
+                                     final ObservationFeatureCollection observationFeatureCollection) {
+        this.caption = caption;
+        this.observationFeatureCollection = observationFeatureCollection;
+    }
 
     public Caption getCaption() {
         return caption;

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,9 +25,7 @@ public class Link implements Serializable {
     @JsonProperty(required = true)
     private Integer mValue;
 
-    public Link() {
-    }
-
+    @JsonCreator
     public Link(Integer id, Integer mValue) {
         this.id = id;
         this.mValue = mValue;

@@ -57,7 +57,7 @@ public enum PerformedTask {
         }
     }
 
-    private PerformedTask(String value) {
+    private PerformedTask(final String value) {
         this.value = value;
     }
 
@@ -71,9 +71,8 @@ public enum PerformedTask {
         return this.value;
     }
 
-    @JsonCreator
-    public static PerformedTask fromValue(String value) {
-        PerformedTask constant = CONSTANTS.get(value);
+    public static PerformedTask fromValue(final String value) {
+        final PerformedTask constant = CONSTANTS.get(value);
         if (constant == null) {
             throw new IllegalArgumentException(value);
         } else {

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -26,9 +27,7 @@ public class WorkMachine implements Serializable
     @JsonProperty(required = true)
     private String type;
 
-    public WorkMachine() {
-    }
-
+    @JsonCreator
     public WorkMachine(Integer id, String type) {
         this.id = id;
         this.type = type;

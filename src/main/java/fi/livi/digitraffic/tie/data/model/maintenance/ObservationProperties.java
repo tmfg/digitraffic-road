@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,12 +48,23 @@ public class ObservationProperties implements Serializable {
     @JsonProperty(required = true)
     private ZonedDateTime observationTime;
 
-    private List<PerformedTask> performedTasks = new ArrayList<PerformedTask>();
+    private final List<PerformedTask> performedTasks;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties;
 
-    public ObservationProperties() {
+    @JsonCreator
+    public ObservationProperties(WorkMachine workMachine, Road road, Link link, Double direction, Integer contractId,
+                                 ZonedDateTime observationTime,
+                                 List<PerformedTask> performedTasks, Map<String, Object> additionalProperties) {
+        this.workMachine = workMachine;
+        this.road = road;
+        this.link = link;
+        this.direction = direction;
+        this.contractId = contractId;
+        this.observationTime = observationTime;
+        this.performedTasks = performedTasks;
+        this.additionalProperties = additionalProperties;
     }
 
     public WorkMachine getWorkMachine() {
@@ -91,17 +103,9 @@ public class ObservationProperties implements Serializable {
         return performedTasks;
     }
 
-    public void setPerformedTasks(List<PerformedTask> performedTasks) {
-        this.performedTasks = performedTasks;
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
-    }
-
-    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-        this.additionalProperties = additionalProperties;
     }
 
     @JsonAnySetter

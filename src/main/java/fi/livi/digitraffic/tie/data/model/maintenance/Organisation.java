@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,9 +25,7 @@ public class Organisation implements Serializable
     @JsonProperty(required = true)
     private String businessId;
 
-    public Organisation() {
-    }
-
+    @JsonCreator
     public Organisation(String name, String businessId) {
         this.name = name;
         this.businessId = businessId;

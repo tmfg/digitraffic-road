@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,14 +71,12 @@ public class Road implements Serializable
     private ZonedDateTime mapDate;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties;
 
-    public Road() {
-    }
-
-    public Road(String name, Integer number, Integer startDistance, Integer startPart, Integer endDistance, Integer endPart,
-                Integer carriageway, Lane lane, Integer side, ZonedDateTime startDate, ZonedDateTime endDate, ZonedDateTime mapDate,
-                Map<String, Object> additionalProperties) {
+    @JsonCreator
+    public Road(final String name, final Integer number, final Integer startDistance, final Integer startPart, final Integer endDistance,
+                final Integer endPart, final Integer carriageway, final Lane lane, final Integer side, final ZonedDateTime startDate,
+                final ZonedDateTime endDate, final ZonedDateTime mapDate, final Map<String, Object> additionalProperties) {
         this.name = name;
         this.number = number;
         this.startDistance = startDistance;

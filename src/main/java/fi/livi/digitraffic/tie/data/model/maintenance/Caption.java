@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -31,9 +32,7 @@ public class Caption implements Serializable
     @JsonProperty(required = true)
     private ZonedDateTime sendingTime;
 
-    public Caption() {
-    }
-
+    @JsonCreator
     public Caption(Sender sender, Integer messageIdentifier, ZonedDateTime sendingTime) {
         this.sender = sender;
         this.messageIdentifier = messageIdentifier;

@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -22,8 +24,9 @@ public class ObservationFeatureCollection implements Iterable<ObservationFeature
     private final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
-    private List<ObservationFeature> features;
+    private final List<ObservationFeature> features;
 
+    @JsonCreator
     public ObservationFeatureCollection(final List<ObservationFeature> features) {
         this.features = features;
     }
@@ -34,18 +37,6 @@ public class ObservationFeatureCollection implements Iterable<ObservationFeature
 
     public List<ObservationFeature> getFeatures() {
         return features;
-    }
-
-    public void setFeatures(final List<ObservationFeature> features) {
-        this.features = features;
-    }
-
-    public ObservationFeatureCollection() {
-    }
-
-    public ObservationFeatureCollection add(final ObservationFeature feature) {
-        features.add(feature);
-        return this;
     }
 
     public void addAll(final Collection<ObservationFeature> features) {
