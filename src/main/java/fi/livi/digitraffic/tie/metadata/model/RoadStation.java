@@ -95,6 +95,8 @@ public class RoadStation {
     @Fetch(FetchMode.SELECT)
     private RoadAddress roadAddress;
 
+    private String purpose;
+
     @ManyToMany
     @JoinTable(name = "ROAD_STATION_SENSORS",
                joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
@@ -371,6 +373,14 @@ public class RoadStation {
 
     public boolean isPublishable() {
         return publishable;
+    }
+
+    public void setPurpose(final String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getPurpose() {
+        return purpose;
     }
 
     @Override

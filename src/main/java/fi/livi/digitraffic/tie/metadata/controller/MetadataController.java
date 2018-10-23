@@ -18,7 +18,8 @@ import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
-import fi.livi.digitraffic.tie.metadata.dto.RoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.metadata.dto.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
@@ -52,7 +53,7 @@ public class MetadataController {
     private static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
     private static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
 
-    private static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
+    static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
     static final String CAMERA_STATIONS_PATH = "/camera-stations";
     static final String WEATHER_STATIONS_PATH = "/weather-stations";
     static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
@@ -140,11 +141,11 @@ public class MetadataController {
     @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors") })
-    public RoadStationsSensorsMetadata tmsSensors(
+    public TmsRoadStationsSensorsMetadata tmsSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) {
-        return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.TMS_STATION, lastUpdated);
+        return roadStationSensorService.findTmsRoadStationsSensorsMetadata(lastUpdated);
     }
 
     @ApiOperation("The static information of weather camera presets")
@@ -170,11 +171,11 @@ public class MetadataController {
     @ApiOperation("The static information of available sensors of weather stations")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station Sensors") })
-    public RoadStationsSensorsMetadata weatherSensors(
+    public WeatherRoadStationsSensorsMetadata weatherSensors(
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             final boolean lastUpdated) {
-        return roadStationSensorService.findRoadStationsSensorsMetadata(RoadStationType.WEATHER_STATION, lastUpdated);
+        return roadStationSensorService.findWeatherRoadStationsSensorsMetadata(lastUpdated);
     }
 
     @ApiOperation("List available location versions")

@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpoint;
+import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
@@ -21,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
-    private LotjuLAMMetatiedotServiceEndpoint lotjuLAMMetatiedotServiceMock;
+    private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
 
     @Autowired
     private TmsStationSensorUpdater tmsStationSensorUpdater;
@@ -62,6 +64,23 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.fi", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.sv", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)));
+                .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)));
+    }
+
+    @Test
+    public void testTmsStationSensorsMetadataRestApi() throws Exception {
+        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
+            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+            MetadataController.TMS_STATIONS_AVAILABLE_SENSORS_PATH))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(CONTENT_TYPE))
+            .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].lane", anyOf(nullValue(), isA(String.class))))
+            .andExpect(jsonPath("$.roadStationSensors[0].direction", anyOf(nullValue(), isA(String.class))));
     }
 }

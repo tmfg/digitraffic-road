@@ -1,50 +1,70 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2016/10/06">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/03/12">
     <ns2:esiasennot>
+        <id>2714</id>
         <jarjestys>1</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>2</kameraId>
         <keruussa>true</keruussa>
         <kompressio>30</kompressio>
+        <nimiEsitys>Porvoo</nimiEsitys>
+        <nimiLaitteella>huuhaa</nimiLaitteella>
+        <oletussuunta>true</oletussuunta>
+        <resoluutio>704x576</resoluutio>
+        <suunta>0</suunta>
+        <viive>10</viive>
+    </ns2:esiasennot>
+    <ns2:esiasennot>
+        <id>115</id>
+        <jarjestys>2</jarjestys>
+        <julkisuus>JULKINEN</julkisuus>
+        <kameraId>2</kameraId>
+        <keruussa>false</keruussa>
+        <kompressio>30</kompressio>
+        <nimiEsitys>Tie 7 Kotkaan</nimiEsitys>
+        <nimiLaitteella>Kotkaan</nimiLaitteella>
+        <oletussuunta>false</oletussuunta>
+        <resoluutio>704x576</resoluutio>
+        <suunta>1</suunta>
+        <viive>10</viive>
+    </ns2:esiasennot>
+    <ns2:esiasennot>
+        <id>117</id>
+        <jarjestys>3</jarjestys>
+        <julkisuus>JULKINEN</julkisuus>
+        <kameraId>2</kameraId>
+        <keruussa>false</keruussa>
+        <kompressio>30</kompressio>
         <nimiEsitys>Tie 55 Porvooseen</nimiEsitys>
         <nimiLaitteella>Porvoo</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>4</suunta>
-        <id>117</id>
+        <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
-        <jarjestys>2</jarjestys>
+        <id>857</id>
+        <jarjestys>4</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>2</kameraId>
-        <keruussa>true</keruussa>
-        <kompressio>30</kompressio>
-        <nimiEsitys>Tie 7 Kotkaan</nimiEsitys>
-        <nimiLaitteella>Kotka</nimiLaitteella>
-        <resoluutio>704x576</resoluutio>
-        <suunta>1</suunta>
-        <id>115</id>
-    </ns2:esiasennot>
-    <ns2:esiasennot>
-        <jarjestys>3</jarjestys>
-        <julkisuus>JULKINEN</julkisuus>
-        <kameraId>2</kameraId>
-        <keruussa>true</keruussa>
+        <keruussa>false</keruussa>
         <kompressio>30</kompressio>
         <nimiEsitys>Tienpinta</nimiEsitys>
         <nimiLaitteella>tienpinta</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
         <suunta>9</suunta>
-        <id>857</id>
+        <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
-        <jarjestys>4</jarjestys>
+        <id>116</id>
+        <jarjestys>5</jarjestys>
         <julkisuus>JULKINEN</julkisuus>
         <kameraId>2</kameraId>
-        <keruussa>true</keruussa>
+        <keruussa>false</keruussa>
         <kompressio>30</kompressio>
         <nimiEsitys>Tie 7 Helsinkiin</nimiEsitys>
-        <nimiLaitteella>Helsinki</nimiLaitteella>
+        <nimiLaitteella>Helsinkiin</nimiLaitteella>
+        <oletussuunta>false</oletussuunta>
         <resoluutio>704x576</resoluutio>
         <suunta>2</suunta>
-        <id>116</id>
+        <viive>10</viive>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

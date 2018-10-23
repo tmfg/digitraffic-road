@@ -1,7 +1,8 @@
-<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2016/10/06">
+<ns2:HaeEsiasennotKameranTunnuksellaResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/03/12">
     <ns2:esiasennot>
+        <id>1165</id>
         <jarjestys>0</jarjestys>
-        <julkisuus>VALIAIKAISESTI_SALAINEN</julkisuus>
+        <julkisuus>PYSYVASTI_SALAINEN</julkisuus>
         <kameraId>56</kameraId>
         <keruussa>true</keruussa>
         <kompressio>0</kompressio>
@@ -9,6 +10,6 @@
         <nimiLaitteella>-</nimiLaitteella>
         <resoluutio>0x0</resoluutio>
         <suunta>0</suunta>
-        <id>1165</id>
+        <viive>0</viive>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>

@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://v4.ws.service.meta.tiesaa.lotju.ely.fi/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2017/05/02" name="TiesaaPerustiedotEndpointImplService" targetNamespace="http://v4.ws.service.meta.tiesaa.lotju.ely.fi/">
+    <wsdl:documentation>Tiesaaasemien perustietojen haku, muokkaus ja lisays (versio 4)</wsdl:documentation>
+    <wsdl:import location="TiesaaPerustiedotEndpoint.wsdl" namespace="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2017/05/02"/>
+    <wsdl:binding name="TiesaaPerustiedotEndpointImplServiceSoapBinding" type="ns1:TiesaaPerustiedotEndpoint">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="HaeLaskennallisenAnturinArvovastaavuudet">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeLaskennallisenAnturinArvovastaavuudet">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeLaskennallisenAnturinArvovastaavuudetResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKaikkiTiesaaAsemat">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiTiesaaAsemat">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiTiesaaAsematResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKaikkiLaskennallisetAnturit">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiLaskennallisetAnturit">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiLaskennallisetAnturitResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeTiesaaAsemat">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeTiesaaAsemat">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeTiesaaAsematResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeAnturi">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeAnturi">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeAnturiResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeAnturisanoma">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeAnturisanoma">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeAnturisanomaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKaikkiAnturisanomat">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiAnturisanomat">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiAnturisanomatResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeKaikkiArvovastaavuudet">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeKaikkiArvovastaavuudet">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeKaikkiArvovastaavuudetResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeArvovastaavuus">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeArvovastaavuus">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeArvovastaavuusResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeLaskennallinenAnturi">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeLaskennallinenAnturi">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeLaskennallinenAnturiResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeTiesaaAsemanLaskennallistenAntureidenTilat">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeTiesaaAsemanLaskennallistenAntureidenTilat">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeTiesaaAsemanLaskennallistenAntureidenTilatResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeTiesaaAsemanAnturit">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeTiesaaAsemanAnturit">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeTiesaaAsemanAnturitResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeTiesaaAsemanLaskennallisetAnturit">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeTiesaaAsemanLaskennallisetAnturit">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeTiesaaAsemanLaskennallisetAnturitResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="HaeTiesaaAsema">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="HaeTiesaaAsema">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HaeTiesaaAsemaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="TiesaaPerustiedotEndpointImplService">
+        <wsdl:port binding="tns:TiesaaPerustiedotEndpointImplServiceSoapBinding" name="TiesaaPerustiedotEndpointImplPort">
+            <soap:address location="http://LotjuTiesaaPerustiedot:9002/tiesaameta/services/ws/TiesaaPerustiedot/v4"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

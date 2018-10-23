@@ -12,14 +12,14 @@ public class MetadataMarshallerConfiguration {
 
         marshaller.setContextPaths(
                 // from WSDLs generate classes
-                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2015._09._29",
-                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06",
-                "fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06",
-                "fi.livi.ws.wsdl.lotju.lammetatiedot._2015._09._29",
-                "fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06",
+
+                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12",
+                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12",
+                "fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12",
+                "fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2014._03._06",
                 "fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29",
-                "fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06",
+                "fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02",
                 // From xsds generated classes
                 "fi.livi.digitraffic.tie.lotju.xsd.datex2");
         return marshaller;

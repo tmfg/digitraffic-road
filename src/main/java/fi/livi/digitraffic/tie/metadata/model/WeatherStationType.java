@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.ws.wsdl.lotju.tiesaa._2016._10._06.TiesaaAsemaTyyppi;
+import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaTyyppi;
 
 public enum WeatherStationType {
 
@@ -8,6 +8,7 @@ public enum WeatherStationType {
     E_18("E18"),
     FINAVIA_V("FINAVIA_V"),
     FINAVIA_B("FINAVIA_B"),
+    ELY_B("ELY_B"),
     ISGN("ISGN"),
     OLD("OLD"),
 

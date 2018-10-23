@@ -39,7 +39,7 @@ import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2016._10._06.LamAsemaVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 
 @Service
 public class TmsStationService extends AbstractTmsStationAttributeUpdater {
@@ -71,7 +71,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo, final TmsState tmsState) {
-        final List<TmsStation> stations = findStations(onlyUpdateInfo, tmsState);
+        final List<TmsStation> stations = onlyUpdateInfo ? Collections.emptyList() : findPublishableStations(tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
@@ -81,7 +81,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final List<TmsStation> stations = findStations(roadNumber, tmsState);
+        final List<TmsStation> stations = findPublishableStations(roadNumber, tmsState);
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
@@ -230,7 +230,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         }
     }
 
-    private List<TmsStation> findStations(final Integer roadNumber, final TmsState tmsState) {
+    private List<TmsStation> findPublishableStations(final Integer roadNumber, final TmsState tmsState) {
         switch(tmsState) {
         case ACTIVE:
             return tmsStationRepository
@@ -247,11 +247,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         }
     }
 
-    private List<TmsStation> findStations(final boolean onlyUpdateInfo, final TmsState tmsState) {
-        if(onlyUpdateInfo) {
-            return Collections.emptyList();
-        }
-
+    private List<TmsStation> findPublishableStations(final TmsState tmsState) {
         switch(tmsState) {
         case ACTIVE:
             return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();

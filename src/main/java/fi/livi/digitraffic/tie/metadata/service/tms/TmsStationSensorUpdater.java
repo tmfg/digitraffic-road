@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationSensorUpdater
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 
 @Service
 public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {

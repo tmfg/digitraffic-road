@@ -160,7 +160,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
                         .findFirst().get();
 
         try (final Session session = this.sftpSessionFactory.getSession()) {
-            assertTrue("Publishable preset image should exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
+            assertTrue("Publishable preset image should exist: " + presetToDelete, session.exists(getSftpPath(presetToDelete.getPresetId())));
         }
 
         presetToDelete.setPublicExternal(false);
