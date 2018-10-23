@@ -440,35 +440,17 @@
                 </executions>
             </plugin>
 
-<!--
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>get-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>validate-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
+                <version>2.2.5</version>
 
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                     <prefix>git</prefix>
-                    <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
                     <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
-                    &lt;!&ndash; false is default here, it prints some more information during the build &ndash;&gt;
-                    <verbose>false</verbose>
-                    &lt;!&ndash; this is false by default, forces the plugin to generate the git.properties file &ndash;&gt;
+                    <verbose>true</verbose>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <format>properties</format>
@@ -476,37 +458,23 @@
                     <injectAllReactorProjects>false</injectAllReactorProjects>
                     <failOnNoGitDirectory>true</failOnNoGitDirectory>
                     <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
-                    <skip>false</skip>
-                    <runOnlyOnce>false</runOnlyOnce>
                     <excludeProperties>
-                      &lt;!&ndash; <excludeProperty>git.user.*</excludeProperty> &ndash;&gt;
+                        <excludeProperty>git.commit.user.*</excludeProperty>
+                        <excludeProperty>git.build.user.*</excludeProperty>
+                        <excludeProperty>git.build.host</excludeProperty>
                     </excludeProperties>
-                    <includeOnlyProperties>
-                      &lt;!&ndash; <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> &ndash;&gt;
-                    </includeOnlyProperties>
-                    <useNativeGit>false</useNativeGit>
-                    <abbrevLength>7</abbrevLength>
-                    <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
-                        &lt;!&ndash; don't generate the describe property &ndash;&gt;
                         <skip>false</skip>
-                        &lt;!&ndash; if no tag was found "near" this commit, just print the commit's id instead, helpful when you always expect this field to be not-empty &ndash;&gt;
-                        <always>false</always>
-                        &lt;!&ndash; how many chars should be displayed as the commit object id? 7 is git's default, 0 has a special meaning (see end of this README.md), and 40 is the maximum value here &ndash;&gt;
+                        <always>true</always>
                         <abbrev>7</abbrev>
-                        &lt;!&ndash; when the build is triggered while the repo is in "dirty state", append this suffix &ndash;&gt;
                         <dirty>-dirty</dirty>
-                        &lt;!&ndash; Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. &ndash;&gt;
                         <match>*</match>
-                        &lt;!&ndash; always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. The distance will always be 0 if you're "on" the tag. &ndash;&gt;
+                        <tags>false</tags>
                         <forceLongFormat>false</forceLongFormat>
                     </gitDescribe>
+                    <evaluateOnCommit>HEAD</evaluateOnCommit>
                 </configuration>
-
             </plugin>
-            &lt;!&ndash; END OF GIT COMMIT ID PLUGIN CONFIGURATION &ndash;&gt;
--->
-
         </plugins>
     </build>
 </project>
