@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -174,7 +175,7 @@ public class RoadStation {
         return obsolete;
     }
 
-    public void setObsolete(final boolean obsolete) {
+    public void obsolete(final boolean obsolete) {
         this.obsolete = obsolete;
         if (!obsolete) {
             setObsoleteDate(null);

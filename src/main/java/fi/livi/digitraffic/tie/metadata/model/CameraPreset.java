@@ -322,7 +322,7 @@ public class CameraPreset {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public void setObsolete(final boolean obsolete) {
+    public void obsolete(final boolean obsolete) {
         if (!obsolete) {
             setObsoleteDate(null);
         } else if (obsoleteDate == null) {

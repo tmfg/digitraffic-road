@@ -26,7 +26,7 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
         if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila())) {
             to.obsolete();
         } else {
-            to.setObsolete(false);
+            to.obsolete(false);
         }
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());

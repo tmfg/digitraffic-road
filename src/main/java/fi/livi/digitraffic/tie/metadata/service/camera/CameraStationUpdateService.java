@@ -26,8 +26,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 
 @Service
 public class CameraStationUpdateService extends AbstractCameraStationAttributeUpdater {
@@ -253,7 +253,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         to.setPresetId(presetId);
 
         to.setLotjuId(esiasentoFrom.getId());
-        to.setObsolete(isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
+        to.obsolete(isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
                        Objects.equals(isPublic(esiasentoFrom), false));
         to.setPresetOrder(esiasentoFrom.getJarjestys());
         to.setPublicExternal(isPublic(esiasentoFrom));

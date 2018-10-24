@@ -42,7 +42,6 @@ import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -108,9 +107,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 rs.setLotjuId(rs.getId() * -1);
             }
             rs.setCollectionStatus(CollectionStatus.GATHERING);
-            rs.setObsolete(false);
+            rs.obsolete(false);
             rs.setPublic(true);
-            cp.setObsolete(false);
+            cp.obsolete(false);
             cp.setPublicExternal(true);
             cp.setPublicInternal(true);
         }
