@@ -11,8 +11,7 @@
         function connect() {
             console.log('trying to connect to road mqtt...');
 
-            client = new Paho.MQTT.Client("", 61619, '');
-            // empty client_id, server will generate one
+            client = new Paho.MQTT.Client("tie-aws-mqtt-test.digitraffic.fi", 61619, 'testclient_' + Date.now());
 
             client.onConnectionLost = function (response) {
                 console.info('Collection lost:' + response.errorMessage);
@@ -25,12 +24,15 @@
                 updateList();
             };
 
-            client.connect({hosts:["b-faf6f5cf-184e-4d1d-8ba5-596d576fc87a-1.mq.eu-west-1.amazonaws.com","b-faf6f5cf-184e-4d1d-8ba5-596d576fc87a-2.mq.eu-west-1.amazonaws.com"],
-                ports:[61619,61619],
+            const connectionProperties = {
                 onSuccess:onConnect,
                 mqttVersion:4,
                 useSSL:true,
-                userName:"digitraffic", password:"digitrafficPassword"});
+                userName:"digitraffic",
+                password:"digitrafficPassword"
+            };
+
+            client.connect(connectionProperties);
 
             window.setInterval(logMessageCount, 60*1000);
         }
