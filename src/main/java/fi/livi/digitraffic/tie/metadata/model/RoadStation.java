@@ -175,6 +175,10 @@ public class RoadStation {
         return obsolete;
     }
 
+    public void setObsolete(boolean obsolete) {
+        this.obsolete = obsolete;
+    }
+
     public void obsolete(final boolean obsolete) {
         this.obsolete = obsolete;
         if (!obsolete) {
