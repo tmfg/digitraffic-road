@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -134,6 +135,20 @@ public class DefaultExceptionHandler {
                                                       "Method not allowed",
                                                       request.getRequest().getRequestURI()),
                                     HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(final Exception exception, final ServletWebRequest request) {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(
+            new ErrorResponse(
+                Timestamp.from(ZonedDateTime.now().toInstant()),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequest().getRequestURI()),
+            status);
     }
 
     @ExceptionHandler(Exception.class)

@@ -36,8 +36,11 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_BETA_BASE_PATH = "/api/beta";
+
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
+    public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
+
     public static final String API_PLAIN_WEBSOCKETS_PART_PATH = "/plain-websockets";
 
     private final ConfigurableApplicationContext applicationContext;

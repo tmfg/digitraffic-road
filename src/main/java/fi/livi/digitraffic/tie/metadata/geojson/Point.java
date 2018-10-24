@@ -1,11 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
@@ -13,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
-public class Point {
+public class Point implements Serializable {
 
     private static final int LONGITUDE_IDX = 0;
     private static final int LATITUDE_IDX = 1;
@@ -26,21 +29,28 @@ public class Point {
                       required = true, position = 2, example = "[6669701, 364191, 0]")
     private final List<Double> coordinates;
 
-    public Point() {
-        coordinates = new ArrayList<>(3);
+    /**
+     * @param coordinates longitude, latitude, [altitude]
+     */
+    @JsonCreator
+    public Point(@JsonProperty("coordinates")
+                 final List<Double> coordinates) {
+        this(coordinates.get(LONGITUDE_IDX),
+             coordinates.get(LATITUDE_IDX),
+             coordinates.size() >= ALTITUDE_IDX + 1 ? coordinates.get(ALTITUDE_IDX) : null);
     }
 
     public Point(final double longitude, final double latitude) {
-        this();
-        setLongitude(longitude);
-        setLatitude(latitude);
+        this(longitude, latitude, null);
     }
 
-    public Point(final double longitude, final double latitude, final double altitude) {
-        this();
-        setLongitude(longitude);
-        setLatitude(latitude);
-        setAltitude(altitude);
+    public Point(final double longitude, final double latitude, final Double altitude) {
+        coordinates = Arrays.asList(new Double[ altitude == null ? 2 : 3 ]);
+        coordinates.set(LONGITUDE_IDX, longitude);
+        coordinates.set(LATITUDE_IDX, latitude);
+        if (altitude != null) {
+            coordinates.set(ALTITUDE_IDX, altitude);
+        }
     }
 
     public String getType() {
@@ -49,11 +59,6 @@ public class Point {
 
     public List<Double> getCoordinates() {
         return coordinates;
-    }
-
-    @JsonIgnore
-    public boolean hasAltitude() {
-        return getCoordinate(ALTITUDE_IDX) != null;
     }
 
     @JsonIgnore
@@ -68,19 +73,7 @@ public class Point {
 
     @JsonIgnore
     public Double getLatitude() {
-        return getCoordinates().get(LATITUDE_IDX);
-    }
-
-    public void setLongitude(final double longitude) {
-        setCoordinate(LONGITUDE_IDX, longitude);
-    }
-
-    public void setLatitude(final double latitude) {
-        setCoordinate(LATITUDE_IDX, latitude);
-    }
-
-    public void setAltitude(final double altitude) {
-        setCoordinate(ALTITUDE_IDX, altitude);
+        return getCoordinate(LATITUDE_IDX);
     }
 
     private Double getCoordinate(int index) {
@@ -88,13 +81,6 @@ public class Point {
             return coordinates.get(index);
         }
         return null;
-    }
-
-    private void setCoordinate(int index, double coordinate) {
-        while (coordinates.size() <= index) {
-            coordinates.add(null);
-        }
-        coordinates.set(index, coordinate);
     }
 
     @Override
