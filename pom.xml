@@ -118,9 +118,6 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <!-- Versions from 2.2.1 on has loop bug on jdbc conection drop. Fixed by using 2.2.0-version
-                 http://stackoverflow.com/questions/35761746/quartz-scheduler-unlimited-attempts-to-connect-with-database
-                 https://jira.terracotta.org/jira/browse/QTZ-470 -->
             <version>2.3.0</version>
         </dependency>
 
@@ -207,7 +204,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
+            <version>27.0-jre</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
