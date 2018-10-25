@@ -26,7 +26,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila()) ) {
             to.obsolete();
         } else {
-            to.obsolete(false);
+            to.unobsolete();
         }
         to.setLotjuId(from.getId());
         to.setPublic(from.isJulkinen() == null || from.isJulkinen());

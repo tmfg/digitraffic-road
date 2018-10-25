@@ -97,10 +97,9 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             if (rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() || !cp.isPublicExternal()) {
                 missingCount--;
             }
-            rs.obsolete(false);
-            rs.obsolete(false);
+            rs.unobsolete();
             rs.setPublic(true);
-            cp.obsolete(false);
+            cp.unobsolete();
             cp.setPublicInternal(true);
             cp.setPublicExternal(true);
         }

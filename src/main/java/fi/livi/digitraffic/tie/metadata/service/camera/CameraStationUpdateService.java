@@ -253,8 +253,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         to.setPresetId(presetId);
 
         to.setLotjuId(esiasentoFrom.getId());
-        to.obsolete(isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
-                       Objects.equals(isPublic(esiasentoFrom), false));
+
+        if (isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
+            Objects.equals(isPublic(esiasentoFrom), false)) {
+            to.obsolete();
+        } else {
+            to.unobsolete();
+        }
         to.setPresetOrder(esiasentoFrom.getJarjestys());
         to.setPublicExternal(isPublic(esiasentoFrom));
         to.setInCollection(esiasentoFrom.isKeruussa());

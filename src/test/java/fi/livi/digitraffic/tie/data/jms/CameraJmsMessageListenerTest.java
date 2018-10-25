@@ -107,9 +107,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 rs.setLotjuId(rs.getId() * -1);
             }
             rs.setCollectionStatus(CollectionStatus.GATHERING);
-            rs.obsolete(false);
+            rs.unobsolete();
             rs.setPublic(true);
-            cp.obsolete(false);
+            cp.unobsolete();
             cp.setPublicExternal(true);
             cp.setPublicInternal(true);
         }

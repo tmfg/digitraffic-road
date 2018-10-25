@@ -264,7 +264,18 @@ public class CameraPreset {
      */
     public boolean obsolete() {
         if (obsoleteDate == null) {
-            obsoleteDate = LocalDate.now();
+            setObsoleteDate(LocalDate.now());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return true if state changed
+     */
+    public boolean unobsolete() {
+        if (obsoleteDate != null) {
+            setObsoleteDate(null);
             return true;
         }
         return false;
@@ -320,14 +331,6 @@ public class CameraPreset {
 
     private void setObsoleteDate(final LocalDate obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
-    }
-
-    public void obsolete(final boolean obsolete) {
-        if (!obsolete) {
-            setObsoleteDate(null);
-        } else if (obsoleteDate == null) {
-            setObsoleteDate(LocalDate.now());
-        }
     }
 
     public boolean isObsolete() {
