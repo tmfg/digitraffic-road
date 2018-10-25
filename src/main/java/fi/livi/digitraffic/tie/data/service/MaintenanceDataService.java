@@ -44,7 +44,7 @@ public class MaintenanceDataService {
         final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
         final WorkMachineTracking tracking = new WorkMachineTracking(record);
         workMachineTrackingRepository.save(tracking);
-        log.info("Saved WorkMachineTracking {}", tracking);
+        log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
         return tracking;
     }
 
