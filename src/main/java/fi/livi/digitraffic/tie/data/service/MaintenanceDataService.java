@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
+@ConditionalOnWebApplication
 @Service
 public class MaintenanceDataService {
 
@@ -42,7 +44,7 @@ public class MaintenanceDataService {
         final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
         final WorkMachineTracking tracking = new WorkMachineTracking(record);
         workMachineTrackingRepository.save(tracking);
-        log.info("Saved WorkMachineTracking {}", tracking);
+        log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
         return tracking;
     }
 

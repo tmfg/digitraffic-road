@@ -2,9 +2,6 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 import io.swagger.annotations.Api;
@@ -56,7 +52,8 @@ public class MaintenanceController {
     public ResponseEntity<Void> postWorkMachineTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
-        log.info("Received JSON:\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
+        log.info("method=postWorkMachineTrackingData JSON=\n{}",
+                 objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
 
         maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
 

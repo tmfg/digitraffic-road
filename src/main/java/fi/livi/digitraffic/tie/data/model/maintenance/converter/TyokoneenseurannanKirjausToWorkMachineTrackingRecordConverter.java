@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.model.maintenance.Caption;
@@ -11,6 +12,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeatureCollecti
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
+@ConditionalOnWebApplication
 @Component
 public class TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter
     extends AutoRegisteredConverter<TyokoneenseurannanKirjausRequestSchema, WorkMachineTrackingRecord> {
