@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -24,6 +25,7 @@ import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = "datex2.traffic.alerts.url=Datex2Url")
 public class Datex2MessageUpdaterTest extends AbstractTest {
     @Autowired

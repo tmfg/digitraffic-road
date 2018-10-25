@@ -31,6 +31,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
@@ -42,6 +43,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class CameraSftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);

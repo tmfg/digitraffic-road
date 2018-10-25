@@ -7,11 +7,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MaintenanceControllerTest extends AbstractRestWebTest {
 
     @Autowired
