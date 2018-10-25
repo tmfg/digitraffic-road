@@ -99,8 +99,9 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
         testSftpServer.setCommandFactory(new ScpCommandFactory());
         testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
+        log.info("Start Sftp Server on port {}", port);
         testSftpServer.start();
-
+        log.info("Sftp Server started");
         final Session session = sftpSessionFactory.getSession();
         if (!session.exists(sftpUploadFolder)) {
             session.mkdir(sftpUploadFolder);

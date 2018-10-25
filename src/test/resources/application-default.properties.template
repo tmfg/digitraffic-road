@@ -39,6 +39,7 @@ camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_
 camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
 camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
 camera-image-uploader.sftp.poolSize = 5
+camera-image-uploader.sftp.port=61234
 camera-image-uploader.sftp.sessionWaitTimeout = 5000
 # Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
 camera-image-download.url = http://localhost:62859/kamerakuva/
