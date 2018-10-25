@@ -18,7 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class LocationMetadataUpdaterTest extends AbstractTest {
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
