@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.model.maintenance.Link;
@@ -15,6 +16,7 @@ import fi.livi.digitraffic.tie.harja.Havainto;
 import fi.livi.digitraffic.tie.harja.entities.SijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
+@ConditionalOnWebApplication
 @Component
 public class HavaintoToObservationPropertiesConverter extends AutoRegisteredConverter<Havainto, ObservationProperties> {
 

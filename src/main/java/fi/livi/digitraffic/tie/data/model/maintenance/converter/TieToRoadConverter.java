@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.model.maintenance.converter;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.model.maintenance.Lane;
@@ -7,6 +8,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.Road;
 import fi.livi.digitraffic.tie.harja.entities.Tie;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
+@ConditionalOnWebApplication
 @Component
 public class TieToRoadConverter extends AutoRegisteredConverter<Tie, Road> {
 
