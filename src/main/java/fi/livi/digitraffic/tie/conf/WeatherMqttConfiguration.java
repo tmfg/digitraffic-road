@@ -19,9 +19,9 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(WeatherMqttConfiguration.class);
 
-    // tms/weather/{roadStationId}/{sensorId}
-    private static final String WEATHER_TOPIC = "tms/weather/%d/%d";
-    private static final String WEATHER_STATUS_TOPIC = "tms/weather/status";
+    // weather/{roadStationId}/{sensorId}
+    private static final String WEATHER_TOPIC = "weather/%d/%d";
+    private static final String WEATHER_STATUS_TOPIC = "weather/status";
 
     @Autowired
     public WeatherMqttConfiguration(final MqttRelayService mqttRelay,
