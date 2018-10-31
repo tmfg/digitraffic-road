@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -176,10 +177,19 @@ public class RoadStation {
 
     public void setObsolete(final boolean obsolete) {
         this.obsolete = obsolete;
-        if (!obsolete) {
-            setObsoleteDate(null);
-        } else if (obsoleteDate == null) {
+    }
+
+    public void obsolete() {
+        if (obsoleteDate == null || !obsolete) {
             setObsoleteDate(LocalDate.now());
+            setObsolete(true);
+        }
+    }
+
+    public void unobsolete() {
+        if (obsoleteDate != null || obsolete) {
+            setObsoleteDate(null);
+            setObsolete(false);
         }
     }
 
@@ -237,18 +247,6 @@ public class RoadStation {
 
     public void setAltitude(final BigDecimal altitude) {
         this.altitude = altitude;
-    }
-
-    /**
-     * @return true if state changed
-     */
-    public boolean obsolete() {
-        if (obsoleteDate == null || !obsolete) {
-            obsoleteDate = LocalDate.now();
-            obsolete = true;
-            return true;
-        }
-        return false;
     }
 
     public Integer getCollectionInterval() {

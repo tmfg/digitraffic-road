@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -100,10 +99,9 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             if (rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() || !cp.isPublicExternal()) {
                 missingCount--;
             }
-            rs.setObsolete(false);
-            rs.setObsolete(false);
+            rs.unobsolete();
             rs.setPublic(true);
-            cp.setObsolete(false);
+            cp.unobsolete();
             cp.setPublicInternal(true);
             cp.setPublicExternal(true);
         }
