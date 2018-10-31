@@ -37,4 +37,22 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(recordsBefore+1, recordsAfter);
     }
 
+
+    @Test
+    public void postWorkMachineTrackingDataWithNoContentType() throws Exception {
+
+        final String jsonContent = readResourceContent("classpath:harja/seuranta.json");
+
+        final int recordsBefore = maintenanceDataService.findAll().size();
+        mockMvc.perform(
+            post(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.WORK_MACHINE_TRACKING_PATH)
+                .content(jsonContent)
+        )
+        .andExpect(status().is5xxServerError());
+
+        final int recordsAfter = maintenanceDataService.findAll().size();
+        Assert.assertEquals(recordsBefore, recordsAfter);
+    }
+
 }
