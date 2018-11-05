@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +48,7 @@ public class MaintenanceController {
     }
 
     @ApiOperation("Posting real-time tracking information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = WORK_MACHINE_TRACKING_PATH)
+    @RequestMapping(method = RequestMethod.POST, path = WORK_MACHINE_TRACKING_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of real-time tracking information for a work machine from HARJA"))
     public ResponseEntity<Void> postWorkMachineTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
