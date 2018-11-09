@@ -70,6 +70,8 @@ quartz.enabled=false
 mqtt.enabled=true
 # Is TMS messages available. Should be true for daemon process
 mqtt.tms.enabled=true
+# Is WEATHER messages available
+mqtt.weather.enabled=true
 
 # JMS queue enabled/disabled (Only daemon should have these enabled)
 jms.weather.enabled=false
