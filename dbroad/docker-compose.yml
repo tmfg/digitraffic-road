@@ -1,0 +1,30 @@
+version: '2.0' # docker-compose version
+
+services:
+
+  db:
+    image: postgres:9.6.6
+    restart: always
+    environment:
+      POSTGRES_USER: road
+      POSTGRES_PASSWORD: road
+      POSTGRES_DB: road
+    ports:
+      - 54322:5432
+
+  db-init:
+    build: .
+    volumes:
+      - "./sql:/sql"
+      - "~/.m2:/root/.m2"
+    links:
+      - "db:db"
+    command: ["./wait-for-postgres.sh", "db", "road", "road", "road", "./init-db.sh"]
+
+  adminer:
+    image: adminer
+    restart: always
+    links:
+      - "db:database" # postgres is reachable for adminer from web at the hostnames db and database
+    ports:
+      - 8082:8080

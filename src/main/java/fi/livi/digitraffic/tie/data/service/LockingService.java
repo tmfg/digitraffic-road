@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,18 +14,25 @@ public class LockingService {
 
     private final LockingDao lockingDao;
 
-    @Autowired
+    private final String instanceId;
+
+    private static final Logger log = LoggerFactory.getLogger(LockingService.class);
+
     public LockingService(final LockingDao lockingDao) {
         this.lockingDao = lockingDao;
+        this.instanceId = UUID.randomUUID().toString();
+    }
+
+    public boolean acquireLock(final String lockName, final int expirationSeconds) {
+        return lockingDao.acquireLock(lockName, instanceId, expirationSeconds);
     }
 
     @Transactional
-    public boolean acquireLock(final String lockName, final String callerInstanceId, final int expirationSeconds) {
-        return lockingDao.acquireLock(lockName, callerInstanceId, expirationSeconds);
+    public void releaseLock(final String lockName) {
+        lockingDao.releaseLock(lockName, instanceId);
     }
 
-    @Transactional
-    public void releaseLock(final String lockName, final String callerInstanceId) {
-        lockingDao.releaseLock(lockName, callerInstanceId);
+    public String getInstanceId() {
+        return instanceId;
     }
 }

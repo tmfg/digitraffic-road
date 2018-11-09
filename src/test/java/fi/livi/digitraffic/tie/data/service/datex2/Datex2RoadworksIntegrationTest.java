@@ -16,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractTest;
@@ -24,6 +25,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class Datex2RoadworksIntegrationTest extends AbstractTest {
     private Datex2SimpleMessageUpdater messageUpdater;
 
@@ -59,8 +61,8 @@ public class Datex2RoadworksIntegrationTest extends AbstractTest {
         assertVersionTime(roadWorks.get(0), versionTime);
     }
 
-    private static void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
-        assertEquals(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
+    private void assertVersionTime(final Datex2 datex2, final ZonedDateTime versionTime) {
+        assertTimesEqual(versionTime.withNano(0), datex2.getSituations().get(0).getSituationRecords().get(0).getVersionTime());
     }
 
     private String getRoadworks(final ZonedDateTime versionTime) throws IOException {

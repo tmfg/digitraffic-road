@@ -60,7 +60,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
 
     @Query("SELECT CASE WHEN count(rs) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM RoadStation rs\n" +
-           "WHERE rs.publishable = 1\n" +
+           "WHERE rs.publishable = true\n" +
            "  AND rs.type = :roadStationType\n" +
            "  AND rs.naturalId = :roadStationNaturalId")
     boolean isPublishableRoadStation(@Param("roadStationNaturalId")

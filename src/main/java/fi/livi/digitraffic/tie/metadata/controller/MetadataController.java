@@ -1,20 +1,20 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -25,7 +25,6 @@ import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.geojson.traveltime.LinkFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
@@ -34,7 +33,6 @@ import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionS
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
-import fi.livi.digitraffic.tie.metadata.service.traveltime.TravelTimeLinkMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +43,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(tags = "metadata", description = "Metadata for Digitraffic services")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 public class MetadataController {
 
     public static final String TMS_STATIONS_PATH = "/tms-stations";
@@ -70,7 +68,6 @@ public class MetadataController {
     private final RoadStationSensorService roadStationSensorService;
     private final ForecastSectionService forecastSectionService;
     private final LocationService locationService;
-    private final TravelTimeLinkMetadataService travelTimeLinkMetadataService;
 
     @Autowired
     public MetadataController(final CameraPresetService cameraPresetService,
@@ -78,15 +75,13 @@ public class MetadataController {
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
                               final ForecastSectionService forecastSectionService,
-                              final LocationService locationService,
-                              final TravelTimeLinkMetadataService travelTimeLinkMetadataService) {
+                              final LocationService locationService) {
         this.cameraPresetService = cameraPresetService;
         this.tmsStationService = tmsStationService;
         this.weatherStationService = weatherStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.forecastSectionService = forecastSectionService;
         this.locationService = locationService;
-        this.travelTimeLinkMetadataService = travelTimeLinkMetadataService;
     }
 
     @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
@@ -233,12 +228,5 @@ public class MetadataController {
 
             @PathVariable("id") final int id) {
         return locationService.findLocation(id, version);
-    }
-
-    @ApiOperation("The static information of metropolitan area travel time links")
-    @RequestMapping(method = RequestMethod.GET, path = TRAVEL_TIME_LINKS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of travel time links") })
-    public LinkFeatureCollection travelTimeLinks() {
-        return travelTimeLinkMetadataService.getLinkMetadata();
     }
 }

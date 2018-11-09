@@ -1,11 +1,11 @@
 package fi.livi.digitraffic.tie.data.websocket;
 
+import org.hibernate.annotations.Immutable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 
 @Immutable
 public class TmsMessage {

@@ -53,14 +53,9 @@ public class WeatherStationUpdater  {
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
 
         final boolean updateStaticDataStatus = updateWeatherStationsMetadata(tiesaaAsemas);
-        updateRoadWeatherStationStaticDataStatus(updateStaticDataStatus);
 
         log.info("Update WeatherStations end");
         return updateStaticDataStatus;
-    }
-
-    private void updateRoadWeatherStationStaticDataStatus(final boolean updateStaticDataStatus) {
-        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.ROAD_WEATHER, updateStaticDataStatus);
     }
 
     private boolean updateWeatherStationsMetadata(final List<TiesaaAsemaVO> tiesaaAsemas) {

@@ -46,19 +46,13 @@ public class TmsStationUpdater {
         log.info("Update tms Stations start");
 
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
-
         final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
-        updateStaticDataStatus(updatedTmsStations);
+
         log.info("UpdateTmsStations end");
         return updatedTmsStations;
     }
 
-    private void updateStaticDataStatus(final boolean updateStaticDataStatus) {
-        dataStatusService.updateStaticDataStatus(DataStatusService.StaticStatusType.TMS, updateStaticDataStatus);
-    }
-
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {
-
         final int fixed = tmsStationService.fixNullLotjuIds(lamAsemas);
 
         int updated = 0;

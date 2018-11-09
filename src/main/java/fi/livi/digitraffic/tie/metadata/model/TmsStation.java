@@ -169,21 +169,17 @@ public class TmsStation {
     /**
      * @return true if state changed
      */
-    public boolean obsolete() {
-        boolean obsoleted = false;
+    public void obsolete() {
         if (roadStation == null) {
             log.error("Cannot obsolete TmsStation (" + getId() + ", lotjuId " + getLotjuId() + ") with null roadstation");
-            if (obsoleteDate == null || !obsolete) {
-                obsoleteDate = LocalDate.now();
-                obsolete = true;
-                obsoleted = true;
+            if (getObsoleteDate() == null) {
+                setObsoleteDate(LocalDate.now());
             }
         } else {
-            obsoleted = roadStation.obsolete();
-            obsoleteDate = roadStation.getObsoleteDate();
-            obsolete = roadStation.isObsolete();
+            roadStation.obsolete();
+            setObsoleteDate(roadStation.getObsoleteDate());
         }
-        return obsoleted;
+        setObsolete(true);
     }
 
     public double getWinterFreeFlowSpeed2() {

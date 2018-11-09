@@ -15,6 +15,3 @@
 # Lokitiedostot
 **/*.log
 **/*.log.gz
-
-# Statistiikka modulin datatallennus kansio
-/javamelody

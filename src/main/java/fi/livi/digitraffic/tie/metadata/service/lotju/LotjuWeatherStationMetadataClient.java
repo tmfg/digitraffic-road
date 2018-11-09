@@ -30,42 +30,46 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuWeatherStationMetadataClient(Jaxb2Marshaller marshaller,
-                                             @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
+    public LotjuWeatherStationMetadataClient(final Jaxb2Marshaller marshaller,
+                                             final @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
         super(marshaller, weatherMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaAsemaVO> getTiesaaAsemmas() {
+    public List<TiesaaAsemaVO> getTiesaaAsemmas() {
+        log.info("Fetching TiesaaAsemas from " + getWebServiceTemplate().getDefaultUri());
+
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
-        log.info("Fetching TiesaaAsemas");
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
+
         log.info("roadStationFetchedCount={} TiesaaAsemas", response.getValue().getTiesaaAsema().size());
         return response.getValue().getTiesaaAsema();
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
+    public List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
+        log.info("Fetching all LaskennallisetAnturit from " + getWebServiceTemplate().getDefaultUri());
 
-        log.info("Fetching all LaskennallisetAnturit");
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
-
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+
         return response.getValue().getLaskennallinenAnturi();
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
+    public List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
         request.setId(tiesaaAsemaLotjuId);
+
         final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response =
                 (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
                         getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+
         return response.getValue().getLaskennallinenAnturi();
     }
 

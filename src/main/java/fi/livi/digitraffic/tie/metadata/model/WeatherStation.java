@@ -66,8 +66,8 @@ public class WeatherStation {
         this.roadStation = roadStation;
     }
 
-    public boolean obsolete() {
-        return roadStation.obsolete();
+    public void obsolete() {
+        roadStation.obsolete();
     }
 
     public WeatherStationType getWeatherStationType() {

@@ -79,7 +79,6 @@ public class JMSMessageListener<K> implements MessageListener {
 
             // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
             if (!isDrainScheduled()) {
-                log.info("Handle JMS message immediately");
                 drainQueueInternal();
                 try {
                     message.acknowledge();
@@ -146,11 +145,11 @@ public class JMSMessageListener<K> implements MessageListener {
             }
 
             if ( counter > 0 && !shutdownCalled.get() ) {
-                log.info("JMS message queue drainedCount={} of queueToDrain={} messages. Next update data to db.", counter, queueToDrain);
+                log.info("JMS messages drainedCount={} queueToDrain={}", counter, queueToDrain);
                 messageDrainedCounter.addAndGet(counter);
                 final int updated = dataUpdater.updateData(targetList);
                 dbRowsUpdatedCounter.addAndGet(updated);
-                log.info("JMS message queue draining and updating of counter={} messages ( updated={} db rows) tookMs={}", counter, updated, start.getTime());
+                log.info("JMS messages updated counter={} updated={} tookMs={}", counter, updated, start.getTime());
             }
         } else {
             log.info("drainQueueInternal: Shutdown called");

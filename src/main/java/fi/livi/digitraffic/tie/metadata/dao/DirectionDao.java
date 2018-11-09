@@ -39,6 +39,6 @@ public class DirectionDao {
     }
 
     public void makeNonObsoleteDirectionsObsolete() {
-        jdbcTemplate.update("UPDATE DIRECTION SET obsolete_date = sysdate WHERE obsolete_date IS NULL", Collections.emptyMap());
+        jdbcTemplate.update("UPDATE DIRECTION SET obsolete_date = current_timestamp WHERE obsolete_date IS NULL", Collections.emptyMap());
     }
 }

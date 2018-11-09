@@ -3,12 +3,16 @@ package fi.livi.digitraffic.tie.conf.jms;
 import javax.jms.JMSException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import progress.message.jclient.QueueConnectionFactory;
 
 @Configuration
+@ConditionalOnProperty("jms.sonja.connection.enabled")
+@ConditionalOnNotWebApplication
 public class JMSConfiguration {
 
     @Bean(name = "sonjaJMSConnectionFactory")

@@ -10,14 +10,7 @@ public class CoordinateConverterTest {
 
     @Test
     public void convertFromETRSToWGS84Succeeds() {
-
         assertCoordinates(CoordinateConverter.convertFromETRS89ToWGS84(new Point(386261, 6686131)));
-    }
-
-    @Test
-    public void convertFromKKJ3ToWGS84Succeeds() {
-
-        assertCoordinates(CoordinateConverter.convertFromKKJ3ToWGS84(new Point(3386386, 6688942)));
     }
 
     // Reference system https://www.retkikartta.fi/

@@ -65,7 +65,7 @@ public class ForecastSectionMetadataUpdater {
         boolean updated = updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);
         markForecastSectionsObsolete(naturalIdToForecastSections, forecastSectionsToDelete);
 
-        forecastSectionRepository.save(naturalIdToForecastSections.values());
+        forecastSectionRepository.saveAll(naturalIdToForecastSections.values());
         forecastSectionRepository.flush();
         return forecastSectionCoordinates.size() != existingForecastSections.size() || forecastSectionsToDelete.size() > 0 || updated;
     }

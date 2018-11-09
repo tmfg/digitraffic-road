@@ -42,7 +42,7 @@ public class TmsDataService {
         if (onlyUpdateInfo) {
             return new TmsRootDataObjectDto(updated);
         } else {
-            List<TmsStation> tmsStations = tmsStationService.findAllPublishableTmsStations();
+            final List<TmsStation> tmsStations = tmsStationService.findAllPublishableTmsStations();
             final Map<Long, List<SensorValueDto>> values =
                     roadStationSensorService.findAllPublishableRoadStationSensorValuesMappedByNaturalId(RoadStationType.TMS_STATION);
 
@@ -71,8 +71,9 @@ public class TmsDataService {
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllPublishableRoadStationSensorValues(roadStationNaturalId,
                         RoadStationType.TMS_STATION);
-        TmsStation tms = tmsStationService.findPublishableTmsStationByRoadStationNaturalId(roadStationNaturalId);
+        final TmsStation tms = tmsStationService.findPublishableTmsStationByRoadStationNaturalId(roadStationNaturalId);
         final TmsStationDto dto = new TmsStationDto();
+
         dto.setTmsStationNaturalId(tms.getNaturalId());
         dto.setRoadStationNaturalId(roadStationNaturalId);
         dto.setSensorValues(values);

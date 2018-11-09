@@ -4,7 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -153,10 +154,6 @@ public class CameraImageUpdateService {
         return true;
     }
 
-    private static boolean isPublicCameraPreset(final CameraPreset cameraPreset) {
-        return cameraPreset != null && cameraPreset.isPublicExternal() && cameraPreset.isPublicInternal();
-    }
-
     private byte[] readImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         log.info("Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
         byte[] result;
@@ -188,9 +185,8 @@ public class CameraImageUpdateService {
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         if (cameraPreset != null) {
-            ZonedDateTime pictureTaken = DateHelper.toZonedDateTime(DateHelper.toLocalDateTime(kuva.getAikaleima()));
             cameraPreset.setPublicExternal(kuva.getJulkinen());
-            cameraPreset.setPictureLastModified(pictureTaken);
+            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTime(Instant.ofEpochMilli(kuva.getAikaleima())));
         }
     }
 

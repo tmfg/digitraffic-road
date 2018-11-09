@@ -22,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 /**
  * Test that every data-api has working last update query
@@ -31,12 +31,11 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(DataUpdatedControllerRestWebTest.class);
 
     private static final Set<String> excludedOperations = Sets.newSet(
-        "FLUENCY_CURRENT_PATH",
-        "FLUENCY_HISTORY_DATA_PATH",
-        "FLUENCY_HISTORY_DAY_DATA_PATH",
         "TRAFFIC_DISORDERS_DATEX2_PATH",
         "FORECAST_SECTION_WEATHER_DATA_PATH",
-        "ROADWORKS_DATEX2_PATH");
+        "WEIGHT_RESTRICTIONS_DATEX2_PATH",
+        "ROADWORKS_DATEX2_PATH"
+    );
 
     @Autowired
     private DataController dataController;
@@ -47,8 +46,8 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
        final List<Field> fields = Stream.of(fieldArray).filter(this::filter).collect(Collectors.toList());
 
         for(final Field field : fields) {
-            final String url = MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                         MetadataApplicationConfiguration.API_DATA_PART_PATH +
+            final String url = RoadApplicationConfiguration.API_V1_BASE_PATH +
+                         RoadApplicationConfiguration.API_DATA_PART_PATH +
                          field.get(dataController) +
                          "?" + DataController.LAST_UPDATED_PARAM + "=true";
 

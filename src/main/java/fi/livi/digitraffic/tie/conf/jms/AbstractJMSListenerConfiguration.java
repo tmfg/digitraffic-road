@@ -16,6 +16,8 @@ import javax.jms.Session;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
@@ -26,6 +28,8 @@ import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
+@ConditionalOnProperty("jms.sonja.connection.enabled")
+@ConditionalOnNotWebApplication
 public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
     private static String STATISTICS_PREFIX = "STATISTICS:";
@@ -77,7 +81,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
         log.info("prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" +
                 " times per minute ( instanceId={} )",
-                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
+                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, lockingService.getInstanceId());
         log.info("prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" +
                 " db rows per minute. Current in memory queue size queueSize={}.",
                  STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
@@ -107,13 +111,12 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         try {
             // If lock can be acquired then connect and start listening
             final boolean lockAcquired = lockingService.acquireLock(jmsParameters.getLockInstanceName(),
-                                                                    jmsParameters.getLockInstanceId(),
                                                                     JMS_CONNECTION_LOCK_EXPIRATION_S);
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + jmsParameters.getLockInstanceId() + ")");
+                          " (instanceId: " + lockingService.getInstanceId() + ")");
 
                 // Try to connect if not connected
                 if (connection == null) {
@@ -125,20 +128,20 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
-                    "instance is holding the lock", jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
+                    "instance is holding the lock", jmsParameters.getLockInstanceName(), lockingService.getInstanceId());
                 // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
             closeConnectionQuietly();
-            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
+            lockingService.releaseLock(jmsParameters.getLockInstanceName());
         }
 
         // Check if shutdown was called during connection initialization
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
-            lockingService.releaseLock(jmsParameters.getLockInstanceName(), jmsParameters.getLockInstanceId());
+            lockingService.releaseLock(jmsParameters.getLockInstanceName());
         }
     }
 

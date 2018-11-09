@@ -24,6 +24,9 @@ If you want to disable some jobs, it can be done by adding following line to app
     # Disable jobs. Format: quartz.{jobClassName}.enabled = false
     quartz.CameraUpdateJob.enabled = false
 
+### Run PosgresSQL server
+
+See dbroad directory [README.md](dbroad/README.md)
 ### Configure Oracle JDBC driver
 
 Download Oracle JDBC driver and add it to your local Maven repository.

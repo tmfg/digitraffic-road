@@ -15,7 +15,6 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
 @Service
 public class CameraDataService {
-
     private final CameraPresetRepository cameraPresetRepository;
     private final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter;
 
@@ -28,8 +27,8 @@ public class CameraDataService {
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final boolean onlyUpdateInfo) {
-
         final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
+
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
         } else {
@@ -41,10 +40,10 @@ public class CameraDataService {
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final String cameraId) {
-
         final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
-        List<CameraPreset> data = cameraPresetRepository
+        final List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(cameraId);
+
         if (data.isEmpty()) {
             throw new ObjectNotFoundException("CameraStation", cameraId);
         }

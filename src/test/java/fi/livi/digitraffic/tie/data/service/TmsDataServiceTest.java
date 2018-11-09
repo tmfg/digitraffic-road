@@ -33,21 +33,6 @@ public class TmsDataServiceTest extends AbstractTest {
     @Autowired
     private RoadStationSensorService roadStationSensorService;
 
-    @Before
-    public void initData() {
-        final Map<Long, TmsStation> stations = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
-        final List<RoadStationSensor> availableSensors = roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(TMS_STATION);
-
-        stations.values().forEach(station -> {
-            final RoadStation rs = station.getRoadStation();
-            availableSensors.forEach(s -> {
-                if (!rs.getRoadStationSensors().contains(s)) {
-                    rs.getRoadStationSensors().add(s);
-                }
-            });
-        });
-    }
-
     @Test
     public void findPublishableTmsData() {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(false);
@@ -59,7 +44,7 @@ public class TmsDataServiceTest extends AbstractTest {
 
     @Test
     public void findPublishableTmsDataById() {
-        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(-23001);
+        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23801);
         assertNotNull(object);
         assertNotNull(object.getDataUpdatedTime());
         assertNotNull(object.getTmsStations());

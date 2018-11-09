@@ -26,10 +26,9 @@ public class ForecastSectionDataUpdaterTest extends AbstractTest {
     @Test
     public void updateForecastSectionWeatherDataSucceeds() {
         forecastSectionMetadataUpdater.updateForecastSectionMetadata();
-
         forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
 
         assertNotNull(forecastSections);
     }

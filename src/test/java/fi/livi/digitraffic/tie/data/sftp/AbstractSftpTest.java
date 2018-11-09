@@ -14,10 +14,10 @@ import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
-import org.apache.sshd.common.util.Base64;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
@@ -99,9 +99,10 @@ public abstract class AbstractSftpTest extends AbstractTest {
 
         testSftpServer.setCommandFactory(new ScpCommandFactory());
         testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
+        log.info("Start Sftp Server on port {}", port);
         testSftpServer.start();
-
-        Session session = sftpSessionFactory.getSession();
+        log.info("Sftp Server started");
+        final Session session = sftpSessionFactory.getSession();
         if (!session.exists(sftpUploadFolder)) {
             session.mkdir(sftpUploadFolder);
         }

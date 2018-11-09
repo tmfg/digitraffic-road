@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,45 +31,45 @@ public class ForecastSectionDataUpdater {
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public ForecastSectionDataUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionRepository forecastSectionRepository) {
+    public ForecastSectionDataUpdater(final ForecastSectionClient forecastSectionClient, final ForecastSectionRepository forecastSectionRepository) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
     }
 
     @Transactional
-    public Timestamp updateForecastSectionWeatherData() {
+    public Instant updateForecastSectionWeatherData() {
+        final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
 
-        ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
-
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
-
-        Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
+        final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
                 data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
         log.info("Forecast section weather data contains weather forecasts for " + weatherDataByNaturalId.size() +
                  " forecast sections. Number of forecast sections in database is " + forecastSections.size());
 
-        Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(Collectors.toMap(fs -> fs.getNaturalId(), fs -> fs));
+        final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
 
         updateForecastSectionWeatherData(weatherDataByNaturalId, forecastSectionsByNaturalId);
 
-        forecastSectionRepository.save(forecastSectionsByNaturalId.values());
+        forecastSectionRepository.saveAll(forecastSectionsByNaturalId.values());
         forecastSectionRepository.flush();
 
-        return Timestamp.from(data.messageTimestamp.toInstant());
+        return data.messageTimestamp.toInstant();
     }
 
-    private void updateForecastSectionWeatherData(Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, Map<String, ForecastSection> forecastSectionsByNaturalId) {
+    private void updateForecastSectionWeatherData(final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, final Map<String, ForecastSection> forecastSectionsByNaturalId) {
+        for (final Map.Entry<String, ForecastSection> fs : forecastSectionsByNaturalId.entrySet()) {
+            final ForecastSection forecastSection = fs.getValue();
 
-        for (Map.Entry<String, ForecastSection> fs : forecastSectionsByNaturalId.entrySet()) {
+            if(forecastSection.getForecastSectionWeatherList() == null) {
+                continue;
+            }
 
-            ForecastSection forecastSection = fs.getValue();
-            List<ForecastSectionWeather> forecastsToAdd = new ArrayList<>();
-
-            ForecastSectionWeatherDto weatherData = weatherDataByNaturalId.get(fs.getKey());
+            final List<ForecastSectionWeather> forecastsToAdd = new ArrayList<>();
+            final ForecastSectionWeatherDto weatherData = weatherDataByNaturalId.get(fs.getKey());
 
             // Update observation for forecast section
-            ForecastSectionWeather observation =
+            final ForecastSectionWeather observation = forecastSection.getForecastSectionWeatherList() == null ? null :
                     forecastSection.getForecastSectionWeatherList().stream().filter(f -> "OBSERVATION".equals(f.getType())).findFirst().orElse(null);
 
             if (observation != null) {
@@ -88,19 +89,19 @@ public class ForecastSectionDataUpdater {
             }
 
             // Update forecasts 2h, 4h, 6h, 12h for forecast section
-            List<ForecastSectionWeather> forecasts =
+            final List<ForecastSectionWeather> forecasts =
                     forecastSection.getForecastSectionWeatherList().stream().filter(f -> "FORECAST".equals(f.getType())).collect(Collectors.toList());
-            Set<String> existingForecastNames = forecasts.stream().map(f -> f.getForecastName()).collect(Collectors.toSet());
+            final Set<String> existingForecastNames = forecasts.stream().map(ForecastSectionWeather::getForecastName).collect(Collectors.toSet());
 
-            List<String> forecastNamesInData = weatherData.forecast.stream().map(data -> data.forecastName).collect(Collectors.toList());
-            Set<ForecastSectionWeather> forecastsToDelete = forecasts.stream().filter(f -> !forecastNamesInData.contains(f.getForecastName())).collect(Collectors.toSet());
+            final List<String> forecastNamesInData = weatherData.forecast.stream().map(data -> data.forecastName).collect(Collectors.toList());
+            final Set<ForecastSectionWeather> forecastsToDelete = forecasts.stream().filter(f -> !forecastNamesInData.contains(f.getForecastName())).collect(Collectors.toSet());
 
-            Map<String, ForecastSectionWeather> forecastNameToWeather = forecasts.stream().collect(Collectors.toMap(ForecastSectionWeather::getForecastName, f -> f));
+            final Map<String, ForecastSectionWeather> forecastNameToWeather = forecasts.stream().collect(Collectors.toMap(ForecastSectionWeather::getForecastName, f -> f));
 
             weatherData.forecast.forEach(data -> {
                 if (existingForecastNames.contains(data.forecastName)) {
                     // update
-                    ForecastSectionWeather forecastSectionWeather = forecastNameToWeather.get(data.forecastName);
+                    final ForecastSectionWeather forecastSectionWeather = forecastNameToWeather.get(data.forecastName);
                     updateForecast(forecastSection.getId(), forecastSectionWeather, data);
                 } else {
                     // add
@@ -124,7 +125,8 @@ public class ForecastSectionDataUpdater {
         }
     }
 
-    private ForecastConditionReason forecastConditionReason(long forecastSectionId, String forecastName, ForecastSectionWeatherReasonDto conditionReason) {
+    private static ForecastConditionReason forecastConditionReason(final long forecastSectionId, final String forecastName,
+        final ForecastSectionWeatherReasonDto conditionReason) {
         if (conditionReason == null) {
             return null;
         } else {
@@ -139,7 +141,8 @@ public class ForecastSectionDataUpdater {
         }
     }
 
-    private void updateForecast(long forecastSectionId, ForecastSectionWeather forecastSectionWeather, ForecastSectionForecastDto update) {
+    private static void updateForecast(final long forecastSectionId, final ForecastSectionWeather forecastSectionWeather,
+        final ForecastSectionForecastDto update) {
         forecastSectionWeather.setDaylight(update.daylight);
         forecastSectionWeather.setOverallRoadCondition(update.overallRoadCondition);
         forecastSectionWeather.setReliability(update.reliability);
@@ -165,7 +168,7 @@ public class ForecastSectionDataUpdater {
         }
     }
 
-    private void updateObservation(ForecastSectionWeather observation, ForecastSectionObservationDto observationData) {
+    private void updateObservation(final ForecastSectionWeather observation, final ForecastSectionObservationDto observationData) {
         observation.setDaylight(observationData.daylight);
         observation.setOverallRoadCondition(observationData.overallRoadCondition);
         observation.setReliability(observationData.reliability);

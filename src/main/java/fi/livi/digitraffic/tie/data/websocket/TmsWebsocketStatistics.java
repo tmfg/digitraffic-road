@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnExpression("'${controllers.enabled}' != 'false' and '${config.test}' != 'true'")
+@ConditionalOnExpression("'${app.type}' != 'daemon' and '${config.test}' != 'true'")
 public class TmsWebsocketStatistics {
     private static final Logger log = LoggerFactory.getLogger(TmsWebsocketStatistics.class);
 
@@ -29,7 +29,7 @@ public class TmsWebsocketStatistics {
             sentStatisticsMap.put(websocketType, new SentStatistics(sentStatistics != null ? sentStatistics.sessions : 0, 0));
         }
     }
-    
+
     public static synchronized void sentTmsWebsocketStatistics(final WebsocketType type, final int sessions, final int messages) {
         final SentStatistics ss = sentStatisticsMap.get(type);
 

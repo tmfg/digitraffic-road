@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -26,44 +25,36 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 public class SensorValueDao {
     private static final Logger log = LoggerFactory.getLogger(SensorValueDao.class);
 
-    private static final String MERGE_STATEMENT =
-            "MERGE INTO SENSOR_VALUE dst\n" +
-            "USING (\n" +
-            "  SELECT (\n" +
-            "        SELECT sensor.id  \n" +
-            "        FROM ROAD_STATION_SENSOR sensor\n" +
-            "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
-            "          AND sensor.road_station_type = :stationType\n" +
-            "          AND sensor.obsolete_date is null\n" +
-            "        ) as road_station_sensor_id ,(\n" +
-            "        SELECT station.id\n" +
-            "        FROM ROAD_STATION station\n" +
-            "        WHERE station.lotju_id = :rsLotjuId\n" +
-            "          AND station.road_station_type = :stationType\n" +
-            "          AND station.obsolete_date is null\n" +
-            "       ) as road_station_id FROM DUAL\n" +
-            ") src ON (dst.road_station_sensor_id = src.road_station_sensor_id\n" +
-            "      AND dst.road_station_id = src.road_station_id)\n" +
-            "WHEN MATCHED THEN UPDATE SET dst.value = :value\n" +
-            "                           , dst.measured = :measured\n" +
-            "                           , dst.updated = sysdate\n" +
-            "                           , dst.time_window_start = :timeWindowStart\n" +
-            "                           , dst.time_window_end = :timeWindowEnd\n" +
-            "     WHERE (dst.value != :value\n" +
-            "     OR dst.time_window_start is null\n" +
-            "     OR dst.time_window_start != :timeWindowStart)\n" +
-            "     AND dst.measured < :measured \n" +
-            "WHEN NOT MATCHED THEN INSERT (dst.id, dst.road_station_id, dst.road_station_sensor_id, dst.value, dst.measured, dst.updated, dst.time_window_start, dst.time_window_end)\n" +
-            "     VALUES (SEQ_SENSOR_VALUE.nextval\n" +
-            "           , src.road_station_id\n" +
-            "           , src.road_station_sensor_id\n" +
-            "           , :value\n" +
-            "           , :measured\n" +
-            "           , sysdate\n" + // updated
-            "           , :timeWindowStart\n" +
-            "           , :timeWindowEnd)\n" +
-            "     WHERE src.road_station_id IS NOT NULL\n" +
-            "       AND src.road_station_sensor_id IS NOT NULL";
+    private static final String MERGE_STATEMENT = "with upsert as (\n" +
+        "  SELECT (\n" +
+        "        SELECT sensor.id  \n" +
+        "        FROM ROAD_STATION_SENSOR sensor\n" +
+        "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
+        "          AND sensor.road_station_type = :stationType\n" +
+        "          AND sensor.obsolete_date is null\n" +
+        "        ) as road_station_sensor_id ,(\n" +
+        "        SELECT station.id\n" +
+        "        FROM ROAD_STATION station\n" +
+        "        WHERE station.lotju_id = :rsLotjuId\n" +
+        "          AND station.road_station_type = :stationType\n" +
+        "          AND station.obsolete_date is null\n" +
+        "       ) as road_station_id\n" +
+        ")\n" +
+        "insert into sensor_value(id, road_station_id, road_station_sensor_id, " +
+        "value, measured, updated, time_window_start, time_window_end)\n" +
+        "select nextval('seq_sensor_value'), upsert.road_station_id, " +
+        "upsert.road_station_sensor_id, :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd from upsert\n" +
+        "where upsert.road_station_sensor_id is not null\n" + 
+        "on conflict (road_station_id, road_station_sensor_id)\n" +
+        "do update set value = :value\n" +
+        "                , measured = :measured\n" +
+        "                , updated = current_timestamp\n" +
+        "                , time_window_start = :timeWindowStart\n" +
+        "                , time_window_end = :timeWindowEnd\n" +
+        "WHERE (sensor_value.value != :value\n" +
+        "     OR sensor_value.time_window_start is null\n" +
+        "     OR sensor_value.time_window_start != :timeWindowStart)\n" +
+        "     AND sensor_value.measured < :measured";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -150,8 +141,7 @@ public class SensorValueDao {
     }
 
     private static Map createArgsMap(final TiesaaProtos.TiesaaMittatieto tiesaa, final TiesaaProtos.TiesaaMittatieto.Anturi anturi) {
-        final LocalDateTime sensorValueMeasured = DateHelper.toLocalDateTime(tiesaa.getAika());
-        final Timestamp measured = Timestamp.valueOf(sensorValueMeasured);
+        final Timestamp measured = Timestamp.from(Instant.ofEpochMilli(tiesaa.getAika()));
         final HashMap<String, Object> args = new HashMap<>();
 
         args.put("value", NumberConverter.convertAnturiValueToDouble(anturi.getArvo()));

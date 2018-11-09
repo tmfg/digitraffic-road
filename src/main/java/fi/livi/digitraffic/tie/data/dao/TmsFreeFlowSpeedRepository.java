@@ -28,8 +28,8 @@ public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpe
             "FROM LAM_STATION LS\n" +
             "INNER JOIN ROAD_STATION RS ON RS.ID = LS.ROAD_STATION_ID\n" +
             "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE LS.OBSOLETE = 0\n" +
-            "  AND RS.IS_PUBLIC = 1",
+            "WHERE LS.OBSOLETE = false\n" +
+            "  AND RS.IS_PUBLIC = true",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<TmsFreeFlowSpeedDto> listAllPublicTmsFreeFlowSpeeds();
@@ -48,8 +48,8 @@ public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpe
             "FROM LAM_STATION LS\n" +
             "INNER JOIN ROAD_STATION RS ON RS.ID = LS.ROAD_STATION_ID\n" +
             "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE LS.OBSOLETE = 0\n" +
-            "  AND RS.IS_PUBLIC = 1\n" +
+            "WHERE LS.OBSOLETE = false\n" +
+            "  AND RS.IS_PUBLIC = true\n" +
             "  AND RS.NATURAL_ID = ?1",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

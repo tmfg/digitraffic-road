@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +46,7 @@ public class TmsStationData2Datex2Converter {
     private final InformationStatusEnum informationStatus;
 
     public TmsStationData2Datex2Converter(@Value("${spring.profiles.active}") final String profile) {
-        this.informationStatus = profile.equals("koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
+        this.informationStatus = StringUtils.equals(profile, "koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
     }
 
     public D2LogicalModel convert(final Map<TmsStation, List<SensorValueDto>> stations, final ZonedDateTime updated) {
@@ -77,8 +78,7 @@ public class TmsStationData2Datex2Converter {
             .withExchange(new Exchange().withSupplierIdentification(new InternationalIdentifier().withCountry(CountryEnum.FI).withNationalIdentifier("FI")));
     }
 
-    private SiteMeasurements getSiteMeasurement(final TmsStation station, final SensorValueDto sensorValue, final HashMap<String, Long> skipped) {
-
+    private static SiteMeasurements getSiteMeasurement(final TmsStation station, final SensorValueDto sensorValue, final HashMap<String, Long> skipped) {
         final BasicData data = getBasicData(sensorValue);
 
         if (data != null) {
@@ -106,7 +106,7 @@ public class TmsStationData2Datex2Converter {
                 return trafficSpeed;
             }
         } else if (sensorName.contains("OHITUKSET")) {
-            final BigInteger value = new BigDecimal(sensorValue.getSensorValue()).round(MathContext.UNLIMITED).toBigInteger();
+            final BigInteger value = BigDecimal.valueOf(sensorValue.getSensorValue()).round(MathContext.UNLIMITED).toBigInteger();
             final TrafficFlow trafficFlow = new TrafficFlow().withVehicleFlow(new VehicleFlowValue().withVehicleFlowRate(value));
             if (setMeasurementOrCalculationPeriod(sensorName, trafficFlow)) {
                 return trafficFlow;

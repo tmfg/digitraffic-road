@@ -28,9 +28,11 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
-    public TmsJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                       @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                       @Value("#{'${jms.tms.inQueue}'.split(',')}") final List<String> jmsQueueKeys, final SensorDataUpdateService sensorDataUpdateService,
+    public TmsJMSListenerConfiguration(final @Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                       final @Value("${jms.userId}") String jmsUserId,
+                                       final @Value("${jms.password}") String jmsPassword,
+                                       final @Value("#{'${jms.tms.inQueue}'.split(',')}") List<String> jmsQueueKeys,
+                                       final SensorDataUpdateService sensorDataUpdateService,
                                        final LockingService lockingService) {
 
         super(connectionFactory,
