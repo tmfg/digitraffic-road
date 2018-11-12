@@ -156,7 +156,8 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(final HttpMediaTypeNotSupportedException exception, final ServletWebRequest request) {
-        final String errorMsg = "Illegal " + HttpHeaders.CONTENT_TYPE + ": " + request.getHeader(HttpHeaders.CONTENT_TYPE) + ". Supported types: " + exception.getSupportedMediaTypes();
+        final String errorMsg = String.format("Illegal %s: %s. Supported types: %s",
+                                              HttpHeaders.CONTENT_TYPE, request.getHeader(HttpHeaders.CONTENT_TYPE), exception.getSupportedMediaTypes());
         log.error(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() + ": " + errorMsg, exception);
         request.getHeader(HttpHeaders.CONTENT_TYPE);
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
