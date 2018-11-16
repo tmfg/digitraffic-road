@@ -372,6 +372,14 @@
             </plugin>
 
             <plugin>
+                <!-- OpenJDK8 compatibility issue with 2.x versions. Jenkins uses OpenJDK -->
+                <!-- https://stackoverflow.com/questions/53010200/maven-surefire-could-not-find-forkedbooter-class -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
