@@ -103,7 +103,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
                                  final @Value("${road.datasource.password}") String password,
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
 
-        HikariConfig config = new HikariConfig();
+        final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
@@ -113,6 +113,9 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
+
+        // register mbeans for debug
+        config.setRegisterMbeans(true);
 
         // Auto commit must be true for Quartz
         config.setAutoCommit(true);
