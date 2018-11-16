@@ -115,7 +115,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setConnectionTimeout(60000);
 
         // register mbeans for debug
-        config.setRegisterMbeans(true);
+        config.setRegisterMbeans(false);
 
         // Auto commit must be true for Quartz
         config.setAutoCommit(true);
