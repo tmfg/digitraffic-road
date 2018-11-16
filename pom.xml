@@ -37,6 +37,14 @@
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
     <dependencyManagement>
         <dependencies>
+<!--
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <type>maven-plugin</type>
+            </dependency>
+-->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
@@ -372,6 +380,13 @@
             </plugin>
 
             <plugin>
+                <!-- OpenJDK8 compatibility issue with 2.x versions. Jenkins uses OpenJDK-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
@@ -509,6 +524,47 @@
                     <evaluateOnCommit>HEAD</evaluateOnCommit>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>RunSchemaSpy</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>/usr/local/bin/java</executable>
+                    <basedir>${basedir}/dbroad/schemaspy</basedir>
+                    <mainClass>org.schemaspy.Main</mainClass>
+                    <arguments>
+                        <argument>-jar</argument>
+                        <argument>schemaspy-6.0.0.jar</argument>
+                        <argument>-configFile</argument>
+                        <argument>schemaspy.properties</argument>
+                        <argument>-o</argument>
+                        <argument>${basedir}/schemaspy</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/schemaspy</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>
