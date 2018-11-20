@@ -58,6 +58,10 @@ Or build the JAR file with:
 
     $ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
 
+### Generate SchemaSpy schemas from the db
+
+    $ mvn exec:exec@RunSchemaSpy
+
 ### Misc commands
 
 To compile Java-classes from wsdl:s run command

@@ -539,6 +539,7 @@
                         <argument>schemaspy-6.0.0.jar</argument>
                         <argument>-configFile</argument>
                         <argument>schemaspy.properties</argument>
+                        <!-- Output directory -->
                         <argument>-o</argument>
                         <argument>${basedir}/schemaspy</argument>
                     </arguments>
