@@ -15,3 +15,6 @@
 # Lokitiedostot
 **/*.log
 **/*.log.gz
+
+# SchemaSpyn generoimat schemat
+/schemaspy

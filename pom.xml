@@ -531,7 +531,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>/usr/local/bin/java</executable>
+                    <executable>java</executable>
                     <basedir>${basedir}/dbroad/schemaspy</basedir>
                     <mainClass>org.schemaspy.Main</mainClass>
                     <arguments>
