@@ -70,7 +70,7 @@ Generated schemas can be found at `dbroad/schemaspy/schema` -directory
 Or without Maven
 
     $ cd dbroad/schemaspy
-    $ java -jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /../../chemaspy
+    $ java -jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /tmp/schema
 
 ### Misc commands
 
