@@ -524,7 +524,7 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <id>RunSchemaSpy</id>
+                        <id>schemaspy</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -532,8 +532,7 @@
                 </executions>
                 <configuration>
                     <executable>java</executable>
-                    <basedir>${basedir}/dbroad/schemaspy</basedir>
-                    <mainClass>org.schemaspy.Main</mainClass>
+                    <workingDirectory>${basedir}/dbroad/schemaspy</workingDirectory>
                     <arguments>
                         <argument>-jar</argument>
                         <argument>schemaspy-6.0.0.jar</argument>

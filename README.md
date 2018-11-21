@@ -61,6 +61,7 @@ Or build the JAR file with:
 ### Generate SchemaSpy schemas from the db
 
     $ mvn exec:exec@RunSchemaSpy
+    $ mvn exec:exec -e -X -Dexec.args="-jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o road"
 
 ### Misc commands
 
