@@ -61,7 +61,16 @@ Or build the JAR file with:
 ### Generate SchemaSpy schemas from the db
 
     $ mvn exec:exec@RunSchemaSpy
-    $ mvn exec:exec -e -X -Dexec.args="-jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o road"
+
+Generated schemas can be found at `dbroad/schemaspy/schema` -directory    
+
+    Or with parameters
+    $ mvn exec:exec -e -X -Dexec.args="-jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /tmp/schema
+
+Or without Maven
+
+    $ cd dbroad/schemaspy
+    $ java -jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /../../chemaspy
 
 ### Misc commands
 
