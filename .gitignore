@@ -17,4 +17,4 @@
 **/*.log.gz
 
 # SchemaSpyn generoimat schemat
-/schemaspy
+/dbroad/schemaspy/schema
