@@ -548,7 +548,7 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${basedir}/schemaspy</directory>
+                            <directory>${basedir}/dbroad/schemaspy/schema</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>
