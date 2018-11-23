@@ -127,6 +127,8 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
     // fix bug in spring boot, tries to export hikari beans twice
     public MBeanExporter exporter() {
         final MBeanExporter exporter = new MBeanExporter();
+        
+        exporter.setAutodetect(true);
         exporter.setExcludedBeans("datasource");
 
         return exporter;
