@@ -30,6 +30,8 @@ else
 fi
 curl ${Z_FLAG} -o ${PG_JAR} -L https://jdbc.postgresql.org/download/postgresql-42.2.5.jar
 
+set -x
+
 # Copy default parameters, read command line parameters and replace in properties
 cp ${BASEDIR}/schemaspy-default.properties ${BASEDIR}/lib/schemaspy.properties
 while [ "$1" != "" ]; do
@@ -39,7 +41,7 @@ while [ "$1" != "" ]; do
     if [ ! -z "${PARAM}" ] && [ ! -z  "${VALUE}" ]; then
         PARAM=${PARAM:1}
         echo "Setting property: schemaspy.${PARAM}=${VALUE}"
-        sed -n -e "s;schemaspy.${PARAM}=.*;schemaspy.${PARAM}=${VALUE};g" ${BASEDIR}/lib/schemaspy.properties
+        sed -i -e "s;schemaspy.${PARAM}=.*;schemaspy.${PARAM}=${VALUE};g" ${BASEDIR}/lib/schemaspy.properties
     fi
     shift
 done
