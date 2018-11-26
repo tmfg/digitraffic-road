@@ -8,10 +8,12 @@ cd ${BASEDIR}
 
 echo "Running at dir $(pwd)"
 
+mkdir -p ${BASEDIR}/lib
+
 SS_JAR="${BASEDIR}/lib/schemaspy.jar"
 PG_JAR="${BASEDIR}/lib/postgresql.jar"
 
- Download only if changed
+# Download only if changed
 if test -e ${SS_JAR}
 then
     Z_FLAG="-z ${SS_JAR}"
