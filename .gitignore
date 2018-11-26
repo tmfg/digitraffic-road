@@ -16,5 +16,6 @@
 **/*.log
 **/*.log.gz
 
-# SchemaSpyn generoimat schemat
+# SchemaSpyn generoimat schemat ja kirjastot
 /dbroad/schemaspy/schema
+/dbroad/schemaspy/lib

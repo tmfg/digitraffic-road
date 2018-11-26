@@ -528,20 +528,13 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}/dbroad/schemaspy</workingDirectory>
+                            <executable>./get-deps-and-run-schemaspy.sh</executable>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>java</executable>
-                    <workingDirectory>${basedir}/dbroad/schemaspy</workingDirectory>
-                    <arguments>
-                        <argument>-jar</argument>
-                        <argument>schemaspy-6.0.0.jar</argument>
-                        <argument>-configFile</argument>
-                        <argument>schemaspy.properties</argument>
-                    </arguments>
-                </configuration>
             </plugin>
-
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.1.0</version>
@@ -549,6 +542,10 @@
                     <filesets>
                         <fileset>
                             <directory>${basedir}/dbroad/schemaspy/schema</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/dbroad/schemaspy/lib</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>

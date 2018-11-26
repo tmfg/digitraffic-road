@@ -58,19 +58,20 @@ Or build the JAR file with:
 
     $ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
 
-### Generate SchemaSpy schemas from the db
+### Generate SchemaSpy schemas from the db with Maven
 
-    $ mvn exec:exec@RunSchemaSpy
+    $ mvn exec:exec@schemaspy
 
 Generated schemas can be found at `dbroad/schemaspy/schema` -directory    
 
-    Or with parameters
-    $ mvn exec:exec -e -X -Dexec.args="-jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /tmp/schema
+Or with custom parameters.
+    
+    $ mvn exec:exec@schemaspy -Dexec.args="-o=/tmp/schema"
 
 Or without Maven
 
     $ cd dbroad/schemaspy
-    $ java -jar schemaspy-6.0.0.jar -configFile schemaspy.properties -o /tmp/schema
+    $ get-deps-and-run-schemaspy.sh [-o=/tmp/schema]
 
 ### Misc commands
 
