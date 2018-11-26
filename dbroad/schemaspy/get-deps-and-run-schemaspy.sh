@@ -36,12 +36,10 @@ while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     VALUE=`echo $1 | awk -F= '{print $2}'`
 
-    echo "p=${PARAM} v=${VALUE}"
-
     if [ ! -z "${PARAM}" ] && [ ! -z  "${VALUE}" ]; then
         PARAM=${PARAM:1}
         echo "Setting property: schemaspy.${PARAM}=${VALUE}"
-        sed -i "" -e "s:schemaspy.${PARAM}.*:schemaspy.${PARAM}=${VALUE}:g" ${BASEDIR}/lib/schemaspy.properties
+        sed -i "" -e "s:schemaspy.${PARAM}=.*:schemaspy.${PARAM}=${VALUE}:g" ${BASEDIR}/lib/schemaspy.properties
     fi
     shift
 done
