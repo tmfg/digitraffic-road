@@ -39,7 +39,7 @@ while [ "$1" != "" ]; do
     if [ ! -z "${PARAM}" ] && [ ! -z  "${VALUE}" ]; then
         PARAM=${PARAM:1}
         echo "Setting property: schemaspy.${PARAM}=${VALUE}"
-        sed -i "" -e "s;schemaspy.${PARAM}=.*;schemaspy.${PARAM}=${VALUE};g" ${BASEDIR}/lib/schemaspy.properties
+        sed -i ".bak" -e "s;schemaspy.${PARAM}=.*;schemaspy.${PARAM}=${VALUE};g" ${BASEDIR}/lib/schemaspy.properties
     fi
     shift
 done
