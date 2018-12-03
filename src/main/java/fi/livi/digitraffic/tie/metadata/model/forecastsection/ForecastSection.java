@@ -112,6 +112,10 @@ public class ForecastSection {
     @OrderBy("forecastSectionCoordinatesPK.orderNumber")
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
+    @OneToMany(mappedBy = "primaryKey.forecastSectionCoordinate", cascade = CascadeType.ALL)
+    @OrderBy("orderNumber")
+    private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
     private List<ForecastSectionWeather> forecastSectionWeatherList;
