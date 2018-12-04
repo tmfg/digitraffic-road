@@ -18,7 +18,7 @@ public class ForecastSectionCoordinatesMetadataUpdateJob extends SimpleUpdateJob
     private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) throws Exception {
+    protected void doExecute(JobExecutionContext context) {
         boolean updated = forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
         if (updated) {
