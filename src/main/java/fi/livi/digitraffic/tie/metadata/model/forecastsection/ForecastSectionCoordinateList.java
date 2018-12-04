@@ -1,55 +1,39 @@
 package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
-@AssociationOverrides({ @AssociationOverride(name = "primaryKey.forecastSection", joinColumns = @JoinColumn(name = "FORECAST_SECTION_ID")),
-                        @AssociationOverride(name = "primaryKey.forecastSectionCoordinate", joinColumns = @JoinColumn(name = "FORECAST_SECTION_COORDINATE_ID")) })
 public class ForecastSectionCoordinateList {
 
     @EmbeddedId
-    private ForecastSectionCoordinateListId primaryKey = new ForecastSectionCoordinateListId();
+    private ForecastSectionCoordinateListPK forecastSectionCoordinateListPK;
 
-    @NotNull
-    private Long orderNumber;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumns({ @JoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
+                   @JoinColumn(name="list_order_number", referencedColumnName = "order_number")})
+    @Fetch(FetchMode.JOIN)
+    List<ForecastSectionCoordinate> forecastSectionCoordinates;
 
-    public ForecastSectionCoordinateListId getPrimaryKey() {
-        return primaryKey;
-    }
-
-    public void setPrimaryKey(ForecastSectionCoordinateListId primaryKey) {
-        this.primaryKey = primaryKey;
-    }
-
-    @Transient
-    public ForecastSection getForecastSection() {
-        return primaryKey.getForecastSection();
-    }
-
-    public void setForecastSection(final ForecastSection forecastSection) {
-        primaryKey.setForecastSection(forecastSection);
-    }
-
-    @Transient
-    public ForecastSectionCoordinate getForecastSectionCoordinate() {
-        return primaryKey.getForecastSectionCoordinate();
-    }
-
-    public void setForecastSectionCoordinate(final ForecastSectionCoordinate forecastSectionCoordinate) {
-        primaryKey.setForecastSectionCoordinate(forecastSectionCoordinate);
+    public Long getForecastSectionId() {
+        return forecastSectionCoordinateListPK.getForecastSectionId();
     }
 
     public Long getOrderNumber() {
-        return orderNumber;
+        return forecastSectionCoordinateListPK.getOrderNumber();
     }
 
-    public void setOrderNumber(final long orderNumber) {
-        this.orderNumber = orderNumber;
+    public List<ForecastSectionCoordinate> getForecastSectionCoordinates() {
+        return forecastSectionCoordinates;
     }
 }

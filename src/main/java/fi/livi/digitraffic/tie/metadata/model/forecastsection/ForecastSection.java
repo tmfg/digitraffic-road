@@ -115,8 +115,8 @@ public class ForecastSection {
     @OrderBy("forecastSectionCoordinatesPK.orderNumber")
     private List<ForecastSectionCoordinates> forecastSectionCoordinates;
 
-    @OneToMany(mappedBy = "primaryKey.forecastSectionCoordinate", cascade = CascadeType.ALL)
-    @OrderBy("orderNumber")
+    @OneToMany(mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("forecastSectionCoordinateListPK.orderNumber")
     private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -249,16 +249,12 @@ public class ForecastSection {
         return forecastSectionCoordinates;
     }
 
-    public void setForecastSectionCoordinates(List<ForecastSectionCoordinates> forecastSectionCoordinates) {
-        this.forecastSectionCoordinates = forecastSectionCoordinates;
-    }
-
     public List<ForecastSectionWeather> getForecastSectionWeatherList() {
         return forecastSectionWeatherList;
     }
 
-    public void setForecastSectionWeatherList(List<ForecastSectionWeather> forecastSectionWeatherList) {
-        this.forecastSectionWeatherList = forecastSectionWeatherList;
+    public List<ForecastSectionCoordinateList> getForecastSectionCoordinateLists() {
+        return forecastSectionCoordinateLists;
     }
 
     public void addCoordinates(List<Coordinate> coordinates) {
