@@ -26,3 +26,19 @@ ALTER TABLE forecast_section_coordinate_list
   ADD CONSTRAINT foresec_coord_list_coord_fk FOREIGN KEY (forecast_section_coordinate_id)
 REFERENCES forecast_section_coordinate (id)
 ON DELETE NO ACTION;
+
+ALTER TABLE forecast_section ADD COLUMN version INTEGER;
+
+UPDATE forecast_section set version = 1;
+
+create or replace function "f_trigger_vc$forecast_section"() returns trigger
+language plpgsql
+as $$
+BEGIN
+  NEW.road_number := SUBSTR(NEW.natural_id, 1, 5);
+  NEW.road_section_number := SUBSTR(NEW.natural_id, 7, 3);
+  NEW.road_section_version_number := CASE WHEN NEW.version = 1 THEN SUBSTR(NEW.natural_id, 11, 3) ELSE '0' END;
+  RETURN NEW;
+END;
+$$
+;

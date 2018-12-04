@@ -66,6 +66,9 @@ public class ForecastSection {
     @JsonProperty("roadId")
     private String naturalId;
 
+    @JsonIgnore
+    private Integer version;
+
     @ApiModelProperty(value = "Forecast section description")
     private String description;
 
@@ -144,6 +147,14 @@ public class ForecastSection {
 
     public void setNaturalId(String naturalId) {
         this.naturalId = naturalId;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public String getDescription() {
