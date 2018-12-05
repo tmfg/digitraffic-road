@@ -13,6 +13,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionF
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionProperties;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinate;
 
 @Component
 public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -31,9 +32,14 @@ public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureC
         return forecastSectionFeatures;
     }
 
-    private ForecastSectionFeature convert(ForecastSection fs) {
+    private ForecastSectionFeature convert(final ForecastSection fs) {
+        final List<ForecastSectionCoordinate> collect = fs.getForecastSectionCoordinateLists().stream()
+            .map(l -> l.getForecastSectionCoordinates())
+            .flatMap(f -> f.stream())
+            .collect(Collectors.toList());
+
         final List<List<Double>> coordinates =
-            fs.getForecastSectionCoordinates().stream().map(c -> Arrays.asList(c.getLongitude().doubleValue(), c.getLatitude().doubleValue()))
+            collect.stream().map(c -> Arrays.asList(c.getLongitude().doubleValue(), c.getLatitude().doubleValue()))
                                                        .collect(Collectors.toList());
 
         return new ForecastSectionFeature(fs.getId(), new LineString(coordinates), createProperties(fs));

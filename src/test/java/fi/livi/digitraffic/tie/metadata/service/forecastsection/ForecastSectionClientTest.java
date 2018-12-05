@@ -20,7 +20,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     @Test
     public void getForecastSectionCoordinatesSucceeds() {
 
-        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
         assertTrue(forecastSectionCoordinates.size() > 2);
         assertEquals("00001_001_000_0", forecastSectionCoordinates.get(0).getNaturalId());

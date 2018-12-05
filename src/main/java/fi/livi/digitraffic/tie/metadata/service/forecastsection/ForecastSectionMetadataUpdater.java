@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionCoordinatesRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinate;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateList;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateListPK;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinatePK;
 
 @Service
 public class ForecastSectionMetadataUpdater {
@@ -25,14 +30,12 @@ public class ForecastSectionMetadataUpdater {
 
     private final ForecastSectionClient forecastSectionClient;
 
-    private final ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository;
-
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public ForecastSectionMetadataUpdater(ForecastSectionClient forecastSectionClient, ForecastSectionCoordinatesRepository forecastSectionCoordinatesRepository, ForecastSectionRepository forecastSectionRepository) {
+    public ForecastSectionMetadataUpdater(final ForecastSectionClient forecastSectionClient,
+                                          final ForecastSectionRepository forecastSectionRepository) {
         this.forecastSectionClient = forecastSectionClient;
-        this.forecastSectionCoordinatesRepository = forecastSectionCoordinatesRepository;
         this.forecastSectionRepository = forecastSectionRepository;
     }
 
@@ -42,24 +45,25 @@ public class ForecastSectionMetadataUpdater {
     @Transactional
     public boolean updateForecastSectionMetadata() {
 
-        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
+        final List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
-        Set<String> existingForecastSections = forecastSections.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+        final Set<String> existingForecastSections = forecastSections.stream().map(ForecastSection::getNaturalId).collect(Collectors.toSet());
 
         printLogInfo(forecastSectionCoordinates, forecastSections);
 
-        Map<String, ForecastSection> naturalIdToForecastSections = forecastSections.stream().collect(Collectors.toMap(fs -> fs.getNaturalId(), fs -> fs));
+        final Map<String, ForecastSection> naturalIdToForecastSections = forecastSections.stream().collect(Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
 
-        Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd = forecastSectionCoordinates.stream().filter(
-                fs -> !existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+        final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd = forecastSectionCoordinates.stream().filter(
+                fs -> !existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSectionCoordinatesDto::getNaturalId, c -> c));
 
-        Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate = forecastSectionCoordinates.stream().filter(
-                fs -> existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+        final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate = forecastSectionCoordinates.stream().filter(
+                fs -> existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSectionCoordinatesDto::getNaturalId, c -> c));
 
-        Set<String> receivedForecastSections = forecastSectionCoordinates.stream().map(fs -> fs.getNaturalId()).collect(Collectors.toSet());
-        Map<String, ForecastSection> forecastSectionsToDelete = forecastSections.stream().filter(
-                fs -> !receivedForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(c -> c.getNaturalId(), c -> c));
+        final Set<String> receivedForecastSections = forecastSectionCoordinates.stream().map(ForecastSectionCoordinatesDto::getNaturalId).collect(Collectors.toSet());
+
+        final Map<String, ForecastSection> forecastSectionsToDelete = forecastSections.stream().filter(
+                fs -> !receivedForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSection::getNaturalId, c -> c));
 
         addForecastSections(naturalIdToForecastSections, forecastSectionsToAdd);
         boolean updated = updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);
@@ -70,13 +74,13 @@ public class ForecastSectionMetadataUpdater {
         return forecastSectionCoordinates.size() != existingForecastSections.size() || forecastSectionsToDelete.size() > 0 || updated;
     }
 
-    private void addForecastSections(Map<String, ForecastSection> forecastSections, Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd) {
+    private void addForecastSections(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd) {
 
-        for (Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToAdd.entrySet()) {
+        for (final Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToAdd.entrySet()) {
 
-            ForecastSectionCoordinatesDto forecastSection = fs.getValue();
+            final ForecastSectionCoordinatesDto forecastSection = fs.getValue();
 
-            ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), forecastSection.getName());
+            final ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), 1, forecastSection.getName());
             forecastSectionRepository.saveAndFlush(newForecastSection);
             newForecastSection.addCoordinates(forecastSection.getCoordinates());
             forecastSectionRepository.saveAndFlush(newForecastSection);
@@ -84,11 +88,11 @@ public class ForecastSectionMetadataUpdater {
         }
     }
 
-    private boolean updateForecastSections(Map<String, ForecastSection> forecastSections, Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate) {
+    private boolean updateForecastSections(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate) {
 
         boolean updated = false;
-        for (Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToUpdate.entrySet()) {
-            ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
+        for (final Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToUpdate.entrySet()) {
+            final ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
 
             if (!forecastSection.corresponds(fs.getValue())) {
                 log.info("Updating forecast section: " + forecastSection.toString() + " with data: " + fs.toString());
@@ -96,32 +100,51 @@ public class ForecastSectionMetadataUpdater {
             }
             forecastSection.setDescription(fs.getValue().getName());
             forecastSection.setObsoleteDate(null);
-            forecastSection.getForecastSectionCoordinates().clear();
-            forecastSectionCoordinatesRepository.deleteInBatch(forecastSection.getForecastSectionCoordinates());
-            forecastSection.addCoordinates(fs.getValue().getCoordinates());
+
+            forecastSection.removeCoordinateLists();
+            forecastSectionRepository.saveAndFlush(forecastSection);
+
+            addCoordinates(forecastSection, fs.getValue().getCoordinates());
         }
         return updated;
     }
 
-    private void markForecastSectionsObsolete(Map<String, ForecastSection> forecastSections, Map<String, ForecastSection> forecastSectionsToDelete) {
+    private void addCoordinates(final ForecastSection forecastSection, final List<Coordinate> coordinates) {
+        final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
 
-        for (Map.Entry<String, ForecastSection> fs : forecastSectionsToDelete.entrySet()) {
-            ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
+        long orderNumber = 1;
+        for (final Coordinate coordinate : coordinates) {
+            if (!coordinate.isValid()) {
+                log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " + coordinate.toString());
+            } else {
+                coordinateList.add(new ForecastSectionCoordinate(
+                    new ForecastSectionCoordinatePK(forecastSection.getId(), 1L, orderNumber), coordinate.longitude, coordinate.latitude));
+                orderNumber++;
+            }
+        }
+        final ForecastSectionCoordinateList list =
+            new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(forecastSection.getId(), 1L), coordinateList);
+        forecastSection.getForecastSectionCoordinateLists().add(list);
+    }
+
+    private void markForecastSectionsObsolete(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSection> forecastSectionsToDelete) {
+
+        for (final Map.Entry<String, ForecastSection> fs : forecastSectionsToDelete.entrySet()) {
+            final ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
             forecastSection.setObsoleteDate(Date.from(Instant.now()));
         }
     }
 
-    private void printLogInfo(List<ForecastSectionCoordinatesDto> roadSectionCoordinates, List<ForecastSection> forecastSections) {
+    private void printLogInfo(final List<ForecastSectionCoordinatesDto> roadSectionCoordinates, final List<ForecastSection> forecastSections) {
 
-        int newCoordinatesCount = roadSectionCoordinates.stream().mapToInt(c -> c.getCoordinates().size()).sum();
-
-        log.info("Updating forecast section coordinates. Number of coordinates in database: " + forecastSectionCoordinatesRepository.count() +
-                 ". Number of coordinates received for update: " + newCoordinatesCount);
-        List<String> externalNaturalIds = roadSectionCoordinates.stream().map(c -> c.getNaturalId()).collect(Collectors.toList());
-        List<String> existingNaturalIds = forecastSections.stream().map(f -> f.getNaturalId()).collect(Collectors.toList());
-        List<String> newForecastSectionNaturalIds = externalNaturalIds.stream().filter(n -> !existingNaturalIds.contains(n)).collect(Collectors.toList());
-        List<String> missingForecastSectionNaturalIds = existingNaturalIds.stream().filter(n -> !externalNaturalIds.contains(n)).collect(Collectors.toList());
-        log.info("Database is missing " + newForecastSectionNaturalIds.size() + " ForecastSections (naturalIds): " + StringUtils.join(newForecastSectionNaturalIds, ", ") +
-                 ". Update data is missing " + missingForecastSectionNaturalIds.size() + " ForecastSections (naturalIds): " + StringUtils.join(missingForecastSectionNaturalIds, ", "));
+        log.info(String.format("Updating forecast sections. existingForecastSections=%s receivedForecastSections=%s",
+                               forecastSections.size(), roadSectionCoordinates.size()));
+        final List<String> externalNaturalIds = roadSectionCoordinates.stream().map(c -> c.getNaturalId()).collect(Collectors.toList());
+        final List<String> existingNaturalIds = forecastSections.stream().map(f -> f.getNaturalId()).collect(Collectors.toList());
+        final List<String> newForecastSectionNaturalIds = externalNaturalIds.stream().filter(n -> !existingNaturalIds.contains(n)).collect(Collectors.toList());
+        final List<String> missingForecastSectionNaturalIds = existingNaturalIds.stream().filter(n -> !externalNaturalIds.contains(n)).collect(Collectors.toList());
+        log.info(String.format("newForecastSections=%s with naturalIds=%s deletedForecastSections=%s with naturalIds=%s",
+                               newForecastSectionNaturalIds.size(), StringUtils.join(newForecastSectionNaturalIds, ","),
+                               missingForecastSectionNaturalIds.size(), StringUtils.join(missingForecastSectionNaturalIds, ",")));
     }
 }

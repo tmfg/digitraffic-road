@@ -111,11 +111,7 @@ public class ForecastSection {
     @Fetch(FetchMode.JOIN)
     private RoadSection endRoadSection;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
-    @OrderBy("forecastSectionCoordinatesPK.orderNumber")
-    private List<ForecastSectionCoordinates> forecastSectionCoordinates;
-
-    @OneToMany(mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("forecastSectionCoordinateListPK.orderNumber")
     private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists;
 
@@ -126,13 +122,17 @@ public class ForecastSection {
     public ForecastSection() {
     }
 
-    public ForecastSection(final String naturalId, final String description) {
+    public ForecastSection(final String naturalId, final int version, final String description) {
         this.naturalId = naturalId;
         this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
         this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
-        this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
+        if (version == 1) {
+            this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
+        } else {
+            this.roadSectionVersionNumber = 0;
+        }
         this.description = description;
-        this.forecastSectionCoordinates = new ArrayList<>();
+        this.forecastSectionCoordinateLists = new ArrayList<>();
         this.forecastSectionWeatherList = new ArrayList<>();
         this.obsoleteDate = null;
     }
@@ -245,10 +245,6 @@ public class ForecastSection {
         this.endRoadSection = endRoadSection;
     }
 
-    public List<ForecastSectionCoordinates> getForecastSectionCoordinates() {
-        return forecastSectionCoordinates;
-    }
-
     public List<ForecastSectionWeather> getForecastSectionWeatherList() {
         return forecastSectionWeatherList;
     }
@@ -257,19 +253,28 @@ public class ForecastSection {
         return forecastSectionCoordinateLists;
     }
 
-    public void addCoordinates(List<Coordinate> coordinates) {
-        this.forecastSectionCoordinates = new ArrayList<>();
+    public void removeCoordinateLists() {
+        forecastSectionCoordinateLists.forEach(l -> l.removeCoordinates());
+        forecastSectionCoordinateLists.clear();
+    }
+
+    public void addCoordinates(final List<Coordinate> coordinates) {
+        forecastSectionCoordinateLists = new ArrayList<>();
+
+        final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
+
+        // FIXME: V2
         long orderNumber = 1;
-        for (Coordinate coordinate : coordinates) {
+        for (final Coordinate coordinate : coordinates) {
             if (!coordinate.isValid()) {
                 log.info("Invalid coordinates for forecast section " + getNaturalId() + ". Coordinates were: " + coordinate.toString());
             } else {
-                getForecastSectionCoordinates().add(
-                        new ForecastSectionCoordinates(this, new ForecastSectionCoordinatesPK(getId(), orderNumber),
-                                                       coordinate.longitude, coordinate.latitude));
+                coordinateList.add(new ForecastSectionCoordinate(
+                    new ForecastSectionCoordinatePK(id, 1L, orderNumber), coordinate.longitude, coordinate.latitude));
                 orderNumber++;
             }
         }
+        forecastSectionCoordinateLists.add(new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(id, 1L), coordinateList));
     }
 
     public boolean corresponds(ForecastSectionCoordinatesDto value) {
@@ -281,9 +286,15 @@ public class ForecastSection {
 
     private boolean coordinatesCorrespond(List<Coordinate> coordinates) {
 
-        if (getForecastSectionCoordinates().size() != coordinates.size()) return false;
+        // FIXME: V2
+        List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
+        if (!forecastSectionCoordinateLists.isEmpty()) {
+            coordinateList = forecastSectionCoordinateLists.get(0).getForecastSectionCoordinates();
+        }
 
-        List<Coordinate> sorted1 = this.forecastSectionCoordinates.stream().sorted((a, b) -> {
+        if (coordinateList.size() != coordinates.size()) return false;
+
+        List<Coordinate> sorted1 = coordinateList.stream().sorted((a, b) -> {
             if (a.getLongitude().equals(b.getLongitude())) {
                 return a.getLatitude().compareTo(b.getLatitude());
             }
@@ -297,7 +308,7 @@ public class ForecastSection {
             return a.longitude.compareTo(b.longitude);
         }).collect(Collectors.toList());
 
-        for (int i = 0; i < getForecastSectionCoordinates().size(); ++i) {
+        for (int i = 0; i < coordinateList.size(); ++i) {
             if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
                 sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
                 return false;
@@ -322,7 +333,7 @@ public class ForecastSection {
                ", road=" + road +
                ", startRoadSection=" + startRoadSection +
                ", endRoadSection=" + endRoadSection +
-               ", forecastSectionCoordinates=" + forecastSectionCoordinates +
+               ", forecastSectionCoordinateLists=" + forecastSectionCoordinateLists +
                '}';
     }
 }

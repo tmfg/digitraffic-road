@@ -20,12 +20,12 @@ ALTER TABLE forecast_section_coordinate_list ADD CONSTRAINT forsec_coord_list_pk
 ALTER TABLE forecast_section_coordinate_list
   ADD CONSTRAINT foresec_coord_list_fk FOREIGN KEY (forecast_section_id)
 REFERENCES forecast_section (id)
-ON DELETE NO ACTION;
+ON DELETE CASCADE;
 
 ALTER TABLE forecast_section_coordinate
   ADD CONSTRAINT foresec_coord_list_coord_fk FOREIGN KEY (forecast_section_id, list_order_number)
 REFERENCES forecast_section_coordinate_list (forecast_section_id, order_number)
-ON DELETE NO ACTION;
+ON DELETE CASCADE;
 
 ALTER TABLE forecast_section ADD COLUMN version INTEGER;
 

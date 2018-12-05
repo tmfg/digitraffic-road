@@ -29,7 +29,7 @@ public class ForecastSectionClient {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Retryable
-    public List<ForecastSectionCoordinatesDto> getForecastSectionMetadata() {
+    public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
 
         final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
 

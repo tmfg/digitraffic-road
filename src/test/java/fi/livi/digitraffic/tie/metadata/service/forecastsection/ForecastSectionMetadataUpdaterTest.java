@@ -26,12 +26,12 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractTest {
     public void updateForecastSectionCoordinatesSucceeds() {
         forecastSectionMetadataUpdater.updateForecastSectionMetadata();
 
-        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
 
         assertTrue(forecastSections.size() > 250);
         assertEquals("00001_001_000_0", forecastSections.get(0).getNaturalId());
-        assertTrue(forecastSections.get(0).getForecastSectionCoordinates().size() > 3);
-        assertEquals(new BigDecimal("24.944"), forecastSections.get(0).getForecastSectionCoordinates().get(0).getLongitude());
-        assertEquals(new BigDecimal("60.167"), forecastSections.get(0).getForecastSectionCoordinates().get(0).getLatitude());
+        assertTrue(forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().size() > 3);
+        assertEquals(new BigDecimal("24.944"), forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLongitude());
+        assertEquals(new BigDecimal("60.167"), forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLatitude());
     }
 }
