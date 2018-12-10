@@ -19,6 +19,6 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        log.info("Started MetadataApplication version: " + buildVersionService.getAppFullVersion());
+        log.info("Started RoadApplication version: " + buildVersionService.getAppFullVersion());
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.integration.util.PoolItemNotAvailableException;
 import org.springframework.messaging.MessagingException;
 import org.springframework.util.ReflectionUtils;
 
@@ -73,7 +74,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 try {
                     Session session = this.sftpSessionFactory.getSession();
                     session.close();
-                } catch (final MessagingException e) {
+                } catch (final PoolItemNotAvailableException e) {
                     fail = true;
                     time.stop();
                     log.info("Timeout tookMs={}", time.getTime());

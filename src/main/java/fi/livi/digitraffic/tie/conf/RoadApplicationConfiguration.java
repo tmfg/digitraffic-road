@@ -2,16 +2,17 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.util.List;
 import java.util.Locale;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
@@ -25,7 +26,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
 @Configuration
@@ -103,7 +103,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
                                  final @Value("${road.datasource.password}") String password,
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
 
-        HikariConfig config = new HikariConfig();
+        final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
@@ -114,10 +114,23 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
 
+        // register mbeans for debug
+        config.setRegisterMbeans(true);
+
         // Auto commit must be true for Quartz
         config.setAutoCommit(true);
 
         return new HikariDataSource(config);
     }
 
+    @Bean
+    // fix bug in spring boot, tries to export hikari beans twice
+    public MBeanExporter exporter() {
+        final MBeanExporter exporter = new MBeanExporter();
+        
+        exporter.setAutodetect(true);
+        exporter.setExcludedBeans("datasource");
+
+        return exporter;
+    }
 }
