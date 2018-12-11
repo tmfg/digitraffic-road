@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,7 @@ import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpda
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
+@ConditionalOnNotWebApplication
 public class QuartzSchedulerConfig {
     private static final Logger log = LoggerFactory.getLogger(QuartzSchedulerConfig.class);
     private final Environment environment;
@@ -90,9 +92,6 @@ public class QuartzSchedulerConfig {
         factory.setDataSource(dataSource);
         factory.setJobFactory(jobFactory);
         factory.setQuartzProperties(quartzProperties());
-
-        // https://github.com/javamelody/javamelody/wiki/UserGuide#13-batch-jobs-if-quartz
-        factory.setExposeSchedulerInRepository(true);
 
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();

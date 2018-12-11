@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <springProperty name="appType" source="app.type"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- Log message format -->
@@ -15,19 +16,20 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>info</level>
         </filter>
-        <file>metadata-logstash.log</file>
+        <file>logs/road-${appType}-logstash.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-logstash.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-logstash.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
         </rollingPolicy>
+
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-daily.log</file>
+        <file>logs/road-${appType}-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -40,9 +42,9 @@
     <!-- JMS message logging in separate file -->
     <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-jms-daily.log</file>
+        <file>logs/road-jms-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -55,9 +57,9 @@
     <!-- PerformanceMonitor messages logging in separate file -->
     <appender name="FILE_PERFORMANCE_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>metadata-performance-daily.log</file>
+        <file>logs/road-performance-daily.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>metadata-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>road-${appType}-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>92</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -116,15 +118,6 @@
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
-    <!-- debugging log -->
-    <logger name="net.bull.javamelody" additivity="true">
-        <level value="ERROR" />
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-    <logger name="net.bull.javamelody" additivity="false">
-        <appender-ref ref="NULL" />
-    </logger>
-
     <!-- PerformanceMonitorAspect log -->
     <logger name="PerformanceMonitor" additivity="true">
         <appender-ref ref="FILE_PERFORMANCE_MONITOR" />
@@ -137,14 +130,7 @@
     <root level="INFO" additivity="false">
         <appender-ref ref="FILE" />
         <appender-ref ref="FILE_LOGSTASH" />
-
-        <springProfile name="localhost">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
-
-        <springProfile name="virtualbox">
-            <appender-ref ref="CONSOLE" />
-        </springProfile>
+        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>

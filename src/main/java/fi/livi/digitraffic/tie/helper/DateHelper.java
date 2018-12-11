@@ -1,13 +1,11 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static java.time.ZoneOffset.UTC;
+
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -31,11 +29,8 @@ public final class DateHelper {
         return second;
     }
 
-    public static LocalDateTime toLocalDateTime(final XMLGregorianCalendar calendar) {
-        if (calendar != null) {
-            return calendar.toGregorianCalendar().toZonedDateTime().withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        }
-        return null;
+    public static ZonedDateTime toZonedDateTime(final XMLGregorianCalendar calendar) {
+        return calendar == null ? null : calendar.toGregorianCalendar().toZonedDateTime();
     }
 
     /**
@@ -55,35 +50,19 @@ public final class DateHelper {
                                 0,
                                 calendar.getTimezone());
                 return toZonedDateTime(calSeconds);
-            } catch (DatatypeConfigurationException e) {
-                throw new RuntimeException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
+            } catch (final DatatypeConfigurationException e) {
+                throw new IllegalArgumentException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
             }
         }
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTime(final XMLGregorianCalendar calendar) {
-        if (calendar != null) {
-            // This way Time is formed as 1995-01-01T00:00+02:00[Europe/Helsinki]
-            //                 and not as 1995-01-01T00:00+02:00[GMT+02:00]
-            // HashCodeBuilder handles them differently
-            return ZonedDateTime.of(toLocalDateTime(calendar), ZoneId.systemDefault());
-        }
-        return null;
+    public static ZonedDateTime toZonedDateTime(final Instant instant) {
+        return instant == null ? null : instant.atZone(UTC);
     }
 
-    public static ZonedDateTime toZonedDateTime(final LocalDateTime localDateTime) {
-        if (localDateTime != null) {
-            return localDateTime.atZone(ZoneId.systemDefault());
-        }
-        return null;
-    }
-
-    public static LocalDateTime toLocalDateTime(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        }
-        return null;
+    public static ZonedDateTime toZonedDateTime(final Date from) {
+        return from == null ? null : toZonedDateTime(from.toInstant());
     }
 
     public static Date toDate(final ZonedDateTime zonedDateTime) {
@@ -107,7 +86,7 @@ public final class DateHelper {
 
     public static XMLGregorianCalendar toXMLGregorianCalendarUtc(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
-            final ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), ZoneOffset.UTC);
+            final ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), UTC);
             final GregorianCalendar gregorianCalendar = GregorianCalendar.from(utc);
             try {
                 return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
@@ -116,9 +95,5 @@ public final class DateHelper {
             }
         }
         return null;
-    }
-
-    public static LocalDateTime toLocalDateTime(final long aika) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(aika), ZoneId.systemDefault());
     }
 }

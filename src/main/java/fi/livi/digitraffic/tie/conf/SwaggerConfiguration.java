@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.conf;
 
 import static com.google.common.base.Predicates.or;
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import java.time.LocalDate;
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Predicate;
-
-import fi.livi.digitraffic.tie.annotation.ConditionalOnControllersEnabled;
 import fi.livi.digitraffic.tie.data.controller.DataController;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
@@ -30,7 +31,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@ConditionalOnControllersEnabled
+@ConditionalOnWebApplication
 @Configuration
 @EnableSwagger2
 @ComponentScan(basePackageClasses = {
@@ -90,8 +91,8 @@ public class SwaggerConfiguration {
      */
     private static Predicate<String> getMetadataApiPaths() {
         return or(
-                regex(API_V1_BASE_PATH +"/*.*")
-                //, regex(API_V2_PATH +"/*.*")
+                regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
+                regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")
         );
     }
 }

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -85,6 +86,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         log.info("Read and send " + datex2Resources.size() + " Datex2 messages...");
         for (final Resource datex2Resource : datex2Resources) {
             final File datex2file = datex2Resource.getFile();
+            log.info("Datex2file={}", datex2file.getName());
             final String content = FileUtils.readFileToString(datex2file, StandardCharsets.UTF_8);
             try {
                 messageListener.onMessage(createTextMessage(autoFix ?

@@ -11,9 +11,12 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,7 +58,7 @@ public class DefaultExceptionHandler {
         final String parameterName = exception.getParameterName();
         final String requiredType = exception.getParameterType();
 
-        log.info("Query parameter missing. uri={}, queryString={}, requiredName={], requiredType={}",
+        log.info("Query parameter missing. uri={}, queryString={}, requiredName={}, requiredType={}",
                 request.getRequest().getRequestURI(), request.getRequest().getQueryString(), parameterName, requiredType);
 
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
@@ -136,6 +139,35 @@ public class DefaultExceptionHandler {
                                     HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(final Exception exception, final ServletWebRequest request) {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(
+            new ErrorResponse(
+                Timestamp.from(ZonedDateTime.now().toInstant()),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequest().getRequestURI()),
+            status);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(final HttpMediaTypeNotSupportedException exception, final ServletWebRequest request) {
+        final String errorMsg = String.format("Illegal %s: %s. Supported types: %s",
+                                              HttpHeaders.CONTENT_TYPE, request.getHeader(HttpHeaders.CONTENT_TYPE), exception.getSupportedMediaTypes());
+        log.error(HttpStatus.INTERNAL_SERVER_ERROR.value() + " " + HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() + ": " + errorMsg, exception);
+        request.getHeader(HttpHeaders.CONTENT_TYPE);
+        return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
+                                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                    errorMsg,
+                                    request.getRequest().getRequestURI()),
+                                    HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleException(final Exception exception, final ServletWebRequest request) {

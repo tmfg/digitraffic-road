@@ -2,11 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,23 +13,34 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RoadStationSensorServiceTest extends AbstractTest {
-
-    private static final Logger log = LoggerFactory.getLogger(RoadStationSensorServiceTest.class);
-
     @Autowired
     private RoadStationSensorService roadStationSensorService;
 
     @Test
-    public void testFindAllNonObsoleteRoadStationSensors() {
+    public void findAllNonObsoleteAndAllowedRoadStationSensorsForWeatherStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
-        log.info("sensorsCount={}", sensors.size());
-        Assert.assertTrue(sensors.size() >= 50);
+
+        assertCollectionSize(69, sensors);
     }
 
     @Test
-    public void testFindRoadStationSensorsByRoadStationType() {
-        List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
-        log.info("sensorsCount={}", sensors.size());
-        Assert.assertTrue(sensors.size() >= 56);
+    public void findAllNonObsoleteAndAllowedRoadStationSensorsForTmsStation() {
+        final List<RoadStationSensor> sensors = roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION);
+
+        assertCollectionSize(23, sensors);
+    }
+
+    @Test
+    public void findAllRoadStationSensorsForWeatherStation() {
+        final List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
+
+        assertCollectionSize(139, sensors);
+    }
+
+    @Test
+    public void findAllRoadStationSensorsForTmsStation() {
+        final List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.TMS_STATION);
+
+        assertCollectionSize(231, sensors);
     }
 }

@@ -1,10 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,15 +12,15 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
 
     @Test
     public void testWeatherStationMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.WEATHER_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
@@ -47,22 +45,22 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.stationSensors[0]", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.purpose").doesNotExist());
+                .andExpect(jsonPath("$.features[0].properties.purpose").doesNotHaveJsonPath());
     }
 
     @Test
     public void testWeatherStationSensorsMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+            RoadApplicationConfiguration.API_METADATA_PART_PATH +
             MetadataController.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].name", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].description", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotExist())
-            .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotExist())
-            .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotExist());
+            .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotHaveJsonPath());
     }
 }

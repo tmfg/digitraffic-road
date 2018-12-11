@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,7 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
@@ -45,8 +43,8 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
 
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.TMS_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
@@ -70,17 +68,17 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testTmsStationSensorsMetadataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-            MetadataApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+            RoadApplicationConfiguration.API_METADATA_PART_PATH +
             MetadataController.TMS_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.roadStationSensors[0].description", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].lane", anyOf(nullValue(), isA(String.class))))
-            .andExpect(jsonPath("$.roadStationSensors[0].direction", anyOf(nullValue(), isA(String.class))));
+            .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].descriptions.fi", isA(String.class)))
+            .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
+            .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath());
     }
 }

@@ -20,7 +20,7 @@ public class LocationSubtypeUpdater {
         final LocationSubtypeReader locationSubtypeReader = new LocationSubtypeReader(version);
         final List<LocationSubtype> newTypes = locationSubtypeReader.read(path);
 
-        locationSubtypeRepository.save(newTypes);
+        locationSubtypeRepository.saveAll(newTypes);
 
         return newTypes;
     }

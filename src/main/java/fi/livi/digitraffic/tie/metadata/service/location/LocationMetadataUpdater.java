@@ -47,7 +47,7 @@ public class LocationMetadataUpdater {
             final LocationVersion currentVersion = locationVersionRepository.findLatestVersion();
 
             if(areVersionsEmpty(latestVersions)) {
-                log.error("empty metadataversions!");
+                log.error("empty metadataversions:" + latestVersions);
             } else if(!areVersionsSame(latestVersions)) {
                 log.info("Different versions, locations {} and types {}", latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
             } else if(isUpdateNeeded(latestVersions, currentVersion)) {

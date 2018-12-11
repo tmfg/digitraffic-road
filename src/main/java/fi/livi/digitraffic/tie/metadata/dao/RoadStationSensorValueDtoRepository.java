@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,10 +36,10 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
             "                                            and svd.sensor_value = sv.value\n" +
             "where rs.type = :stationTypeId\n" +
-            "  and rs.publishable = 1\n" +
-            "  and s.publishable = 1\n" +
+            "  and rs.publishable = true\n" +
+            "  and s.publishable = true\n" +
             "  and sv.measured > (\n" +
-            "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
+            "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 MINUTE')\n" +
             "    from sensor_value sensv\n" +
             "    where sensv.road_station_id = sv.road_station_id\n" +
             "  )\n" +
@@ -82,10 +81,10 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "                                            and svd.sensor_value = sv.value\n" +
             "where rs.type = :stationTypeId\n" +
             "  and rs.natural_id = :stationNaturalId\n" +
-            "  and rs.publishable = 1\n" +
-            "  and s.publishable = 1\n" +
+            "  and rs.publishable = true\n" +
+            "  and s.publishable = true\n" +
             "  and sv.measured > (\n" +
-            "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
+            "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 MINUTE')\n" +
             "    from sensor_value sensv\n" +
             "    where sensv.road_station_id = sv.road_station_id\n" +
             "  )\n" +
@@ -128,9 +127,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
                    "                                            and svd.sensor_value = sv.value\n" +
                    "where rs.type = :stationTypeId\n" +
-                   "  and rs.obsolete = 0\n" +
-                   "  and rs.publishable = 1\n" +
-                   "  and s.publishable = 1\n" +
+                   "  and rs.publishable = true\n" +
+                   "  and s.publishable = true\n" +
                    "  and sv.updated > :afterDate\n" +
                    "  and exists (\n" +
                    "     select null\n" +
@@ -152,10 +150,10 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
            "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
            "where rs.type = :stationTypeId\n" +
-           "  and rs.publishable = 1\n" +
-           "  and s.publishable = 1\n" +
+           "  and rs.publishable = true\n" +
+           "  and s.publishable = true\n" +
            "  and sv.measured > (\n" +
-           "    select max(sensv.measured) - NUMTODSINTERVAL(:timeLimitInMinutes, 'MINUTE')\n" +
+           "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 minute')\n" +
            "    from sensor_value sensv\n" +
            "    where sensv.road_station_id = sv.road_station_id\n" +
            "  )\n" +
@@ -166,7 +164,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            "       and allowed.road_station_type = s.road_station_type\n" +
            "  )",
            nativeQuery = true)
-    LocalDateTime getLatestMeasurementTime(@Param("stationTypeId")
+    Instant getLatestMeasurementTime(@Param("stationTypeId")
                                            final int stationTypeId,
                                            @Param("timeLimitInMinutes")
                                            final int timeLimitInMinutes);

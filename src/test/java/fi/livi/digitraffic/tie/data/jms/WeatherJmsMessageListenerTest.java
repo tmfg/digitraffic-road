@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +23,6 @@ import javax.jms.JMSException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -37,6 +36,7 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.WeatherMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -47,7 +47,6 @@ import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
     @Autowired
@@ -62,6 +61,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
+    /**
     @Before
     public void initData() {
         log.info("Add available sensors for weather stations");
@@ -96,6 +96,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         assertFalse(TestTransaction.isActive());
         log.info("Commit done");
     }
+    */
 
     public static BytesMessage createBytesMessage(final TiesaaProtos.TiesaaMittatieto tiesaa) throws JMSException, IOException {
         final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
@@ -208,6 +209,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
             }
 
+            sw.stop();
             log.info("Data generation tookMs={}", sw.getTime());
             StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
@@ -266,7 +268,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     private void assertLastUpdated(final ZonedDateTime lastUpdated) {
-        final ZonedDateTime limit = ZonedDateTime.now().minusMinutes(2);
+        final ZonedDateTime limit = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         assertTrue(String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit), lastUpdated.isAfter(limit));
 

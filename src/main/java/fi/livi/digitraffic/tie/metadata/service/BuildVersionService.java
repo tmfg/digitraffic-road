@@ -16,32 +16,54 @@ public class BuildVersionService {
     private static final Logger log = LoggerFactory.getLogger(BuildVersionService.class);
 
     private static final String GIT_PROPERTIES  = "git.properties";
-    private static final String GIT_TAGS_PROPERTY  = "git.tags";
-    private static final String GIT_REVISION_HASH  = "git.commit.id.describe-short";
+    private static final String GIT_COMMIT_ID_HASH = "git.commit.id.abbrev";
+    private static final String GIT_BUILD_TIME  = "git.build.time";
+    private static final String MANIFEST_APP_VERSION  = "RoadApplication-Version";
 
-    public String getAppVersion() {
-        if (Manifests.exists("MetadataApplication-Version")) {
-            return "1.0"; //Manifests.read("MetadataApplication-Version");
+
+    private String getAppVersion() {
+        if (Manifests.exists(MANIFEST_APP_VERSION)) {
+            return Manifests.read(MANIFEST_APP_VERSION);
         }
         return "DEV-BUILD";
     }
 
-    public String getAppBuildRevision() {
+    private String getAppBuildRevision() {
+        final String tag = readProperty(GIT_COMMIT_ID_HASH);
+        if (StringUtils.isNotBlank(tag)) {
+            return tag;
+        }
+        return "?";
+    }
+
+    private String getAppBuildTime() {
+        final String time = readProperty(GIT_BUILD_TIME);
+        if (StringUtils.isNotBlank(time)) {
+            return time;
+        }
+        return "?";
+    }
+
+
+    public String getAppFullVersion() {
+        final String version = String.format("%s#%s@%s", getAppVersion(), getAppBuildRevision(), getAppBuildTime());
+        log.info("Application version: {}", version);
+        return version;
+    }
+
+    private String readProperty(final String property) {
         final Properties properties = new Properties();
         try {
             properties.load(getClass().getClassLoader().getResourceAsStream(GIT_PROPERTIES));
-            String prop = "" + properties.get(GIT_TAGS_PROPERTY);
+            final String prop = (String) properties.get(property);
             if (StringUtils.isNotBlank(prop)) {
                 return prop;
             }
-            return "" + properties.get(GIT_REVISION_HASH);
-        } catch (final IOException e) {
-            log.error("Failed to load git properties from file: " + GIT_PROPERTIES, e);
-            return "?";
+            return null;
+        } catch (IOException ioe) {
+            log.error("Failed to load git properties from file: " + GIT_PROPERTIES, ioe);
+            return null;
         }
     }
 
-    public String getAppFullVersion() {
-        return getAppVersion() + "#" + getAppBuildRevision();
-    }
 }

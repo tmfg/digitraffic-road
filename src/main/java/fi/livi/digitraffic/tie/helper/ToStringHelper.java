@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -29,7 +30,7 @@ public class ToStringHelper {
     private final StringBuffer sb;
     private boolean toStringCalled;
 
-    public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00)";
+    public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00 or 2018-11-09T09:41:09Z)";
 
     public ToStringHelper(final Object object) {
         sb = createStartSb(object);
@@ -206,6 +207,7 @@ public class ToStringHelper {
         JSON_STYLE.append(sb, "aika", kuva.getAikaleima(), true);
         JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
         JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
+
         JSON_STYLE.append(sb, "julkinen", kuva.getJulkinen());
         //JSON_STYLE.append(sb, "url", CameraHelper.createCameraUrl(kuva), true);
         removeLastFieldSeparatorFromEnd(sb);

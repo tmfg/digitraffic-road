@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 

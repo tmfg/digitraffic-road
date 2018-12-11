@@ -163,6 +163,7 @@ public class Datex2DataService {
             final String datex2Xml = datex2.getMessage();
             if (!StringUtils.isBlank(datex2Xml)) {
                 final TimestampedTrafficDisorderDatex2 tsDatex2 = unmarshallTrafficDisorder(datex2Xml, datex2.getImportTime());
+
                 if (tsDatex2 != null) {
                     timestampedTrafficDisorderDatex2s.add(tsDatex2);
                 }

@@ -16,5 +16,6 @@
 **/*.log
 **/*.log.gz
 
-# Statistiikka modulin datatallennus kansio
-/javamelody
+# SchemaSpyn generoimat schemat ja kirjastot
+/dbroad/schemaspy/schema
+/dbroad/schemaspy/lib

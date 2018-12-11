@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 
 public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
@@ -30,8 +30,8 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     @Test
     public void testCameraDataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                            MetadataApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -49,8 +49,8 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     @Test
     public void testCameraDataRestApiById() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                MetadataApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                RoadApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.CAMERA_DATA_PATH + "/" + cameraId)) // C08520
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

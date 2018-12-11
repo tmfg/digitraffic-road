@@ -84,6 +84,7 @@ public final class LAMRealtimeProtos {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:lam.Lam)
       LamOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Lam.newBuilder() to construct.
     private Lam(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -106,6 +107,9 @@ public final class LAMRealtimeProtos {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new NullPointerException();
+      }
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -118,8 +122,8 @@ public final class LAMRealtimeProtos {
               done = true;
               break;
             default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -173,7 +177,7 @@ public final class LAMRealtimeProtos {
       return LAMRealtimeProtos.internal_static_lam_Lam_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return LAMRealtimeProtos.internal_static_lam_Lam_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -227,6 +231,7 @@ public final class LAMRealtimeProtos {
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:lam.Lam.Anturi)
         AnturiOrBuilder {
+    private static final long serialVersionUID = 0L;
       // Use Anturi.newBuilder() to construct.
       private Anturi(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
@@ -248,6 +253,9 @@ public final class LAMRealtimeProtos {
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
+        if (extensionRegistry == null) {
+          throw new NullPointerException();
+        }
         int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -260,8 +268,8 @@ public final class LAMRealtimeProtos {
                 done = true;
                 break;
               default: {
-                if (!parseUnknownField(input, unknownFields,
-                                       extensionRegistry, tag)) {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
                 break;
@@ -303,7 +311,7 @@ public final class LAMRealtimeProtos {
         return LAMRealtimeProtos.internal_static_lam_Lam_Anturi_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return LAMRealtimeProtos.internal_static_lam_Lam_Anturi_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -432,7 +440,6 @@ public final class LAMRealtimeProtos {
         return size;
       }
 
-      private static final long serialVersionUID = 0L;
       @Override
       public boolean equals(final Object obj) {
         if (obj == this) {
@@ -583,7 +590,7 @@ public final class LAMRealtimeProtos {
 
       @Override
       protected Builder newBuilderForType(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         Builder builder = new Builder(parent);
         return builder;
       }
@@ -599,7 +606,7 @@ public final class LAMRealtimeProtos {
           return LAMRealtimeProtos.internal_static_lam_Lam_Anturi_descriptor;
         }
 
-        protected FieldAccessorTable
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return LAMRealtimeProtos.internal_static_lam_Lam_Anturi_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
@@ -612,7 +619,7 @@ public final class LAMRealtimeProtos {
         }
 
         private Builder(
-            BuilderParent parent) {
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
           super(parent);
           maybeForceBuilderInitialization();
         }
@@ -916,7 +923,7 @@ public final class LAMRealtimeProtos {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-            return new Anturi(input, extensionRegistry);
+          return new Anturi(input, extensionRegistry);
         }
       };
 
@@ -1113,7 +1120,6 @@ public final class LAMRealtimeProtos {
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
     @Override
     public boolean equals(final Object obj) {
       if (obj == this) {
@@ -1271,7 +1277,7 @@ public final class LAMRealtimeProtos {
 
     @Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1287,7 +1293,7 @@ public final class LAMRealtimeProtos {
         return LAMRealtimeProtos.internal_static_lam_Lam_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return LAMRealtimeProtos.internal_static_lam_Lam_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -1300,7 +1306,7 @@ public final class LAMRealtimeProtos {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1897,7 +1903,7 @@ public final class LAMRealtimeProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new Lam(input, extensionRegistry);
+        return new Lam(input, extensionRegistry);
       }
     };
 

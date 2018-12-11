@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,18 +16,21 @@ public class RoadStationServiceTest extends AbstractTest {
     @Test
     public void testFindAllTmsStations() {
         final List<RoadStation> tms = roadStationService.findByType(RoadStationType.TMS_STATION);
-        Assert.assertTrue(tms.size() >= 2);
+
+        assertCollectionSize(545, tms);
     }
 
     @Test
     public void testFindAllCameras() {
         final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA_STATION);
-        Assert.assertTrue(cameras.size() >= 2);
+
+        assertCollectionSize(866, cameras);
     }
 
     @Test
     public void testFindAllWeatherStations() {
         final List<RoadStation> weatherStations = roadStationService.findByType(RoadStationType.WEATHER_STATION);
-        Assert.assertTrue(weatherStations.size() >= 2);
+
+        assertCollectionSize(880, weatherStations);
     }
 }

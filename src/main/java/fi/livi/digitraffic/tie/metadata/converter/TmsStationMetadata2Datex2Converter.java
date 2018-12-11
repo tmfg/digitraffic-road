@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,6 @@ import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @Component
 public class TmsStationMetadata2Datex2Converter {
-
     public static final String MEASUREMENT_SITE_TABLE_IDENTIFICATION = "DigitrafficFI";
     public static final String MEASUREMENT_SITE_TABLE_VERSION = "1";
     public static final String MEASUREMENT_SITE_RECORD_VERSION = "1";
@@ -38,11 +38,10 @@ public class TmsStationMetadata2Datex2Converter {
     private final InformationStatusEnum informationStatus;
 
     public TmsStationMetadata2Datex2Converter(@Value("${spring.profiles.active}") final String profile) {
-        this.informationStatus = profile.equals("koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
+        this.informationStatus = StringUtils.equals(profile, "koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
     }
 
     public D2LogicalModel convert(final List<TmsStation> stations, final ZonedDateTime metadataLastUpdated) {
-
         final MeasurementSiteTablePublication measurementSiteTablePublication =
             new MeasurementSiteTablePublication()
                 .withPublicationTime(DateHelper.toXMLGregorianCalendar(metadataLastUpdated))
@@ -65,7 +64,6 @@ public class TmsStationMetadata2Datex2Converter {
                 .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
         for (final TmsStation station : stations) {
-
             final List<RoadStationSensor> sensors =
                 station.getRoadStation().getRoadStationSensors().stream().sorted(RoadStationSensor::compareTo).collect(Collectors.toList());
 
@@ -79,7 +77,6 @@ public class TmsStationMetadata2Datex2Converter {
     }
 
     private static MeasurementSiteRecord getMeasurementSiteRecord(final TmsStation station, final RoadStationSensor sensor) {
-
         final fi.livi.digitraffic.tie.metadata.geojson.Point point =
             AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
 

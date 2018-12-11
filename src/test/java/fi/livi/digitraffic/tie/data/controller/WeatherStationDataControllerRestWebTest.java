@@ -10,14 +10,14 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.MetadataApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testWeatherDataRestApi() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                            MetadataApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.WEATHER_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -36,8 +36,8 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
 
     @Test
     public void testWeatherDataRestApiById() throws Exception {
-        mockMvc.perform(get(MetadataApplicationConfiguration.API_V1_BASE_PATH +
-                MetadataApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
+                RoadApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.WEATHER_DATA_PATH + "/1034"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

@@ -4,7 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +42,6 @@ import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -89,8 +87,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             i--;
         }
 
-        List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
-        log.info("Non obsolete CameraPresets before " + nonObsoleteCameraPresets.size());
+        final List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
+        log.info("Non obsolete CameraPresets before:{}", nonObsoleteCameraPresets.size());
 
         final Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
         log.info("All camera presets size cameraPresetsCount={}", cameraPresets.size());
@@ -99,8 +97,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         final Iterator<CameraPreset> iter = cameraPresets.values().iterator();
 
         while (missingMin > 0 && iter.hasNext()) {
-            CameraPreset cp = iter.next();
-            RoadStation rs = cp.getRoadStation();
+            final CameraPreset cp = iter.next();
+            final RoadStation rs = cp.getRoadStation();
+
             if (!rs.isPublishable() || !cp.isPublishable()) {
                 missingMin--;
             }
@@ -108,16 +107,16 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 rs.setLotjuId(rs.getId() * -1);
             }
             rs.setCollectionStatus(CollectionStatus.GATHERING);
-            rs.setObsolete(false);
+            rs.unobsolete();
             rs.setPublic(true);
-            cp.setObsolete(false);
+            cp.unobsolete();
             cp.setPublicExternal(true);
             cp.setPublicInternal(true);
         }
         entityManager.flush();
         entityManager.clear();
-        nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
-        log.info("Non obsolete CameraPresets for testing " + nonObsoleteCameraPresets.size());
+
+        log.info("Non obsolete CameraPresets for testing {}", cameraPresetService.findAllPublishableCameraPresets());
     }
 
     /**
@@ -244,7 +243,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
         log.info("Check data validy");
 
-        Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
+        final Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
         for (KuvaProtos.Kuva kuva : data) {
             String presetId = CameraHelper.resolvePresetId(kuva);
@@ -255,8 +254,10 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
-            LocalDateTime kuvaTaken = DateHelper.toLocalDateTime(kuva.getAikaleima());
-            LocalDateTime presetPictureLastModified = DateHelper.toLocalDateTime(preset.getPictureLastModified());
+
+            Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
+            Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
+
             Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
         }
         log.info("Data is valid");
@@ -264,19 +265,21 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
                 handleDataTotalTime <= maxHandleTime);
     }
 
-    private byte[] readCameraDataFromSftp(String presetId) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Session s = sftpSessionFactory.getSession();
-        s.read(getSftpPath(presetId), out);
-        s.close();
-        return out.toByteArray();
+    private byte[] readCameraDataFromSftp(final String presetId) throws IOException {
+        try(final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            final Session s = sftpSessionFactory.getSession();
+            s.read(getSftpPath(presetId), out);
+            s.close();
+
+            return out.toByteArray();
+        }
     }
 
     String getImportDir() {
         return testFolder.getRoot().getPath();
     }
 
-    private byte[] readCameraDataFromDisk(String presetId) throws IOException {
+    private byte[] readCameraDataFromDisk(final String presetId) throws IOException {
         final File imageFile = new File(getImportDir() + "/" + presetId + ".jpg");
         return FileUtils.readFileToByteArray(imageFile);
     }

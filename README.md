@@ -24,6 +24,9 @@ If you want to disable some jobs, it can be done by adding following line to app
     # Disable jobs. Format: quartz.{jobClassName}.enabled = false
     quartz.CameraUpdateJob.enabled = false
 
+### Run PosgresSQL server
+
+See dbroad directory [README.md](dbroad/README.md)
 ### Configure Oracle JDBC driver
 
 Download Oracle JDBC driver and add it to your local Maven repository.
@@ -54,6 +57,21 @@ Or build the JAR file with:
  And run the JAR by typing:
 
     $ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
+
+### Generate SchemaSpy schemas from the db with Maven
+
+    $ mvn exec:exec@schemaspy
+
+Generated schemas can be found at `dbroad/schemaspy/schema` -directory    
+
+Or with custom parameters.
+    
+    $ mvn exec:exec@schemaspy -Dexec.args="-o=/tmp/schema"
+
+Or without Maven
+
+    $ cd dbroad/schemaspy
+    $ get-deps-and-run-schemaspy.sh [-o=/tmp/schema]
 
 ### Misc commands
 

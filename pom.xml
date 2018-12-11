@@ -5,30 +5,31 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fi.fta.digitraffic</groupId>
-    <artifactId>metadata</artifactId>
-    <version>1.32.0</version>
+    <artifactId>road</artifactId>
+    <version>2.1.0</version>
     <packaging>jar</packaging>
 
-    <name>dt-metadata</name>
-    <description>Digitraffic Metadata</description>
+    <name>dt-road</name>
+    <description>Digitraffic Road</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.10.RELEASE</version>
+        <version>2.1.0.RELEASE</version>
         <relativePath/>
     </parent>
+
+    <prerequisites>
+        <maven>3.0.5</maven>
+    </prerequisites>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+        <jackson.dataformat.version>2.9.7</jackson.dataformat.version>
     </properties>
 
-    <!-- Download OJDBC7.jar, ons.jar and ucp.jar and install drivers to local repo
-         $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 \
-         -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=<filename>
-         OR add repository below that contains the drivers -->
     <repositories>
         <!-- PLACEHOLDER -->
     </repositories>
@@ -102,6 +103,16 @@
             <artifactId>spring-integration-sftp</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-mqtt</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+        </dependency>
+
         <!-- Includes spring's support classes for quartz -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -111,9 +122,6 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <!-- Versions from 2.2.1 on has loop bug on jdbc conection drop. Fixed by using 2.2.0-version
-                 http://stackoverflow.com/questions/35761746/quartz-scheduler-unlimited-attempts-to-connect-with-database
-                 https://jira.terracotta.org/jira/browse/QTZ-470 -->
             <version>2.3.0</version>
         </dependency>
 
@@ -121,51 +129,51 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.2.0.RELEASE</version>
+            <version>1.2.2.RELEASE</version>
         </dependency>
 
         <!-- google protobuf -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.3.0</version>
+            <version>3.6.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>3.3.0</version>
+            <version>3.6.1</version>
         </dependency>
 
         <!-- Helpers and others -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <version>3.7</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.5</version>
+            <version>2.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.6</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.9.6</version>
+            <version>${jackson.dataformat.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
-            <version>2.9.6</version>
-        </dependency>
+            <version>${jackson.dataformat.version}</version>
+       </dependency>
 
         <!-- Swagger2 JSON API specification generation-->
         <dependency>
@@ -186,17 +194,10 @@
             <version>1.1</version>
         </dependency>
 
-        <!-- ojdbc -->
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>ojdbc7</artifactId>
-            <version>12.1.0.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.7.4</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
         </dependency>
 
         <dependency>
@@ -207,7 +208,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>27.0-jre</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
@@ -246,14 +247,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>4.11</version>
-        </dependency>
-
-        <!-- JavaMelody -->
-        <dependency>
-            <groupId>net.bull.javamelody</groupId>
-            <artifactId>javamelody-core</artifactId>
-            <version>1.67.0</version>
+            <version>5.2</version>
         </dependency>
 
         <!-- test dependencies -->
@@ -273,28 +267,28 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>3.1.10-dt.1</version>
+            <version>3.2.6</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>3.1.10</version>
+            <version>3.2.6</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>3.1.10</version>
+            <version>3.2.6</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.7.0</version>
+            <version>2.19.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -302,7 +296,7 @@
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-core</artifactId>
-            <version>1.3.0</version>
+            <version>1.7.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -320,97 +314,80 @@
             <plugin>
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
-                <version>4.2.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.4</version>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>5.0.4</version>
-                    </dependency>
-                </dependencies>
+                <version>4.2.1</version>
                 <configuration>
-                    <formats>
-                        <format>xml</format>
-                    </formats>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotation>fi.livi.digitraffic.tie.annotation.CoverageIgnore</ignoreMethodAnnotation>
-                        <excludes>
-                            <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/conf/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.class</exclude>
-                            <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.class</exclude>
-                        </excludes>
-                    </instrumentation>
+                    <excludes>
+                        <exclude>fi/livi/digitraffic/tie/domain/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/model/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/conf/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/aop/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.java</exclude>
+                        <exclude>fi/ely/lotju/**/proto/*.java</exclude>
+                        <exclude>**/dto/**/*.java</exclude>
+
+                        <exclude>fi/livi/ws/wsdl/lotju/**/*.class</exclude>
+                        <exclude>fi/livi/digitraffic/tie/lotju/xsd/**/*.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>fi.livi.digitraffic.tie.MetadataApplication</mainClass>
+                            <mainClass>fi.livi.digitraffic.tie.RoadApplication</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <RoadApplication-Version>${project.version}</RoadApplication-Version>
+                            <RoadApplication-Build>${buildNumber}</RoadApplication-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
 
             <plugin>
+                <!-- OpenJDK8 compatibility issue with 2.x versions. Jenkins uses OpenJDK -->
+                <!-- https://stackoverflow.com/questions/53010200/maven-surefire-could-not-find-forkedbooter-class -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>fi.livi.digitraffic.tie.MetadataApplication</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <MetadataApplication-Version>${project.version}</MetadataApplication-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M1</version>
             </plugin>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <executable>true</executable>
-                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>3.1.9</version>
+                <version>3.2.5</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
@@ -449,7 +426,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.2</version>
                 <configuration>
                     <extensions>
                         <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.0.5</extension>
@@ -485,33 +462,37 @@
             </plugin>
 
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.5.1</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/resources/schemas/HARJA</sourceDirectory>
+                    <targetPackage>fi.livi.digitraffic.tie.harja</targetPackage>
+                    <outputDirectory>${project.build.directory}/generated-sources/json</outputDirectory>
+                    <useCommonsLang3>true</useCommonsLang3>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>get-the-git-infos</id>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>revision</goal>
+                            <goal>generate</goal>
                         </goals>
-                    </execution>
-                    <execution>
-                        <id>validate-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                        <phase>package</phase>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.5</version>
 
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                     <prefix>git</prefix>
-                    <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
                     <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
-                    <!-- false is default here, it prints some more information during the build -->
-                    <verbose>false</verbose>
-                    <!-- this is false by default, forces the plugin to generate the git.properties file -->
+                    <verbose>true</verbose>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <format>properties</format>
@@ -519,35 +500,57 @@
                     <injectAllReactorProjects>false</injectAllReactorProjects>
                     <failOnNoGitDirectory>true</failOnNoGitDirectory>
                     <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
-                    <skip>false</skip>
-                    <runOnlyOnce>false</runOnlyOnce>
                     <excludeProperties>
-                      <!-- <excludeProperty>git.user.*</excludeProperty> -->
+                        <excludeProperty>git.commit.user.*</excludeProperty>
+                        <excludeProperty>git.build.user.*</excludeProperty>
+                        <excludeProperty>git.build.host</excludeProperty>
                     </excludeProperties>
-                    <includeOnlyProperties>
-                      <!-- <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> -->
-                    </includeOnlyProperties>
-                    <useNativeGit>false</useNativeGit>
-                    <abbrevLength>7</abbrevLength>
-                    <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
-                        <!-- don't generate the describe property -->
                         <skip>false</skip>
-                        <!-- if no tag was found "near" this commit, just print the commit's id instead, helpful when you always expect this field to be not-empty -->
-                        <always>false</always>
-                        <!-- how many chars should be displayed as the commit object id? 7 is git's default, 0 has a special meaning (see end of this README.md), and 40 is the maximum value here -->
+                        <always>true</always>
                         <abbrev>7</abbrev>
-                        <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
                         <dirty>-dirty</dirty>
-                        <!-- Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. -->
                         <match>*</match>
-                        <!-- always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. The distance will always be 0 if you're "on" the tag. -->
+                        <tags>false</tags>
                         <forceLongFormat>false</forceLongFormat>
                     </gitDescribe>
+                    <evaluateOnCommit>HEAD</evaluateOnCommit>
                 </configuration>
-
             </plugin>
-            <!-- END OF GIT COMMIT ID PLUGIN CONFIGURATION -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>schemaspy</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}/dbroad/schemaspy</workingDirectory>
+                            <executable>./get-deps-and-run-schemaspy.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}/dbroad/schemaspy/schema</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/dbroad/schemaspy/lib</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
 
         </plugins>
     </build>
