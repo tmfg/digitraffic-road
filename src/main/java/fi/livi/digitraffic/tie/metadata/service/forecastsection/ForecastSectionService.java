@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,20 +33,20 @@ public class ForecastSectionService {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionFeatureCollection findAllForecastSections() {
-        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+    public ForecastSectionFeatureCollection findForecastSectionsV1Metadata() {
+        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
         return forecastSection2FeatureConverter.convert(forecastSections,
                                                         dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
                                                         dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
     }
 
-    public ForecastSectionsMetadata findForecastSectionsMetadata(final boolean onlyUpdateInfo) {
+    public ForecastSectionsMetadata findForecastSectionsV1Metadata(final boolean onlyUpdateInfo) {
+
+        final ForecastSectionFeatureCollection features = findForecastSectionsV1Metadata();
 
         return new ForecastSectionsMetadata(
-                onlyUpdateInfo ?
-                    null :
-                    findAllForecastSections(),
-                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
-                    dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
+                    onlyUpdateInfo ? null : features,
+                    features.getDataUpdatedTime(),
+                    features.getDataLastCheckedTime());
     }
 }

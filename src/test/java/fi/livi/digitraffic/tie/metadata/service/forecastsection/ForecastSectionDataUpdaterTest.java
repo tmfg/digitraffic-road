@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
@@ -18,17 +17,17 @@ public class ForecastSectionDataUpdaterTest extends AbstractTest {
     private ForecastSectionDataUpdater forecastSectionDataUpdater;
 
     @Autowired
-    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
+    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
 
     @Test
     public void updateForecastSectionWeatherDataSucceeds() {
-        forecastSectionMetadataUpdater.updateForecastSectionMetadata();
+        forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
         forecastSectionDataUpdater.updateForecastSectionWeatherData();
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
 
         assertNotNull(forecastSections);
     }

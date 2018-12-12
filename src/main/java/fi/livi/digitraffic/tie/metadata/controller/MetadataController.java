@@ -26,7 +26,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureColle
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
@@ -187,7 +186,7 @@ public class MetadataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             final boolean lastUpdated) {
-        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
+        return forecastSectionService.findForecastSectionsV1Metadata(lastUpdated);
     }
 
     @ApiOperation("The static information of locations")

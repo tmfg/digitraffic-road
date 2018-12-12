@@ -17,14 +17,14 @@ public class ForecastSectionServiceTest extends AbstractTest {
     private ForecastSectionService forecastSectionService;
 
     @Autowired
-    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
+    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
 
     @Test
     public void findAllForecastSectionsSucceeds() {
 
-        forecastSectionMetadataUpdater.updateForecastSectionMetadata();
+        forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
 
-        ForecastSectionFeatureCollection forecastSections = forecastSectionService.findAllForecastSections();
+        ForecastSectionFeatureCollection forecastSections = forecastSectionService.findForecastSectionsV1Metadata();
 
         assertTrue(forecastSections.getFeatures().size() > 250);
         ForecastSectionFeature firstFeature = forecastSections.getFeatures().get(0);

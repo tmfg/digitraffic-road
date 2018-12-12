@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +23,17 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoo
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinatePK;
 
 @Service
-public class ForecastSectionMetadataUpdater {
+public class ForecastSectionV1MetadataUpdater {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionMetadataUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionV1MetadataUpdater.class);
 
     private final ForecastSectionClient forecastSectionClient;
 
     private final ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    public ForecastSectionMetadataUpdater(final ForecastSectionClient forecastSectionClient,
-                                          final ForecastSectionRepository forecastSectionRepository) {
+    public ForecastSectionV1MetadataUpdater(final ForecastSectionClient forecastSectionClient,
+                                            final ForecastSectionRepository forecastSectionRepository) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
     }
@@ -43,11 +42,11 @@ public class ForecastSectionMetadataUpdater {
      * @return Returns true if one or more forecast sections were updated
      */
     @Transactional
-    public boolean updateForecastSectionMetadata() {
+    public boolean updateForecastSectionV1Metadata() {
 
         final List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctBy(new Sort(Sort.Direction.ASC, "naturalId"));
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
         final Set<String> existingForecastSections = forecastSections.stream().map(ForecastSection::getNaturalId).collect(Collectors.toSet());
 
         printLogInfo(forecastSectionCoordinates, forecastSections);
