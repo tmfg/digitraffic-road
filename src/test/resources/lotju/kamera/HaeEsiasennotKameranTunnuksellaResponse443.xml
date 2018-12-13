@@ -9,7 +9,7 @@
         <nimiEsitys>Kalajoelle</nimiEsitys>
         <nimiLaitteella>Kalajoki</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
-        <suunta>2</suunta>
+        <suunta>1</suunta>
         <viive>10</viive>
     </ns2:esiasennot>
     <ns2:esiasennot>
@@ -22,7 +22,7 @@
         <nimiEsitys>Iisalmeen</nimiEsitys>
         <nimiLaitteella>Iisalmi</nimiLaitteella>
         <resoluutio>704x576</resoluutio>
-        <suunta>1</suunta>
+        <suunta>2</suunta>
         <viive>10</viive>
     </ns2:esiasennot>
 </ns2:HaeEsiasennotKameranTunnuksellaResponse>
