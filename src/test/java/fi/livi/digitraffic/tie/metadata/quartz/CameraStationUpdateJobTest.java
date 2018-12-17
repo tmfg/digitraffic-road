@@ -38,7 +38,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.updateCameras();
         final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
-        // cameras with lotjuId 443 and 56 are in collection
+        // cameras with lotjuId 443 in collection 56 (no public presets) and 121 removed temporary, 2 removed permanently
         allInitial.getFeatures().stream().forEach(c -> System.out.println(c.getProperties().getLotjuId()));
         assertEquals(2, allInitial.getFeatures().size());
         int countPresets = 0;
@@ -78,8 +78,8 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // lotjuId 443
         // C0852001 is not public
-        assertNull(findWithPresetId(allInitial, "C0852001"));
-        assertNotNull(findWithPresetId(allInitial, "C0852002"));
+        assertNotNull(findWithPresetId(allInitial, "C0852001"));
+        assertNull(findWithPresetId(allInitial, "C0852002"));
         assertNull(findWithPresetId(allInitial, "C0852009")); // preset not exists
         // lotjuId 121
         assertNotNull(findWithPresetId(allInitial, "C0162801"));
@@ -94,7 +94,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // 443: C0852001, C0852002 C0852009
         assertNotNull(findWithPresetId(allAfterChange, "C0852001"));
-        assertNotNull(findWithPresetId(allAfterChange, "C0852003"));
+        assertNotNull(findWithPresetId(allAfterChange, "C0852002"));
         assertNotNull(findWithPresetId(allAfterChange, "C0852009"));
         // 121: C0162801, C0162802
         assertNotNull(findWithPresetId(allAfterChange, "C0162801"));
@@ -108,8 +108,8 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
 
         // Test C0852002/C0852003 changes
-        final CameraPresetDto before = findWithPresetId(allInitial, "C0852002");
-        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852003");
+        final CameraPresetDto before = findWithPresetId(allInitial, "C0852001");
+        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
 
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
