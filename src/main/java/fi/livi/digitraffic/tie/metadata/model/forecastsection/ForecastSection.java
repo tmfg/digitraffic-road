@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.Road;
 import fi.livi.digitraffic.tie.metadata.model.RoadSection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -111,7 +111,7 @@ public class ForecastSection {
     @Fetch(FetchMode.JOIN)
     private RoadSection endRoadSection;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("forecastSectionCoordinateListPK.orderNumber")
     private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists;
 
@@ -126,6 +126,7 @@ public class ForecastSection {
         this.naturalId = naturalId;
         this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
         this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
+        this.version = version;
         if (version == 1) {
             this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
         } else {

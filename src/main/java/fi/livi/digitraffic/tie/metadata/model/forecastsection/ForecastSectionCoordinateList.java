@@ -20,7 +20,7 @@ public class ForecastSectionCoordinateList {
     @EmbeddedId
     private ForecastSectionCoordinateListPK forecastSectionCoordinateListPK;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumns({ @JoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id", nullable = false, insertable = false, updatable = false),
                    @JoinColumn(name="list_order_number", referencedColumnName = "order_number", nullable = false, insertable = false, updatable = false)})
     List<ForecastSectionCoordinate> forecastSectionCoordinates;

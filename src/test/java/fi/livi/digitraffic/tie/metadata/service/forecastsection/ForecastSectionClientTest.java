@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
 
 public class ForecastSectionClientTest extends AbstractTest {
 
@@ -18,7 +20,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     private ForecastSectionClient forecastSectionClient;
 
     @Test
-    public void getForecastSectionCoordinatesSucceeds() {
+    public void getForecastSectionV1MetadataSucceeds() {
 
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
@@ -28,6 +30,14 @@ public class ForecastSectionClientTest extends AbstractTest {
         assertEquals(10, forecastSectionCoordinates.get(0).getCoordinates().size());
         assertEquals(BigDecimal.valueOf(24.944), forecastSectionCoordinates.get(0).getCoordinates().get(0).longitude);
         assertEquals(BigDecimal.valueOf(60.167), forecastSectionCoordinates.get(0).getCoordinates().get(0).latitude);
+    }
+
+    @Test
+    public void getForecastSectionV2MetadataSucceeds() {
+
+        final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
+
+        assertNotNull(forecastSectionV2Metadata);
     }
 
     @Test

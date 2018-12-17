@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.forecastsection;
+package fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1;
 
 import java.math.BigDecimal;
 import java.util.List;
