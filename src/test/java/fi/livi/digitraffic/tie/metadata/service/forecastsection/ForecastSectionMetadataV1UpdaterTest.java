@@ -5,8 +5,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 
 public class ForecastSectionMetadataV1UpdaterTest extends AbstractTest {
 
@@ -33,6 +31,9 @@ public class ForecastSectionMetadataV1UpdaterTest extends AbstractTest {
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
+
+    @Autowired
+    private ForecastSectionService forecastSectionService;
 
     private MockRestServiceServer server;
 
@@ -55,12 +56,12 @@ public class ForecastSectionMetadataV1UpdaterTest extends AbstractTest {
 
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
+        final ForecastSectionFeatureCollection collection = forecastSectionService.findForecastSectionsV1Metadata();
 
-        assertEquals(277, forecastSections.size());
-        assertEquals("00001_001_000_0", forecastSections.get(0).getNaturalId());
-        assertEquals(10, forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().size());
-        assertEquals(new BigDecimal("24.944"), forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLongitude());
-        assertEquals(new BigDecimal("60.167"), forecastSections.get(0).getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLatitude());
+        assertEquals(277, collection.getFeatures().size());
+        assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
+        assertEquals(10, collection.getFeatures().get(0).getGeometry().coordinates.size());
+        assertEquals(new Double("24.944"), collection.getFeatures().get(0).getGeometry().coordinates.get(0).get(0));
+        assertEquals(new Double("60.167"), collection.getFeatures().get(0).getGeometry().coordinates.get(0).get(1));
     }
 }

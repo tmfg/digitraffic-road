@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +21,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     private ForecastSectionClient forecastSectionClient;
 
     @Test
+    @Ignore("For manual integration testing")
     public void getForecastSectionV1MetadataSucceeds() {
 
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
@@ -33,6 +35,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     }
 
     @Test
+    @Ignore("For manual integration testing")
     public void getForecastSectionV2MetadataSucceeds() {
 
         final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
@@ -41,6 +44,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     }
 
     @Test
+    @Ignore("For manual integration testing")
     public void getRoadConditionsSucceeds() {
 
         ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions();
