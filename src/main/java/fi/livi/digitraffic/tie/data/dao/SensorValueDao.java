@@ -40,11 +40,13 @@ public class SensorValueDao {
         "          AND station.obsolete_date is null\n" +
         "       ) as road_station_id\n" +
         ")\n" +
-        "insert into sensor_value(id, road_station_id, road_station_sensor_id, " +
-        "value, measured, updated, time_window_start, time_window_end)\n" +
-        "select nextval('seq_sensor_value'), upsert.road_station_id, " +
-        "upsert.road_station_sensor_id, :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd from upsert\n" +
-        "where upsert.road_station_sensor_id is not null\n" + 
+        "insert into sensor_value(id, road_station_id, road_station_sensor_id, value,\n" +
+        "                         measured, updated, time_window_start, time_window_end)\n" +
+        "select nextval('seq_sensor_value'), upsert.road_station_id, upsert.road_station_sensor_id,\n" +
+        "       :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd\n" +
+        "from upsert\n" +
+        "where upsert.road_station_sensor_id is not null\n" +
+        "  and upsert.road_station_id is not null\n" +
         "on conflict (road_station_id, road_station_sensor_id)\n" +
         "do update set value = :value\n" +
         "                , measured = :measured\n" +
