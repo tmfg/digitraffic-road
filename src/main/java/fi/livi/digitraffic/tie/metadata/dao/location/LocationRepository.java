@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao.location;
 
 import java.util.List;
-
+import java.util.stream.Stream;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,9 +15,5 @@ import fi.livi.digitraffic.tie.metadata.model.location.Location;
 public interface LocationRepository extends JpaRepository<Location, Integer> {
     LocationJson findByVersionAndLocationCode(final String version, final int locationCode);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<LocationJson> findAllByVersion(final String version);
-
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Location> findAll();
+    Stream<LocationJson> findAllByVersion(final String version);
 }

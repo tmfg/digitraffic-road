@@ -48,7 +48,7 @@ public class LocationService {
         }
 
         return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion,
-                locationRepository.findAllByVersion(lVersion).parallelStream().map(LocationFeature::new).collect(Collectors.toList())
+                locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList())
         );
     }
 
