@@ -15,5 +15,6 @@ import fi.livi.digitraffic.tie.metadata.model.location.Location;
 public interface LocationRepository extends JpaRepository<Location, Integer> {
     LocationJson findByVersionAndLocationCode(final String version, final int locationCode);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
     Stream<LocationJson> findAllByVersion(final String version);
 }
