@@ -102,7 +102,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 final WeatherStation currentStation = stationsIter.next();
 
                 TiesaaProtos.TiesaaMittatieto tiesaa =
-                    getTiesaaMittatieto(time, availableSensors, currentStation.getLotjuId());
+                    generateTiesaaMittatieto(time, availableSensors, currentStation.getLotjuId());
 
                 data.add(tiesaa);
 
@@ -187,7 +187,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             }
             final WeatherStation currentStation = stationsIter.next();
 
-            TiesaaProtos.TiesaaMittatieto tiesaa = getTiesaaMittatieto(Instant.now(), availableSensors, currentStation.getLotjuId());
+            TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, currentStation.getLotjuId());
 
             data.add(tiesaa);
 
@@ -199,7 +199,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         }
 
         // Create data for non existing station
-        TiesaaProtos.TiesaaMittatieto tiesaa = getTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
+        TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
         data.add(tiesaa);
         jmsMessageListener.onMessage(createBytesMessage(tiesaa));
 
@@ -237,9 +237,9 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         };
     }
 
-    private static TiesaaProtos.TiesaaMittatieto getTiesaaMittatieto(final Instant measurementTime,
-                                                                     final List<RoadStationSensor> availableSensors,
-                                                                     final Long currentStationLotjuId) {
+    private static TiesaaProtos.TiesaaMittatieto generateTiesaaMittatieto(final Instant measurementTime,
+                                                                          final List<RoadStationSensor> availableSensors,
+                                                                          final Long currentStationLotjuId) {
         final TiesaaProtos.TiesaaMittatieto.Builder tiesaaMittatietoBuilder = TiesaaProtos.TiesaaMittatieto.newBuilder();
 
         tiesaaMittatietoBuilder.setAsemaId(currentStationLotjuId);
