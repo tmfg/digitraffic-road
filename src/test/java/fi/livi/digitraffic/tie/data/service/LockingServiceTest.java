@@ -146,9 +146,11 @@ public class LockingServiceTest extends AbstractTest {
                 final boolean locked = lockingService.acquireLock(lock, LOCK_EXPIRATION_S);
                 final long timestamp = System.currentTimeMillis();
                 if (locked) {
-                    log.info("Acquired Lock=[{}] for instanceId=[{}]", lock, lockingService.getInstanceId());
-                    lockStarts.add(timestamp);
-                    lockerInstanceIds.add(lockingService.getInstanceId());
+                    synchronized(LOCK) {
+                        log.info("Acquired Lock=[{}] for instanceId=[{}]", lock, lockingService.getInstanceId());
+                        lockStarts.add(timestamp);
+                        lockerInstanceIds.add(lockingService.getInstanceId());
+                    }
                     counter++;
                     // Sleep little more than expiration time so another thread should get the lock
                     sleep((LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000);
