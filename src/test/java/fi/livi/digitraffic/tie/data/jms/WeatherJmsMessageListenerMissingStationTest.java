@@ -78,6 +78,9 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
         log.info("Check data validy");
         // Assert sensor values are updated to db
         final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
+
+        entityManager.clear();
+
         final Map<Long, List<SensorValue>> valuesMap =
             roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
