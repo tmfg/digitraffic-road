@@ -106,6 +106,9 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
         log.info("Handle weather data total tookMs={} and max was maxMs={} result={}",
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
+
+        entityManager.clear();
+
         // Assert sensor values are updated to db
         final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
         final Map<Long, List<SensorValue>> valuesMap =

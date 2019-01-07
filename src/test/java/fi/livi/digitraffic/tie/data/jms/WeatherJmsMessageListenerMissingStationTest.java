@@ -68,6 +68,8 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
             }
         }
 
+        entityManager.clear();
+
         // Create data for non existing station
         TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
         data.add(tiesaa);
