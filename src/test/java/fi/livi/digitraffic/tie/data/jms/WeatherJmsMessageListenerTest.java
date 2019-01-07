@@ -113,6 +113,7 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
 
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
+        entityManager.clear();
 
         assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }

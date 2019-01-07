@@ -83,5 +83,6 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
 
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
+        entityManager.clear();
     }
 }

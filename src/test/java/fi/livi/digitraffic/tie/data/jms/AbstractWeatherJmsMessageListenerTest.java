@@ -16,6 +16,7 @@ import java.util.Random;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.persistence.EntityManager;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
@@ -52,6 +53,8 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
     protected JdbcTemplate jdbcTemplate;
     @Autowired
     protected SensorDataUpdateService sensorDataUpdateService;
+    @Autowired
+    protected EntityManager entityManager;
 
     protected static TiesaaProtos.TiesaaMittatieto generateTiesaaMittatieto(final Instant measurementTime,
                                                                             final List<RoadStationSensor> availableSensors,
