@@ -38,7 +38,7 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
      * @throws IOException
      */
     @Test
-    public void test1PerformanceForReceivedMessages() throws JMSException, IOException {
+    public void testPerformanceForReceivedMessages() throws JMSException, IOException {
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
             .findAllPublishableWeatherStationsMappedByLotjuId();
 
@@ -112,12 +112,8 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
                     roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
         assertData(data, valuesMap);
+        assertDataIsJustUpdated();
 
         assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
-    }
-
-    @Test
-    public void test2LastUpdated() {
-        assertDataIsJustUpdated();
     }
 }

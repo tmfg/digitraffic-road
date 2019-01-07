@@ -34,7 +34,7 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
      * @throws IOException
      */
     @Test
-    public void test1DataForNonExistingStation() throws JMSException, IOException {
+    public void testDataForNonExistingStation() throws JMSException, IOException {
 
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
             .findAllPublishableWeatherStationsMappedByLotjuId();
@@ -82,12 +82,6 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
             roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
         assertData(data, valuesMap);
-    }
-
-
-    @Test
-    public void test2LastUpdated() {
         assertDataIsJustUpdated();
     }
-
 }
