@@ -24,6 +24,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -164,6 +165,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
      * @throws IOException
      */
     @Test
+    @Ignore
     public void test3DataForNonExistingStation() throws JMSException, IOException {
 
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
