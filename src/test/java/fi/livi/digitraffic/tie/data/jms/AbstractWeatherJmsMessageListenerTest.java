@@ -75,9 +75,9 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
         for (final RoadStationSensor availableSensor : availableSensors) {
             final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
-            log.info("Asema {} set anturi {} arvo {}",currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(arvo));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
+            log.info("Asema {} set anturi {} arvo {}",currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
             tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
 
             // Increase value for every sensor to validate correct updates
