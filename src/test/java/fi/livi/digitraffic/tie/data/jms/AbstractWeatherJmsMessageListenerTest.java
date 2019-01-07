@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -74,13 +75,13 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
         for (final RoadStationSensor availableSensor : availableSensors) {
             final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
+            log.info("Asema {} set anturi {} arvo {}",currentStationLotjuId,  availableSensor.getLotjuId(), arvo);
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(arvo));
+            anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
+            tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
 
             // Increase value for every sensor to validate correct updates
             arvo = arvo + 0.1f;
-            anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-
-            tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
 
             if (tiesaaMittatietoBuilder.getAnturiList().size() >= 30) {
                 break;
@@ -125,6 +126,11 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
                         .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
                         .findFirst();
                 assertTrue(found.isPresent());
+
+                log.info("asema:{} data vs db: anturi: {} vs {}, data: {} vs {}",
+                         tiesaa.getAsemaId(),
+                         anturi.getLaskennallinenAnturiId(), found.get().getRoadStationSensor().getLotjuId(),
+                         NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue());
 
                 Assert.assertEquals(found.get().getValue(), NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), 0.05d);
             }
