@@ -7,17 +7,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.persistence.EntityManager;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
@@ -46,6 +43,8 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
 
     private static final Logger log = LoggerFactory.getLogger(AbstractJmsMessageListenerTest.class);
 
+    private static float sensorValueToSet = 1f;
+
     @Autowired
     protected RoadStationSensorService roadStationSensorService;
     @Autowired
@@ -54,8 +53,6 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
     protected JdbcTemplate jdbcTemplate;
     @Autowired
     protected SensorDataUpdateService sensorDataUpdateService;
-    @Autowired
-    protected EntityManager entityManager;
 
     protected static TiesaaProtos.TiesaaMittatieto generateTiesaaMittatieto(final Instant measurementTime,
                                                                             final List<RoadStationSensor> availableSensors,
@@ -66,28 +63,24 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
         tiesaaMittatietoBuilder.setAika(measurementTime.toEpochMilli());
 
         // Generate update-data
-        final float minX = 0.0f;
-        final float maxX = 100.0f;
-        final Random rand = new Random();
-        float arvo = rand.nextFloat() * (maxX - minX) + minX;
-        log.info("Start with arvo " + arvo);
+        log.debug("Start with arvo " + sensorValueToSet);
 
         for (final RoadStationSensor availableSensor : availableSensors) {
             final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
-            anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(arvo));
+            anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(sensorValueToSet));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-            log.info("Asema {} set anturi {} arvo {}",currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
+            log.debug("Asema {} set anturi {} arvo {}", currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
             tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
 
             // Increase value for every sensor to validate correct updates
-            arvo = arvo + 0.1f;
+            sensorValueToSet++;
 
             if (tiesaaMittatietoBuilder.getAnturiList().size() >= 30) {
                 break;
             }
         }
-        log.info("End with arvo={}", arvo);
+        log.debug("End with arvo={}", sensorValueToSet);
         return tiesaaMittatietoBuilder.build();
     }
 
@@ -132,7 +125,7 @@ public abstract class AbstractWeatherJmsMessageListenerTest extends AbstractJmsM
                          anturi.getLaskennallinenAnturiId(), found.get().getRoadStationSensor().getLotjuId(),
                          NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue());
 
-                Assert.assertEquals(found.get().getValue(), NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), 0.05d);
+                Assert.assertEquals(NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue(), 0.05d);
             }
         }
         log.info("Data is valid");

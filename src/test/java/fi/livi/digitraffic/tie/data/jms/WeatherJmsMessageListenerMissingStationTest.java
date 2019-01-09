@@ -68,8 +68,6 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
             }
         }
 
-        entityManager.clear();
-
         // Create data for non existing station
         TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
         data.add(tiesaa);
@@ -77,17 +75,17 @@ public class WeatherJmsMessageListenerMissingStationTest extends AbstractWeather
 
         jmsMessageListener.drainQueueScheduled();
 
+        // Clear because data has been changed by jmsMessageListener in db and entity manager doesn't know about it
+        entityManager.clear();
+
         log.info("Check data validy");
         // Assert sensor values are updated to db
         final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
-
-        entityManager.clear();
 
         final Map<Long, List<SensorValue>> valuesMap =
             roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
-        entityManager.clear();
     }
 }

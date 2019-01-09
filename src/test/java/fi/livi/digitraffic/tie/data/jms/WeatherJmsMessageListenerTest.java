@@ -30,8 +30,6 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
 
     private static final Logger log = LoggerFactory.getLogger(AbstractJmsMessageListenerTest.class);
 
-    private static final long NON_EXISTING_STATION_LOTJU_ID = -123456789L;
-
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws JMSException
@@ -39,6 +37,7 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
      */
     @Test
     public void testPerformanceForReceivedMessages() throws JMSException, IOException {
+
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
             .findAllPublishableWeatherStationsMappedByLotjuId();
 
@@ -107,6 +106,7 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
 
+        // Clear because data has been changed by jmsMessageListener in db and entity manager doesn't know about it
         entityManager.clear();
 
         // Assert sensor values are updated to db
@@ -116,7 +116,6 @@ public class WeatherJmsMessageListenerTest extends AbstractWeatherJmsMessageList
 
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
-        entityManager.clear();
 
         assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
