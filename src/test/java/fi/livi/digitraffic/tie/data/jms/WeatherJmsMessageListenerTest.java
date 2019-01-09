@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import javax.jms.BytesMessage;
@@ -26,7 +27,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
@@ -42,14 +42,13 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
 
     private static final long NON_EXISTING_STATION_LOTJU_ID = -123456789L;
 
-    private static float sensorValueToSet = 30f;
+    private static float sensorValueToSet = new Random().nextInt(1000);
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
@@ -59,7 +58,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
 
-
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws JMSException
@@ -67,8 +65,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
      */
     @Test
     public void testPerformanceForReceivedMessages() throws JMSException, IOException {
-
-        log.info("START test2PerformanceForReceivedMessages");
 
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
             .findAllPublishableWeatherStationsMappedByLotjuId();
@@ -115,6 +111,11 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
             }
 
+            // Create data for non existing station to test that data will be updated even if there is data for non existing station.
+            TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
+            data.add(tiesaa);
+            jmsMessageListener.onMessage(createBytesMessage(tiesaa));
+
             sw.stop();
             log.info("Data generation tookMs={}", sw.getTime());
             StopWatch swHandle = StopWatch.createStarted();
@@ -148,79 +149,10 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         final Map<Long, List<SensorValue>> valuesMap =
                     roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
 
-        log.info("END test2PerformanceForReceivedMessages");
-
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
 
         assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
-    }
-
-    /**
-     * Send some data bursts to jms handler including sensor data for non existing road station.
-     * That should not fail all the updates.
-     *
-     * @throws JMSException
-     * @throws IOException
-     */
-    @Test
-    public void testDataForNonExistingStation() throws JMSException, IOException {
-
-        log.info("START test1DataForNonExistingStation");
-
-        final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
-            .findAllPublishableWeatherStationsMappedByLotjuId();
-
-        final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater =
-            createTiesaaMittatietoJMSDataUpdater();
-
-        final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener =
-            createTiesaaMittatietoJMSMessageListener(dataUpdater);
-
-        final List<RoadStationSensor> availableSensors = getAvailableRoadStationSensors();
-
-        Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
-
-        final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
-
-        while (true) {
-            if (!stationsIter.hasNext()) {
-                stationsIter = weatherStationsWithLotjuId.values().iterator();
-            }
-            final WeatherStation currentStation = stationsIter.next();
-
-            TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, currentStation.getLotjuId());
-
-            data.add(tiesaa);
-
-            jmsMessageListener.onMessage(createBytesMessage(tiesaa));
-
-            if (data.size() >= 10 || weatherStationsWithLotjuId.size() <= data.size()) {
-                break;
-            }
-        }
-
-        // Create data for non existing station
-        TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
-        data.add(tiesaa);
-        jmsMessageListener.onMessage(createBytesMessage(tiesaa));
-
-        jmsMessageListener.drainQueueScheduled();
-
-        log.info("Check data validy");
-        // Assert sensor values are updated to db
-        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
-
-        // Clear because data has been changed by jmsMessageListener in db and entity manager doesn't know about it
-        entityManager.clear();
-
-        final Map<Long, List<SensorValue>> valuesMap =
-            roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(tiesaaLotjuIds, RoadStationType.WEATHER_STATION);
-
-        log.info("END test1DataForNonExistingStation");
-
-        assertData(data, valuesMap);
-        assertDataIsJustUpdated();
     }
 
     private static TiesaaProtos.TiesaaMittatieto generateTiesaaMittatieto(final Instant measurementTime,
