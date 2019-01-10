@@ -62,7 +62,7 @@ public class DataController {
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
     public static final String DATEX2_API_NOTES =
-        "NB! Dates are include in multiple formats. Under published tag, there is utc " +
+        "Dates are include in multiple formats. Under published tag, there is utc " +
         "and localtime fields that are in UTC (Zulu) time. Other times are in local time " +
         "with offset from the UTC. Best practice is to use some library that can parse " +
         "date and times properly with any offset from ISO 8601 date format.";
