@@ -22,6 +22,7 @@ import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
@@ -37,6 +38,9 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
     @Autowired
     private ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
 
+    @Autowired
+    private DataStatusService dataStatusService;
+
     private MockRestServiceServer server;
 
     @Autowired
@@ -45,7 +49,8 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
     @Before
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
-        forecastSectionMetadataUpdater = new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository, forecastSectionV2MetadataDao);
+        forecastSectionMetadataUpdater = new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository, forecastSectionV2MetadataDao,
+                                                                              dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
 import reactor.util.Logger;
 import reactor.util.Loggers;
@@ -24,13 +26,17 @@ public class ForecastSectionV2MetadataUpdater {
 
     private final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
 
+    private final DataStatusService dataStatusService;
+
     @Autowired
     public ForecastSectionV2MetadataUpdater(final ForecastSectionClient forecastSectionClient,
                                             final ForecastSectionRepository forecastSectionRepository,
-                                            final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao) {
+                                            final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao,
+                                            final DataStatusService dataStatusService) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
         this.forecastSectionV2MetadataDao = forecastSectionV2MetadataDao;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -47,7 +53,7 @@ public class ForecastSectionV2MetadataUpdater {
 
         forecastSectionV2MetadataDao.insertCoordinates(metadata.getFeatures());
 
-        // TODO upsert dataUpdatedTime
-        // metadata.getDataUpdatedTime();
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime());
     }
 }
