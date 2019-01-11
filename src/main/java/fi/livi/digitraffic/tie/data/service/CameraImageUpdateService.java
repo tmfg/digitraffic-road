@@ -63,7 +63,6 @@ public class CameraImageUpdateService {
         this.retryDelayMs = retryDelayMs;
     }
 
-    @Transactional(readOnly = true)
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
         return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().parallelStream()
