@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS forecast_section_coordinate (
   forecast_section_id   NUMERIC(10),
   list_order_number     INTEGER,
   order_number          INTEGER,
-  longitude             NUMERIC(6,3),
-  latitude              NUMERIC(6,3)
+  longitude             NUMERIC(10,7),
+  latitude              NUMERIC(10,7)
 );
 
 ALTER TABLE forecast_section_coordinate ADD CONSTRAINT forecast_section_coordinate_pk PRIMARY KEY (forecast_section_id, list_order_number, order_number);
@@ -41,4 +41,21 @@ BEGIN
   RETURN NEW;
 END;
 $$
+;
+
+ALTER TABLE forecast_section ALTER COLUMN natural_id TYPE varchar(26);
+
+ALTER TABLE forecast_section
+  ADD CONSTRAINT forecast_section_unique EXCLUDE (natural_id WITH =, version WITH =, (CASE
+                                                                                      WHEN obsolete_date IS NULL
+                                                                                        THEN '-1' :: integer :: numeric
+                                                                                      ELSE id
+                                                                                      END) WITH =);
+
+create unique index if not exists forecast_section_ui
+  on forecast_section (natural_id, version, (
+    CASE
+    WHEN obsolete_date IS NULL THEN '-1'::integer::numeric
+    ELSE id
+    END))
 ;

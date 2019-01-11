@@ -47,7 +47,7 @@ public class ForecastSectionClient {
     }
 
     @Retryable
-    public ForecastSectionDataDto getRoadConditions() {
+    public ForecastSectionDataDto getRoadConditionsV1() {
 
         return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
     }

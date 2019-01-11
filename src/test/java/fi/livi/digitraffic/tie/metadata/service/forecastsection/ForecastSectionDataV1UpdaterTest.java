@@ -28,7 +28,7 @@ public class ForecastSectionDataV1UpdaterTest extends AbstractTest {
     private ForecastSectionClient forecastSectionClient;
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionDataUpdater forecastSectionDataUpdater;
+    private ForecastSectionV1DataUpdater forecastSectionDataUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -44,7 +44,7 @@ public class ForecastSectionDataV1UpdaterTest extends AbstractTest {
     @Before
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
-        forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository);
+        forecastSectionDataUpdater = new ForecastSectionV1DataUpdater(forecastSectionClient, forecastSectionRepository);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 

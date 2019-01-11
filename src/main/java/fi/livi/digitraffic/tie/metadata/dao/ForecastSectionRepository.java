@@ -6,7 +6,10 @@ import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
@@ -18,4 +21,14 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection", "startRoadSection.roadDistrict", "endRoadSection.roadDistrict",
                                     "forecastSectionCoordinateLists" }, type = EntityGraph.EntityGraphType.LOAD)
     List<ForecastSection> findDistinctByVersionIsOrderByNaturalIdAsc(final int version);
+
+    @Modifying
+    @Query(value = "UPDATE forecast_section SET obsolete_date = now() " +
+                   "WHERE version = :version AND obsolete_date IS NULL AND natural_id NOT IN (:naturalIds)", nativeQuery = true)
+    void obsoleteNotIn(@Param("naturalIds") final List<String> naturalIds, @Param("version") final int version);
+
+    @Modifying
+    @Query(value = "DELETE FROM forecast_section_coordinate_list WHERE forecast_section_id IN (SELECT id FROM forecast_section WHERE version = :version)",
+           nativeQuery = true)
+    void deleteAllCoordinates(@Param("version") final int version);
 }
