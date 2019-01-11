@@ -65,14 +65,14 @@ public class CameraImageUpdateService {
 
     @Transactional(readOnly = true)
     public long deleteAllImagesForNonPublishablePresets() {
-        List<String> presetIdsToDelete = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
-        return presetIdsToDelete.stream().filter(presetId -> deleteImage(getPresetImageName(presetId))).count();
+        // return count of succesful deletes
+        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().parallelStream()
+            .filter(presetId -> deleteImage(getPresetImageName(presetId)))
+            .count();
     }
 
     @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
-        boolean success;
-
         log.info("Handling {}", ToStringHelper.toString(kuva));
 
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
@@ -80,10 +80,10 @@ public class CameraImageUpdateService {
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
+        final boolean success;
         if (cameraPreset != null) {
             success = transferKuva(kuva, presetId, filename);
-        }
-        else {
+        } else {
             success = deleteKuva(kuva, presetId, filename);
         }
 
@@ -95,7 +95,6 @@ public class CameraImageUpdateService {
     }
 
     private boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
-
         log.info("Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
                 "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
             CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
@@ -159,7 +158,7 @@ public class CameraImageUpdateService {
         byte[] result;
         try {
             final URL url = new URL(downloadImageUrl);
-            URLConnection con = url.openConnection();
+            final URLConnection con = url.openConnection();
             con.setConnectTimeout(connectTimeout);
             con.setReadTimeout(readTimeout);
             result = IOUtils.toByteArray(con.getInputStream());
