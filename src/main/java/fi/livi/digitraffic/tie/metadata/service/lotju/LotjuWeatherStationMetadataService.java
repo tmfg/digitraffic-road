@@ -36,8 +36,8 @@ public class LotjuWeatherStationMetadataService {
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
-    public List<TiesaaAsemaVO> getTiesaaAsemmas() {
-        return lotjuWeatherStationClient.getTiesaaAsemmas();
+    public List<TiesaaAsemaVO> getTiesaaAsemas() {
+        return lotjuWeatherStationClient.getTiesaaAsemas();
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 100000)
