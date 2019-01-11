@@ -65,7 +65,7 @@ public class CameraImageUpdateService {
 
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
-        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().parallelStream()
+        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
             .filter(presetId -> deleteImage(getPresetImageName(presetId)))
             .count();
     }
