@@ -26,6 +26,8 @@ locationsMetadataUpdateJob.frequency=86400000
 datex2TrafficAlertMessageUpdateJob.frequency=180000
 datex2RoadworksMessageUpdateJob.frequency=3600000
 datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
+forecastSectionV2MetadataUpdateJob.frequency=86400000
+forecastSectionV2DataUpdateJob.frequency=300000
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
@@ -91,6 +93,8 @@ jms.datex2.enabled=false
 # quartz.TmsStationsStatusMetadataUpdateJob.enabled = false
 # quartz.WeatherStationMetadataUpdateJob.enabled = true
 # quartz.WeatherStationsStatusMetadataUpdateJob.enabled = false
+# quartz.forecastSectionV2MetadataUpdateJob.enabled = true
+# quartz.forecastSectionV2DataUpdateJob.enabled = true
 
 # Developer life improvements
 logging.level.root=INFO

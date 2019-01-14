@@ -27,7 +27,9 @@ public class ForecastSectionClient {
 
     private static final String roadsV2Url = "roadsV2.php";
 
-    private static final String roadConditionsUrl = "roadConditionsV1-json.php";
+    private static final String roadConditionsV1Url = "roadConditionsV1-json.php";
+
+    private static final String roadConditionsV2Url = "roadConditionsV2-json.php";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -47,9 +49,12 @@ public class ForecastSectionClient {
     }
 
     @Retryable
-    public ForecastSectionDataDto getRoadConditionsV1() {
-
-        return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
+    public ForecastSectionDataDto getRoadConditionsV1(final int version) {
+        if (version == 1) {
+            return restTemplate.getForObject(baseUrl + roadConditionsV1Url, ForecastSectionDataDto.class);
+        } else {
+            return restTemplate.getForObject(baseUrl + roadConditionsV2Url, ForecastSectionDataDto.class);
+        }
     }
 
     protected ForecastSectionCoordinatesDto mapForecastSectionCoordinates(final Map.Entry<String, Object> forecastSection) {

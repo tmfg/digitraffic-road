@@ -29,7 +29,7 @@ public class ForecastSectionDataService {
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final int version, final boolean onlyUpdateInfo) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.FORECAST_SECTION_WEATHER_DATA.toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
@@ -37,7 +37,7 @@ public class ForecastSectionDataService {
             return new ForecastSectionWeatherRootDto(updatedTime);
         }
 
-        final Map<String, List<RoadConditionDto>> forecastSectionWeatherData = forecastSectionWeatherDao.getForecastSectionWeatherData();
+        final Map<String, List<RoadConditionDto>> forecastSectionWeatherData = forecastSectionWeatherDao.getForecastSectionWeatherData(version);
 
         return new ForecastSectionWeatherRootDto(
                 updatedTime,

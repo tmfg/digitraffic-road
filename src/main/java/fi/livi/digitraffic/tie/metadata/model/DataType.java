@@ -25,8 +25,8 @@ public enum DataType {
     TRAVEL_TIME_LINKS_METADATA_CHECK,
     TMS_FREE_FLOW_SPEEDS_DATA,
     FORECAST_SECTION_V2_METADATA,
-    FORECAST_SECTION_V2_METADATA_CHECK
-    ;
+    FORECAST_SECTION_V2_METADATA_CHECK,
+    FORECAST_SECTION_V2_WEATHER_DATA;
 
 
     public static DataType getSensorMetadataTypeForRoadStationType(final RoadStationType roadStationType) {

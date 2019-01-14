@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.quartz.JobDetail;
@@ -37,6 +38,8 @@ import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2WeightRestrictionsMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2DataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2MetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
@@ -168,6 +171,16 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean forecastSectionV2MetadataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV2MetadataUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean forecastSectionV2DataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV2DataUpdateJob.class);
+    }
+
+    @Bean
     public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
                                                                    @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
@@ -239,6 +252,17 @@ public class QuartzSchedulerConfig {
         return createRepeatingTrigger(datex2WeightRestrictionsMessageUpdateJobDetail, frequency);
     }
 
+    @Bean
+    public SimpleTriggerFactoryBean forecastSectionV2MetadataUpdateJobTrigger(final JobDetail forecastSectionV2MetadataUpdateJobDetail,
+                                                                           @Value("${forecastSectionV2MetadataUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(forecastSectionV2MetadataUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public SimpleTriggerFactoryBean forecastSectionV2DataUpdateJobTrigger(final JobDetail forecastSectionV2DataUpdateJobDetail,
+                                                                              @Value("${forecastSectionV2DataUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(forecastSectionV2DataUpdateJobDetail, frequency);
+    }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
         final JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();

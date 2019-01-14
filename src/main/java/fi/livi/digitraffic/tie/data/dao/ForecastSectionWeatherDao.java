@@ -34,14 +34,15 @@ public class ForecastSectionWeatherDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData() {
+    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final int version) {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
             "SELECT * FROM FORECAST_SECTION_WEATHER fsw " +
             "LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name " +
             "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
-            "ORDER BY fs.natural_id, fsw.time",
+            "WHERE fs.version = ? " +
+            "ORDER BY fs.natural_id, fsw.time", new Object[]{ version },
             rs -> {
                 String forecastSectionNaturalId = rs.getString("natural_id");
 
