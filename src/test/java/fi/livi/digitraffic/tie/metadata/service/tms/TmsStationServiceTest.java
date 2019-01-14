@@ -72,7 +72,7 @@ public class TmsStationServiceTest extends AbstractTest {
 
     @Test
     public void getTmsStationByRoadStationId() throws NonPublicRoadStationException {
-        final TmsStationFeature tmsStation = tmsStationService.getTmsStationByRoadStationId(123L);
+        final TmsStationFeature tmsStation = tmsStationService.getTmsStationByRoadStationId(23801L);
 
         Assert.assertNotNull(tmsStation);
     }
