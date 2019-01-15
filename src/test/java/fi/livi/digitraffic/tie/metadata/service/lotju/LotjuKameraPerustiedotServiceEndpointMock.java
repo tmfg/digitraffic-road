@@ -170,7 +170,7 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public KameraVO muutaKameranJulkisuus(Long id, JulkisuusTaso julkisuusTaso, XMLGregorianCalendar alkaen) throws KameraPerustiedotException {
-        return null;
+        throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override
