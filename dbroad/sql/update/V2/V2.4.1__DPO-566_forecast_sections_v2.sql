@@ -43,7 +43,7 @@ END;
 $$
 ;
 
-ALTER TABLE forecast_section ALTER COLUMN natural_id TYPE varchar(26);
+ALTER TABLE forecast_section ALTER COLUMN natural_id TYPE varchar(30);
 
 ALTER TABLE forecast_section
   ADD CONSTRAINT forecast_section_unique EXCLUDE (natural_id WITH =, version WITH =, (CASE
