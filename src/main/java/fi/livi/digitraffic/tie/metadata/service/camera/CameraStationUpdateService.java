@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 
 @Service
 public class CameraStationUpdateService extends AbstractCameraStationAttributeUpdater {

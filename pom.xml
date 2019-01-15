@@ -412,7 +412,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v6/KameraPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v7/KameraPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>
