@@ -46,6 +46,9 @@ public class Datex2DataServiceTest extends AbstractTest {
     private String roadwork1;
     private static final String ROADWORK1_GUID = "GUID50350441";
 
+    private String weightRestriction1;
+    private static final String WR1_GUID = "GUID50354262";
+
     private static final String NOT_FOUND_GUID = "NOT_FOUND";
 
     @Before
@@ -54,6 +57,8 @@ public class Datex2DataServiceTest extends AbstractTest {
         disorder2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
 
         roadwork1 = readResourceContent("classpath:lotju/roadwork/roadwork1.xml");
+
+        weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
     }
 
     private void deleteAllDatex2() {
@@ -103,9 +108,27 @@ public class Datex2DataServiceTest extends AbstractTest {
 
         updateRoadworks(roadwork1);
 
-        assertCollectionSize(1, datex2Repository.findAll());
+        assertCollectionSize(1, datex2DataService.findActiveRoadworks().getRoadwork());
 
         assertNotNull(datex2DataService.getAllRoadworksBySituationId(ROADWORK1_GUID));
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void getAllWeightRestrictionsBySituationIdNotFound() {
+        deleteAllDatex2();
+
+        datex2DataService.getAllWeightRestrictionsBySituationId(NOT_FOUND_GUID);
+    }
+
+    @Test
+    public void findActiveWeightRestrictions() {
+        deleteAllDatex2();
+
+        updateWeightRestrictions(weightRestriction1);
+
+        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions().getRestriction());
+
+        assertNotNull(datex2DataService.getAllWeightRestrictionsBySituationId(WR1_GUID));
     }
 
     private TrafficDisordersDatex2Response findDatex2AndAssert(final String situationId, final boolean found) {
@@ -154,4 +177,9 @@ public class Datex2DataServiceTest extends AbstractTest {
     private void updateRoadworks(final String datex2Content) {
         datex2UpdateService.updateRoadworks(createDtoList(datex2Content));
     }
+
+    private void updateWeightRestrictions(final String datex2Content) {
+        datex2UpdateService.updateWeightRestrictions(createDtoList(datex2Content));
+    }
+
 }
