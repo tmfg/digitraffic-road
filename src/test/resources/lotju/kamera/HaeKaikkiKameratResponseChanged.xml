@@ -89,9 +89,9 @@
         <alkamisPaiva>2001-11-07T00:00:00+02:00</alkamisPaiva>
         <asemanSijainti>Vanha Porvoo LKA016001</asemanSijainti>
         <hankeId>LKA016001</hankeId>
-        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
+        <julkisuus><julkisuusTaso>VALIAIKAISESTI_SALAINEN</julkisuusTaso></julkisuus>
         <keruuVali>720</keruuVali>
-        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <keruunTila>KERUUSSA</keruunTila>
         <kunta>Porvoo</kunta>
         <kuntaKoodi>638</kuntaKoodi>
         <liviId>Livi1089373</liviId>
