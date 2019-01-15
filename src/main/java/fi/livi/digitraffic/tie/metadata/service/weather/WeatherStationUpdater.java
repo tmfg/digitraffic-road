@@ -50,7 +50,7 @@ public class WeatherStationUpdater  {
     public boolean updateWeatherStations() {
         log.info("Update WeatherStations start");
 
-        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemas();
 
         final boolean updateStaticDataStatus = updateWeatherStationsMetadata(tiesaaAsemas);
 

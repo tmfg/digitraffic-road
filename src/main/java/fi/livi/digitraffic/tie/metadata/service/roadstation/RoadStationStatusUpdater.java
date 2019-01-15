@@ -55,7 +55,7 @@ public class RoadStationStatusUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateWeatherStationsStatuses() {
         log.info("Update weather stations statuses");
-        final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemmas();
+        final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemas();
 
         int updated = 0;
         for (TiesaaAsemaVO from : allTiesaaAsemas) {
