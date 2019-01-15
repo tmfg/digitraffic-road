@@ -37,7 +37,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    public List<TiesaaAsemaVO> getTiesaaAsemmas() {
+    public List<TiesaaAsemaVO> getTiesaaAsemas() {
         log.info("Fetching TiesaaAsemas from " + getWebServiceTemplate().getDefaultUri());
 
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();

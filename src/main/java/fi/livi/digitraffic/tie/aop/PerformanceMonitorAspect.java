@@ -102,16 +102,16 @@ public class PerformanceMonitorAspect {
                                 final Object[] args,
                                 final double executionTime) {
         final double executionTimeSeconds = executionTime/1000.0;
-        final StringBuilder builder = new StringBuilder();
-        builder.append(invocationName);
+        final StringBuilder builder = new StringBuilder(100)
+            .append("invocation=").append(invocationName)
+            .append(" invocationTimeSec=").append(decimalFormat.format(executionTimeSeconds));
 
         if (args != null && args.length > 0) {
-            builder.append(" with arguments ");
+            builder.append(" arguments=");
             buildValueToString(builder, args);
         }
 
-        return StringUtils.truncate(builder.toString(), 1000) +
-               String.format(" invocation time was invocationTimeSec=%s", decimalFormat.format(executionTimeSeconds));
+        return StringUtils.truncate(builder.toString(), 1000);
     }
 
     private void buildValueToString(final StringBuilder builder, final Object value) {
@@ -119,7 +119,7 @@ public class PerformanceMonitorAspect {
             builder.append("null");
             return;
         }
-        
+
         if (value.getClass().isArray()) {
             try {
                 final Object[] objects = (Object[]) value;

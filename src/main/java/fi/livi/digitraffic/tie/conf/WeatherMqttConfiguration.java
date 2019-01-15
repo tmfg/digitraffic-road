@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.data.service.MqttRelayService;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
-@ConditionalOnProperty("mqtt.tms.enabled")
+@ConditionalOnProperty("mqtt.weather.enabled")
 @Component
 public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(WeatherMqttConfiguration.class);
@@ -33,7 +33,7 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
               lockingService, WeatherMqttConfiguration.class.getSimpleName());
     }
 
-    @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
+    @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")
     public void pollData() {
         handleData();
     }

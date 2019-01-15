@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
+import com.sun.org.apache.bcel.internal.generic.D2L;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
@@ -35,45 +38,97 @@ public class Datex2DataServiceTest extends AbstractTest {
     @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
 
-    private String datex2Content1;
-    private String datex2Content2;
+    private String disorder1;
+    private String disorder2;
+    private static final String DISORDER1_GUID = "GUID50005166";
+    private static final String DISORDER2_GUID = "GUID50006936";
+
+    private String roadwork1;
+    private static final String ROADWORK1_GUID = "GUID50350441";
+
+    private String weightRestriction1;
+    private static final String WR1_GUID = "GUID50354262";
+
+    private static final String NOT_FOUND_GUID = "NOT_FOUND";
 
     @Before
     public void init() throws JAXBException, IOException {
-        datex2Content1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");
-        datex2Content2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
+        disorder1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");
+        disorder2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
+
+        roadwork1 = readResourceContent("classpath:lotju/roadwork/roadwork1.xml");
+
+        weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
+    }
+
+    private void deleteAllDatex2() {
+        datex2Repository.deleteAll();
+        assertTrue(datex2Repository.findAll().isEmpty());
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void getAllTrafficDisordersBySituationIdNotFound() {
+        deleteAllDatex2();
+
+        datex2DataService.getAllTrafficDisordersBySituationId(NOT_FOUND_GUID);
     }
 
     @Test
-    public void testUpdateDatex2Data() throws JAXBException, IOException {
-        final String situationId1 = "GUID50005166";
-        final String situationId2 = "GUID50006936";
+    public void updateTrafficAlerts() throws JAXBException, IOException {
+        deleteAllDatex2();
 
-        datex2Repository.deleteAll();
-        assertTrue(datex2Repository.findAll().isEmpty());
-
-        try {
-            datex2DataService.getAllTrafficDisordersBySituationId(situationId1);
-            Assert.fail("ObjectNotFoundException should be raised");
-        } catch (final ObjectNotFoundException onfe) {
-            // OK
-        }
-
-        updateDatex2Data(datex2Content1);
-        findDatex2AndAssert(situationId1, true);
-        findDatex2AndAssert(situationId2, false);
-        updateDatex2Data(datex2Content2);
+        updateTrafficAlerts(disorder1);
+        findDatex2AndAssert(DISORDER1_GUID, true);
+        findDatex2AndAssert(DISORDER2_GUID, false);
+        updateTrafficAlerts(disorder2);
 
         assertCollectionSize(2, datex2Repository.findAll());
 
-        findDatex2AndAssert(situationId1, true);
-        findDatex2AndAssert(situationId2, true);
+        findDatex2AndAssert(DISORDER1_GUID, true);
+        findDatex2AndAssert(DISORDER2_GUID, true);
 
-        TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders();
+        final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders();
         assertCollectionSize(1, allActive.getDisorder());
-        SituationPublication active = getSituationPublication(allActive);
+
+        final SituationPublication active = getSituationPublication(allActive);
         assertCollectionSize(1, active.getSituation());
-        assertTrue(active.getSituation().get(0).getId().equals(situationId2));
+        assertTrue(active.getSituation().get(0).getId().equals(DISORDER2_GUID));
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void getAllRoadworksBySituationIdNotFound() {
+        deleteAllDatex2();
+
+        datex2DataService.getAllRoadworksBySituationId(NOT_FOUND_GUID);
+    }
+
+    @Test
+    public void findActiveRoadworks() {
+        deleteAllDatex2();
+
+        updateRoadworks(roadwork1);
+
+        assertCollectionSize(1, datex2DataService.findActiveRoadworks().getRoadwork());
+
+        assertNotNull(datex2DataService.getAllRoadworksBySituationId(ROADWORK1_GUID));
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void getAllWeightRestrictionsBySituationIdNotFound() {
+        deleteAllDatex2();
+
+        datex2DataService.getAllWeightRestrictionsBySituationId(NOT_FOUND_GUID);
+    }
+
+    @Test
+    public void findActiveWeightRestrictions() {
+        deleteAllDatex2();
+
+        updateWeightRestrictions(weightRestriction1);
+
+        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions().getRestriction());
+
+        assertNotNull(datex2DataService.getAllWeightRestrictionsBySituationId(WR1_GUID));
     }
 
     private TrafficDisordersDatex2Response findDatex2AndAssert(final String situationId, final boolean found) {
@@ -98,12 +153,33 @@ public class Datex2DataServiceTest extends AbstractTest {
         return ((SituationPublication) response.getDisorder().get(0).getD2LogicalModel().getPayloadPublication());
     }
 
-    private void updateDatex2Data(final String datex2Content) {
-        Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Content));
+    private D2LogicalModel createModel(final String datex2Content) {
+        final Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Content));
+
         if (object instanceof JAXBElement) {
-            object = ((JAXBElement) object).getValue();
+            return (D2LogicalModel) ((JAXBElement) object).getValue();
         }
-        final D2LogicalModel d2LogicalModel = (D2LogicalModel)object;
-        datex2UpdateService.updateTrafficAlerts(Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel)));
+
+        return (D2LogicalModel)object;
     }
+
+    private List<Datex2MessageDto> createDtoList(final String datex2Content) {
+        final D2LogicalModel d2LogicalModel = createModel(datex2Content);
+
+        return Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel));
+    }
+
+
+    private void updateTrafficAlerts(final String datex2Content) {
+        datex2UpdateService.updateTrafficAlerts(createDtoList(datex2Content));
+    }
+
+    private void updateRoadworks(final String datex2Content) {
+        datex2UpdateService.updateRoadworks(createDtoList(datex2Content));
+    }
+
+    private void updateWeightRestrictions(final String datex2Content) {
+        datex2UpdateService.updateWeightRestrictions(createDtoList(datex2Content));
+    }
+
 }

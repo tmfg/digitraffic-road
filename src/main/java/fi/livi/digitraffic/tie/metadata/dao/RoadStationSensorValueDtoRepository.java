@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.dao;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -51,13 +52,13 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "  )",
            nativeQuery = true)
     // sensor typeid 2 = rws
-    List<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
+    Stream<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -104,7 +105,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
     @Query(value =
                    "select rs.natural_id road_station_natural_id\n" +
                    "     , s.natural_id sensor_natural_id\n" +
