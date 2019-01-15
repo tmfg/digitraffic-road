@@ -32,7 +32,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(JulkisuusTaso.JULKINEN ==  from.getJulkisuus().getJulkisuusTaso());
+        to.setPublic(from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.CAMERA_STATION);
         to.setName(from.getNimi());
