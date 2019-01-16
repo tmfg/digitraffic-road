@@ -106,10 +106,25 @@ public class RoadStationStatusesUpdateJobTest extends AbstractTest {
         assertCollectionStatus(allAfterChange, 121, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allAfterChange, 2, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allAfterChange, 56, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_PERMANENTLY);
+
+        assertPublicity(allInitial, 443, RoadStationType.CAMERA_STATION, true);
+        assertPublicity(allInitial, 121, RoadStationType.CAMERA_STATION, true);
+        assertPublicity(allInitial, 2, RoadStationType.CAMERA_STATION, true);
+        assertPublicity(allInitial, 56, RoadStationType.CAMERA_STATION, true);
+
+        assertPublicity(allAfterChange, 443, RoadStationType.CAMERA_STATION, true);
+        assertPublicity(allAfterChange, 121, RoadStationType.CAMERA_STATION, true);
+        assertPublicity(allAfterChange, 2, RoadStationType.CAMERA_STATION, false);
+        assertPublicity(allAfterChange, 56, RoadStationType.CAMERA_STATION, true);
     }
 
-    private void assertCollectionStatus(List<RoadStation> roadStations, long lotjuId, RoadStationType roadStationType, CollectionStatus collectionStatus) {
-        RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
+    private void assertPublicity(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final boolean isPublic) {
+        final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
+        Assert.assertEquals(isPublic, found.isPublic());
+    }
+
+    private void assertCollectionStatus(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final CollectionStatus collectionStatus) {
+        final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
         Assert.assertEquals(collectionStatus, found.getCollectionStatus());
     }
 
