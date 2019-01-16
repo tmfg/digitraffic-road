@@ -99,14 +99,13 @@ public class RoadStationStatusesUpdateJobTest extends AbstractTest {
         // Camera stations: 443(GATHERING), 121 (REMOVED_TEMPORARILY->GATHERING), 2(REMOVED_PERMANENTLY), 56(REMOVED_TEMPORARILY->REMOVED_PERMANENTLY)
         assertCollectionStatus(allInitial, 443, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allInitial, 121, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_TEMPORARILY);
-        assertCollectionStatus(allInitial, 2, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_PERMANENTLY);
+        assertCollectionStatus(allInitial, 2, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allInitial, 56, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_TEMPORARILY);
 
         assertCollectionStatus(allAfterChange, 443, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allAfterChange, 121, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
-        assertCollectionStatus(allAfterChange, 2, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_PERMANENTLY);
+        assertCollectionStatus(allAfterChange, 2, RoadStationType.CAMERA_STATION, CollectionStatus.GATHERING);
         assertCollectionStatus(allAfterChange, 56, RoadStationType.CAMERA_STATION, CollectionStatus.REMOVED_PERMANENTLY);
-
     }
 
     private void assertCollectionStatus(List<RoadStation> roadStations, long lotjuId, RoadStationType roadStationType, CollectionStatus collectionStatus) {
