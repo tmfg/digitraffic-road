@@ -11,13 +11,9 @@ public class MetadataMarshallerConfiguration {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
         marshaller.setContextPaths(
-                // from WSDLs generate classes
+                // from WSDLs generate classes. Only higest
                 "fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15",
-                "fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06",
                 "fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12",
-                "fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02",
-                "fi.livi.ws.wsdl.lotju.metatiedot._2014._03._06",
-                "fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29",
                 "fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02",
                 // From xsds generated classes
                 "fi.livi.digitraffic.tie.lotju.xsd.datex2");
