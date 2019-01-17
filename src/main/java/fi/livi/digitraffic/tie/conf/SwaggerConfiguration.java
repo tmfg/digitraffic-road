@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_BETA
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V2_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import java.time.LocalDate;
@@ -92,7 +93,9 @@ public class SwaggerConfiguration {
     private static Predicate<String> getMetadataApiPaths() {
         return or(
                 regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
-                regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")
+                regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*"),
+                regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
+                regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")
         );
     }
 }

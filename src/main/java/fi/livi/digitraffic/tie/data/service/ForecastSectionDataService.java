@@ -30,10 +30,10 @@ public class ForecastSectionDataService {
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final int version, final boolean onlyUpdateInfo) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.FORECAST_SECTION_WEATHER_DATA.toString());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(getDataType(version).toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
-        if(onlyUpdateInfo) {
+        if (onlyUpdateInfo) {
             return new ForecastSectionWeatherRootDto(updatedTime);
         }
 
@@ -48,5 +48,13 @@ public class ForecastSectionDataService {
         return forecastSectionWeatherData.entrySet().stream()
             .map(w -> new ForecastSectionWeatherDataDto(w.getKey(), w.getValue()))
             .collect(Collectors.toList());
+    }
+
+    private DataType getDataType(final int version) {
+        switch (version) {
+        case 1: return DataType.FORECAST_SECTION_WEATHER_DATA;
+        case 2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        default: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        }
     }
 }

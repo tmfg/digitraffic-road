@@ -2,10 +2,10 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.util.List;
 import java.util.Locale;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +26,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
 @Configuration
@@ -35,6 +36,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
 public class RoadApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
+    public static final String API_V2_BASE_PATH = "/api/v2";
     public static final String API_BETA_BASE_PATH = "/api/beta";
 
     public static final String API_METADATA_PART_PATH = "/metadata";

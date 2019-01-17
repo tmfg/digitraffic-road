@@ -55,7 +55,7 @@ public class DataController {
 
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
     // datex2
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";

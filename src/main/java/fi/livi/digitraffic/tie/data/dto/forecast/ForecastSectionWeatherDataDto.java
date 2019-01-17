@@ -10,11 +10,17 @@ import io.swagger.annotations.ApiModelProperty;
 public class ForecastSectionWeatherDataDto {
 
     @ApiModelProperty(
-            "Forecast section identifier 15 characters ie. 00004_112_000_0: \n" +
+            "VERSION 1: Forecast section identifier 15 characters ie. 00004_112_000_0: \n" +
             "1. Road number 5 characters ie. 00004, \n" +
             "2. Road section 3 characters ie. 112, \n" +
             "3. Road section version 3 characters ie. 000, \n" +
-            "4. Reserved for future needs 1 characters default 0")
+            "4. Reserved for future needs 1 characters default 0 \n\n" +
+            "VERSION 2: Forecast section identifier 26 characters ie. 00004_342_01435_0_274.569: \n" +
+            "1. Road number 5 characters ie. 00004, \n" +
+            "2. Road section 3 characters ie. 342, \n" +
+            "3. Smallest start distance 5 characters ie. 000, \n" +
+            "4. Smallest carriageway 1 character, \n" +
+            "5. Smallest ALKU_PAALU ie. 274.569")
     @JsonProperty("id")
     public final String naturalId;
 
