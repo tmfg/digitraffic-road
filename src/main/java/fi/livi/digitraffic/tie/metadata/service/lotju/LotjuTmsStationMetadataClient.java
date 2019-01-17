@@ -13,7 +13,10 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakio;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakioResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsemat;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturit;
@@ -68,6 +71,19 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
         log.info("lamFetchedCount={} LAMLaskennallisetAnturis", response.getValue().getLaskennallinenAnturi().size());
         return response.getValue().getLaskennallinenAnturi();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
+        final HaeAsemanAnturiVakio haeAsemanAnturiVakioRequest =
+            new HaeAsemanAnturiVakio();
+        haeAsemanAnturiVakioRequest.setAsemaId(lotjuId);
+
+        final JAXBElement<HaeAsemanAnturiVakioResponse> haeAsemanAnturiVakioResponse =
+            (JAXBElement< HaeAsemanAnturiVakioResponse>)
+                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeAsemanAnturiVakio(haeAsemanAnturiVakioRequest));
+        return haeAsemanAnturiVakioResponse.getValue().getLamanturivakiot();
     }
 
 }

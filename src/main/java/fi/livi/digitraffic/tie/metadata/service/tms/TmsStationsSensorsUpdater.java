@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +56,7 @@ public class TmsStationsSensorsUpdater {
         log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
-                lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
+                lotjuTmsStationMetadataService.getLamLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
         currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 
@@ -43,7 +44,7 @@ public class LotjuTmsStationMetadataService {
     }
 
 //    TODO @PerformanceMonitor(maxErroExcecutionTime = , maxWarnExcecutionTime = )
-    public Map<Long, List<LamLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
+    public Map<Long, List<LamLaskennallinenAnturiVO>> getLamLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
         final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new ConcurrentHashMap<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -74,6 +75,38 @@ public class LotjuTmsStationMetadataService {
         return lamAnturisMappedByTmsLotjuId;
     }
 
+    public Map<Long, List<LamAnturiVakioVO>> getLamAnturiVakiosMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
+        final ConcurrentMap<Long, List<LamAnturiVakioVO>> lamAnturiVakiosMappedByTmsLotjuId = new ConcurrentHashMap<>();
+
+        final ExecutorService executor = Executors.newFixedThreadPool(1);
+        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+
+        final StopWatch start = StopWatch.createStarted();
+        for (final Long tmsLotjuId : tmsLotjuIds) {
+            completionService.submit(new AnturiVakioFetcher(tmsLotjuId, lamAnturiVakiosMappedByTmsLotjuId));
+        }
+
+        final AtomicInteger countAnturiVakios = new AtomicInteger();
+        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
+        tmsLotjuIds.forEach(id -> {
+            try {
+                final Future<Integer> f = completionService.take();
+                countAnturiVakios.addAndGet(f.get());
+                log.debug("Got {} AnturiVakios", f.get());
+            } catch (final InterruptedException | ExecutionException e) {
+                log.error("Error while fetching LamAnturiVakios", e);
+                executor.shutdownNow();
+                throw new RuntimeException(e);
+            }
+        });
+        executor.shutdown();
+
+        log.info("lamFetchedCount={} LamAnturiVakios for lamStationCount={} LAMAsemas, tookMs={}",
+            countAnturiVakios.get(), lamAnturiVakiosMappedByTmsLotjuId.size(), start.getTime());
+        return lamAnturiVakiosMappedByTmsLotjuId;
+    }
+
+
     private class LaskennallinenanturiFetcher implements Callable<Integer> {
 
         private final Long tmsLotjuId;
@@ -88,6 +121,24 @@ public class LotjuTmsStationMetadataService {
         public Integer call() throws Exception {
             final List<LamLaskennallinenAnturiVO> anturis = lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId);
             currentLamAnturisMappedByTmsLotjuId.put(tmsLotjuId, anturis);
+            return anturis.size();
+        }
+    }
+
+    private class AnturiVakioFetcher implements Callable<Integer> {
+
+        private final Long tmsLotjuId;
+        private final ConcurrentMap<Long, List<LamAnturiVakioVO>> currentLamAnturiVakiosMappedByTmsLotjuId;
+
+        public AnturiVakioFetcher(final Long tmsLotjuId, final ConcurrentMap<Long, List<LamAnturiVakioVO>> currentLamAnturiVakiosMappedByTmsLotjuId) {
+            this.tmsLotjuId = tmsLotjuId;
+            this.currentLamAnturiVakiosMappedByTmsLotjuId = currentLamAnturiVakiosMappedByTmsLotjuId;
+        }
+
+        @Override
+        public Integer call() throws Exception {
+            final List<LamAnturiVakioVO> anturis = lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
+            currentLamAnturiVakiosMappedByTmsLotjuId.put(tmsLotjuId, anturis);
             return anturis.size();
         }
     }
