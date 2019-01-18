@@ -4,7 +4,7 @@
             xmlns:D2LogicalModel="http://datex2.eu/schema/2/2_0" elementFormDefault="qualified"
             targetNamespace="http://tie.digitraffic.fi/schemas" version="1.0">
     <xsd:import namespace="http://datex2.eu/schema/2/2_0"
-                schemaLocation="https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_1_with_definitions_FI.xsd"/>
+                schemaLocation="http://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_1_with_definitions_FI.xsd"/>
     <xsd:element name="TrafficDisordersDatex2">
         <xsd:complexType>
             <xsd:sequence>

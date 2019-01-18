@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -53,6 +54,12 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // put first
         converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter());
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Add datex2 schema locations to default static file path
+        registry.addResourceHandler("/schemas/datex2/**").addResourceLocations("classpath:/schemas/datex2/");
     }
 
     @Bean
