@@ -33,7 +33,7 @@ public class CameraStationUpdateJobTest extends AbstractTest {
     @Test
     public void testUpdateKameras() {
 
-        lotjuKameraPerustiedotServiceMock.initDataAndService();
+        lotjuKameraPerustiedotServiceMock.initStateAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.updateCameras();

@@ -36,7 +36,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
     public void testTmsMetadataRestApi() throws Exception {
 
         // Init data
-        lotjuLAMMetatiedotServiceMock.initDataAndService();
+        lotjuLAMMetatiedotServiceMock.initStateAndService();
 
         // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
         tmsStationSensorUpdater.updateRoadStationSensors();

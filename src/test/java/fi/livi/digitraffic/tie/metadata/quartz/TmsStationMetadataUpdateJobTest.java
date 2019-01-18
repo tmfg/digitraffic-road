@@ -52,12 +52,14 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
 
     @Test
     public void testUpdateTmsStations() {
-        lotjuLAMMetatiedotServiceMock.initDataAndService();
+        lotjuLAMMetatiedotServiceMock.initStateAndService();
 
         // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
         tmsStationSensorUpdater.updateRoadStationSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
+        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
+
         final TmsStationFeatureCollection allInitial =
                 tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
         final TmsRoadStationsSensorsMetadata allSensorsInitial =

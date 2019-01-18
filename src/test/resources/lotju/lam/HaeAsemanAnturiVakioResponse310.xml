@@ -1,0 +1,27 @@
+<ns2:HaeAsemanAnturiVakioResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2018/03/12">
+    <ns2:lamanturivakiot>
+        <id>982</id>
+        <asemaId>310</asemaId>
+        <nimi>VVAPAAS2</nimi>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1793</id>
+        <asemaId>310</asemaId>
+        <nimi>MS2</nimi>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1535</id>
+        <asemaId>310</asemaId>
+        <nimi>VVAPAAS1</nimi>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1536</id>
+        <asemaId>310</asemaId>
+        <nimi>MS1</nimi>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1537</id>
+        <asemaId>310</asemaId>
+        <nimi>Tien_suunta</nimi>
+    </ns2:lamanturivakiot>
+</ns2:HaeAsemanAnturiVakioResponse>

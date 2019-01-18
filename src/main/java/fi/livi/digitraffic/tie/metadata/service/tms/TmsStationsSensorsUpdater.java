@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 
 @Service
@@ -41,7 +43,7 @@ public class TmsStationsSensorsUpdater {
     }
 
     /**
-     * Updates all available sensors of weather road stations
+     * Updates all available sensors of tms road stations
      */
     public boolean updateTmsStationsSensors() {
         log.info("Update TMS Stations Sensors start");
@@ -92,7 +94,7 @@ public class TmsStationsSensorsUpdater {
                 countRemoved += deletedInserted.getLeft();
                 countAdded += deletedInserted.getRight();
             } catch (final Exception e) {
-                log.info("Anturis anturisCount={}", anturis);
+                log.info("Anturis count={}", anturis);
                 throw e;
             }
         }
@@ -101,5 +103,48 @@ public class TmsStationsSensorsUpdater {
         log.info("Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
+    }
+
+    /**
+     * Updates all available sensorConstants of tms road stations
+     */
+    public boolean updateTmsStationsSensorConstants() {
+        log.info("Update TMS Stations SensorConstants start");
+
+        // Update sensors of road stations
+        // Get current TmsStations
+        final Map<Long, TmsStation> currentTmsStationMappedByByLotjuId =
+            tmsStationService.findAllTmsStationsMappedByByLotjuId();
+
+        final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
+
+        log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
+
+        final Map<Long, List<LamAnturiVakioVO>> anturiVakiosMappedByAsemaLotjuId =
+            lotjuTmsStationMetadataService.getLamAnturiVakiosMappedByAsemaLotjuId(tmsLotjuIds);
+
+        final List<Pair<TmsStation,  List<LamAnturiVakioVO>>> stationAnturiVakiosPairs = new ArrayList<>();
+        currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {
+            final List<LamAnturiVakioVO> anturiVakios = anturiVakiosMappedByAsemaLotjuId.remove(tmsStation.getLotjuId());
+            if (anturiVakios != null) {
+                stationAnturiVakiosPairs.add(Pair.of(tmsStation, anturiVakios));
+            } else {
+                log.info("No AnturiVakios for {}", tmsStation);
+                stationAnturiVakiosPairs.add(Pair.of(tmsStation, Collections.emptyList()));
+            }
+        });
+
+        // Update sensors of road stations
+        final boolean updateStaticDataStatus = updateSensorConstantsOfTmsStations(stationAnturiVakiosPairs);
+
+        log.info("Update TMS Stations SensorConstants end");
+        return updateStaticDataStatus;
+    }
+
+    private boolean updateSensorConstantsOfTmsStations(final List<Pair<TmsStation, List<LamAnturiVakioVO>>> stationAnturiVakiosPairs) {
+        for (final Pair<TmsStation, List<LamAnturiVakioVO>> pair : stationAnturiVakiosPairs) {
+            log.info("Tms tation {} sensorConstants: {}", pair.getKey().getLotjuId(), ToStringHelper.toStringFull(pair.getValue()));
+        }
+        return false;
     }
 }
