@@ -33,7 +33,7 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractTest {
     private ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    private ForecastSectionService forecastSectionService;
+    private ForecastSectionV1MetadataService forecastSectionService;
 
     private MockRestServiceServer server;
 

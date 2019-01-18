@@ -6,7 +6,7 @@ public class ForecastSectionV2FeatureDto {
 
     private ForecastSectionV2Geometry geometry;
 
-    private ForecastSectionV2Properties properties;
+    private ForecastSectionV2PropertiesDto properties;
 
     public ForecastSectionV2FeatureDto() {
     }
@@ -27,11 +27,11 @@ public class ForecastSectionV2FeatureDto {
         this.geometry = geometry;
     }
 
-    public ForecastSectionV2Properties getProperties() {
+    public ForecastSectionV2PropertiesDto getProperties() {
         return properties;
     }
 
-    public void setProperties(ForecastSectionV2Properties properties) {
+    public void setProperties(ForecastSectionV2PropertiesDto properties) {
         this.properties = properties;
     }
 }

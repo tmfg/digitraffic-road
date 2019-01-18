@@ -16,9 +16,9 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinate;
 
 @Component
-public class ForecastSection2FeatureConverter extends AbstractMetadataToFeatureConverter {
+public class ForecastSectionV1ToFeatureConverter extends AbstractMetadataToFeatureConverter {
 
-    protected ForecastSection2FeatureConverter(CoordinateConverter coordinateConverter) {
+    protected ForecastSectionV1ToFeatureConverter(CoordinateConverter coordinateConverter) {
         super(coordinateConverter);
     }
 

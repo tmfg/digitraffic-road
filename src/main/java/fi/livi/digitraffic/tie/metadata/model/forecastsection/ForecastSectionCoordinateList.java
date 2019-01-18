@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.model.forecastsection;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
@@ -49,6 +51,10 @@ public class ForecastSectionCoordinateList {
 
     public List<ForecastSectionCoordinate> getForecastSectionCoordinates() {
         return forecastSectionCoordinates;
+    }
+
+    public List<List<Double>> getListCoordinates() {
+        return forecastSectionCoordinates.stream().map(c -> Arrays.asList(c.getLongitude().doubleValue(), c.getLatitude().doubleValue())).collect(Collectors.toList());
     }
 
     public void removeCoordinates() {

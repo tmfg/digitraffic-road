@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2;
 
 import java.util.List;
 
-public class ForecastSectionV2Properties {
+public class ForecastSectionV2PropertiesDto {
 
     private String id;
 
@@ -18,7 +18,7 @@ public class ForecastSectionV2Properties {
 
     private List<Long> linkIdList;
 
-    public ForecastSectionV2Properties() {
+    public ForecastSectionV2PropertiesDto() {
     }
 
     public String getId() {

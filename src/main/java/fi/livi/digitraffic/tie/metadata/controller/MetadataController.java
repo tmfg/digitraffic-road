@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -55,7 +55,7 @@ public class MetadataController {
     static final String WEATHER_STATIONS_PATH = "/weather-stations";
     static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
 
-    private static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
+    public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
     static final String LOCATIONS_PATH = "/locations";
     private static final String LOCATION_VERSIONS_PATH = "/location-versions";
     private static final String LOCATION_TYPES_PATH = "/location-types";
@@ -65,7 +65,7 @@ public class MetadataController {
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
-    private final ForecastSectionService forecastSectionService;
+    private final ForecastSectionV1MetadataService forecastSectionService;
     private final LocationService locationService;
 
     @Autowired
@@ -73,7 +73,7 @@ public class MetadataController {
                               final TmsStationService tmsStationService,
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
-                              final ForecastSectionService forecastSectionService,
+                              final ForecastSectionV1MetadataService forecastSectionService,
                               final LocationService locationService) {
         this.cameraPresetService = cameraPresetService;
         this.tmsStationService = tmsStationService;
