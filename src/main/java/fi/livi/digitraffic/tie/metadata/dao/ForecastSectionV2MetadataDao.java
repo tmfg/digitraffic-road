@@ -1,13 +1,23 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
 
@@ -33,6 +43,15 @@ public class ForecastSectionV2MetadataDao {
     private static final String insertCoordinate =
         "INSERT INTO forecast_section_coordinate(forecast_section_id, list_order_number, order_number, longitude, latitude) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
+
+    private static final String selectAll =
+        "SELECT * \n" +
+        "FROM forecast_section_coordinate fsc \n" +
+        "       LEFT OUTER JOIN forecast_section_coordinate_list fscl \n" +
+        "         ON fsc.forecast_section_id = fscl.forecast_section_id AND fsc.list_order_number = fscl.order_number \n" +
+        "       LEFT OUTER JOIN forecast_section f ON f.id = fscl.forecast_section_id \n" +
+        "WHERE f.version = 2 \n" +
+        "ORDER BY natural_id, fscl.order_number, fsc.order_number, list_order_number";
 
     @Autowired
     public ForecastSectionV2MetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
@@ -91,6 +110,44 @@ public class ForecastSectionV2MetadataDao {
 
         jdbcTemplate.batchUpdate(insertCoordinateList, listSources);
         jdbcTemplate.batchUpdate(insertCoordinate, coordinateSources);
+    }
+
+    public List<ForecastSectionV2Feature> findForecastSectionV2Features() {
+        final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
+
+        final AtomicLong rowNumber = new AtomicLong(1);
+
+        jdbcTemplate.query(selectAll, rs -> {
+            final String naturalId = rs.getString("natural_id");
+
+            if (!featureMap.containsKey(naturalId) || rowNumber.get() == 1L) {
+                final ForecastSectionV2Feature feature = new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
+                                                                                      new MultiLineString(),
+                                                                                      new ForecastSectionV2Properties(naturalId, rs.getString("description")));
+
+                addCoordinate(rs, feature);
+
+                featureMap.put(naturalId, feature);
+            } else {
+                addCoordinate(rs, featureMap.get(naturalId));
+            }
+            rowNumber.getAndIncrement();
+        });
+
+        return featureMap.values().stream()
+            .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
+    }
+
+    private static void addCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
+        final int listOrderNumber = rs.getInt("list_order_number");
+
+        if (feature.getGeometry().coordinates.size() < listOrderNumber) {
+            feature.getGeometry().coordinates.add(new ArrayList<>());
+        }
+
+        final List<List<Double>> list = feature.getGeometry().coordinates.get(listOrderNumber - 1);
+
+        list.add(Arrays.asList(rs.getDouble("longitude"), rs.getDouble("latitude")));
     }
 
     private MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,

@@ -2,14 +2,13 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.ForecastSectionV2ToFeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
@@ -19,20 +18,19 @@ import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 @Service
 public class ForecastSectionV2MetadataService {
 
-    private final ForecastSectionRepository forecastSectionRepository;
-
     private final DataStatusService dataStatusService;
 
+    private final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
+
     @Autowired
-    public ForecastSectionV2MetadataService(final ForecastSectionRepository forecastSectionRepository,
-                                            final DataStatusService dataStatusService) {
-        this.forecastSectionRepository = forecastSectionRepository;
+    public ForecastSectionV2MetadataService(final DataStatusService dataStatusService,
+                                            final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao) {
         this.dataStatusService = dataStatusService;
+        this.forecastSectionV2MetadataDao = forecastSectionV2MetadataDao;
     }
 
     @Transactional(readOnly = true)
     public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo) {
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(2);
 
         final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA);
         final ZonedDateTime metadataChecked = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK);
@@ -43,7 +41,7 @@ public class ForecastSectionV2MetadataService {
             return featureCollection;
         }
 
-        final List<ForecastSectionV2Feature> features = forecastSections.stream().map(f -> forecastSectionV2Feature(f)).collect(Collectors.toList());
+        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features();
         featureCollection.addAll(features);
 
         return featureCollection;
