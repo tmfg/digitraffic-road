@@ -13,12 +13,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Table;
+
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 
@@ -118,7 +121,7 @@ public class TmsStationsSensorsUpdater {
 
         final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
 
-        log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
+        log.info("Fetching LamAnturiVakios for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
         final Map<Long, List<LamAnturiVakioVO>> anturiVakiosMappedByAsemaLotjuId =
             lotjuTmsStationMetadataService.getLamAnturiVakiosMappedByAsemaLotjuId(tmsLotjuIds);
@@ -141,10 +144,30 @@ public class TmsStationsSensorsUpdater {
         return updateStaticDataStatus;
     }
 
+    // TODO updateSensorConstantsOfTmsStations
     private boolean updateSensorConstantsOfTmsStations(final List<Pair<TmsStation, List<LamAnturiVakioVO>>> stationAnturiVakiosPairs) {
         for (final Pair<TmsStation, List<LamAnturiVakioVO>> pair : stationAnturiVakiosPairs) {
-            log.info("Tms tation {} sensorConstants: {}", pair.getKey().getLotjuId(), ToStringHelper.toStringFull(pair.getValue()));
+            log.info("Tms station {} sensorConstants: {}", pair.getKey().getLotjuId(), ToStringHelper.toStringFull(pair.getValue()));
         }
         return false;
+    }
+
+    /**
+     * Updates all available sensorConstants of tms road stations
+     */
+    public boolean updateTmsStationsSensorConstantsValues() {
+        log.info("Update TMS Stations SensorConstantValues start");
+
+        final Table<Integer, Integer, List<LamAnturiVakioArvoVO>> lamAnturiVakioArvosMappedByMonthAndDay =
+            lotjuTmsStationMetadataService.getLamAnturiVakioArvosMappedByMonthAndDay();
+
+        log.info("lamAnturiVakioArvosMappedByMonthAndDay.size() {}", lamAnturiVakioArvosMappedByMonthAndDay.size());
+
+        // TODO updateSensorConstantValuesOfTmsStations
+        // Update sensors of road stations
+//        final boolean updateStaticDataStatus = updateSensorConstantValuesOfTmsStations(lamAnturiVakioArvosMappedByMonthAndDay);
+
+        log.info("Update TMS Stations SensorConstantValues end");
+        return true; //TODO updateStaticDataStatus;
     }
 }
