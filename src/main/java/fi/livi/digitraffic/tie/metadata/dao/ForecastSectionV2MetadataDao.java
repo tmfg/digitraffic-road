@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +44,13 @@ public class ForecastSectionV2MetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String selectAll =
-        "SELECT * \n" +
+        "SELECT fsc.order_number as c_order_number, * \n" +
         "FROM forecast_section_coordinate fsc \n" +
         "       LEFT OUTER JOIN forecast_section_coordinate_list fscl \n" +
         "         ON fsc.forecast_section_id = fscl.forecast_section_id AND fsc.list_order_number = fscl.order_number \n" +
         "       LEFT OUTER JOIN forecast_section f ON f.id = fscl.forecast_section_id \n" +
         "WHERE f.version = 2 \n" +
-        "ORDER BY natural_id, fscl.order_number, fsc.order_number, list_order_number";
+        "ORDER BY f.natural_id";
 
     @Autowired
     public ForecastSectionV2MetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
@@ -115,39 +114,42 @@ public class ForecastSectionV2MetadataDao {
     public List<ForecastSectionV2Feature> findForecastSectionV2Features() {
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
-        final AtomicLong rowNumber = new AtomicLong(1);
-
         jdbcTemplate.query(selectAll, rs -> {
             final String naturalId = rs.getString("natural_id");
 
-            if (!featureMap.containsKey(naturalId) || rowNumber.get() == 1L) {
+            if (!featureMap.containsKey(naturalId)) {
                 final ForecastSectionV2Feature feature = new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
                                                                                       new MultiLineString(),
                                                                                       new ForecastSectionV2Properties(naturalId, rs.getString("description")));
 
-                addCoordinate(rs, feature);
+                setCoordinate(rs, feature);
 
                 featureMap.put(naturalId, feature);
             } else {
-                addCoordinate(rs, featureMap.get(naturalId));
+                setCoordinate(rs, featureMap.get(naturalId));
             }
-            rowNumber.getAndIncrement();
         });
 
         return featureMap.values().stream()
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
     }
 
-    private static void addCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
+    private static void setCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
         final int listOrderNumber = rs.getInt("list_order_number");
 
-        if (feature.getGeometry().coordinates.size() < listOrderNumber) {
+        while (feature.getGeometry().coordinates.size() < listOrderNumber) {
             feature.getGeometry().coordinates.add(new ArrayList<>());
         }
 
         final List<List<Double>> list = feature.getGeometry().coordinates.get(listOrderNumber - 1);
 
-        list.add(Arrays.asList(rs.getDouble("longitude"), rs.getDouble("latitude")));
+        final int coordinateOrderNumber = rs.getInt("c_order_number");
+
+        while (list.size() < coordinateOrderNumber) {
+            list.add(new ArrayList<>());
+        }
+
+        list.set(coordinateOrderNumber - 1, Arrays.asList(rs.getDouble("longitude"), rs.getDouble("latitude")));
     }
 
     private MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,
