@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 

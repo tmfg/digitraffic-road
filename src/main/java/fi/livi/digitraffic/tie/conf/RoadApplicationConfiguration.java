@@ -30,7 +30,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"})
+@EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"},
+    enableDefaultTransactions = false)
 @EnableTransactionManagement
 @EnableRetry
 public class RoadApplicationConfiguration implements WebMvcConfigurer {
@@ -127,7 +128,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
     // fix bug in spring boot, tries to export hikari beans twice
     public MBeanExporter exporter() {
         final MBeanExporter exporter = new MBeanExporter();
-        
+
         exporter.setAutodetect(true);
         exporter.setExcludedBeans("datasource");
 

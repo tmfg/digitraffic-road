@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -12,16 +14,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.ely.lotju.kamera.meta.service.ws.v6.KameraPerustiedotEndpointImplService;
+import fi.ely.lotju.kamera.meta.service.ws.v7.KameraPerustiedotEndpointImplService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraKokoonpanoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraPerustiedotException;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.VideopalvelinVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraKokoonpanoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotEndpoint;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotException;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.ObjectFactory;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements KameraPerustiedotEndpoint {
 
@@ -163,6 +166,11 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     @Override
     public KameraKokoonpanoVO haeKokoonpanoKameranTunnuksella(final Long id) throws KameraPerustiedotException {
         throw new NotImplementedException("haeKokoonpanoKameranTunnuksella");
+    }
+
+    @Override
+    public KameraVO muutaKameranJulkisuus(Long id, JulkisuusTaso julkisuusTaso, XMLGregorianCalendar alkaen) throws KameraPerustiedotException {
+        throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override

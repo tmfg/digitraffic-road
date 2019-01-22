@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/03/12">
+<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/06/15">
     <ns2:kamerat>
         <id>443</id>
         <nimi>vt27_Iisalmi_Runni</nimi>
@@ -17,7 +17,7 @@
         </tieosoite>
         <alkamisPaiva>2001-12-01T00:00:00+02:00</alkamisPaiva>
         <asemanTila>OK</asemanTila>
-        <julkinen>true</julkinen>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
         <keruuVali>720</keruuVali>
         <keruunTila>KERUUSSA</keruunTila>
         <kunta>Iisalmi</kunta>
@@ -53,7 +53,7 @@
         </tieosoite>
         <alkamisPaiva>2013-10-15T00:00:00+03:00</alkamisPaiva>
         <asemanTila>KORJAUSPYYNTO_LAHETETTY</asemanTila>
-        <julkinen>true</julkinen>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
         <keruuVali>720</keruuVali>
         <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
         <kunta>Loviisa</kunta>
@@ -89,9 +89,9 @@
         <alkamisPaiva>2001-11-07T00:00:00+02:00</alkamisPaiva>
         <asemanSijainti>Vanha Porvoo LKA016001</asemanSijainti>
         <hankeId>LKA016001</hankeId>
-        <julkinen>true</julkinen>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
         <keruuVali>720</keruuVali>
-        <keruunTila>POISTETTU_PYSYVASTI</keruunTila>
+        <keruunTila>KERUUSSA</keruunTila>
         <kunta>Porvoo</kunta>
         <kuntaKoodi>638</kuntaKoodi>
         <liviId>Livi1089373</liviId>
@@ -121,7 +121,7 @@
         </tieosoite>
         <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
         <hankeId>LKA01V701</hankeId>
-        <julkinen>true</julkinen>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
         <keruuVali>720</keruuVali>
         <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
         <kunta>Helsinki</kunta>
