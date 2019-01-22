@@ -1,17 +1,17 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.KORJAUS_KESKEYTETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKAEPAILY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKA_VAHVISTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUS_KESKEYTETTY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKAEPAILY;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKA_VAHVISTETTU;
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi;
 
 public enum RoadStationState {
 
@@ -36,7 +36,7 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState fromTilaTyyppi(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }

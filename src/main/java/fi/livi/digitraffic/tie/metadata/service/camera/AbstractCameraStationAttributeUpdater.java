@@ -11,8 +11,9 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.Julkisuus;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
@@ -31,7 +32,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
+        to.setPublic(from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.CAMERA_STATION);
         to.setName(from.getNimi());

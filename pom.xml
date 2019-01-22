@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.1.RELEASE</version>
+        <version>2.1.2.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -27,7 +27,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-        <jackson.dataformat.version>2.9.7</jackson.dataformat.version>
+        <jackson.dataformat.version>2.9.8</jackson.dataformat.version>
     </properties>
 
     <repositories>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.2.2.RELEASE</version>
+            <version>1.2.3.RELEASE</version>
         </dependency>
 
         <!-- google protobuf -->
@@ -260,7 +260,7 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path-assert</artifactId>
-            <version>2.2.0</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -412,7 +412,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v6/KameraPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/wsdl/v7/KameraPerustiedot.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>
