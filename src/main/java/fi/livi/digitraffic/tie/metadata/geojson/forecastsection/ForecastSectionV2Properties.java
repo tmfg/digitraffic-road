@@ -21,13 +21,25 @@ public class ForecastSectionV2Properties {
     @ApiModelProperty(value = "Forecast section description")
     private String description;
 
+    @ApiModelProperty(value = "Forecast section road number")
+    private int roadNumber;
+
+    @ApiModelProperty(value = "Road section number")
+    private int roadSectionNumber;
+
+    @ApiModelProperty(value = "Forecast section length")
+    private Integer length;
+
     public ForecastSectionV2Properties() {
     }
 
-    // TODO: add properties
-    public ForecastSectionV2Properties(String naturalId, String description) {
+    public ForecastSectionV2Properties(final String naturalId, final String description, final int roadNumber, final int roadSectionNumber,
+                                       final Integer length) {
         this.naturalId = naturalId;
         this.description = description;
+        this.roadNumber = roadNumber;
+        this.roadSectionNumber = roadSectionNumber;
+        this.length = length;
     }
 
     public String getNaturalId() {
@@ -36,5 +48,17 @@ public class ForecastSectionV2Properties {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getRoadNumber() {
+        return roadNumber;
+    }
+
+    public int getRoadSectionNumber() {
+        return roadSectionNumber;
+    }
+
+    public Integer getLength() {
+        return length;
     }
 }

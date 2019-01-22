@@ -19,7 +19,8 @@ public class ForecastSectionV2ToFeatureConverter {
     }
 
     private static ForecastSectionV2Properties getProperties(final ForecastSection forecastSection) {
-        return new ForecastSectionV2Properties(forecastSection.getNaturalId(), forecastSection.getDescription());
+        return new ForecastSectionV2Properties(forecastSection.getNaturalId(), forecastSection.getDescription(),
+                                               forecastSection.getRoadNumber(), forecastSection.getRoadSectionNumber(), forecastSection.getLength());
     }
 
     private static MultiLineString getGeometry(final List<ForecastSectionCoordinateList> forecastSectionCoordinateLists) {

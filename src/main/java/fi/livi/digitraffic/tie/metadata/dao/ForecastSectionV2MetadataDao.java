@@ -120,7 +120,11 @@ public class ForecastSectionV2MetadataDao {
             if (!featureMap.containsKey(naturalId)) {
                 final ForecastSectionV2Feature feature = new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
                                                                                       new MultiLineString(),
-                                                                                      new ForecastSectionV2Properties(naturalId, rs.getString("description")));
+                                                                                      new ForecastSectionV2Properties(naturalId,
+                                                                                                                      rs.getString("description"),
+                                                                                                                      Integer.parseInt(rs.getString("road_number")),
+                                                                                                                      Integer.parseInt(rs.getString("road_section_number")),
+                                                                                                                      rs.getInt("length")));
 
                 setCoordinate(rs, feature);
 
