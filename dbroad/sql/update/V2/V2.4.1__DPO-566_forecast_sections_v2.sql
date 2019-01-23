@@ -3,8 +3,6 @@ CREATE TABLE IF NOT EXISTS forecast_section_coordinate_list (
   order_number                        INTEGER
 );
 
-CREATE SEQUENCE IF NOT EXISTS seq_forecast_section_coordinate INCREMENT BY 1;
-
 CREATE TABLE IF NOT EXISTS forecast_section_coordinate (
   forecast_section_id   NUMERIC(10),
   list_order_number     INTEGER,
