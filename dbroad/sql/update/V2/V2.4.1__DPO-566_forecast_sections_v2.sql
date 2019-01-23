@@ -57,3 +57,32 @@ create unique index if not exists forecast_section_ui
     ELSE id
     END))
 ;
+
+CREATE TABLE IF NOT EXISTS road_segment (
+  forecast_section_id NUMERIC(10),
+  order_number        INTEGER,
+  start_distance      INTEGER,
+  end_distance        INTEGER
+);
+
+ALTER TABLE road_segment ADD CONSTRAINT road_segment_pk PRIMARY KEY (forecast_section_id, order_number);
+
+ALTER TABLE road_segment
+  ADD CONSTRAINT road_segment_foresec_fk FOREIGN KEY (forecast_section_id)
+REFERENCES forecast_section (id)
+ON DELETE CASCADE;
+
+CREATE TABLE IF NOT EXISTS link_id (
+  forecast_section_id NUMERIC(10),
+  order_number        INTEGER,
+  link_id             BIGINT
+);
+
+ALTER TABLE link_id ADD CONSTRAINT link_id_pk PRIMARY KEY (forecast_section_id, order_number);
+
+ALTER TABLE link_id
+  ADD CONSTRAINT link_id_foresec_fk FOREIGN KEY (forecast_section_id)
+REFERENCES forecast_section (id)
+ON DELETE CASCADE;
+
+DROP TABLE forecast_section_coordinates;
