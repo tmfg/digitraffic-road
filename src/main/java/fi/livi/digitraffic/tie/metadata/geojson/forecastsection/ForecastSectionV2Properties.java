@@ -9,12 +9,13 @@ import io.swagger.annotations.ApiModelProperty;
 public class ForecastSectionV2Properties {
 
     @ApiModelProperty(value =
-                          "Forecast section identifier 26 characters ie. 00004_342_01435_0_274.569: \n" +
+                          "Forecast section identifier ie. 00004_342_01435_0_274.569: \n" +
                           "1. Road number 5 characters ie. 00004, \n" +
                           "2. Road section 3 characters ie. 342, \n" +
-                          "3. Smallest start distance 5 characters ie. 000, \n" +
-                          "4. Smallest carriageway 1 character, \n" +
-                          "5. Smallest ALKU_PAALU ie. 274.569")
+                          "3. Start distance 5 characters ie. 000, \n" +
+                          "4. Carriageway 1 character, \n" +
+                          "5. Measure value of link start point. Varying number of characters ie. 274.569, \n" +
+                          "Refers to Digiroad content at https://aineistot.liikennevirasto.fi/digiroad/")
     @JsonProperty("id")
     private String naturalId;
 
