@@ -28,7 +28,7 @@ public class ForecastSectionV2Properties {
     @ApiModelProperty(value = "Road section number")
     private int roadSectionNumber;
 
-    @ApiModelProperty(value = "Forecast section length")
+    @ApiModelProperty(value = "Forecast section length in meters")
     private Integer length;
 
     public ForecastSectionV2Properties() {
