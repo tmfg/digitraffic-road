@@ -23,12 +23,11 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     List<ForecastSection> findDistinctByVersionIsOrderByNaturalIdAsc(final int version);
 
     @Modifying
-    @Query(value = "UPDATE forecast_section SET obsolete_date = now() " +
-                   "WHERE version = :version AND obsolete_date IS NULL AND natural_id NOT IN (:naturalIds)", nativeQuery = true)
-    void obsoleteNotIn(@Param("naturalIds") final List<String> naturalIds, @Param("version") final int version);
-
-    @Modifying
     @Query(value = "DELETE FROM forecast_section_coordinate_list WHERE forecast_section_id IN (SELECT id FROM forecast_section WHERE version = :version)",
            nativeQuery = true)
     void deleteAllCoordinates(@Param("version") final int version);
+
+    @Modifying
+    @Query(value = "UPDATE forecast_section SET obsolete_date = now() WHERE version = :version AND obsolete_date IS NULL", nativeQuery = true)
+    void obsoleteAll(@Param("version") final int version);
 }

@@ -86,3 +86,17 @@ REFERENCES forecast_section (id)
 ON DELETE CASCADE;
 
 DROP TABLE forecast_section_coordinates;
+
+CREATE INDEX forecast_section_version ON forecast_section (id, natural_id, version);
+
+ALTER TABLE forecast_section_weather DROP CONSTRAINT foresec_weather_foresec_fk;
+ALTER TABLE forecast_section_weather
+  ADD CONSTRAINT foresec_weather_foresec_fk FOREIGN KEY (forecast_section_id)
+REFERENCES forecast_section (id)
+ON DELETE CASCADE;
+
+ALTER TABLE forecast_condition_reason DROP CONSTRAINT weather_reason_weather_fk;
+ALTER TABLE forecast_condition_reason
+  ADD CONSTRAINT weather_reason_weather_fk FOREIGN KEY (forecast_section_id, forecast_name)
+REFERENCES forecast_section_weather (forecast_section_id, forecast_name)
+ON DELETE CASCADE;

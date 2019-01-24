@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +40,7 @@ public class ForecastSectionV2MetadataUpdater {
     public void updateForecastSectionsV2Metadata() {
         final ForecastSectionV2Dto metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
-        final List<String> naturalIds = metadata.getFeatures().stream().map(f -> f.getProperties().getId()).collect(Collectors.toList());
-
-        forecastSectionRepository.obsoleteNotIn(naturalIds, 2);
+        forecastSectionRepository.obsoleteAll( 2);
 
         forecastSectionV2MetadataDao.upsertForecastSections(metadata.getFeatures());
 
