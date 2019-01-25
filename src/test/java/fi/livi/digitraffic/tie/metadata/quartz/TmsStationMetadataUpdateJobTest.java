@@ -58,8 +58,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         tmsStationSensorUpdater.updateRoadStationSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
-        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
-        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
+//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
+//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
 
         final TmsStationFeatureCollection allInitial =
                 tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
@@ -74,8 +74,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractTest {
         tmsStationSensorUpdater.updateRoadStationSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
-        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
-        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
+//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
+//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
 
         final TmsStationFeatureCollection allAfterChange =
                 tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);

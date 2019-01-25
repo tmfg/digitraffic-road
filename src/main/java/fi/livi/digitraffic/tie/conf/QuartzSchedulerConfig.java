@@ -17,6 +17,7 @@ import org.quartz.spi.JobFactory;
 import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
@@ -40,6 +42,7 @@ import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadat
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.TmsStationSensorConstantsMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpdateJob;
@@ -98,6 +101,7 @@ public class QuartzSchedulerConfig {
             triggers.forEach(triggerBean -> log.info("Schedule trigger={}", triggerBean.getJobKey()));
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
+
         return factory;
     }
 
@@ -132,6 +136,11 @@ public class QuartzSchedulerConfig {
     @Bean
     public JobDetailFactoryBean tmsStationsStatusMetadataUpdateJobDetail() {
         return createJobDetail(TmsStationsStatusMetadataUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean tmsStationSensorConstantsUpdateJobDetail() {
+        return createJobDetail(TmsStationSensorConstantsMetadataUpdateJob.class);
     }
 
     @Bean
@@ -177,6 +186,13 @@ public class QuartzSchedulerConfig {
     public SimpleTriggerFactoryBean tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail,
                                                                        @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
         return createRepeatingTrigger(tmsStationMetadataUpdateJobDetail, frequency);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> tmsStationSensorConstantsUpdateJobTrigger(final JobDetail tmsStationSensorConstantsUpdateJobDetail,
+                                                                                    @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
+        return createRepeatingTrigger(tmsStationSensorConstantsUpdateJobDetail, 1000000);
+//        return createCronTrigger(tmsStationMetadataUpdateJobDetail, "");
     }
 
     @Bean
@@ -265,6 +281,35 @@ public class QuartzSchedulerConfig {
         factoryBean.setJobDetail(jobDetail);
         factoryBean.setRepeatInterval(repeatIntervalMs);
         factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
+        // In case of misfire: The first misfired execution is run immediately, remaining are discarded.
+        // Next execution happens after desired interval. Effectively the first execution time is moved to current time.
+        factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
+
+        if (!jobEnabled) {
+            factoryBean.setStartTime(QUARTZ_MAX_DATE);
+        } else {
+            // Delay first execution 5 seconds
+            factoryBean.setStartDelay(5000L);
+        }
+        log.info("Created Trigger for jobName={} enabled={}", jobName, jobEnabled);
+        return factoryBean;
+    }
+
+    /**
+     * @param jobDetail
+     * @param cronExpression Cron expression for trigger schedule.
+     * @return
+     */
+    private CronTriggerFactoryBean createCronTrigger(final JobDetail jobDetail, final String cronExpression) {
+
+        final String jobName = jobDetail.getJobClass().getSimpleName();
+        final String jobEnabledProperty = environment.getProperty("quartz." + jobName + ".enabled");
+
+        final boolean jobEnabled = jobEnabledProperty == null || !"false".equalsIgnoreCase(jobEnabledProperty);
+
+        final CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
+        factoryBean.setJobDetail(jobDetail);
+        factoryBean.setCronExpression(cronExpression);
         // In case of misfire: The first misfired execution is run immediately, remaining are discarded.
         // Next execution happens after desired interval. Effectively the first execution time is moved to current time.
         factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);

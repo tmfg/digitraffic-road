@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.time.LocalDate;
-import java.time.MonthDay;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,10 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.print.MultiDocPrintJob;
-
-import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
@@ -86,23 +87,23 @@ public class LotjuTmsStationMetadataService {
         return lamAnturisMappedByTmsLotjuId;
     }
 
-    public Map<Long, List<LamAnturiVakioVO>> getLamAnturiVakiosMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
-        final ConcurrentMap<Long, List<LamAnturiVakioVO>> lamAnturiVakiosMappedByTmsLotjuId = new ConcurrentHashMap<>();
+    public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Set<Long> tmsLotjuIds) {
 
-        final ExecutorService executor = Executors.newFixedThreadPool(1);
+        final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<LamAnturiVakioVO>();
+        final List<LamAnturiVakioVO> synchronizedAnturiVakios = Collections.synchronizedList(allAnturiVakios);
+
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
         final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(new AnturiVakioFetcher(tmsLotjuId, lamAnturiVakiosMappedByTmsLotjuId));
+            completionService.submit(new AnturiVakioFetcher(tmsLotjuId, synchronizedAnturiVakios));
         }
 
-        final AtomicInteger countAnturiVakios = new AtomicInteger();
-        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
+        // It's necessary to wait all executors to complete.
         tmsLotjuIds.forEach(id -> {
             try {
                 final Future<Integer> f = completionService.take();
-                countAnturiVakios.addAndGet(f.get());
                 log.debug("Got {} AnturiVakios", f.get());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamAnturiVakios", e);
@@ -113,16 +114,15 @@ public class LotjuTmsStationMetadataService {
         executor.shutdown();
 
         log.info("lamFetchedCount={} LamAnturiVakios for lamStationCount={} LAMAsemas, tookMs={}",
-                 countAnturiVakios.get(), lamAnturiVakiosMappedByTmsLotjuId.size(), start.getTime());
-        return lamAnturiVakiosMappedByTmsLotjuId;
+                 allAnturiVakios.size(), tmsLotjuIds.size(), start.getTime());
+        return allAnturiVakios;
     }
 
-    public Table<Integer, Integer, List<LamAnturiVakioArvoVO>> getLamAnturiVakioArvosMappedByMonthAndDay() {
+    public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
 
-        // Month, date, data
-        Table<Integer, Integer, List<LamAnturiVakioArvoVO>> monthDateValue = HashBasedTable.create();
+        final List<LamAnturiVakioArvoVO> lamAnturiVakios = Collections.synchronizedList(new ArrayList<>());
 
-        final ExecutorService executor = Executors.newFixedThreadPool(1);
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
         final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
 
         LocalDate date = LocalDate.ofYearDay(LocalDate.now().getYear(),1);
@@ -130,15 +130,14 @@ public class LotjuTmsStationMetadataService {
         final StopWatch start = StopWatch.createStarted();
         int dayCounter = 0;
         while (startYear == date.getYear()) {
-            completionService.submit(new AnturiVakioArvoFetcher(date.getMonthValue(), date.getDayOfMonth(), monthDateValue));
+            completionService.submit(new AnturiVakioArvoFetcher(date.getMonthValue(), date.getDayOfMonth(), lamAnturiVakios));
             dayCounter++;
             date = date.plusDays(1);
         }
         log.info("Fetch LamAnturiVakioArvos for {} days", dayCounter);
 
-
         final AtomicInteger countLamAnturiVakioArvos = new AtomicInteger();
-        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
+        // It's necessary to wait all executors to complete.
         for (int i = 0; i < dayCounter; i++) {
             try {
                 final Future<Integer> f = completionService.take();
@@ -152,9 +151,18 @@ public class LotjuTmsStationMetadataService {
         }
         executor.shutdown();
 
-        log.info("lamFetchedCount={} LamAnturiVakios for dateCount={} days, tookMs={}",
-                 countLamAnturiVakioArvos.get(), dayCounter, start.getTime());
-        return monthDateValue;
+        final StopWatch distinctTime = StopWatch.createStarted();
+        List<LamAnturiVakioArvoVO> distincLamAnturiVakios = lamAnturiVakios.parallelStream()
+            .map(LamAnturiVakioArvoWrapper::new)
+            .distinct()
+            .map(LamAnturiVakioArvoWrapper::unWrap)
+            .collect(Collectors.toList());
+        distinctTime.stop();
+
+        log.info("LamAnturiVakios from {} to distinct {}", lamAnturiVakios.size(), distincLamAnturiVakios.size());
+        log.info("lamFetchedCount={} LamAnturiVakios, for dateCount={} days, tookMs={}, distinctCount {}",
+                 countLamAnturiVakioArvos.get(), dayCounter, start.getTime(), distincLamAnturiVakios.size());
+        return distincLamAnturiVakios;
     }
 
     private class LaskennallinenanturiFetcher implements Callable<Integer> {
@@ -178,17 +186,20 @@ public class LotjuTmsStationMetadataService {
     private class AnturiVakioFetcher implements Callable<Integer> {
 
         private final Long tmsLotjuId;
-        private final ConcurrentMap<Long, List<LamAnturiVakioVO>> currentLamAnturiVakiosMappedByTmsLotjuId;
+        private final List<LamAnturiVakioVO> synchronizedAnturiVakios;
 
-        public AnturiVakioFetcher(final Long tmsLotjuId, final ConcurrentMap<Long, List<LamAnturiVakioVO>> currentLamAnturiVakiosMappedByTmsLotjuId) {
+        public AnturiVakioFetcher(final Long tmsLotjuId, final List<LamAnturiVakioVO> synchronizedAnturiVakios) {
             this.tmsLotjuId = tmsLotjuId;
-            this.currentLamAnturiVakiosMappedByTmsLotjuId = currentLamAnturiVakiosMappedByTmsLotjuId;
+            this.synchronizedAnturiVakios = synchronizedAnturiVakios;
         }
 
         @Override
         public Integer call() throws Exception {
             final List<LamAnturiVakioVO> anturis = lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
-            currentLamAnturiVakiosMappedByTmsLotjuId.put(tmsLotjuId, anturis);
+            for (LamAnturiVakioVO lamAnturiVakioVO : anturis) {
+                log.debug("Anturi {}", ToStringHelper.toStringFull(lamAnturiVakioVO));
+            }
+            synchronizedAnturiVakios.addAll(anturis);
             return anturis.size();
         }
     }
@@ -197,20 +208,62 @@ public class LotjuTmsStationMetadataService {
 
         private final int month;
         private final int dayOfMonth;
-        private final Table<Integer, Integer, List<LamAnturiVakioArvoVO>> monthDateValue;
+        private final List<LamAnturiVakioArvoVO> anturiVakioArvos;
 
-
-        public AnturiVakioArvoFetcher(final int month, final int dayOfMonth, final Table<Integer, Integer, List<LamAnturiVakioArvoVO>> monthDateValue) {
+        public AnturiVakioArvoFetcher(final int month, final int dayOfMonth, final List<LamAnturiVakioArvoVO> anturiVakioArvos) {
             this.month = month;
             this.dayOfMonth = dayOfMonth;
-            this.monthDateValue = monthDateValue;
+            this.anturiVakioArvos = anturiVakioArvos;
         }
 
         @Override
         public Integer call() throws Exception {
-            final List<LamAnturiVakioArvoVO> anturiVakioArvos = lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, dayOfMonth);
-            monthDateValue.put(month, dayOfMonth, anturiVakioArvos);
-            return anturiVakioArvos.size();
+            final List<LamAnturiVakioArvoVO> arvos = lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, dayOfMonth);
+            anturiVakioArvos.addAll(arvos);
+            return arvos.size();
+        }
+    }
+
+    private class LamAnturiVakioArvoWrapper {
+
+        private final LamAnturiVakioArvoVO vakio;
+
+        public LamAnturiVakioArvoWrapper(LamAnturiVakioArvoVO vakio) {
+            this.vakio = vakio;
+        }
+
+        public LamAnturiVakioArvoVO unWrap() {
+            return vakio;
+        }
+
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            LamAnturiVakioArvoVO other = ((LamAnturiVakioArvoWrapper)o).unWrap();
+
+            boolean equals = new EqualsBuilder()
+                .append(other.getAnturiVakioId(), vakio.getAnturiVakioId())
+                .append(other.getVoimassaAlku(), vakio.getVoimassaAlku())
+                .append(other.getVoimassaLoppu(), vakio.getVoimassaLoppu())
+                .isEquals();
+            if (equals && !new EqualsBuilder().append(other.getArvo(), vakio.getArvo()).isEquals()) {
+                log.error("Lotju returns unequal values for same AnturiVakioArvo {} vs {}", ToStringHelper.toStringFull(vakio), ToStringHelper.toStringFull(other));
+            }
+            return equals;
+        }
+
+        public int hashCode() {
+            return new HashCodeBuilder()
+                .append(vakio.getAnturiVakioId())
+                .append(vakio.getArvo())
+                .append(vakio.getVoimassaAlku())
+                .append(unWrap().getVoimassaLoppu())
+                .toHashCode();
         }
     }
 }

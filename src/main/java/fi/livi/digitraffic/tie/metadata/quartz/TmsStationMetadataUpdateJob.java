@@ -41,14 +41,6 @@ public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
         final boolean updatedTmsStationsSensors = tmsStationsSensorsUpdater.updateTmsStationsSensors();
         stationsSensorsWatch.stop();
 
-        final StopWatch stationsSensorConstantsWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationSensorConstants = tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
-        stationsSensorConstantsWatch.stop();
-
-        final StopWatch stationsSensorConstantValuesWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationSensorConstantValues = tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
-        stationsSensorConstantValuesWatch.stop();
-
         if (stationsUpdated || updatedTmsStationsSensors) {
             dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
         }

@@ -17,6 +17,7 @@ import com.google.common.collect.Table;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstant;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
@@ -106,68 +107,5 @@ public class TmsStationsSensorsUpdater {
         log.info("Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
-    }
-
-    /**
-     * Updates all available sensorConstants of tms road stations
-     */
-    public boolean updateTmsStationsSensorConstants() {
-        log.info("Update TMS Stations SensorConstants start");
-
-        // Update sensors of road stations
-        // Get current TmsStations
-        final Map<Long, TmsStation> currentTmsStationMappedByByLotjuId =
-            tmsStationService.findAllTmsStationsMappedByByLotjuId();
-
-        final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
-
-        log.info("Fetching LamAnturiVakios for tmsCount={} LamAsemas", tmsLotjuIds.size());
-
-        final Map<Long, List<LamAnturiVakioVO>> anturiVakiosMappedByAsemaLotjuId =
-            lotjuTmsStationMetadataService.getLamAnturiVakiosMappedByAsemaLotjuId(tmsLotjuIds);
-
-        final List<Pair<TmsStation,  List<LamAnturiVakioVO>>> stationAnturiVakiosPairs = new ArrayList<>();
-        currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {
-            final List<LamAnturiVakioVO> anturiVakios = anturiVakiosMappedByAsemaLotjuId.remove(tmsStation.getLotjuId());
-            if (anturiVakios != null) {
-                stationAnturiVakiosPairs.add(Pair.of(tmsStation, anturiVakios));
-            } else {
-                log.info("No AnturiVakios for {}", tmsStation);
-                stationAnturiVakiosPairs.add(Pair.of(tmsStation, Collections.emptyList()));
-            }
-        });
-
-        // Update sensors of road stations
-        final boolean updateStaticDataStatus = updateSensorConstantsOfTmsStations(stationAnturiVakiosPairs);
-
-        log.info("Update TMS Stations SensorConstants end");
-        return updateStaticDataStatus;
-    }
-
-    // TODO updateSensorConstantsOfTmsStations
-    private boolean updateSensorConstantsOfTmsStations(final List<Pair<TmsStation, List<LamAnturiVakioVO>>> stationAnturiVakiosPairs) {
-        for (final Pair<TmsStation, List<LamAnturiVakioVO>> pair : stationAnturiVakiosPairs) {
-            log.info("Tms station {} sensorConstants: {}", pair.getKey().getLotjuId(), ToStringHelper.toStringFull(pair.getValue()));
-        }
-        return false;
-    }
-
-    /**
-     * Updates all available sensorConstants of tms road stations
-     */
-    public boolean updateTmsStationsSensorConstantsValues() {
-        log.info("Update TMS Stations SensorConstantValues start");
-
-        final Table<Integer, Integer, List<LamAnturiVakioArvoVO>> lamAnturiVakioArvosMappedByMonthAndDay =
-            lotjuTmsStationMetadataService.getLamAnturiVakioArvosMappedByMonthAndDay();
-
-        log.info("lamAnturiVakioArvosMappedByMonthAndDay.size() {}", lamAnturiVakioArvosMappedByMonthAndDay.size());
-
-        // TODO updateSensorConstantValuesOfTmsStations
-        // Update sensors of road stations
-//        final boolean updateStaticDataStatus = updateSensorConstantValuesOfTmsStations(lamAnturiVakioArvosMappedByMonthAndDay);
-
-        log.info("Update TMS Stations SensorConstantValues end");
-        return true; //TODO updateStaticDataStatus;
     }
 }
