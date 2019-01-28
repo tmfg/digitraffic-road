@@ -45,8 +45,10 @@ public class ForecastSectionV2MetadataUpdater {
         forecastSectionV2MetadataDao.upsertForecastSections(metadata.getFeatures());
 
         forecastSectionRepository.deleteAllCoordinates(2);
-
         forecastSectionV2MetadataDao.insertCoordinates(metadata.getFeatures());
+
+        forecastSectionRepository.deleteRoadSegments(2);
+        forecastSectionV2MetadataDao.insertRoadSegments(metadata.getFeatures());
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime());

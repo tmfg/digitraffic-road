@@ -30,4 +30,9 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @Modifying
     @Query(value = "UPDATE forecast_section SET obsolete_date = now() WHERE version = :version AND obsolete_date IS NULL", nativeQuery = true)
     void obsoleteAll(@Param("version") final int version);
+
+    @Modifying
+    @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
+           nativeQuery = true)
+    void deleteRoadSegments(@Param("version") final int version);
 }

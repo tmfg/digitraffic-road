@@ -119,6 +119,10 @@ public class ForecastSection {
     @OrderBy("time")
     private List<ForecastSectionWeather> forecastSectionWeatherList;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roadSegmentPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy("roadSegmentPK.orderNumber")
+    private List<RoadSegment> roadSegments;
+
     public ForecastSection() {
     }
 
@@ -254,6 +258,10 @@ public class ForecastSection {
         return forecastSectionCoordinateLists;
     }
 
+    public List<RoadSegment> getRoadSegments() {
+        return roadSegments;
+    }
+
     public void removeCoordinateLists() {
         forecastSectionCoordinateLists.forEach(l -> l.removeCoordinates());
         forecastSectionCoordinateLists.clear();
@@ -264,7 +272,7 @@ public class ForecastSection {
 
         final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
 
-        // FIXME: V2
+        // FIXME: Move to V1MetadataUpdater
         long orderNumber = 1;
         for (final Coordinate coordinate : coordinates) {
             if (!coordinate.isValid()) {
@@ -278,6 +286,7 @@ public class ForecastSection {
         forecastSectionCoordinateLists.add(new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(id, 1L), coordinateList));
     }
 
+    // FIXME: Move to V1MetadataUpdater
     public boolean corresponds(ForecastSectionCoordinatesDto value) {
         if (value.getName().equals(description) && coordinatesCorrespond(value.getCoordinates())) {
             return true;
@@ -287,7 +296,7 @@ public class ForecastSection {
 
     private boolean coordinatesCorrespond(List<Coordinate> coordinates) {
 
-        // FIXME: V2
+        // FIXME: Move to V1MetadataUpdater
         List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
         if (!forecastSectionCoordinateLists.isEmpty()) {
             coordinateList = forecastSectionCoordinateLists.get(0).getForecastSectionCoordinates();

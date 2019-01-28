@@ -78,6 +78,9 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         assertCoordinates(61.6419140, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLatitude().doubleValue());
         assertCoordinates(27.0793790, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(1).getLongitude().doubleValue());
         assertCoordinates(61.6420209, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(1).getLatitude().doubleValue());
+        assertEquals(1, forecastSection.getRoadSegments().size());
+        assertEquals(2100, forecastSection.getRoadSegments().get(0).getStartDistance().intValue());
+        assertEquals(2148, forecastSection.getRoadSegments().get(0).getEndDistance().intValue());
 
         assertEquals(2, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().size());
         assertCoordinates(27.0793790, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().get(0).getLongitude().doubleValue());

@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.RoadSegmentDto;
 
 @Repository
 public class ForecastSectionV2MetadataDao {
@@ -51,6 +52,10 @@ public class ForecastSectionV2MetadataDao {
         "       LEFT OUTER JOIN forecast_section f ON f.id = fscl.forecast_section_id \n" +
         "WHERE f.version = 2 \n" +
         "ORDER BY f.natural_id";
+
+    private static final String insertRoadSegment =
+        "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance) " +
+        "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance)";
 
     @Autowired
     public ForecastSectionV2MetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
@@ -171,6 +176,31 @@ public class ForecastSectionV2MetadataDao {
         final HashMap<String, Object> args = new HashMap<>();
         args.put("naturalId", naturalId);
         args.put("orderNumber", orderNumber);
+        return new MapSqlParameterSource(args);
+    }
+
+    public void insertRoadSegments(final List<ForecastSectionV2FeatureDto> features) {
+        final MapSqlParameterSource[] segmentSources = new MapSqlParameterSource[features.stream().mapToInt(f -> f.getProperties().getRoadSegmentList().size()).sum()];
+
+        int i = 0;
+        for (final ForecastSectionV2FeatureDto feature : features) {
+            int orderNumber = 1;
+            for (final RoadSegmentDto roadSegmentDto : feature.getProperties().getRoadSegmentList()) {
+                segmentSources[i] = roadSegmentParameterSource(feature, roadSegmentDto, orderNumber);
+                i++;
+                orderNumber++;
+            }
+        }
+
+        jdbcTemplate.batchUpdate(insertRoadSegment, segmentSources);
+    }
+
+    private MapSqlParameterSource roadSegmentParameterSource(final ForecastSectionV2FeatureDto feature, final RoadSegmentDto roadSegmentDto, final int orderNumber) {
+        final HashMap<String, Object> args = new HashMap<>();
+        args.put("naturalId", feature.getProperties().getId());
+        args.put("orderNumber", orderNumber);
+        args.put("startDistance", roadSegmentDto.getStartDistance());
+        args.put("endDistance", roadSegmentDto.getEndDistance());
         return new MapSqlParameterSource(args);
     }
 }
