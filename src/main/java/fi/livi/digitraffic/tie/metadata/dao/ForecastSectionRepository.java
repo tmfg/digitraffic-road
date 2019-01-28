@@ -35,4 +35,9 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
            nativeQuery = true)
     void deleteRoadSegments(@Param("version") final int version);
+
+    @Modifying
+    @Query(value = "DELETE FROM link_id WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
+           nativeQuery = true)
+    void deleteLinkIds(@Param("version") final int version);
 }

@@ -57,6 +57,10 @@ public class ForecastSectionV2MetadataDao {
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance)";
 
+    private static final String insertLinkIds =
+        "INSERT INTO link_id(forecast_section_id, order_number, link_id) " +
+        "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
+
     @Autowired
     public ForecastSectionV2MetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -201,6 +205,30 @@ public class ForecastSectionV2MetadataDao {
         args.put("orderNumber", orderNumber);
         args.put("startDistance", roadSegmentDto.getStartDistance());
         args.put("endDistance", roadSegmentDto.getEndDistance());
+        return new MapSqlParameterSource(args);
+    }
+
+    public void insertLinkIds(final List<ForecastSectionV2FeatureDto> features) {
+        final MapSqlParameterSource[] linkIdSources = new MapSqlParameterSource[features.stream().mapToInt(f -> f.getProperties().getLinkIdList().size()).sum()];
+
+        int i = 0;
+        for (final ForecastSectionV2FeatureDto feature : features) {
+            int orderNumber = 1;
+            for (final Long linkId : feature.getProperties().getLinkIdList()) {
+                linkIdSources[i] = linkIdParameterSource(feature, linkId, orderNumber);
+                i++;
+                orderNumber++;
+            }
+        }
+
+        jdbcTemplate.batchUpdate(insertLinkIds, linkIdSources);
+    }
+
+    private MapSqlParameterSource linkIdParameterSource(final ForecastSectionV2FeatureDto feature, final Long linkId, final int orderNumber) {
+        final HashMap<String, Object> args = new HashMap<>();
+        args.put("naturalId", feature.getProperties().getId());
+        args.put("orderNumber", orderNumber);
+        args.put("linkId", linkId);
         return new MapSqlParameterSource(args);
     }
 }

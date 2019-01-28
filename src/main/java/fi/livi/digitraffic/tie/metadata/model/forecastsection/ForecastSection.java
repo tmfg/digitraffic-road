@@ -123,6 +123,10 @@ public class ForecastSection {
     @OrderBy("roadSegmentPK.orderNumber")
     private List<RoadSegment> roadSegments;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "linkIdPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy("linkIdPK.orderNumber")
+    private List<LinkId> linkIds;
+
     public ForecastSection() {
     }
 
@@ -260,6 +264,10 @@ public class ForecastSection {
 
     public List<RoadSegment> getRoadSegments() {
         return roadSegments;
+    }
+
+    public List<LinkId> getLinkIds() {
+        return linkIds;
     }
 
     public void removeCoordinateLists() {
