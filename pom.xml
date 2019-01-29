@@ -317,6 +317,7 @@
                 <version>4.2.1</version>
                 <configuration>
                     <excludes>
+                        <exclude>fi/livi/digitraffic/tie/RoadApplication.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/domain/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/model/**/*.java</exclude>
