@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.TimeZone;
+
 import javax.sql.DataSource;
 
 import org.quartz.JobDetail;
@@ -309,12 +311,10 @@ public class QuartzSchedulerConfig {
         final CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
         factoryBean.setJobDetail(jobDetail);
         factoryBean.setCronExpression(cronExpression);
+        factoryBean.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (!jobEnabled) {
             factoryBean.setStartTime(QUARTZ_MAX_DATE);
-        } else {
-            // Delay first execution 5 seconds
-            factoryBean.setStartDelay(5000L);
         }
         log.info("Created Trigger for jobName={} enabled={}", jobName, jobEnabled);
         return factoryBean;
