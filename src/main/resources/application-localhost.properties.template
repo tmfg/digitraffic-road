@@ -19,7 +19,7 @@ metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 cameraStationUpdateJob.frequency=43200000
 tmsStationUpdateJob.frequency=43200000
 // Every night at 3:00
-tmsStationSensorConstantsUpdateJob.cron=0 0 3 * * *
+tmsStationSensorConstantsUpdateJob.cron=0 0 3 * * ?
 weatherStationUpdateJob.frequency=43200000
 roadStationsStatusUpdateJob.frequency=3600000
 forecastSectionCoordinatesUpdateJob.frequency=86400000

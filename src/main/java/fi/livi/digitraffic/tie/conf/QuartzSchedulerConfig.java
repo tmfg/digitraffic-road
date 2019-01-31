@@ -309,9 +309,6 @@ public class QuartzSchedulerConfig {
         final CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
         factoryBean.setJobDetail(jobDetail);
         factoryBean.setCronExpression(cronExpression);
-        // In case of misfire: The first misfired execution is run immediately, remaining are discarded.
-        // Next execution happens after desired interval. Effectively the first execution time is moved to current time.
-        factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
 
         if (!jobEnabled) {
             factoryBean.setStartTime(QUARTZ_MAX_DATE);
