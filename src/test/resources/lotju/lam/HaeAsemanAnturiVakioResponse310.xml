@@ -15,11 +15,6 @@
         <nimi>VVAPAAS1</nimi>
     </ns2:lamanturivakiot>
     <ns2:lamanturivakiot>
-        <id>1536</id>
-        <asemaId>310</asemaId>
-        <nimi>MS1</nimi>
-    </ns2:lamanturivakiot>
-    <ns2:lamanturivakiot>
         <id>1537</id>
         <asemaId>310</asemaId>
         <nimi>Tien_suunta</nimi>

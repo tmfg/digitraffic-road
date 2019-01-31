@@ -190,9 +190,8 @@ public class QuartzSchedulerConfig {
 
     @Bean
     public FactoryBean<? extends Trigger> tmsStationSensorConstantsUpdateJobTrigger(final JobDetail tmsStationSensorConstantsUpdateJobDetail,
-                                                                                    @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(tmsStationSensorConstantsUpdateJobDetail, 1000000);
-//        return createCronTrigger(tmsStationMetadataUpdateJobDetail, "");
+                                                                                    @Value("${tmsStationSensorConstantsUpdateJob.cron}") final String cron) {
+        return createCronTrigger(tmsStationSensorConstantsUpdateJobDetail, cron);
     }
 
     @Bean

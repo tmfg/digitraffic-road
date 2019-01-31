@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Table;
 
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
@@ -23,6 +24,7 @@ public class TmsStationSensorConstantUpdater {
 
     private final TmsStationSensorConstantService tmsStationSensorConstantService;
     private final TmsStationService tmsStationService;
+    private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
@@ -32,6 +34,7 @@ public class TmsStationSensorConstantUpdater {
                                            final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         this.tmsStationSensorConstantService = tmsStationSensorConstantService;
         this.tmsStationService = tmsStationService;
+        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
@@ -51,11 +54,15 @@ public class TmsStationSensorConstantUpdater {
 
         List<LamAnturiVakioVO> allLamAnturiVakios = lotjuTmsStationMetadataService.getAllLamAnturiVakios(tmsLotjuIds);
 
-        final boolean updateStaticDataStatus = tmsStationSensorConstantService.updateSensorConstants(allLamAnturiVakios);
+        final boolean updated = tmsStationSensorConstantService.updateSensorConstants(allLamAnturiVakios);
 
+        if (updated) {
+            dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA_CHECK);
 
         log.info("Update TMS Stations SensorConstants end");
-        return updateStaticDataStatus;
+        return updated;
     }
 
     /**
@@ -66,15 +73,20 @@ public class TmsStationSensorConstantUpdater {
 
         final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos = lotjuTmsStationMetadataService.getAllLamAnturiVakioArvos();
 
-        log.info("allLamAnturiVakioArvos.size() {}", allLamAnturiVakioArvos.size());
-
-        int count = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
-        log.info("SensorConstantValues count {}", count);
+        boolean updated = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
 
         int countFreeFlowSpeeds = tmsStationSensorConstantService.updateFreeFlowSpeedsOfTmsStations();
-        log.info("Update FreeFlowSpeeds for {} TmsStations", countFreeFlowSpeeds);
+        log.info("Updated FreeFlowSpeeds for {} TmsStations", countFreeFlowSpeeds);
+        if (countFreeFlowSpeeds > 0) {
+            dataStatusService.updateDataUpdated(DataType.TMS_FREE_FLOW_SPEEDS_DATA);
+        }
+
+        if (updated) {
+            dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_METADATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_METADATA_CHECK);
 
         log.info("Update TMS Stations SensorConstantValues end");
-        return true;
+        return updated;
     }
 }

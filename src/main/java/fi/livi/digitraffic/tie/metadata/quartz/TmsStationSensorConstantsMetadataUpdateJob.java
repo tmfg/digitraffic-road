@@ -26,7 +26,8 @@ public class TmsStationSensorConstantsMetadataUpdateJob extends SimpleUpdateJob 
     protected void doExecute(JobExecutionContext context) throws Exception {
 
         final StopWatch stationsSensorConstantsWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationSensorConstants = tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
+        final boolean updatedTmsStationSensorConstants =
+            tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
         stationsSensorConstantsWatch.stop();
 
         final StopWatch stationsSensorConstantValuesWatch = StopWatch.createStarted();

@@ -17,6 +17,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamAsemaLaskennallinenA
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ArvoVastaavuusVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakioResponse;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiAnturiVakioArvotResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturitResponse;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturitResponse;
@@ -72,7 +73,11 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamAnturiVakioArvoVO> haeKaikkiAnturiVakioArvot(final Integer paiva, final Integer kuukausi) {
-        throw new NotImplementedException("haeKaikkiAnturiVakioArvot");
+        HaeKaikkiAnturiVakioArvotResponse response = readLotjuSoapResponse(HaeKaikkiAnturiVakioArvotResponse.class);
+        if (response != null) {
+            return response.getLamanturivakiot();
+        }
+        return Collections.emptyList();
     }
 
     @Override

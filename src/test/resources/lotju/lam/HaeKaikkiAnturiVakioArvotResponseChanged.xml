@@ -1,0 +1,102 @@
+<ns2:HaeKaikkiAnturiVakioArvotResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2018/03/12">
+    <!-- Lam 1 -->
+    <!-- VVAPAAS1 -->
+    <ns2:lamanturivakiot>
+        <id>1092</id>
+        <anturiVakioId>747</anturiVakioId>
+        <arvo>110</arvo>
+        <voimassaAlku>401</voimassaAlku>
+        <voimassaLoppu>1031</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1534</id>
+        <anturiVakioId>747</anturiVakioId>
+        <arvo>100</arvo>
+        <voimassaAlku>1101</voimassaAlku>
+        <voimassaLoppu>331</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- MS2 (duplicates) -->
+    <ns2:lamanturivakiot>
+        <id>1536</id>
+        <anturiVakioId>748</anturiVakioId>
+        <arvo>2800</arvo>
+        <voimassaAlku>101</voimassaAlku>
+        <voimassaLoppu>1231</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1536</id>
+        <anturiVakioId>748</anturiVakioId>
+        <arvo>2800</arvo>
+        <voimassaAlku>101</voimassaAlku>
+        <voimassaLoppu>1231</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- Tien_suunta -->
+    <ns2:lamanturivakiot>
+        <id>232</id>
+        <anturiVakioId>1021</anturiVakioId>
+        <arvo>60</arvo>
+        <voimassaAlku>101</voimassaAlku>
+        <voimassaLoppu>1231</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- VVAPAAS2 -->
+    <ns2:lamanturivakiot>
+        <id>3259</id>
+        <anturiVakioId>1578</anturiVakioId>
+        <arvo>95</arvo>
+        <voimassaAlku>301</voimassaAlku>
+        <voimassaLoppu>0930</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>1535</id>
+        <anturiVakioId>1578</anturiVakioId>
+        <arvo>105</arvo>
+        <voimassaAlku>1001</voimassaAlku>
+        <voimassaLoppu>230</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- MS1 -->
+    <ns2:lamanturivakiot>
+        <id>231</id>
+        <anturiVakioId>177</anturiVakioId>
+        <arvo>2800</arvo>
+        <voimassaAlku>101</voimassaAlku>
+        <voimassaLoppu>1231</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>231</id>
+        <anturiVakioId>177</anturiVakioId>
+        <arvo>2800</arvo>
+        <voimassaAlku>101</voimassaAlku>
+        <voimassaLoppu>1231</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- Lam 310 -->
+    <!-- VVAPAAS2 -->
+    <ns2:lamanturivakiot>
+        <id>2356</id>
+        <anturiVakioId>982</anturiVakioId>
+        <arvo>80</arvo>
+        <voimassaAlku>401</voimassaAlku>
+        <voimassaLoppu>1031</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>2357</id>
+        <anturiVakioId>982</anturiVakioId>
+        <arvo>80</arvo>
+        <voimassaAlku>1101</voimassaAlku>
+        <voimassaLoppu>331</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <!-- VVAPAAS1 -->
+    <ns2:lamanturivakiot>
+        <id>183</id>
+        <anturiVakioId>1535</anturiVakioId>
+        <arvo>80</arvo>
+        <voimassaAlku>401</voimassaAlku>
+        <voimassaLoppu>1031</voimassaLoppu>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>3215</id>
+        <anturiVakioId>1535</anturiVakioId>
+        <arvo>80</arvo>
+        <voimassaAlku>1101</voimassaAlku>
+        <voimassaLoppu>331</voimassaLoppu>
+    </ns2:lamanturivakiot>
+</ns2:HaeKaikkiAnturiVakioArvotResponse>

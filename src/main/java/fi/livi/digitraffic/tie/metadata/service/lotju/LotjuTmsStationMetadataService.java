@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -27,9 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
@@ -55,7 +52,8 @@ public class LotjuTmsStationMetadataService {
         return lotjuTmsStationMetadataClient.getAllLamLaskennallinenAnturis();
     }
 
-//    TODO @PerformanceMonitor(maxErroExcecutionTime = , maxWarnExcecutionTime = )
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 800000, maxErroExcecutionTime = 1000000)
     public Map<Long, List<LamLaskennallinenAnturiVO>> getLamLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
         final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new ConcurrentHashMap<>();
 
@@ -87,6 +85,7 @@ public class LotjuTmsStationMetadataService {
         return lamAnturisMappedByTmsLotjuId;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Set<Long> tmsLotjuIds) {
 
         final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<LamAnturiVakioVO>();
@@ -113,14 +112,15 @@ public class LotjuTmsStationMetadataService {
         });
         executor.shutdown();
 
-        log.info("lamFetchedCount={} LamAnturiVakios for lamStationCount={} LAMAsemas, tookMs={}",
+        log.info("method=getAllLamAnturiVakios fetchedCount={} for lamStationCount={} tookMs={}",
                  allAnturiVakios.size(), tmsLotjuIds.size(), start.getTime());
         return allAnturiVakios;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 500000, maxErroExcecutionTime = 700000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
 
-        final List<LamAnturiVakioArvoVO> lamAnturiVakios = Collections.synchronizedList(new ArrayList<>());
+        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = Collections.synchronizedList(new ArrayList<>());
 
         final ExecutorService executor = Executors.newFixedThreadPool(5);
         final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
@@ -130,7 +130,7 @@ public class LotjuTmsStationMetadataService {
         final StopWatch start = StopWatch.createStarted();
         int dayCounter = 0;
         while (startYear == date.getYear()) {
-            completionService.submit(new AnturiVakioArvoFetcher(date.getMonthValue(), date.getDayOfMonth(), lamAnturiVakios));
+            completionService.submit(new AnturiVakioArvoFetcher(date.getMonthValue(), date.getDayOfMonth(), lamAnturiVakioArvos));
             dayCounter++;
             date = date.plusDays(1);
         }
@@ -142,7 +142,7 @@ public class LotjuTmsStationMetadataService {
             try {
                 final Future<Integer> f = completionService.take();
                 countLamAnturiVakioArvos.addAndGet(f.get());
-                log.debug("Got {} LamAnturiVakioArvos", f.get());
+                log.debug("Got {} LamAnturiVakioArvos, {}/{}", f.get(), i+1, dayCounter);
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamAnturiVakioArvos", e);
                 executor.shutdownNow();
@@ -151,17 +151,15 @@ public class LotjuTmsStationMetadataService {
         }
         executor.shutdown();
 
-        final StopWatch distinctTime = StopWatch.createStarted();
-        List<LamAnturiVakioArvoVO> distincLamAnturiVakios = lamAnturiVakios.parallelStream()
+        List<LamAnturiVakioArvoVO> distincLamAnturiVakios = lamAnturiVakioArvos.parallelStream()
             .map(LamAnturiVakioArvoWrapper::new)
             .distinct()
             .map(LamAnturiVakioArvoWrapper::unWrap)
             .collect(Collectors.toList());
-        distinctTime.stop();
 
-        log.info("LamAnturiVakios from {} to distinct {}", lamAnturiVakios.size(), distincLamAnturiVakios.size());
-        log.info("lamFetchedCount={} LamAnturiVakios, for dateCount={} days, tookMs={}, distinctCount {}",
-                 countLamAnturiVakioArvos.get(), dayCounter, start.getTime(), distincLamAnturiVakios.size());
+        log.debug("Distinct lamAnturiVakioArvos {} was before {}", distincLamAnturiVakios.size(), lamAnturiVakioArvos.size());
+        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for dateCount={} distincLamAnturiVakiosCount={} tookMs={}",
+                 countLamAnturiVakioArvos.get(), dayCounter, distincLamAnturiVakios.size(), start.getTime());
         return distincLamAnturiVakios;
     }
 
@@ -196,9 +194,6 @@ public class LotjuTmsStationMetadataService {
         @Override
         public Integer call() throws Exception {
             final List<LamAnturiVakioVO> anturis = lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
-            for (LamAnturiVakioVO lamAnturiVakioVO : anturis) {
-                log.debug("Anturi {}", ToStringHelper.toStringFull(lamAnturiVakioVO));
-            }
             synchronizedAnturiVakios.addAll(anturis);
             return anturis.size();
         }
@@ -252,7 +247,7 @@ public class LotjuTmsStationMetadataService {
                 .append(other.getVoimassaLoppu(), vakio.getVoimassaLoppu())
                 .isEquals();
             if (equals && !new EqualsBuilder().append(other.getArvo(), vakio.getArvo()).isEquals()) {
-                log.error("Lotju returns unequal values for same AnturiVakioArvo {} vs {}", ToStringHelper.toStringFull(vakio), ToStringHelper.toStringFull(other));
+                log.error("LOTJU returns unequal values for same AnturiVakioArvo {} vs {}", ToStringHelper.toStringFull(vakio), ToStringHelper.toStringFull(other));
             }
             return equals;
         }

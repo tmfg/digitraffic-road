@@ -11,6 +11,8 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 
+import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstant;
+import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstantValue;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
@@ -215,12 +217,36 @@ public class ToStringHelper {
         return sb.toString();
     }
 
+    public static String toString(final TmsSensorConstant tmsSensorConstant) {
+        final StringBuffer sb = createStartSb(tmsSensorConstant);
+        JSON_STYLE.append(sb, "lotjuId", tmsSensorConstant.getLotjuId(), true);
+        JSON_STYLE.append(sb, "nimi", tmsSensorConstant.getName(), true);
+        JSON_STYLE.append(sb, "updated", tmsSensorConstant.getUpdated(), true);
+        JSON_STYLE.append(sb, "obsoleteDate", tmsSensorConstant.getObsoleteDate(), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static String toString(final TmsSensorConstantValue tmsSensorConstantValue) {
+        final StringBuffer sb = createStartSb(tmsSensorConstantValue);
+        JSON_STYLE.append(sb, "lotjuId", tmsSensorConstantValue.getLotjuId(), true);
+        JSON_STYLE.append(sb, "value", tmsSensorConstantValue.getValue(), true);
+        JSON_STYLE.append(sb, "valid", tmsSensorConstantValue.getValidFrom() + " " + tmsSensorConstantValue.getValidTo(), true);
+        JSON_STYLE.append(sb, "updated", tmsSensorConstantValue.getUpdated(), true);
+        JSON_STYLE.append(sb, "obsoleteDate", tmsSensorConstantValue.getObsoleteDate(), true);
+        removeLastFieldSeparatorFromEnd(sb);
+        sb.append("}");
+        return sb.toString();
+    }
+
     public static String nullSafeToString(final Object o) {
         return o != null ? o.toString() : null;
     }
 
+
     public enum TimestampFormat {
         ISO_8601_UTC,
-        ISO_8601_WITH_ZONE_OFFSET
+        ISO_8601_WITH_ZONE_OFFSET;
     }
 }

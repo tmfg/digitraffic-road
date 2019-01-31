@@ -1,13 +1,13 @@
 <ns2:HaeAsemanAnturiVakioResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2018/03/12">
     <ns2:lamanturivakiot>
-        <id>747</id>
-        <asemaId>1</asemaId>
-        <nimi>VVAPAAS1</nimi>
-    </ns2:lamanturivakiot>
-    <ns2:lamanturivakiot>
         <id>748</id>
         <asemaId>1</asemaId>
         <nimi>MS2</nimi>
+    </ns2:lamanturivakiot>
+    <ns2:lamanturivakiot>
+        <id>747</id>
+        <asemaId>1</asemaId>
+        <nimi>VVAPAAS11</nimi>
     </ns2:lamanturivakiot>
     <ns2:lamanturivakiot>
         <id>1021</id>
