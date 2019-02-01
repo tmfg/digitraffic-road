@@ -28,11 +28,11 @@ public class TmsSensorConstantDao {
         "    SELECT rs.id as rs_id, rs.lotju_id rs_lotju_id\n" +
         "    FROM road_station rs\n" +
         "    WHERE rs.road_station_type = 'TMS_STATION'\n" +
+        "      AND rs.lotju_id = :sensorConstantRoadStationLotjuId\n" +
         ")\n" +
         "INSERT INTO TMS_SENSOR_CONSTANT (LOTJU_ID, ROAD_STATION_ID, NAME, UPDATED)\n" +
         "SELECT :sensorConstantLotjuId, tms_rs.rs_id, :sensorConstantName, now()\n" +
         "FROM TMS_RS\n" +
-        "WHERE tms_rs.rs_lotju_id = :sensorConstantRoadStationLotjuId\n" +
         "ON CONFLICT (LOTJU_ID)\n" +
         "DO UPDATE SET\n" +
         "  name = :sensorConstantName,\n" +
@@ -47,11 +47,11 @@ public class TmsSensorConstantDao {
         "WITH sc AS (\n" +
         "  SELECT lotju_id\n" +
         "  FROM TMS_SENSOR_CONSTANT\n" +
+        "  WHERE LOTJU_ID = :sensorConstantLotjuId\n" +
         ")\n" +
         "INSERT INTO TMS_SENSOR_CONSTANT_VALUE (LOTJU_ID, SENSOR_CONSTANT_LOTJU_ID, VALUE, VALID_FROM, VALID_TO, UPDATED)\n" +
         "SELECT :sensorConstantValueLotjuId, sc.LOTJU_ID, :sensorConstantValue, :sensorConstantValidFrom, :sensorConstantValidTo, now()\n" +
         "FROM sc\n" +
-        "WHERE sc.LOTJU_ID = :sensorConstantLotjuId\n" +
         "ON CONFLICT (LOTJU_ID)\n" +
         "DO UPDATE set\n" +
         "    sensor_constant_lotju_id = EXCLUDED.sensor_constant_lotju_id,\n" +
