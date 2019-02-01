@@ -113,10 +113,10 @@ public class TmsSensorConstantDao {
         "    left outer join summer_free_flow_speed_2 s2 on s2.ROAD_STATION_ID = sv.ROAD_STATION_ID\n" +
         ")\n" +
         "update lam_station as lam\n" +
-        "set summer_free_flow_speed_1 = data.summer_free_flow_speed_1,\n" +
-        "    summer_free_flow_speed_2 = data.summer_free_flow_speed_2,\n" +
-        "    winter_free_flow_speed_1 = data.winter_free_flow_speed_1,\n" +
-        "    winter_free_flow_speed_2 = data.winter_free_flow_speed_2\n" +
+        "set summer_free_flow_speed_1 = coalesce(data.summer_free_flow_speed_1, -1),\n" +
+        "    summer_free_flow_speed_2 = coalesce(data.summer_free_flow_speed_2, -1),\n" +
+        "    winter_free_flow_speed_1 = coalesce(data.winter_free_flow_speed_1, -1),\n" +
+        "    winter_free_flow_speed_2 = coalesce(data.winter_free_flow_speed_2, -1)\n" +
         "from data\n" +
         "where lam.road_station_id = data.ROAD_STATION_ID\n" +
         " and (lam.summer_free_flow_speed_1 <> data.summer_free_flow_speed_1\n" +
