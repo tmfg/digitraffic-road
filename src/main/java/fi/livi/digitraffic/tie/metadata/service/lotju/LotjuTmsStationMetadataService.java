@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class LotjuTmsStationMetadataService {
             completionService.submit(new LaskennallinenanturiFetcher(tmsLotjuId, lamAnturisMappedByTmsLotjuId));
         }
 
-        final CounterInteger countAnturis = new CounterInteger();
+        final MutableInt countAnturis = new MutableInt();
         // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
         tmsLotjuIds.forEach(id -> {
             try {
@@ -249,18 +250,5 @@ public class LotjuTmsStationMetadataService {
                 .append(unWrap().getVoimassaLoppu())
                 .toHashCode();
         }
-    }
-
-    private class CounterInteger extends sun.java2d.xr.MutableInteger {
-
-        public CounterInteger() {
-            super(0);
-        }
-
-        public Integer addAndGet(Integer toAdd) {
-            setValue(getValue() + toAdd);
-            return getValue();
-        }
-
     }
 }
