@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +13,6 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -65,7 +62,7 @@ public class LotjuTmsStationMetadataService {
             completionService.submit(new LaskennallinenanturiFetcher(tmsLotjuId, lamAnturisMappedByTmsLotjuId));
         }
 
-        final AtomicInteger countAnturis = new AtomicInteger();
+        final CounterInteger countAnturis = new CounterInteger();
         // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
         tmsLotjuIds.forEach(id -> {
             try {
@@ -81,29 +78,29 @@ public class LotjuTmsStationMetadataService {
         executor.shutdown();
 
         log.info("lamFetchedCount={} LamLaskennallinenAnturis for lamStationCount={} LAMAsemas, tookMs={}",
-                countAnturis.get(), lamAnturisMappedByTmsLotjuId.size(), start.getTime());
+                 countAnturis.getValue(), lamAnturisMappedByTmsLotjuId.size(), start.getTime());
         return lamAnturisMappedByTmsLotjuId;
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Set<Long> tmsLotjuIds) {
 
-        final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<LamAnturiVakioVO>();
-        final List<LamAnturiVakioVO> synchronizedAnturiVakios = Collections.synchronizedList(allAnturiVakios);
+        final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(5);
-        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+        final CompletionService<List<LamAnturiVakioVO>> completionService = new ExecutorCompletionService<>(executor);
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(new AnturiVakioFetcher(tmsLotjuId, synchronizedAnturiVakios));
+            completionService.submit(new AnturiVakioFetcher(tmsLotjuId));
         }
 
         // It's necessary to wait all executors to complete.
         tmsLotjuIds.forEach(id -> {
             try {
-                final Future<Integer> f = completionService.take();
-                log.debug("Got {} AnturiVakios", f.get());
+                final List<LamAnturiVakioVO> values = completionService.take().get();
+                allAnturiVakios.addAll(values);
+                log.debug("Got {} AnturiVakios", values.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamAnturiVakios", e);
                 executor.shutdownNow();
@@ -117,32 +114,31 @@ public class LotjuTmsStationMetadataService {
         return allAnturiVakios;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 500000, maxErroExcecutionTime = 700000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
 
-        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = Collections.synchronizedList(new ArrayList<>());
+        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(5);
-        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+        final CompletionService<List<LamAnturiVakioArvoVO>> completionService = new ExecutorCompletionService<>(executor);
 
-        LocalDate date = LocalDate.ofYearDay(LocalDate.now().getYear(),1);
-        final int startYear = date.getYear();
+
         final StopWatch start = StopWatch.createStarted();
-        int dayCounter = 0;
-        while (startYear == date.getYear()) {
-            completionService.submit(new AnturiVakioArvoFetcher(date.getMonthValue(), date.getDayOfMonth(), lamAnturiVakioArvos));
-            dayCounter++;
-            date = date.plusDays(1);
+        int monthCounter = 0;
+        while (monthCounter < 12) {
+            monthCounter++;
+            completionService.submit(new AnturiVakioArvoFetcher(monthCounter, 1));
         }
-        log.info("Fetch LamAnturiVakioArvos for {} days", dayCounter);
+        log.info("Fetch LamAnturiVakioArvos for {} months", monthCounter);
 
-        final AtomicInteger countLamAnturiVakioArvos = new AtomicInteger();
+        int countLamAnturiVakioArvos = 0;
         // It's necessary to wait all executors to complete.
-        for (int i = 0; i < dayCounter; i++) {
+        for (int i = 0; i < monthCounter; i++) {
             try {
-                final Future<Integer> f = completionService.take();
-                countLamAnturiVakioArvos.addAndGet(f.get());
-                log.debug("Got {} LamAnturiVakioArvos, {}/{}", f.get(), i+1, dayCounter);
+                final List<LamAnturiVakioArvoVO> values = completionService.take().get();
+                countLamAnturiVakioArvos += values.size();
+                lamAnturiVakioArvos.addAll(values);
+                log.debug("Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamAnturiVakioArvos", e);
                 executor.shutdownNow();
@@ -158,8 +154,8 @@ public class LotjuTmsStationMetadataService {
             .collect(Collectors.toList());
 
         log.debug("Distinct lamAnturiVakioArvos {} was before {}", distincLamAnturiVakios.size(), lamAnturiVakioArvos.size());
-        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for dateCount={} distincLamAnturiVakiosCount={} tookMs={}",
-                 countLamAnturiVakioArvos.get(), dayCounter, distincLamAnturiVakios.size(), start.getTime());
+        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
+                 countLamAnturiVakioArvos, monthCounter, distincLamAnturiVakios.size(), start.getTime());
         return distincLamAnturiVakios;
     }
 
@@ -181,41 +177,33 @@ public class LotjuTmsStationMetadataService {
         }
     }
 
-    private class AnturiVakioFetcher implements Callable<Integer> {
+    private class AnturiVakioFetcher implements Callable<List<LamAnturiVakioVO>> {
 
         private final Long tmsLotjuId;
-        private final List<LamAnturiVakioVO> synchronizedAnturiVakios;
 
-        public AnturiVakioFetcher(final Long tmsLotjuId, final List<LamAnturiVakioVO> synchronizedAnturiVakios) {
+        public AnturiVakioFetcher(final Long tmsLotjuId) {
             this.tmsLotjuId = tmsLotjuId;
-            this.synchronizedAnturiVakios = synchronizedAnturiVakios;
         }
 
         @Override
-        public Integer call() throws Exception {
-            final List<LamAnturiVakioVO> anturis = lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
-            synchronizedAnturiVakios.addAll(anturis);
-            return anturis.size();
+        public List<LamAnturiVakioVO> call() throws Exception {
+            return lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
         }
     }
 
-    private class AnturiVakioArvoFetcher implements Callable<Integer> {
+    private class AnturiVakioArvoFetcher implements Callable<List<LamAnturiVakioArvoVO>> {
 
         private final int month;
         private final int dayOfMonth;
-        private final List<LamAnturiVakioArvoVO> anturiVakioArvos;
 
-        public AnturiVakioArvoFetcher(final int month, final int dayOfMonth, final List<LamAnturiVakioArvoVO> anturiVakioArvos) {
+        public AnturiVakioArvoFetcher(final int month, final int dayOfMonth) {
             this.month = month;
             this.dayOfMonth = dayOfMonth;
-            this.anturiVakioArvos = anturiVakioArvos;
         }
 
         @Override
-        public Integer call() throws Exception {
-            final List<LamAnturiVakioArvoVO> arvos = lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, dayOfMonth);
-            anturiVakioArvos.addAll(arvos);
-            return arvos.size();
+        public List<LamAnturiVakioArvoVO> call() throws Exception {
+            return lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, dayOfMonth);
         }
     }
 
@@ -260,5 +248,18 @@ public class LotjuTmsStationMetadataService {
                 .append(unWrap().getVoimassaLoppu())
                 .toHashCode();
         }
+    }
+
+    private class CounterInteger extends sun.java2d.xr.MutableInteger {
+
+        public CounterInteger() {
+            super(0);
+        }
+
+        public Integer addAndGet(Integer toAdd) {
+            setValue(getValue() + toAdd);
+            return getValue();
+        }
+
     }
 }
