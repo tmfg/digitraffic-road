@@ -155,17 +155,7 @@ public class TmsSensorConstantDao {
             UPSERT_CONSTANTS_STATEMENT,
             batchData.toArray(new Map[0]));
 
-        final int upsertCount = countUpserts(upserts);
-
-        Integer upsertCount2 =
-            namedParameterJdbcTemplate.getJdbcTemplate().queryForObject(
-                "SELECT COUNT(*)\n" +
-                "FROM TMS_SENSOR_CONSTANT\n" +
-                "WHERE UPDATED > now() - INTERVAL '1 min'", Integer.class);
-
-        log.info("Upsert: {} select: {}", upsertCount, upsertCount2);
-
-        return upsertCount;
+        return countUpserts(upserts);
     }
 
     public int updateSensorConstantValues(final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos) {
@@ -186,17 +176,7 @@ public class TmsSensorConstantDao {
                 UPSERT_CONSTANT_VALUES_STATEMENT,
                 batchData.toArray(new Map[0]));
 
-        final int upsertCount = countUpserts(upserts);
-
-        Integer upsertCount2 =
-            namedParameterJdbcTemplate.getJdbcTemplate().queryForObject(
-                "SELECT COUNT(*)\n" +
-                "FROM TMS_SENSOR_CONSTANT_VALUE\n" +
-                "WHERE UPDATED > now() - INTERVAL '1 min'", Integer.class);
-
-        log.info("Upsert: {} select: {}", upsertCount, upsertCount2);
-
-        return upsertCount;
+        return countUpserts(upserts);
     }
 
     private int countUpserts(final int[] upserts) {
