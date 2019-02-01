@@ -45,10 +45,8 @@ public class TmsStationSensorConstantUpdater {
         log.info("Update TMS Stations SensorConstants start");
 
         // Get current TmsStations
-        final Map<Long, TmsStation> currentTmsStationMappedByByLotjuId =
-            tmsStationService.findAllTmsStationsMappedByByLotjuId();
-
-        final Set<Long> tmsLotjuIds = currentTmsStationMappedByByLotjuId.keySet();
+        final List<Long> tmsLotjuIds =
+            tmsStationService.findAllTmsStationsLotjuIds();
 
         log.info("Fetching LamAnturiVakios for tmsCount={} LamAsemas", tmsLotjuIds.size());
 

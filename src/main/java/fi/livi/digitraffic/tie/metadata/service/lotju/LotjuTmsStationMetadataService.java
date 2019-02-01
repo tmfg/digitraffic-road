@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.lotju;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +84,7 @@ public class LotjuTmsStationMetadataService {
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
-    public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Set<Long> tmsLotjuIds) {
+    public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Collection<Long> tmsLotjuIds) {
 
         final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<>();
 

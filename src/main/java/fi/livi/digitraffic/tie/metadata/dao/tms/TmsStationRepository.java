@@ -64,10 +64,12 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
         roadNumber);
 
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
-    List<TmsStation> findByRoadStationIsNull();
-
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
     TmsStation findByLotjuId(Long lotjuId);
+
+    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
+    @Query("select p.lotjuId\n" +
+           "from #{#entityName} p\n" +
+           "where p.lotjuId is not null")
+    List<Long> findAllTmsStationsLotjuIds();
 }
