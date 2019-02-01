@@ -85,19 +85,19 @@ jms.camera.enabled=false
 jms.datex2.enabled=false
 
 # Disable jobs. Format: quartz.{jobClassName}.enabled = false
-# Ie. quartz.CameraMetadataUpdateJob.enabled = false
-# quartz.CameraMetadataUpdateJob.enabled = false
-# quartz.CameraStationsStatusMetadataUpdateJob.enabled = false
-# quartz.Datex2RoadworksMessageUpdateJob.enabled = false
-# quartz.Datex2TrafficAlertMessageUpdateJob.enabled = false
-# quartz.Datex2WeightRestrictionsMessageUpdateJob.enabled = false
-# quartz.ForecastSectionCoordinatesMetadataUpdateJob.enabled = false
-# quartz.ForecastSectionWeatherUpdateJob.enabled = false
-# quartz.LocationMetadataUpdateJob.enabled = false
-# quartz.TmsStationMetadataUpdateJob.enabled = false
-# quartz.TmsStationsStatusMetadataUpdateJob.enabled = false
-# quartz.WeatherStationMetadataUpdateJob.enabled = true
-# quartz.WeatherStationsStatusMetadataUpdateJob.enabled = false
+# Ie. digitraffic.job.CameraMetadataUpdateJob.enabled = false
+# digitraffic.job.CameraMetadataUpdateJob.enabled = false
+# digitraffic.job.CameraStationsStatusMetadataUpdateJob.enabled = false
+# digitraffic.job.Datex2RoadworksMessageUpdateJob.enabled = false
+# digitraffic.job.Datex2TrafficAlertMessageUpdateJob.enabled = false
+# digitraffic.job.Datex2WeightRestrictionsMessageUpdateJob.enabled = false
+# digitraffic.job.ForecastSectionCoordinatesMetadataUpdateJob.enabled = false
+# digitraffic.job.ForecastSectionWeatherUpdateJob.enabled = false
+# digitraffic.job.LocationMetadataUpdateJob.enabled = false
+# digitraffic.job.TmsStationMetadataUpdateJob.enabled = false
+# digitraffic.job.TmsStationsStatusMetadataUpdateJob.enabled = false
+# digitraffic.job.WeatherStationMetadataUpdateJob.enabled = true
+# digitraffic.job.WeatherStationsStatusMetadataUpdateJob.enabled = false
 
 # Developer life improvements
 logging.level.root=INFO

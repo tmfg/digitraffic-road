@@ -16,7 +16,6 @@ import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
-import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -78,17 +77,8 @@ public class QuartzSchedulerConfig {
             @Override
             protected Scheduler createScheduler(SchedulerFactory schedulerFactory, String schedulerName) throws SchedulerException {
                 Scheduler scheduler = super.createScheduler(schedulerFactory, schedulerName);
-                triggerBeans.get().forEach(t -> {
-                    try {
-                        // If trigger is missing but job exists in db, the trigger will not be created. Delete the job to recreate it and the trigger again.
-                        if (scheduler.checkExists(t.getJobKey()) && !scheduler.checkExists(t.getKey()) && Key.DEFAULT_GROUP.equals(t.getKey().getGroup())) {
-                            log.info("Delete orphan job={}", t.getJobKey());
-                            scheduler.deleteJob(t.getJobKey());
-                        }
-                    } catch (SchedulerException e) {
-                        log.error("Deleting job=" + t.getJobKey() + " with missing trigger failed", e);
-                    }
-                });
+                // Clear previous job definitions
+                scheduler.clear();
                 return scheduler;
             }
         };
@@ -179,81 +169,81 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
-                                                                   @Value("${cameraStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(cameraMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail,
+                                                                   @Value("${cameraStationUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(cameraMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail,
-                                                                       @Value("${tmsStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(tmsStationMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail,
+                                                                       @Value("${tmsStationUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(tmsStationMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
     public FactoryBean<? extends Trigger> tmsStationSensorConstantsUpdateJobTrigger(final JobDetail tmsStationSensorConstantsUpdateJobDetail,
-                                                                                    @Value("${tmsStationSensorConstantsUpdateJob.cron}") final String cron) {
-        return createCronTrigger(tmsStationSensorConstantsUpdateJobDetail, cron);
+                                                                                    @Value("${tmsStationSensorConstantsUpdateJob.cron}") final String scheduleExpression) {
+        return createTrigger(tmsStationSensorConstantsUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJobDetail,
-                                                                           @Value("${weatherStationUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(weatherStationMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJobDetail,
+                                                                           @Value("${weatherStationUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(weatherStationMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJobDetail,
-                                                                                 @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(cameraStationsStatusMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJobDetail,
+                                                                                 @Value("${roadStationsStatusUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(cameraStationsStatusMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJobDetail,
-                                                                              @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(tmsStationsStatusMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJobDetail,
+                                                                              @Value("${roadStationsStatusUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(tmsStationsStatusMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJobDetail,
-                                                                                  @Value("${roadStationsStatusUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(weatherStationsStatusMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJobDetail,
+                                                                                  @Value("${roadStationsStatusUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(weatherStationsStatusMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail,
-                                                                      @Value("${locationsMetadataUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(locationMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail,
+                                                                      @Value("${locationsMetadataUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(locationMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionCoordinatesMetadataUpdateJobDetail,
-                                                                                       @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(forecastSectionCoordinatesMetadataUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionCoordinatesMetadataUpdateJobDetail,
+                                                                                       @Value("${forecastSectionCoordinatesUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(forecastSectionCoordinatesMetadataUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail,
-                                                                           @Value("${forecastSectionWeatherUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(forecastSectionWeatherUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail,
+                                                                           @Value("${forecastSectionWeatherUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(forecastSectionWeatherUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJobDetail,
-                                                                  @Value("${datex2TrafficAlertMessageUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(datex2TrafficAlertMessageUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJobDetail,
+                                                                  @Value("${datex2TrafficAlertMessageUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(datex2TrafficAlertMessageUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJobDetail,
-        @Value("${datex2RoadworksMessageUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(datex2RoadworksMessageUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJobDetail,
+                                                                           @Value("${datex2RoadworksMessageUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(datex2RoadworksMessageUpdateJobDetail, scheduleExpression);
     }
 
     @Bean
-    public SimpleTriggerFactoryBean datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJobDetail,
-        @Value("${datex2WeightRestrictionsMessageUpdateJob.frequency}") final long frequency) {
-        return createRepeatingTrigger(datex2WeightRestrictionsMessageUpdateJobDetail, frequency);
+    public FactoryBean<? extends Trigger> datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJobDetail,
+                                                                                    @Value("${datex2WeightRestrictionsMessageUpdateJob.frequency}") final String scheduleExpression) {
+        return createTrigger(datex2WeightRestrictionsMessageUpdateJobDetail, scheduleExpression);
     }
 
 
@@ -262,7 +252,19 @@ public class QuartzSchedulerConfig {
         factoryBean.setJobClass(jobClass);
         // job has to be durable to be stored in DB:
         factoryBean.setDurability(true);
+        // In case of job executing during the time of a hard shutdown, it will be re-executed when the scheduler is started again
+        factoryBean.setRequestsRecovery(true);
         return factoryBean;
+    }
+
+    private FactoryBean<? extends Trigger> createTrigger(final JobDetail jobDetail, final String expression) {
+        try {
+            // Try first to create interval trigger and fallback to cron
+            long intervalMs = Long.parseLong(expression);
+            return  createRepeatingTrigger(jobDetail, intervalMs);
+        } catch (NumberFormatException nfe) { // cron expression
+            return createCronTrigger(jobDetail, expression);
+        }
     }
 
     /**
@@ -273,7 +275,7 @@ public class QuartzSchedulerConfig {
     private SimpleTriggerFactoryBean createRepeatingTrigger(final JobDetail jobDetail, final long repeatIntervalMs) {
 
         final String jobName = jobDetail.getJobClass().getSimpleName();
-        final String jobEnabledProperty = environment.getProperty("quartz." + jobName + ".enabled");
+        final String jobEnabledProperty = environment.getProperty("digitraffic.job." + jobName + ".enabled");
 
         final boolean jobEnabled = jobEnabledProperty == null || !"false".equalsIgnoreCase(jobEnabledProperty);
 
@@ -292,7 +294,7 @@ public class QuartzSchedulerConfig {
             // Delay first execution 5 seconds
             factoryBean.setStartDelay(5000L);
         }
-        log.info("Created Trigger for jobName={} enabled={}", jobName, jobEnabled);
+        log.info("Created SimpleTrigger for jobName={} enabled={} with repeatIntervalMs={}", jobName, jobEnabled, repeatIntervalMs);
         return factoryBean;
     }
 
@@ -304,7 +306,7 @@ public class QuartzSchedulerConfig {
     private CronTriggerFactoryBean createCronTrigger(final JobDetail jobDetail, final String cronExpression) {
 
         final String jobName = jobDetail.getJobClass().getSimpleName();
-        final String jobEnabledProperty = environment.getProperty("quartz." + jobName + ".enabled");
+        final String jobEnabledProperty = environment.getProperty("digitraffic.job." + jobName + ".enabled");
 
         final boolean jobEnabled = jobEnabledProperty == null || !"false".equalsIgnoreCase(jobEnabledProperty);
 
@@ -316,7 +318,7 @@ public class QuartzSchedulerConfig {
         if (!jobEnabled) {
             factoryBean.setStartTime(QUARTZ_MAX_DATE);
         }
-        log.info("Created Trigger for jobName={} enabled={}", jobName, jobEnabled);
+        log.info("Created CronTrigger for jobName={} enabled={} with expression={}", jobName, jobEnabled, cronExpression);
         return factoryBean;
     }
 }
