@@ -15,7 +15,7 @@ metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v7
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 
-# Metadata update frequencies in ms or by cron in UTC
+# Metadata update schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html
 # To disable job, just comment it out.
 # Fields: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
