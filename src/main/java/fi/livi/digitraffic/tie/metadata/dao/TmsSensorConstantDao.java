@@ -66,7 +66,7 @@ public class TmsSensorConstantDao {
         "   OR TMS_SENSOR_CONSTANT_VALUE.valid_to <> EXCLUDED.valid_to\n" +
         "   OR TMS_SENSOR_CONSTANT_VALUE.obsolete_date is not null";
 
-    // Gets free flow speeds for winter at 1.1. and for summer at 1.7.
+    // Updates free flow speeds by getting speeds for winter at 1.1. and for summer at 1.7.
     private final String UPDATE_FREE_FLOW_SPEEDS =
         "WITH sv AS (\n" +
         "    select sc.ROAD_STATION_ID, sc.NAME, scv.VALID_FROM, scv.VALID_TO, scv.VALUE\n" +
