@@ -18,8 +18,10 @@ services:
 
   db-wait:
       build: .
+      depends_on:
+        - db
       networks:
-          - db_network
+        - db_network
       links:
-          - "db:db"
+        - "db:db"
       command: ["./wait-for-postgres.sh", "db", "marine", "marine", "marine"]
