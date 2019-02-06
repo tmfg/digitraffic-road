@@ -8,6 +8,7 @@ import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -291,7 +292,7 @@ public class QuartzSchedulerConfig {
         factoryBean.setJobDetail(jobDetail);
         factoryBean.setCronExpression(cronExpression);
         factoryBean.setTimeZone(TimeZone.getTimeZone("UTC"));
-
+        factoryBean.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW);
         log.info("Created CronTrigger for jobName={} with cron expression={}", jobName, cronExpression);
         return factoryBean;
     }
