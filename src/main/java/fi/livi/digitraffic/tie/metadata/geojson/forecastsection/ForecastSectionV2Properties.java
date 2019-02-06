@@ -1,8 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({ "naturalId", "description" })
@@ -31,16 +34,21 @@ public class ForecastSectionV2Properties {
     @ApiModelProperty(value = "Forecast section length in meters")
     private Integer length;
 
+    @ApiModelProperty(value = "Forecast section road segments. Refers to https://aineistot.liikennevirasto.fi/digiroad/")
+    private List<RoadSegment> roadSegments;
+
     public ForecastSectionV2Properties() {
     }
 
     public ForecastSectionV2Properties(final String naturalId, final String description, final int roadNumber, final int roadSectionNumber,
-                                       final Integer length) {
+                                       final Integer length,
+                                       final List<RoadSegment> roadSegments) {
         this.naturalId = naturalId;
         this.description = description;
         this.roadNumber = roadNumber;
         this.roadSectionNumber = roadSectionNumber;
         this.length = length;
+        this.roadSegments = roadSegments;
     }
 
     public String getNaturalId() {
@@ -61,5 +69,9 @@ public class ForecastSectionV2Properties {
 
     public Integer getLength() {
         return length;
+    }
+
+    public List<RoadSegment> getRoadSegments() {
+        return roadSegments;
     }
 }

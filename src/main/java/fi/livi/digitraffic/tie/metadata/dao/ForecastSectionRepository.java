@@ -23,16 +23,14 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     List<ForecastSection> findDistinctByVersionIsOrderByNaturalIdAsc(final int version);
 
     @Modifying
-    @Query(value = "DELETE FROM forecast_section_coordinate_list WHERE forecast_section_id IN (SELECT id FROM forecast_section WHERE version = :version)",
+    @Query(value = "DELETE FROM forecast_section_coordinate_list WHERE forecast_section_id IN " +
+                   "(SELECT id FROM forecast_section WHERE version = :version AND obsolete_date IS NULL)",
            nativeQuery = true)
-    void deleteAllCoordinates(@Param("version") final int version);
+    void deleteCoordinates(@Param("version") final int version);
 
     @Modifying
-    @Query(value = "UPDATE forecast_section SET obsolete_date = now() WHERE version = :version AND obsolete_date IS NULL", nativeQuery = true)
-    void obsoleteAll(@Param("version") final int version);
-
-    @Modifying
-    @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
+    @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN " +
+                   "(SELECT forecast_section_id FROM forecast_section WHERE version = :version AND obsolete_date IS NULL)",
            nativeQuery = true)
     void deleteRoadSegments(@Param("version") final int version);
 
@@ -40,4 +38,8 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @Query(value = "DELETE FROM link_id WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
            nativeQuery = true)
     void deleteLinkIds(@Param("version") final int version);
+
+    @Modifying
+    @Query(value = "DELETE FROM forecast_section WHERE natural_id NOT IN (:naturalIds) AND version = :version", nativeQuery = true)
+    void deleteAllNotIn(@Param("naturalIds") final List<String> naturalIds, @Param("version") final int version);
 }

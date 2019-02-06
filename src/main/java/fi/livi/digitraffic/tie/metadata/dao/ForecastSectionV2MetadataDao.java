@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.RoadSegmentDto;
@@ -26,6 +27,7 @@ public class ForecastSectionV2MetadataDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    // FIXME: forecast_section natural_id should be unique?
     private static final String insertForecastSection =
         "INSERT INTO forecast_section(id, natural_id, description, length, version) " +
         "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version) " +
@@ -38,19 +40,18 @@ public class ForecastSectionV2MetadataDao {
 
     private static final String insertCoordinateList =
         "INSERT INTO forecast_section_coordinate_list(forecast_section_id, order_number) " +
-        "VALUES((SELECT id FROM forecast_Section WHERE natural_id = :naturalId), :orderNumber)";
+        "VALUES((SELECT id FROM forecast_Section WHERE natural_id = :naturalId and version = :version), :orderNumber)";
 
     private static final String insertCoordinate =
         "INSERT INTO forecast_section_coordinate(forecast_section_id, list_order_number, order_number, longitude, latitude) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String selectAll =
-        "SELECT fsc.order_number as c_order_number, * \n" +
-        "FROM forecast_section_coordinate fsc \n" +
-        "       LEFT OUTER JOIN forecast_section_coordinate_list fscl \n" +
-        "         ON fsc.forecast_section_id = fscl.forecast_section_id AND fsc.list_order_number = fscl.order_number \n" +
-        "       LEFT OUTER JOIN forecast_section f ON f.id = fscl.forecast_section_id \n" +
-        "WHERE f.version = 2 \n" +
+        "SELECT fsc.order_number as c_order_number, rs.order_number as rs_order_number, rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, *\n" +
+        "FROM forecast_section f LEFT OUTER JOIN forecast_section_coordinate_list fsc on f.id = fsc.forecast_section_id\n" +
+        "          LEFT OUTER JOIN forecast_section_coordinate c ON c.forecast_section_id = fsc.forecast_section_id and c.list_order_number = fsc.order_number\n" +
+        "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
+        "WHERE f.version = 2\n" +
         "ORDER BY f.natural_id";
 
     private static final String insertRoadSegment =
@@ -133,18 +134,33 @@ public class ForecastSectionV2MetadataDao {
                                                                                                                       rs.getString("description"),
                                                                                                                       Integer.parseInt(rs.getString("road_number")),
                                                                                                                       Integer.parseInt(rs.getString("road_section_number")),
-                                                                                                                      rs.getInt("length")));
+                                                                                                                      rs.getInt("length"),
+                                                                                                                      new ArrayList<>()));
 
                 setCoordinate(rs, feature);
+                setRoadSegment(rs, feature);
 
                 featureMap.put(naturalId, feature);
             } else {
                 setCoordinate(rs, featureMap.get(naturalId));
+                setRoadSegment(rs, featureMap.get(naturalId));
             }
         });
 
         return featureMap.values().stream()
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
+    }
+
+    private void setRoadSegment(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
+        final int orderNumber = rs.getInt("rs_order_number");
+
+        while(feature.getProperties().getRoadSegments().size() < orderNumber) {
+            feature.getProperties().getRoadSegments().add(new RoadSegment());
+        }
+        final RoadSegment roadSegment = feature.getProperties().getRoadSegments().get(orderNumber - 1);
+
+        roadSegment.setStartDistance(rs.getInt("rs_start_distance"));
+        roadSegment.setEndDistance(rs.getInt("rs_end_distance"));
     }
 
     private static void setCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
@@ -180,6 +196,7 @@ public class ForecastSectionV2MetadataDao {
         final HashMap<String, Object> args = new HashMap<>();
         args.put("naturalId", naturalId);
         args.put("orderNumber", orderNumber);
+        args.put("version", 2);
         return new MapSqlParameterSource(args);
     }
 

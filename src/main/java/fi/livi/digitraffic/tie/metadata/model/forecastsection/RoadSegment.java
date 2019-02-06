@@ -9,16 +9,24 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 public class RoadSegment {
 
     @EmbeddedId
+    @JsonIgnore
     private RoadSegmentPK roadSegmentPK;
 
+    @ApiModelProperty(value = "Road segment start distance")
     private Integer startDistance;
 
+    @ApiModelProperty(value = "Road segment end distance")
     private Integer endDistance;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
