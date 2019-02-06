@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.helper.DaoUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
@@ -47,7 +48,8 @@ public class ForecastSectionV2MetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String selectAll =
-        "SELECT fsc.order_number as c_order_number, rs.order_number as rs_order_number, rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, *\n" +
+        "SELECT fsc.order_number as c_order_number, rs.order_number as rs_order_number, " +
+        "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway, *\n" +
         "FROM forecast_section f LEFT OUTER JOIN forecast_section_coordinate_list fsc on f.id = fsc.forecast_section_id\n" +
         "          LEFT OUTER JOIN forecast_section_coordinate c ON c.forecast_section_id = fsc.forecast_section_id and c.list_order_number = fsc.order_number\n" +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
@@ -55,8 +57,8 @@ public class ForecastSectionV2MetadataDao {
         "ORDER BY f.natural_id";
 
     private static final String insertRoadSegment =
-        "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance) " +
-        "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance)";
+        "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
+        "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance, :carriageway)";
 
     private static final String insertLinkIds =
         "INSERT INTO link_id(forecast_section_id, order_number, link_id) " +
@@ -161,6 +163,7 @@ public class ForecastSectionV2MetadataDao {
 
         roadSegment.setStartDistance(rs.getInt("rs_start_distance"));
         roadSegment.setEndDistance(rs.getInt("rs_end_distance"));
+        roadSegment.setCarriageway(DaoUtils.findInteger(rs, "rs_carriageway"));
     }
 
     private static void setCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
@@ -222,6 +225,7 @@ public class ForecastSectionV2MetadataDao {
         args.put("orderNumber", orderNumber);
         args.put("startDistance", roadSegmentDto.getStartDistance());
         args.put("endDistance", roadSegmentDto.getEndDistance());
+        args.put("carriageway", roadSegmentDto.getCarriageway());
         return new MapSqlParameterSource(args);
     }
 

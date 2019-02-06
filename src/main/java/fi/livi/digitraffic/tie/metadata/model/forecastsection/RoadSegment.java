@@ -10,10 +10,13 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadSegment {
 
     @EmbeddedId
@@ -26,6 +29,9 @@ public class RoadSegment {
     @ApiModelProperty(value = "Road segment end distance")
     private Integer endDistance;
 
+    @ApiModelProperty(value = "Road segment carriageway")
+    private Integer carriageway;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="forecast_section_id", nullable = false, referencedColumnName = "id", insertable = false, updatable = false)
@@ -36,10 +42,11 @@ public class RoadSegment {
     }
 
     public RoadSegment(RoadSegmentPK roadSegmentPK, Integer startDistance, Integer endDistance,
-                       ForecastSection forecastSection) {
+                       Integer carriageway, ForecastSection forecastSection) {
         this.roadSegmentPK = roadSegmentPK;
         this.startDistance = startDistance;
         this.endDistance = endDistance;
+        this.carriageway = carriageway;
         this.forecastSection = forecastSection;
     }
 
@@ -65,6 +72,14 @@ public class RoadSegment {
 
     public void setEndDistance(Integer endDistance) {
         this.endDistance = endDistance;
+    }
+
+    public Integer getCarriageway() {
+        return carriageway;
+    }
+
+    public void setCarriageway(Integer carriageway) {
+        this.carriageway = carriageway;
     }
 
     public ForecastSection getForecastSection() {

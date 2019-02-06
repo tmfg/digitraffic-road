@@ -6,6 +6,8 @@ public class RoadSegmentDto {
 
     private Integer endDistance;
 
+    private Integer carriageway;
+
     public RoadSegmentDto() {
     }
 
@@ -23,5 +25,13 @@ public class RoadSegmentDto {
 
     public void setEndDistance(Integer endDistance) {
         this.endDistance = endDistance;
+    }
+
+    public Integer getCarriageway() {
+        return carriageway;
+    }
+
+    public void setCarriageway(Integer carriageway) {
+        this.carriageway = carriageway;
     }
 }

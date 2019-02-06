@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS road_segment (
   forecast_section_id NUMERIC(10),
   order_number        INTEGER,
   start_distance      INTEGER,
-  end_distance        INTEGER
+  end_distance        INTEGER,
+  carriageway         INTEGER
 );
 
 ALTER TABLE road_segment ADD CONSTRAINT road_segment_pk PRIMARY KEY (forecast_section_id, order_number);
