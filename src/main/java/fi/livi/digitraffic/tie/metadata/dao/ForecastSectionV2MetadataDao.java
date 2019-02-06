@@ -48,7 +48,7 @@ public class ForecastSectionV2MetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String selectAll =
-        "SELECT fsc.order_number as c_order_number, rs.order_number as rs_order_number, " +
+        "SELECT c.order_number as c_order_number, rs.order_number as rs_order_number, " +
         "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway, *\n" +
         "FROM forecast_section f LEFT OUTER JOIN forecast_section_coordinate_list fsc on f.id = fsc.forecast_section_id\n" +
         "          LEFT OUTER JOIN forecast_section_coordinate c ON c.forecast_section_id = fsc.forecast_section_id and c.list_order_number = fsc.order_number\n" +
