@@ -1,20 +1,25 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +80,27 @@ public class QuartzSchedulerConfig {
             @Override
             protected Scheduler createScheduler(SchedulerFactory schedulerFactory, String schedulerName) throws SchedulerException {
                 Scheduler scheduler = super.createScheduler(schedulerFactory, schedulerName);
-                // Clear previous job definitions
-                scheduler.clear();
+
+                final List<Trigger> triggers = triggerBeans.isPresent() ? triggerBeans.get() : Collections.emptyList();
+                final Set<JobKey> jobKeys = triggers.stream().map(f -> f.getJobKey()).collect(Collectors.toSet());
+
+                // Remove jobs from the db that are not in current apps job list
+                for (String groupName : scheduler.getJobGroupNames()) {
+                    for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                        if (!jobKeys.contains(jobKey)) {
+                            try {
+                                log.error("Deleting job={}", jobKey);
+                                scheduler.deleteJob(jobKey);
+                            } catch (SchedulerException e) {
+                                log.error("Deleting job=" + jobKey + " failed", e);
+                            }
+                        }
+                    }
+                }
                 return scheduler;
             }
         };
+        factory.setOverwriteExistingJobs(true);
         factory.setDataSource(dataSource);
         factory.setJobFactory(jobFactory);
         factory.setQuartzProperties(quartzProperties());
@@ -89,7 +110,6 @@ public class QuartzSchedulerConfig {
             triggers.forEach(triggerBean -> log.info("Schedule trigger={}", triggerBean.getJobKey()));
             factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
         }
-
         return factory;
     }
 
