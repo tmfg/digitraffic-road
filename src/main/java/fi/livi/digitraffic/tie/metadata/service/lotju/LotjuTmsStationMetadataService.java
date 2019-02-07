@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -18,8 +17,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,30 +56,35 @@ public class LotjuTmsStationMetadataService {
         final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new ConcurrentHashMap<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(1);
-        final CompletionService<Integer> completionService = new ExecutorCompletionService<>(executor);
+        final CompletionService<Pair<Long, List<LamLaskennallinenAnturiVO>>> completionService = new ExecutorCompletionService<>(executor);
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(new LaskennallinenanturiFetcher(tmsLotjuId, lamAnturisMappedByTmsLotjuId));
+            completionService.submit(() -> Pair.of(tmsLotjuId, lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId)));
         }
 
-        final MutableInt countAnturis = new MutableInt();
-        // Tämä laskenta on välttämätön, jotta executor suorittaa loppuun jokaisen submitatun taskin.
-        tmsLotjuIds.forEach(id -> {
+        int countAnturis = 0;
+        // It's necessary to wait all executors to complete.
+        int handledCount = 0;
+        while (handledCount < tmsLotjuIds.size()) {
+            handledCount++;
             try {
-                final Future<Integer> f = completionService.take();
-                countAnturis.addAndGet(f.get());
-                log.debug("Got {} anturis", f.get());
+                final Future<Pair<Long, List<LamLaskennallinenAnturiVO>>> f = completionService.take();
+                final Long tmsLotjuId = f.get().getKey();
+                final List<LamLaskennallinenAnturiVO> anturis = f.get().getValue();
+                lamAnturisMappedByTmsLotjuId.put(tmsLotjuId, anturis);
+                countAnturis += anturis.size();
+                log.debug("Got {} anturis", anturis.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamLaskennallinenAnturis", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
-        });
+        }
         executor.shutdown();
 
         log.info("lamFetchedCount={} LamLaskennallinenAnturis for lamStationCount={} LAMAsemas, tookMs={}",
-                 countAnturis.getValue(), lamAnturisMappedByTmsLotjuId.size(), start.getTime());
+                 countAnturis, lamAnturisMappedByTmsLotjuId.size(), start.getTime());
         return lamAnturisMappedByTmsLotjuId;
     }
 
@@ -94,11 +98,13 @@ public class LotjuTmsStationMetadataService {
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(new AnturiVakioFetcher(tmsLotjuId));
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId));
         }
 
         // It's necessary to wait all executors to complete.
-        tmsLotjuIds.forEach(id -> {
+        int handledCount = 0;
+        while (handledCount < tmsLotjuIds.size()) {
+            handledCount++;
             try {
                 final List<LamAnturiVakioVO> values = completionService.take().get();
                 allAnturiVakios.addAll(values);
@@ -108,7 +114,7 @@ public class LotjuTmsStationMetadataService {
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
-        });
+        }
         executor.shutdown();
 
         log.info("method=getAllLamAnturiVakios fetchedCount={} for lamStationCount={} tookMs={}",
@@ -129,7 +135,8 @@ public class LotjuTmsStationMetadataService {
         int monthCounter = 0;
         while (monthCounter < 12) {
             monthCounter++;
-            completionService.submit(new AnturiVakioArvoFetcher(monthCounter, 1));
+            final int month = monthCounter;
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, 1));
         }
         log.info("Fetch LamAnturiVakioArvos for {} months", monthCounter);
 
@@ -159,54 +166,6 @@ public class LotjuTmsStationMetadataService {
         log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
                  countLamAnturiVakioArvos, monthCounter, distincLamAnturiVakios.size(), start.getTime());
         return distincLamAnturiVakios;
-    }
-
-    private class LaskennallinenanturiFetcher implements Callable<Integer> {
-
-        private final Long tmsLotjuId;
-        private final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId;
-
-        public LaskennallinenanturiFetcher(final Long tmsLotjuId, final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> currentLamAnturisMappedByTmsLotjuId) {
-            this.tmsLotjuId = tmsLotjuId;
-            this.currentLamAnturisMappedByTmsLotjuId = currentLamAnturisMappedByTmsLotjuId;
-        }
-
-        @Override
-        public Integer call() throws Exception {
-            final List<LamLaskennallinenAnturiVO> anturis = lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId);
-            currentLamAnturisMappedByTmsLotjuId.put(tmsLotjuId, anturis);
-            return anturis.size();
-        }
-    }
-
-    private class AnturiVakioFetcher implements Callable<List<LamAnturiVakioVO>> {
-
-        private final Long tmsLotjuId;
-
-        public AnturiVakioFetcher(final Long tmsLotjuId) {
-            this.tmsLotjuId = tmsLotjuId;
-        }
-
-        @Override
-        public List<LamAnturiVakioVO> call() throws Exception {
-            return lotjuTmsStationMetadataClient.getAsemanAnturiVakios(tmsLotjuId);
-        }
-    }
-
-    private class AnturiVakioArvoFetcher implements Callable<List<LamAnturiVakioArvoVO>> {
-
-        private final int month;
-        private final int dayOfMonth;
-
-        public AnturiVakioArvoFetcher(final int month, final int dayOfMonth) {
-            this.month = month;
-            this.dayOfMonth = dayOfMonth;
-        }
-
-        @Override
-        public List<LamAnturiVakioArvoVO> call() throws Exception {
-            return lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, dayOfMonth);
-        }
     }
 
     private class LamAnturiVakioArvoWrapper {
