@@ -17,7 +17,6 @@ import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstantValue;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorConstantUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 
 public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractTest {
@@ -35,9 +34,6 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractTest
 
     @Autowired
     private TmsStationUpdater tmsStationUpdater;
-
-    @Autowired
-    private TmsStationService tmsStationService;
 
     @Autowired
     TmsStationSensorConstantService tmsStationSensorConstantService;
