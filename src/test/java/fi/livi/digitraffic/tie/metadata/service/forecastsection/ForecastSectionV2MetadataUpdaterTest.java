@@ -5,7 +5,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,8 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
@@ -34,6 +34,9 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
+
+    @Autowired
+    private ForecastSectionV2MetadataService forecastSectionV2MetadataService;
 
     @Autowired
     private ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
@@ -64,32 +67,28 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(2);
+        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false);
 
-        assertEquals(9473, forecastSections.size());
+        final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
 
-        final ForecastSection forecastSection =
-            forecastSections.stream().filter(f -> f.getNaturalId().equals("00005_124_02100_0_0")).findFirst().get();
+        assertEquals(9473, featureCollection.getFeatures().size());
 
-        assertEquals(2, forecastSection.getForecastSectionCoordinateLists().size());
+        assertEquals("00001_001_00000_1_0", feature.getProperties().getNaturalId());
 
-        assertEquals(2, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().size());
-        assertCoordinates(27.0789783, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLongitude().doubleValue());
-        assertCoordinates(61.6419140, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(0).getLatitude().doubleValue());
-        assertCoordinates(27.0793790, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(1).getLongitude().doubleValue());
-        assertCoordinates(61.6420209, forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates().get(1).getLatitude().doubleValue());
-        assertEquals(1, forecastSection.getRoadSegments().size());
-        assertEquals(2100, forecastSection.getRoadSegments().get(0).getStartDistance().intValue());
-        assertEquals(2148, forecastSection.getRoadSegments().get(0).getEndDistance().intValue());
-        assertEquals(2, forecastSection.getLinkIds().size());
-        assertEquals(3231234L, forecastSection.getLinkIds().get(0).getLinkId().longValue());
-        assertEquals(3231239L, forecastSection.getLinkIds().get(1).getLinkId().longValue());
+        assertEquals(2, feature.getGeometry().coordinates.get(0).size());
+        assertCoordinates(24.9430081, feature.getGeometry().coordinates.get(0).get(0).get(0));
+        assertCoordinates(60.1667212, feature.getGeometry().coordinates.get(0).get(0).get(1));
+        assertCoordinates(24.9418095, feature.getGeometry().coordinates.get(0).get(1).get(0));
+        assertCoordinates(60.1675145, feature.getGeometry().coordinates.get(0).get(1).get(1));
+        assertEquals(12, feature.getGeometry().coordinates.get(70).size());
+        assertCoordinates(24.9336238, feature.getGeometry().coordinates.get(70).get(0).get(0));
+        assertCoordinates(60.1739127, feature.getGeometry().coordinates.get(70).get(0).get(1));
 
-        assertEquals(2, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().size());
-        assertCoordinates(27.0793790, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().get(0).getLongitude().doubleValue());
-        assertCoordinates(61.6420209, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().get(0).getLatitude().doubleValue());
-        assertCoordinates(27.0797605, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().get(1).getLongitude().doubleValue());
-        assertCoordinates(61.6421227, forecastSection.getForecastSectionCoordinateLists().get(1).getForecastSectionCoordinates().get(1).getLatitude().doubleValue());
+        assertEquals(2, feature.getProperties().getRoadSegments().size());
+        assertEquals(0, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
+        assertEquals(3264, feature.getProperties().getRoadSegments().get(1).getEndDistance().intValue());
+        // TODO: assert linkIds
+
     }
 
     private void assertCoordinates(final double expected, final double actual) {
