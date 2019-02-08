@@ -24,4 +24,4 @@ services:
         - db_network
       links:
         - "db:db"
-      command: ["./wait-for-postgres.sh", "db", "marine", "marine", "marine"]
+      command: ["./wait-for-postgres.sh", "db", "road", "road", "road"]
