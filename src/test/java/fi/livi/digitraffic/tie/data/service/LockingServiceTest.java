@@ -33,7 +33,7 @@ public class LockingServiceTest extends AbstractTest {
     private static final int LOCK_COUNT = 3;
     private static final int THREAD_COUNT = 2;
 
-    private static final int LOCKING_TIME_EXTRA = 10; // how long it takes after obtaining lock to get timestamp?
+    private static final int LOCKING_TIME_EXTRA = 20; // how long it takes after obtaining lock to get timestamp?
 
     @Autowired
     private LockingDao lockingDao;
