@@ -39,6 +39,10 @@ public class LinkId {
         return linkId;
     }
 
+    public void setLinkId(final Long linkId) {
+        this.linkId = linkId;
+    }
+
     public ForecastSection getForecastSection() {
         return forecastSection;
     }

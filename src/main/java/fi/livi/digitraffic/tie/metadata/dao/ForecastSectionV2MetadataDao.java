@@ -18,6 +18,7 @@ import fi.livi.digitraffic.tie.helper.DaoUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
+import fi.livi.digitraffic.tie.metadata.model.forecastsection.LinkId;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
@@ -49,10 +50,12 @@ public class ForecastSectionV2MetadataDao {
 
     private static final String selectAll =
         "SELECT c.order_number as c_order_number, rs.order_number as rs_order_number, " +
-        "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway, *\n" +
+        "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway," +
+        "li.order_number as li_order_number, *\n" +
         "FROM forecast_section f LEFT OUTER JOIN forecast_section_coordinate_list fsc on f.id = fsc.forecast_section_id\n" +
         "          LEFT OUTER JOIN forecast_section_coordinate c ON c.forecast_section_id = fsc.forecast_section_id and c.list_order_number = fsc.order_number\n" +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
+        "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
         "WHERE f.version = 2\n" +
         "ORDER BY f.natural_id";
 
@@ -124,6 +127,7 @@ public class ForecastSectionV2MetadataDao {
     }
 
     public List<ForecastSectionV2Feature> findForecastSectionV2Features() {
+        jdbcTemplate.getJdbcTemplate().setFetchSize(1000);
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
         jdbcTemplate.query(selectAll, rs -> {
@@ -137,15 +141,18 @@ public class ForecastSectionV2MetadataDao {
                                                                                                                       Integer.parseInt(rs.getString("road_number")),
                                                                                                                       Integer.parseInt(rs.getString("road_section_number")),
                                                                                                                       rs.getInt("length"),
+                                                                                                                      new ArrayList<>(),
                                                                                                                       new ArrayList<>()));
 
                 setCoordinate(rs, feature);
                 setRoadSegment(rs, feature);
+                setLinkId(rs, feature);
 
                 featureMap.put(naturalId, feature);
             } else {
                 setCoordinate(rs, featureMap.get(naturalId));
                 setRoadSegment(rs, featureMap.get(naturalId));
+                setLinkId(rs, featureMap.get(naturalId));
             }
         });
 
@@ -153,10 +160,21 @@ public class ForecastSectionV2MetadataDao {
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
     }
 
-    private void setRoadSegment(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
+    private static void setLinkId(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
+        final int orderNumber = rs.getInt("li_order_number");
+
+        while (feature.getProperties().getLinkIdList().size() < orderNumber) {
+            feature.getProperties().getLinkIdList().add(new LinkId());
+        }
+
+        final LinkId linkId = feature.getProperties().getLinkIdList().get(orderNumber - 1);
+        linkId.setLinkId(rs.getLong("link_id"));
+    }
+
+    private static void setRoadSegment(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
         final int orderNumber = rs.getInt("rs_order_number");
 
-        while(feature.getProperties().getRoadSegments().size() < orderNumber) {
+        while (feature.getProperties().getRoadSegments().size() < orderNumber) {
             feature.getProperties().getRoadSegments().add(new RoadSegment());
         }
         final RoadSegment roadSegment = feature.getProperties().getRoadSegments().get(orderNumber - 1);
