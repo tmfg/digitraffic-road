@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,10 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.helper.DaoUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -26,6 +32,8 @@ import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.RoadSegme
 
 @Repository
 public class ForecastSectionV2MetadataDao {
+
+    private static final Logger log = LoggerFactory.getLogger(ForecastSectionV2MetadataDao.class);
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -49,15 +57,21 @@ public class ForecastSectionV2MetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String selectAll =
-        "SELECT c.order_number as c_order_number, rs.order_number as rs_order_number, " +
+        "SELECT rs.order_number as rs_order_number, " +
         "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway," +
-        "li.order_number as li_order_number, *\n" +
-        "FROM forecast_section f LEFT OUTER JOIN forecast_section_coordinate_list fsc on f.id = fsc.forecast_section_id\n" +
-        "          LEFT OUTER JOIN forecast_section_coordinate c ON c.forecast_section_id = fsc.forecast_section_id and c.list_order_number = fsc.order_number\n" +
+        "li.order_number as li_order_number, * " +
+        "FROM forecast_section f " +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
         "WHERE f.version = 2\n" +
         "ORDER BY f.natural_id";
+
+    private static final String selectCoordinates =
+        "SELECT natural_id, list_order_number, '[' ||string_agg('['|| longitude ||','|| latitude ||']', ',') || ']' as coordinates\n" +
+        "FROM forecast_section_coordinate c inner join forecast_section f on c.forecast_section_id = f.id\n" +
+        "WHERE f.version = 2\n " +
+        "GROUP BY natural_id, list_order_number\n" +
+        "ORDER BY natural_id, list_order_number";
 
     private static final String insertRoadSegment =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
@@ -143,17 +157,26 @@ public class ForecastSectionV2MetadataDao {
                                                                                                                       rs.getInt("length"),
                                                                                                                       new ArrayList<>(),
                                                                                                                       new ArrayList<>()));
-
-                setCoordinate(rs, feature);
                 setRoadSegment(rs, feature);
                 setLinkId(rs, feature);
 
                 featureMap.put(naturalId, feature);
             } else {
-                setCoordinate(rs, featureMap.get(naturalId));
                 setRoadSegment(rs, featureMap.get(naturalId));
                 setLinkId(rs, featureMap.get(naturalId));
             }
+        });
+
+        jdbcTemplate.query(selectCoordinates, rs -> {
+            final TypeReference<List<List<Double>>> typeReference = new TypeReference<List<List<Double>>>() {};
+            List coordinates = new ArrayList();
+            try {
+                coordinates = new ObjectMapper().readValue(rs.getString("coordinates"), typeReference);
+            } catch (IOException e) {
+                log.error("method=findForecastSectionV2Features coordinates objectMapper readValue error");
+            }
+            final ForecastSectionV2Feature feature = featureMap.get(rs.getString("natural_id"));
+            feature.getGeometry().coordinates.add(coordinates);
         });
 
         return featureMap.values().stream()

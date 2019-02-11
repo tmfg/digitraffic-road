@@ -87,8 +87,10 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         assertEquals(2, feature.getProperties().getRoadSegments().size());
         assertEquals(0, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
         assertEquals(3264, feature.getProperties().getRoadSegments().get(1).getEndDistance().intValue());
-        // TODO: assert linkIds
 
+        assertEquals(52, feature.getProperties().getLinkIdList().size());
+        assertEquals(441054L, feature.getProperties().getLinkIdList().get(0).getLinkId().longValue());
+        assertEquals(452523L, feature.getProperties().getLinkIdList().get(51).getLinkId().longValue());
     }
 
     private void assertCoordinates(final double expected, final double actual) {
