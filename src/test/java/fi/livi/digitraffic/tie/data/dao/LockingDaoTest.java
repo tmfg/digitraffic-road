@@ -23,10 +23,10 @@ import fi.livi.digitraffic.tie.RoadApplication;
 public class LockingDaoTest {
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 
-    private static final String LOCK_NAME_1 = "Lock1";
+    private static final String LOCK_NAME_1 = LockingDaoTest.class.getSimpleName()+"1";
     private static final String INSTANCE_ID_1 = "1";
     private static final int EXPIRATION_SECONDS = 5;
-    private static final String LOCK_NAME_2 = "Lock2";
+    private static final String LOCK_NAME_2 = LockingDaoTest.class.getSimpleName()+"2";
     private static final String INSTANCE_ID_2 = "2";
 
     @Autowired
