@@ -47,6 +47,9 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractTest
         tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
         tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantsValues();
 
+        entityManager.flush();
+        entityManager.clear();
+
         TmsSensorConstantRootDto sensorConstantValuesBefore =
             tmsDataService.findPublishableSensorConstants(false);
 
