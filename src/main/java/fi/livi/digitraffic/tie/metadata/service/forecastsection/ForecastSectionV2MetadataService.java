@@ -30,21 +30,25 @@ public class ForecastSectionV2MetadataService {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo) {
+    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, Integer roadNumber) {
 
-        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA);
-        final ZonedDateTime metadataChecked = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK);
-
-        final ForecastSectionV2FeatureCollection featureCollection = new ForecastSectionV2FeatureCollection(metadataUpdated, metadataChecked);
+        final ForecastSectionV2FeatureCollection featureCollection = getFeatureCollection();
 
         if (onlyUpdateInfo) {
             return featureCollection;
         }
 
-        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features();
+        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features(roadNumber);
         featureCollection.addAll(features);
 
         return featureCollection;
+    }
+
+    private ForecastSectionV2FeatureCollection getFeatureCollection() {
+        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA);
+        final ZonedDateTime metadataChecked = dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK);
+
+        return new ForecastSectionV2FeatureCollection(metadataUpdated, metadataChecked);
     }
 
     // FIXME turha?

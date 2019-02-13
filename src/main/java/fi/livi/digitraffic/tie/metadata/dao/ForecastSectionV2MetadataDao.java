@@ -60,13 +60,13 @@ public class ForecastSectionV2MetadataDao {
         "FROM forecast_section f " +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2\n" +
+        "WHERE f.version = 2 --<CONDITIONS>\n" +
         "ORDER BY f.natural_id";
 
     private static final String selectCoordinates =
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| longitude ||','|| latitude ||']' ORDER BY order_number), ',') || ']' AS coordinates\n" +
         "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2\n" +
+        "WHERE f.version = 2 --<CONDITIONS>\n" +
         "GROUP BY natural_id, list_order_number\n" +
         "ORDER BY natural_id, list_order_number";
 
@@ -137,11 +137,17 @@ public class ForecastSectionV2MetadataDao {
         jdbcTemplate.batchUpdate(insertCoordinate, coordinateSources);
     }
 
-    public List<ForecastSectionV2Feature> findForecastSectionV2Features() {
+    public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber) {
 
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
-        jdbcTemplate.query(selectAll, rs -> {
+        final String queryAll = roadNumber == null ? selectAll : selectAll.replace("--<CONDITIONS>", "AND f.road_number::integer = :roadNumber\n");
+        final HashMap<String, Object> args = new HashMap<>();
+        if (roadNumber != null) {
+            args.put("roadNumber", roadNumber);
+        }
+
+        jdbcTemplate.query(queryAll, args, rs -> {
             final String naturalId = rs.getString("natural_id");
 
             if (!featureMap.containsKey(naturalId)) {
@@ -164,7 +170,9 @@ public class ForecastSectionV2MetadataDao {
             }
         });
 
-        jdbcTemplate.query(selectCoordinates, rs -> {
+        final String queryCoordinates = roadNumber == null ? selectCoordinates : selectCoordinates.replace("--<CONDITIONS>", "AND f.road_number::integer = :roadNumber\n");
+
+        jdbcTemplate.query(queryCoordinates, args, rs -> {
             final TypeReference<List<List<Double>>> typeReference = new TypeReference<List<List<Double>>>() {};
             List coordinates = new ArrayList();
             try {

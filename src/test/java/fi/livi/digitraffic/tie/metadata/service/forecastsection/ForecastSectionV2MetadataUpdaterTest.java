@@ -67,7 +67,7 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false);
+        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
 
@@ -93,6 +93,39 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         assertEquals(52, feature.getProperties().getLinkIdList().size());
         assertEquals(441054L, feature.getProperties().getLinkIdList().get(0).longValue());
         assertEquals(452523L, feature.getProperties().getLinkIdList().get(51).longValue());
+    }
+
+    @Test
+    public void findForecastSectionsByRoadNumberSucceeds() throws IOException {
+
+        server.expect(requestTo("/nullroadsV2.php"))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(
+                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
+
+        forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+
+        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3);
+
+        assertEquals(2, featureCollection.getFeatures().size());
+
+        final ForecastSectionV2Feature feature1 = featureCollection.getFeatures().get(0);
+        final ForecastSectionV2Feature feature2 = featureCollection.getFeatures().get(1);
+
+        assertEquals("00003_218_04302_0_0", feature1.getProperties().getNaturalId());
+        assertEquals("Vaasantie 3.218", feature1.getProperties().getDescription());
+        assertEquals(1, feature1.getProperties().getRoadSegments().size());
+        assertEquals(16, feature1.getProperties().getLinkIdList().size());
+        assertEquals("MultiLineString", feature1.getGeometry().type);
+        assertEquals(16, feature1.getGeometry().coordinates.size());
+        assertEquals(9, feature1.getGeometry().coordinates.get(0).size());
+        assertCoordinates(22.9983705, feature1.getGeometry().coordinates.get(0).get(0).get(0));
+        assertCoordinates(62.1215860, feature1.getGeometry().coordinates.get(0).get(0).get(1));
+        assertCoordinates(22.9800960, feature1.getGeometry().coordinates.get(14).get(2).get(0));
+        assertCoordinates(62.1412124, feature1.getGeometry().coordinates.get(14).get(2).get(1));
+
+        assertEquals("00003_226_00000_0_0", feature2.getProperties().getNaturalId());
+        assertEquals("Tampereentie 3.226", feature2.getProperties().getDescription());
     }
 
     private void assertCoordinates(final double expected, final double actual) {

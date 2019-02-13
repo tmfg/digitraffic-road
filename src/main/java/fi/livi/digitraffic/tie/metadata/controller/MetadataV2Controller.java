@@ -40,7 +40,7 @@ public class MetadataV2Controller {
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated);
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null);
     }
 
 }
