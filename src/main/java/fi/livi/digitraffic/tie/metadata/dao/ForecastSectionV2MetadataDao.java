@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -204,25 +203,7 @@ public class ForecastSectionV2MetadataDao {
         roadSegment.setCarriageway(DaoUtils.findInteger(rs, "rs_carriageway"));
     }
 
-    private static void setCoordinate(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
-        final int listOrderNumber = rs.getInt("list_order_number");
-
-        while (feature.getGeometry().coordinates.size() < listOrderNumber) {
-            feature.getGeometry().coordinates.add(new ArrayList<>());
-        }
-
-        final List<List<Double>> list = feature.getGeometry().coordinates.get(listOrderNumber - 1);
-
-        final int coordinateOrderNumber = rs.getInt("c_order_number");
-
-        while (list.size() < coordinateOrderNumber) {
-            list.add(new ArrayList<>());
-        }
-
-        list.set(coordinateOrderNumber - 1, Arrays.asList(rs.getDouble("longitude"), rs.getDouble("latitude")));
-    }
-
-    private MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,
+    private static MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,
                                                             final Coordinate coordinate) {
         final HashMap<String, Object> args = new HashMap<>();
         args.put("naturalId", naturalId);
@@ -257,7 +238,7 @@ public class ForecastSectionV2MetadataDao {
         jdbcTemplate.batchUpdate(insertRoadSegment, segmentSources);
     }
 
-    private MapSqlParameterSource roadSegmentParameterSource(final ForecastSectionV2FeatureDto feature, final RoadSegmentDto roadSegmentDto, final int orderNumber) {
+    private static MapSqlParameterSource roadSegmentParameterSource(final ForecastSectionV2FeatureDto feature, final RoadSegmentDto roadSegmentDto, final int orderNumber) {
         final HashMap<String, Object> args = new HashMap<>();
         args.put("naturalId", feature.getProperties().getId());
         args.put("orderNumber", orderNumber);
@@ -283,7 +264,7 @@ public class ForecastSectionV2MetadataDao {
         jdbcTemplate.batchUpdate(insertLinkIds, linkIdSources);
     }
 
-    private MapSqlParameterSource linkIdParameterSource(final ForecastSectionV2FeatureDto feature, final Long linkId, final int orderNumber) {
+    private static MapSqlParameterSource linkIdParameterSource(final ForecastSectionV2FeatureDto feature, final Long linkId, final int orderNumber) {
         final HashMap<String, Object> args = new HashMap<>();
         args.put("naturalId", feature.getProperties().getId());
         args.put("orderNumber", orderNumber);
