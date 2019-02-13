@@ -24,7 +24,6 @@ import fi.livi.digitraffic.tie.helper.DaoUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.LinkId;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
@@ -187,11 +186,10 @@ public class ForecastSectionV2MetadataDao {
         final int orderNumber = rs.getInt("li_order_number");
 
         while (feature.getProperties().getLinkIdList().size() < orderNumber) {
-            feature.getProperties().getLinkIdList().add(new LinkId());
+            feature.getProperties().getLinkIdList().add(0L);
         }
 
-        final LinkId linkId = feature.getProperties().getLinkIdList().get(orderNumber - 1);
-        linkId.setLinkId(rs.getLong("link_id"));
+        feature.getProperties().getLinkIdList().set(orderNumber - 1, rs.getLong("link_id"));
     }
 
     private static void setRoadSegment(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {

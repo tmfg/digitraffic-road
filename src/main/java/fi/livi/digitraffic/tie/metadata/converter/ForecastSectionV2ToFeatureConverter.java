@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,8 @@ public class ForecastSectionV2ToFeatureConverter {
     private static ForecastSectionV2Properties getProperties(final ForecastSection forecastSection) {
         return new ForecastSectionV2Properties(forecastSection.getNaturalId(), forecastSection.getDescription(),
                                                forecastSection.getRoadNumber(), forecastSection.getRoadSectionNumber(), forecastSection.getLength(),
-                                               forecastSection.getRoadSegments(), forecastSection.getLinkIds());
+                                               forecastSection.getRoadSegments(),
+                                               forecastSection.getLinkIds().stream().map(l -> l.getLinkId()).collect(Collectors.toList()));
     }
 
     private static MultiLineString getGeometry(final List<ForecastSectionCoordinateList> forecastSectionCoordinateLists) {

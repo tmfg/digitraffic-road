@@ -5,7 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.LinkId;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -39,7 +38,7 @@ public class ForecastSectionV2Properties {
     private List<RoadSegment> roadSegments;
 
     @ApiModelProperty(value = "Forecast section link indices. Refers to https://aineistot.liikennevirasto.fi/digiroad/")
-    private List<LinkId> linkIdList;
+    private List<Long> linkIdList;
 
     public ForecastSectionV2Properties() {
     }
@@ -47,7 +46,7 @@ public class ForecastSectionV2Properties {
     public ForecastSectionV2Properties(final String naturalId, final String description, final int roadNumber, final int roadSectionNumber,
                                        final Integer length,
                                        final List<RoadSegment> roadSegments,
-                                       final List<LinkId> linkIdList) {
+                                       final List<Long> linkIdList) {
         this.naturalId = naturalId;
         this.description = description;
         this.roadNumber = roadNumber;
@@ -81,7 +80,7 @@ public class ForecastSectionV2Properties {
         return roadSegments;
     }
 
-    public List<LinkId> getLinkIdList() {
+    public List<Long> getLinkIdList() {
         return linkIdList;
     }
 }
