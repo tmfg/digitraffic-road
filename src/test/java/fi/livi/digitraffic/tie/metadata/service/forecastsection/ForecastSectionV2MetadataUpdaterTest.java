@@ -83,6 +83,8 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         assertEquals(12, feature.getGeometry().coordinates.get(70).size());
         assertCoordinates(24.9336238, feature.getGeometry().coordinates.get(70).get(0).get(0));
         assertCoordinates(60.1739127, feature.getGeometry().coordinates.get(70).get(0).get(1));
+        assertCoordinates(24.9335811, feature.getGeometry().coordinates.get(70).get(1).get(0));
+        assertCoordinates(60.1739668, feature.getGeometry().coordinates.get(70).get(1).get(1));
 
         assertEquals(2, feature.getProperties().getRoadSegments().size());
         assertEquals(0, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());

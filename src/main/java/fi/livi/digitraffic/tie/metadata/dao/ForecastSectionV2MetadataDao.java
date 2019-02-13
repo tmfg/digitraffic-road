@@ -67,11 +67,11 @@ public class ForecastSectionV2MetadataDao {
         "ORDER BY f.natural_id";
 
     private static final String selectCoordinates =
-        "SELECT natural_id, list_order_number, '[' ||string_agg('['|| longitude ||','|| latitude ||']', ',') || ']' as coordinates\n" +
-        "FROM forecast_section_coordinate c inner join forecast_section f on c.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2\n " +
-        "GROUP BY natural_id, list_order_number\n" +
-        "ORDER BY natural_id, list_order_number";
+        "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| longitude ||','|| latitude ||']' ORDER BY order_number), ',') || ']' AS coordinates\n" +
+        "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
+        "WHERE f.version = 2\n" +
+        "GROUP BY natural_id, forecast_section_id, list_order_number\n" +
+        "ORDER BY natural_id, forecast_section_id, list_order_number";
 
     private static final String insertRoadSegment =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
