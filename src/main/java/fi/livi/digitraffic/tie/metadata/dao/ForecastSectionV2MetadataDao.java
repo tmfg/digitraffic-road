@@ -36,7 +36,6 @@ public class ForecastSectionV2MetadataDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    // FIXME: forecast_section natural_id should be unique?
     private static final String insertForecastSection =
         "INSERT INTO forecast_section(id, natural_id, description, length, version) " +
         "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version) " +
@@ -69,8 +68,8 @@ public class ForecastSectionV2MetadataDao {
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| longitude ||','|| latitude ||']' ORDER BY order_number), ',') || ']' AS coordinates\n" +
         "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
         "WHERE f.version = 2\n" +
-        "GROUP BY natural_id, forecast_section_id, list_order_number\n" +
-        "ORDER BY natural_id, forecast_section_id, list_order_number";
+        "GROUP BY natural_id, list_order_number\n" +
+        "ORDER BY natural_id, list_order_number";
 
     private static final String insertRoadSegment =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
@@ -140,7 +139,7 @@ public class ForecastSectionV2MetadataDao {
     }
 
     public List<ForecastSectionV2Feature> findForecastSectionV2Features() {
-        jdbcTemplate.getJdbcTemplate().setFetchSize(1000);
+
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
         jdbcTemplate.query(selectAll, rs -> {

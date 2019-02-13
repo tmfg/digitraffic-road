@@ -50,6 +50,8 @@ ALTER TABLE forecast_section
                                                                                       ELSE id
                                                                                       END) WITH =);
 
+CREATE INDEX forecast_section_index ON forecast_section (id, natural_id, version);
+
 create unique index if not exists forecast_section_ui
   on forecast_section (natural_id, version, (
     CASE
