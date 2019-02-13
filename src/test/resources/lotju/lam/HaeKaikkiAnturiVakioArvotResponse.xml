@@ -42,14 +42,14 @@
     <ns2:lamanturivakiot>
         <id>3259</id>
         <anturiVakioId>1578</anturiVakioId>
-        <arvo>95</arvo>
+        <arvo>105</arvo>
         <voimassaAlku>401</voimassaAlku>
         <voimassaLoppu>1031</voimassaLoppu>
     </ns2:lamanturivakiot>
     <ns2:lamanturivakiot>
         <id>1535</id>
         <anturiVakioId>1578</anturiVakioId>
-        <arvo>105</arvo>
+        <arvo>95</arvo>
         <voimassaAlku>1101</voimassaAlku>
         <voimassaLoppu>331</voimassaLoppu>
     </ns2:lamanturivakiot>

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantRepository;
-import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantValueRepository;
-import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstant;
-import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstantValue;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 
@@ -21,17 +21,14 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 public class TmsStationSensorConstantService {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorConstantService.class);
     private final TmsSensorConstantDao tmsSensorConstantDao;
-    private final TmsSensorConstantRepository tmsSensorConstantRepository;
-    private final TmsSensorConstantValueRepository tmsSensorConstantValueRepository;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public TmsStationSensorConstantService(final TmsSensorConstantDao tmsSensorConstantDao,
-                                           final TmsSensorConstantRepository tmsSensorConstantRepository,
-                                           final TmsSensorConstantValueRepository tmsSensorConstantValueRepository) {
+                                           final DataStatusService dataStatusService) {
 
         this.tmsSensorConstantDao = tmsSensorConstantDao;
-        this.tmsSensorConstantRepository = tmsSensorConstantRepository;
-        this.tmsSensorConstantValueRepository = tmsSensorConstantValueRepository;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -58,22 +55,9 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public List<TmsSensorConstant> findAllTmsStationsSensorConstants() {
-        return tmsSensorConstantRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public List<TmsSensorConstant> findAllPublishableTmsStationsSensorConstants() {
-        return tmsSensorConstantRepository.findByObsoleteDateIsNull();
-    }
-
-    @Transactional(readOnly = true)
-    public List<TmsSensorConstantValue> findAllTmsStationsSensorConstantValues() {
-        return tmsSensorConstantValueRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public List<TmsSensorConstantValue> findAllPublishableTmsStationsSensorConstantValues() {
-        return tmsSensorConstantValueRepository.findByObsoleteDateIsNull();
+    public ZonedDateTime getLatestMeasurementTime() {
+        final ZonedDateTime dataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_SENSOR_CONSTANT_METADATA);
+        return DateHelper.getNewest(dataUpdated, metadataUpdated);
     }
 }

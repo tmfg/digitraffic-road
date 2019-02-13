@@ -1,18 +1,13 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Table;
-
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
@@ -80,9 +75,9 @@ public class TmsStationSensorConstantUpdater {
         }
 
         if (updated) {
-            dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_METADATA);
+            dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
         }
-        dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA_CHECK);
 
         log.info("Update TMS Stations SensorConstantValues end");
         return updated;
