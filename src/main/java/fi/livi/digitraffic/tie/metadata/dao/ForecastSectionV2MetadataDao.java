@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadSegment;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.Coordinate;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.RoadSegmentDto;
 

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
+
 public class ForecastSectionCoordinatesDto {
 
     private final String naturalId;
