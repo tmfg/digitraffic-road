@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,4 +44,11 @@ public class MetadataV2Controller {
         return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("The static information of weather forecast sections V2 by road number")
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
+    public ForecastSectionV2FeatureCollection forecastSections(
+        @PathVariable("roadNumber") final int roadNumber) {
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber);
+    }
 }
