@@ -11,7 +11,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastConditionReasonDto;
@@ -27,24 +28,25 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
 
 @Repository
 public class ForecastSectionWeatherDao {
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ForecastSectionWeatherDao(final JdbcTemplate jdbcTemplate) {
+    public ForecastSectionWeatherDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final int version) {
+    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final int version, final Integer roadNumber) {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
             "SELECT * FROM FORECAST_SECTION_WEATHER fsw " +
             "LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name " +
             "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
-            "WHERE fs.version = ? " +
-            "ORDER BY fs.natural_id, fsw.time", new Object[]{ version },
+            "WHERE fs.version = :version AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
+            "ORDER BY fs.natural_id, fsw.time",
+            new MapSqlParameterSource().addValue("version", version).addValue("roadNumber", roadNumber),
             rs -> {
-                String forecastSectionNaturalId = rs.getString("natural_id");
+                final String forecastSectionNaturalId = rs.getString("natural_id");
 
                 if (res.containsKey(forecastSectionNaturalId)) {
                     res.get(forecastSectionNaturalId).add(mapRoadConditionDto(rs));

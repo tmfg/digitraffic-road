@@ -8,6 +8,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,10 +38,18 @@ public class DataV2Controller {
     @ApiOperation("Current data of Weather Forecast Sections V2")
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
-    public ForecastSectionWeatherRootDto roadConditionsV2(
+    public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(2, lastUpdated);
+        return forecastSectionDataService.getForecastSectionWeatherData(2, lastUpdated, null);
+    }
+
+    @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
+    public ForecastSectionWeatherRootDto roadConditions(
+        @PathVariable("roadNumber") final int roadNumber) {
+        return forecastSectionDataService.getForecastSectionWeatherData(2, false, roadNumber);
     }
 }

@@ -74,7 +74,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractTest {
 
         forecastSectionDataUpdater.updateForecastSectionWeatherData(1);
 
-        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(1, false);
+        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(1, false, null);
 
         assertEquals(277, data.weatherData.size());
         assertEquals("00009_303_000_0", data.weatherData.get(0).naturalId);
@@ -105,7 +105,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractTest {
 
         forecastSectionDataUpdater.updateForecastSectionWeatherData(2);
 
-        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(2, false);
+        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(2, false, null);
 
         assertNotNull(data);
         assertEquals("00003_226_00000_0_0", data.weatherData.get(0).naturalId);
