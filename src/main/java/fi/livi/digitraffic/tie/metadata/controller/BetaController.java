@@ -70,7 +70,7 @@ public class BetaController {
 
     @ApiOperation("Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of sensor constants and values"))
     public TmsSensorConstantRootDto tmsSensorConstants(
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=DataController.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
