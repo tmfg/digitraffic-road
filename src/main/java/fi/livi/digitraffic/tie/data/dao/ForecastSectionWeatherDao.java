@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,7 +45,7 @@ public class ForecastSectionWeatherDao {
             "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
             "WHERE fs.version = :version AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
             "ORDER BY fs.natural_id, fsw.time",
-            new MapSqlParameterSource().addValue("version", version).addValue("roadNumber", roadNumber),
+            new MapSqlParameterSource().addValue("version", version).addValue("roadNumber", roadNumber, Types.INTEGER),
             rs -> {
                 final String forecastSectionNaturalId = rs.getString("natural_id");
 

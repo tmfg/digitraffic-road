@@ -30,7 +30,7 @@ public class ForecastSectionV2MetadataService {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, Integer roadNumber) {
+    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, final Integer roadNumber) {
 
         final ForecastSectionV2FeatureCollection featureCollection = getFeatureCollection();
 
