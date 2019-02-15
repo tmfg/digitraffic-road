@@ -113,7 +113,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
-        config.setPoolName("application_pool");
+        //config.setPoolName("application_pool");
 
         // register mbeans for debug
         //config.setRegisterMbeans(true);
