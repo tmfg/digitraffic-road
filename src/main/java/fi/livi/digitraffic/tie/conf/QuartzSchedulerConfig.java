@@ -82,6 +82,7 @@ public class QuartzSchedulerConfig {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
+        config.setPoolName("quartz_pool");
 
         // register mbeans for debug
         config.setRegisterMbeans(true);
