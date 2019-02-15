@@ -207,8 +207,10 @@ public class MetadataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) throws JsonProcessingException {
+
+        final LocationFeatureCollection metadata = locationService.findLocationsMetadata(lastUpdated, version);
         final StopWatch sw = StopWatch.createStarted();
-        final String featureString = new ObjectMapper().writeValueAsString(locationService.findLocationsMetadata(lastUpdated, version));
+        final String featureString = new ObjectMapper().writeValueAsString(metadata);
 
         log.info("conversionMs={}", sw.getTime());
 
