@@ -70,7 +70,8 @@ public class QuartzSchedulerConfig {
     @Bean
     public DataSource quartzDataSource(final @Value("${road.datasource.url}") String url,
         final @Value("${road.datasource.username}") String username,
-        final @Value("${road.datasource.password}") String password) {
+        final @Value("${road.datasource.password}") String password,
+        final @Value("quartz.enabled") String quartz) {
 
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
@@ -82,13 +83,15 @@ public class QuartzSchedulerConfig {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
-        config.setPoolName("quartz_pool");
+//        config.setPoolName("quartz_pool");
 
         // register mbeans for debug
-        config.setRegisterMbeans(true);
+  //      config.setRegisterMbeans(true);
 
         // Auto commit must be true for Quartz
         config.setAutoCommit(true);
+
+        System.out.println("starting quartz:" + quartz);
 
         return new HikariDataSource(config);
     }
