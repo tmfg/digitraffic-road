@@ -116,7 +116,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setPoolName("application_pool");
 
         // register mbeans for debug
-        config.setRegisterMbeans(true);
+        //config.setRegisterMbeans(true);
 
         return new HikariDataSource(config);
     }
