@@ -7,6 +7,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,6 +72,8 @@ public class MetadataController {
     private final RoadStationSensorService roadStationSensorService;
     private final ForecastSectionService forecastSectionService;
     private final LocationService locationService;
+
+    private static final Logger log = LoggerFactory.getLogger(LocationService.class);
 
     @Autowired
     public MetadataController(final CameraPresetService cameraPresetService,
@@ -194,15 +199,20 @@ public class MetadataController {
     @ApiOperation("The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations") })
-    public LocationFeatureCollection locations (
+    public String locations (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
             final String version,
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    final boolean lastUpdated) {
-        return locationService.findLocationsMetadata(lastUpdated, version);
+                    final boolean lastUpdated) throws JsonProcessingException {
+        final StopWatch sw = StopWatch.createStarted();
+        final String featureString = new ObjectMapper().writeValueAsString(locationService.findLocationsMetadata(lastUpdated, version));
+
+        log.info("conversionMs={}", sw.getTime());
+
+        return featureString;
     }
 
     @ApiOperation("The static information of location types and locationsubtypes")
