@@ -113,10 +113,10 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
-        //config.setPoolName("application_pool");
+        config.setPoolName("application_pool");
 
         // register mbeans for debug
-        //config.setRegisterMbeans(true);
+        config.setRegisterMbeans(true);
 
         return new HikariDataSource(config);
     }
@@ -127,7 +127,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         final MBeanExporter exporter = new MBeanExporter();
 
         exporter.setAutodetect(true);
-        exporter.setExcludedBeans("datasource");
+        exporter.setExcludedBeans("dataSource");
 
         return exporter;
     }
