@@ -72,9 +72,7 @@ public class QuartzSchedulerConfig {
     @QuartzDataSource
     public DataSource quartzDataSource(final @Value("${road.datasource.url}") String url,
         final @Value("${road.datasource.username}") String username,
-        final @Value("${road.datasource.password}") String password,
-        final @Value("quartz.enabled") String quartz) {
-        log.error("starting quartz:" + quartz);
+        final @Value("${road.datasource.password}") String password) {
 
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
