@@ -116,9 +116,6 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         // register mbeans for debug
         config.setRegisterMbeans(true);
 
-        // Auto commit must be true for Quartz
-        config.setAutoCommit(true);
-
         return new HikariDataSource(config);
     }
 
