@@ -127,7 +127,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         final MBeanExporter exporter = new MBeanExporter();
 
         exporter.setAutodetect(true);
-        exporter.setExcludedBeans("dataSource");
+        exporter.setExcludedBeans("dataSource", "quartzDataSource");
 
         return exporter;
     }
