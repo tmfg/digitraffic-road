@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -25,38 +27,25 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 public class SensorValueDao {
     private static final Logger log = LoggerFactory.getLogger(SensorValueDao.class);
 
-    private static final String MERGE_STATEMENT = "with upsert as (\n" +
-        "  SELECT (\n" +
-        "        SELECT sensor.id  \n" +
-        "        FROM ROAD_STATION_SENSOR sensor\n" +
-        "        WHERE sensor.lotju_id = :sensorLotjuId\n" +
-        "          AND sensor.road_station_type = :stationType\n" +
-        "          AND sensor.obsolete_date is null\n" +
-        "        ) as road_station_sensor_id ,(\n" +
-        "        SELECT station.id\n" +
-        "        FROM ROAD_STATION station\n" +
-        "        WHERE station.lotju_id = :rsLotjuId\n" +
-        "          AND station.road_station_type = :stationType\n" +
-        "          AND station.obsolete_date is null\n" +
-        "       ) as road_station_id\n" +
-        ")\n" +
-        "insert into sensor_value(id, road_station_id, road_station_sensor_id, value,\n" +
+    private static final String MERGE_STATEMENT =
+        "INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,\n" +
         "                         measured, updated, time_window_start, time_window_end)\n" +
-        "select nextval('seq_sensor_value'), upsert.road_station_id, upsert.road_station_sensor_id,\n" +
+        "SELECT nextval('seq_sensor_value'), :rsId, sensor.id,\n" +
         "       :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd\n" +
-        "from upsert\n" +
-        "where upsert.road_station_sensor_id is not null\n" +
-        "  and upsert.road_station_id is not null\n" +
+        "FROM ROAD_STATION_SENSOR sensor\n" +
+        "WHERE sensor.lotju_id = :sensorLotjuId\n" +
+        "  AND sensor.road_station_type = :stationType\n" +
+        "  AND sensor.obsolete_date is null\n" +
         "on conflict (road_station_id, road_station_sensor_id)\n" +
         "do update set value = :value\n" +
         "                , measured = :measured\n" +
         "                , updated = current_timestamp\n" +
         "                , time_window_start = :timeWindowStart\n" +
-        "                , time_window_end = :timeWindowEnd\n" +
-        "WHERE (sensor_value.value != :value\n" +
-        "     OR sensor_value.time_window_start is null\n" +
-        "     OR sensor_value.time_window_start != :timeWindowStart)\n" +
-        "     AND sensor_value.measured < :measured";
+        "                , time_window_end = :timeWindowEnd\n";
+//        "WHERE sensor_value.measured < :measured\n" +
+//        "     AND (sensor_value.value != :value\n" +
+//        "       OR sensor_value.time_window_start is null\n" +
+//        "       OR sensor_value.time_window_start != :timeWindowStart)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -65,95 +54,115 @@ public class SensorValueDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int updateLamSensorData(final Collection<LAMRealtimeProtos.Lam> data, final Set<Long> allowedTmsSensorLotjuIds) {
+    public int updateLamSensorData(final Collection<LAMRealtimeProtos.Lam> data,
+                                   final Set<Long> allowedTmsSensorLotjuIds,
+                                   final Map<Long, Long> allowedStationsLotjuIdtoIds) {
         final TimestampCache timestampCache = new TimestampCache();
-        final ArrayList<Map<String, Object>> batchData = appendLamBatchData(timestampCache, data, allowedTmsSensorLotjuIds);
-
-        return batchUpdate(MERGE_STATEMENT, batchData.toArray(new Map[0]));
-    }
-
-    public int updateWeatherSensorData(final Collection<TiesaaProtos.TiesaaMittatieto> data, final Set<Long> allowedWeatherSensorLotjuIds) {
-        final Map<String, Object>[] batchData = appendTiesaaBatchData(data, allowedWeatherSensorLotjuIds);
+        final MapSqlParameterSource[] batchData = createLamBatchData(timestampCache, data, allowedTmsSensorLotjuIds, allowedStationsLotjuIdtoIds);
 
         return batchUpdate(MERGE_STATEMENT, batchData);
     }
 
-    private int batchUpdate(final String statement, final Map<String, Object> data[]) {
-        jdbcTemplate.batchUpdate(statement, data);
+    public int updateWeatherSensorData(final Collection<TiesaaProtos.TiesaaMittatieto> data,
+                                       final Set<Long> allowedWeatherSensorLotjuIds,
+                                       final Map<Long, Long> allowedStationsLotjuIdtoIds) {
+        final MapSqlParameterSource[] batchData = createTiesaaBatchData(data, allowedWeatherSensorLotjuIds, allowedStationsLotjuIdtoIds);
 
-        return data.length;
+        return batchUpdate(MERGE_STATEMENT, batchData);
     }
 
-    private static ArrayList<Map<String, Object>> appendLamBatchData(final TimestampCache timestampCache, final Collection<LAMRealtimeProtos.Lam> lams,
-        final Set<Long> allowedTmsSensorLotjuIds) {
-        final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
-        int updateCount = 0;
-        int notAllowed = 0;
-
-        for (final LAMRealtimeProtos.Lam lam : lams) {
-            final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
-            for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
-                if ( allowedTmsSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
-                    batchData.add(createArgsMap(timestampCache, lam, anturi));
-                    updateCount++;
-                } else {
-                    notAllowed++;
-                }
+    private int batchUpdate(final String statement, final MapSqlParameterSource data[]) {
+        int[] count = jdbcTemplate.batchUpdate(statement, data);
+        int rowsUpdated = 0;
+        for (int i : count) {
+            if (count[i] >= 0) {
+                rowsUpdated += count[i];
+            } else if (count[i] == Statement.SUCCESS_NO_INFO ){
+                log.info("method=batchUpdate Could not resolve update count");
+            } else {
+                log.error("method=batchUpdate Error {} in batch update", count[i]);
             }
         }
-        log.info("updateCount={} allowed and skipped notAllowedCount={} not allowed tms sensor values", updateCount, notAllowed);
-        return batchData;
+
+        log.info("method=batchUpdate Updated: {}", rowsUpdated);
+
+        return rowsUpdated;
     }
 
-    private static Map<String, Object>[] appendTiesaaBatchData(final Collection<TiesaaProtos.TiesaaMittatieto> tiesaas,
-                                                               final Set<Long> allowedWeatherSensorLotjuIds) {
+    private static MapSqlParameterSource[] createLamBatchData(final TimestampCache timestampCache,
+                                                              final Collection<LAMRealtimeProtos.Lam> lams,
+                                                              final Set<Long> allowedTmsSensorLotjuIds,
+                                                              final Map<Long, Long> allowedStationsLotjuIdtoIds) {
+
+        final ArrayList<MapSqlParameterSource> batchData = new ArrayList<>();
         int updateCount = 0;
         int notAllowed = 0;
-        final ArrayList<Map> batchData = new ArrayList<>();
+        int skippedStations = 0;
+        for (final LAMRealtimeProtos.Lam lam : lams) {
+            if (allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())) {
+                final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
+                for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
+                    if (allowedTmsSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
+                        batchData.add(
+                            new MapSqlParameterSource()
+                                .addValue("value", anturi.getArvo())
+                                .addValue("measured", timestampCache.get(lam.getAika()))
+                                .addValue("rsId", allowedStationsLotjuIdtoIds.get(lam.getAsemaId()))
+                                .addValue("sensorLotjuId", anturi.getLaskennallinenAnturiId())
+                                .addValue("stationType", RoadStationType.TMS_STATION.name())
+                                .addValue("timeWindowStart", anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null)
+                                .addValue("timeWindowEnd", anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null));
+                        updateCount++;
+                    } else {
+                        notAllowed++;
+                    }
+                }
+            } else {
+                skippedStations++;
+                log.warn("method=createLamBatchData Skipped non existing or non publishable TmsStation with lotjuId {}", lam.getAsemaId());
+            }
+        }
+        log.info("method=createLamBatchData updateCount={} allowed and skipped notAllowedCount={} not allowed tms sensor values and skippedStations={}",
+                 updateCount, notAllowed, skippedStations);
+        return batchData.toArray(new MapSqlParameterSource[0]);
+    }
+
+    private static MapSqlParameterSource[] createTiesaaBatchData(final Collection<TiesaaProtos.TiesaaMittatieto> tiesaas,
+                                                                 final Set<Long> allowedWeatherSensorLotjuIds,
+                                                                 final Map<Long, Long> allowedStationsLotjuIdtoIds) {
+        int updateCount = 0;
+        int notAllowed = 0;
+        int skippedStations = 0;
+        final ArrayList<MapSqlParameterSource> batchData = new ArrayList<>();
 
         for (final TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
-            final List<TiesaaProtos.TiesaaMittatieto.Anturi> anturit = tiesaa.getAnturiList();
+            if (allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())) {
+                final List<TiesaaProtos.TiesaaMittatieto.Anturi> anturit = tiesaa.getAnturiList();
 
-            for (final TiesaaProtos.TiesaaMittatieto.Anturi anturi : anturit) {
-                if (allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
-                    batchData.add(createArgsMap(tiesaa, anturi));
-                    updateCount++;
+                for (final TiesaaProtos.TiesaaMittatieto.Anturi anturi : anturit) {
+                    if (allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId())) {
+                        final Timestamp measured = Timestamp.from(Instant.ofEpochMilli(tiesaa.getAika()));
+                        batchData.add(new MapSqlParameterSource()
+                            .addValue("value", NumberConverter.convertAnturiValueToDouble(anturi.getArvo()))
+                            .addValue("measured", measured)
+                            .addValue("rsId", allowedStationsLotjuIdtoIds.get(tiesaa.getAsemaId()))
+                            .addValue("sensorLotjuId", anturi.getLaskennallinenAnturiId())
+                            .addValue("stationType", RoadStationType.WEATHER_STATION.name())
+                            .addValue("timeWindowStart", null)
+                            .addValue("timeWindowEnd", null));
+                        updateCount++;
 
-                } else {
-                    notAllowed++;
+                    } else {
+                        notAllowed++;
+                    }
                 }
+            } else {
+                skippedStations++;
+                log.warn("method=createTiesaaBatchData Skipped non existing or non publishable WeatherStation with lotjuId {}", tiesaa.getAsemaId());
             }
         }
-        log.info("updateCount={} allowed and skipped notAllowedCount={} not allowed weather sensor values", updateCount, notAllowed);
-        return (Map<String, Object>[])batchData.toArray(((Map[])new HashMap[0]));
-    }
-
-    private static Map createArgsMap(final TimestampCache timestampCache, final LAMRealtimeProtos.Lam lam, final LAMRealtimeProtos.Lam.Anturi anturi) {
-        final HashMap<String, Object> args = new HashMap<>();
-
-        args.put("value", anturi.getArvo());
-        args.put("measured", timestampCache.get(lam.getAika()));
-        args.put("rsLotjuId", lam.getAsemaId());
-        args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());
-        args.put("stationType", RoadStationType.TMS_STATION.name());
-        args.put("timeWindowStart", anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null);
-        args.put("timeWindowEnd", anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null);
-
-        return args;
-    }
-
-    private static Map createArgsMap(final TiesaaProtos.TiesaaMittatieto tiesaa, final TiesaaProtos.TiesaaMittatieto.Anturi anturi) {
-        final Timestamp measured = Timestamp.from(Instant.ofEpochMilli(tiesaa.getAika()));
-        final HashMap<String, Object> args = new HashMap<>();
-
-        args.put("value", NumberConverter.convertAnturiValueToDouble(anturi.getArvo()));
-        args.put("measured", measured);
-        args.put("rsLotjuId", tiesaa.getAsemaId());
-        args.put("sensorLotjuId", anturi.getLaskennallinenAnturiId());
-        args.put("stationType", RoadStationType.WEATHER_STATION.name());
-        args.put("timeWindowStart", null);
-        args.put("timeWindowEnd", null);
-
-        return args;
+        log.info("method=createTiesaaBatchData updateCount={} allowed and skipped notAllowedCount={} not allowed weather sensor values and skippedStations={}",
+                 updateCount, notAllowed, skippedStations);
+        return batchData.toArray(new MapSqlParameterSource[0]);
     }
 }

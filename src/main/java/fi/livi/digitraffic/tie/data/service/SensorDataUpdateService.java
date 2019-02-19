@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
+import fi.livi.digitraffic.tie.metadata.dao.RoadStationDao;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
@@ -28,10 +30,13 @@ public class SensorDataUpdateService {
     private final Set<Long> allowedWeatherSensorLotjuIds;
 
     private final SensorValueDao sensorValueDao;
+    private final RoadStationDao roadStationDao;
 
     @Autowired
-    public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService) {
+    public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService,
+                                   final RoadStationDao roadStationDao) {
         this.sensorValueDao = sensorValueDao;
+        this.roadStationDao = roadStationDao;
 
         final List<RoadStationSensor> allowedTmsSensors =
             roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION);
@@ -52,10 +57,12 @@ public class SensorDataUpdateService {
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<LAMRealtimeProtos.Lam> filtered = filterNewestLamValues(data);
 
+        Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
+
         if (data.size()-filtered.size() > 0) {
             log.info("filtered={} tms station messages of original count={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
-        final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds);
+        final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds, allowedStationsLotjuIdtoIds);
         stopWatch.stop();
         log.info("Update tms sensors data for rows={} sensors of filteredCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
                  rows, filtered.size(), data.stream().anyMatch(lam -> lam.getIsRealtime()), data.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
@@ -71,11 +78,12 @@ public class SensorDataUpdateService {
     public int updateWeatherData(final List<TiesaaProtos.TiesaaMittatieto> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<TiesaaProtos.TiesaaMittatieto> filtered = filterNewestTiesaaValues(data);
+        Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
 
         if (data.size()-filtered.size() > 0) {
             log.info("filtered={} weather station messages of original dataCount={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
         }
-        final int rows = sensorValueDao.updateWeatherSensorData(filtered, allowedWeatherSensorLotjuIds);
+        final int rows = sensorValueDao.updateWeatherSensorData(filtered, allowedWeatherSensorLotjuIds, allowedStationsLotjuIdtoIds);
         stopWatch.stop();
         log.info("Update weather sensors data for rows={} sensors of filteredCount={} stations tookMs={}", rows, filtered.size(), stopWatch.getTime());
         return rows;
