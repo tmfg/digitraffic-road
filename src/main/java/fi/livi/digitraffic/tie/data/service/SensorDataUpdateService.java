@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
+import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationDao;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -55,17 +57,33 @@ public class SensorDataUpdateService {
     @Transactional
     public int updateLamData(final List<LAMRealtimeProtos.Lam> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<LAMRealtimeProtos.Lam> filtered = filterNewestLamValues(data);
+        final Collection<LAMRealtimeProtos.Lam> filteredByNewest = filterNewestLamValues(data);
+
+        if (data.size()-filteredByNewest.size() > 0) {
+            log.info("method=updateLamData filtered={} tms stations from originalCount={} to filteredCount={}",  data.size()-filteredByNewest.size(), data.size(), filteredByNewest.size());
+        }
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
 
-        if (data.size()-filtered.size() > 0) {
-            log.info("filtered={} tms station messages of original count={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+        final List<LAMRealtimeProtos.Lam> filteredByStation =
+            filteredByNewest.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
+
+        if (filteredByStation.size() < filteredByNewest.size()) {
+            log.warn("method=updateLamData filtered data for {} missing tms stations" , filteredByNewest.size()-filteredByStation.size());
         }
-        final int rows = sensorValueDao.updateLamSensorData(filtered, allowedTmsSensorLotjuIds, allowedStationsLotjuIdtoIds);
+
+        final TimestampCache timestampCache = new TimestampCache();
+
+        List<SensorValueUpdateParameterDto> params = filteredByStation.stream()
+            .flatMap(lam -> lam.getAnturiList().stream()
+                            .filter(anturi -> allowedTmsSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId()))
+                            .map(anturi -> new SensorValueUpdateParameterDto(lam, anturi, allowedStationsLotjuIdtoIds.get(lam.getAsemaId()), timestampCache)))
+            .collect(Collectors.toList());
+
+        final int rows = sensorValueDao.updateLamSensorData(params);
         stopWatch.stop();
-        log.info("Update tms sensors data for rows={} sensors of filteredCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
-                 rows, filtered.size(), data.stream().anyMatch(lam -> lam.getIsRealtime()), data.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
+        log.info("method=updateLamData Update tms sensors data for rows={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
+                 rows, filteredByStation.size(), data.stream().anyMatch(lam -> lam.getIsRealtime()), data.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
         return rows;
     }
 
@@ -77,15 +95,33 @@ public class SensorDataUpdateService {
     @Transactional
     public int updateWeatherData(final List<TiesaaProtos.TiesaaMittatieto> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<TiesaaProtos.TiesaaMittatieto> filtered = filterNewestTiesaaValues(data);
+        final Collection<TiesaaProtos.TiesaaMittatieto> filteredByNewest = filterNewestTiesaaValues(data);
+
+        if (data.size()-filteredByNewest.size() > 0) {
+            log.info("method=updateWeatherData filtered={} weather stations from originalCount={} to filteredCount={}",  data.size()-filteredByNewest.size(), data.size(), filteredByNewest.size());
+        }
+
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
 
-        if (data.size()-filtered.size() > 0) {
-            log.info("filtered={} weather station messages of original dataCount={} -> filteredCount={} messages updated",  data.size()-filtered.size(), data.size(), filtered.size());
+        final List<TiesaaProtos.TiesaaMittatieto> filteredByStation =
+            filteredByNewest.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
+
+        if (filteredByStation.size() < filteredByNewest.size()) {
+            log.warn("method=updateWeatherData filtered data for {} missing weather stations" , filteredByNewest.size()-filteredByStation.size());
         }
-        final int rows = sensorValueDao.updateWeatherSensorData(filtered, allowedWeatherSensorLotjuIds, allowedStationsLotjuIdtoIds);
+
+        final TimestampCache timestampCache = new TimestampCache();
+
+        List<SensorValueUpdateParameterDto> params = filteredByStation.stream()
+            .flatMap(tiesaa -> tiesaa.getAnturiList().stream()
+                               .filter(anturi -> allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId()))
+                               .map(anturi -> new SensorValueUpdateParameterDto(tiesaa, anturi, allowedStationsLotjuIdtoIds.get(tiesaa.getAsemaId()), timestampCache)))
+            .collect(Collectors.toList());
+
+        final int rows = sensorValueDao.updateWeatherSensorData(params);
         stopWatch.stop();
-        log.info("Update weather sensors data for rows={} sensors of filteredCount={} stations tookMs={}", rows, filtered.size(), stopWatch.getTime());
+        log.info("method=updateWeatherData Update weather sensors data for rows={} sensors of stationCount={} stations tookMs={}",
+                 rows, filteredByStation.size(), stopWatch.getTime());
         return rows;
     }
 

@@ -11,12 +11,12 @@ public class NumberConverter {
 
     private NumberConverter() {}
 
-    public static double convertAnturiValueToDouble(TiesaaProtos.TiesaaMittatieto.Anturi anturi) {
-        return convertAnturiValueToDouble(anturi.getArvo());
+    public static double convertAnturiValueToDouble(TiesaaProtos.TiesaaMittatieto.Anturi.BDecimal arvo) {
+        return convertAnturiValueToBigDecimal(arvo).doubleValue();
     }
 
-    public static double convertAnturiValueToDouble(TiesaaProtos.TiesaaMittatieto.Anturi.BDecimal arvo) {
-        return new BigDecimal(new BigInteger(arvo.getBigintValue().getValue().toByteArray()), arvo.getScale()).doubleValue();
+    public static BigDecimal convertAnturiValueToBigDecimal(TiesaaProtos.TiesaaMittatieto.Anturi.BDecimal arvo) {
+        return new BigDecimal(new BigInteger(arvo.getBigintValue().getValue().toByteArray()), arvo.getScale());
     }
 
     public static TiesaaProtos.TiesaaMittatieto.Anturi.BDecimal convertDoubleValueToBDecimal(final double value) {
