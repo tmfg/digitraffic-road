@@ -79,7 +79,7 @@ public class QuartzSchedulerConfig {
         config.setUsername(username);
         config.setPassword(password);
 
-        config.setMaximumPoolSize(4);
+        config.setMaximumPoolSize(12);
 
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
