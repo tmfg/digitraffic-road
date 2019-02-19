@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,17 +34,13 @@ public class SensorValueDao {
         "FROM ROAD_STATION_SENSOR sensor\n" +
         "WHERE sensor.lotju_id = :sensorLotjuId\n" +
         "  AND sensor.road_station_type = :stationType\n" +
-        "  AND sensor.obsolete_date is null\n" +
+        "  AND sensor.publishable = true\n" +
         "on conflict (road_station_id, road_station_sensor_id)\n" +
         "do update set value = :value\n" +
         "                , measured = :measured\n" +
         "                , updated = current_timestamp\n" +
         "                , time_window_start = :timeWindowStart\n" +
-        "                , time_window_end = :timeWindowEnd\n";
-//        "WHERE sensor_value.measured < :measured\n" +
-//        "     AND (sensor_value.value != :value\n" +
-//        "       OR sensor_value.time_window_start is null\n" +
-//        "       OR sensor_value.time_window_start != :timeWindowStart)";
+        "                , time_window_end = :timeWindowEnd";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
