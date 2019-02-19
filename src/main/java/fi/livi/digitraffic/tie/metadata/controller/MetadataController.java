@@ -7,7 +7,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -199,7 +197,7 @@ public class MetadataController {
     @ApiOperation("The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations") })
-    public String locations (
+    public LocationFeatureCollection locations (
             @ApiParam("If parameter is given use this version.")
             @RequestParam(value = "version", required = false, defaultValue = LATEST)
             final String version,
@@ -208,13 +206,7 @@ public class MetadataController {
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) throws JsonProcessingException {
 
-        final LocationFeatureCollection metadata = locationService.findLocationsMetadata(lastUpdated, version);
-        final StopWatch sw = StopWatch.createStarted();
-        final String featureString = new ObjectMapper().writeValueAsString(metadata);
-
-        log.info("conversionMs={}", sw.getTime());
-
-        return featureString;
+        return locationService.findLocationsMetadata(lastUpdated, version);
     }
 
     @ApiOperation("The static information of location types and locationsubtypes")
