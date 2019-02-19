@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.quartz.QuartzDataSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,8 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
@@ -66,7 +69,34 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(final DataSource dataSource,
+    @QuartzDataSource
+    public DataSource quartzDataSource(final @Value("${road.datasource.url}") String url,
+        final @Value("${road.datasource.username}") String username,
+        final @Value("${road.datasource.password}") String password) {
+
+        final HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+
+        config.setMaximumPoolSize(12);
+
+        config.setMaxLifetime(570000);
+        config.setIdleTimeout(500000);
+        config.setConnectionTimeout(60000);
+        config.setPoolName("quartz_pool");
+
+        // register mbeans for debug
+        config.setRegisterMbeans(true);
+
+        // Auto commit must be true for Quartz
+        config.setAutoCommit(true);
+
+        return new HikariDataSource(config);
+    }
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean(final DataSource quartzDataSource,
                                                      final JobFactory jobFactory,
                                                      final Optional<List<Trigger>> triggerBeans) throws IOException {
         final SchedulerFactoryBean factory = new SchedulerFactoryBean() {
@@ -89,7 +119,7 @@ public class QuartzSchedulerConfig {
         };
         // this allows to update triggers in DB when updating settings in config file:
         factory.setOverwriteExistingJobs(true);
-        factory.setDataSource(dataSource);
+        factory.setDataSource(quartzDataSource);
         factory.setJobFactory(jobFactory);
         factory.setQuartzProperties(quartzProperties());
 

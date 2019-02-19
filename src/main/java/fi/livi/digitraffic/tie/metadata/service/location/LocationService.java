@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,8 @@ public class LocationService {
 
     public static final String LATEST="latest";
 
+    private static final Logger log = LoggerFactory.getLogger(LocationService.class);
+
     public LocationService(final LocationTypeRepository locationTypeRepository,
                            final LocationSubtypeRepository locationSubtypeRepository,
                            final LocationRepository locationRepository,
@@ -47,9 +52,10 @@ public class LocationService {
             return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion);
         }
 
-        return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion,
-                locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList())
-        );
+        final List<LocationFeature> features =
+            locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList());
+
+        return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion, features);
     }
 
     private static boolean isLatestVersion(final String version) {
