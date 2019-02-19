@@ -52,10 +52,8 @@ public class LocationService {
             return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion);
         }
 
-        final StopWatch sw = StopWatch.createStarted();
         final List<LocationFeature> features =
             locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList());
-        log.info("databaseMs={}", sw.getTime());
 
         return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion, features);
     }
