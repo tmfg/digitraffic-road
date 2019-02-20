@@ -13,9 +13,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
-@ApiModel(value = "TmsSensorConstant", description = "Sensor constant values of TMS Station", parent = RootDataObjectDto.class)
+@ApiModel(value = "TmsSensorConstant", description = "Sensor constant values of TMS Station")
 @JsonPropertyOrder({ "roadStationId", "sensorConstantValues"})
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TmsSensorConstantDto {
 
     @ApiModelProperty(value = "Id of TMS station", required = true)
