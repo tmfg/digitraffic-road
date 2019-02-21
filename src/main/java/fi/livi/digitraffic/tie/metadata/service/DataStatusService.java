@@ -16,20 +16,6 @@ import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
 public class DataStatusService {
     private static final Logger log = LoggerFactory.getLogger(DataStatusService.class);
 
-    public enum StaticStatusType {
-        TMS("LAM_DATA_LAST_UPDATED"),
-        ROAD_WEATHER("RWS_DATA_LAST_UPDATED"),
-        ROAD_WEATHER_SENSOR("RW_SENSOR_DATA_LAST_UPDATED"),
-        CAMERA_PRESET("CAMERAPRESET_DATA_LAST_UPDATED"),
-        LINK("LINK_DATA_LAST_UPDATED");
-
-        private final String updateField;
-
-        StaticStatusType(final String updateField) {
-            this.updateField = updateField;
-        }
-    }
-
     private final DataUpdatedRepository dataUpdatedRepository;
 
     @Autowired

@@ -16,6 +16,7 @@
 # Lokitiedostot
 **/*.log
 **/*.log.gz
+**/*.tmp
 
 # SchemaSpyn generoimat schemat ja kirjastot
 /dbroad/schemaspy/schema

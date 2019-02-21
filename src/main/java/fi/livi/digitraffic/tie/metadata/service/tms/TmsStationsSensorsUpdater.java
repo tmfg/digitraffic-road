@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,11 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Table;
+
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstant;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
+import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 
 @Service
@@ -42,7 +47,7 @@ public class TmsStationsSensorsUpdater {
     }
 
     /**
-     * Updates all available sensors of weather road stations
+     * Updates all available sensors of tms road stations
      */
     public boolean updateTmsStationsSensors() {
         log.info("Update TMS Stations Sensors start");
@@ -57,7 +62,7 @@ public class TmsStationsSensorsUpdater {
         log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
-                lotjuTmsStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
+                lotjuTmsStationMetadataService.getLamLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
         currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {
@@ -93,7 +98,7 @@ public class TmsStationsSensorsUpdater {
                 countRemoved += deletedInserted.getLeft();
                 countAdded += deletedInserted.getRight();
             } catch (final Exception e) {
-                log.info("Anturis anturisCount={}", anturis);
+                log.info("Anturis count={}", anturis);
                 throw e;
             }
         }

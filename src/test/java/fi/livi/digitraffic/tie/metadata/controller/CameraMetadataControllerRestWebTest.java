@@ -33,7 +33,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
     public void testCameraPresetMetadataRestApi() throws Exception {
 
         // initialize state
-        lotjuKameraPerustiedotServiceMock.initDataAndService();
+        lotjuKameraPerustiedotServiceMock.initStateAndService();
         cameraStationUpdater.updateCameras();
 
         final ArrayList<String> cameraTypes = new ArrayList<>();
