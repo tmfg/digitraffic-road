@@ -76,7 +76,7 @@ app.type=web
 # Web application type. Should be none for daemon process
 spring.main.web-application-type=servlet
 
-# Is metadata updates on. Should be true only for daemon process.
+# Is Quartz scheduler enabled. Should be true only for daemon process.
 dt.job.scheduler.enabled=false
 
 # if set to false no messages are sent to mqtt.  Should be true for daemon process
