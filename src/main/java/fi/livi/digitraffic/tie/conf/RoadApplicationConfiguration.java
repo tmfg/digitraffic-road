@@ -2,10 +2,10 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.util.List;
 import java.util.Locale;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +27,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
 @Configuration
