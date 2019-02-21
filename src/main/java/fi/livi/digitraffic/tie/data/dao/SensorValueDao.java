@@ -87,7 +87,7 @@ public class SensorValueDao {
             } else if (count[i] == Statement.SUCCESS_NO_INFO ){
                 log.info("method=batchUpdate Could not resolve update count");
             } else {
-                log.error("method=batchUpdate Error {} in batch update", count[i]);
+                log.error("method=batchUpdate error={} in batch update", count[i]);
             }
         }
 

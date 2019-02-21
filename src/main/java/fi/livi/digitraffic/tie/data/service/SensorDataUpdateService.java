@@ -59,8 +59,9 @@ public class SensorDataUpdateService {
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<LAMRealtimeProtos.Lam> filteredByNewest = filterNewestLamValues(data);
 
-        if (data.size()-filteredByNewest.size() > 0) {
-            log.info("method=updateLamData filtered={} tms stations from originalCount={} to filteredCount={}",  data.size()-filteredByNewest.size(), data.size(), filteredByNewest.size());
+        if (data.size() > filteredByNewest.size()) {
+            log.info("method=updateLamData filter data from originalCount={} with oldDataCount={} to resultCount={}",
+                     data.size(), data.size()-filteredByNewest.size(), filteredByNewest.size());
         }
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
@@ -69,7 +70,8 @@ public class SensorDataUpdateService {
             filteredByNewest.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
 
         if (filteredByStation.size() < filteredByNewest.size()) {
-            log.warn("method=updateLamData filtered data for {} missing tms stations" , filteredByNewest.size()-filteredByStation.size());
+            log.warn("method=updateLamData filter data from originalCount={} with missingTmsStationsCount={} to resultCount={}" ,
+                     filteredByNewest.size(), filteredByNewest.size()-filteredByStation.size(), filteredByStation.size());
         }
 
         final TimestampCache timestampCache = new TimestampCache();
@@ -97,8 +99,9 @@ public class SensorDataUpdateService {
         final StopWatch stopWatch = StopWatch.createStarted();
         final Collection<TiesaaProtos.TiesaaMittatieto> filteredByNewest = filterNewestTiesaaValues(data);
 
-        if (data.size()-filteredByNewest.size() > 0) {
-            log.info("method=updateWeatherData filtered={} weather stations from originalCount={} to filteredCount={}",  data.size()-filteredByNewest.size(), data.size(), filteredByNewest.size());
+        if (data.size() > filteredByNewest.size()) {
+            log.info("method=updateWeatherData filter data from originalCount={} with oldDataCount={} to resultCount={}",
+                     data.size(), data.size()-filteredByNewest.size(), filteredByNewest.size());
         }
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
@@ -107,7 +110,8 @@ public class SensorDataUpdateService {
             filteredByNewest.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
 
         if (filteredByStation.size() < filteredByNewest.size()) {
-            log.warn("method=updateWeatherData filtered data for {} missing weather stations" , filteredByNewest.size()-filteredByStation.size());
+            log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} to resultCount={}" ,
+                     filteredByNewest.size(), filteredByNewest.size()-filteredByStation.size(), filteredByStation.size());
         }
 
         final TimestampCache timestampCache = new TimestampCache();
