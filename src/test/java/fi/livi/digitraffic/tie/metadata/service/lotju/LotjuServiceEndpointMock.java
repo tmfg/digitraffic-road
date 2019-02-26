@@ -24,6 +24,7 @@ public abstract class LotjuServiceEndpointMock {
     private final Class<?> metatiedotClass;
     private final QName serviceName;
     private final Jaxb2Marshaller jaxb2Marshaller;
+    protected final String resourcePath;
 
     private boolean stateAfterChange = false;
 
@@ -31,19 +32,20 @@ public abstract class LotjuServiceEndpointMock {
     private boolean inited;
 
     public LotjuServiceEndpointMock(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
-                                    final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller) {
+                                    final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller, String resourcePath) {
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
         this.serviceName = serviceName;
         this.jaxb2Marshaller = jaxb2Marshaller;
+        this.resourcePath = resourcePath;
     }
 
     /**
      * Initiaize data and call initService-method here.
      * Call this before tests.
      */
-    public abstract void initDataAndService();
+    public abstract void initStateAndService();
 
     /**
      * Must be called before api-operations
@@ -71,6 +73,41 @@ public abstract class LotjuServiceEndpointMock {
         this.stateAfterChange = stateChanged;
     }
 
+    protected <TYPE> TYPE readLotjuSoapResponse(Class<TYPE> returnType) {
+        return readLotjuSoapResponse(returnType, null);
+    }
+
+    protected <TYPE> TYPE readLotjuSoapResponse(Class<TYPE> returnType, final Long lotjuId) {
+        final String filePath = resolveFilePath(returnType.getSimpleName(), lotjuId);
+        if (filePath == null) {
+            return null;
+        }
+        return (TYPE)readLotjuMetadataXml(filePath, getObjectFactoryClass());
+
+    }
+
+    protected abstract Class<?> getObjectFactoryClass();
+
+    private String resolveFilePath(final String file, final Long lotjuId) {
+        String filePath = getFilePath(file, lotjuId, isStateAfterChange());
+        // Check if changed file exists and return initial if not
+        if ( isStateAfterChange() && !resourceLoader.getResource("classpath:" + filePath).exists() ) {
+            filePath = getFilePath(file, lotjuId, false);
+        }
+        if ( resourceLoader.getResource("classpath:" + filePath).exists() ) {
+            return filePath;
+        }
+        return null;
+    }
+
+    private String getFilePath(final String file, final Long lotjuId, boolean changed) {
+        return String.format(resourcePath + "%s%s%s.xml",
+            file,
+            lotjuId != null ?  lotjuId : "",
+            changed ? "Changed" : "");
+    }
+
+
     /**
      * Read given lotju xml and returns response value
      * @param filePath
@@ -78,6 +115,7 @@ public abstract class LotjuServiceEndpointMock {
      * @return response value Object returned from JAXBElement<?>.getValue()
      */
     protected Object readLotjuMetadataXml(final String filePath, final Class<?> objectFactoryClass) {
+        log.info("Read Lotju SOAP response: {}", filePath);
         try {
             final Resource resource = resourceLoader.getResource("classpath:" + filePath);
             final String content = FileUtils.readFileToString(resource.getFile(), UTF_8);

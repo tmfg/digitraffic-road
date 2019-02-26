@@ -15,17 +15,30 @@ metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
 metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v7
 metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 
-# Metadata update frequencies in ms
-cameraStationUpdateJob.frequency=43200000
-tmsStationUpdateJob.frequency=43200000
-weatherStationUpdateJob.frequency=43200000
-roadStationsStatusUpdateJob.frequency=3600000
-forecastSectionCoordinatesUpdateJob.frequency=86400000
-forecastSectionWeatherUpdateJob.frequency=300000
-locationsMetadataUpdateJob.frequency=86400000
-datex2TrafficAlertMessageUpdateJob.frequency=180000
-datex2RoadworksMessageUpdateJob.frequency=3600000
-datex2WeightRestrictionsMessageUpdateJob.frequency=3600000
+# Job schedules in ms or by cron in UTC
+# Cron: http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html
+# To disable job, just comment it out.
+# Fields: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
+# Only one of Day-of-Month and Day-of-Week can be set at the time (?=no value set)
+
+# Every 3 min
+dt.job.Datex2TrafficAlertMessageUpdateJob.schedule =           0 0/3 * * * ?
+# Every 5 min
+dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
+# Every 1 h
+dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
+dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
+dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
+dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
+dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
+# Every 12 h
+dt.job.CameraMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
+dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
+dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
+# Every 24 h
+dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 0 3 * * ?
+dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
+dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
@@ -63,8 +76,8 @@ app.type=web
 # Web application type. Should be none for daemon process
 spring.main.web-application-type=servlet
 
-# Is metadata updates on. Should be true only for daemon process.
-quartz.enabled=false
+# Is Quartz scheduler enabled. Should be true only for daemon process.
+dt.job.scheduler.enabled=false
 
 # if set to false no messages are sent to mqtt.  Should be true for daemon process
 mqtt.enabled=true
@@ -78,21 +91,6 @@ jms.weather.enabled=false
 jms.tms.enabled=false
 jms.camera.enabled=false
 jms.datex2.enabled=false
-
-# Disable jobs. Format: quartz.{jobClassName}.enabled = false
-# Ie. quartz.CameraMetadataUpdateJob.enabled = false
-# quartz.CameraMetadataUpdateJob.enabled = false
-# quartz.CameraStationsStatusMetadataUpdateJob.enabled = false
-# quartz.Datex2RoadworksMessageUpdateJob.enabled = false
-# quartz.Datex2TrafficAlertMessageUpdateJob.enabled = false
-# quartz.Datex2WeightRestrictionsMessageUpdateJob.enabled = false
-# quartz.ForecastSectionCoordinatesMetadataUpdateJob.enabled = false
-# quartz.ForecastSectionWeatherUpdateJob.enabled = false
-# quartz.LocationMetadataUpdateJob.enabled = false
-# quartz.TmsStationMetadataUpdateJob.enabled = false
-# quartz.TmsStationsStatusMetadataUpdateJob.enabled = false
-# quartz.WeatherStationMetadataUpdateJob.enabled = true
-# quartz.WeatherStationsStatusMetadataUpdateJob.enabled = false
 
 # Developer life improvements
 logging.level.root=INFO

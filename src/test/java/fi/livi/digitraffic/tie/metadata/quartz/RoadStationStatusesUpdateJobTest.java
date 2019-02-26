@@ -49,9 +49,9 @@ public class RoadStationStatusesUpdateJobTest extends AbstractTest {
     @Test
     public void testUpdateRoadStationStatuses() throws Exception {
 
-        lotjuLAMMetatiedotServiceMock.initDataAndService();
-        lotjuTiesaaPerustiedotServiceMock.initDataAndService();
-        lotjuKameraPerustiedotServiceMock.initDataAndService();
+        lotjuLAMMetatiedotServiceMock.initStateAndService();
+        lotjuTiesaaPerustiedotServiceMock.initStateAndService();
+        lotjuKameraPerustiedotServiceMock.initStateAndService();
 
         // Update/create road stations to initial state (2 non obsolete stations and 2 obsolete)
         tmsStationUpdater.updateTmsStations();

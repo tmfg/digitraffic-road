@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
+
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +16,7 @@ import org.springframework.data.repository.query.Param;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -58,7 +60,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -105,7 +107,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="0"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
     @Query(value =
                    "select rs.natural_id road_station_natural_id\n" +
                    "     , s.natural_id sensor_natural_id\n" +

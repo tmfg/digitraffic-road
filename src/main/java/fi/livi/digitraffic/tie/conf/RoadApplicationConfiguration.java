@@ -2,14 +2,15 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.util.List;
 import java.util.Locale;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.jmx.export.MBeanExporter;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 
 @Configuration
@@ -95,9 +97,9 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("redirect:swagger-ui.html");
     }
 
-    @SuppressWarnings("Duplicates")
     @Bean
-    public DataSource datasource(final @Value("${road.datasource.url}") String url,
+    @Primary
+    public DataSource dataSource(final @Value("${road.datasource.url}") String url,
                                  final @Value("${road.datasource.username}") String username,
                                  final @Value("${road.datasource.password}") String password,
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
@@ -112,12 +114,10 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
+        config.setPoolName("application_pool");
 
         // register mbeans for debug
         config.setRegisterMbeans(true);
-
-        // Auto commit must be true for Quartz
-        config.setAutoCommit(true);
 
         return new HikariDataSource(config);
     }
@@ -128,7 +128,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         final MBeanExporter exporter = new MBeanExporter();
 
         exporter.setAutodetect(true);
-        exporter.setExcludedBeans("datasource");
+        exporter.setExcludedBeans("dataSource", "quartzDataSource");
 
         return exporter;
     }

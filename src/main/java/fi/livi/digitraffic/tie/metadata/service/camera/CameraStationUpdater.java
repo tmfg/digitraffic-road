@@ -21,7 +21,7 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
 public class CameraStationUpdater {
-    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraStationUpdater.class);
 
     private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
     private final CameraStationUpdateService cameraStationUpdateService;

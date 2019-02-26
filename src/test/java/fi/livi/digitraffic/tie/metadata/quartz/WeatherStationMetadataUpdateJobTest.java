@@ -56,7 +56,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractTest {
 
     @Before
     public void initData() {
-        lotjuTiesaaPerustiedotServiceMock.initDataAndService();
+        lotjuTiesaaPerustiedotServiceMock.initStateAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
         weatherStationSensorUpdater.updateRoadStationSensors();

@@ -81,7 +81,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
+        final long maxHandleTime = testBurstsLeft * (long)(1000 * Math.PI);
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();
 
@@ -164,14 +164,14 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         tiesaaMittatietoBuilder.setAika(measurementTime.toEpochMilli());
 
         // Generate update-data
-        log.info("Start with arvo " + sensorValueToSet);
+        log.debug("Start with arvo " + sensorValueToSet);
 
         for (final RoadStationSensor availableSensor : availableSensors) {
             final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(sensorValueToSet));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-            log.info("Asema {} set anturi {} arvo {}", currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
+            log.debug("Asema {} set anturi {} arvo {}", currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
             tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
 
             // Increase value for every sensor to validate correct updates
@@ -181,7 +181,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 break;
             }
         }
-        log.info("End with arvo={}", sensorValueToSet - 1);
+        log.debug("End with arvo={}", sensorValueToSet - 1);
         return tiesaaMittatietoBuilder.build();
     }
 
