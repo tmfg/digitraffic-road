@@ -20,11 +20,3 @@ services:
     links:
       - "db:db"
     command: ["./wait-for-postgres.sh", "db", "road", "road", "road", "./init-db.sh"]
-
-  adminer:
-    image: adminer
-    restart: always
-    links:
-      - "db:database" # postgres is reachable for adminer from web at the hostnames db and database
-    ports:
-      - 8082:8080

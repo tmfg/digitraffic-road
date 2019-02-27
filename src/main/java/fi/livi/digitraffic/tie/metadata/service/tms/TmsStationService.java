@@ -122,6 +122,11 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
+    public List<Long> findAllTmsStationsLotjuIds() {
+        return tmsStationRepository.findAllTmsStationsLotjuIds();
+    }
+
+    @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> map = new HashMap<>();
         final List<TmsStation> all = tmsStationRepository.findAll();
@@ -163,11 +168,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
 
         return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
-    }
-
-    @Transactional(readOnly = true)
-    public List<TmsStation> findTmsStationsWithoutRoadStation() {
-        return tmsStationRepository.findByRoadStationIsNull();
     }
 
     @Transactional
