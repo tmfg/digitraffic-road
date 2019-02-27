@@ -1,14 +1,29 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 public abstract class AbstractJmsMessageListenerTest extends AbstractTest {
+
+    @Autowired
+    protected RoadStationSensorService roadStationSensorService;
+
+    protected List<RoadStationSensor> getAvailableRoadStationSensors(final RoadStationType roadStationType) {
+        return roadStationSensorService
+            .findAllPublishableRoadStationSensors(roadStationType);
+    }
+
 
     public static TextMessage createTextMessage(final String content, final String filename) {
         return new TextMessage() {

@@ -95,7 +95,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(final RoadStationType roadStationType) {
+    public List<RoadStationSensor> findAllPublishableRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorRepository.findByRoadStationTypeAndPublishable(roadStationType);
     }
 
@@ -122,7 +122,7 @@ public class RoadStationSensorService {
         return new WeatherRoadStationsSensorsMetadata(
             onlyUpdateInfo ?
                 Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertWeatherSensors(findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION)),
+                RoadStationSensorDtoConverter.convertWeatherSensors(findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION)),
             dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
             dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
     }
@@ -132,7 +132,7 @@ public class RoadStationSensorService {
         return new TmsRoadStationsSensorsMetadata(
             onlyUpdateInfo ?
                 Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertTmsSensors(findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION)),
+                RoadStationSensorDtoConverter.convertTmsSensors(findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION)),
             dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
             dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
     }
