@@ -37,10 +37,10 @@ public class ForecastSectionDataUpdater {
     }
 
     @Transactional
-    public Instant updateForecastSectionWeatherData(final int version) {
-        final ForecastSectionDataDto data = forecastSectionClient.getRoadConditionsV1(version);
+    public Instant updateForecastSectionWeatherData(final ForecastSectionApiVersion version) {
+        final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions(version.getVersion());
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(version);
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(version.getVersion());
 
         final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
                 data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, Function.identity()));

@@ -13,15 +13,15 @@ CREATE TABLE IF NOT EXISTS forecast_section_coordinate (
 
 ALTER TABLE forecast_section_coordinate ADD CONSTRAINT forecast_section_coordinate_pk PRIMARY KEY (forecast_section_id, list_order_number, order_number);
 
-ALTER TABLE forecast_section_coordinate_list ADD CONSTRAINT forsec_coord_list_pk PRIMARY KEY(forecast_section_id, order_number);
+ALTER TABLE forecast_section_coordinate_list ADD CONSTRAINT forecast_section_coordinate_list_pk PRIMARY KEY(forecast_section_id, order_number);
 
 ALTER TABLE forecast_section_coordinate_list
-  ADD CONSTRAINT foresec_coord_list_fk FOREIGN KEY (forecast_section_id)
+  ADD CONSTRAINT forecast_section_coordinate_list_fk FOREIGN KEY (forecast_section_id)
 REFERENCES forecast_section (id)
 ON DELETE CASCADE;
 
 ALTER TABLE forecast_section_coordinate
-  ADD CONSTRAINT foresec_coord_list_coord_fk FOREIGN KEY (forecast_section_id, list_order_number)
+  ADD CONSTRAINT forecast_section_coordinate_forecast_section_list_fk FOREIGN KEY (forecast_section_id, list_order_number)
 REFERENCES forecast_section_coordinate_list (forecast_section_id, order_number)
 ON DELETE CASCADE;
 
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS road_segment (
 ALTER TABLE road_segment ADD CONSTRAINT road_segment_pk PRIMARY KEY (forecast_section_id, order_number);
 
 ALTER TABLE road_segment
-  ADD CONSTRAINT road_segment_foresec_fk FOREIGN KEY (forecast_section_id)
+  ADD CONSTRAINT road_segment_forecast_section_fk FOREIGN KEY (forecast_section_id)
 REFERENCES forecast_section (id)
 ON DELETE CASCADE;
 
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS link_id (
 ALTER TABLE link_id ADD CONSTRAINT link_id_pk PRIMARY KEY (forecast_section_id, order_number);
 
 ALTER TABLE link_id
-  ADD CONSTRAINT link_id_foresec_fk FOREIGN KEY (forecast_section_id)
+  ADD CONSTRAINT link_id_forecast_section_fk FOREIGN KEY (forecast_section_id)
 REFERENCES forecast_section (id)
 ON DELETE CASCADE;
 
@@ -94,12 +94,12 @@ CREATE INDEX forecast_section_version ON forecast_section (id, natural_id, versi
 
 ALTER TABLE forecast_section_weather DROP CONSTRAINT foresec_weather_foresec_fk;
 ALTER TABLE forecast_section_weather
-  ADD CONSTRAINT foresec_weather_foresec_fk FOREIGN KEY (forecast_section_id)
+  ADD CONSTRAINT forecast_section_weather_forecast_section_fk FOREIGN KEY (forecast_section_id)
 REFERENCES forecast_section (id)
 ON DELETE CASCADE;
 
 ALTER TABLE forecast_condition_reason DROP CONSTRAINT weather_reason_weather_fk;
 ALTER TABLE forecast_condition_reason
-  ADD CONSTRAINT weather_reason_weather_fk FOREIGN KEY (forecast_section_id, forecast_name)
+  ADD CONSTRAINT condition_reason_weather_fk FOREIGN KEY (forecast_section_id, forecast_name)
 REFERENCES forecast_section_weather (forecast_section_id, forecast_name)
 ON DELETE CASCADE;

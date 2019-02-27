@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.Reliability;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.VisibilityCondition;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Repository
 public class ForecastSectionWeatherDao {
@@ -36,7 +37,7 @@ public class ForecastSectionWeatherDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final int version, final Integer roadNumber) {
+    public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final ForecastSectionApiVersion version, final Integer roadNumber) {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
@@ -45,7 +46,7 @@ public class ForecastSectionWeatherDao {
             "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
             "WHERE fs.version = :version AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
             "ORDER BY fs.natural_id, fsw.time",
-            new MapSqlParameterSource().addValue("version", version).addValue("roadNumber", roadNumber, Types.INTEGER),
+            new MapSqlParameterSource().addValue("version", version.getVersion()).addValue("roadNumber", roadNumber, Types.INTEGER),
             rs -> {
                 final String forecastSectionNaturalId = rs.getString("natural_id");
 

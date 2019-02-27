@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,7 +43,7 @@ public class DataV2Controller {
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(2, lastUpdated, null);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, lastUpdated, null);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
@@ -50,6 +51,6 @@ public class DataV2Controller {
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionDataService.getForecastSectionWeatherData(2, false, roadNumber);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, roadNumber);
     }
 }

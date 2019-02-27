@@ -43,7 +43,7 @@ public class ForecastSectionV2MetadataDao {
         "DO NOTHING ";
 
     private static final String updateForecastSection =
-        "UPDATE forecast_section SET description = :description, length = :length, obsolete_date = null " +
+        "UPDATE forecast_section SET description = :description, length = :length " +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
 
     private static final String insertCoordinateList =

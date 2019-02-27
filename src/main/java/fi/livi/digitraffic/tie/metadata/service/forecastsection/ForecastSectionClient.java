@@ -49,7 +49,7 @@ public class ForecastSectionClient {
     }
 
     @Retryable
-    public ForecastSectionDataDto getRoadConditionsV1(final int version) {
+    public ForecastSectionDataDto getRoadConditions(final int version) {
         if (version == 1) {
             return restTemplate.getForObject(baseUrl + roadConditionsV1Url, ForecastSectionDataDto.class);
         } else {

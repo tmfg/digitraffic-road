@@ -47,7 +47,7 @@ public class ForecastSectionClientTest extends AbstractTest {
     @Ignore("For manual integration testing")
     public void getRoadConditionsSucceeds() {
 
-        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditionsV1(1);
+        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));

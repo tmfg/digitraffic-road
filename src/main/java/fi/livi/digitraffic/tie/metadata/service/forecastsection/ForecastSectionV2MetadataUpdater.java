@@ -45,17 +45,17 @@ public class ForecastSectionV2MetadataUpdater {
 
         final List<String> naturalIds = metadata.getFeatures().stream().map(f -> f.getProperties().getId()).collect(Collectors.toList());
 
-        forecastSectionRepository.deleteAllNotIn(naturalIds, 2);
+        forecastSectionRepository.deleteAllNotIn(naturalIds, ForecastSectionApiVersion.V2.getVersion());
 
         forecastSectionV2MetadataDao.upsertForecastSections(metadata.getFeatures());
 
-        forecastSectionRepository.deleteCoordinates(2);
+        forecastSectionRepository.deleteCoordinates(ForecastSectionApiVersion.V2.getVersion());
         forecastSectionV2MetadataDao.insertCoordinates(metadata.getFeatures());
 
-        forecastSectionRepository.deleteRoadSegments(2);
+        forecastSectionRepository.deleteRoadSegments(ForecastSectionApiVersion.V2.getVersion());
         forecastSectionV2MetadataDao.insertRoadSegments(metadata.getFeatures());
 
-        forecastSectionRepository.deleteLinkIds(2);
+        forecastSectionRepository.deleteLinkIds(ForecastSectionApiVersion.V2.getVersion());
         forecastSectionV2MetadataDao.insertLinkIds(metadata.getFeatures());
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);

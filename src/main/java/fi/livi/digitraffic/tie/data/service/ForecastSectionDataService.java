@@ -15,6 +15,7 @@ import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Service
 public class ForecastSectionDataService {
@@ -29,7 +30,7 @@ public class ForecastSectionDataService {
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final int version, final boolean onlyUpdateInfo, Integer roadNumber) {
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo, Integer roadNumber) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(getDataType(version).toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
@@ -50,10 +51,10 @@ public class ForecastSectionDataService {
             .collect(Collectors.toList());
     }
 
-    private DataType getDataType(final int version) {
+    private DataType getDataType(final ForecastSectionApiVersion version) {
         switch (version) {
-        case 1: return DataType.FORECAST_SECTION_WEATHER_DATA;
-        case 2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
+        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
         default: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
         }
     }
