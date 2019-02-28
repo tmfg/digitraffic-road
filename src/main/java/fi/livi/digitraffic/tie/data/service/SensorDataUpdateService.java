@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam.Anturi;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
 import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
@@ -75,8 +74,8 @@ public class SensorDataUpdateService {
                      data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
         }
 
-
-        final List<LotjuAnturiWrapper<Anturi>> filteredByNewest = filterNewestLamValues(filteredByStation);
+        final List<LotjuAnturiWrapper<Lam.Anturi>> wrappedAnturiValues = wrapLamData(filteredByStation);
+        final List<LotjuAnturiWrapper<Lam.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
 
         if (filteredByNewest.size() < filteredByStationRowCount) {
             log.info("method=updateLamData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
@@ -128,7 +127,8 @@ public class SensorDataUpdateService {
                      data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
         }
 
-        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByNewest = filterNewestTiesaaValues(filteredByStation);
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrappedAnturiValues = wrapTiesaaData(filteredByStation);
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
 
         if (filteredByNewest.size() < filteredByStationRowCount) {
             log.info("method=updateWeatherData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
@@ -154,49 +154,34 @@ public class SensorDataUpdateService {
         return rows;
     }
 
-
-    private List<LotjuAnturiWrapper<Lam.Anturi>> filterNewestLamValues(final List<Lam> data) {
-
-        final HashMap<Long, Map<Long, LotjuAnturiWrapper<Anturi>>> stationIdToSensoridToSensorData = new HashMap<>();
-
-        for (final Lam lamCandidate : data) {
-            Map<Long, LotjuAnturiWrapper<Anturi>> sensoridToSensorData = stationIdToSensoridToSensorData.get(lamCandidate.getAsemaId());
-            if (sensoridToSensorData == null) {
-                sensoridToSensorData = new HashMap<>();
-                stationIdToSensoridToSensorData.put(lamCandidate.getAsemaId(), sensoridToSensorData);
-            }
-            for(Anturi anturiCandidate :lamCandidate.getAnturiList()) {
-                final LotjuAnturiWrapper currentAnturi = sensoridToSensorData.get(anturiCandidate.getLaskennallinenAnturiId());
-                if (currentAnturi == null || currentAnturi.getAika() < lamCandidate.getAika()) {
-                    sensoridToSensorData.put(anturiCandidate.getLaskennallinenAnturiId(),
-                        new LotjuAnturiWrapper(anturiCandidate, lamCandidate.getAika(), lamCandidate.getAsemaId()));
-                }
-            }
-        }
-
-        return stationIdToSensoridToSensorData.values()
-            .stream()
-            .map(Map::values)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+    private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {
+        return lams.stream()
+            .flatMap(lam -> lam.getAnturiList().stream()
+                .map(anturi -> new LotjuAnturiWrapper<>(lam.getAsemaId(), anturi.getLaskennallinenAnturiId(),
+                                                        anturi, lam.getAika()))
+            ).collect(Collectors.toList());
     }
 
-    private List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filterNewestTiesaaValues(final List<TiesaaMittatieto> data) {
+    private static List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrapTiesaaData(final List<TiesaaMittatieto> tiesaaMittatietos) {
+        return tiesaaMittatietos.stream()
+            .flatMap(tiesaa -> tiesaa.getAnturiList().stream()
+                               .map(anturi -> new LotjuAnturiWrapper<>(tiesaa.getAsemaId(), anturi.getLaskennallinenAnturiId(),
+                                                                       anturi, tiesaa.getAika()))
+            ).collect(Collectors.toList());
+    }
 
-        final HashMap<Long, Map<Long, LotjuAnturiWrapper<TiesaaMittatieto.Anturi>>> stationIdToSensoridToSensorData = new HashMap<>();
+    private static <T> List<LotjuAnturiWrapper<T>> filterNewestAnturiValues(final List<LotjuAnturiWrapper<T>> wrappedValues) {
+        final HashMap<Long, Map<Long, LotjuAnturiWrapper<T>>> stationIdToSensoridToSensorData = new HashMap<>();
 
-        for (final TiesaaMittatieto tiesaaCandidate : data) {
-            Map<Long, LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> sensoridToSensorData = stationIdToSensoridToSensorData.get(tiesaaCandidate.getAsemaId());
+        for (final LotjuAnturiWrapper<T> anturiCandidate : wrappedValues) {
+            Map<Long, LotjuAnturiWrapper<T>> sensoridToSensorData = stationIdToSensoridToSensorData.get(anturiCandidate.getAsemaLotjuId());
             if (sensoridToSensorData == null) {
                 sensoridToSensorData = new HashMap<>();
-                stationIdToSensoridToSensorData.put(tiesaaCandidate.getAsemaId(), sensoridToSensorData);
+                stationIdToSensoridToSensorData.put(anturiCandidate.getAsemaLotjuId(), sensoridToSensorData);
             }
-            for(TiesaaMittatieto.Anturi anturiCandidate :tiesaaCandidate.getAnturiList()) {
-                final LotjuAnturiWrapper currentAnturi = sensoridToSensorData.get(anturiCandidate.getLaskennallinenAnturiId());
-                if (currentAnturi == null || currentAnturi.getAika() < tiesaaCandidate.getAika()) {
-                    sensoridToSensorData.put(anturiCandidate.getLaskennallinenAnturiId(),
-                        new LotjuAnturiWrapper<>(anturiCandidate, tiesaaCandidate.getAika(), tiesaaCandidate.getAsemaId()));
-                }
+            LotjuAnturiWrapper<T> currentAnturi = sensoridToSensorData.get(anturiCandidate.getAnturiLotjuId());
+            if (currentAnturi == null || currentAnturi.getAika() < anturiCandidate.getAika()) {
+                sensoridToSensorData.put(anturiCandidate.getAnturiLotjuId(), anturiCandidate);
             }
         }
 

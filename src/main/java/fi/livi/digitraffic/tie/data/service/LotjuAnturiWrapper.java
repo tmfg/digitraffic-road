@@ -3,13 +3,23 @@ package fi.livi.digitraffic.tie.data.service;
 public class LotjuAnturiWrapper<T> {
 
     private final T anturi;
+    private final long anturiLotjuId;
     private final long aika;
-    private final long asemaId;
+    private final long asemaLotjuId;
 
-    public LotjuAnturiWrapper(final T anturi, final long aika, final long asemaLotjuId) {
+    public LotjuAnturiWrapper(final long asemaLotjuId, final long anturiLotjuId, final T anturi, final long aika) {
+        this.asemaLotjuId = asemaLotjuId;
+        this.anturiLotjuId = anturiLotjuId;
         this.anturi = anturi;
         this.aika = aika;
-        this.asemaId = asemaLotjuId;
+    }
+
+    public long getAsemaLotjuId() {
+        return asemaLotjuId;
+    }
+
+    public long getAnturiLotjuId() {
+        return anturiLotjuId;
     }
 
     public T getAnturi() {
@@ -18,9 +28,5 @@ public class LotjuAnturiWrapper<T> {
 
     public long getAika() {
         return aika;
-    }
-
-    public long getAsemaLotjuId() {
-        return asemaId;
     }
 }
