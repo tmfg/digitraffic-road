@@ -36,25 +36,25 @@ public class ForecastSectionV2MetadataDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String insertForecastSection =
+    private static final String INSERT_FORECAST_SECTION =
         "INSERT INTO forecast_section(id, natural_id, description, length, version) " +
         "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version) " +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
         "DO NOTHING ";
 
-    private static final String updateForecastSection =
+    private static final String UPDATE_FORECAST_SECTION =
         "UPDATE forecast_section SET description = :description, length = :length " +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
 
-    private static final String insertCoordinateList =
+    private static final String INSERT_COORDINATE_LIST =
         "INSERT INTO forecast_section_coordinate_list(forecast_section_id, order_number) " +
         "VALUES((SELECT id FROM forecast_Section WHERE natural_id = :naturalId and version = :version), :orderNumber)";
 
-    private static final String insertCoordinate =
+    private static final String INSERT_COORDINATE =
         "INSERT INTO forecast_section_coordinate(forecast_section_id, list_order_number, order_number, longitude, latitude) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
-    private static final String selectAll =
+    private static final String SELECT_ALL =
         "SELECT rs.order_number as rs_order_number, " +
         "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway," +
         "li.order_number as li_order_number, * " +
@@ -64,18 +64,18 @@ public class ForecastSectionV2MetadataDao {
         "WHERE f.version = 2 AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
         "ORDER BY f.natural_id";
 
-    private static final String selectCoordinates =
+    private static final String SELECT_COORDINATES =
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| c.longitude ||','|| c.latitude ||']' ORDER BY c.order_number), ',') || ']' AS coordinates\n" +
         "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
         "WHERE f.version = 2 AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
         "GROUP BY natural_id, list_order_number\n" +
         "ORDER BY natural_id, list_order_number";
 
-    private static final String insertRoadSegment =
+    private static final String INSERT_ROAD_SEGMENT =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance, :carriageway)";
 
-    private static final String insertLinkIds =
+    private static final String INSERT_LINK_IDS =
         "INSERT INTO link_id(forecast_section_id, order_number, link_id) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
 
@@ -94,8 +94,8 @@ public class ForecastSectionV2MetadataDao {
         }
 
         // Only DO NOTHING is supported for EXCLUDE constraint (ON CONFLICT ON CONSTRAINT forecast_section_unique)
-        jdbcTemplate.batchUpdate(insertForecastSection, sources);
-        jdbcTemplate.batchUpdate(updateForecastSection, sources);
+        jdbcTemplate.batchUpdate(INSERT_FORECAST_SECTION, sources);
+        jdbcTemplate.batchUpdate(UPDATE_FORECAST_SECTION, sources);
     }
 
     private static MapSqlParameterSource forecastSectionParameterSource(final ForecastSectionV2FeatureDto feature) {
@@ -134,15 +134,15 @@ public class ForecastSectionV2MetadataDao {
             }
         }
 
-        jdbcTemplate.batchUpdate(insertCoordinateList, listSources);
-        jdbcTemplate.batchUpdate(insertCoordinate, coordinateSources);
+        jdbcTemplate.batchUpdate(INSERT_COORDINATE_LIST, listSources);
+        jdbcTemplate.batchUpdate(INSERT_COORDINATE, coordinateSources);
     }
 
     public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber) {
 
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
-        jdbcTemplate.query(selectAll, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
+        jdbcTemplate.query(SELECT_ALL, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
             final String naturalId = rs.getString("natural_id");
 
             if (!featureMap.containsKey(naturalId)) {
@@ -165,7 +165,7 @@ public class ForecastSectionV2MetadataDao {
             }
         });
 
-        jdbcTemplate.query(selectCoordinates, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
+        jdbcTemplate.query(SELECT_COORDINATES, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
             final TypeReference<List<List<Double>>> typeReference = new TypeReference<List<List<Double>>>() {};
             List coordinates = new ArrayList();
             try {
@@ -236,7 +236,7 @@ public class ForecastSectionV2MetadataDao {
             }
         }
 
-        jdbcTemplate.batchUpdate(insertRoadSegment, segmentSources);
+        jdbcTemplate.batchUpdate(INSERT_ROAD_SEGMENT, segmentSources);
     }
 
     private static MapSqlParameterSource roadSegmentParameterSource(final ForecastSectionV2FeatureDto feature, final RoadSegmentDto roadSegmentDto, final int orderNumber) {
@@ -262,7 +262,7 @@ public class ForecastSectionV2MetadataDao {
             }
         }
 
-        jdbcTemplate.batchUpdate(insertLinkIds, linkIdSources);
+        jdbcTemplate.batchUpdate(INSERT_LINK_IDS, linkIdSources);
     }
 
     private static MapSqlParameterSource linkIdParameterSource(final ForecastSectionV2FeatureDto feature, final Long linkId, final int orderNumber) {

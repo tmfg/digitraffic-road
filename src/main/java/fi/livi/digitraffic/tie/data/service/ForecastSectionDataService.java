@@ -30,7 +30,8 @@ public class ForecastSectionDataService {
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
     }
 
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo, Integer roadNumber) {
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo,
+                                                                       final Integer roadNumber) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(getDataType(version).toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
