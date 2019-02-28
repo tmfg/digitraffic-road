@@ -41,7 +41,11 @@ public class ForecastSectionWeatherDao {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
-            "SELECT * FROM FORECAST_SECTION_WEATHER fsw " +
+            "SELECT fs.natural_id, fsw.forecast_name, fsw.time, fsw.daylight, fsw.overall_road_condition, fsw.reliability, " +
+            "fsw.road_temperature, fsw.temperature, fsw.weather_symbol, fsw.wind_direction, fsw.wind_speed, fsw.type, " +
+            "fcr.precipitation_condition, fcr.road_condition, fcr.wind_condition, fcr.freezing_rain_condition, fcr.freezing_rain_condition, " +
+            "fcr.winter_slipperiness, fcr.visibility_condition, fcr.friction_condition " +
+            "FROM FORECAST_SECTION_WEATHER fsw " +
             "LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name " +
             "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
             "WHERE fs.version = :version AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
