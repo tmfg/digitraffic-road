@@ -62,12 +62,12 @@ public class SensorDataUpdateService {
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
 
-        final long initialDataRows = data.stream().map(lam -> lam.getAnturiList())
+        final long initialDataRowCount = data.stream().map(lam -> lam.getAnturiList())
             .flatMap(Collection::stream).count();
 
         final List<Lam> filteredByStation =
             data.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
-        final long filteredByStationRows = filteredByStation.stream().map(lam -> lam.getAnturiList())
+        final long filteredByStationRowCount = filteredByStation.stream().map(lam -> lam.getAnturiList())
             .flatMap(Collection::stream).count();
 
         if (filteredByStation.size() < data.size()) {
@@ -78,9 +78,9 @@ public class SensorDataUpdateService {
 
         final List<LotjuAnturiWrapper<Anturi>> filteredByNewest = filterNewestLamValues(filteredByStation);
 
-        if (filteredByNewest.size() < filteredByStationRows) {
+        if (filteredByNewest.size() < filteredByStationRowCount) {
             log.info("method=updateLamData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
-                     filteredByStationRows, filteredByStationRows-filteredByNewest.size(), filteredByNewest.size());
+                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
         }
 
         final long stationsCount = filteredByNewest.stream().map(a -> a.getAsemaLotjuId()).distinct().count();
@@ -97,7 +97,7 @@ public class SensorDataUpdateService {
         stopWatch.stop();
 
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
-                 initialDataRows, filteredByNewest.size());
+                 initialDataRowCount, filteredByNewest.size());
         log.info("method=updateLamData update tms sensors data for updateCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
                  rows, stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
         return rows;
@@ -114,13 +114,13 @@ public class SensorDataUpdateService {
 
         final Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
 
-        final long initialDataRows = data.stream().map(tiesaa -> tiesaa.getAnturiList())
+        final long initialDataRowCount = data.stream().map(tiesaa -> tiesaa.getAnturiList())
             .flatMap(Collection::stream).count();
 
         final List<TiesaaMittatieto> filteredByStation =
             data.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
 
-        final long filteredByStationRows = filteredByStation.stream().map(lam -> lam.getAnturiList())
+        final long filteredByStationRowCount = filteredByStation.stream().map(lam -> lam.getAnturiList())
             .flatMap(Collection::stream).count();
 
         if (filteredByStation.size() < data.size()) {
@@ -130,9 +130,9 @@ public class SensorDataUpdateService {
 
         final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByNewest = filterNewestTiesaaValues(filteredByStation);
 
-        if (filteredByNewest.size() < filteredByStationRows) {
+        if (filteredByNewest.size() < filteredByStationRowCount) {
             log.info("method=updateWeatherData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
-                     filteredByStationRows, filteredByStationRows-filteredByNewest.size(), filteredByNewest.size());
+                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
         }
 
         final TimestampCache timestampCache = new TimestampCache();
@@ -148,7 +148,7 @@ public class SensorDataUpdateService {
         final int rows = sensorValueDao.updateWeatherSensorData(params);
         stopWatch.stop();
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
-                 initialDataRows, filteredByNewest.size());
+                 initialDataRowCount, filteredByNewest.size());
         log.info("method=updateWeatherData update weather sensors data for updateCount={} sensors of stationCount={} stations tookMs={}",
                  rows, stationsCount, stopWatch.getTime());
         return rows;
