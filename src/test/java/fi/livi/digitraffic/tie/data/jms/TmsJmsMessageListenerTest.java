@@ -225,7 +225,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
                 final SensorValue sv = found.get();
                 Assert.assertEquals(sv.getValue(), (double) anturi.getArvo(), 0.05d);
-                System.out.println("JES");
+
                 if (found.get().getTimeWindowStart() != null) {
                     assertTimesEqual(timeWindowStart, sv.getTimeWindowStart());
                     assertTimesEqual(timeWindowEnd, sv.getTimeWindowEnd());
