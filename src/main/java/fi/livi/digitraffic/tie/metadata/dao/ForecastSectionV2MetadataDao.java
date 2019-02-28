@@ -68,8 +68,8 @@ public class ForecastSectionV2MetadataDao {
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| c.longitude ||','|| c.latitude ||']' ORDER BY c.order_number), ',') || ']' AS coordinates\n" +
         "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
         "WHERE f.version = 2 AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
-        "GROUP BY natural_id, list_order_number\n" +
-        "ORDER BY natural_id, list_order_number";
+        "GROUP BY f.natural_id, c.list_order_number\n" +
+        "ORDER BY f.natural_id, c.list_order_number";
 
     private static final String INSERT_ROAD_SEGMENT =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
@@ -205,22 +205,20 @@ public class ForecastSectionV2MetadataDao {
     }
 
     private static MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,
-                                                            final Coordinate coordinate) {
-        final HashMap<String, Object> args = new HashMap<>();
-        args.put("naturalId", naturalId);
-        args.put("listOrderNumber", listOrderNumber);
-        args.put("orderNumber", coordinateOrderNumber);
-        args.put("longitude", coordinate.longitude);
-        args.put("latitude", coordinate.latitude);
-        return new MapSqlParameterSource(args);
+                                                                   final Coordinate coordinate) {
+        return new MapSqlParameterSource()
+            .addValue("naturalId", naturalId)
+            .addValue("listOrderNumber", listOrderNumber)
+            .addValue("orderNumber", coordinateOrderNumber)
+            .addValue("longitude", coordinate.longitude)
+            .addValue("latitude", coordinate.latitude);
     }
 
     private static MapSqlParameterSource coordinateListParameterSource(final String naturalId, final int orderNumber) {
-        final HashMap<String, Object> args = new HashMap<>();
-        args.put("naturalId", naturalId);
-        args.put("orderNumber", orderNumber);
-        args.put("version", 2);
-        return new MapSqlParameterSource(args);
+        return new MapSqlParameterSource()
+            .addValue("naturalId", naturalId)
+            .addValue("orderNumber", orderNumber)
+            .addValue("version", 2);
     }
 
     public void insertRoadSegments(final List<ForecastSectionV2FeatureDto> features) {
@@ -240,13 +238,12 @@ public class ForecastSectionV2MetadataDao {
     }
 
     private static MapSqlParameterSource roadSegmentParameterSource(final ForecastSectionV2FeatureDto feature, final RoadSegmentDto roadSegmentDto, final int orderNumber) {
-        final HashMap<String, Object> args = new HashMap<>();
-        args.put("naturalId", feature.getProperties().getId());
-        args.put("orderNumber", orderNumber);
-        args.put("startDistance", roadSegmentDto.getStartDistance());
-        args.put("endDistance", roadSegmentDto.getEndDistance());
-        args.put("carriageway", roadSegmentDto.getCarriageway());
-        return new MapSqlParameterSource(args);
+        return new MapSqlParameterSource()
+            .addValue("naturalId", feature.getProperties().getId())
+            .addValue("orderNumber", orderNumber)
+            .addValue("startDistance", roadSegmentDto.getStartDistance())
+            .addValue("endDistance", roadSegmentDto.getEndDistance())
+            .addValue("carriageway", roadSegmentDto.getCarriageway());
     }
 
     public void insertLinkIds(final List<ForecastSectionV2FeatureDto> features) {
@@ -266,10 +263,9 @@ public class ForecastSectionV2MetadataDao {
     }
 
     private static MapSqlParameterSource linkIdParameterSource(final ForecastSectionV2FeatureDto feature, final Long linkId, final int orderNumber) {
-        final HashMap<String, Object> args = new HashMap<>();
-        args.put("naturalId", feature.getProperties().getId());
-        args.put("orderNumber", orderNumber);
-        args.put("linkId", linkId);
-        return new MapSqlParameterSource(args);
+        return new MapSqlParameterSource()
+            .addValue("naturalId", feature.getProperties().getId())
+            .addValue("orderNumber", orderNumber)
+            .addValue("linkId", linkId);
     }
 }
