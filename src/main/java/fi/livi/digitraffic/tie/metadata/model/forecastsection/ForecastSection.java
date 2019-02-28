@@ -113,19 +113,19 @@ public class ForecastSection {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("forecastSectionCoordinateListPK.orderNumber")
-    private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists;
+    private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
-    private List<ForecastSectionWeather> forecastSectionWeatherList;
+    private List<ForecastSectionWeather> forecastSectionWeatherList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roadSegmentPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("roadSegmentPK.orderNumber")
-    private List<RoadSegment> roadSegments;
+    private List<RoadSegment> roadSegments = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "linkIdPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("linkIdPK.orderNumber")
-    private List<LinkId> linkIds;
+    private List<LinkId> linkIds = new ArrayList<>();
 
     public ForecastSection() {
     }
@@ -292,47 +292,6 @@ public class ForecastSection {
             }
         }
         forecastSectionCoordinateLists.add(new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(id, 1L), coordinateList));
-    }
-
-    // FIXME: Move to V1MetadataUpdater
-    public boolean corresponds(ForecastSectionCoordinatesDto value) {
-        if (value.getName().equals(description) && coordinatesCorrespond(value.getCoordinates())) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean coordinatesCorrespond(List<Coordinate> coordinates) {
-
-        // FIXME: Move to V1MetadataUpdater
-        List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
-        if (!forecastSectionCoordinateLists.isEmpty()) {
-            coordinateList = forecastSectionCoordinateLists.get(0).getForecastSectionCoordinates();
-        }
-
-        if (coordinateList.size() != coordinates.size()) return false;
-
-        List<Coordinate> sorted1 = coordinateList.stream().sorted((a, b) -> {
-            if (a.getLongitude().equals(b.getLongitude())) {
-                return a.getLatitude().compareTo(b.getLatitude());
-            }
-            return a.getLongitude().compareTo(b.getLongitude());
-        }).map(c -> new Coordinate(Arrays.asList(c.getLongitude(), c.getLatitude()))).collect(Collectors.toList());
-
-        List<Coordinate> sorted2 = coordinates.stream().sorted((a, b) -> {
-            if (a.longitude.equals(b.longitude)) {
-                return a.latitude.compareTo(b.latitude);
-            }
-            return a.longitude.compareTo(b.longitude);
-        }).collect(Collectors.toList());
-
-        for (int i = 0; i < coordinateList.size(); ++i) {
-            if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
-                sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

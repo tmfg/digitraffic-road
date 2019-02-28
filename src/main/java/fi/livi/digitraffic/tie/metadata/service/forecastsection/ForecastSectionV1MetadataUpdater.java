@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class ForecastSectionV1MetadataUpdater {
 
             final ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), 1, forecastSection.getName());
             forecastSectionRepository.saveAndFlush(newForecastSection);
-            newForecastSection.addCoordinates(forecastSection.getCoordinates());
+            newForecastSection.addCoordinates( forecastSection.getCoordinates());
             forecastSectionRepository.saveAndFlush(newForecastSection);
             forecastSections.put(fs.getValue().getNaturalId(), newForecastSection);
         }
@@ -95,8 +96,8 @@ public class ForecastSectionV1MetadataUpdater {
         for (final Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToUpdate.entrySet()) {
             final ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
 
-            if (!forecastSection.corresponds(fs.getValue())) {
-                log.info("Updating forecast section: " + forecastSection.toString() + " with data: " + fs.toString());
+            if (!corresponds(forecastSection, fs.getValue())) {
+                log.info("Updating forecastSection=" + forecastSection.toString() + " with forecastSectionData=" + fs.toString());
                 updated = true;
             }
             forecastSection.setDescription(fs.getValue().getName());
@@ -106,6 +107,7 @@ public class ForecastSectionV1MetadataUpdater {
             forecastSectionRepository.saveAndFlush(forecastSection);
 
             addCoordinates(forecastSection, fs.getValue().getCoordinates());
+            forecastSectionRepository.saveAndFlush(forecastSection);
         }
         return updated;
     }
@@ -116,7 +118,7 @@ public class ForecastSectionV1MetadataUpdater {
         long orderNumber = 1;
         for (final Coordinate coordinate : coordinates) {
             if (!coordinate.isValid()) {
-                log.info("Invalid coordinates for forecast section " + forecastSection.getNaturalId() + ". Coordinates were: " + coordinate.toString());
+                log.info("Invalid coordinates for forecastSection=" + forecastSection.getNaturalId() + " . coordinates=" + coordinate.toString());
             } else {
                 coordinateList.add(new ForecastSectionCoordinate(
                     new ForecastSectionCoordinatePK(forecastSection.getId(), 1L, orderNumber), coordinate.longitude, coordinate.latitude));
@@ -134,6 +136,45 @@ public class ForecastSectionV1MetadataUpdater {
             final ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
             forecastSection.setObsoleteDate(Date.from(Instant.now()));
         }
+    }
+
+    public static boolean corresponds(final ForecastSection forecastSection, final ForecastSectionCoordinatesDto value) {
+        if (value.getName().equals(forecastSection.getDescription()) && coordinatesCorrespond(forecastSection, value.getCoordinates())) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean coordinatesCorrespond(final ForecastSection forecastSection, final List<Coordinate> coordinates) {
+
+        List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
+        if (!forecastSection.getForecastSectionCoordinateLists().isEmpty()) {
+            coordinateList = forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates();
+        }
+
+        if (coordinateList.size() != coordinates.size()) return false;
+
+        final List<Coordinate> sorted1 = coordinateList.stream().sorted((a, b) -> {
+            if (a.getLongitude().equals(b.getLongitude())) {
+                return a.getLatitude().compareTo(b.getLatitude());
+            }
+            return a.getLongitude().compareTo(b.getLongitude());
+        }).map(c -> new Coordinate(Arrays.asList(c.getLongitude(), c.getLatitude()))).collect(Collectors.toList());
+
+        final List<Coordinate> sorted2 = coordinates.stream().sorted((a, b) -> {
+            if (a.longitude.equals(b.longitude)) {
+                return a.latitude.compareTo(b.latitude);
+            }
+            return a.longitude.compareTo(b.longitude);
+        }).collect(Collectors.toList());
+
+        for (int i = 0; i < coordinateList.size(); ++i) {
+            if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
+                sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void printLogInfo(final List<ForecastSectionCoordinatesDto> roadSectionCoordinates, final List<ForecastSection> forecastSections) {
