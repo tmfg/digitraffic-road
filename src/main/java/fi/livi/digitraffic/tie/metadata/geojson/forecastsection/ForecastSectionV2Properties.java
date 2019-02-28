@@ -18,7 +18,7 @@ public class ForecastSectionV2Properties {
                           "3. Start distance 5 characters ie. 000, \n" +
                           "4. Carriageway 1 character, \n" +
                           "5. Measure value of link start point. Varying number of characters ie. 274.569, \n" +
-                          "Refers to Digiroad content at https://aineistot.liikennevirasto.fi/digiroad/")
+                          "Refers to Digiroad content at https://aineistot.vayla.fi/digiroad/")
     @JsonProperty("id")
     private String naturalId;
 
@@ -34,10 +34,10 @@ public class ForecastSectionV2Properties {
     @ApiModelProperty(value = "Forecast section length in meters")
     private Integer length;
 
-    @ApiModelProperty(value = "Forecast section road segments. Refers to https://aineistot.liikennevirasto.fi/digiroad/")
+    @ApiModelProperty(value = "Forecast section road segments. Refers to https://aineistot.vayla.fi/digiroad/")
     private List<RoadSegment> roadSegments;
 
-    @ApiModelProperty(value = "Forecast section link indices. Refers to https://aineistot.liikennevirasto.fi/digiroad/")
+    @ApiModelProperty(value = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")
     private List<Long> linkIdList;
 
     public ForecastSectionV2Properties() {
