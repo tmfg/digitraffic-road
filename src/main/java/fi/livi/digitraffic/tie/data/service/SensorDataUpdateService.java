@@ -61,13 +61,11 @@ public class SensorDataUpdateService {
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
 
-        final long initialDataRowCount = data.stream().map(lam -> lam.getAnturiList())
-            .flatMap(Collection::stream).count();
+        final long initialDataRowCount = data.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
         final List<Lam> filteredByStation =
             data.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
-        final long filteredByStationRowCount = filteredByStation.stream().map(lam -> lam.getAnturiList())
-            .flatMap(Collection::stream).count();
+        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
         if (filteredByStation.size() < data.size()) {
             log.warn("method=updateLamData filter data from originalCount={} with missingTmsStationsCount={} to resultCount={}" ,
@@ -113,14 +111,12 @@ public class SensorDataUpdateService {
 
         final Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
 
-        final long initialDataRowCount = data.stream().map(tiesaa -> tiesaa.getAnturiList())
-            .flatMap(Collection::stream).count();
+        final long initialDataRowCount = data.stream().mapToLong(tiesaa -> tiesaa.getAnturiList().size()).sum();
 
         final List<TiesaaMittatieto> filteredByStation =
             data.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
 
-        final long filteredByStationRowCount = filteredByStation.stream().map(lam -> lam.getAnturiList())
-            .flatMap(Collection::stream).count();
+        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
         if (filteredByStation.size() < data.size()) {
             log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} to resultCount={}" ,
