@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -14,13 +13,8 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "coordinates"})
     public class LineString extends Geometry<List<Double>> {
 
-    @JsonCreator()
-    public LineString(@JsonProperty("coordinates") List<List<Double>> coordinates) {
-        this("", coordinates);
-    }
-
     @JsonCreator
-    public LineString(@JsonProperty("type") String type, @JsonProperty("coordinates") List<List<Double>> coordinates) {
+    public LineString(List<List<Double>> coordinates) {
         super(Type.LineString, coordinates);
     }
 

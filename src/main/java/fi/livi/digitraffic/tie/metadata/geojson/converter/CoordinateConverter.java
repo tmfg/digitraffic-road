@@ -1,5 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.sound.sampled.Line;
+
 import org.osgeo.proj4j.CRSFactory;
 import org.osgeo.proj4j.CoordinateReferenceSystem;
 import org.osgeo.proj4j.CoordinateTransform;
@@ -9,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 @Component
@@ -34,6 +41,14 @@ public class CoordinateConverter {
 
     public static Point convertFromETRS89ToWGS84(Point fromETRS89) {
         return convert(fromETRS89, transformerFromEtrs89Tm35FinToWgs84);
+    }
+
+    public static LineString convertLineStringFromETRS89ToWGS84(List<List<Double>> fromETRS89Coordinates) {
+        List<List<Double>> coords =
+            fromETRS89Coordinates.stream()
+                .map(l -> (List<Double>) new ArrayList(convertFromETRS89ToWGS84(new Point(l)).getCoordinates()))
+                .collect(Collectors.toList());
+        return new LineString(coords);
     }
 
     private static Point convert(final Point fromPoint, final CoordinateTransform transformer) {

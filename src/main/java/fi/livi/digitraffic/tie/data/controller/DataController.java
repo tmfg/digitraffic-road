@@ -5,6 +5,8 @@ import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_B
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -24,10 +26,12 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
@@ -75,6 +79,7 @@ public class DataController {
     private final CameraDataService cameraDataService;
     private final ForecastSectionDataService forecastSectionDataService;
     private final Datex2DataService datex2DataService;
+    private final MaintenanceDataService maintenanceDataService;
 
     @Autowired
     public DataController(final TmsDataService tmsDataService,
@@ -82,13 +87,15 @@ public class DataController {
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
                           final ForecastSectionDataService forecastSectionDataService,
-                          final Datex2DataService datex2DataService) {
+                          final Datex2DataService datex2DataService,
+                          final MaintenanceDataService maintenanceDataService) {
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
         this.forecastSectionDataService = forecastSectionDataService;
         this.datex2DataService = datex2DataService;
+        this.maintenanceDataService = maintenanceDataService;
     }
 
     @ApiOperation("Current free flow speeds")
@@ -293,5 +300,12 @@ public class DataController {
         @RequestParam @Valid @Range(min = 1, max = 12)
         final int month) {
         return datex2DataService.findWeightRestrictions(situationId, year, month);
+    }
+
+    @ApiOperation(value = "Work Machine Tracking data")
+    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_UTF8_VALUE })
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+    public List<WorkMachineTracking> workMachineTrackings() {
+        return maintenanceDataService.findAll();
     }
 }

@@ -24,11 +24,10 @@ public class Point extends Geometry<Double> implements Serializable {
     private static final int ALTITUDE_IDX = 2;
 
     /**
-     * @param coordinates longitude, latitude, [altitude]
+     * @param coordinates Array in order: longitude, latitude, [altitude].
      */
     @JsonCreator
-    public Point(@JsonProperty("coordinates")
-                 final List<Double> coordinates) {
+    public Point(final List<Double> coordinates) {
         super(Type.Point, coordinates);
     }
 

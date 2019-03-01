@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "GeoJSON Feature Object", value = "ObservationFeature")
 @JsonPropertyOrder({ "type", "geometry", "properties" })
-public class ObservationFeature implements Feature<Point>, Serializable {
+public class ObservationFeature implements Feature<Geometry<?>>, Serializable {
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1, allowableValues = "Feature")
     @JsonPropertyOrder(value = "1")
@@ -27,14 +27,14 @@ public class ObservationFeature implements Feature<Point>, Serializable {
 
     @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where the machine was located", required = true, position = 3)
     @JsonPropertyOrder(value = "3")
-    private Point geometry;
+    private Geometry<?> geometry;
 
     @ApiModelProperty(value = "TMS station properties", required = true, position = 4)
     @JsonPropertyOrder(value = "4")
     private ObservationProperties properties;
 
     @JsonCreator
-    public ObservationFeature(final Point geometry, final ObservationProperties properties) {
+    public ObservationFeature(final Geometry<?> geometry, final ObservationProperties properties) {
         this.geometry = geometry;
         if (properties == null) {
             throw new IllegalArgumentException("ObservationProperties cannot be null");
@@ -48,12 +48,12 @@ public class ObservationFeature implements Feature<Point>, Serializable {
     }
 
     @Override
-    public Point getGeometry() {
+    public Geometry<?> getGeometry() {
         return geometry;
     }
 
     @Override
-    public void setGeometry(final Point geometry) {
+    public void setGeometry(final Geometry<?> geometry) {
         this.geometry = geometry;
     }
 
