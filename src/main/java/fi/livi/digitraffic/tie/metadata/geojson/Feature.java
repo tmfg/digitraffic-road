@@ -1,6 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-public interface Feature {
-    Point getGeometry();
-    void setGeometry(final Point geometry);
+public interface Feature<T> {
+
+    String getType();
+
+    T getGeometry();
+
+    void setGeometry(T geometry);
 }

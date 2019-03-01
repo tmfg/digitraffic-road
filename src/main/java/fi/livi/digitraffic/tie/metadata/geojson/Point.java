@@ -11,23 +11,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
+@ApiModel(description = "GeoJson Point Geometry Object", value = "PointGeometry", parent = Geometry.class)
 @JsonPropertyOrder({ "type", "coordinates"})
-public class Point implements Serializable {
+public class Point extends Geometry<Double> implements Serializable {
 
     private static final int LONGITUDE_IDX = 0;
     private static final int LATITUDE_IDX = 1;
     private static final int ALTITUDE_IDX = 2;
-
-    @ApiModelProperty(value = "\"Point\": GeoJson Point Geometry Object", required = true, position = 1)
-    private final String type = "Point";
-
-    @ApiModelProperty(value = "Point's coordinates [LONGITUDE, LATITUDE, ALTITUDE] (Coordinates in WGS84 format in decimal degrees. Altitude is optional and measured in meters. Location accuracy is 1-100 metres.)",
-                      required = true, position = 2, example = "[6669701, 364191, 0]")
-    private final List<Double> coordinates;
 
     /**
      * @param coordinates longitude, latitude, [altitude]
@@ -35,9 +29,7 @@ public class Point implements Serializable {
     @JsonCreator
     public Point(@JsonProperty("coordinates")
                  final List<Double> coordinates) {
-        this(coordinates.get(LONGITUDE_IDX),
-             coordinates.get(LATITUDE_IDX),
-             coordinates.size() >= ALTITUDE_IDX + 1 ? coordinates.get(ALTITUDE_IDX) : null);
+        super(Type.Point, coordinates);
     }
 
     public Point(final double longitude, final double latitude) {
@@ -45,19 +37,31 @@ public class Point implements Serializable {
     }
 
     public Point(final double longitude, final double latitude, final Double altitude) {
-        coordinates = Arrays.asList(new Double[ altitude == null ? 2 : 3 ]);
+        super(Type.Point, coordinatesAsList(longitude, latitude, altitude));
+    }
+
+    @ApiModelProperty(required = true, allowableValues = "Point", example = "Point")
+    @Override
+    public Type getType() {
+        return super.getType();
+    }
+
+    @ApiModelProperty(required = true, position = 2, example = "[26.976774926733796, 65.34673850731987]",
+                      value = "List of coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. " +
+                              "Coordinates are in WGS84 format in decimal degrees. Altitude is optional and measured in meters.")
+    @Override
+    public List<Double> getCoordinates() {
+        return super.getCoordinates();
+    }
+
+
+    private static List<Double> coordinatesAsList(double longitude, double latitude, Double altitude) {
+        final List<Double> coordinates = Arrays.asList(new Double[altitude == null ? 2 : 3]);
         coordinates.set(LONGITUDE_IDX, longitude);
         coordinates.set(LATITUDE_IDX, latitude);
         if (altitude != null) {
             coordinates.set(ALTITUDE_IDX, altitude);
         }
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public List<Double> getCoordinates() {
         return coordinates;
     }
 
@@ -77,36 +81,14 @@ public class Point implements Serializable {
     }
 
     private Double getCoordinate(int index) {
-        if ( index < coordinates.size() ) {
-            return coordinates.get(index);
+        if ( index < getCoordinates().size() ) {
+            return getCoordinates().get(index);
         }
         return null;
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Point)) {
-            return false;
-        }
-        final Point point = (Point) o;
-        final EqualsBuilder eq = new EqualsBuilder();
-        eq.append(getCoordinates(), point.getCoordinates())
-                .append(getType(), point.getType());
-        return eq.isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (coordinates != null ? coordinates.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
-        return "Point{" + "coordinates=" + coordinates + "} " + super.toString();
+        return ToStringHelper.toStringFull(this);
     }
 }
