@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
+import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
-import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
+import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationDao;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
@@ -41,11 +42,11 @@ public class SensorDataUpdateService {
         this.roadStationDao = roadStationDao;
 
         final List<RoadStationSensor> allowedTmsSensors =
-            roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION);
+            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
         allowedTmsSensorLotjuIds = allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
 
         final List<RoadStationSensor> allowedWeatherSensors =
-            roadStationSensorService.findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
+            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
         allowedWeatherSensorLotjuIds = allowedWeatherSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
     }
 
@@ -55,37 +56,47 @@ public class SensorDataUpdateService {
      * @return count of updated db rows
      */
     @Transactional
-    public int updateLamData(final List<LAMRealtimeProtos.Lam> data) {
+    public int updateLamData(final List<Lam> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<LAMRealtimeProtos.Lam> filteredByNewest = filterNewestLamValues(data);
-
-        if (data.size() > filteredByNewest.size()) {
-            log.info("method=updateLamData filter data from originalCount={} with oldDataCount={} to resultCount={}",
-                     data.size(), data.size()-filteredByNewest.size(), filteredByNewest.size());
-        }
 
         Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
 
-        final List<LAMRealtimeProtos.Lam> filteredByStation =
-            filteredByNewest.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
+        final long initialDataRowCount = data.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
-        if (filteredByStation.size() < filteredByNewest.size()) {
+        final List<Lam> filteredByStation =
+            data.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
+        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
+
+        if (filteredByStation.size() < data.size()) {
             log.warn("method=updateLamData filter data from originalCount={} with missingTmsStationsCount={} to resultCount={}" ,
-                     filteredByNewest.size(), filteredByNewest.size()-filteredByStation.size(), filteredByStation.size());
+                     data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
         }
+
+        final List<LotjuAnturiWrapper<Lam.Anturi>> wrappedAnturiValues = wrapLamData(filteredByStation);
+        final List<LotjuAnturiWrapper<Lam.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
+
+        if (filteredByNewest.size() < filteredByStationRowCount) {
+            log.info("method=updateLamData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
+                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
+        }
+
+        final long stationsCount = filteredByNewest.stream().map(a -> a.getAsemaLotjuId()).distinct().count();
 
         final TimestampCache timestampCache = new TimestampCache();
 
-        List<SensorValueUpdateParameterDto> params = filteredByStation.stream()
-            .flatMap(lam -> lam.getAnturiList().stream()
-                            .filter(anturi -> allowedTmsSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId()))
-                            .map(anturi -> new SensorValueUpdateParameterDto(lam, anturi, allowedStationsLotjuIdtoIds.get(lam.getAsemaId()), timestampCache)))
+        List<SensorValueUpdateParameterDto> params =
+            filteredByNewest.stream()
+            .filter(wrapper -> allowedTmsSensorLotjuIds.contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
+                            .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
 
         final int rows = sensorValueDao.updateLamSensorData(params);
         stopWatch.stop();
-        log.info("method=updateLamData Update tms sensors data for rows={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
-                 rows, filteredByStation.size(), data.stream().anyMatch(lam -> lam.getIsRealtime()), data.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
+
+        log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
+                 initialDataRowCount, filteredByNewest.size());
+        log.info("method=updateLamData update tms sensors data for updateCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
+                 rows, stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
         return rows;
     }
 
@@ -95,70 +106,85 @@ public class SensorDataUpdateService {
      * @return count of updated db rows
      */
     @Transactional
-    public int updateWeatherData(final List<TiesaaProtos.TiesaaMittatieto> data) {
+    public int updateWeatherData(final List<TiesaaMittatieto> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
-        final Collection<TiesaaProtos.TiesaaMittatieto> filteredByNewest = filterNewestTiesaaValues(data);
 
-        if (data.size() > filteredByNewest.size()) {
-            log.info("method=updateWeatherData filter data from originalCount={} with oldDataCount={} to resultCount={}",
-                     data.size(), data.size()-filteredByNewest.size(), filteredByNewest.size());
+        final Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+
+        final long initialDataRowCount = data.stream().mapToLong(tiesaa -> tiesaa.getAnturiList().size()).sum();
+
+        final List<TiesaaMittatieto> filteredByStation =
+            data.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
+
+        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
+
+        if (filteredByStation.size() < data.size()) {
+            log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} to resultCount={}" ,
+                     data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
         }
 
-        Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.WEATHER_STATION);
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrappedAnturiValues = wrapTiesaaData(filteredByStation);
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
 
-        final List<TiesaaProtos.TiesaaMittatieto> filteredByStation =
-            filteredByNewest.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
-
-        if (filteredByStation.size() < filteredByNewest.size()) {
-            log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} to resultCount={}" ,
-                     filteredByNewest.size(), filteredByNewest.size()-filteredByStation.size(), filteredByStation.size());
+        if (filteredByNewest.size() < filteredByStationRowCount) {
+            log.info("method=updateWeatherData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
+                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
         }
 
         final TimestampCache timestampCache = new TimestampCache();
 
-        List<SensorValueUpdateParameterDto> params = filteredByStation.stream()
-            .flatMap(tiesaa -> tiesaa.getAnturiList().stream()
-                               .filter(anturi -> allowedWeatherSensorLotjuIds.contains(anturi.getLaskennallinenAnturiId()))
-                               .map(anturi -> new SensorValueUpdateParameterDto(tiesaa, anturi, allowedStationsLotjuIdtoIds.get(tiesaa.getAsemaId()), timestampCache)))
-            .collect(Collectors.toList());
+        final long stationsCount = filteredByNewest.stream().map(a -> a.getAsemaLotjuId()).distinct().count();
+
+        List<SensorValueUpdateParameterDto> params =
+            filteredByNewest.stream()
+                .filter(wrapper -> allowedWeatherSensorLotjuIds.contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
+                .map(anturi -> new SensorValueUpdateParameterDto(anturi, timestampCache, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId())))
+                .collect(Collectors.toList());
 
         final int rows = sensorValueDao.updateWeatherSensorData(params);
         stopWatch.stop();
-        log.info("method=updateWeatherData Update weather sensors data for rows={} sensors of stationCount={} stations tookMs={}",
-                 rows, filteredByStation.size(), stopWatch.getTime());
+        log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
+                 initialDataRowCount, filteredByNewest.size());
+        log.info("method=updateWeatherData update weather sensors data for updateCount={} sensors of stationCount={} stations tookMs={}",
+                 rows, stationsCount, stopWatch.getTime());
         return rows;
     }
 
-    private static Collection<LAMRealtimeProtos.Lam> filterNewestLamValues(final List<LAMRealtimeProtos.Lam> data) {
-        // Collect newest data per station
-        final HashMap<Long, LAMRealtimeProtos.Lam> tmsMapByLamStationLotjuId = new HashMap<>();
-
-        for (final LAMRealtimeProtos.Lam lam : data) {
-            final LAMRealtimeProtos.Lam currentLam = tmsMapByLamStationLotjuId.get(lam.getAsemaId());
-            if (currentLam == null || lam.getAika() > currentLam.getAika()) {
-                if (currentLam != null) {
-                    log.debug("Replace lam " + currentLam.getAika() + " with " + lam.getAika());
-                }
-                tmsMapByLamStationLotjuId.put(lam.getAsemaId(), lam);
-            }
-        }
-        return tmsMapByLamStationLotjuId.values();
+    private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {
+        return lams.stream()
+            .flatMap(lam -> lam.getAnturiList().stream()
+                .map(anturi -> new LotjuAnturiWrapper<>(lam.getAsemaId(), anturi.getLaskennallinenAnturiId(),
+                                                        anturi, lam.getAika()))
+            ).collect(Collectors.toList());
     }
 
-    private static Collection<TiesaaProtos.TiesaaMittatieto> filterNewestTiesaaValues(final List<TiesaaProtos.TiesaaMittatieto> data) {
-        // Collect newest data per station
-        final HashMap<Long, TiesaaProtos.TiesaaMittatieto> tiesaaMapByTmsStationLotjuId = new HashMap<>();
+    private static List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrapTiesaaData(final List<TiesaaMittatieto> tiesaaMittatietos) {
+        return tiesaaMittatietos.stream()
+            .flatMap(tiesaa -> tiesaa.getAnturiList().stream()
+                               .map(anturi -> new LotjuAnturiWrapper<>(tiesaa.getAsemaId(), anturi.getLaskennallinenAnturiId(),
+                                                                       anturi, tiesaa.getAika()))
+            ).collect(Collectors.toList());
+    }
 
-        for (final TiesaaProtos.TiesaaMittatieto tiesaaCandidate : data) {
-            final TiesaaProtos.TiesaaMittatieto currentTiesaa = tiesaaMapByTmsStationLotjuId.get(tiesaaCandidate.getAsemaId());
+    private static <T> List<LotjuAnturiWrapper<T>> filterNewestAnturiValues(final List<LotjuAnturiWrapper<T>> wrappedValues) {
+        final HashMap<Long, Map<Long, LotjuAnturiWrapper<T>>> stationIdToSensoridToSensorData = new HashMap<>();
 
-            if (currentTiesaa == null || currentTiesaa.getAika() < tiesaaCandidate.getAika()) {
-                if (currentTiesaa != null) {
-                    log.debug("Replace tiesaa " + currentTiesaa.getAika() + " with " + tiesaaCandidate.getAika());
-                }
-                tiesaaMapByTmsStationLotjuId.put(tiesaaCandidate.getAsemaId(), tiesaaCandidate);
+        for (final LotjuAnturiWrapper<T> anturiCandidate : wrappedValues) {
+            Map<Long, LotjuAnturiWrapper<T>> sensoridToSensorData = stationIdToSensoridToSensorData.get(anturiCandidate.getAsemaLotjuId());
+            if (sensoridToSensorData == null) {
+                sensoridToSensorData = new HashMap<>();
+                stationIdToSensoridToSensorData.put(anturiCandidate.getAsemaLotjuId(), sensoridToSensorData);
+            }
+            LotjuAnturiWrapper<T> currentAnturi = sensoridToSensorData.get(anturiCandidate.getAnturiLotjuId());
+            if (currentAnturi == null || currentAnturi.getAika() < anturiCandidate.getAika()) {
+                sensoridToSensorData.put(anturiCandidate.getAnturiLotjuId(), anturiCandidate);
             }
         }
-        return tiesaaMapByTmsStationLotjuId.values();
+
+        return stationIdToSensoridToSensorData.values()
+            .stream()
+            .map(Map::values)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
     }
 }
