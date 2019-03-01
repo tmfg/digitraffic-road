@@ -25,7 +25,7 @@ metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 dt.job.Datex2TrafficAlertMessageUpdateJob.schedule =           0 0/3 * * * ?
 # Every 5 min
 dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
-dt.job.forecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
+dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
 # Every 1 h
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
@@ -40,7 +40,7 @@ dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
 dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 0 3 * * ?
 dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
 dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
-dt.job.forecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
+dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
