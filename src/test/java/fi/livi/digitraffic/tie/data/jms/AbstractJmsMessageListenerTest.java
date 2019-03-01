@@ -19,7 +19,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractTest {
     @Autowired
     protected RoadStationSensorService roadStationSensorService;
 
-    protected List<RoadStationSensor> getAvailableRoadStationSensors(final RoadStationType roadStationType) {
+    protected List<RoadStationSensor> findPublishableRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorService
             .findAllPublishableRoadStationSensors(roadStationType);
     }

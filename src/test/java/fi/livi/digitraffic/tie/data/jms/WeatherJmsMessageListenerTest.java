@@ -40,7 +40,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -68,7 +67,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater = createTiesaaMittatietoJMSDataUpdater();
         final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener = createTiesaaMittatietoJMSMessageListener(dataUpdater);
-        final List<RoadStationSensor> availableSensors = getAvailableRoadStationSensors(RoadStationType.WEATHER_STATION);
+        final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
@@ -91,7 +90,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 final WeatherStation currentStation = stationsIter.next();
 
                 List<TiesaaProtos.TiesaaMittatieto> tiesaas =
-                    generateTiesaaMittatieto(time, availableSensors, currentStation.getLotjuId());
+                    generateTiesaaMittatieto(time, publishableSensors, currentStation.getLotjuId());
 
                 for (TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
                     data.add(tiesaa);
@@ -106,7 +105,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             }
 
             // Create data for non existing station to test that data will be updated even if there is data for non existing station.
-            List<TiesaaProtos.TiesaaMittatieto> nonExistingTiesaas = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
+            List<TiesaaProtos.TiesaaMittatieto> nonExistingTiesaas = generateTiesaaMittatieto(Instant.now(), publishableSensors, NON_EXISTING_STATION_LOTJU_ID);
             for (TiesaaProtos.TiesaaMittatieto nonExistingTiesaa : nonExistingTiesaas) {
                 data.add(nonExistingTiesaa);
                 jmsMessageListener.onMessage(createBytesMessage(nonExistingTiesaa));

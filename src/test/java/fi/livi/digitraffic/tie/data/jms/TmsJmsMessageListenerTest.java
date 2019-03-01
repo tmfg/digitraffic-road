@@ -87,7 +87,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = createLamJMSDataUpdater();
         final JMSMessageListener tmsJmsMessageListener = createTmsJmsMessageListener(dataUpdater);
-        final List<RoadStationSensor> availableSensors = getAvailableRoadStationSensors(RoadStationType.TMS_STATION);
+        final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
@@ -110,7 +110,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 final TmsStation currentStation = stationsIter.next();
 
                 List<LAMRealtimeProtos.Lam> lams =
-                    generateLams(time, availableSensors, currentStation.getLotjuId());
+                    generateLams(time, publishableSensors, currentStation.getLotjuId());
 
                 for (LAMRealtimeProtos.Lam lam : lams) {
                     data.add(lam);
