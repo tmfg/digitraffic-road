@@ -111,7 +111,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractTest {
         assertEquals("00003_226_00000_0_0", data.weatherData.get(0).naturalId);
         assertEquals(5, data.weatherData.get(0).roadConditions.size());
         assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
-        assertEquals(ZonedDateTime.parse("2018-11-14T14:00+02:00[Europe/Helsinki]"), data.weatherData.get(0).roadConditions.get(0).getTime());
+        assertEquals(ZonedDateTime.parse("2018-11-14T14:00+02:00[Europe/Helsinki]").toInstant(), data.weatherData.get(0).roadConditions.get(0).getTime().toInstant());
         assertEquals("+4.2", data.weatherData.get(0).roadConditions.get(0).getTemperature());
         assertEquals("12h", data.weatherData.get(0).roadConditions.get(4).getForecastName());
         assertEquals(RoadCondition.MOIST, data.weatherData.get(0).roadConditions.get(4).getForecastConditionReason().getRoadCondition());
