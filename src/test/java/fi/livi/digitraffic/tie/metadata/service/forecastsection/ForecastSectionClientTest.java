@@ -7,10 +7,13 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
 
 public class ForecastSectionClientTest extends AbstractTest {
 
@@ -18,9 +21,10 @@ public class ForecastSectionClientTest extends AbstractTest {
     private ForecastSectionClient forecastSectionClient;
 
     @Test
-    public void getForecastSectionCoordinatesSucceeds() {
+    @Ignore("For manual integration testing")
+    public void getForecastSectionV1MetadataSucceeds() {
 
-        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionMetadata();
+        List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
         assertTrue(forecastSectionCoordinates.size() > 2);
         assertEquals("00001_001_000_0", forecastSectionCoordinates.get(0).getNaturalId());
@@ -31,9 +35,19 @@ public class ForecastSectionClientTest extends AbstractTest {
     }
 
     @Test
+    @Ignore("For manual integration testing")
+    public void getForecastSectionV2MetadataSucceeds() {
+
+        final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
+
+        assertNotNull(forecastSectionV2Metadata);
+    }
+
+    @Test
+    @Ignore("For manual integration testing")
     public void getRoadConditionsSucceeds() {
 
-        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions();
+        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
