@@ -179,7 +179,8 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, lastUpdated, null);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, lastUpdated, null,
+                                                                        null, null, null, null);
     }
 
     @ApiOperation(value = "Active traffic disorders Datex2 messages",

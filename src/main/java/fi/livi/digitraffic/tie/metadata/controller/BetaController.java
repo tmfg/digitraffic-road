@@ -99,7 +99,8 @@ public class BetaController {
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, lastUpdated, null);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, lastUpdated, null,
+                                                                        null, null, null, null);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
@@ -107,7 +108,20 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, roadNumber);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, roadNumber,
+                                                                        null, null, null, null);
+    }
+
+    @ApiOperation("Current data of Weather Forecast Sections V2 by bounding box")
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
+    public ForecastSectionWeatherRootDto roadConditions(
+        @PathVariable("minLongitude") final double minLongitude,
+        @PathVariable("minLatitude") final double minLatitude,
+        @PathVariable("maxLongitude") final double maxLongitude,
+        @PathVariable("maxLatitude") final double maxLatitude) {
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
+                                                                        minLongitude, minLatitude, maxLongitude, maxLatitude);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
