@@ -30,7 +30,9 @@ public class ForecastSectionV2MetadataService {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, final Integer roadNumber) {
+    public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, final Integer roadNumber,
+                                                                           final Double minLongitude, final Double minLatitude,
+                                                                           final Double maxLongitude, final Double maxLatitude) {
 
         final ForecastSectionV2FeatureCollection featureCollection = getFeatureCollection();
 
@@ -38,7 +40,8 @@ public class ForecastSectionV2MetadataService {
             return featureCollection;
         }
 
-        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features(roadNumber);
+        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features(roadNumber, minLongitude, minLatitude,
+                                                                                                                   maxLongitude, maxLatitude);
         featureCollection.addAll(features);
 
         return featureCollection;

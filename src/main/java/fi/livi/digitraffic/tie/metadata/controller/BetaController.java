@@ -117,7 +117,7 @@ public class BetaController {
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null);
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null, null, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -125,6 +125,18 @@ public class BetaController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber);
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null, null, null);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("The static information of weather forecast sections V2 by bounding box")
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
+    public ForecastSectionV2FeatureCollection forecastSections(
+        @PathVariable("minLongitude") final double minLongitude,
+        @PathVariable("minLatitude") final double minLatitude,
+        @PathVariable("maxLongitude") final double maxLongitude,
+        @PathVariable("maxLatitude") final double maxLatitude) {
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
+                                                                             maxLongitude, maxLatitude);
     }
 }

@@ -68,7 +68,7 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
         final ForecastSectionV2FeatureCollection featureCollection =
-            forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null);
+            forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
 
@@ -106,7 +106,9 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3);
+        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3,
+                                                                                                                                   null, null,
+                                                                                                                                   null, null);
 
         assertEquals(2, featureCollection.getFeatures().size());
 

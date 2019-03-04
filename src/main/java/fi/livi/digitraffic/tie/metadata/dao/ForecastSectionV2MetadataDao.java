@@ -61,13 +61,21 @@ public class ForecastSectionV2MetadataDao {
         "FROM forecast_section f " +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2 AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
+        "WHERE f.version = 2 " +
+        "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber) " +
+        "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
+        " OR f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
+        "             WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
         "ORDER BY f.natural_id";
 
     private static final String SELECT_COORDINATES =
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| c.longitude ||','|| c.latitude ||']' ORDER BY c.order_number), ',') || ']' AS coordinates\n" +
         "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2 AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
+        "WHERE f.version = 2 " +
+        "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber) " +
+        "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
+        " OR f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
+        "             WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
         "GROUP BY f.natural_id, c.list_order_number\n" +
         "ORDER BY f.natural_id, c.list_order_number";
 
@@ -138,11 +146,19 @@ public class ForecastSectionV2MetadataDao {
         jdbcTemplate.batchUpdate(INSERT_COORDINATE, coordinateSources);
     }
 
-    public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber) {
+    public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber, final Double minLongitude, final Double minLatitude,
+                                                                        final Double maxLongitude, final Double maxLatitude) {
 
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
-        jdbcTemplate.query(SELECT_ALL, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
+        final MapSqlParameterSource paramSource = new MapSqlParameterSource()
+            .addValue("roadNumber", roadNumber, Types.INTEGER)
+            .addValue("minLongitude", minLongitude, Types.DOUBLE)
+            .addValue("minLatitude", minLatitude, Types.DOUBLE)
+            .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
+            .addValue("maxLatitude", maxLatitude, Types.DOUBLE);
+
+        jdbcTemplate.query(SELECT_ALL, paramSource, rs -> {
             final String naturalId = rs.getString("natural_id");
 
             if (!featureMap.containsKey(naturalId)) {
@@ -165,7 +181,7 @@ public class ForecastSectionV2MetadataDao {
             }
         });
 
-        jdbcTemplate.query(SELECT_COORDINATES, new MapSqlParameterSource().addValue("roadNumber", roadNumber, Types.INTEGER), rs -> {
+        jdbcTemplate.query(SELECT_COORDINATES, paramSource, rs -> {
             final TypeReference<List<List<Double>>> typeReference = new TypeReference<List<List<Double>>>() {};
             List coordinates = new ArrayList();
             try {
