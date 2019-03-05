@@ -39,7 +39,8 @@ public class ForecastSectionWeatherDao {
 
     public Map<String, List<RoadConditionDto>> getForecastSectionWeatherData(final ForecastSectionApiVersion version, final Integer roadNumber,
                                                                              final Double minLongitude, final Double minLatitude,
-                                                                             final Double maxLongitude, final Double maxLatitude) {
+                                                                             final Double maxLongitude, final Double maxLatitude,
+                                                                             final List<String> naturalIds) {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
         jdbcTemplate.query(
@@ -55,6 +56,7 @@ public class ForecastSectionWeatherDao {
             "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
             "     OR fs.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
             "                 WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
+            "AND (:naturalIdsIsEmpty IS TRUE OR fs.natural_id IN (:naturalIds))\n" +
             "ORDER BY fs.natural_id, fsw.time",
             new MapSqlParameterSource()
                 .addValue("version", version.getVersion(), Types.INTEGER)
@@ -62,7 +64,9 @@ public class ForecastSectionWeatherDao {
                 .addValue("minLongitude", minLongitude, Types.DOUBLE)
                 .addValue("minLatitude", minLatitude, Types.DOUBLE)
                 .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
-                .addValue("maxLatitude", maxLatitude, Types.DOUBLE),
+                .addValue("maxLatitude", maxLatitude, Types.DOUBLE)
+                .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
+                .addValue("naturalIds", naturalIds),
             rs -> {
                 final String forecastSectionNaturalId = rs.getString("natural_id");
 

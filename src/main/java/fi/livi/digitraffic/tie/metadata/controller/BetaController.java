@@ -100,9 +100,13 @@ public class BetaController {
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
-        boolean lastUpdated) {
+        boolean lastUpdated,
+        @ApiParam(value = "List of forecast section indices")
+        @RequestParam(value = "naturalIds", required = false)
+        final List<String> naturalIds) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, lastUpdated, null,
-                                                                        null, null, null, null);
+                                                                        null, null, null, null,
+                                                                        naturalIds);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
@@ -111,7 +115,8 @@ public class BetaController {
     public ForecastSectionWeatherRootDto roadConditions(
         @PathVariable("roadNumber") final int roadNumber) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, roadNumber,
-                                                                        null, null, null, null);
+                                                                        null, null, null, null,
+                                                                        null);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by bounding box")
@@ -123,7 +128,7 @@ public class BetaController {
         @PathVariable("maxLongitude") final double maxLongitude,
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
-                                                                        minLongitude, minLatitude, maxLongitude, maxLatitude);
+                                                                        minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)

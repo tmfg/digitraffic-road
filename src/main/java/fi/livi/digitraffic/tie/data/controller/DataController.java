@@ -180,7 +180,8 @@ public class DataController {
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, lastUpdated, null,
-                                                                        null, null, null, null);
+                                                                        null, null, null, null,
+                                                                        null);
     }
 
     @ApiOperation(value = "Active traffic disorders Datex2 messages",

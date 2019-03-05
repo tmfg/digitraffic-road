@@ -33,7 +33,8 @@ public class ForecastSectionDataService {
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo,
                                                                        final Integer roadNumber,
                                                                        final Double minLongitude, final Double minLatitude,
-                                                                       final Double maxLongitude, final Double maxLatitude) {
+                                                                       final Double maxLongitude, final Double maxLatitude,
+                                                                       final List<String> naturalIds) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(getDataType(version).toString());
         final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
 
@@ -42,7 +43,7 @@ public class ForecastSectionDataService {
         }
 
         final Map<String, List<RoadConditionDto>> forecastSectionWeatherData =
-            forecastSectionWeatherDao.getForecastSectionWeatherData(version, roadNumber, minLongitude, minLatitude, maxLongitude, maxLatitude);
+            forecastSectionWeatherDao.getForecastSectionWeatherData(version, roadNumber, minLongitude, minLatitude, maxLongitude, maxLatitude, naturalIds);
 
         return new ForecastSectionWeatherRootDto(
                 updatedTime,
