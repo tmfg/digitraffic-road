@@ -6,6 +6,8 @@ import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FOR
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
@@ -130,8 +132,12 @@ public class BetaController {
     public ForecastSectionV2FeatureCollection forecastSections(
         @ApiParam("If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null, null, null);
+        final boolean lastUpdated,
+        @ApiParam(value = "List of forecast section indices")
+        @RequestParam(value = "naturalIds", required = false)
+        final List<String> naturalIds) {
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
+                                                                             null,null, naturalIds);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -139,7 +145,8 @@ public class BetaController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null, null, null);
+        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
+                                                                             null, null, null);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -151,6 +158,6 @@ public class BetaController {
         @PathVariable("maxLongitude") final double maxLongitude,
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
-                                                                             maxLongitude, maxLatitude);
+                                                                             maxLongitude, maxLatitude, null);
     }
 }

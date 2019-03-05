@@ -66,6 +66,7 @@ public class ForecastSectionV2MetadataDao {
         "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
         " OR f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
         "             WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
+        "AND (:naturalIdsIsEmpty IS TRUE OR f.natural_id IN (:naturalIds))\n" +
         "ORDER BY f.natural_id";
 
     private static final String SELECT_COORDINATES =
@@ -76,6 +77,7 @@ public class ForecastSectionV2MetadataDao {
         "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
         " OR f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
         "             WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
+        "AND (:naturalIdsIsEmpty IS TRUE OR f.natural_id IN (:naturalIds))\n" +
         "GROUP BY f.natural_id, c.list_order_number\n" +
         "ORDER BY f.natural_id, c.list_order_number";
 
@@ -147,7 +149,8 @@ public class ForecastSectionV2MetadataDao {
     }
 
     public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber, final Double minLongitude, final Double minLatitude,
-                                                                        final Double maxLongitude, final Double maxLatitude) {
+                                                                        final Double maxLongitude, final Double maxLatitude,
+                                                                        final List<String> naturalIds) {
 
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
@@ -156,7 +159,9 @@ public class ForecastSectionV2MetadataDao {
             .addValue("minLongitude", minLongitude, Types.DOUBLE)
             .addValue("minLatitude", minLatitude, Types.DOUBLE)
             .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
-            .addValue("maxLatitude", maxLatitude, Types.DOUBLE);
+            .addValue("maxLatitude", maxLatitude, Types.DOUBLE)
+            .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
+            .addValue("naturalIds", naturalIds);
 
         jdbcTemplate.query(SELECT_ALL, paramSource, rs -> {
             final String naturalId = rs.getString("natural_id");

@@ -5,6 +5,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +69,8 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
         final ForecastSectionV2FeatureCollection featureCollection =
-            forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null);
+            forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
+                                                                          null);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
 
@@ -108,7 +110,8 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3,
                                                                                                                                    null, null,
-                                                                                                                                   null, null);
+                                                                                                                                   null, null,
+                                                                                                                                   null);
 
         assertEquals(2, featureCollection.getFeatures().size());
 
@@ -129,6 +132,25 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         assertEquals("00003_226_00000_0_0", feature2.getProperties().getNaturalId());
         assertEquals("Tampereentie 3.226", feature2.getProperties().getDescription());
+    }
+
+    @Test
+    public void findForecastSectionsByNaturalIdSucceeds() throws IOException {
+
+        server.expect(requestTo("/nullroadsV2.php"))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(
+                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
+
+        forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+
+        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null,
+                                                                                                                                   null, null,
+                                                                                                                                   null, null,
+                                                                                                                                   Arrays.asList("00009_216_03050_0_0"));
+
+        assertEquals(1, featureCollection.getFeatures().size());
+        assertEquals("00009_216_03050_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());
     }
 
     private void assertCoordinates(final double expected, final double actual) {
