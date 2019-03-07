@@ -1,9 +1,8 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;

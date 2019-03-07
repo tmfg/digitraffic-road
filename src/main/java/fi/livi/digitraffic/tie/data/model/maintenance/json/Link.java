@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.io.Serializable;
 
@@ -15,38 +15,37 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "system",
-    "organisation"
+    "id",
+    "mValue"
 })
-public class Sender implements Serializable
-{
-    @JsonProperty(required = true)
-    private String system;
+public class Link implements Serializable {
 
-    private Organisation organisation;
+    @JsonProperty(required = true)
+    private Integer id;
+
+    @JsonProperty(required = true)
+    private Integer mValue;
 
     @JsonCreator
-    public Sender(final String system, final Organisation organisation) {
-        this.system = system;
-        this.organisation = organisation;
+    public Link(final Integer id, final Integer mValue) {
+        this.id = id;
+        this.mValue = mValue;
     }
 
-    public String getSystem() {
-        return system;
+    public Integer getId() {
+        return id;
     }
 
-    public void setSystem(final String system) {
-        this.system = system;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @JsonProperty("organisation")
-    public Organisation getOrganisation() {
-        return organisation;
+    public Integer getMValue() {
+        return mValue;
     }
 
-    @JsonProperty("organisation")
-    public void setOrganisation(final Organisation organisation) {
-        this.organisation = organisation;
+    public void setMValue(Integer mValue) {
+        this.mValue = mValue;
     }
 
     @Override
@@ -64,19 +63,19 @@ public class Sender implements Serializable
             return false;
         }
 
-        Sender sender = (Sender) o;
+        Link link = (Link) o;
 
         return new EqualsBuilder()
-            .append(system, sender.system)
-            .append(organisation, sender.organisation)
+            .append(id, link.id)
+            .append(mValue, link.mValue)
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(system)
-            .append(organisation)
+            .append(id)
+            .append(mValue)
             .toHashCode();
     }
 }

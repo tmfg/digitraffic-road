@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
 
 import javax.annotation.PostConstruct;
 

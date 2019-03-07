@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.Caption;
-import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeature;
-import fi.livi.digitraffic.tie.data.model.maintenance.ObservationFeatureCollection;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.Caption;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.ObservationFeature;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.ObservationFeatureCollection;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 @ConditionalOnWebApplication

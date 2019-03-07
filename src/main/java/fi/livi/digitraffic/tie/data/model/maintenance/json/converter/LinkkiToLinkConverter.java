@@ -1,9 +1,9 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.Link;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.Link;
 import fi.livi.digitraffic.tie.harja.entities.LinkkisijaintiSchema;
 
 @ConditionalOnWebApplication

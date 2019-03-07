@@ -1,10 +1,9 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum PerformedTask {

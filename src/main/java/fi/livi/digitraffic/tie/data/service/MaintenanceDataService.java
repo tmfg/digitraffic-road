@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.data.dao.WorkMachineTrackingRepository;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
 @ConditionalOnWebApplication
 @Service

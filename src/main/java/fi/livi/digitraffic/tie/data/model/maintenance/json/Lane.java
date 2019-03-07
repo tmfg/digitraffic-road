@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.util.HashMap;
 import java.util.Map;

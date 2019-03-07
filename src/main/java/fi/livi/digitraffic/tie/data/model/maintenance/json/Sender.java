@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.io.Serializable;
 
@@ -15,36 +15,38 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "businessId"
+    "system",
+    "organisation"
 })
-public class Organisation implements Serializable
+public class Sender implements Serializable
 {
-    private String name;
-
     @JsonProperty(required = true)
-    private String businessId;
+    private String system;
+
+    private Organisation organisation;
 
     @JsonCreator
-    public Organisation(final String name, final String businessId) {
-        this.name = name;
-        this.businessId = businessId;
+    public Sender(final String system, final Organisation organisation) {
+        this.system = system;
+        this.organisation = organisation;
     }
 
-    public String getName() {
-        return name;
+    public String getSystem() {
+        return system;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setSystem(final String system) {
+        this.system = system;
     }
 
-    public String getBusinessId() {
-        return businessId;
+    @JsonProperty("organisation")
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setBusinessId(final String businessId) {
-        this.businessId = businessId;
+    @JsonProperty("organisation")
+    public void setOrganisation(final Organisation organisation) {
+        this.organisation = organisation;
     }
 
     @Override
@@ -62,19 +64,19 @@ public class Organisation implements Serializable
             return false;
         }
 
-        Organisation that = (Organisation) o;
+        Sender sender = (Sender) o;
 
         return new EqualsBuilder()
-            .append(name, that.name)
-            .append(businessId, that.businessId)
+            .append(system, sender.system)
+            .append(organisation, sender.organisation)
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(name)
-            .append(businessId)
+            .append(system)
+            .append(organisation)
             .toHashCode();
     }
 }

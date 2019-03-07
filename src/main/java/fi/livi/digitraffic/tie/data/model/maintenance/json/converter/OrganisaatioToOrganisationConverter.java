@@ -1,9 +1,9 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.Organisation;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.Organisation;
 import fi.livi.digitraffic.tie.harja.entities.OrganisaatioSchema;
 
 @ConditionalOnWebApplication

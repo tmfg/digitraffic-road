@@ -6,19 +6,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class MaintenanceControllerTest extends AbstractRestWebTest {

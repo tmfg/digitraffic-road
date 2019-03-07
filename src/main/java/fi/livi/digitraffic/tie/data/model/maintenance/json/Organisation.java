@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance;
+package fi.livi.digitraffic.tie.data.model.maintenance.json;
 
 import java.io.Serializable;
 
@@ -15,37 +15,36 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "mValue"
+    "name",
+    "businessId"
 })
-public class Link implements Serializable {
+public class Organisation implements Serializable
+{
+    private String name;
 
     @JsonProperty(required = true)
-    private Integer id;
-
-    @JsonProperty(required = true)
-    private Integer mValue;
+    private String businessId;
 
     @JsonCreator
-    public Link(final Integer id, final Integer mValue) {
-        this.id = id;
-        this.mValue = mValue;
+    public Organisation(final String name, final String businessId) {
+        this.name = name;
+        this.businessId = businessId;
     }
 
-    public Integer getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setName(final String name) {
+        this.name = name;
     }
 
-    public Integer getMValue() {
-        return mValue;
+    public String getBusinessId() {
+        return businessId;
     }
 
-    public void setMValue(Integer mValue) {
-        this.mValue = mValue;
+    public void setBusinessId(final String businessId) {
+        this.businessId = businessId;
     }
 
     @Override
@@ -63,19 +62,19 @@ public class Link implements Serializable {
             return false;
         }
 
-        Link link = (Link) o;
+        Organisation that = (Organisation) o;
 
         return new EqualsBuilder()
-            .append(id, link.id)
-            .append(mValue, link.mValue)
+            .append(name, that.name)
+            .append(businessId, that.businessId)
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(id)
-            .append(mValue)
+            .append(name)
+            .append(businessId)
             .toHashCode();
     }
 }
