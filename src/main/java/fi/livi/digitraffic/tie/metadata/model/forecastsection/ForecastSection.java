@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.model.Road;
 import fi.livi.digitraffic.tie.metadata.model.RoadSection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.Coordinate;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -65,6 +65,9 @@ public class ForecastSection {
             "4. Reserved for future needs 1 characters default 0")
     @JsonProperty("roadId")
     private String naturalId;
+
+    @JsonIgnore
+    private Integer version;
 
     @ApiModelProperty(value = "Forecast section description")
     private String description;
@@ -108,24 +111,37 @@ public class ForecastSection {
     @Fetch(FetchMode.JOIN)
     private RoadSection endRoadSection;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinatesPK.forecastSectionId", cascade = CascadeType.ALL)
-    @OrderBy("forecastSectionCoordinatesPK.orderNumber")
-    private List<ForecastSectionCoordinates> forecastSectionCoordinates;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy("forecastSectionCoordinateListPK.orderNumber")
+    private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
-    private List<ForecastSectionWeather> forecastSectionWeatherList;
+    private List<ForecastSectionWeather> forecastSectionWeatherList = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roadSegmentPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy("roadSegmentPK.orderNumber")
+    private List<RoadSegment> roadSegments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "linkIdPK.forecastSectionId", cascade = CascadeType.ALL)
+    @OrderBy("linkIdPK.orderNumber")
+    private List<LinkId> linkIds = new ArrayList<>();
 
     public ForecastSection() {
     }
 
-    public ForecastSection(final String naturalId, final String description) {
+    public ForecastSection(final String naturalId, final int version, final String description) {
         this.naturalId = naturalId;
         this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
         this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
-        this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
+        this.version = version;
+        if (version == 1) {
+            this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
+        } else {
+            this.roadSectionVersionNumber = 0;
+        }
         this.description = description;
-        this.forecastSectionCoordinates = new ArrayList<>();
+        this.forecastSectionCoordinateLists = new ArrayList<>();
         this.forecastSectionWeatherList = new ArrayList<>();
         this.obsoleteDate = null;
     }
@@ -140,6 +156,14 @@ public class ForecastSection {
 
     public void setNaturalId(String naturalId) {
         this.naturalId = naturalId;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public String getDescription() {
@@ -230,69 +254,44 @@ public class ForecastSection {
         this.endRoadSection = endRoadSection;
     }
 
-    public List<ForecastSectionCoordinates> getForecastSectionCoordinates() {
-        return forecastSectionCoordinates;
-    }
-
-    public void setForecastSectionCoordinates(List<ForecastSectionCoordinates> forecastSectionCoordinates) {
-        this.forecastSectionCoordinates = forecastSectionCoordinates;
-    }
-
     public List<ForecastSectionWeather> getForecastSectionWeatherList() {
         return forecastSectionWeatherList;
     }
 
-    public void setForecastSectionWeatherList(List<ForecastSectionWeather> forecastSectionWeatherList) {
-        this.forecastSectionWeatherList = forecastSectionWeatherList;
+    public List<ForecastSectionCoordinateList> getForecastSectionCoordinateLists() {
+        return forecastSectionCoordinateLists;
     }
 
-    public void addCoordinates(List<Coordinate> coordinates) {
-        this.forecastSectionCoordinates = new ArrayList<>();
+    public List<RoadSegment> getRoadSegments() {
+        return roadSegments;
+    }
+
+    public List<LinkId> getLinkIds() {
+        return linkIds;
+    }
+
+    public void removeCoordinateLists() {
+        forecastSectionCoordinateLists.forEach(l -> l.removeCoordinates());
+        forecastSectionCoordinateLists.clear();
+    }
+
+    public void addCoordinates(final List<Coordinate> coordinates) {
+        forecastSectionCoordinateLists = new ArrayList<>();
+
+        final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
+
+        // FIXME: Move to V1MetadataUpdater
         long orderNumber = 1;
-        for (Coordinate coordinate : coordinates) {
+        for (final Coordinate coordinate : coordinates) {
             if (!coordinate.isValid()) {
                 log.info("Invalid coordinates for forecast section " + getNaturalId() + ". Coordinates were: " + coordinate.toString());
             } else {
-                getForecastSectionCoordinates().add(
-                        new ForecastSectionCoordinates(this, new ForecastSectionCoordinatesPK(getId(), orderNumber),
-                                                       coordinate.longitude, coordinate.latitude));
+                coordinateList.add(new ForecastSectionCoordinate(
+                    new ForecastSectionCoordinatePK(id, 1L, orderNumber), coordinate.longitude, coordinate.latitude));
                 orderNumber++;
             }
         }
-    }
-
-    public boolean corresponds(ForecastSectionCoordinatesDto value) {
-        if (value.getName().equals(description) && coordinatesCorrespond(value.getCoordinates())) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean coordinatesCorrespond(List<Coordinate> coordinates) {
-
-        if (getForecastSectionCoordinates().size() != coordinates.size()) return false;
-
-        List<Coordinate> sorted1 = this.forecastSectionCoordinates.stream().sorted((a, b) -> {
-            if (a.getLongitude().equals(b.getLongitude())) {
-                return a.getLatitude().compareTo(b.getLatitude());
-            }
-            return a.getLongitude().compareTo(b.getLongitude());
-        }).map(c -> new Coordinate(Arrays.asList(c.getLongitude(), c.getLatitude()))).collect(Collectors.toList());
-
-        List<Coordinate> sorted2 = coordinates.stream().sorted((a, b) -> {
-            if (a.longitude.equals(b.longitude)) {
-                return a.latitude.compareTo(b.latitude);
-            }
-            return a.longitude.compareTo(b.longitude);
-        }).collect(Collectors.toList());
-
-        for (int i = 0; i < getForecastSectionCoordinates().size(); ++i) {
-            if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
-                sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
-                return false;
-            }
-        }
-        return true;
+        forecastSectionCoordinateLists.add(new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(id, 1L), coordinateList));
     }
 
     @Override
@@ -311,7 +310,7 @@ public class ForecastSection {
                ", road=" + road +
                ", startRoadSection=" + startRoadSection +
                ", endRoadSection=" + endRoadSection +
-               ", forecastSectionCoordinates=" + forecastSectionCoordinates +
+               ", forecastSectionCoordinateLists=" + forecastSectionCoordinateLists +
                '}';
     }
 }

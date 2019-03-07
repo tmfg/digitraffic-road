@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,7 @@ public class CameraImageUpdateService {
 
     @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
+        final StopWatch start = StopWatch.createStarted();
         log.info("Handling {}", ToStringHelper.toString(kuva));
 
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
@@ -89,7 +91,7 @@ public class CameraImageUpdateService {
         if (success) {
             updateCameraPreset(cameraPreset, kuva);
         }
-
+        log.info("method=handleKuva tookMs={}", start.getTime());
         return success;
     }
 
@@ -102,6 +104,7 @@ public class CameraImageUpdateService {
     }
 
     private boolean transferKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
+        final StopWatch start = StopWatch.createStarted();
         // Read the image
         byte[] image = null;
         for (int readTries = 3; readTries > 0; readTries--) {
@@ -123,12 +126,14 @@ public class CameraImageUpdateService {
                 throw new Error(e);
             }
         }
+        log.info("method=transferKuva readTookMs={}", start.getTime());
         if (image == null) {
             log.error("Reading image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
             return false;
         }
 
         // Write the image
+        final StopWatch writeStart = StopWatch.createStarted();
         boolean writtenSuccessfully = false;
         for (int writeTries = 3; writeTries > 0; writeTries--) {
             try {
@@ -145,10 +150,12 @@ public class CameraImageUpdateService {
                 throw new Error(e);
             }
         }
+        log.info("method=transferKuva writerTookMs={}", writeStart.getTime());
         if (!writtenSuccessfully) {
             log.error("Writing image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
             return false;
         }
+        log.info("method=transferKuva tookMs={}", start.getTime());
         return true;
     }
 

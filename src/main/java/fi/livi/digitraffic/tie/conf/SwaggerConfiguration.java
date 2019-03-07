@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Predicate;
+
 import fi.livi.digitraffic.tie.data.controller.DataController;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;

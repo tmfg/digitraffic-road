@@ -41,6 +41,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
@@ -48,6 +49,8 @@ import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2WeightRestrictionsMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2DataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2MetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
@@ -216,6 +219,16 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean forecastSectionV2MetadataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV2MetadataUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean forecastSectionV2DataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV2DataUpdateJob.class);
+    }
+
+    @Bean
     public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail) {
         return createTrigger(cameraMetadataUpdateJobDetail);
     }
@@ -280,6 +293,15 @@ public class QuartzSchedulerConfig {
         return createTrigger(datex2WeightRestrictionsMessageUpdateJobDetail);
     }
 
+    @Bean
+    public FactoryBean<? extends Trigger> forecastSectionV2MetadataUpdateJobTrigger(final JobDetail forecastSectionV2MetadataUpdateJobDetail) {
+        return createTrigger(forecastSectionV2MetadataUpdateJobDetail);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> forecastSectionV2DataUpdateJobTrigger(final JobDetail forecastSectionV2DataUpdateJobDetail) {
+        return createTrigger(forecastSectionV2DataUpdateJobDetail);
+    }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
         final JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();

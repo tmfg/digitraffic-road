@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +44,8 @@ public class TmsStationData2Datex2Converter {
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationData2Datex2Converter(@Value("${spring.profiles.active}") final String profile) {
-        this.informationStatus = StringUtils.equals(profile, "koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
+    public TmsStationData2Datex2Converter(@Value("${weathercam.baseUrl}") final String camUrl) {
+        this.informationStatus = camUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
     public D2LogicalModel convert(final Map<TmsStation, List<SensorValueDto>> stations, final ZonedDateTime updated) {
