@@ -47,9 +47,9 @@ public class WorkMachineTracking {
 
     public WorkMachineTracking() {
     }
-    public WorkMachineTracking(final WorkMachineTrackingRecord record, final Geometry.Type type) {
+
+    public WorkMachineTracking(final WorkMachineTrackingRecord record) {
         this.record = record;
-        this.type = type;
     }
 
     public Long getId() {

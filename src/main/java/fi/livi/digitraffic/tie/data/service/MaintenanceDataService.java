@@ -41,11 +41,15 @@ public class MaintenanceDataService {
     public WorkMachineTracking saveWorkMachineTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
 
         final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
-        final Geometry.Type value = record.getObservationFeatureCollection().getFeatures().stream().findFirst().map(a -> a.getGeometry().getType()).orElse(null);
-        final WorkMachineTracking tracking = new WorkMachineTracking(record, value);
+        final WorkMachineTracking tracking = new WorkMachineTracking(record);
         workMachineTrackingRepository.save(tracking);
         log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
         return tracking;
+    }
+
+    @Transactional
+    public int updateWorkMachineTrackingType() throws JsonProcessingException {
+        return workMachineTrackingRepository.updateWorkMachineTrackingType();
     }
 
     @Transactional(readOnly = true)
