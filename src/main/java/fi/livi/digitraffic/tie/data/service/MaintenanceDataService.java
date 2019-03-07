@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,22 +19,20 @@ import fi.livi.digitraffic.tie.data.dao.WorkMachineTrackingRepository;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
 @ConditionalOnWebApplication
 @Service
 public class MaintenanceDataService {
 
     private static final Logger log = LoggerFactory.getLogger(MaintenanceDataService.class);
-    private final ObjectMapper objectMapper;
     private final WorkMachineTrackingRepository workMachineTrackingRepository;
     private final ConversionService conversionService;
 
     @Autowired
-    public MaintenanceDataService(final ObjectMapper objectMapper,
-                                  final WorkMachineTrackingRepository workMachineTrackingRepository,
+    public MaintenanceDataService(final WorkMachineTrackingRepository workMachineTrackingRepository,
                                   @Qualifier("mvcConversionService")
                                   final ConversionService conversionService) {
-        this.objectMapper = objectMapper;
         this.workMachineTrackingRepository = workMachineTrackingRepository;
         this.conversionService = conversionService;
     }
@@ -42,7 +41,8 @@ public class MaintenanceDataService {
     public WorkMachineTracking saveWorkMachineTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
 
         final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
-        final WorkMachineTracking tracking = new WorkMachineTracking(record);
+        final Geometry.Type value = record.getObservationFeatureCollection().getFeatures().stream().findFirst().map(a -> a.getGeometry().getType()).orElse(null);
+        final WorkMachineTracking tracking = new WorkMachineTracking(record, value);
         workMachineTrackingRepository.save(tracking);
         log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
         return tracking;

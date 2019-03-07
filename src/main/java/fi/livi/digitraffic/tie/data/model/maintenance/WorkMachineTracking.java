@@ -1,7 +1,11 @@
 package fi.livi.digitraffic.tie.data.model.maintenance;
 
+import java.time.ZonedDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,6 +20,7 @@ import org.hibernate.annotations.TypeDef;
 
 import fi.livi.digitraffic.tie.conf.postgres.WorkMachineTrackingRecordUserType;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
 @TypeDef(name = "WorkMachineTrackingRecordUserType", typeClass = WorkMachineTrackingRecordUserType.class)
 @Entity
@@ -33,11 +38,18 @@ public class WorkMachineTracking {
     @Type(type = "WorkMachineTrackingRecordUserType")
     private WorkMachineTrackingRecord record;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Geometry.Type type;
+
+    @Column
+    private ZonedDateTime handled;
+
     public WorkMachineTracking() {
     }
-
-    public WorkMachineTracking(final WorkMachineTrackingRecord record) {
+    public WorkMachineTracking(final WorkMachineTrackingRecord record, final Geometry.Type type) {
         this.record = record;
+        this.type = type;
     }
 
     public Long getId() {
@@ -56,6 +68,22 @@ public class WorkMachineTracking {
         this.record = record;
     }
 
+    public Geometry.Type getType() {
+        return type;
+    }
+
+    public void setType(final Geometry.Type type) {
+        this.type = type;
+    }
+
+    public void setHandled(ZonedDateTime handled) {
+        this.handled = handled;
+    }
+
+    public ZonedDateTime getHandled() {
+        return handled;
+    }
+
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
@@ -67,23 +95,27 @@ public class WorkMachineTracking {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WorkMachineTracking)) {
             return false;
         }
 
         WorkMachineTracking that = (WorkMachineTracking) o;
 
         return new EqualsBuilder()
-            .append(id, that.id)
-            .append(record, that.record)
+            .append(getId(), that.getId())
+            .append(getRecord(), that.getRecord())
+            .append(getType(), that.getType())
+            .append(getHandled(), that.getHandled())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(id)
-            .append(record)
+            .append(getId())
+            .append(getRecord())
+            .append(getType())
+            .append(getHandled())
             .toHashCode();
     }
 }
