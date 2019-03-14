@@ -77,7 +77,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.TMS_STATION);
 
         if (!invalid.isEmpty()) {
-            log.info("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.TMS_STATION);
+            log.warn("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.TMS_STATION);
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;

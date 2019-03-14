@@ -77,7 +77,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.WEATHER_STATION);
 
         if (!invalid.isEmpty()) {
-            log.info("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.WEATHER_STATION);
+            log.warn("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.WEATHER_STATION);
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;
