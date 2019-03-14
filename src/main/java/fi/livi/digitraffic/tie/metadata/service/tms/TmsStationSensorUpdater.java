@@ -57,8 +57,8 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<LamLaskennallinenAnturiVO> toUpdate =
             allLamLaskennallinenAnturis.stream().filter(TmsStationSensorUpdater::validate).collect(Collectors.toList());
 
-        List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-        int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
+        final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+        final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
 
         final Collection invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
@@ -72,11 +72,12 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
             }
         }
 
-        log.info("Obsoleted={} RoadStationSensors", obsoleted);
-        log.info("Updated={} RoadStationSensors", updated);
-        log.info("Inserted={} RoadStationSensors", inserted);
+        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} roadStationType={}", obsoleted, RoadStationType.TMS_STATION);
+        log.info("method=updateAllRoadStationSensors roadStationSensors updatedCount={} roadStationType={}", updated, RoadStationType.TMS_STATION);
+        log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.TMS_STATION);
+
         if (!invalid.isEmpty()) {
-            log.warn("Invalid TMS sensors from lotju invalidCount={}", invalid.size());
+            log.info("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.TMS_STATION);
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;
