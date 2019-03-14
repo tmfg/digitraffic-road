@@ -11,3 +11,13 @@ CREATE TABLE "pghero_query_stats" (
   "captured_at" timestamp
 );
 CREATE INDEX ON "pghero_query_stats" ("database", "captured_at");
+
+CREATE TABLE "pghero_space_stats" (
+  "id" serial primary key,
+  "database" text,
+  "schema" text,
+  "relation" text,
+  "size" bigint,
+  "captured_at" timestamp
+);
+CREATE INDEX ON "pghero_space_stats" ("database", "captured_at");
