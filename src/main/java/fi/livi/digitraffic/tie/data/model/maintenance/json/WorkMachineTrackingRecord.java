@@ -60,23 +60,23 @@ public class WorkMachineTrackingRecord implements Serializable {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WorkMachineTrackingRecord)) {
             return false;
         }
 
         WorkMachineTrackingRecord that = (WorkMachineTrackingRecord) o;
 
         return new EqualsBuilder()
-            .append(caption, that.caption)
-            .append(observationFeatureCollection, that.observationFeatureCollection)
+            .append(getCaption(), that.getCaption())
+            .append(getObservationFeatureCollection(), that.getObservationFeatureCollection())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(caption)
-            .append(observationFeatureCollection)
+            .append(getCaption())
+            .append(getObservationFeatureCollection())
             .toHashCode();
     }
 }

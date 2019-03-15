@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
@@ -310,5 +311,13 @@ public class DataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
     public List<WorkMachineTracking> workMachineTrackings() {
         return maintenanceDataService.findAll();
+    }
+
+    // TODO FIXME only for testing, must be removed
+    @ApiOperation(value = "Work Machine Observation data")
+    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_UTF8_VALUE })
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+    public List<WorkMachineObservation> workMachineObservations() {
+        return maintenanceDataService.finAllWorkMachineObservations();
     }
 }

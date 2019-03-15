@@ -24,9 +24,9 @@ public class TieToRoadConverter extends AutoRegisteredConverter<Tie, Road> {
             src.getAjr(),
             convert(src.getKaista(), Lane.class),
             src.getPuoli(),
-            DateHelper.toZonedDateTime(src.getAlkupvm()),
-            DateHelper.toZonedDateTime(src.getLoppupvm()),
-            DateHelper.toZonedDateTime(src.getKarttapvm()),
+            DateHelper.toZonedDateTimeAtUtc(src.getAlkupvm()),
+            DateHelper.toZonedDateTimeAtUtc(src.getLoppupvm()),
+            DateHelper.toZonedDateTimeAtUtc(src.getKarttapvm()),
             src.getAdditionalProperties());
     }
 }

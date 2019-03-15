@@ -60,23 +60,23 @@ public class WorkMachine implements Serializable
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof WorkMachine)) {
             return false;
         }
 
         WorkMachine that = (WorkMachine) o;
 
         return new EqualsBuilder()
-            .append(id, that.id)
-            .append(type, that.type)
+            .append(getId(), that.getId())
+            .append(getType(), that.getType())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(id)
-            .append(type)
+            .append(getId())
+            .append(getType())
             .toHashCode();
     }
 }

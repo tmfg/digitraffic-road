@@ -43,6 +43,9 @@ public class WorkMachineTracking {
     private Geometry.Type type;
 
     @Column
+    private ZonedDateTime created;
+
+    @Column
     private ZonedDateTime handled;
 
     public WorkMachineTracking() {
@@ -50,6 +53,7 @@ public class WorkMachineTracking {
 
     public WorkMachineTracking(final WorkMachineTrackingRecord record) {
         this.record = record;
+        created = ZonedDateTime.now();
     }
 
     public Long getId() {
@@ -74,6 +78,14 @@ public class WorkMachineTracking {
 
     public void setType(final Geometry.Type type) {
         this.type = type;
+    }
+
+    public void setCreated(ZonedDateTime created) {
+        this.created = created;
+    }
+
+    public ZonedDateTime getCreated() {
+        return created;
     }
 
     public void setHandled(ZonedDateTime handled) {
@@ -105,6 +117,7 @@ public class WorkMachineTracking {
             .append(getId(), that.getId())
             .append(getRecord(), that.getRecord())
             .append(getType(), that.getType())
+            .append(getCreated(), that.getCreated())
             .append(getHandled(), that.getHandled())
             .isEquals();
     }
@@ -115,6 +128,7 @@ public class WorkMachineTracking {
             .append(getId())
             .append(getRecord())
             .append(getType())
+            .append(getCreated())
             .append(getHandled())
             .toHashCode();
     }

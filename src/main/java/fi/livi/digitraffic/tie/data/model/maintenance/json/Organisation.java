@@ -58,23 +58,23 @@ public class Organisation implements Serializable
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Organisation)) {
             return false;
         }
 
         Organisation that = (Organisation) o;
 
         return new EqualsBuilder()
-            .append(name, that.name)
-            .append(businessId, that.businessId)
+            .append(getName(), that.getName())
+            .append(getBusinessId(), that.getBusinessId())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(name)
-            .append(businessId)
+            .append(getName())
+            .append(getBusinessId())
             .toHashCode();
     }
 }

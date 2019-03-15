@@ -54,7 +54,7 @@ public class Datex2UpdateService {
 
         for (final Object[] o : datex2Repository.listDatex2SituationVersionTimes(messageType.name())) {
             final String situationId = (String) o[0];
-            final ZonedDateTime versionTime = DateHelper.toZonedDateTime(((Timestamp)o[1]).toInstant());
+            final ZonedDateTime versionTime = DateHelper.toZonedDateTimeAtUtc(((Timestamp)o[1]).toInstant());
 
             if (map.put(situationId, versionTime) != null) {
                 throw new IllegalStateException("Duplicate key");

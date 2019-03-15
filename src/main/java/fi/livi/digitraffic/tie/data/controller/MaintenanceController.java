@@ -57,8 +57,10 @@ public class MaintenanceController {
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
 
         maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
-        // TODO move to job
-        int count = maintenanceDataService.updateWorkMachineTrackingType();
+
+        // TODO FIXME move to job
+        int count = maintenanceDataService.updateWorkMachineTrackingTypes();
+
         log.info("Updated {} types", count);
         return ResponseEntity.ok().build();
     }

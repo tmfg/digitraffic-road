@@ -52,23 +52,23 @@ public class ObservationFeatureCollection implements Serializable {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ObservationFeatureCollection)) {
             return false;
         }
 
         ObservationFeatureCollection that = (ObservationFeatureCollection) o;
 
         return new EqualsBuilder()
-            .append(type, that.type)
-            .append(features, that.features)
+            .append(getType(), that.getType())
+            .append(getFeatures(), that.getFeatures())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(type)
-            .append(features)
+            .append(getType())
+            .append(getFeatures())
             .toHashCode();
     }
 }

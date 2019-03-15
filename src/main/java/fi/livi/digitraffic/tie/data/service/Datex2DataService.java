@@ -91,7 +91,7 @@ public class Datex2DataService {
     }
 
     public ZonedDateTime findLatestImportTime(final Datex2MessageType messageType) {
-        return DateHelper.toZonedDateTime(datex2Repository.findLatestImportTime(messageType.name()));
+        return DateHelper.toZonedDateTimeAtUtc(datex2Repository.findLatestImportTime(messageType.name()));
     }
 
     @Transactional(readOnly = true)

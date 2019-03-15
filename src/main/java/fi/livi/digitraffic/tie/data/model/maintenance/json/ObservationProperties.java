@@ -138,35 +138,35 @@ public class ObservationProperties implements Serializable {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ObservationProperties)) {
             return false;
         }
 
         ObservationProperties that = (ObservationProperties) o;
 
         return new EqualsBuilder()
-            .append(workMachine, that.workMachine)
-            .append(road, that.road)
-            .append(link, that.link)
-            .append(direction, that.direction)
-            .append(contractId, that.contractId)
-            .append(observationTime, that.observationTime)
-            .append(performedTasks, that.performedTasks)
-            .append(additionalProperties, that.additionalProperties)
+            .append(getWorkMachine(), that.getWorkMachine())
+            .append(getRoad(), that.getRoad())
+            .append(getLink(), that.getLink())
+            .append(getDirection(), that.getDirection())
+            .append(getContractId(), that.getContractId())
+            .append(getObservationTime(), that.getObservationTime())
+            .append(getPerformedTasks(), that.getPerformedTasks())
+            .append(getAdditionalProperties(), that.getAdditionalProperties())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(workMachine)
-            .append(road)
-            .append(link)
-            .append(direction)
-            .append(contractId)
-            .append(observationTime)
-            .append(performedTasks)
-            .append(additionalProperties)
+            .append(getWorkMachine())
+            .append(getRoad())
+            .append(getLink())
+            .append(getDirection())
+            .append(getContractId())
+            .append(getObservationTime())
+            .append(getPerformedTasks())
+            .append(getAdditionalProperties())
             .toHashCode();
     }
 }

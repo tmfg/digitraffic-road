@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -50,5 +53,31 @@ public abstract class Geometry<T> implements Serializable {
 
     public enum Type {
         Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Geometry)) {
+            return false;
+        }
+
+        Geometry<?> geometry = (Geometry<?>) o;
+
+        return new EqualsBuilder()
+            .append(getType(), geometry.getType())
+            .append(getCoordinates(), geometry.getCoordinates())
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+            .append(getType())
+            .append(getCoordinates())
+            .toHashCode();
     }
 }

@@ -60,23 +60,23 @@ public class Sender implements Serializable
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Sender)) {
             return false;
         }
 
         Sender sender = (Sender) o;
 
         return new EqualsBuilder()
-            .append(system, sender.system)
-            .append(organisation, sender.organisation)
+            .append(getSystem(), sender.getSystem())
+            .append(getOrganisation(), sender.getOrganisation())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(system)
-            .append(organisation)
+            .append(getSystem())
+            .append(getOrganisation())
             .toHashCode();
     }
 }

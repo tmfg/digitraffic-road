@@ -40,7 +40,7 @@ public class HavaintoToObservationPropertiesConverter extends AutoRegisteredConv
                 link,
                 src.getSuunta(),
                 src.getUrakkaid(),
-                DateHelper.toZonedDateTime(src.getHavaintoaika()),
+                DateHelper.toZonedDateTimeAtUtc(src.getHavaintoaika()),
                 performedTasks,
                 src.getAdditionalProperties());
 

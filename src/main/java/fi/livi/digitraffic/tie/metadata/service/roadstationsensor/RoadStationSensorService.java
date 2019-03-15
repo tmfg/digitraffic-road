@@ -149,7 +149,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTime(
+        return DateHelper.toZonedDateTimeAtUtc(
                 roadStationSensorValueDtoRepository.getLatestMeasurementTime(roadStationType));
     }
 
@@ -203,7 +203,7 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public ZonedDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTime(sensorValueRepository.getLastUpdated(roadStationType));
+        return DateHelper.toZonedDateTimeAtUtc(sensorValueRepository.getLastUpdated(roadStationType));
     }
 
     /**

@@ -17,6 +17,6 @@ public class OtsikkoToCaptionConverter extends AutoRegisteredConverter<OtsikkoSc
         return new Caption(
             convert(src.getLahettaja(), Sender.class),
             src.getViestintunniste() != null ? src.getViestintunniste().getId() : null,
-            DateHelper.toZonedDateTime(src.getLahetysaika()));
+            DateHelper.toZonedDateTimeAtUtc(src.getLahetysaika()));
     }
 }

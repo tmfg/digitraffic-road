@@ -33,32 +33,43 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
     "endDate",
     "mapDate"
 })
-public class Road implements Serializable
-{
+public class Road implements Serializable {
 
     private String name;
 
     @JsonProperty(required = true)
     private Integer number;
 
-    /** aet */
+    /**
+     * aet
+     */
     @JsonProperty(required = true)
     private Integer startDistance;
 
-    /** aosa */
+    /**
+     * aosa
+     */
     @JsonProperty(required = true)
     private Integer startPart;
 
-    /** let */
+    /**
+     * let
+     */
     private Integer endDistance;
 
-    /** losa */
+    /**
+     * losa
+     */
     private Integer endPart;
 
-    /** ajr */
+    /**
+     * ajr
+     */
     private Integer carriageway;
 
-    /** kaistta*/
+    /**
+     * kaistta
+     */
     private Lane lane;
 
     private Integer side;
@@ -208,45 +219,45 @@ public class Road implements Serializable
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Road)) {
             return false;
         }
 
         Road road = (Road) o;
 
         return new EqualsBuilder()
-            .append(name, road.name)
-            .append(number, road.number)
-            .append(startDistance, road.startDistance)
-            .append(startPart, road.startPart)
-            .append(endDistance, road.endDistance)
-            .append(endPart, road.endPart)
-            .append(carriageway, road.carriageway)
-            .append(lane, road.lane)
-            .append(side, road.side)
-            .append(startDate, road.startDate)
-            .append(endDate, road.endDate)
-            .append(mapDate, road.mapDate)
-            .append(additionalProperties, road.additionalProperties)
+            .append(getName(), road.getName())
+            .append(getNumber(), road.getNumber())
+            .append(getStartDistance(), road.getStartDistance())
+            .append(getStartPart(), road.getStartPart())
+            .append(getEndDistance(), road.getEndDistance())
+            .append(getEndPart(), road.getEndPart())
+            .append(getCarriageway(), road.getCarriageway())
+            .append(getLane(), road.getLane())
+            .append(getSide(), road.getSide())
+            .append(getStartDate(), road.getStartDate())
+            .append(getEndDate(), road.getEndDate())
+            .append(getMapDate(), road.getMapDate())
+            .append(getAdditionalProperties(), road.getAdditionalProperties())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(name)
-            .append(number)
-            .append(startDistance)
-            .append(startPart)
-            .append(endDistance)
-            .append(endPart)
-            .append(carriageway)
-            .append(lane)
-            .append(side)
-            .append(startDate)
-            .append(endDate)
-            .append(mapDate)
-            .append(additionalProperties)
+            .append(getName())
+            .append(getNumber())
+            .append(getStartDistance())
+            .append(getStartPart())
+            .append(getEndDistance())
+            .append(getEndPart())
+            .append(getCarriageway())
+            .append(getLane())
+            .append(getSide())
+            .append(getStartDate())
+            .append(getEndDate())
+            .append(getMapDate())
+            .append(getAdditionalProperties())
             .toHashCode();
     }
 }

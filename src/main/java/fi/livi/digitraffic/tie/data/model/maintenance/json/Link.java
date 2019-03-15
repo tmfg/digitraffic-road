@@ -59,14 +59,14 @@ public class Link implements Serializable {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Link)) {
             return false;
         }
 
         Link link = (Link) o;
 
         return new EqualsBuilder()
-            .append(id, link.id)
+            .append(getId(), link.getId())
             .append(mValue, link.mValue)
             .isEquals();
     }
@@ -74,7 +74,7 @@ public class Link implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(id)
+            .append(getId())
             .append(mValue)
             .toHashCode();
     }

@@ -74,25 +74,25 @@ public class Caption implements Serializable
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Caption)) {
             return false;
         }
 
         Caption caption = (Caption) o;
 
         return new EqualsBuilder()
-            .append(sender, caption.sender)
-            .append(messageIdentifier, caption.messageIdentifier)
-            .append(sendingTime, caption.sendingTime)
+            .append(getSender(), caption.getSender())
+            .append(getMessageIdentifier(), caption.getMessageIdentifier())
+            .append(getSendingTime(), caption.getSendingTime())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(sender)
-            .append(messageIdentifier)
-            .append(sendingTime)
+            .append(getSender())
+            .append(getMessageIdentifier())
+            .append(getSendingTime())
             .toHashCode();
     }
 }

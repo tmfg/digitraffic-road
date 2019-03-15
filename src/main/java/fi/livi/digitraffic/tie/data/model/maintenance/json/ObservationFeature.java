@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -70,31 +71,35 @@ public class ObservationFeature implements Feature<Geometry<?>>, Serializable {
         return ToStringHelper.toStringFull(this);
     }
 
+    public Pair<Integer, Integer> getHarjaTyokoneUrakkaIdPair() {
+        return Pair.of(getProperties().getWorkMachine().getId(), getProperties().getContractId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ObservationFeature)) {
             return false;
         }
 
         ObservationFeature that = (ObservationFeature) o;
 
         return new EqualsBuilder()
-            .append(type, that.type)
-            .append(geometry, that.geometry)
-            .append(properties, that.properties)
+            .append(getType(), that.getType())
+            .append(getGeometry(), that.getGeometry())
+            .append(getProperties(), that.getProperties())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(type)
-            .append(geometry)
-            .append(properties)
+            .append(getType())
+            .append(getGeometry())
+            .append(getProperties())
             .toHashCode();
     }
 }

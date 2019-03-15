@@ -4,11 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
