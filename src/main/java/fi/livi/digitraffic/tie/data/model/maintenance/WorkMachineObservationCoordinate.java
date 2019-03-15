@@ -17,6 +17,8 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Entity
 public class WorkMachineObservationCoordinate {
 
@@ -82,5 +84,10 @@ public class WorkMachineObservationCoordinate {
 
     public Set<WorkMachineTask> getWorkMachineTasks() {
         return workMachineTasks;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringExcluded(this, "workMachineObservation");
     }
 }

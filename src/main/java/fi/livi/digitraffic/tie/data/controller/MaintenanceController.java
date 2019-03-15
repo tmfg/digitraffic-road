@@ -58,10 +58,6 @@ public class MaintenanceController {
 
         maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
 
-        // TODO FIXME move to job
-        int count = maintenanceDataService.updateWorkMachineTrackingTypes();
-
-        log.info("Updated {} types", count);
         return ResponseEntity.ok().build();
     }
 }

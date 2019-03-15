@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 
 public interface WorkMachineObservationRepository extends JpaRepository<WorkMachineObservation, Long> {
 
-    List<WorkMachineObservation> findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaId(final long workMachineHarjaId, final long contractHarjaId);
+    List<WorkMachineObservation> findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedAsc(final long workMachineHarjaId, final long contractHarjaId);
 
     WorkMachineObservation findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedDesc(final long workMachineHarjaId, final long contractHarjaId);
 

@@ -8,6 +8,8 @@ import javax.persistence.Embeddable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Embeddable
 public class WorkMachineObservationCoordinatePK implements Serializable {
 
@@ -57,5 +59,10 @@ public class WorkMachineObservationCoordinatePK implements Serializable {
             .append(getWorkMachineObservationId())
             .append(getOrderNumber())
             .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringExcluded(this);
     }
 }

@@ -99,7 +99,7 @@ public class MaintenanceDataService {
 
     @Transactional(readOnly = true)
     public List<WorkMachineObservation> findWorkMachineObservationsByWorkMachineHarjaIdAndHarjaUrakkaId(final long workMachineHarjaId, final long harjaUrakkaId) {
-      return workMachineObservationRepository.findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaId(workMachineHarjaId, harjaUrakkaId);
+      return workMachineObservationRepository.findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedAsc(workMachineHarjaId, harjaUrakkaId);
     }
 
     @Transactional(readOnly = true)

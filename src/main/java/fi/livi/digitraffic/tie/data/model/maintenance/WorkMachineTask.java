@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Entity
 public class WorkMachineTask {
 
@@ -93,12 +95,12 @@ public class WorkMachineTask {
     public WorkMachineTask() {
     }
 
-    public WorkMachineTask(final WorkMachineObservationCoordinate coordinate, final Task task) {
-        this.id = new WorkMachineTaskPK(coordinate.getWorkMachineObservationId(), coordinate.getOrderNumber(), task);
-        this.workMachineObservationCoordinate = coordinate;
-    }
-
     public Task getTask() {
         return id.getTask();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringExcluded(getTask());
     }
 }
