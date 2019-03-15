@@ -22,3 +22,6 @@
 /dbroad/schemaspy/schema
 /dbroad/schemaspy/lib
 /dbroad/flyway-dev/flyway-test.conf
+
+# no_commit tekstin sisältävät tiedostot
+**/*no_commit*
