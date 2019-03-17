@@ -112,6 +112,7 @@ public class MaintenanceDataService {
         return workMachineObservationRepository.findAll();
     }
 
+    // TODO nämä kutsut jobiin ajastetusti
     public int handleUnhandledWorkMachineTrakkings() throws JsonProcessingException {
         updateWorkMachineTrackingTypes();
         Map<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> unhandledMap = findAllUnhandledTrakkingsMappedByHarjaWorkMachineAndContract();

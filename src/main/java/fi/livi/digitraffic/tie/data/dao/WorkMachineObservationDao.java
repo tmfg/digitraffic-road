@@ -46,8 +46,6 @@ public class WorkMachineObservationDao {
                               final BigDecimal latitude,
                               final ZonedDateTime observationTime) {
 
-        // TODO static final string x 2 versiota
-
         Query query = entityManager.createNativeQuery(observationTime != null ?
                                                       INSERT_WITH_OBSERVATION_TIME: INSERT_WITHOUT_OBSERVATION_TIME);
 
