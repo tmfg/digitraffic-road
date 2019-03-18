@@ -29,25 +29,33 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 public class SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateService.class);
 
-    private final Set<Long> allowedTmsSensorLotjuIds;
-    private final Set<Long> allowedWeatherSensorLotjuIds;
+    private final HashMap<RoadStationType, Set<Long>> allowedSensorsLotjuIds = new HashMap<>();
+    private final HashMap<RoadStationType, Long> allowedSensorsLastUpdatedTimeMillis = new HashMap<>();
+    private static final long allowedSensorExpirationMillis = 300000; // 5min
 
     private final SensorValueDao sensorValueDao;
+    private final RoadStationSensorService roadStationSensorService;
     private final RoadStationDao roadStationDao;
 
     @Autowired
     public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService,
                                    final RoadStationDao roadStationDao) {
         this.sensorValueDao = sensorValueDao;
+        this.roadStationSensorService = roadStationSensorService;
         this.roadStationDao = roadStationDao;
+    }
 
-        final List<RoadStationSensor> allowedTmsSensors =
-            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
-        allowedTmsSensorLotjuIds = allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
+    private Set<Long> getAllowedRoadStationSensorsLotjuIds(final RoadStationType roadStationType) {
+        if (allowedSensorsLotjuIds.get(roadStationType) == null || allowedSensorsLastUpdatedTimeMillis.get(roadStationType) < System.currentTimeMillis() - allowedSensorExpirationMillis) {
+            final List<RoadStationSensor> allowedTmsSensors =
+                roadStationSensorService.findAllPublishableRoadStationSensors(roadStationType);
 
-        final List<RoadStationSensor> allowedWeatherSensors =
-            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
-        allowedWeatherSensorLotjuIds = allowedWeatherSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet());
+            allowedSensorsLotjuIds.put(roadStationType, allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet()));
+
+            allowedSensorsLastUpdatedTimeMillis.put(roadStationType, System.currentTimeMillis());
+            log.info("method=getAllowedRoadStationSensorsLotjuIds fetched sensorCount={} for roadStationType={}", allowedSensorsLotjuIds.get(roadStationType).size(), roadStationType);
+        }
+        return allowedSensorsLotjuIds.get(roadStationType);
     }
 
     /**
@@ -86,7 +94,7 @@ public class SensorDataUpdateService {
 
         List<SensorValueUpdateParameterDto> params =
             filteredByNewest.stream()
-            .filter(wrapper -> allowedTmsSensorLotjuIds.contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
+            .filter(wrapper -> getAllowedRoadStationSensorsLotjuIds(RoadStationType.TMS_STATION).contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
                             .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
 
@@ -137,7 +145,7 @@ public class SensorDataUpdateService {
 
         List<SensorValueUpdateParameterDto> params =
             filteredByNewest.stream()
-                .filter(wrapper -> allowedWeatherSensorLotjuIds.contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
+                .filter(wrapper -> getAllowedRoadStationSensorsLotjuIds(RoadStationType.WEATHER_STATION).contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
                 .map(anturi -> new SensorValueUpdateParameterDto(anturi, timestampCache, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId())))
                 .collect(Collectors.toList());
 
