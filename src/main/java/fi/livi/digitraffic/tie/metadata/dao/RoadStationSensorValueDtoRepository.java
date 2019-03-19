@@ -14,9 +14,10 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
-    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -41,11 +42,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "where rs.type = :stationTypeId\n" +
             "  and rs.publishable = true\n" +
             "  and s.publishable = true\n" +
-            "  and sv.measured > (\n" +
-            "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 MINUTE')\n" +
-            "    from sensor_value sensv\n" +
-            "    where sensv.road_station_id = sv.road_station_id\n" +
-            "  )\n" +
+            "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
             "  and exists (\n" +
             "     select null\n" +
             "     from allowed_road_station_sensor allowed\n" +
@@ -60,7 +57,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
     @Query(value =
             "select rs.natural_id road_station_natural_id\n" +
             "     , s.natural_id sensor_natural_id\n" +
@@ -86,11 +83,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "  and rs.natural_id = :stationNaturalId\n" +
             "  and rs.publishable = true\n" +
             "  and s.publishable = true\n" +
-            "  and sv.measured > (\n" +
-            "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 MINUTE')\n" +
-            "    from sensor_value sensv\n" +
-            "    where sensv.road_station_id = sv.road_station_id\n" +
-            "  )\n" +
+            "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
             "  and exists (\n" +
             "     select null\n" +
             "     from allowed_road_station_sensor allowed\n" +
@@ -107,7 +100,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("timeLimitInMinutes")
             final int timeLimitInMinutes);
 
-    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="2000"))
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
     @Query(value =
                    "select rs.natural_id road_station_natural_id\n" +
                    "     , s.natural_id sensor_natural_id\n" +
@@ -148,27 +141,10 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             final Date afterDate);
 
     @Query(value =
-           "select max(sv.measured) as updated_time\n" +
-           "from road_station rs\n" +
-           "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
-           "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
-           "where rs.type = :stationTypeId\n" +
-           "  and rs.publishable = true\n" +
-           "  and s.publishable = true\n" +
-           "  and sv.measured > (\n" +
-           "    select max(sensv.measured) - (:timeLimitInMinutes * interval '1 minute')\n" +
-           "    from sensor_value sensv\n" +
-           "    where sensv.road_station_id = sv.road_station_id\n" +
-           "  )\n" +
-           "  and exists (\n" +
-           "     select null\n" +
-           "     from allowed_road_station_sensor allowed\n" +
-           "     where allowed.natural_id = s.natural_id\n" +
-           "       and allowed.road_station_type = s.road_station_type\n" +
-           "  )",
-           nativeQuery = true)
-    Instant getLatestMeasurementTime(@Param("stationTypeId")
-                                           final int stationTypeId,
-                                           @Param("timeLimitInMinutes")
-                                           final int timeLimitInMinutes);
+             "SELECT max(sv.sensorValueMeasured) AS updatedTime\n" +
+             "FROM SensorValue sv\n " +
+             "INNER JOIN sv.roadStationSensor s \n" +
+             "WHERE s.roadStationType = :roadStationType")
+    Instant getLatestMeasurementTime(@Param("roadStationType")
+                                     final RoadStationType roadStationType);
 }

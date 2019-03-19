@@ -37,15 +37,16 @@ public class ForecastSectionDataUpdater {
     }
 
     @Transactional
-    public Instant updateForecastSectionWeatherData() {
-        final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions();
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findAll();
+    public Instant updateForecastSectionWeatherData(final ForecastSectionApiVersion version) {
+        final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions(version.getVersion());
+
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(version.getVersion());
 
         final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
                 data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
-        log.info("Forecast section weather data contains weather forecasts for " + weatherDataByNaturalId.size() +
-                 " forecast sections. Number of forecast sections in database is " + forecastSections.size());
+        log.info("Forecast section weather data contains weather forecasts for forecastCount=" + weatherDataByNaturalId.size() +
+                 " forecast sections. forecastSectionsInDatabase=" + forecastSections.size());
 
         final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
 
@@ -67,6 +68,10 @@ public class ForecastSectionDataUpdater {
 
             final List<ForecastSectionWeather> forecastsToAdd = new ArrayList<>();
             final ForecastSectionWeatherDto weatherData = weatherDataByNaturalId.get(fs.getKey());
+
+            if (weatherData == null) {
+                continue;
+            }
 
             // Update observation for forecast section
             final ForecastSectionWeather observation = forecastSection.getForecastSectionWeatherList() == null ? null :

@@ -4,7 +4,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +36,8 @@ public class TmsStationMetadata2Datex2Converter {
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationMetadata2Datex2Converter(@Value("${spring.profiles.active}") final String profile) {
-        this.informationStatus = StringUtils.equals(profile, "koka-prod") ? InformationStatusEnum.REAL : InformationStatusEnum.TEST;
+    public TmsStationMetadata2Datex2Converter(@Value("${weathercam.baseUrl}") final String camUrl) {
+        this.informationStatus = camUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
     public D2LogicalModel convert(final List<TmsStation> stations, final ZonedDateTime metadataLastUpdated) {

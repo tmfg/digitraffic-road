@@ -39,7 +39,6 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         cameraStationUpdater.updateCameras();
         final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
         // cameras with lotjuId 443 in collection, 56 (no public presets) and 121 removed temporary, 2 public with 5 presets
-        allInitial.getFeatures().stream().forEach(c -> System.out.println(c.getProperties().getLotjuId()));
         assertEquals(3, allInitial.getFeatures().size());
         int countPresets = 0;
         for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {

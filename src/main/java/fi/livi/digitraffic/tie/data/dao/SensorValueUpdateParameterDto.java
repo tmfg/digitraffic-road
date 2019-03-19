@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+import fi.livi.digitraffic.tie.data.service.LotjuAnturiWrapper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -19,10 +20,10 @@ public class SensorValueUpdateParameterDto {
     private final Timestamp timeWindowStart;
     private final Timestamp timeWindowEnd;
 
-    public SensorValueUpdateParameterDto(final LAMRealtimeProtos.Lam lam, final LAMRealtimeProtos.Lam.Anturi anturi,
-                                         long roadSationId, TimestampCache timestampCache) {
+    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadSationId, final TimestampCache timestampCache) {
+        final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
         this.value = BigDecimal.valueOf(anturi.getArvo());
-        this.measured = timestampCache.get(lam.getAika());
+        this.measured = timestampCache.get(wrapper.getAika());
         this.roadSationId = roadSationId;
         this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
         this.stationType = RoadStationType.TMS_STATION.name();
@@ -30,10 +31,10 @@ public class SensorValueUpdateParameterDto {
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
     }
 
-    public SensorValueUpdateParameterDto(final TiesaaProtos.TiesaaMittatieto tiesaa, final TiesaaProtos.TiesaaMittatieto.Anturi anturi,
-                                         final Long roadSationId, final TimestampCache timestampCache) {
+    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper, final TimestampCache timestampCache, final Long roadSationId) {
+        final TiesaaProtos.TiesaaMittatieto.Anturi anturi = wrapper.getAnturi();
         this.value = NumberConverter.convertAnturiValueToBigDecimal(anturi.getArvo());
-        this.measured = timestampCache.get(tiesaa.getAika());
+        this.measured = timestampCache.get(wrapper.getAika());
         this.roadSationId = roadSationId;
         this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
         this.stationType = RoadStationType.WEATHER_STATION.name();

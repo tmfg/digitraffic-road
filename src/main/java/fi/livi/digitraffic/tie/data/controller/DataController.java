@@ -33,6 +33,7 @@ import fi.livi.digitraffic.tie.data.service.WeatherService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -55,7 +56,7 @@ public class DataController {
 
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
     // datex2
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
@@ -178,7 +179,9 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(lastUpdated);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, lastUpdated, null,
+                                                                        null, null, null, null,
+                                                                        null);
     }
 
     @ApiOperation(value = "Active traffic disorders Datex2 messages",

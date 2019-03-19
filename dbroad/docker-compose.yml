@@ -11,6 +11,7 @@ services:
       POSTGRES_DB: road
     ports:
       - 54322:5432
+    command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all
 
   db-init:
     build: .
@@ -20,3 +21,13 @@ services:
     links:
       - "db:db"
     command: ["./wait-for-postgres.sh", "db", "road", "road", "road", "./init-db.sh"]
+
+  pghero:
+    image: ankane/pghero
+    restart: always
+    environment:
+      DATABASE_URL: postgres://road:road@db:5432/road
+    links:
+    - "db:database" # postgres is reachable for pghero from web at the hostnames db and database
+    ports:
+    - 8081:8080

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionMetadataUpdater;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater;
 
 @DisallowConcurrentExecution
 public class ForecastSectionCoordinatesMetadataUpdateJob extends SimpleUpdateJob {
@@ -15,11 +15,11 @@ public class ForecastSectionCoordinatesMetadataUpdateJob extends SimpleUpdateJob
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionCoordinatesMetadataUpdateJob.class);
 
     @Autowired
-    private ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
+    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) throws Exception {
-        boolean updated = forecastSectionMetadataUpdater.updateForecastSectionMetadata();
+    protected void doExecute(JobExecutionContext context) {
+        boolean updated = forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
 
         if (updated) {
             dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA);

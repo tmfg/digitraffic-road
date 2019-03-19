@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.TmsSensorConstantValueDtoRepository;
@@ -47,7 +48,7 @@ public class TmsDataService {
         this.tmsSensorConstantValueDtoRepository = tmsSensorConstantValueDtoRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public TmsRootDataObjectDto findPublishableTmsData(boolean onlyUpdateInfo) {
         final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
 
@@ -73,7 +74,7 @@ public class TmsDataService {
 
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public TmsRootDataObjectDto findPublishableTmsData(long roadStationNaturalId) {
         if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
@@ -94,7 +95,7 @@ public class TmsDataService {
         return new TmsRootDataObjectDto(Collections.singletonList(dto), updated);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public TmsSensorConstantRootDto findPublishableSensorConstants(final boolean lastUpdated) {
         final ZonedDateTime updated = tmsStationSensorConstantService.getLatestMeasurementTime();
 

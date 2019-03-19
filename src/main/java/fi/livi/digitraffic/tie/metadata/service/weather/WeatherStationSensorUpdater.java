@@ -60,8 +60,8 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final Collection invalid = CollectionUtils.subtract(allTiesaaLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
 
-        List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-        int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
+        final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
+        final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
 
         for (TiesaaLaskennallinenAnturiVO anturi : toUpdate) {
             final UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
@@ -72,11 +72,12 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
             }
         }
 
-        log.info("roadStationSensorsObsoleted={}", obsoleted);
-        log.info("roadStationSensorsUpdated={}", updated);
-        log.info("roadStationSensorsInserted={}", inserted);
+        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} roadStationType={}", obsoleted, RoadStationType.WEATHER_STATION);
+        log.info("method=updateAllRoadStationSensors roadStationSensors updatedCount={} roadStationType={}", updated, RoadStationType.WEATHER_STATION);
+        log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.WEATHER_STATION);
+
         if (!invalid.isEmpty()) {
-            log.warn("invalidWeatherSensorsFromLotjuCount={}", invalid.size());
+            log.warn("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.WEATHER_STATION);
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;

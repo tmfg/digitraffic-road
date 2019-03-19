@@ -13,23 +13,35 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesEntry;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
+
 @Component
 public class ForecastSectionClient {
 
     @Value("${roadConditions.baseUrl}")
     private String baseUrl;
 
-    private final String roadsUrl = "roads.php";
+    private static final String roadsUrl = "roads.php";
 
-    private final String roadConditionsUrl = "roadConditionsV1-json.php";
+    private static final String roadsV2Url = "roadsV2.php";
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private static final String roadConditionsV1Url = "roadConditionsV1-json.php";
+
+    private static final String roadConditionsV2Url = "roadConditionsV2-json.php";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public ForecastSectionClient(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Retryable
-    public List<ForecastSectionCoordinatesDto> getForecastSectionMetadata() {
+    public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
 
         final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
 
@@ -37,14 +49,22 @@ public class ForecastSectionClient {
     }
 
     @Retryable
-    public ForecastSectionDataDto getRoadConditions() {
-
-        return restTemplate.getForObject(baseUrl + roadConditionsUrl, ForecastSectionDataDto.class);
+    public ForecastSectionDataDto getRoadConditions(final int version) {
+        if (version == 1) {
+            return restTemplate.getForObject(baseUrl + roadConditionsV1Url, ForecastSectionDataDto.class);
+        } else {
+            return restTemplate.getForObject(baseUrl + roadConditionsV2Url, ForecastSectionDataDto.class);
+        }
     }
 
-    private ForecastSectionCoordinatesDto mapForecastSectionCoordinates(final Map.Entry<String, Object> forecastSection) {
+    protected ForecastSectionCoordinatesDto mapForecastSectionCoordinates(final Map.Entry<String, Object> forecastSection) {
         final ForecastSectionCoordinatesEntry entry = objectMapper.convertValue(forecastSection.getValue(), ForecastSectionCoordinatesEntry.class);
 
         return new ForecastSectionCoordinatesDto(forecastSection.getKey(), entry.getName(), entry.getCoordinates());
+    }
+
+    public ForecastSectionV2Dto getForecastSectionV2Metadata() {
+
+        return restTemplate.getForObject(baseUrl + roadsV2Url, ForecastSectionV2Dto.class);
     }
 }
