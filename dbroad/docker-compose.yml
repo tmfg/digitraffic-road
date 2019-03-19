@@ -3,7 +3,7 @@ version: '2.0' # docker-compose version
 services:
 
   db:
-    image: postgres:9.6.8
+    image: postgres:9.6.12-alpine
     restart: always
     environment:
       POSTGRES_USER: road
