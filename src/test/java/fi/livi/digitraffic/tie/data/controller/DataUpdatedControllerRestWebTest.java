@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
@@ -23,6 +24,9 @@ import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 /**
  * Test that every data-api has working last update query
@@ -39,6 +43,15 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private DataController dataController;
+
+    @Autowired
+    private DataStatusService dataStatusService;
+
+    @Before
+    public void update() {
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+    }
 
     @Test
     public void testDataUpdatedExists() throws Exception {

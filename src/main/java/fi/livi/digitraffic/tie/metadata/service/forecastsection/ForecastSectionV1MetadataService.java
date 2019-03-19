@@ -36,8 +36,8 @@ public class ForecastSectionV1MetadataService {
     public ForecastSectionFeatureCollection findForecastSectionsV1Metadata() {
         List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
         return forecastSectionV1ToFeatureConverter.convert(forecastSections,
-                                                           dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA),
-                                                           dataStatusService.findDataUpdatedTimeByDataType(DataType.FORECAST_SECTION_METADATA_CHECK));
+                                                           dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA),
+                                                           dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA_CHECK));
     }
 
     public ForecastSectionsMetadata findForecastSectionsV1Metadata(final boolean onlyUpdateInfo) {

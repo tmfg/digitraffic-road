@@ -5,14 +5,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.ZonedDateTime;
+
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest {
+
+    @Autowired
+    private DataStatusService dataStatusService;
+
+    @Autowired
+    private SensorValueRepository sensorValueRepository;
+
+    @Before
+    public void updateData() {
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+        sensorValueRepository.findAll().stream()
+            .filter(sv -> sv.getRoadStation().getType().equals(RoadStationType.WEATHER_STATION))
+            .forEach(sv -> sv.setSensorValueMeasured(ZonedDateTime.now()));
+    }
 
     @Test
     public void testWeatherDataRestApi() throws Exception {

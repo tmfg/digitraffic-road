@@ -3,12 +3,16 @@ package fi.livi.digitraffic.tie.data.service;
 import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -21,8 +25,10 @@ import fi.livi.digitraffic.tie.data.dao.SensorValueDao;
 import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationDao;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Service
@@ -36,13 +42,15 @@ public class SensorDataUpdateService {
     private final SensorValueDao sensorValueDao;
     private final RoadStationSensorService roadStationSensorService;
     private final RoadStationDao roadStationDao;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService,
-                                   final RoadStationDao roadStationDao) {
+                                   final RoadStationDao roadStationDao, final DataStatusService dataStatusService) {
         this.sensorValueDao = sensorValueDao;
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationDao = roadStationDao;
+        this.dataStatusService = dataStatusService;
     }
 
     private Set<Long> getAllowedRoadStationSensorsLotjuIds(final RoadStationType roadStationType) {
@@ -98,7 +106,13 @@ public class SensorDataUpdateService {
                             .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
 
+        final Timestamp max = getMaxMeasured(params);
+
         final int rows = sensorValueDao.updateLamSensorData(params);
+        dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(RoadStationType.TMS_STATION), max.toInstant());
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION),
+                                            dataStatusService.getTransactionStartTime());
+
         stopWatch.stop();
 
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
@@ -106,6 +120,13 @@ public class SensorDataUpdateService {
         log.info("method=updateLamData update tms sensors data for updateCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
                  rows, stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
         return rows;
+    }
+
+    private Timestamp getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
+        final StopWatch stopWatch = StopWatch.createStarted();
+        final Timestamp max = params.stream().max(Comparator.comparing(SensorValueUpdateParameterDto::getMeasured)).get().getMeasured();
+        log.info("method=getMaxMeasured tookMs={}", stopWatch.getTime());
+        return max;
     }
 
     /**
@@ -149,7 +170,11 @@ public class SensorDataUpdateService {
                 .map(anturi -> new SensorValueUpdateParameterDto(anturi, timestampCache, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId())))
                 .collect(Collectors.toList());
 
+        final Timestamp max = getMaxMeasured(params);
         final int rows = sensorValueDao.updateWeatherSensorData(params);
+        dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(RoadStationType.WEATHER_STATION), max.toInstant());
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION),
+                                            dataStatusService.getTransactionStartTime());
         stopWatch.stop();
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
                  initialDataRowCount, filteredByNewest.size());

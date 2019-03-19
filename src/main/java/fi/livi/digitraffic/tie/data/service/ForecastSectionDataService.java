@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Service
@@ -22,12 +22,15 @@ public class ForecastSectionDataService {
     private final DataUpdatedRepository dataUpdatedRepository;
 
     private final ForecastSectionWeatherDao forecastSectionWeatherDao;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public ForecastSectionDataService(final DataUpdatedRepository dataUpdatedRepository,
-                                      final ForecastSectionWeatherDao forecastSectionWeatherDao) {
+                                      final ForecastSectionWeatherDao forecastSectionWeatherDao,
+                                      final DataStatusService dataStatusService) {
         this.dataUpdatedRepository = dataUpdatedRepository;
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
+        this.dataStatusService = dataStatusService;
     }
 
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo,
@@ -35,8 +38,7 @@ public class ForecastSectionDataService {
                                                                        final Double minLongitude, final Double minLatitude,
                                                                        final Double maxLongitude, final Double maxLatitude,
                                                                        final List<String> naturalIds) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(getDataType(version).toString());
-        final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
+        final ZonedDateTime updatedTime = dataStatusService.findDataUpdatedTime(getDataType(version));
 
         if (onlyUpdateInfo) {
             return new ForecastSectionWeatherRootDto(updatedTime);

@@ -243,7 +243,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     public void assertDataIsJustUpdated() {
-        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
         assertLastUpdated(lastUpdated);
 
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);

@@ -143,6 +143,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             }
         }
 
+        log.error("Last updated {}", time);
+
         log.info("Handle tms data total tookMs={} and maxMs={} result={}",
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
@@ -152,7 +154,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Test
     public void test2LastUpdated() {
-        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
+        final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
         ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);

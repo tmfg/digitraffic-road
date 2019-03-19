@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
@@ -12,6 +13,8 @@ import javax.persistence.Id;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @Entity
 @DynamicUpdate
