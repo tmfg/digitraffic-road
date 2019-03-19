@@ -4,6 +4,7 @@ import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,10 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,27 +108,14 @@ public class SensorDataUpdateService {
                             .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
 
-        final Timestamp max = getMaxMeasured(params);
-
-        final int rows = sensorValueDao.updateLamSensorData(params);
-        dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(RoadStationType.TMS_STATION), max.toInstant());
-        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION),
-                                            dataStatusService.getTransactionStartTime());
-
+        Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.TMS_STATION);
         stopWatch.stop();
 
-        log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
+        log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}",
                  initialDataRowCount, filteredByNewest.size());
-        log.info("method=updateLamData update tms sensors data for updateCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
-                 rows, stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
-        return rows;
-    }
-
-    private Timestamp getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
-        final StopWatch stopWatch = StopWatch.createStarted();
-        final Timestamp max = params.stream().max(Comparator.comparing(SensorValueUpdateParameterDto::getMeasured)).get().getMeasured();
-        log.info("method=getMaxMeasured tookMs={}", stopWatch.getTime());
-        return max;
+        log.info("method=updateLamData update tms sensors data for updateCount={} insertCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
+                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
+        return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
     }
 
     /**
@@ -170,17 +159,40 @@ public class SensorDataUpdateService {
                 .map(anturi -> new SensorValueUpdateParameterDto(anturi, timestampCache, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId())))
                 .collect(Collectors.toList());
 
-        final Timestamp max = getMaxMeasured(params);
-        final int rows = sensorValueDao.updateWeatherSensorData(params);
-        dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(RoadStationType.WEATHER_STATION), max.toInstant());
-        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION),
-                                            dataStatusService.getTransactionStartTime());
+        Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.WEATHER_STATION);
+
         stopWatch.stop();
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
                  initialDataRowCount, filteredByNewest.size());
-        log.info("method=updateWeatherData update weather sensors data for updateCount={} sensors of stationCount={} stations tookMs={}",
-                 rows, stationsCount, stopWatch.getTime());
-        return rows;
+        log.info("method=updateWeatherData update weather sensors data for updateCount={} insertCount={} sensors of stationCount={} stations tookMs={}",
+                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount, stopWatch.getTime());
+        return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
+    }
+
+    /**
+     *
+     * @param params
+     * @param roadStationType
+     * @return Pair<updateCount, insertCount>
+     */
+    private Pair<Integer, Integer> updateSensorData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
+        final StopWatch stopWatch = StopWatch.createStarted();
+
+        final Timestamp maxMeasuredTime = getMaxMeasured(params);
+
+        final int[] updated = sensorValueDao.updateSensorData(params);
+        ArrayList<SensorValueUpdateParameterDto> toInsert = getSensorValueInsertParameters(params, updated);
+        final int[] inserted = sensorValueDao.insertSensorData(toInsert);
+
+        dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(roadStationType),
+                                            maxMeasuredTime.toInstant());
+        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(roadStationType),
+                                            dataStatusService.getTransactionStartTime());
+        final int updatedCount = countSum(updated);
+        final int insertedCount = countSum(inserted);
+        log.info("method=updateSensorData for {} stations updateCount={} insertCount={} tookMs={}",
+                 roadStationType, updatedCount, insertedCount, stopWatch.getTime());
+        return new ImmutablePair<>(updatedCount, insertedCount);
     }
 
     private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {
@@ -219,5 +231,24 @@ public class SensorDataUpdateService {
             .map(Map::values)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
+    }
+
+    private static ArrayList<SensorValueUpdateParameterDto> getSensorValueInsertParameters(final List<SensorValueUpdateParameterDto> params,
+                                                                                           final int[] updated) {
+        final ArrayList<SensorValueUpdateParameterDto> toInsert = new ArrayList<>();
+        for(int i = 0; i < updated.length; i++) {
+            if (updated[i] == 0) {
+                toInsert.add(params.get(i));
+            }
+        }
+        return toInsert;
+    }
+
+    private int countSum(final int[] values) {
+        return IntStream.of(values).sum();
+    }
+
+    private Timestamp getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
+        return params.stream().max(Comparator.comparing(SensorValueUpdateParameterDto::getMeasured)).get().getMeasured();
     }
 }

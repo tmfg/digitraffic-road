@@ -14,28 +14,28 @@ public class SensorValueUpdateParameterDto {
 
     private final BigDecimal value;
     private final Timestamp measured;
-    private final long roadSationId;
+    private final long roadStationId;
     private final long sensorLotjuId;
     private final String stationType;
     private final Timestamp timeWindowStart;
     private final Timestamp timeWindowEnd;
 
-    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadSationId, final TimestampCache timestampCache) {
+    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadStationId, final TimestampCache timestampCache) {
         final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
         this.value = BigDecimal.valueOf(anturi.getArvo());
         this.measured = timestampCache.get(wrapper.getAika());
-        this.roadSationId = roadSationId;
+        this.roadStationId = roadStationId;
         this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
         this.stationType = RoadStationType.TMS_STATION.name();
         this.timeWindowStart = anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null;
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
     }
 
-    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper, final TimestampCache timestampCache, final Long roadSationId) {
+    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper, final TimestampCache timestampCache, final Long roadStationId) {
         final TiesaaProtos.TiesaaMittatieto.Anturi anturi = wrapper.getAnturi();
         this.value = NumberConverter.convertAnturiValueToBigDecimal(anturi.getArvo());
         this.measured = timestampCache.get(wrapper.getAika());
-        this.roadSationId = roadSationId;
+        this.roadStationId = roadStationId;
         this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
         this.stationType = RoadStationType.WEATHER_STATION.name();
         this.timeWindowStart = null;
@@ -50,8 +50,8 @@ public class SensorValueUpdateParameterDto {
         return measured;
     }
 
-    public long getRoadSationId() {
-        return roadSationId;
+    public long getRoadStationId() {
+        return roadStationId;
     }
 
     public long getSensorLotjuId() {
