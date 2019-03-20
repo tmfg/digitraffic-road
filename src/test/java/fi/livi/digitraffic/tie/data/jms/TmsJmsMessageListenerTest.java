@@ -93,7 +93,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 1500;
+        long maxHandleTime = testBurstsLeft * 500;
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
 

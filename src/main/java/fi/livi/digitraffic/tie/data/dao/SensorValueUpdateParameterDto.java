@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
@@ -13,12 +13,12 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 public class SensorValueUpdateParameterDto {
 
     private final BigDecimal value;
-    private final Timestamp measured;
+    private final OffsetDateTime measured;
     private final long roadStationId;
     private final long sensorLotjuId;
     private final String stationType;
-    private final Timestamp timeWindowStart;
-    private final Timestamp timeWindowEnd;
+    private final OffsetDateTime timeWindowStart;
+    private final OffsetDateTime timeWindowEnd;
 
     public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadStationId, final TimestampCache timestampCache) {
         final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
@@ -46,7 +46,7 @@ public class SensorValueUpdateParameterDto {
         return value;
     }
 
-    public Timestamp getMeasured() {
+    public OffsetDateTime getMeasured() {
         return measured;
     }
 
@@ -62,11 +62,11 @@ public class SensorValueUpdateParameterDto {
         return stationType;
     }
 
-    public Timestamp getTimeWindowStart() {
+    public OffsetDateTime getTimeWindowStart() {
         return timeWindowStart;
     }
 
-    public Timestamp getTimeWindowEnd() {
+    public OffsetDateTime getTimeWindowEnd() {
         return timeWindowEnd;
     }
 }

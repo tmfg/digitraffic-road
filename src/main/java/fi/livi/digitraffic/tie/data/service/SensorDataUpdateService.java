@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.data.service;
 import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -178,7 +178,7 @@ public class SensorDataUpdateService {
     private Pair<Integer, Integer> updateSensorData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
         final StopWatch stopWatch = StopWatch.createStarted();
 
-        final Timestamp maxMeasuredTime = getMaxMeasured(params);
+        final OffsetDateTime maxMeasuredTime = getMaxMeasured(params);
 
         final int[] updated = sensorValueDao.updateSensorData(params);
         ArrayList<SensorValueUpdateParameterDto> toInsert = getSensorValueInsertParameters(params, updated);
@@ -248,7 +248,7 @@ public class SensorDataUpdateService {
         return IntStream.of(values).sum();
     }
 
-    private Timestamp getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
+    private OffsetDateTime getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
         return params.stream().max(Comparator.comparing(SensorValueUpdateParameterDto::getMeasured)).get().getMeasured();
     }
 }

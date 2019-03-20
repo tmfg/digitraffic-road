@@ -69,7 +69,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener = createTiesaaMittatietoJMSMessageListener(dataUpdater);
         final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
-        // subset of 60 stations
+        // subset of 100 stations
         List<Long> lotjuIds = weatherStationsWithLotjuId.keySet().stream().collect(Collectors.toList())
                                   .subList(0 , Math.min(100, weatherStationsWithLotjuId.size()));
         weatherStationsWithLotjuId.keySet().retainAll(lotjuIds);
@@ -78,12 +78,11 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                                 publishableSensors.subList(0, Math.min(29, publishableSensors.size()-1)),
                                 jmsMessageListener);
 
-
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * (long)(1000 * Math.PI);
+        final long maxHandleTime = testBurstsLeft * 500L;
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();
 

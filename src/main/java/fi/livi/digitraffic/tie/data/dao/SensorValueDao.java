@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import java.sql.JDBCType;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -65,8 +66,8 @@ public class SensorValueDao {
             .addValue("roadStationId", p.getRoadStationId())
             .addValue("sensorLotjuId", p.getSensorLotjuId())
             .addValue("stationType", p.getStationType())
-            .addValue("timeWindowStart", p.getTimeWindowStart())
-            .addValue("timeWindowEnd", p.getTimeWindowEnd()))
+            .addValue("timeWindowStart", p.getTimeWindowStart(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
+            .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber()))
             .toArray(MapSqlParameterSource[]::new);
     }
 }
