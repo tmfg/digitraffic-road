@@ -75,14 +75,14 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         weatherStationsWithLotjuId.keySet().retainAll(lotjuIds);
         // Generate previous sensor values so that sensor update is mostly only updating old values
         generateSensorValuesFor(weatherStationsWithLotjuId.values(),
-                                publishableSensors.subList(0, Math.min(29, publishableSensors.size()-1)),
+                                publishableSensors.subList(0, publishableSensors.size()-1),
                                 jmsMessageListener);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * 500L;
+        final long maxHandleTime = testBurstsLeft * 1000L;
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();
 

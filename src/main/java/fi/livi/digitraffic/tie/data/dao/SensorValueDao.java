@@ -62,7 +62,7 @@ public class SensorValueDao {
     private static MapSqlParameterSource[] getMapSqlParameterSources(final List<SensorValueUpdateParameterDto> params) {
         return params.stream().map(p -> new MapSqlParameterSource()
             .addValue("value", p.getValue())
-            .addValue("measured", p.getMeasured())
+            .addValue("measured", p.getMeasured(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
             .addValue("roadStationId", p.getRoadStationId())
             .addValue("sensorLotjuId", p.getSensorLotjuId())
             .addValue("stationType", p.getStationType())
