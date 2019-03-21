@@ -82,6 +82,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
+        // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
         final long maxHandleTime = testBurstsLeft * 3000L;
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();

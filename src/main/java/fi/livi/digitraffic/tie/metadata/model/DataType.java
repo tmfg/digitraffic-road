@@ -77,10 +77,4 @@ public enum DataType {
         throw new IllegalArgumentException(String.format("Allowed RoadStationTypes are %s and %s",
             RoadStationType.TMS_STATION, RoadStationType.WEATHER_STATION));
     }
-
-    public static void main(String[] args) {
-        System.out.println(getSensorValueMeasuredDataType(RoadStationType.TMS_STATION));
-        System.out.println(getSensorValueMeasuredDataType(RoadStationType.WEATHER_STATION));
-        System.out.println(getSensorValueMeasuredDataType(RoadStationType.CAMERA_STATION));
-    }
 }

@@ -48,7 +48,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     private DataStatusService dataStatusService;
 
     @Before
-    public void update() {
+    public void updateDataUpdated() {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
     }

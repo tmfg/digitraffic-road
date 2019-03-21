@@ -93,7 +93,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        // This just an value got by running tests. Purpose is only to notice if there is big change in performance
+        // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
         long maxHandleTime = testBurstsLeft * 1100;
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
@@ -143,8 +143,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 e.printStackTrace();
             }
         }
-
-        log.error("Last updated {}", time);
 
         log.info("Handle tms data total tookMs={} and maxMs={} result={}",
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
