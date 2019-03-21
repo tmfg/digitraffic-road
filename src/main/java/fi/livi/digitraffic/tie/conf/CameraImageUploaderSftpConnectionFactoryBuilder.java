@@ -74,7 +74,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
 
     private DefaultSftpSessionFactory getDefaultSftpSessionFactory() throws IOException {
         // Create "shared session" session factory then it must be used with cached session factory
-        DefaultSftpSessionFactory defaultSftpSessionFactory = new DefaultSftpSessionFactory(true);
+        DefaultSftpSessionFactory defaultSftpSessionFactory = new DefaultSftpSessionFactory(false);
         defaultSftpSessionFactory.setHost(host);
         defaultSftpSessionFactory.setPort(port);
         defaultSftpSessionFactory.setPrivateKey(getPrivateKey());
