@@ -82,7 +82,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * 1000L;
+        final long maxHandleTime = testBurstsLeft * 3000L;
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();
 
