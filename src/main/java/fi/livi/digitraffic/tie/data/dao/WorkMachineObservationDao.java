@@ -17,10 +17,7 @@ import org.springframework.stereotype.Repository;
 public class WorkMachineObservationDao {
     private static final Logger log = LoggerFactory.getLogger(WorkMachineObservationDao.class);
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-
     @PersistenceContext
-    @Autowired
     EntityManager entityManager;
 
     private static final String INSERT_WITH_OBSERVATION_TIME =
@@ -37,8 +34,8 @@ public class WorkMachineObservationDao {
 
 
     @Autowired
-    public WorkMachineObservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public WorkMachineObservationDao(final EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     public int addCoordinates(final long observationId,
