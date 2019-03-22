@@ -45,6 +45,11 @@ public class SensorValueDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * @param params
+     * @return the number of rows updated for each param. Zero value in return array means that
+     *         the parameter in question didn't cause update -> should be called with inserted instead.
+     */
     public int[] updateSensorData(final List<SensorValueUpdateParameterDto> params) {
 
         final MapSqlParameterSource[] batchData = getMapSqlParameterSources(params);
@@ -52,6 +57,10 @@ public class SensorValueDao {
         return jdbcTemplate.batchUpdate(UPDATE, batchData);
     }
 
+    /**
+     * @param params
+     * @return the number of rows inserted for each param.
+     */
     public int[] insertSensorData(final List<SensorValueUpdateParameterDto> params) {
 
         final MapSqlParameterSource[] batchData = getMapSqlParameterSources(params);

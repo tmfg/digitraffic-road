@@ -19,16 +19,13 @@ import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionA
 
 @Service
 public class ForecastSectionDataService {
-    private final DataUpdatedRepository dataUpdatedRepository;
 
     private final ForecastSectionWeatherDao forecastSectionWeatherDao;
     private final DataStatusService dataStatusService;
 
     @Autowired
-    public ForecastSectionDataService(final DataUpdatedRepository dataUpdatedRepository,
-                                      final ForecastSectionWeatherDao forecastSectionWeatherDao,
+    public ForecastSectionDataService(final ForecastSectionWeatherDao forecastSectionWeatherDao,
                                       final DataStatusService dataStatusService) {
-        this.dataUpdatedRepository = dataUpdatedRepository;
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
         this.dataStatusService = dataStatusService;
     }
