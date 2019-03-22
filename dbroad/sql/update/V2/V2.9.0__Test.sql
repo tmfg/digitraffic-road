@@ -1,0 +1,3 @@
+ALTER TABLE sensor_value SET UNLOGGED;
+
+--ALTER TABLE sensor_value SET LOGGED;
