@@ -36,7 +36,6 @@ import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
@@ -123,8 +122,8 @@ public class RoadStationSensorService {
             onlyUpdateInfo ?
                 Collections.emptyList() :
                 RoadStationSensorDtoConverter.convertWeatherSensors(findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
     }
 
     @Transactional(readOnly = true)
@@ -133,8 +132,8 @@ public class RoadStationSensorService {
             onlyUpdateInfo ?
                 Collections.emptyList() :
                 RoadStationSensorDtoConverter.convertTmsSensors(findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
     }
 
     @Transactional(readOnly = true)
@@ -148,9 +147,13 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public ZonedDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTimeAtUtc(
-                roadStationSensorValueDtoRepository.getLatestMeasurementTime(roadStationType));
+    public ZonedDateTime getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
+        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueUpdatedDataType(roadStationType));
+    }
+
+    @Transactional(readOnly = true)
+    public ZonedDateTime getLatestSensorValueMeasurementTime(final RoadStationType roadStationType) {
+        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueMeasuredDataType(roadStationType));
     }
 
     @Transactional(readOnly = true)
@@ -198,12 +201,7 @@ public class RoadStationSensorService {
     public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType.getTypeNumber(),
-                DateHelper.toDate(updatedAfter));
-    }
-
-    @Transactional(readOnly = true)
-    public ZonedDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTimeAtUtc(sensorValueRepository.getLastUpdated(roadStationType));
+                updatedAfter.toInstant());
     }
 
     /**

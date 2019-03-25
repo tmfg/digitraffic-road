@@ -59,6 +59,6 @@ public class ForecastSectionV2MetadataUpdater {
         forecastSectionV2MetadataDao.insertLinkIds(metadata.getFeatures());
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime());
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime().toInstant());
     }
 }

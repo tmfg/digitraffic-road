@@ -33,7 +33,7 @@ public class WeatherService {
     @Transactional(readOnly = true)
     public WeatherRootDataObjectDto findPublishableWeatherData(final boolean onlyUpdateInfo) {
 
-        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
 
         if (onlyUpdateInfo) {
             return new WeatherRootDataObjectDto(updated);
@@ -61,7 +61,7 @@ public class WeatherService {
             throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
         }
 
-        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
 
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllPublishableRoadStationSensorValues(roadStationNaturalId,

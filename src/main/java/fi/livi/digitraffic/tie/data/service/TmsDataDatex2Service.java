@@ -34,7 +34,7 @@ public class TmsDataDatex2Service {
 
     @Transactional(readOnly = true)
     public TmsDataDatex2Response findPublishableTmsDataDatex2() {
-        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 
         final List<TmsStation> tmsStations = tmsStationDatex2Service.findAllPublishableTmsStations();
 

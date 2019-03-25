@@ -138,13 +138,5 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("afterDate")
-            final Date afterDate);
-
-    @Query(value =
-             "SELECT max(sv.sensorValueMeasured) AS updatedTime\n" +
-             "FROM SensorValue sv\n " +
-             "INNER JOIN sv.roadStationSensor s \n" +
-             "WHERE s.roadStationType = :roadStationType")
-    Instant getLatestMeasurementTime(@Param("roadStationType")
-                                     final RoadStationType roadStationType);
+            final Instant afterDate);
 }

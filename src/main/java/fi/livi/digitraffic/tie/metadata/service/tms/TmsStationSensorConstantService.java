@@ -56,8 +56,8 @@ public class TmsStationSensorConstantService {
 
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestMeasurementTime() {
-        final ZonedDateTime dataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_SENSOR_CONSTANT_METADATA);
+        final ZonedDateTime dataUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_SENSOR_CONSTANT_METADATA);
         return DateHelper.getNewest(dataUpdated, metadataUpdated);
     }
 }
