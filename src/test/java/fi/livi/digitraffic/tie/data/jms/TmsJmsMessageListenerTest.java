@@ -94,7 +94,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
-        long maxHandleTime = testBurstsLeft * 1100;
+        long maxHandleTime = testBurstsLeft * 1500;
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
 
