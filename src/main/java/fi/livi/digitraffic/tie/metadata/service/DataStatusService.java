@@ -48,15 +48,15 @@ public class DataStatusService {
         final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType);
         log.info("Update DataUpdated, type={}, updated={}", dataType, updated);
         if (dataUpdated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTime(updated), null));
+            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTimeAtUtc(updated), null));
         } else {
-            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTime(updated));
+            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTimeAtUtc(updated));
         }
     }
 
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
-        return DateHelper.toZonedDateTime(dataUpdatedRepository.findUpdatedTime(dataType));
+        return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
     }
 
     @Transactional(readOnly = true)
