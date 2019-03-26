@@ -314,7 +314,7 @@
             <plugin>
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
-                <version>4.3.0</version>
+                <version>4.3.1</version>
                 <configuration>
                     <excludes>
                         <exclude>fi/livi/digitraffic/tie/RoadApplication.java</exclude>
