@@ -56,7 +56,7 @@ public class SensorValue {
     /**
      * Default constructor fo Hibernate
      */
-    protected SensorValue() {
+    public SensorValue() {
     }
 
     public SensorValue(final RoadStation roadStation, final RoadStationSensor roadStationSensor, final double value, final ZonedDateTime sensorValueMeasured) {

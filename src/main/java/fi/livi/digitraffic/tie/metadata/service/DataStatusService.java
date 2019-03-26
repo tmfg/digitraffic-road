@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
@@ -30,7 +32,7 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType);
         log.info("Update DataUpdated, type={}, version={}", dataType, version);
 
         if (updated == null) {
@@ -42,20 +44,23 @@ public class DataStatusService {
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, final ZonedDateTime updated) {
-        final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType.name());
+    public void updateDataUpdated(final DataType dataType, final Instant updated) {
+        final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType);
         log.info("Update DataUpdated, type={}, updated={}", dataType, updated);
-
         if (dataUpdated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, updated, null));
+            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTime(updated), null));
         } else {
-            dataUpdated.setUpdatedTime(updated);
+            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTime(updated));
         }
     }
 
     @Transactional(readOnly = true)
-    public ZonedDateTime findDataUpdatedTimeByDataType(final DataType dataType) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType.name());
-        return updated != null ? updated.getUpdatedTime() : null;
+    public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
+        return DateHelper.toZonedDateTime(dataUpdatedRepository.findUpdatedTime(dataType));
+    }
+
+    @Transactional(readOnly = true)
+    public Instant getTransactionStartTime() {
+        return dataUpdatedRepository.getTransactionStartTime();
     }
 }

@@ -93,6 +93,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
+        // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
         long maxHandleTime = testBurstsLeft * 1500;
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
@@ -152,7 +153,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Test
     public void test2LastUpdated() {
-        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.TMS_STATION);
+        final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
         ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);

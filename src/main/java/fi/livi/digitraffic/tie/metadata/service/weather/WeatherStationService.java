@@ -152,14 +152,14 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     }
 
     private ZonedDateTime getMetadataLastUpdated() {
-        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_SENSOR_METADATA);
-        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_METADATA);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_SENSOR_METADATA);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA);
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 
     public ZonedDateTime getMetadataLastChecked() {
-        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
-        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.WEATHER_STATION_METADATA_CHECK);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA_CHECK);
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

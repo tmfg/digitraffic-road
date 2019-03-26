@@ -50,7 +50,7 @@ public class TmsDataService {
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public TmsRootDataObjectDto findPublishableTmsData(boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 
         if (onlyUpdateInfo) {
             return new TmsRootDataObjectDto(updated);
@@ -79,7 +79,7 @@ public class TmsDataService {
         if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }
-        final ZonedDateTime updated = roadStationSensorService.getLatestMeasurementTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 
         final List<SensorValueDto> values =
                 roadStationSensorService.findAllPublishableRoadStationSensorValues(roadStationNaturalId,

@@ -21,6 +21,6 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) {
         final Instant messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
 
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA, DateHelper.toZonedDateTime(messageTimestamp));
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA, messageTimestamp);
     }
 }

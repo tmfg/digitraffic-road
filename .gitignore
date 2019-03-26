@@ -17,7 +17,9 @@
 **/*.log
 **/*.log.gz
 **/*.tmp
+**/*no_commit*
 
 # SchemaSpyn generoimat schemat ja kirjastot
 /dbroad/schemaspy/schema
 /dbroad/schemaspy/lib
+/dbroad/flyway-dev/flyway-test.conf
