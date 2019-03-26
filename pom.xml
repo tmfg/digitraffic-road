@@ -470,6 +470,7 @@
                     <sourceDirectory>${basedir}/src/main/resources/schemas/HARJA</sourceDirectory>
                     <targetPackage>fi.livi.digitraffic.tie.harja</targetPackage>
                     <outputDirectory>${project.build.directory}/generated-sources/json</outputDirectory>
+                    <useCommonsLang3>true</useCommonsLang3>
                 </configuration>
                 <executions>
                     <execution>
