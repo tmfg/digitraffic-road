@@ -19,9 +19,8 @@ public class ToStringHelperTest extends AbstractTest {
         kamera.setId(741L);
         kamera.setVanhaId(1501);
         kamera.setNimi("OLD_vt6_Lapinjärvi");
-        Assert.assertEquals("KameraVO: {\"lotjuId\":741,\"vanhaId\":1501,\"nimi\":\"OLD_vt6_Lapinjärvi\"}", ToStringHelper.toString(kamera));
+        Assert.assertEquals("KameraVO: {\"lotjuId\":741,\"vanhaId\":1501,\"nimi\":\"OLD_vt6_Lapinj\\u00E4rvi\"}", ToStringHelper.toString(kamera));
     }
-
 
     @Test
     public void testLamasemaToString() {
