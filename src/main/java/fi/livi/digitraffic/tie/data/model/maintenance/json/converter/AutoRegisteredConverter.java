@@ -10,7 +10,7 @@ import org.springframework.core.convert.support.GenericConversionService;
 public abstract class AutoRegisteredConverter<S, T> implements Converter<S, T> {
 
     @Autowired
-    @Qualifier("mvcConversionService")
+    @Qualifier("conversionService")
     private GenericConversionService conversionService;
 
     @SuppressWarnings("unused")

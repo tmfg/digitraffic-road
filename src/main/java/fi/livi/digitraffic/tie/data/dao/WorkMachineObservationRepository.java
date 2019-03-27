@@ -12,28 +12,9 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 
 public interface WorkMachineObservationRepository extends JpaRepository<WorkMachineObservation, Long> {
 
-    List<WorkMachineObservation> findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedAsc(final long workMachineHarjaId, final long contractHarjaId);
+    List<WorkMachineObservation> findByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedAscIdAsc(final long workMachineHarjaId, final long contractHarjaId);
 
-    WorkMachineObservation findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedDesc(final long workMachineHarjaId, final long contractHarjaId);
-
-    @Modifying
-    @Query(value =
-               "INSERT INTO WORK_MACHINE_OBSERVATION_COORDINATE (work_machine_observation_id, order_number, longitude, latitude, observation_time)\n" +
-               "SELECT :observationId , COALESCE(MAX(order_number) + 1, 0), :longitude, :latitude, coalesce(:observationTime, null)::timestamptz\n" +
-               "FROM WORK_MACHINE_OBSERVATION_COORDINATE\n" +
-               "WHERE work_machine_observation_id=:observationId",
-           nativeQuery = true)
-    int addCoordinates(final long observationId,
-                       final BigDecimal longitude,
-                       final BigDecimal latitude,
-                       final Timestamp observationTime);
-
-    @Query(value =
-               "SELECT COALESCE(MAX(order_number), -1)\n" +
-               "FROM WORK_MACHINE_OBSERVATION_COORDINATE\n" +
-               "WHERE work_machine_observation_id = :observationId",
-           nativeQuery = true)
-    int getLastCoordinateOrder(final long observationId);
+    WorkMachineObservation findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByUpdatedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
     @Modifying
     @Query(value =

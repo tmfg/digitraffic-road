@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.model.maintenance;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import javax.persistence.OrderColumn;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
 @Entity
@@ -38,17 +38,17 @@ public class WorkMachineObservation {
         public static WorkMachineObservationType valueOf(Geometry.Type geometryType) {
             return valueOf(geometryType.name());
         }
-    }
 
+    }
     @Id
     @GenericGenerator(name = "SEQ_WORK_MACHINE_OBSERVATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_WORK_MACHINE_OBSERVATION"))
     @GeneratedValue(generator = "SEQ_WORK_MACHINE_OBSERVATION")
     private Long id;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="WORK_MACHINE_ID", referencedColumnName = "ID", nullable = false, updatable = false)
     private WorkMachine workMachine;
-
     @OneToMany(mappedBy = "workMachineObservation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderColumn(name = "order_number", nullable = false, updatable = false)
     private List<WorkMachineObservationCoordinate> coordinates = new ArrayList<>();
@@ -63,6 +63,9 @@ public class WorkMachineObservation {
 
     @Column
     private ZonedDateTime updated;
+
+    @Column
+    private Boolean transition;
 
     public WorkMachineObservation() {
     }
@@ -127,11 +130,23 @@ public class WorkMachineObservation {
         setUpdated(ZonedDateTime.now());
     }
 
-    public void addCoordinates(final List<Double> coordinateList, final ZonedDateTime observationTime) {
-        final WorkMachineObservationCoordinate coordinate =
-            new WorkMachineObservationCoordinate(new WorkMachineObservationCoordinatePK(this.getId(), coordinates.size()),
-                                                 BigDecimal.valueOf(coordinateList.get(0)), BigDecimal.valueOf(coordinateList.get(1)), observationTime);
 
-        coordinates.add(coordinate);
+    /**
+     * Observation is transition if it doesn't have tasks
+     */
+    public void setTransition(final boolean transition) {
+        this.transition = transition;
+    }
+
+    /**
+     * @return Observation is transition if it doesn't have tasks
+     */
+    public boolean isTransition() {
+        return transition;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringExcluded(this, "coordinates");
     }
 }

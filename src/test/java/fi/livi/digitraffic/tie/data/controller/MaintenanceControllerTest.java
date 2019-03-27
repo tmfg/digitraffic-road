@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +23,6 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoor
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
-import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -77,7 +75,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
         postTrackingJson("linestring_tracking_3.json");
 
         maintenanceDataService.updateWorkMachineTrackingTypes();
-        maintenanceDataService.handleUnhandledWorkMachineTrakkings();
+        maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
         entityManager.flush();
         entityManager.clear();
 

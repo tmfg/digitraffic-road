@@ -16,6 +16,8 @@ import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Entity
 public class WorkMachine {
 
@@ -81,5 +83,10 @@ public class WorkMachine {
 
     public void setObservations(List<WorkMachineObservation> observations) {
         this.observations = observations;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringExcluded(this, "observations");
     }
 }

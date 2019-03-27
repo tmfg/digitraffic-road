@@ -1,0 +1,42 @@
+{
+    "otsikko": {
+        "lahettaja": {
+            "jarjestelma": "Urakoitsijan järjestelmä",
+            "organisaatio": {
+                "nimi": "Urakoitsija viivageometrialla",
+                "ytunnus": "6547365-0"
+            }
+        },
+        "viestintunniste": {
+            "id": 123
+        },
+        "lahetysaika": "2019-01-30T12:05:00+02:00"
+    },
+    "havainnot": [
+        {
+            "havainto": {
+                "tyokone": {
+                    "id": 12345,
+                    "tyokonetyyppi": "aura-auto"
+                },
+                "sijainti": {
+                    "viivageometria": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [293371, 6889101],
+                            [293381, 6889111],
+                            [293391, 6889121],
+                            [293401, 6889131]
+                        ]
+                    }
+                },
+                "suunta": 90,
+                "havaintoaika": "2019-01-30T12:15:00+02:00",
+                "urakkaid": 999999,
+                "suoritettavatTehtavat": [
+                    "auraus ja sohjonpoisto"
+                ]
+            }
+        }
+    ]
+}

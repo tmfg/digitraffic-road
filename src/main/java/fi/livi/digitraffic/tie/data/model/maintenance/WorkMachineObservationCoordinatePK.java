@@ -13,10 +13,10 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 @Embeddable
 public class WorkMachineObservationCoordinatePK implements Serializable {
 
-    @Column(name = "WORK_MACHINE_OBSERVATION_ID", nullable = false)
+    @Column(name = "WORK_MACHINE_OBSERVATION_ID", nullable = false, insertable = false, updatable=false)
     private Long workMachineObservationId;
 
-    @Column(name = "ORDER_NUMBER", nullable = false)
+    @Column(name = "ORDER_NUMBER", nullable = false, insertable = false, updatable=false)
     private Integer orderNumber;
 
     public WorkMachineObservationCoordinatePK() {

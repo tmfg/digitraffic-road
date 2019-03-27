@@ -11,6 +11,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.jmx.export.MBeanExporter;
@@ -131,5 +133,13 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         exporter.setExcludedBeans("dataSource", "quartzDataSource");
 
         return exporter;
+    }
+
+    @Bean("conversionService")
+    public org.springframework.core.convert.ConversionService getConversionService() {
+        ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
+        bean.afterPropertiesSet();
+        ConversionService object = bean.getObject();
+        return object;
     }
 }
