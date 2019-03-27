@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 

@@ -1,10 +1,11 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja.converter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.json.Caption;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.Sender;
+import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.Caption;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.Sender;
 import fi.livi.digitraffic.tie.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTrackingImmutable;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingImmutable;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 public class MaintenanceDataServiceTest extends AbstractTest {

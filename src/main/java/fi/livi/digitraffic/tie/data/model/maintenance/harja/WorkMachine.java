@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance.json;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja;
 
 import java.io.Serializable;
 
@@ -15,36 +15,38 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "businessId"
+    "id",
+    "type"
 })
-public class Organisation implements Serializable
+public class WorkMachine implements Serializable
 {
-    private String name;
 
     @JsonProperty(required = true)
-    private String businessId;
+    private Integer id;
+
+    @JsonProperty(required = true)
+    private String type;
 
     @JsonCreator
-    public Organisation(final String name, final String businessId) {
-        this.name = name;
-        this.businessId = businessId;
+    public WorkMachine(final Integer id, final String type) {
+        this.id = id;
+        this.type = type;
     }
 
-    public String getName() {
-        return name;
+    public Integer getId() {
+        return id;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setId(final Integer id) {
+        this.id = id;
     }
 
-    public String getBusinessId() {
-        return businessId;
+    public String getType() {
+        return type;
     }
 
-    public void setBusinessId(final String businessId) {
-        this.businessId = businessId;
+    public void setType(final String type) {
+        this.type = type;
     }
 
     @Override
@@ -58,23 +60,23 @@ public class Organisation implements Serializable
             return true;
         }
 
-        if (!(o instanceof Organisation)) {
+        if (!(o instanceof WorkMachine)) {
             return false;
         }
 
-        Organisation that = (Organisation) o;
+        WorkMachine that = (WorkMachine) o;
 
         return new EqualsBuilder()
-            .append(getName(), that.getName())
-            .append(getBusinessId(), that.getBusinessId())
+            .append(getId(), that.getId())
+            .append(getType(), that.getType())
             .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-            .append(getName())
-            .append(getBusinessId())
+            .append(getId())
+            .append(getType())
             .toHashCode();
     }
 }

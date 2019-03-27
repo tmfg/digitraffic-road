@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTrackingImmutable;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingImmutable;
 
 @Repository
 public interface WorkMachineTrackingRepository extends JpaRepository<WorkMachineTracking, Long> {

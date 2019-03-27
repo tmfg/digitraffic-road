@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance.json;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;

@@ -1,9 +1,10 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja.converter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachine;
+import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachine;
 import fi.livi.digitraffic.tie.harja.Tyokone;
 
 @ConditionalOnWebApplication

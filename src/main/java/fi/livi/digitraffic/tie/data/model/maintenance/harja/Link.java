@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.data.model.maintenance.json;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja;
 
 import java.io.Serializable;
 
@@ -16,37 +16,36 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
-    "type"
+    "mValue"
 })
-public class WorkMachine implements Serializable
-{
+public class Link implements Serializable {
 
     @JsonProperty(required = true)
     private Integer id;
 
     @JsonProperty(required = true)
-    private String type;
+    private Integer mValue;
 
     @JsonCreator
-    public WorkMachine(final Integer id, final String type) {
+    public Link(final Integer id, final Integer mValue) {
         this.id = id;
-        this.type = type;
+        this.mValue = mValue;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(final Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public Integer getMValue() {
+        return mValue;
     }
 
-    public void setType(final String type) {
-        this.type = type;
+    public void setMValue(Integer mValue) {
+        this.mValue = mValue;
     }
 
     @Override
@@ -60,15 +59,15 @@ public class WorkMachine implements Serializable
             return true;
         }
 
-        if (!(o instanceof WorkMachine)) {
+        if (!(o instanceof Link)) {
             return false;
         }
 
-        WorkMachine that = (WorkMachine) o;
+        Link link = (Link) o;
 
         return new EqualsBuilder()
-            .append(getId(), that.getId())
-            .append(getType(), that.getType())
+            .append(getId(), link.getId())
+            .append(mValue, link.mValue)
             .isEquals();
     }
 
@@ -76,7 +75,7 @@ public class WorkMachine implements Serializable
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
             .append(getId())
-            .append(getType())
+            .append(mValue)
             .toHashCode();
     }
 }

@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjec
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.WorkMachineTracking;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;

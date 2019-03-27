@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.model.maintenance.json.converter;
+package fi.livi.digitraffic.tie.data.model.maintenance.harja.converter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.json.ObservationFeature;
-import fi.livi.digitraffic.tie.data.model.maintenance.json.ObservationProperties;
+import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationFeature;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationProperties;
 import fi.livi.digitraffic.tie.harja.Havainto;
 import fi.livi.digitraffic.tie.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
