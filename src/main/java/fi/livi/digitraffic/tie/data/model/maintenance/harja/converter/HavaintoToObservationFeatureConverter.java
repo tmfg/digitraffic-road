@@ -31,7 +31,7 @@ public class HavaintoToObservationFeatureConverter extends AutoRegisteredConvert
         return tgt;
     }
 
-    private Geometry resolveGeometry(Havainto src) {
+    private Geometry resolveGeometry(final Havainto src) {
 
         if (src.getSijainti() != null) {
             if (src.getSijainti().getViivageometria() != null) {
