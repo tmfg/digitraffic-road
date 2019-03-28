@@ -92,7 +92,12 @@ public class MaintenanceDataService {
 
     @Transactional(readOnly = true)
     public List<WorkMachineTrackingDto> findAllNotHandledWorkMachineTrackingsOldestFirst() {
-        return workMachineTrackingRepository.findByHandledIsNullOrderByCreatedAsc();
+        return findAllNotHandledWorkMachineTrackingsOldestFirst(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkMachineTrackingDto> findAllNotHandledWorkMachineTrackingsOldestFirst(final Integer maxToFind) {
+        return workMachineTrackingRepository.findUnhandeldOldestFirst(maxToFind);
     }
 
     @Transactional(readOnly = true)
@@ -120,12 +125,7 @@ public class MaintenanceDataService {
     @Transactional(readOnly = true)
     public Map<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> findUnhandledTrakkingsOldestFirstMappedByHarjaWorkMachineAndContract(final Integer maxToFind) {
 
-        // TODO limit max sise in the query
-        List<WorkMachineTrackingDto> allNotHandled = findAllNotHandledWorkMachineTrackingsOldestFirst();
-        if (maxToFind != null && allNotHandled.size() > maxToFind) {
-            allNotHandled = allNotHandled.subList(0, maxToFind);
-        }
-
+        List<WorkMachineTrackingDto> allNotHandled = findAllNotHandledWorkMachineTrackingsOldestFirst(maxToFind);
         Map<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> result = allNotHandled.stream()
             .flatMap(workMachineTracking -> workMachineTracking.getRecord().getObservationFeatureCollection().getFeatures().stream()
                 .map(f -> new ObservationFeatureWrapper(f, workMachineTracking.getId())))

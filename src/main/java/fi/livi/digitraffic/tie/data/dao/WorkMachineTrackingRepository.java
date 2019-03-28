@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +22,15 @@ public interface WorkMachineTrackingRepository extends JpaRepository<WorkMachine
            nativeQuery = true)
     int updateWorkMachineTrackingTypes();
 
+    List<WorkMachineTrackingDto> findByHandledIsNullOrderByCreatedAsc(final Pageable pageable);
     List<WorkMachineTrackingDto> findByHandledIsNullOrderByCreatedAsc();
+
+    default List<WorkMachineTrackingDto> findUnhandeldOldestFirst(final Integer maxResultCount) {
+        if (maxResultCount != null && maxResultCount > 0) {
+            return findByHandledIsNullOrderByCreatedAsc(PageRequest.of(0, maxResultCount));
+        }
+        return findByHandledIsNullOrderByCreatedAsc();
+    }
 
     @Modifying
     @Query(value = "UPDATE WORK_MACHINE_TRACKING\n" +
