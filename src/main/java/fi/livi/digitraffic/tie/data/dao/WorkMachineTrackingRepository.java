@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingImmutable;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingDto;
 
 @Repository
 public interface WorkMachineTrackingRepository extends JpaRepository<WorkMachineTracking, Long> {
@@ -20,7 +20,7 @@ public interface WorkMachineTrackingRepository extends JpaRepository<WorkMachine
            nativeQuery = true)
     int updateWorkMachineTrackingTypes();
 
-    List<WorkMachineTrackingImmutable> findByHandledIsNullOrderByCreatedAsc();
+    List<WorkMachineTrackingDto> findByHandledIsNullOrderByCreatedAsc();
 
     @Modifying
     @Query(value = "UPDATE WORK_MACHINE_TRACKING\n" +

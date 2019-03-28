@@ -33,7 +33,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationFeature;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.PerformedTask;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingImmutable;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingDto;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingRecord;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -91,7 +91,7 @@ public class MaintenanceDataService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkMachineTrackingImmutable> findAllNotHandledWorkMachineTrackingsOldestFirst() {
+    public List<WorkMachineTrackingDto> findAllNotHandledWorkMachineTrackingsOldestFirst() {
         return workMachineTrackingRepository.findByHandledIsNullOrderByCreatedAsc();
     }
 
@@ -121,7 +121,7 @@ public class MaintenanceDataService {
     public Map<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> findUnhandledTrakkingsOldestFirstMappedByHarjaWorkMachineAndContract(final Integer maxToFind) {
 
         // TODO limit max sise in the query
-        List<WorkMachineTrackingImmutable> allNotHandled = findAllNotHandledWorkMachineTrackingsOldestFirst();
+        List<WorkMachineTrackingDto> allNotHandled = findAllNotHandledWorkMachineTrackingsOldestFirst();
         if (maxToFind != null && allNotHandled.size() > maxToFind) {
             allNotHandled = allNotHandled.subList(0, maxToFind);
         }

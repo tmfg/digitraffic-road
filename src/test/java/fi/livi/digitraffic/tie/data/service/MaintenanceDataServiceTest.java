@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingImmutable;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingDto;
 import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
 
 public class MaintenanceDataServiceTest extends AbstractTest {
@@ -41,7 +42,7 @@ public class MaintenanceDataServiceTest extends AbstractTest {
     @Test
     public void findAllNotHandledWorkMachineTrackings() throws IOException {
         readTrackingJsonAndSave("timegap", 3);
-        List<WorkMachineTrackingImmutable> all =
+        List<WorkMachineTrackingDto> all =
             maintenanceDataService.findAllNotHandledWorkMachineTrackingsOldestFirst();
         log.info("all: {}", all);
     }
@@ -134,6 +135,19 @@ public class MaintenanceDataServiceTest extends AbstractTest {
         Assert.assertEquals(true, transition.isTransition());
         Assert.assertEquals(false, second.isTransition());
 
+    }
+
+    /**
+     * For development
+     */
+    @Rollback(false)
+    //@Test
+    public void developTestConvertUnhandledWorkMachineTrackingsInDbToObservations() {
+
+        Map<Pair<Integer, Integer>, List<MaintenanceDataService.ObservationFeatureWrapper>> unhandledMap =
+            maintenanceDataService.findUnhandledTrakkingsOldestFirstMappedByHarjaWorkMachineAndContract(200);
+
+        convertWorkMachineTrackingsToObservationsAndSave(unhandledMap);
     }
 
     private int convertWorkMachineTrackingsToObservationsAndSave(final Map<Pair<Integer, Integer>, List<MaintenanceDataService.ObservationFeatureWrapper>> unhandledMap) {
