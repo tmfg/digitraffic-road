@@ -103,7 +103,7 @@ public class MaintenanceDataServiceTest extends AbstractTest {
      * Tests for trackings with and without task will be divided to distinct observations
      */
     @Test
-    public void convertUnhandledWorkMachineTIdAscrackingsToObservationsWithMissingTask() throws IOException {
+    public void convertUnhandledWorkMachineTrackingsToObservationsWithMissingTask() throws IOException {
 
         readTrackingJsonAndSave("missingtask", 5);
 

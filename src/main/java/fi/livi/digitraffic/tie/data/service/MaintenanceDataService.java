@@ -151,7 +151,6 @@ public class MaintenanceDataService {
             WorkMachineObservation lastObservation =
                 findLastWorkMachineObservationByWorkMachineHarjaIdAndHarjaUrakkaId(harjaWorkMachineId, harjaContractId);
 
-            final Geometry.Type observationCurrentGeometryType = observationFeatureToHandle.getGeometry().getType();
             final ZonedDateTime observationTime = observationFeatureToHandle.getProperties().getObservationTime();
 
             final List<PerformedTask> currentPerformedTasks = observationFeatureToHandle.getProperties().getPerformedTasks();
@@ -160,8 +159,9 @@ public class MaintenanceDataService {
 
             if (createNewObservation)  {
                 final WorkMachine machine = getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, observationFeatureToHandle.getProperties().getWorkMachine().getType());
+                final Geometry.Type currentObservationGeometryType = observationFeatureToHandle.getGeometry().getType();
                 lastObservation = new WorkMachineObservation(machine, observationTime,
-                                                             WorkMachineObservationType.valueOf(observationCurrentGeometryType));
+                                                             WorkMachineObservationType.valueOf(currentObservationGeometryType));
             }
 
             lastObservation.setTransition(currentPerformedTasks.isEmpty());
@@ -173,38 +173,9 @@ public class MaintenanceDataService {
                 workMachineObservationRepository.save(lastObservation);
                 log.info("Created new: {}", lastObservation);
             }
-            final Long observationId = lastObservation.getId();
 
-            final List<WorkMachineTask.Task> currentTasks =
-                currentPerformedTasks.stream().map(task -> WorkMachineTask.Task.valueOf(task.name())).collect(Collectors.toList());
+            addCoordinatesToObservationInDb(observationFeatureToHandle, lastObservation);
 
-            if (Geometry.Type.LineString.equals(observationCurrentGeometryType)) {
-                List<List<Double>> lineStringCoordinates = (List<List<Double>>) observationFeatureToHandle.getGeometry().getCoordinates();
-                Iterator<List<Double>> coordinateIterator = lineStringCoordinates.iterator();
-                while (coordinateIterator.hasNext()) {
-                    List<Double> coordinates = coordinateIterator.next();
-                    if (!coordinateIterator.hasNext()) {
-                        // Add time only to last item of list as it's closest to right
-                        addNewCoordinateInDb(observationId, coordinates, observationTime);
-                    } else {
-                        addNewCoordinateInDb(observationId, coordinates, null);
-                    }
-                    addNewTasksToLastCoordinateInDb(currentTasks, observationId);
-                }
-
-                if (lastObservation.getType().equals(WorkMachineObservationType.Point)) {
-                    lastObservation.setObservationType(WorkMachineObservationType.LineString);
-                    log.info("Updated to LineString Observation {}", lastObservation);
-                }
-            } else if (Geometry.Type.Point.equals(observationCurrentGeometryType)) {
-                if (lastObservation.getType().equals(WorkMachineObservationType.Point)) {
-                    final List<Double> pointCoordinates = (List<Double>) observationFeatureToHandle.getGeometry().getCoordinates();
-                    addNewCoordinateInDb(observationId, pointCoordinates, observationTime);
-                    addNewTasksToLastCoordinateInDb(currentTasks, observationId);
-                } else {
-                    log.info("Observation is already LineString type, not adding Point coordinates");
-                }
-            }
             workMachineObservationRepository.save(lastObservation);
             workMachineTrackingRepository.markHandled(workMachineTrackingId);
             log.info("Saved: {}", ToStringHelper.toStringFull(lastObservation, "coordinates"));
@@ -213,6 +184,52 @@ public class MaintenanceDataService {
         log.info("method=convertUnhandledWorkMachineTrackingsToObservations urakka={} tyokone={} unhandledCount={} observations={}", harjaContractId, harjaWorkMachineId, observationFeatures.size(), ToStringHelper.toStringFull(observationFeatures));
 
         return observationFeatures.size();
+    }
+
+    /**
+     * Takes coordinates from parameter observationFeatureFrom and adds them to toObservation by inserting
+     * them to db. Coordinates are not added directly to toObservation for performance reasons.
+     * @param observationFeatureFrom Feature containing coordinates in Geometry object
+     * @param toObservation to add coordinates for in db
+     */
+    private void addCoordinatesToObservationInDb(final ObservationFeature observationFeatureFrom,
+                                                 final WorkMachineObservation toObservation) {
+
+        final ZonedDateTime observationTime = observationFeatureFrom.getProperties().getObservationTime();
+        final Geometry.Type currentObservationGeometryType = observationFeatureFrom.getGeometry().getType();
+        final List<PerformedTask> currentPerformedTasks = observationFeatureFrom.getProperties().getPerformedTasks();
+        final Long observationId = toObservation.getId();
+
+        final List<WorkMachineTask.Task> currentTasks =
+            currentPerformedTasks.stream().map(task -> WorkMachineTask.Task.valueOf(task.name())).collect(Collectors.toList());
+
+        if (Geometry.Type.LineString.equals(currentObservationGeometryType)) {
+            List<List<Double>> lineStringCoordinates = (List<List<Double>>) observationFeatureFrom.getGeometry().getCoordinates();
+            Iterator<List<Double>> coordinateIterator = lineStringCoordinates.iterator();
+            while (coordinateIterator.hasNext()) {
+                List<Double> coordinates = coordinateIterator.next();
+                if (!coordinateIterator.hasNext()) {
+                    // Add time only to last item of list as it's closest to right
+                    addNewCoordinateInDb(observationId, coordinates, observationTime);
+                } else {
+                    addNewCoordinateInDb(observationId, coordinates, null);
+                }
+                addNewTasksToLastCoordinateInDb(currentTasks, observationId);
+            }
+
+            if (toObservation.getType().equals(WorkMachineObservationType.Point)) {
+                toObservation.setObservationType(WorkMachineObservationType.LineString);
+                log.info("Updated to LineString Observation {}", toObservation);
+            }
+        } else if (Geometry.Type.Point.equals(currentObservationGeometryType)) {
+            if (toObservation.getType().equals(WorkMachineObservationType.Point)) {
+                final List<Double> pointCoordinates = (List<Double>) observationFeatureFrom.getGeometry().getCoordinates();
+                addNewCoordinateInDb(observationId, pointCoordinates, observationTime);
+                addNewTasksToLastCoordinateInDb(currentTasks, observationId);
+            } else {
+                log.info("Observation is already LineString type, not adding Point coordinates");
+            }
+        }
     }
 
     /**
@@ -229,7 +246,7 @@ public class MaintenanceDataService {
         // * There is no previous observation
         // * Observation changes from transition to work with tasks (or opposite)
         // * Time between observations is too long between observations with task
-        // Don't care if transitions timegap is too long, we only wan't to track
+        // Don't care if transitions time gap is too long, we only wan't to track
         // observations with tasks.
         if (lastObservation == null) {
             log.info("method=isNewObservationNeeded Create new observation as previous doesn't exist");
