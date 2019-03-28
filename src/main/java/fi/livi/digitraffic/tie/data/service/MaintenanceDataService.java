@@ -242,6 +242,7 @@ public class MaintenanceDataService {
                                            final ZonedDateTime currentObservationTime) {
         final boolean currentIsTransition = currentPerformedTasks.isEmpty();
         final boolean lastIsTransition = lastObservation != null ? lastObservation.isTransition() : false;
+        // * TODO: if machine stays on same place for a long time then task has ended (30 min?)
         // Create new if
         // * There is no previous observation
         // * Observation changes from transition to work with tasks (or opposite)
