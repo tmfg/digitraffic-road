@@ -37,7 +37,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
 
         final int recordsBefore = maintenanceDataService.findAll().size();
 
-        postTrackingJson("seuranta-piste.json");
+        postTrackingJson("pisteseuranta.json");
 
         final int recordsAfter = maintenanceDataService.findAll().size();
         Assert.assertEquals(recordsBefore+1, recordsAfter);
@@ -48,7 +48,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
 
         final int recordsBefore = maintenanceDataService.findAll().size();
 
-        postTrackingJson("seuranta-viivageometria.json");
+        postTrackingJson("viivageometriaseuranta.json");
 
         final List<WorkMachineTracking> all = maintenanceDataService.findAll();
         Assert.assertEquals(recordsBefore+1, all.size());
@@ -60,7 +60,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
 
         final int recordsBefore = maintenanceDataService.findAll().size();
 
-        postTracking("seuranta-piste.json", null, status().is5xxServerError());
+        postTracking("pisteseuranta.json", null, status().is5xxServerError());
 
         final int recordsAfter = maintenanceDataService.findAll().size();
         Assert.assertEquals(recordsBefore, recordsAfter);
@@ -118,7 +118,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
     }
 
     private void postTracking(final String fileName, final MediaType mediaType, final ResultMatcher expectResult) throws Exception {
-        final String jsonContent = readResourceContent("classpath:harja/" + fileName);
+        final String jsonContent = readResourceContent("classpath:harja/controller/" + fileName);
 
         final MockHttpServletRequestBuilder post = post(RoadApplicationConfiguration.API_V1_BASE_PATH +
             RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.WORK_MACHINE_TRACKING_PATH)

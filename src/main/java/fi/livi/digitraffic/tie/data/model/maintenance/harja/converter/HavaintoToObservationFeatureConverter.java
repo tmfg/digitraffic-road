@@ -40,7 +40,7 @@ public class HavaintoToObservationFeatureConverter extends AutoRegisteredConvert
                 coords.stream().map(l -> {
                     final ArrayList<Double> list = new ArrayList<Double>();
                     for (Object o : l) {
-                        list.add( (double) (int) o );
+                        list.add( Double.valueOf( (Integer) o ));
                     }
                     return list;
                 }).collect(Collectors.toList());

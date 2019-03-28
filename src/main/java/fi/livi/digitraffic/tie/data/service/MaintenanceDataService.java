@@ -203,18 +203,22 @@ public class MaintenanceDataService {
         final List<WorkMachineTask.Task> currentTasks =
             currentPerformedTasks.stream().map(task -> WorkMachineTask.Task.valueOf(task.name())).collect(Collectors.toList());
 
+        int nextCoordinateOrder = workMachineObservationDao.getLastCoordinateOrder(observationId) + 1;
+
         if (Geometry.Type.LineString.equals(currentObservationGeometryType)) {
             List<List<Double>> lineStringCoordinates = (List<List<Double>>) observationFeatureFrom.getGeometry().getCoordinates();
             Iterator<List<Double>> coordinateIterator = lineStringCoordinates.iterator();
             while (coordinateIterator.hasNext()) {
+
                 List<Double> coordinates = coordinateIterator.next();
                 if (!coordinateIterator.hasNext()) {
                     // Add time only to last item of list as it's closest to right
-                    addNewCoordinateInDb(observationId, coordinates, observationTime);
+                    addNewCoordinateInDb(observationId, nextCoordinateOrder, coordinates, observationTime);
                 } else {
-                    addNewCoordinateInDb(observationId, coordinates, null);
+                    addNewCoordinateInDb(observationId, nextCoordinateOrder, coordinates, null);
                 }
-                addNewTasksToLastCoordinateInDb(currentTasks, observationId);
+                addNewTasksToCoordinateInDb(observationId, nextCoordinateOrder, currentTasks);
+                nextCoordinateOrder++;
             }
 
             if (toObservation.getType().equals(WorkMachineObservationType.Point)) {
@@ -224,8 +228,8 @@ public class MaintenanceDataService {
         } else if (Geometry.Type.Point.equals(currentObservationGeometryType)) {
             if (toObservation.getType().equals(WorkMachineObservationType.Point)) {
                 final List<Double> pointCoordinates = (List<Double>) observationFeatureFrom.getGeometry().getCoordinates();
-                addNewCoordinateInDb(observationId, pointCoordinates, observationTime);
-                addNewTasksToLastCoordinateInDb(currentTasks, observationId);
+                addNewCoordinateInDb(observationId, nextCoordinateOrder, pointCoordinates, observationTime);
+                addNewTasksToCoordinateInDb(observationId, nextCoordinateOrder, currentTasks);
             } else {
                 log.info("Observation is already LineString type, not adding Point coordinates");
             }
@@ -266,18 +270,18 @@ public class MaintenanceDataService {
         return false;
     }
 
-    private void addNewTasksToLastCoordinateInDb(List<WorkMachineTask.Task> currentTasks,
-                                                 Long observationId) {
+    private void addNewTasksToCoordinateInDb(final long observationId, final int orderNumber,
+                                             final List<WorkMachineTask.Task> currentTasks) {
         try {
             currentTasks.forEach(t ->
-                workMachineObservationRepository.addCoordinateTaskToLastCoordinate(observationId, t.name()));
+                workMachineObservationRepository.addCoordinateTaskToLastCoordinate(observationId, orderNumber, t.name()));
         } catch (Exception e) {
             log.error("Adding task to last work machine observation failed.", e);
         }
     }
 
-    private void addNewCoordinateInDb(final long observationId, final List<Double> pointCoordinates, final ZonedDateTime observationTime) {
-        workMachineObservationDao.addCoordinates(observationId, BigDecimal.valueOf(pointCoordinates.get(0)),
+    private void addNewCoordinateInDb(final long observationId,final int orderNumber, final List<Double> pointCoordinates, final ZonedDateTime observationTime) {
+        workMachineObservationDao.addCoordinates(observationId, orderNumber, BigDecimal.valueOf(pointCoordinates.get(0)),
                                                  BigDecimal.valueOf(pointCoordinates.get(1)), observationTime);
     }
 

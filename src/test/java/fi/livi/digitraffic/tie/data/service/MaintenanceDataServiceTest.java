@@ -141,13 +141,23 @@ public class MaintenanceDataServiceTest extends AbstractTest {
      * For development
      */
     @Rollback(false)
-    //@Test
-    public void developTestConvertUnhandledWorkMachineTrackingsInDbToObservations() {
+//    @Test
+    public void devTestConvertAllUnhandledWorkMachineTrackingsInDbToObservations() throws JsonProcessingException {
+        int count = 0;
+        do {
+            count = maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
+            log.info("handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
+        } while (count > 0);
+    }
 
-        Map<Pair<Integer, Integer>, List<MaintenanceDataService.ObservationFeatureWrapper>> unhandledMap =
-            maintenanceDataService.findUnhandledTrakkingsOldestFirstMappedByHarjaWorkMachineAndContract(200);
-
-        convertWorkMachineTrackingsToObservationsAndSave(unhandledMap);
+    /**
+     * For development
+     */
+    @Rollback(false)
+//    @Test
+    public void devTestConvertNext100UnhandledWorkMachineTrackingsInDbToObservations() throws JsonProcessingException {
+        final int count = maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
+        log.info("handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
     }
 
     private int convertWorkMachineTrackingsToObservationsAndSave(final Map<Pair<Integer, Integer>, List<MaintenanceDataService.ObservationFeatureWrapper>> unhandledMap) {

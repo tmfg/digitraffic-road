@@ -19,9 +19,7 @@ public interface WorkMachineObservationRepository extends JpaRepository<WorkMach
     @Modifying
     @Query(value =
                "insert into work_machine_task (work_machine_coordinate_observation_id, work_machine_coordinate_order_number, task)\n" +
-               "select :observationId, MAX(order_number), :task\n" +
-               "from work_machine_observation_coordinate\n" +
-               "where work_machine_observation_id = :observationId",
+               "values (:observationId, :orderNumber, :task)",
            nativeQuery = true)
-    void addCoordinateTaskToLastCoordinate(final Long observationId, String task);
+    void addCoordinateTaskToLastCoordinate(final long observationId, final int orderNumber, final String task);
 }
