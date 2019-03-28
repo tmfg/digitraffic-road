@@ -90,7 +90,7 @@ public class MaintenanceDataServiceTest extends AbstractTest {
         List<WorkMachineObservation> obs =
             maintenanceDataService.findWorkMachineObservationsByWorkMachineHarjaIdAndHarjaUrakkaId(1234, 999999);
 
-        // Observations has over 30 min gap -> should be divided to two distinct observations
+        // 3. observation has over 30 min gap from 2. observation -> should be divided to two distinct observations
         Assert.assertEquals(2, obs.size());
 
         final WorkMachineObservation first = obs.get(0);

@@ -26,6 +26,13 @@ public class MaintenanceDataJobConfiguration {
         this.maintenanceDataService = maintenanceDataService;
     }
 
+    /**
+     * This job get all work machine trackings that have been received, but haven't been converted
+     * from source JSON-format to db relations. After one tracking has been handled, meaning it has
+     * been extracted from JSON to db relations (observatios), tracking will be marked as handled.
+     *
+     * @throws JsonProcessingException
+     */
     @Scheduled(fixedDelayString = "${workmachine.tracking.observation.handlingIntervalMs}")
     public void handleUnhandledWorkMachineTrackings() throws JsonProcessingException {
         final StopWatch start = StopWatch.createStarted();

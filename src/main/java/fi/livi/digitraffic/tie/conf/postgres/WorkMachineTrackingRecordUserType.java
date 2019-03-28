@@ -100,7 +100,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
         try {
             return getReader().readValue(cellContent.getBytes("UTF-8"));
         } catch (final Exception ex) {
-            throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to convert String to WorkMachineTrackingRecord: " + ex.getMessage(), ex);
         }
     }
 

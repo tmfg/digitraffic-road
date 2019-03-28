@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.model.maintenance;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class WorkMachineObservation {
     @Enumerated(EnumType.STRING)
     private WorkMachineObservationType type;
 
-    private Integer direction;
+    private BigDecimal direction;
 
     @Column
     private ZonedDateTime lastObservationTime;
@@ -102,11 +103,11 @@ public class WorkMachineObservation {
         this.type = observationType;
     }
 
-    public Integer getDirection() {
+    public BigDecimal getDirection() {
         return direction;
     }
 
-    public void setDirection(final Integer direction) {
+    public void setDirection(final BigDecimal direction) {
         this.direction = direction;
     }
 

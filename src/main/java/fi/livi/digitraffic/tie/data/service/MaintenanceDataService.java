@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -133,7 +134,7 @@ public class MaintenanceDataService {
         return result;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected int convertUnhandledWorkMachineTrackingsToObservations(
         final Map.Entry<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> harjaMachineIdContractIdPairWithObservationFeature) {
 
@@ -166,7 +167,7 @@ public class MaintenanceDataService {
 
             lastObservation.setTransition(currentPerformedTasks.isEmpty());
             final Double direction = observationFeatureToHandle.getProperties().getDirection();
-            lastObservation.setDirection(direction != null ? direction.intValue() : null);
+            lastObservation.setDirection(direction != null ? BigDecimal.valueOf(direction) : null);
             lastObservation.setUpdatedNow();
 
             if (lastObservation.getId() == null) {
