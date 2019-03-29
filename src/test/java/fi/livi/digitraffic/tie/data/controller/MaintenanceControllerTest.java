@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoor
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
+import fi.livi.digitraffic.tie.data.service.WorkMachineObservationService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -31,6 +32,9 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
 
     @Autowired
     private MaintenanceDataService maintenanceDataService;
+
+    @Autowired
+    private WorkMachineObservationService workMachineObservationService;
 
     @Test
     public void postWorkMachineTrackingDataOk() throws Exception {
@@ -80,7 +84,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
         entityManager.clear();
 
         List<WorkMachineObservation> observations =
-            maintenanceDataService.findWorkMachineObservationsByWorkMachineHarjaIdAndHarjaUrakkaId(harjaTyokoneId, harjaUrakkaId);
+            workMachineObservationService.findWorkMachineObservationsByWorkMachineHarjaIdAndHarjaUrakkaId(harjaTyokoneId, harjaUrakkaId);
 
         Assert.assertEquals("Observations should be divided in two as there is over 30 min gap in observations",
                    2, observations.size());
