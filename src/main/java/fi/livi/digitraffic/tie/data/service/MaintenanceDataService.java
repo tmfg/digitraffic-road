@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationRepository;
@@ -50,6 +51,7 @@ public class MaintenanceDataService {
     private final WorkMachineRepository workMachineRepository;
     private final WorkMachineObservationDao workMachineObservationDao;
     private final EntityManager entityManager;
+    private final ObjectMapper objectMapper;
     private final int distinctObservationGapMinutes;
 
     @Autowired
@@ -60,6 +62,7 @@ public class MaintenanceDataService {
                                   final WorkMachineRepository workMachineRepository,
                                   final WorkMachineObservationDao workMachineObservationDao,
                                   final EntityManager entityManager,
+                                  final ObjectMapper objectMapper,
                                   @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
                                   final int distinctObservationGapMinutes) {
         this.workMachineTrackingRepository = workMachineTrackingRepository;
@@ -68,17 +71,24 @@ public class MaintenanceDataService {
         this.workMachineRepository = workMachineRepository;
         this.workMachineObservationDao = workMachineObservationDao;
         this.entityManager = entityManager;
+        this.objectMapper = objectMapper;
         this.distinctObservationGapMinutes = distinctObservationGapMinutes;
     }
 
     @Transactional
     public WorkMachineTracking saveWorkMachineTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
 
-        final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
-        final WorkMachineTracking tracking = new WorkMachineTracking(record);
-        workMachineTrackingRepository.save(tracking);
-        log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
-        return tracking;
+        try {
+            final WorkMachineTrackingRecord record = conversionService.convert(tyokoneenseurannanKirjaus, WorkMachineTrackingRecord.class);
+            final WorkMachineTracking tracking = new WorkMachineTracking(record);
+            workMachineTrackingRepository.save(tracking);
+            log.info("method=saveWorkMachineTrackingData Saved={}", tracking);
+            return tracking;
+        } catch (Exception e) {
+            log.error("method=saveWorkMachineTrackingData failed for JSON:\n{}",
+                      objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
+            throw e;
+        }
     }
 
     @Transactional
@@ -134,7 +144,7 @@ public class MaintenanceDataService {
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     protected int convertUnhandledWorkMachineTrackingsToObservations(
         final Map.Entry<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> harjaMachineIdContractIdPairWithObservationFeature) {
 
@@ -267,6 +277,8 @@ public class MaintenanceDataService {
             log.info("method=isNewObservationNeeded Create new observation as distinctObservationGapMinutes={} exceeded", distinctObservationGapMinutes);
             return true;
         }
+        Boolean test = null;
+        test.hashCode();
         log.info("method=isNewObservationNeeded Not creating new observation as last observation exists");
         return false;
     }

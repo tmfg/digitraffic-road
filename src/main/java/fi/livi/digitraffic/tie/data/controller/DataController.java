@@ -306,18 +306,19 @@ public class DataController {
         return datex2DataService.findWeightRestrictions(situationId, year, month);
     }
 
-    @ApiOperation(value = "Work Machine Tracking data")
-    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_UTF8_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
-    public List<WorkMachineTracking> workMachineTrackings() {
-        return maintenanceDataService.findAll();
-    }
-
-    // TODO FIXME only for testing, must be removed
-    @ApiOperation(value = "Work Machine Observation data")
-    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_UTF8_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
-    public List<WorkMachineObservation> workMachineObservations() {
-        return maintenanceDataService.finAllWorkMachineObservations();
-    }
+//    // TODO FIXME only for testing, must be removed
+//    @ApiOperation(value = "Work Machine Tracking data")
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+//    public List<WorkMachineTracking> workMachineTrackings() {
+//        return maintenanceDataService.findAll();
+//    }
+//
+//    // TODO FIXME only for testing, must be removed
+//    @ApiOperation(value = "Work Machine Observation data")
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+//    public List<WorkMachineObservation> workMachineObservations() {
+//        return maintenanceDataService.finAllWorkMachineObservations();
+//    }
 }
