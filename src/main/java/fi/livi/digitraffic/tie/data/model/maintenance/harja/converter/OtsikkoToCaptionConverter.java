@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Caption;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Sender;
-import fi.livi.digitraffic.tie.harja.entities.OtsikkoSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @ConditionalOnWebApplication

@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationFeature;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingDto;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingRecord;
-import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
 /**
  * This service handles data from Harja to db as JSON work machine trackings.

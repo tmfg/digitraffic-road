@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Link;
-import fi.livi.digitraffic.tie.harja.entities.LinkkisijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.LinkkisijaintiSchema;
 
 @ConditionalOnWebApplication
 @Component

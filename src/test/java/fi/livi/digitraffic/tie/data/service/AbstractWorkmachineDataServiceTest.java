@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
 public abstract class AbstractWorkmachineDataServiceTest extends AbstractTest {
 

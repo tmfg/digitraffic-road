@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachine;
-import fi.livi.digitraffic.tie.harja.Tyokone;
+import fi.livi.digitraffic.tie.external.harja.Tyokone;
 
 @ConditionalOnWebApplication
 @Component

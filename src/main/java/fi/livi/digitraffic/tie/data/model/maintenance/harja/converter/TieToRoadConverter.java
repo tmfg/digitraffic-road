@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Lane;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Road;
-import fi.livi.digitraffic.tie.harja.entities.Tie;
+import fi.livi.digitraffic.tie.external.harja.entities.TiesijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @ConditionalOnWebApplication
 @Component
-public class TieToRoadConverter extends AutoRegisteredConverter<Tie, Road> {
+public class TieToRoadConverter extends AutoRegisteredConverter<TiesijaintiSchema, Road> {
 
     @Override
-    public Road convert(final Tie src) {
+    public Road convert(final TiesijaintiSchema src) {
         return new Road(
             src.getNimi(),
             src.getNumero(),

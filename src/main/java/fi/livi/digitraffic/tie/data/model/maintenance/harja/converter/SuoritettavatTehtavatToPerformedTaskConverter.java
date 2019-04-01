@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.AutoRegisteredConverter;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.PerformedTask;
-import fi.livi.digitraffic.tie.harja.SuoritettavatTehtavat;
+import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 
 @ConditionalOnWebApplication
 @Component

@@ -1,0 +1,168 @@
+{
+  "definitions": {},
+  "$schema": "",
+  "$id": "urn:fi.digitraffic.sse.report",
+  "type": "object",
+  "title": "The SSE Report Root Schema",
+  "required": [
+    "SSE_Report"
+  ],
+  "properties": {
+    "SSE_Report": {
+      "$id": "#/properties/SSE_Report",
+      "type": "object",
+      "title": "The Sse_report Schema",
+      "default": null,
+      "additionalProperties": true,
+      "required": [
+        "Site",
+        "SSE_Fields"
+      ],
+      "properties": {
+        "Site": {
+          "$id": "#/properties/SSE_Report/properties/Site",
+          "type": "object",
+          "title": "The Site Schema",
+          "default": null,
+          "additionalProperties": true,
+          "required": [
+            "SiteName",
+            "SiteNumber"
+          ],
+          "properties": {
+            "SiteName": {
+              "$id": "#/properties/SSE_Report/properties/Site/properties/SiteName",
+              "type": "string",
+              "title": "The Sitename Schema",
+              "default": "",
+              "examples": [
+                "Kipsi"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "SiteNumber": {
+              "$id": "#/properties/SSE_Report/properties/Site/properties/SiteNumber",
+              "type": "integer",
+              "title": "The SiteNumber Schema",
+              "default": "",
+              "examples": [
+                "20243"
+              ]
+            }
+          }
+        },
+        "SSE_Fields": {
+          "$id": "#/properties/SSE_Report/properties/SSE_Fields",
+          "type": "object",
+          "title": "The Sse_fields Schema",
+          "default": null,
+          "additionalProperties": true,
+          "required": [
+            "Last_Update",
+            "SeaState",
+            "Trend",
+            "WindWaveDir",
+            "Confidence"
+          ],
+          "properties": {
+            "Last_Update": {
+              "$id": "#/properties/SSE_Report/properties/SSE_Fields/properties/Last_Update",
+              "type": "string",
+              "title": "The Last_update Schema",
+              "default": "",
+              "examples": [
+                "2019-03-29 15:01:30"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "SeaState": {
+              "$id": "#/properties/SSE_Report/properties/SSE_Fields/properties/SeaState",
+              "type": "array",
+              "enum": [
+                "CALM",
+                "LIGHT",
+                "MODERATE",
+                "BREEZE",
+                "GALE",
+                "STORM"
+              ],
+              "title": "The Seastate Schema",
+              "default": "",
+              "examples": [
+                "CALM | LIGHT | MODERATE | BREEZE | GALE | STORM"
+              ]
+            },
+            "Trend": {
+              "$id": "#/properties/SSE_Report/properties/SSE_Fields/properties/Trend",
+              "type": "array",
+              "enum": [
+                "Unknown",
+                "NoChange",
+                "Ascending",
+                "Descending"
+              ],
+              "title": "The Trend Schema",
+              "default": "",
+              "examples": [
+                "Unknown | NoChange | Ascending | Descending"
+              ]
+            },
+            "WindWaveDir": {
+              "$id": "#/properties/SSE_Report/properties/SSE_Fields/properties/WindWaveDir",
+              "type": "integer",
+              "title": "The Windwavedir Schema",
+              "default": "",
+              "examples": [
+                "0-359"
+              ],
+              "multipleOf": 1.0,
+              "minimum": 0.0,
+              "maximum": 359.0
+            },
+            "Confidence": {
+              "$id": "#/properties/SSE_Report/properties/SSE_Fields/properties/Confidence",
+              "type": "array",
+              "enum": [
+                "POOR",
+                "MODERATE",
+                "GOOD"
+              ],
+              "title": "The Confidence Schema",
+              "default": "",
+              "examples": [
+                "POOR | MODERATE | GOOD"
+              ]
+            }
+          }
+        },
+        "Extra_Fields": {
+          "$id": "#/properties/SSE_Report/properties/Extra_Fields",
+          "type": "object",
+          "title": "The Extra_fields Schema",
+          "default": null,
+          "additionalProperties": true,
+          "properties": {
+            "Temperature": {
+              "$id": "#/properties/SSE_Report/properties/Extra_Fields/properties/Temperature",
+              "type": "number",
+              "title": "The Temperature Schema",
+              "default": "",
+              "examples": [
+                "12"
+              ]
+            },
+            "Batt_Voltage": {
+              "$id": "#/properties/SSE_Report/properties/Extra_Fields/properties/Batt_Voltage",
+              "type": "number",
+              "title": "The Batt_voltage Schema",
+              "default": "",
+              "examples": [
+                "12.5"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

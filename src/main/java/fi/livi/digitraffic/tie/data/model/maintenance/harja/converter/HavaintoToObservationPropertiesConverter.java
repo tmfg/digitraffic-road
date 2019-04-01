@@ -12,8 +12,8 @@ import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationPropertie
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.PerformedTask;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.Road;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachine;
-import fi.livi.digitraffic.tie.harja.Havainto;
-import fi.livi.digitraffic.tie.harja.entities.SijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.Havainto;
+import fi.livi.digitraffic.tie.external.harja.entities.SijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @ConditionalOnWebApplication
