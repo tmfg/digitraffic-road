@@ -50,6 +50,7 @@ public class CoordinateConverter {
         return convert(fromWGS84, transformerFromWgs84ToEtrs89Tm35Fin);
     }
 
+    // TODO: change List<List<Double>> to List<List<Integer>> and remove int->double conversion from HavaintoToObservationFeatureConverter and do it here.
     public static LineString convertLineStringFromETRS89ToWGS84(List<List<Double>> fromETRS89Coordinates) {
         List<List<Double>> coords =
             fromETRS89Coordinates.stream()
