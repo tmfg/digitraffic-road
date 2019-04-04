@@ -471,6 +471,8 @@
                     <sourceDirectory>${basedir}/src/main/resources/schemas/json/</sourceDirectory>
                     <targetPackage>fi.livi.digitraffic.tie.external</targetPackage>
                     <outputDirectory>${project.build.directory}/generated-sources/json</outputDirectory>
+                    <dateTimeType>java.time.ZonedDateTime</dateTimeType>
+                    <dateType>java.time.LocalDate</dateType>
                     <includes>
                         <include>**/*.json</include>
                     </includes>
