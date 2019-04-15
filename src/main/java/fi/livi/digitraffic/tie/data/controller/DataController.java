@@ -5,8 +5,6 @@ import static fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration.API_V1_B
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -25,9 +23,8 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
@@ -58,6 +55,8 @@ public class DataController {
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TMS_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
+
+    public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
 
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
@@ -304,6 +303,16 @@ public class DataController {
         @RequestParam @Valid @Range(min = 1, max = 12)
         final int month) {
         return datex2DataService.findWeightRestrictions(situationId, year, month);
+    }
+
+    @ApiOperation("Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of sensor constants and values"))
+    public TmsSensorConstantRootDto tmsSensorConstants(
+        @ApiParam("If parameter is given result will only contain update status")
+        @RequestParam(value=DataController.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+        boolean lastUpdated) {
+        return tmsDataService.findPublishableSensorConstants(lastUpdated);
     }
 
 //    // TODO FIXME only for testing, must be removed
