@@ -45,7 +45,6 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
@@ -82,16 +81,6 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"))
     public TmsDataDatex2Response tmsDataDatex2() {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
-    }
-
-    @ApiOperation("Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of sensor constants and values"))
-    public TmsSensorConstantRootDto tmsSensorConstants(
-        @ApiParam("If parameter is given result will only contain update status")
-        @RequestParam(value=DataController.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
-        boolean lastUpdated) {
-        return tmsDataService.findPublishableSensorConstants(lastUpdated);
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
