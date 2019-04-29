@@ -154,7 +154,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
-        ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
+        ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
         assertTrue("LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes, lastUpdated.isAfter(timeInPast2Minutes));

@@ -26,7 +26,7 @@ public class ForeignKeyIndexTest extends AbstractTest {
             "with constraints as (\n" +
                 "  select a.table_name\n" +
                 "       , a.constraint_name\n" +
-                "       , string_agg(b.column_name, ' ' order by column_name) cols\n" +
+                "       , string_agg(b.column_name, ' ' order by b.ordinal_position) cols\n" +
                 "      from information_schema.table_constraints a, information_schema.key_column_usage b\n" +
                 "     where a.constraint_name = b.constraint_name\n" +
                 "       and a.constraint_type = 'FOREIGN KEY'\n" +
@@ -35,7 +35,7 @@ public class ForeignKeyIndexTest extends AbstractTest {
                 "select\n" +
                 "    t.relname as table_name,\n" +
                 "    i.relname as index_name,\n" +
-                "    array_to_string(array_agg(a.attname order by a.attname), ' ') as cols\n" +
+                "    array_to_string(array_agg(a.attname order by a.attnum), ' ') as cols\n" +
                 "from\n" +
                 "    pg_class t,\n" +
                 "    pg_class i,\n" +
@@ -44,8 +44,7 @@ public class ForeignKeyIndexTest extends AbstractTest {
                 "where\n" +
                 "    t.oid = ix.indrelid\n" +
                 "    and i.oid = ix.indexrelid\n" +
-                "    and a.attrelid = t.oid\n" +
-                "    and a.attnum = ANY(ix.indkey)\n" +
+                "    and a.attrelid = i.oid\n" +
                 "    and t.relkind = 'r'\n" +
                 "group by\n" + "    t.relname,\n" + "    i.relname\n" +
                 "order by\n" + "    t.relname,\n" + "    i.relname\n" +
@@ -64,17 +63,17 @@ public class ForeignKeyIndexTest extends AbstractTest {
 
         for (final Map<String, Object> stringObjectMap : foreignKeysWithoutIndex) {
             sb.append("CREATE INDEX ");
-            sb.append(StringUtils.substring(stringObjectMap.get("CONSTRAINT_NAME").toString(), 0, 28));
+            sb.append(stringObjectMap.get("CONSTRAINT_NAME").toString().toUpperCase());
             sb.append("_I ON ");
-            sb.append(stringObjectMap.get("TABLE_NAME"));
-            sb.append(" (");
+            sb.append(stringObjectMap.get("TABLE_NAME").toString().toUpperCase());
+            sb.append(" USING BTREE (");
             sb.append(StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
             sb.append("); -- ");
             sb.append(stringObjectMap);
             sb.append("\n");
         }
         Assert.assertTrue(
-                "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n" + sb.toString(),
+                "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n\n" + sb.toString(),
                 foreignKeysWithoutIndex.isEmpty());
     }
 }

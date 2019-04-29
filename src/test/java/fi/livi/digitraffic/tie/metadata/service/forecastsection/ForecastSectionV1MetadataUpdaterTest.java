@@ -60,8 +60,8 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractTest {
 
         assertEquals(277, collection.getFeatures().size());
         assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
-        assertEquals(10, collection.getFeatures().get(0).getGeometry().coordinates.size());
-        assertEquals(new Double("24.944"), collection.getFeatures().get(0).getGeometry().coordinates.get(0).get(0));
-        assertEquals(new Double("60.167"), collection.getFeatures().get(0).getGeometry().coordinates.get(0).get(1));
+        assertEquals(10, collection.getFeatures().get(0).getGeometry().getCoordinates().size());
+        assertEquals(new Double("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0));
+        assertEquals(new Double("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1));
     }
 }

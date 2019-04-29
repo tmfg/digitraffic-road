@@ -6,8 +6,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
 
-import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -191,7 +189,7 @@ public class CameraImageUpdateService {
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         if (cameraPreset != null) {
             cameraPreset.setPublicExternal(kuva.getJulkinen());
-            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTime(Instant.ofEpochMilli(kuva.getAikaleima())));
+            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
         }
     }
 

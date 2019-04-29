@@ -1,82 +1,92 @@
-
 package fi.livi.digitraffic.tie.data.model.maintenance;
 
-import java.io.Serializable;
+import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "id",
-    "type"
-})
-public class WorkMachine implements Serializable
-{
+@Entity
+public class WorkMachine {
 
-    @JsonProperty(required = true)
-    private Integer id;
-
-    @JsonProperty(required = true)
+    @Id
+    @GenericGenerator(name = "SEQ_WORK_MACHINE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_WORK_MACHINE"))
+    @GeneratedValue(generator = "SEQ_WORK_MACHINE")
+    private Long id;
+    private Long harjaId;
+    private Long harjaUrakkaId;
     private String type;
 
-    @JsonCreator
-    public WorkMachine(final Integer id, final String type) {
-        this.id = id;
+    @JsonIgnore
+    @OneToMany(mappedBy = "workMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
+    List<WorkMachineObservation> observations;
+
+    public WorkMachine() {
+
+    }
+
+    public WorkMachine(final long harjaId, final long harjaUrakkaId, final String type) {
+        this.harjaId = harjaId;
+        this.harjaUrakkaId = harjaUrakkaId;
         this.type = type;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getHarjaId() {
+        return harjaId;
+    }
+
+    public void setHarjaId(Long harjaId) {
+        this.harjaId = harjaId;
+    }
+
+    public Long getHarjaUrakkaId() {
+        return harjaUrakkaId;
+    }
+
+    public void setHarjaUrakkaId(Long harjaUrakkaId) {
+        this.harjaUrakkaId = harjaUrakkaId;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(final String type) {
-        this.type = type;
+    public void setType(String machineType) {
+        this.type = machineType;
+    }
+
+    public List<WorkMachineObservation> getObservations() {
+        return observations;
+    }
+
+    public void setObservations(List<WorkMachineObservation> observations) {
+        this.observations = observations;
     }
 
     @Override
     public String toString() {
-        return ToStringHelper.toStringFull(this);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        WorkMachine that = (WorkMachine) o;
-
-        return new EqualsBuilder()
-            .append(id, that.id)
-            .append(type, that.type)
-            .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(id)
-            .append(type)
-            .toHashCode();
+        return ToStringHelper.toStringExcluded(this, "observations");
     }
 }

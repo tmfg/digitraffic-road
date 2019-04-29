@@ -276,7 +276,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     private static void assertLastUpdated(final ZonedDateTime lastUpdated) {
-        final ZonedDateTime limit = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime limit = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         assertTrue(String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit), lastUpdated.isAfter(limit));
 

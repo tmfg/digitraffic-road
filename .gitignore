@@ -17,9 +17,12 @@
 **/*.log
 **/*.log.gz
 **/*.tmp
+
+# no_commit tekstin sisältävät tiedostot
 **/*no_commit*
 
 # SchemaSpyn generoimat schemat ja kirjastot
 /dbroad/schemaspy/schema
 /dbroad/schemaspy/lib
+# Flyway
 /dbroad/flyway-dev/flyway-test.conf

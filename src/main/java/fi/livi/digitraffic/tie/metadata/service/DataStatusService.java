@@ -33,8 +33,7 @@ public class DataStatusService {
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
         final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType);
-        log.info("Update DataUpdated, type={}, version={}", dataType, version);
-
+        log.info("method=updateDataUpdated dataType={}, dataVersion={}", dataType, version);
         if (updated == null) {
             dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
         } else {
@@ -46,17 +45,17 @@ public class DataStatusService {
     @Transactional
     public void updateDataUpdated(final DataType dataType, final Instant updated) {
         final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType);
-        log.info("Update DataUpdated, type={}, updated={}", dataType, updated);
+        log.info("method=updateDataUpdated dataType={}, updatedTime={}", dataType, updated);
         if (dataUpdated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTime(updated), null));
+            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTimeAtUtc(updated), null));
         } else {
-            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTime(updated));
+            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTimeAtUtc(updated));
         }
     }
 
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
-        return DateHelper.toZonedDateTime(dataUpdatedRepository.findUpdatedTime(dataType));
+        return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
     }
 
     @Transactional(readOnly = true)
