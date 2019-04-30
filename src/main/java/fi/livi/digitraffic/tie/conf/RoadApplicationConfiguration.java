@@ -40,6 +40,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
 public class RoadApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
+    public static final String API_V2_BASE_PATH = "/api/v2";
     public static final String API_BETA_BASE_PATH = "/api/beta";
 
     public static final String API_METADATA_PART_PATH = "/metadata";

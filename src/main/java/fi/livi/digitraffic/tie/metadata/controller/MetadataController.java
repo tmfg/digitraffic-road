@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "metadata", description = "Metadata for Digitraffic services")
+@Api(tags = "Metadata v1", description = "Metadata for Digitraffic services (Api version 1)")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
