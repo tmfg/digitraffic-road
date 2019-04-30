@@ -93,10 +93,11 @@ public class ToStringHelper {
                         return "*****";
                     }
                 }
-                return super.getValue(field);
+                return field.get(this.getObject());
             }
         };
-        return object.getClass().getSimpleName() + ": " + refBuiler.toString();
+        refBuiler.append("class", object.getClass().getSimpleName(), true);
+        return refBuiler.toString();
     }
 
     private static StringBuffer createStartSb(final Object object) {

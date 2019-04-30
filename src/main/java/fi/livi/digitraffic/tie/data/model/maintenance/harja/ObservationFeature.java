@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -71,6 +72,7 @@ public class ObservationFeature implements Feature<Geometry<?>>, Serializable {
         return ToStringHelper.toStringFull(this);
     }
 
+    @JsonIgnore
     public Pair<Integer, Integer> getHarjaTyokoneUrakkaIdPair() {
         return Pair.of(getProperties().getWorkMachine().getId(), getProperties().getContractId());
     }
