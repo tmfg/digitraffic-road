@@ -21,7 +21,8 @@ import io.swagger.annotations.ApiModelProperty;
     property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Point.class, name = "Point"),
-    @JsonSubTypes.Type(value = LineString.class, name = "LineString")
+    @JsonSubTypes.Type(value = LineString.class, name = "LineString"),
+    @JsonSubTypes.Type(value = MultiLineString.class, name = "MultiLineString")
 })
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
