@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
@@ -78,16 +79,16 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
 
         assertEquals("00001_001_00000_1_0", feature.getProperties().getNaturalId());
 
-        assertEquals(2, feature.getGeometry().coordinates.get(0).size());
-        assertCoordinates(24.9430081, feature.getGeometry().coordinates.get(0).get(0).get(0));
-        assertCoordinates(60.1667212, feature.getGeometry().coordinates.get(0).get(0).get(1));
-        assertCoordinates(24.9418095, feature.getGeometry().coordinates.get(0).get(1).get(0));
-        assertCoordinates(60.1675145, feature.getGeometry().coordinates.get(0).get(1).get(1));
-        assertEquals(12, feature.getGeometry().coordinates.get(70).size());
-        assertCoordinates(24.9336238, feature.getGeometry().coordinates.get(70).get(0).get(0));
-        assertCoordinates(60.1739127, feature.getGeometry().coordinates.get(70).get(0).get(1));
-        assertCoordinates(24.9335811, feature.getGeometry().coordinates.get(70).get(1).get(0));
-        assertCoordinates(60.1739668, feature.getGeometry().coordinates.get(70).get(1).get(1));
+        assertEquals(2, feature.getGeometry().getCoordinates().get(0).size());
+        assertCoordinates(24.9430081, feature.getGeometry().getCoordinates().get(0).get(0).get(0));
+        assertCoordinates(60.1667212, feature.getGeometry().getCoordinates().get(0).get(0).get(1));
+        assertCoordinates(24.9418095, feature.getGeometry().getCoordinates().get(0).get(1).get(0));
+        assertCoordinates(60.1675145, feature.getGeometry().getCoordinates().get(0).get(1).get(1));
+        assertEquals(12, feature.getGeometry().getCoordinates().get(70).size());
+        assertCoordinates(24.9336238, feature.getGeometry().getCoordinates().get(70).get(0).get(0));
+        assertCoordinates(60.1739127, feature.getGeometry().getCoordinates().get(70).get(0).get(1));
+        assertCoordinates(24.9335811, feature.getGeometry().getCoordinates().get(70).get(1).get(0));
+        assertCoordinates(60.1739668, feature.getGeometry().getCoordinates().get(70).get(1).get(1));
 
         assertEquals(2, feature.getProperties().getRoadSegments().size());
         assertEquals(0, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
@@ -122,13 +123,13 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
         assertEquals("Vaasantie 3.218", feature1.getProperties().getDescription());
         assertEquals(1, feature1.getProperties().getRoadSegments().size());
         assertEquals(16, feature1.getProperties().getLinkIdList().size());
-        assertEquals("MultiLineString", feature1.getGeometry().type);
-        assertEquals(16, feature1.getGeometry().coordinates.size());
-        assertEquals(9, feature1.getGeometry().coordinates.get(0).size());
-        assertCoordinates(22.9983705, feature1.getGeometry().coordinates.get(0).get(0).get(0));
-        assertCoordinates(62.1215860, feature1.getGeometry().coordinates.get(0).get(0).get(1));
-        assertCoordinates(22.9800960, feature1.getGeometry().coordinates.get(14).get(2).get(0));
-        assertCoordinates(62.1412124, feature1.getGeometry().coordinates.get(14).get(2).get(1));
+        assertEquals(Geometry.Type.MultiLineString, feature1.getGeometry().getType());
+        assertEquals(16, feature1.getGeometry().getCoordinates().size());
+        assertEquals(9, feature1.getGeometry().getCoordinates().get(0).size());
+        assertCoordinates(22.9983705, feature1.getGeometry().getCoordinates().get(0).get(0).get(0));
+        assertCoordinates(62.1215860, feature1.getGeometry().getCoordinates().get(0).get(0).get(1));
+        assertCoordinates(22.9800960, feature1.getGeometry().getCoordinates().get(14).get(2).get(0));
+        assertCoordinates(62.1412124, feature1.getGeometry().getCoordinates().get(14).get(2).get(1));
 
         assertEquals("00003_226_00000_0_0", feature2.getProperties().getNaturalId());
         assertEquals("Tampereentie 3.226", feature2.getProperties().getDescription());

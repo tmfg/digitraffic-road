@@ -17,14 +17,16 @@ import io.swagger.annotations.ApiModelProperty;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "type")
 @JsonSubTypes({
-                  @JsonSubTypes.Type(value = Point.class, name = "Point"),
-                  @JsonSubTypes.Type(value = LineString.class, name = "LineString")
-              })
+    @JsonSubTypes.Type(value = Point.class, name = "Point"),
+    @JsonSubTypes.Type(value = LineString.class, name = "LineString")
+})
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
 public abstract class Geometry<T> implements Serializable {
+
     private Type type;
 
     private final List<T> coordinates;
@@ -41,7 +43,6 @@ public abstract class Geometry<T> implements Serializable {
     }
 
     @ApiModelProperty(value = "GeoJson Geometry Object type", required = true, position = 1, allowableValues = "Point,LineString,Polygon,MultiPoint,MultiLineString,MultiPolygon")
-    @JsonIgnore
     public Type getType() {
         return type;
     }

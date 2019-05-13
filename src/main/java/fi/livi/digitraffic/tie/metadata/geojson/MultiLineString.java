@@ -10,24 +10,33 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJson MultiLineString Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates" })
-public class MultiLineString {
-
-    @ApiModelProperty(value = "\"MultiLineString\": GeoJson MultiLineString Geometry Object", required = true, position = 1)
-    public final String type = "MultiLineString";
-
-    @ApiModelProperty(value = "Array of LineString coordinates [LONGITUDE, LATITUDE].", required = true, position = 2, example = "[ [100.0, 0.0], [101.0, 1.0] ],\n" +
-                                                                                                                                 "[ [102.0, 2.0], [103.0, 3.0] ]")
-    public final List<List<List<Double>>> coordinates;
+public class MultiLineString extends Geometry<List<List<Double>>> {
 
     public MultiLineString() {
-        coordinates = new ArrayList<>();
+        super(Type.MultiLineString, new ArrayList<>());
     }
 
     public MultiLineString(final List<List<List<Double>>> coordinates) {
-        this.coordinates = coordinates;
+        super(Type.MultiLineString, coordinates);
     }
 
+    @ApiModelProperty(required = true, allowableValues = "MultiLineString", example = "MultiLineString")
+    @Override
+    public Type getType() {
+        return super.getType();
+    }
+
+    @ApiModelProperty(required = true, position = 2, example = "[ [100.0, 0.0], [101.0, 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ]",
+                      value = "Array of LineString coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. " +
+                              "Coordinates are in WGS84 format in decimal degrees. Altitude is optional and measured in meters.",
+                      dataType = "List")
+    @Override
+    public List<List<List<Double>>> getCoordinates() {
+        return super.getCoordinates();
+    }
+
+
     public void addLineString(final List<List<Double>> coordinates) {
-        this.coordinates.add(coordinates);
+        getCoordinates().add(coordinates);
     }
 }
