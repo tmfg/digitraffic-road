@@ -3,7 +3,7 @@ version: '2.0' # docker-compose version
 services:
 
   db:
-    image: postgres:9.6.8
+    image: postgres:9.6.12-alpine
     restart: always
     environment:
       POSTGRES_USER: road
@@ -11,6 +11,7 @@ services:
       POSTGRES_DB: road
     ports:
       - 54322:5432
+    command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all
 
   db-init:
     build: .
@@ -21,10 +22,12 @@ services:
       - "db:db"
     command: ["./wait-for-postgres.sh", "db", "road", "road", "road", "./init-db.sh"]
 
-  adminer:
-    image: adminer
+  pghero:
+    image: ankane/pghero
     restart: always
+    environment:
+      DATABASE_URL: postgres://road:road@db:5432/road
     links:
-      - "db:database" # postgres is reachable for adminer from web at the hostnames db and database
+    - "db:database" # postgres is reachable for pghero from web at the hostnames db and database
     ports:
-      - 8082:8080
+    - 8081:8080

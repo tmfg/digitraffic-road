@@ -33,22 +33,21 @@ public class CameraStationUpdateJobTest extends AbstractTest {
     @Test
     public void testUpdateKameras() {
 
-        lotjuKameraPerustiedotServiceMock.initDataAndService();
+        lotjuKameraPerustiedotServiceMock.initStateAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.updateCameras();
         final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
-        // cameras with lotjuId 443 in collection 56 (no public presets) and 121 removed temporary, 2 removed permanently
-        allInitial.getFeatures().stream().forEach(c -> System.out.println(c.getProperties().getLotjuId()));
-        assertEquals(2, allInitial.getFeatures().size());
+        // cameras with lotjuId 443 in collection, 56 (no public presets) and 121 removed temporary, 2 public with 5 presets
+        assertEquals(3, allInitial.getFeatures().size());
         int countPresets = 0;
         for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
             countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
         }
-        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public
-        assertEquals(3, countPresets);
+        // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public, 2 has 5 public
+        assertEquals(8, countPresets);
 
-        // Update 121 camera to active and 56 removed
+        // Update 121 camera to active, 56 removed and 2 not public
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
 
@@ -85,10 +84,11 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         assertNotNull(findWithPresetId(allInitial, "C0162801"));
         assertNotNull(findWithPresetId(allInitial, "C0162802"));
         // lotjuId 2
-        assertNull(findWithPresetId(allInitial, "C0150202"));
-        assertNull(findWithPresetId(allInitial, "C0150209"));
-        assertNull(findWithPresetId(allInitial, "C0150201"));
-        assertNull(findWithPresetId(allInitial, "C0150204"));
+        assertNotNull(findWithPresetId(allInitial, "C0150200"));
+        assertNotNull(findWithPresetId(allInitial, "C0150202"));
+        assertNotNull(findWithPresetId(allInitial, "C0150201"));
+        assertNotNull(findWithPresetId(allInitial, "C0150204"));
+        assertNotNull(findWithPresetId(allInitial, "C0150209"));
         // 56: C0155600
         assertNull(findWithPresetId(allInitial, "C0155600"));
 
@@ -100,10 +100,11 @@ public class CameraStationUpdateJobTest extends AbstractTest {
         assertNotNull(findWithPresetId(allAfterChange, "C0162801"));
         assertNotNull(findWithPresetId(allAfterChange, "C0162802"));
         // 2
+        assertNull(findWithPresetId(allAfterChange, "C0150200"));
         assertNull(findWithPresetId(allAfterChange, "C0150202"));
-        assertNull(findWithPresetId(allAfterChange, "C0150209"));
         assertNull(findWithPresetId(allAfterChange, "C0150201"));
         assertNull(findWithPresetId(allAfterChange, "C0150204"));
+        assertNull(findWithPresetId(allAfterChange, "C0150209"));
         // 56
         assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
 

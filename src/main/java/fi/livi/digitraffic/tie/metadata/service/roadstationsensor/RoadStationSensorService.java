@@ -36,7 +36,6 @@ import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorValueDtoRepository;
@@ -95,7 +94,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoadStationSensor> findAllNonObsoleteAndAllowedRoadStationSensors(final RoadStationType roadStationType) {
+    public List<RoadStationSensor> findAllPublishableRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorRepository.findByRoadStationTypeAndPublishable(roadStationType);
     }
 
@@ -122,9 +121,9 @@ public class RoadStationSensorService {
         return new WeatherRoadStationsSensorsMetadata(
             onlyUpdateInfo ?
                 Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertWeatherSensors(findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
+                RoadStationSensorDtoConverter.convertWeatherSensors(findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
     }
 
     @Transactional(readOnly = true)
@@ -132,9 +131,9 @@ public class RoadStationSensorService {
         return new TmsRoadStationsSensorsMetadata(
             onlyUpdateInfo ?
                 Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertTmsSensors(findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTimeByDataType(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
+                RoadStationSensorDtoConverter.convertTmsSensors(findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
+            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
     }
 
     @Transactional(readOnly = true)
@@ -148,11 +147,13 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public ZonedDateTime getLatestMeasurementTime(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTime(
-                roadStationSensorValueDtoRepository.getLatestMeasurementTime(
-                        roadStationType.getTypeNumber(),
-                        sensorValueTimeLimitInMins.get(roadStationType)));
+    public ZonedDateTime getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
+        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueUpdatedDataType(roadStationType));
+    }
+
+    @Transactional(readOnly = true)
+    public ZonedDateTime getLatestSensorValueMeasurementTime(final RoadStationType roadStationType) {
+        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueMeasuredDataType(roadStationType));
     }
 
     @Transactional(readOnly = true)
@@ -200,12 +201,7 @@ public class RoadStationSensorService {
     public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType.getTypeNumber(),
-                DateHelper.toDate(updatedAfter));
-    }
-
-    @Transactional(readOnly = true)
-    public ZonedDateTime getSensorValueLastUpdated(final RoadStationType roadStationType) {
-        return DateHelper.toZonedDateTime(sensorValueRepository.getLastUpdated(roadStationType));
+                updatedAfter.toInstant());
     }
 
     /**
@@ -222,9 +218,8 @@ public class RoadStationSensorService {
 
         final int deleted = sensorslotjuIds.isEmpty() ?
                                 roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
-                                roadStationSensorRepository.deleteNonExistingSensors(roadStationType.name(),
-                                    roadStationId,
-                                                                                     sensorslotjuIds);
+                                roadStationSensorRepository.deleteNonExistingSensors(
+                                    roadStationType.name(), roadStationId, sensorslotjuIds);
 
         final int inserted = sensorslotjuIds.isEmpty() ?
                                 0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
@@ -324,8 +319,8 @@ public class RoadStationSensorService {
         // Obsolete not found sensors
         final long obsoleted = obsoleteSensors(currentSensorsMappedByNaturalId.values());
 
-        log.info("obsoletedCount={} roadStationType={} RoadStationSensor", obsoleted, roadStationType);
-        log.info("fixedCount={} roadStationType={} RoadStationSensor without lotjuId", updated, roadStationType);
+        log.info("method=updateRoadStationSensorsWithOutLotjuIds roadStationSensors obsoletedCount={} fixedCount={} roadStationType={}",
+                 obsoleted, updated, roadStationType);
 
         return obsoleted > 0 || updated > 0;
     }

@@ -1,0 +1,141 @@
+<ns2:HaeKaikkiKameratResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/kamerametatiedot/2018/06/15">
+    <ns2:kamerat>
+        <id>443</id>
+        <nimi>vt27_Iisalmi_Runni</nimi>
+        <korkeus>116</korkeus>
+        <latitudi>7053606</latitudi>
+        <longitudi>495841</longitudi>
+        <tieosoite>
+            <ajorata>0</ajorata>
+            <puoli>2</puoli>
+            <tienHoitoluokka>4</tienHoitoluokka>
+            <etaisyysTieosanAlusta>302</etaisyysTieosanAlusta>
+            <tienumero>27</tienumero>
+            <tieosa>26</tieosa>
+            <urakkaAlue>Kiuruvesi 17-22</urakkaAlue>
+            <urakkaAlueKoodi>843</urakkaAlueKoodi>
+        </tieosoite>
+        <alkamisPaiva>2001-12-01T00:00:00+02:00</alkamisPaiva>
+        <asemanTila>OK</asemanTila>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
+        <keruuVali>720</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Iisalmi</kunta>
+        <kuntaKoodi>140</kuntaKoodi>
+        <liviId>Livi1089684</liviId>
+        <maakunta>Pohjois-Savo</maakunta>
+        <maakuntaKoodi>11</maakuntaKoodi>
+        <nimiEn>Road 27 Iisalmi, Runni</nimiEn>
+        <nimiFi>Tie 27 Iisalmi, Runni</nimiFi>
+        <nimiSe>Väg 27 Idensalmi, Runni</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
+        <vanhaId>8520</vanhaId>
+        <vuosihuolto>2018-08-22T00:00:00+03:00</vuosihuolto>
+        <kayttotarkoitus>keli</kayttotarkoitus>
+        <lahinTiesaaAsemaId>424</lahinTiesaaAsemaId>
+        <tyyppi>VAPIX</tyyppi>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <id>121</id>
+        <nimi>vt7_Loviisa_Länsi</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6702980</latitudi>
+        <longitudi>455586</longitudi>
+        <tieosoite>
+            <ajorata>1</ajorata>
+            <etaisyysTieosanAlusta>15</etaisyysTieosanAlusta>
+            <puoli>3</puoli>
+            <tienHoitoluokka>2</tienHoitoluokka>
+            <tienumero>7</tienumero>
+            <tieosa>19</tieosa>
+            <urakkaAlue>Koskenkylä -Kotka 12-27</urakkaAlue>
+            <urakkaAlueKoodi>129</urakkaAlueKoodi>
+        </tieosoite>
+        <alkamisPaiva>2013-10-15T00:00:00+03:00</alkamisPaiva>
+        <asemanTila>KORJAUSPYYNTO_LAHETETTY</asemanTila>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
+        <keruuVali>720</keruuVali>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <kunta>Loviisa</kunta>
+        <kuntaKoodi>434</kuntaKoodi>
+        <liviId>Livi1089371</liviId>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 7 Loviisa_Länsi</nimiEn>
+        <nimiFi>Tie 7 Loviisa_Länsi</nimiFi>
+        <nimiSe>Väg 7 Loviisa_Länsi</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
+        <vanhaId>1628</vanhaId>
+        <kayttotarkoitus>liikenne</kayttotarkoitus>
+        <lahinTiesaaAsemaId>22</lahinTiesaaAsemaId>
+        <tyyppi>VMX_MPH</tyyppi>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <id>2</id>
+        <nimi>vt7_Porvoo_Harabacka</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6695673</latitudi>
+        <longitudi>423740</longitudi>
+        <tieosoite>
+            <ajorata>1</ajorata>
+            <etaisyysTieosanAlusta>3801</etaisyysTieosanAlusta>
+            <puoli>1</puoli>
+            <tienHoitoluokka>1</tienHoitoluokka>
+            <tienumero>7</tienumero>
+            <tieosa>8</tieosa>
+            <urakkaAlue>Porvoo 15 -20</urakkaAlue>
+            <urakkaAlueKoodi>133</urakkaAlueKoodi>
+        </tieosoite>
+        <alkamisPaiva>2001-11-07T00:00:00+02:00</alkamisPaiva>
+        <asemanSijainti>Vanha Porvoo LKA016001</asemanSijainti>
+        <hankeId>LKA016001</hankeId>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
+        <keruuVali>720</keruuVali>
+        <keruunTila>KERUUSSA</keruunTila>
+        <kunta>Porvoo</kunta>
+        <kuntaKoodi>638</kuntaKoodi>
+        <liviId>Livi1089373</liviId>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 7 Porvoo</nimiEn>
+        <nimiFi>Tie 7 Porvoo</nimiFi>
+        <nimiSe>Väg 7 Borgå</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
+        <vanhaId>1502</vanhaId>
+        <kayttotarkoitus>liikenne</kayttotarkoitus>
+        <lahinTiesaaAsemaId>19</lahinTiesaaAsemaId>
+        <tyyppi>VMX_MPH</tyyppi>
+    </ns2:kamerat>
+    <ns2:kamerat>
+        <id>56</id>
+        <nimi>VUO_NIIN</nimi>
+        <korkeus>0</korkeus>
+        <latitudi>6677413</latitudi>
+        <longitudi>398063</longitudi>
+        <tieosoite>
+            <ajorata>0</ajorata>
+            <etaisyysTieosanAlusta>600</etaisyysTieosanAlusta>
+            <puoli>2</puoli>
+            <tienumero>40946</tienumero>
+            <tieosa>3</tieosa>
+        </tieosoite>
+        <alkamisPaiva>2009-10-30T00:00:00+02:00</alkamisPaiva>
+        <hankeId>LKA01V701</hankeId>
+        <julkisuus><julkisuusTaso>JULKINEN</julkisuusTaso></julkisuus>
+        <keruuVali>720</keruuVali>
+        <keruunTila>POISTETTU_TILAPAISESTI</keruunTila>
+        <kunta>Helsinki</kunta>
+        <kuntaKoodi>91</kuntaKoodi>
+        <liviId>Livi1089789</liviId>
+        <maakunta>Uusimaa</maakunta>
+        <maakuntaKoodi>1</maakuntaKoodi>
+        <nimiEn>Road 103 Vuosaari harbor tunne</nimiEn>
+        <nimiFi>Tie 103 Vuosaari, Niinisaarentie</nimiFi>
+        <nimiSe>Väg 103 Nordsjö hamn, tunnel</nimiSe>
+        <synkronoituTierekisteriin>true</synkronoituTierekisteriin>
+        <vanhaId>1556</vanhaId>
+        <kayttotarkoitus>liikenne</kayttotarkoitus>
+        <lahinTiesaaAsemaId>73</lahinTiesaaAsemaId>
+        <tyyppi>VMX_MPC</tyyppi>
+    </ns2:kamerat>
+</ns2:HaeKaikkiKameratResponse>

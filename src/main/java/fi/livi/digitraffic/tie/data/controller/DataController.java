@@ -23,16 +23,19 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -43,7 +46,7 @@ import io.swagger.annotations.ApiResponses;
  * REST/JSON replacement api for Digitraffic SOAP-api
  *
  */
-@Api(tags = "data", description = "Data of Digitraffic services")
+@Api(tags = "Data v1", description = "Data of Digitraffic services (Api version 1)")
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
@@ -53,9 +56,11 @@ public class DataController {
     public static final String TMS_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
 
+    public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
+
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
 
-    private static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
+    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
     // datex2
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
@@ -75,6 +80,7 @@ public class DataController {
     private final CameraDataService cameraDataService;
     private final ForecastSectionDataService forecastSectionDataService;
     private final Datex2DataService datex2DataService;
+    private final MaintenanceDataService maintenanceDataService;
 
     @Autowired
     public DataController(final TmsDataService tmsDataService,
@@ -82,13 +88,15 @@ public class DataController {
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
                           final ForecastSectionDataService forecastSectionDataService,
-                          final Datex2DataService datex2DataService) {
+                          final Datex2DataService datex2DataService,
+                          final MaintenanceDataService maintenanceDataService) {
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
         this.forecastSectionDataService = forecastSectionDataService;
         this.datex2DataService = datex2DataService;
+        this.maintenanceDataService = maintenanceDataService;
     }
 
     @ApiOperation("Current free flow speeds")
@@ -178,7 +186,9 @@ public class DataController {
             @ApiParam("If parameter is given result will only contain update status")
             @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
-        return forecastSectionDataService.getForecastSectionWeatherData(lastUpdated);
+        return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, lastUpdated, null,
+                                                                        null, null, null, null,
+                                                                        null);
     }
 
     @ApiOperation(value = "Active traffic disorders Datex2 messages",
@@ -294,4 +304,30 @@ public class DataController {
         final int month) {
         return datex2DataService.findWeightRestrictions(situationId, year, month);
     }
+
+    @ApiOperation("Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
+    @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of sensor constants and values"))
+    public TmsSensorConstantRootDto tmsSensorConstants(
+        @ApiParam("If parameter is given result will only contain update status")
+        @RequestParam(value=DataController.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+        boolean lastUpdated) {
+        return tmsDataService.findPublishableSensorConstants(lastUpdated);
+    }
+
+//    // TODO FIXME only for testing, must be removed
+//    @ApiOperation(value = "Work Machine Tracking data")
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+//    public List<WorkMachineTracking> workMachineTrackings() {
+//        return maintenanceDataService.findAll();
+//    }
+//
+//    // TODO FIXME only for testing, must be removed
+//    @ApiOperation(value = "Work Machine Observation data")
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
+//    public List<WorkMachineObservation> workMachineObservations() {
+//        return maintenanceDataService.finAllWorkMachineObservations();
+//    }
 }

@@ -48,7 +48,7 @@ Before building application with tests enabled install test db for it! (**See ci
 
 ### Running the application
 
-    $ mvn spring-boot:run -Drun.profiles=localhost # localhost is default, you may leave it out :)
+    $ mvn spring-boot:run -Dspring-boot.run.profiles=localhost # localhost is default, you may leave it out :)
 
 Or build the JAR file with:
 

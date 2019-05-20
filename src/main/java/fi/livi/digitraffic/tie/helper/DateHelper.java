@@ -29,8 +29,8 @@ public final class DateHelper {
         return second;
     }
 
-    public static ZonedDateTime toZonedDateTime(final XMLGregorianCalendar calendar) {
-        return calendar == null ? null : calendar.toGregorianCalendar().toZonedDateTime();
+    public static ZonedDateTime toZonedDateTimeAtUtc(final XMLGregorianCalendar calendar) {
+        return calendar == null ? null : toZonedDateTimeAtUtc(calendar.toGregorianCalendar().toInstant());
     }
 
     /**
@@ -49,7 +49,7 @@ public final class DateHelper {
                                 calendar.getSecond(),
                                 0,
                                 calendar.getTimezone());
-                return toZonedDateTime(calSeconds);
+                return toZonedDateTimeAtUtc(calSeconds);
             } catch (final DatatypeConfigurationException e) {
                 throw new IllegalArgumentException("Failed to convert XMLGregorianCalendar " + calendar + " to XMLGregorianCalendar with out millis.", e);
             }
@@ -57,12 +57,16 @@ public final class DateHelper {
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTime(final Instant instant) {
+    public static ZonedDateTime toZonedDateTimeAtUtc(final ZonedDateTime zonedDateTime) {
+        return zonedDateTime == null ? null : toZonedDateTimeAtUtc(zonedDateTime.toInstant());
+    }
+
+    public static ZonedDateTime toZonedDateTimeAtUtc(final Instant instant) {
         return instant == null ? null : instant.atZone(UTC);
     }
 
-    public static ZonedDateTime toZonedDateTime(final Date from) {
-        return from == null ? null : toZonedDateTime(from.toInstant());
+    public static ZonedDateTime toZonedDateTimeAtUtc(final Date from) {
+        return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }
 
     public static Date toDate(final ZonedDateTime zonedDateTime) {

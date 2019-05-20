@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -50,8 +50,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     private static float sensorValueToSet = new Random().nextInt(1000);
 
-    @Autowired
-    private RoadStationSensorService roadStationSensorService;
     @Autowired
     private WeatherStationService weatherStationService;
 
@@ -66,22 +64,26 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Test
     public void testPerformanceForReceivedMessages() throws JMSException, IOException {
 
-        final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService
-            .findAllPublishableWeatherStationsMappedByLotjuId();
-
+        final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater = createTiesaaMittatietoJMSDataUpdater();
+        final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener = createTiesaaMittatietoJMSMessageListener(dataUpdater);
+        final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
-        final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener =
-            createTiesaaMittatietoJMSMessageListener(dataUpdater);
-
-
-        final List<RoadStationSensor> availableSensors = getAvailableRoadStationSensors();
+        // subset of 100 stations
+        List<Long> lotjuIds = weatherStationsWithLotjuId.keySet().stream().collect(Collectors.toList())
+                                  .subList(0 , Math.min(100, weatherStationsWithLotjuId.size()));
+        weatherStationsWithLotjuId.keySet().retainAll(lotjuIds);
+        // Generate previous sensor values so that sensor update is mostly only updating old values
+        generateSensorValuesFor(weatherStationsWithLotjuId.values(),
+                                publishableSensors.subList(0, publishableSensors.size()-1),
+                                jmsMessageListener);
 
         Iterator<WeatherStation> stationsIter = weatherStationsWithLotjuId.values().iterator();
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * (long)(1000 * 2.5);
+        // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
+        final long maxHandleTime = testBurstsLeft * 3000L;
         final List<TiesaaProtos.TiesaaMittatieto> data = new ArrayList<>();
         Instant time = Instant.now();
 
@@ -97,24 +99,29 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
                 final WeatherStation currentStation = stationsIter.next();
 
-                TiesaaProtos.TiesaaMittatieto tiesaa =
-                    generateTiesaaMittatieto(time, availableSensors, currentStation.getLotjuId());
+                List<TiesaaProtos.TiesaaMittatieto> tiesaas =
+                    generateTiesaaMittatieto(time, publishableSensors, currentStation.getLotjuId(), 2);
 
-                data.add(tiesaa);
+                for (TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
+                    data.add(tiesaa);
+                    jmsMessageListener.onMessage(createBytesMessage(tiesaa));
+                }
 
-                time = time.plusMillis(1000);
+                time = time.plusMillis(2000);
 
-                jmsMessageListener.onMessage(createBytesMessage(tiesaa));
-
-                if (data.size() >= 100 || weatherStationsWithLotjuId.size() <= data.size()) {
+                if (data.size() >= 100 * tiesaas.size() || weatherStationsWithLotjuId.size() * tiesaas.size() <= data.size()) {
                     break;
                 }
             }
 
             // Create data for non existing station to test that data will be updated even if there is data for non existing station.
-            TiesaaProtos.TiesaaMittatieto tiesaa = generateTiesaaMittatieto(Instant.now(), availableSensors, NON_EXISTING_STATION_LOTJU_ID);
-            data.add(tiesaa);
-            jmsMessageListener.onMessage(createBytesMessage(tiesaa));
+            List<TiesaaProtos.TiesaaMittatieto> nonExistingTiesaas =
+                generateTiesaaMittatieto(Instant.now(), publishableSensors,
+                                         NON_EXISTING_STATION_LOTJU_ID, 2);
+            for (TiesaaProtos.TiesaaMittatieto nonExistingTiesaa : nonExistingTiesaas) {
+                data.add(nonExistingTiesaa);
+                jmsMessageListener.onMessage(createBytesMessage(nonExistingTiesaa));
+            }
 
             sw.stop();
             log.info("Data generation tookMs={}", sw.getTime());
@@ -141,7 +148,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
 
         // Assert sensor values are updated to db
-        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).collect(Collectors.toList());
+        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).distinct().collect(Collectors.toList());
 
         // Clear because data has been changed by jmsMessageListener directly to db and entity manager doesn't know about it
         entityManager.clear();
@@ -155,34 +162,56 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
     }
 
-    private static TiesaaProtos.TiesaaMittatieto generateTiesaaMittatieto(final Instant measurementTime,
-                                                                          final List<RoadStationSensor> availableSensors,
-                                                                          final Long currentStationLotjuId) {
-        final TiesaaProtos.TiesaaMittatieto.Builder tiesaaMittatietoBuilder = TiesaaProtos.TiesaaMittatieto.newBuilder();
+    private void generateSensorValuesFor(final Collection<WeatherStation> stations,
+                                         final List<RoadStationSensor> publishableSensors,
+                                         final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener)
+        throws IOException, JMSException {
+        for (WeatherStation station : stations) { ;
+            jmsMessageListener.onMessage(
+                createBytesMessage(generateTiesaaMittatieto(Instant.now(), publishableSensors,
+                                                            station.getLotjuId(),1).get(0)));
+        }
+        jmsMessageListener.drainQueueScheduled();
+    }
 
-        tiesaaMittatietoBuilder.setAsemaId(currentStationLotjuId);
-        tiesaaMittatietoBuilder.setAika(measurementTime.toEpochMilli());
+    private static List<TiesaaProtos.TiesaaMittatieto> generateTiesaaMittatieto(final Instant measurementTime,
+                                                                                final List<RoadStationSensor> availableSensors,
+                                                                                final Long currentStationLotjuId,
+                                                                                final int splitToMessages) {
+        ArrayList<TiesaaProtos.TiesaaMittatieto.Builder> builders = new ArrayList<>();
+        for (int i = 0; i < splitToMessages; i++) {
+            final TiesaaProtos.TiesaaMittatieto.Builder builder = TiesaaProtos.TiesaaMittatieto.newBuilder();
+            builders.add(builder);
+            builder.setAsemaId(currentStationLotjuId);
+            builder.setAika(measurementTime.plusMillis(i*1000).toEpochMilli());
+        }
 
         // Generate update-data
-        log.info("Start with arvo " + sensorValueToSet);
+        log.debug("Start with arvo " + sensorValueToSet);
 
+        Iterator<TiesaaProtos.TiesaaMittatieto.Builder> iter = builders.iterator();
         for (final RoadStationSensor availableSensor : availableSensors) {
             final TiesaaProtos.TiesaaMittatieto.Anturi.Builder anturiBuilder = TiesaaProtos.TiesaaMittatieto.Anturi.newBuilder();
 
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(sensorValueToSet));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-            log.info("Asema {} set anturi {} arvo {}", currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
-            tiesaaMittatietoBuilder.addAnturi(anturiBuilder.build());
+            log.debug("Asema {} set anturi {} arvo {}", currentStationLotjuId,  availableSensor.getLotjuId(), NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
 
+            if (!iter.hasNext()) {
+                iter = builders.iterator();
+            }
+            final TiesaaProtos.TiesaaMittatieto.Builder builder = iter.next();
+
+            builder.addAnturi(anturiBuilder.build());
             // Increase value for every sensor to validate correct updates
             sensorValueToSet++;
 
-            if (tiesaaMittatietoBuilder.getAnturiList().size() >= 30) {
+            if (builders.stream().mapToInt(b -> b.getAnturiCount()).sum() >= 30) {
                 break;
             }
         }
-        log.info("End with arvo={}", sensorValueToSet - 1);
-        return tiesaaMittatietoBuilder.build();
+        log.debug("End with arvo={}", sensorValueToSet - 1);
+        return builders.stream().map(b -> b.build()).collect(Collectors.toList());
     }
 
     private static BytesMessage createBytesMessage(final TiesaaProtos.TiesaaMittatieto tiesaa) throws JMSException, IOException {
@@ -239,7 +268,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     public void assertDataIsJustUpdated() {
-        final ZonedDateTime lastUpdated = roadStationSensorService.getSensorValueLastUpdated(RoadStationType.WEATHER_STATION);
+        final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
         assertLastUpdated(lastUpdated);
 
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(lastUpdated.minusSeconds(1), RoadStationType.WEATHER_STATION);
@@ -247,15 +276,10 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     private static void assertLastUpdated(final ZonedDateTime lastUpdated) {
-        final ZonedDateTime limit = DateHelper.toZonedDateTime(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime limit = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         assertTrue(String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit), lastUpdated.isAfter(limit));
 
-    }
-
-    private List<RoadStationSensor> getAvailableRoadStationSensors() {
-        return roadStationSensorService
-            .findAllNonObsoleteAndAllowedRoadStationSensors(RoadStationType.WEATHER_STATION);
     }
 
     private JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSDataUpdater() {

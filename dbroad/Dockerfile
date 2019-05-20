@@ -1,15 +1,10 @@
-FROM java:8
-
-MAINTAINER Digitraffic
+# this is used just for waiting postgresql to initialize
+FROM postgres:9.6.12
 
 RUN \
-  apt-get update && \
-  apt-get -y install \
-    maven \
-    postgresql-client && \
-  rm -rf /var/lib/apt/lists/*
+apt-get update && \
+apt-get -y install \
+  maven && \
+rm -rf /var/lib/apt/lists/*
 
-COPY files/flyway.conf /flyway.conf
-COPY files/pom.xml /pom.xml
-COPY files/wait-for-postgres.sh /wait-for-postgres.sh
-COPY files/init-db.sh /init-db.sh
+COPY files/flyway.conf files/pom.xml files/wait-for-postgres.sh files/init-db.sh /

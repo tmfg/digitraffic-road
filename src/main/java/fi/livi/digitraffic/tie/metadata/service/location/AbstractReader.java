@@ -24,8 +24,9 @@ import com.opencsv.CSVReader;
 public abstract class AbstractReader<T> {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    protected static final char DELIMETER_SEMICOLON = ';';
-    protected static final char DELIMETER_TAB = '\t';
+    protected static final char DELIMITER_COMMA = ',';
+    protected static final char DELIMITER_SEMICOLON = ';';
+    protected static final char DELIMITER_TAB = '\t';
     protected static final char QUOTE = '\"';
 
     private final Charset charset;
@@ -41,7 +42,7 @@ public abstract class AbstractReader<T> {
     }
 
     protected AbstractReader(final String version) {
-        this(StandardCharsets.ISO_8859_1, DELIMETER_TAB, version);
+        this(StandardCharsets.ISO_8859_1, DELIMITER_TAB, version);
     }
 
     public List<T> read(final Path path) {

@@ -122,6 +122,11 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
+    public List<Long> findAllTmsStationsLotjuIds() {
+        return tmsStationRepository.findAllTmsStationsLotjuIds();
+    }
+
+    @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsByMappedByLotjuId() {
         final Map<Long, TmsStation> map = new HashMap<>();
         final List<TmsStation> all = tmsStationRepository.findAll();
@@ -163,11 +168,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
 
         return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
-    }
-
-    @Transactional(readOnly = true)
-    public List<TmsStation> findTmsStationsWithoutRoadStation() {
-        return tmsStationRepository.findByRoadStationIsNull();
     }
 
     @Transactional
@@ -313,14 +313,14 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     ZonedDateTime getMetadataLastUpdated() {
-        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA);
-        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA);
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 
     private ZonedDateTime getMetadataLastChecked() {
-        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
-        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTimeByDataType(DataType.TMS_STATION_METADATA_CHECK);
+        final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
+        final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA_CHECK);
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 }

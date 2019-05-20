@@ -10,11 +10,11 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON WeatherStation Feature Object
  */
-@ApiModel(description = "GeoJSON Feature Object of Weather Station", value = "Feature")
+@ApiModel(description = "GeoJSON Feature Object of Weather Station", value = "WeatherStationFeature")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class WeatherStationFeature implements Feature {
+public class WeatherStationFeature implements Feature<Point> {
 
-    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
+    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1, allowableValues = "Feature")
     private final String type = "Feature";
 
     @ApiModelProperty(value = "Road station id, same as WeatherStationProperties.roadStationId", required = true, position = 2)
@@ -26,14 +26,17 @@ public class WeatherStationFeature implements Feature {
     @ApiModelProperty(value = "Weather station properties", required = true, position = 4)
     private WeatherStationProperties properties = new WeatherStationProperties();
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public Point getGeometry() {
         return geometry;
     }
 
+    @Override
     public void setGeometry(final Point geometry) {
         this.geometry = geometry;
     }

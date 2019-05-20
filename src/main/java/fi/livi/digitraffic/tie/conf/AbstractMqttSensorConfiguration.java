@@ -58,7 +58,7 @@ public abstract class AbstractMqttSensorConfiguration {
             statisticsType = MqttRelayService.StatisticsType.WEATHER;
         }
 
-        lastUpdated = roadStationSensorService.getSensorValueLastUpdated(roadStationType);
+        lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(roadStationType);
 
         if (lastUpdated == null) {
             lastUpdated = ZonedDateTime.now();

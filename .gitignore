@@ -5,6 +5,7 @@
 # Nämä tiedostot sisältävät salaisuuksia. Ignore.
 /src/test/resources/application-test.properties
 /src/main/resources/application-localhost.properties
+/src/main/resources/application-localhost-daemon.properties
 /src/main/resources/application-virtualbox.properties
 /src/test/resources/application-localhost.properties
 
@@ -15,7 +16,13 @@
 # Lokitiedostot
 **/*.log
 **/*.log.gz
+**/*.tmp
+
+# no_commit tekstin sisältävät tiedostot
+**/*no_commit*
 
 # SchemaSpyn generoimat schemat ja kirjastot
 /dbroad/schemaspy/schema
 /dbroad/schemaspy/lib
+# Flyway
+/dbroad/flyway-dev/flyway-test.conf

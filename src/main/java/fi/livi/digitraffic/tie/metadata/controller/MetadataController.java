@@ -7,6 +7,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -26,10 +29,9 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureColle
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionService;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -40,7 +42,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "metadata", description = "Metadata for Digitraffic services")
+@Api(tags = "Metadata v1", description = "Metadata for Digitraffic services (Api version 1)")
 @RestController
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
@@ -56,7 +58,7 @@ public class MetadataController {
     static final String WEATHER_STATIONS_PATH = "/weather-stations";
     static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
 
-    private static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
+    public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
     static final String LOCATIONS_PATH = "/locations";
     private static final String LOCATION_VERSIONS_PATH = "/location-versions";
     private static final String LOCATION_TYPES_PATH = "/location-types";
@@ -66,15 +68,17 @@ public class MetadataController {
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
-    private final ForecastSectionService forecastSectionService;
+    private final ForecastSectionV1MetadataService forecastSectionService;
     private final LocationService locationService;
+
+    private static final Logger log = LoggerFactory.getLogger(LocationService.class);
 
     @Autowired
     public MetadataController(final CameraPresetService cameraPresetService,
                               final TmsStationService tmsStationService,
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
-                              final ForecastSectionService forecastSectionService,
+                              final ForecastSectionV1MetadataService forecastSectionService,
                               final LocationService locationService) {
         this.cameraPresetService = cameraPresetService;
         this.tmsStationService = tmsStationService;
@@ -187,7 +191,7 @@ public class MetadataController {
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
             final boolean lastUpdated) {
-        return forecastSectionService.findForecastSectionsMetadata(lastUpdated);
+        return forecastSectionService.findForecastSectionsV1Metadata(lastUpdated);
     }
 
     @ApiOperation("The static information of locations")
@@ -200,7 +204,8 @@ public class MetadataController {
 
             @ApiParam("If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    final boolean lastUpdated) {
+                    final boolean lastUpdated) throws JsonProcessingException {
+
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
 

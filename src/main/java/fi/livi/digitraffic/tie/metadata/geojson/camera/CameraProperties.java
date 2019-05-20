@@ -12,12 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = WeatherStationProperties.class)
+@ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = RoadStationProperties.class)
 @JsonPropertyOrder({ "roadStationId", "presetId", "cameraId", "naturalId", "name", "cameraType" })
 public class CameraProperties extends RoadStationProperties {
 

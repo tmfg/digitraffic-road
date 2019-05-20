@@ -14,30 +14,35 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Service
 public class ForecastSectionDataService {
-    private final DataUpdatedRepository dataUpdatedRepository;
 
     private final ForecastSectionWeatherDao forecastSectionWeatherDao;
+    private final DataStatusService dataStatusService;
 
     @Autowired
-    public ForecastSectionDataService(final DataUpdatedRepository dataUpdatedRepository,
-                                      final ForecastSectionWeatherDao forecastSectionWeatherDao) {
-        this.dataUpdatedRepository = dataUpdatedRepository;
+    public ForecastSectionDataService(final ForecastSectionWeatherDao forecastSectionWeatherDao,
+                                      final DataStatusService dataStatusService) {
         this.forecastSectionWeatherDao = forecastSectionWeatherDao;
+        this.dataStatusService = dataStatusService;
     }
 
-    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final boolean onlyUpdateInfo) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(DataType.FORECAST_SECTION_WEATHER_DATA.toString());
-        final ZonedDateTime updatedTime = updated == null ? null : updated.getUpdatedTime();
+    public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo,
+                                                                       final Integer roadNumber,
+                                                                       final Double minLongitude, final Double minLatitude,
+                                                                       final Double maxLongitude, final Double maxLatitude,
+                                                                       final List<String> naturalIds) {
+        final ZonedDateTime updatedTime = dataStatusService.findDataUpdatedTime(getDataType(version));
 
-        if(onlyUpdateInfo) {
+        if (onlyUpdateInfo) {
             return new ForecastSectionWeatherRootDto(updatedTime);
         }
 
-        final Map<String, List<RoadConditionDto>> forecastSectionWeatherData = forecastSectionWeatherDao.getForecastSectionWeatherData();
+        final Map<String, List<RoadConditionDto>> forecastSectionWeatherData =
+            forecastSectionWeatherDao.getForecastSectionWeatherData(version, roadNumber, minLongitude, minLatitude, maxLongitude, maxLatitude, naturalIds);
 
         return new ForecastSectionWeatherRootDto(
                 updatedTime,
@@ -48,5 +53,13 @@ public class ForecastSectionDataService {
         return forecastSectionWeatherData.entrySet().stream()
             .map(w -> new ForecastSectionWeatherDataDto(w.getKey(), w.getValue()))
             .collect(Collectors.toList());
+    }
+
+    private DataType getDataType(final ForecastSectionApiVersion version) {
+        switch (version) {
+        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
+        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        default: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        }
     }
 }

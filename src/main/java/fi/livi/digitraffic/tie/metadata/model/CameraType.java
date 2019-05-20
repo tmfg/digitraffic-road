@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraTyyppi;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraTyyppi;
 
 public enum CameraType {
 

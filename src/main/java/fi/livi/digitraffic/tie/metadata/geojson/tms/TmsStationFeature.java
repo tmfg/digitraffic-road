@@ -12,9 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "GeoJSON Feature Object", value = "TmsStationFeature")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class TmsStationFeature implements Feature {
+public class TmsStationFeature implements Feature<Point> {
 
-    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
+    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1, allowableValues = "Feature")
     @JsonPropertyOrder(value = "1")
     private final String type = "Feature";
 
@@ -30,14 +30,17 @@ public class TmsStationFeature implements Feature {
     @JsonPropertyOrder(value = "4")
     private TmsStationProperties properties = new TmsStationProperties();
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public Point getGeometry() {
         return geometry;
     }
 
+    @Override
     public void setGeometry(final Point geometry) {
         this.geometry = geometry;
     }

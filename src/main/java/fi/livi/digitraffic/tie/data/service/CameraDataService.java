@@ -27,7 +27,7 @@ public class CameraDataService {
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTimeAtUtc(cameraPresetRepository.getLatestMeasurementTime());
 
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
@@ -40,7 +40,7 @@ public class CameraDataService {
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final String cameraId) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTime(cameraPresetRepository.getLatestMeasurementTime());
+        final ZonedDateTime updated = DateHelper.toZonedDateTimeAtUtc(cameraPresetRepository.getLatestMeasurementTime());
         final List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(cameraId);
 

@@ -102,8 +102,8 @@ public class CameraPresetService {
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 findAllPublishableCameraPresets(),
-                dataStatusService.findDataUpdatedTimeByDataType(DataType.CAMERA_STATION_METADATA),
-                dataStatusService.findDataUpdatedTimeByDataType(DataType.CAMERA_STATION_METADATA_CHECK));
+                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA),
+                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA_CHECK));
     }
 
     @Transactional(readOnly = true)

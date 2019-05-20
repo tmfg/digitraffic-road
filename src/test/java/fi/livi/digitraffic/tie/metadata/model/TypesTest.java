@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraTyyppi;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.AjoneuvoluokkaTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LaiteTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaTyyppi;
@@ -25,7 +25,7 @@ public class TypesTest {
 
     @Test
     public void testAllCameraStationCollectionStates() {
-        for (final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KeruunTILA kt : fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KeruunTILA.values()) {
+        for (final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KeruunTILA kt : fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KeruunTILA.values()) {
             assertNotNull(CollectionStatus.convertKeruunTila(kt));
         }
     }
@@ -53,7 +53,7 @@ public class TypesTest {
 
     @Test
     public void testAllCameraRoadStationStates() {
-        for (final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi tt : fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.TilaTyyppi.values()) {
+        for (final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi tt : fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.values()) {
             assertNotNull(RoadStationState.fromTilaTyyppi(tt));
         }
     }

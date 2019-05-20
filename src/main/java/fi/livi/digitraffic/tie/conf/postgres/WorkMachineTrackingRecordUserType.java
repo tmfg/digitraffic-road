@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.conf.SpringContext;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTrackingRecord;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingRecord;
 
 public class WorkMachineTrackingRecordUserType implements UserType {
 
@@ -100,7 +100,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
         try {
             return getReader().readValue(cellContent.getBytes("UTF-8"));
         } catch (final Exception ex) {
-            throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to convert String to WorkMachineTrackingRecord: " + ex.getMessage(), ex);
         }
     }
 
@@ -125,8 +125,20 @@ public class WorkMachineTrackingRecordUserType implements UserType {
         }
     }
 
+    /**
+     * Return a deep copy of the persistent state, stopping at entities and at
+     * collections. It is not necessary to copy immutable objects, or null
+     * values, in which case it is safe to simply return the argument.
+     *
+     * @param value the object to be cloned, which may be null
+     * @return Object a copy
+     */
     @Override
     public Object deepCopy(Object value) throws HibernateException {
+        if (!isMutable()) {
+            return value;
+        }
+
         try {
             // use serialization to create a deep copy
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -145,7 +157,7 @@ public class WorkMachineTrackingRecordUserType implements UserType {
 
     @Override
     public boolean isMutable() {
-        return true;
+        return false;
     }
 
     @Override

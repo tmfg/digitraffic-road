@@ -41,7 +41,7 @@ public class Datex2TrafficAlertMessageUpdater {
         for (final Pair<String, Instant> message : messages) {
             final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(message.getLeft());
 
-            unmarshalled.add(new Datex2MessageDto(message.getLeft(), DateHelper.toZonedDateTime(message.getRight()), d2));
+            unmarshalled.add(new Datex2MessageDto(message.getLeft(), DateHelper.toZonedDateTimeAtUtc(message.getRight()), d2));
         }
         datex2UpdateService.updateTrafficAlerts(unmarshalled);
     }

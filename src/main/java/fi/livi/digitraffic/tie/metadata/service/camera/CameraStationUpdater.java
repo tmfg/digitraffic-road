@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._03._12.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 
 @Service
 public class CameraStationUpdater {
-    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraStationUpdater.class);
 
     private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
     private final CameraStationUpdateService cameraStationUpdateService;
