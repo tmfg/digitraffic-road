@@ -32,6 +32,7 @@
 
     <repositories>
         <!-- PLACEHOLDER -->
+        <repository><id>digitraffic</id><name>Digitraffic Solita Repository</name><url>http://dtmvn.solita.fi/repository/internal/</url></repository>
     </repositories>
 
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
@@ -146,6 +147,13 @@
         </dependency>
 
         <!-- Helpers and others -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-ri</artifactId>
+            <version>2.3.0</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
