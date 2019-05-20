@@ -26,3 +26,4 @@
 /dbroad/schemaspy/lib
 # Flyway
 /dbroad/flyway-dev/flyway-test.conf
+/pom.xml.versionsBackup
