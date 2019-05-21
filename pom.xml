@@ -32,7 +32,6 @@
 
     <repositories>
         <!-- PLACEHOLDER -->
-        <repository><id>digitraffic</id><name>Digitraffic Solita Repository</name><url>http://dtmvn.solita.fi/repository/internal/</url></repository>
     </repositories>
 
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
