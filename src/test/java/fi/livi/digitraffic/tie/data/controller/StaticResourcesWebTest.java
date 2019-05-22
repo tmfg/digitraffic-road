@@ -37,6 +37,5 @@ public class StaticResourcesWebTest extends AbstractRestWebTest {
         final String location = StringUtils.substringAfter(content, "schemaLocation=\"");
         Assert.assertTrue(dtDomainUrl.length() > 0);
         Assert.assertEquals(dtDomainUrl, location.substring(0, dtDomainUrl.length()));
-        ;
     }
 }
