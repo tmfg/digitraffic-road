@@ -1,10 +1,13 @@
 package fi.livi.digitraffic.tie.conf;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.resource.TransformedResource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -50,21 +54,38 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
 
     private final ConfigurableApplicationContext applicationContext;
 
+    // Match when there is no http in location start
+    private final static String SCHEMA_LOCATION_REGEXP = "schemaLocation=\"((?!http))";
+    private final static String SCHEMA_PATH = "/schemas/datex2/";
+    private final String schemaDomainUrlAndPath;
+
     @Autowired
-    public RoadApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
+    public RoadApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
+                                        final @Value("${dt.domain.url}") String schemaDomainUrl) {
         this.applicationContext = applicationContext;
+        this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
     }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // put first
-        converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter());
+        converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter(schemaDomainUrlAndPath));
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Add datex2 schema locations to default static file path
-        registry.addResourceHandler("/schemas/datex2/**").addResourceLocations("classpath:/schemas/datex2/");
+        // Add datex2 schema locations to default static file path and
+        registry.addResourceHandler(SCHEMA_PATH + "/**")
+            .addResourceLocations("classpath:/schemas/datex2/")
+            // cache resource -> this is converted only once per resource
+            .resourceChain(true)
+            // add current domain and path to schemaLocation-attribute
+            .addTransformer((request, resource, transformerChain) -> {
+                final String schema = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
+                final String newSchema =
+                    RegExUtils.replaceAll(schema, SCHEMA_LOCATION_REGEXP, String.format("schemaLocation=\"%s", schemaDomainUrlAndPath));
+                return new TransformedResource(resource, newSchema.getBytes());
+            });
     }
 
     @Bean

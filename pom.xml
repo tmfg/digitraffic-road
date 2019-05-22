@@ -445,7 +445,7 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <xsdOptions>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_0.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
                                     <extensionArgs>
                                         <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
