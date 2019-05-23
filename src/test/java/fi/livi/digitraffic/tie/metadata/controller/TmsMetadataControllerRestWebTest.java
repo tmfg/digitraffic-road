@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
@@ -43,8 +43,8 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
 
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadWebApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.TMS_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
@@ -68,8 +68,8 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testTmsStationSensorsMetadataRestApi() throws Exception {
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+            RoadWebApplicationConfiguration.API_METADATA_PART_PATH +
             MetadataController.TMS_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
             .andExpect(content().contentType(CONTENT_TYPE))

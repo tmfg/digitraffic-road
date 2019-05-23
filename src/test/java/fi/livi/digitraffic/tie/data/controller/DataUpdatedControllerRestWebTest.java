@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
@@ -59,8 +59,8 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
        final List<Field> fields = Stream.of(fieldArray).filter(this::filter).collect(Collectors.toList());
 
         for(final Field field : fields) {
-            final String url = RoadApplicationConfiguration.API_V1_BASE_PATH +
-                         RoadApplicationConfiguration.API_DATA_PART_PATH +
+            final String url = RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+                         RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                          field.get(dataController) +
                          "?" + DataController.LAST_UPDATED_PARAM + "=true";
 

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
@@ -124,8 +124,8 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
     private void postTracking(final String fileName, final MediaType mediaType, final ResultMatcher expectResult) throws Exception {
         final String jsonContent = readResourceContent("classpath:harja/controller/" + fileName);
 
-        final MockHttpServletRequestBuilder post = post(RoadApplicationConfiguration.API_V1_BASE_PATH +
-            RoadApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.WORK_MACHINE_TRACKING_PATH)
+        final MockHttpServletRequestBuilder post = post(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+            RoadWebApplicationConfiguration.API_MAINTENANCE_PART_PATH + MaintenanceController.WORK_MACHINE_TRACKING_PATH)
             .content(jsonContent);
         if (mediaType != null) {
             post.contentType(mediaType);

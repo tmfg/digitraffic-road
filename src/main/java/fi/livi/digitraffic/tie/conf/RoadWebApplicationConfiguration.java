@@ -42,7 +42,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
     enableDefaultTransactions = false)
 @EnableTransactionManagement
 @EnableRetry
-public class RoadApplicationConfiguration implements WebMvcConfigurer {
+public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_V2_BASE_PATH = "/api/v2";
@@ -60,8 +60,8 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
     private final String schemaDomainUrlAndPath;
 
     @Autowired
-    public RoadApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
-                                        final @Value("${dt.domain.url}") String schemaDomainUrl) {
+    public RoadWebApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
+                                           final @Value("${dt.domain.url}") String schemaDomainUrl) {
         this.applicationContext = applicationContext;
         this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
     }
