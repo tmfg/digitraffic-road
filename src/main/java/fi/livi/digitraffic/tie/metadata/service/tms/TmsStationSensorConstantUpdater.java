@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.metadata.model.DataType;
@@ -13,6 +14,7 @@ import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataSer
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 
+@ConditionalOnNotWebApplication
 @Service
 public class TmsStationSensorConstantUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorConstantUpdater.class);

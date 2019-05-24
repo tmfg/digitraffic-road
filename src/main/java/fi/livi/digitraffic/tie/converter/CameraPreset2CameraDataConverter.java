@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.dto.camera.CameraPresetDataDto;
@@ -21,6 +22,7 @@ import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConve
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
+@ConditionalOnWebApplication
 @Component
 public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFeatureConverter {
 

@@ -18,6 +18,7 @@ import javax.persistence.metamodel.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,8 @@ public class CameraPresetService {
 
     @Autowired
     public CameraPresetService(final EntityManager entityManager,
-                               final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
+                               // Only for WebApp TODO move to another service (WebApp) and remove Lazy
+                               @Lazy final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
                                final DataStatusService dataStatusService,
                                final CameraPresetRepository cameraPresetRepository,
                                final RoadStationRepository roadStationRepository,
@@ -96,6 +98,7 @@ public class CameraPresetService {
         return cameraPresetRepository.findAllCameraPresetsWithoutRoadStation();
     }
 
+    // TODO move to new WebApp service cameraPresetMetadata2FeatureConverter doesn't exists for daemon
     @Transactional(readOnly = true)
     public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
         return cameraPresetMetadata2FeatureConverter.convert(

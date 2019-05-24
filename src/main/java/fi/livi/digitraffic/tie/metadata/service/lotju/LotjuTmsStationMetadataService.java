@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
@@ -31,6 +32,7 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 
+@ConditionalOnNotWebApplication
 @Service
 public class LotjuTmsStationMetadataService {
 

@@ -1,0 +1,29 @@
+# daemon or web
+app.type=web
+
+# Web application type. Should be none for daemon process
+spring.main.web-application-type=servlet
+
+# For WebAbblication
+dt.domain.url=http://localhost:9010
+
+# Http-server port
+server.port = 9010
+
+# Datasource
+road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
+road.datasource.username=road
+road.datasource.password=road
+
+# Weathercam url for public fetch. Append camera preset + .jpg to get image url
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
+
+# disable healthchecks
+management.health.jms.enabled=false
+management.health.db.enabled=false
+
+# Developer life improvements
+logging.level.root=INFO
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

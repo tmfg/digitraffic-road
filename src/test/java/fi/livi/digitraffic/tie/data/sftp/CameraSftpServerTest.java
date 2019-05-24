@@ -38,7 +38,6 @@ import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
@@ -116,7 +115,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         final ArrayList<CameraPreset> missingCameraPresets = new ArrayList<>();
         while (i < 5) {
             i++;
-            missingCameraPresets.add(generateMissingDummyPreset());
+            missingCameraPresets.add(generateDummyPreset());
         }
 
         Session session = this.sftpSessionFactory.getSession();
@@ -171,22 +170,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         try (final Session session = this.sftpSessionFactory.getSession()) {
             assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
         }
-    }
-
-    private CameraPreset generateMissingDummyPreset() {
-        CameraPreset cp = new CameraPreset();
-        String cameraId = "X" + RandomUtils.nextLong(10000, 100000);
-        String direction = String.valueOf(RandomUtils.nextLong(10, 100));
-        cp.setPresetId(cameraId + direction);
-        cp.setCameraId(cameraId);
-        final RoadStation rs = new RoadStation(RoadStationType.CAMERA_STATION);
-        rs.setNaturalId(RandomUtils.nextLong(1, 1000) * -1 );
-        rs.setLotjuId(rs.getNaturalId());
-        cp.setLotjuId(rs.getNaturalId());
-        cp.setCameraLotjuId(rs.getNaturalId());
-        rs.setName(cameraId);
-        cp.setRoadStation(rs);
-        return cp;
     }
 
     private KuvaProtos.Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data, final int httpResponseDelay) {

@@ -7,41 +7,55 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
-    private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
+    private RoadStationService roadStationService;
 
     @Autowired
-    private TmsStationSensorUpdater tmsStationSensorUpdater;
+    private TmsStationRepository tmsStationRepository;
 
     @Autowired
-    private TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
+    private RoadStationSensorService roadStationSensorService;
 
-    @Autowired
-    private TmsStationUpdater tmsStationUpdater;
+    @Before
+    public void initData() {
+        roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, Collections.emptyList());
+        TmsStation ts = generateDummyTmsStation();
+        tmsStationRepository.save(ts);
+
+        List<RoadStationSensor> publishable =
+            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
+
+        Assert.assertFalse(publishable.isEmpty());
+
+        roadStationSensorService.updateSensorsOfWeatherStations(ts.getRoadStationId(),
+            RoadStationType.TMS_STATION,
+            publishable.stream().map(s -> s.getLotjuId()).collect(Collectors.toList()));
+    }
+
 
     @Test
     public void testTmsMetadataRestApi() throws Exception {
-
-        // Init data
-        lotjuLAMMetatiedotServiceMock.initStateAndService();
-
-        // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
-        tmsStationSensorUpdater.updateRoadStationSensors();
-        tmsStationUpdater.updateTmsStations();
-        tmsStationsSensorsUpdater.updateTmsStationsSensors();
 
         mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
                             RoadWebApplicationConfiguration.API_METADATA_PART_PATH +

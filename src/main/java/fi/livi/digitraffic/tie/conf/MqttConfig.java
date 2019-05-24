@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 
 @ConditionalOnProperty("mqtt.enabled")
+@ConditionalOnNotWebApplication
 @Configuration
 @EnableIntegration
 @IntegrationComponentScan

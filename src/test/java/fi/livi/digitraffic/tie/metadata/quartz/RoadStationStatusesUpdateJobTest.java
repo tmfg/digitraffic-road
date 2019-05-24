@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpd
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
-public class RoadStationStatusesUpdateJobTest extends AbstractTest {
+public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTest {
 
     @Autowired
     private RoadStationService roadStationService;

@@ -11,21 +11,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Table;
-
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.TmsSensorConstant;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 
+@ConditionalOnNotWebApplication
 @Service
 public class TmsStationsSensorsUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationsSensorsUpdater.class);
