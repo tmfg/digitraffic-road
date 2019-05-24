@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -30,7 +31,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraWebService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
@@ -62,9 +63,8 @@ public class MetadataController {
     static final String LOCATIONS_PATH = "/locations";
     private static final String LOCATION_VERSIONS_PATH = "/location-versions";
     private static final String LOCATION_TYPES_PATH = "/location-types";
-    private static final String TRAVEL_TIME_LINKS_PATH = "/travel-time-links";
 
-    private final CameraPresetService cameraPresetService;
+    private final CameraWebService cameraWebService;
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;
     private final RoadStationSensorService roadStationSensorService;
@@ -74,13 +74,13 @@ public class MetadataController {
     private static final Logger log = LoggerFactory.getLogger(LocationService.class);
 
     @Autowired
-    public MetadataController(final CameraPresetService cameraPresetService,
+    public MetadataController(final CameraWebService cameraWebService,
                               final TmsStationService tmsStationService,
                               final WeatherStationService weatherStationService,
                               final RoadStationSensorService roadStationSensorService,
                               final ForecastSectionV1MetadataService forecastSectionService,
                               final LocationService locationService) {
-        this.cameraPresetService = cameraPresetService;
+        this.cameraWebService = cameraWebService;
         this.tmsStationService = tmsStationService;
         this.weatherStationService = weatherStationService;
         this.roadStationSensorService = roadStationSensorService;
@@ -154,7 +154,7 @@ public class MetadataController {
                     @ApiParam("If parameter is given result will only contain update status.")
                     @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
                     final boolean lastUpdated) {
-        return cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
+        return cameraWebService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
 
     @ApiOperation("The static information of weather stations")
