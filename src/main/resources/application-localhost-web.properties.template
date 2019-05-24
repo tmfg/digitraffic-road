@@ -1,19 +1,19 @@
+# Datasource
+road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=road-local-web
+road.datasource.username=road
+road.datasource.password=road
+
 # daemon or web
 app.type=web
 
-# Web application type. Should be none for daemon process
+# Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=servlet
-
-# For WebAbblication
-dt.domain.url=http://localhost:9010
 
 # Http-server port
 server.port = 9010
 
-# Datasource
-road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
-road.datasource.username=road
-road.datasource.password=road
+# Domain for the app ie. https://digitraffic.fi
+dt.domain.url=http://localhost:9010
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
