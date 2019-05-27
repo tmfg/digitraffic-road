@@ -82,7 +82,7 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 # daemon or web
 app.type=web
 
-# Web application type. Should be none for daemon process
+# Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=servlet
 
 # Is metadata updates on. Should be true only for daemon process.
