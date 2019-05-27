@@ -40,9 +40,9 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 
-public abstract class AbstractSftpTest extends AbstractTest {
+public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSftpTest.class);
 

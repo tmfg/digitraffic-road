@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationDatex2Repository;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
+@ConditionalOnWebApplication
 @Service
 public class TmsStationDatex2Service {
 

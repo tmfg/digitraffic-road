@@ -5,21 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 
-public class CameraStationUpdateJobTest extends AbstractTest {
+public class CameraStationUpdateJobTest extends AbstractDaemonTest {
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
@@ -37,30 +35,26 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset
         cameraStationUpdater.updateCameras();
-        final CameraStationFeatureCollection allInitial = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
+
+        final List<CameraPreset> presetsInitial = cameraPresetService.findAllPublishableCameraPresets();
+        final long cameraCountIntitial = presetsInitial.stream().map(cp -> cp.getCameraId()).distinct().count();
         // cameras with lotjuId 443 in collection, 56 (no public presets) and 121 removed temporary, 2 public with 5 presets
-        assertEquals(3, allInitial.getFeatures().size());
-        int countPresets = 0;
-        for (final CameraStationFeature cameraStationFeature : allInitial.getFeatures()) {
-            countPresets = countPresets + cameraStationFeature.getProperties().getPresets().size();
-        }
+        assertEquals(3, cameraCountIntitial);
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public, 2 has 5 public
-        assertEquals(8, countPresets);
+        assertEquals(8, presetsInitial.size());
+        presetsInitial.forEach(cp -> entityManager.detach(cp));
 
         // Update 121 camera to active, 56 removed and 2 not public
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
 
-        final CameraStationFeatureCollection allAfterChange = cameraPresetService.findAllPublishableCameraStationsAsFeatureCollection(false);
+        final List<CameraPreset> presetsAfterUpdate = cameraPresetService.findAllPublishableCameraPresets();
+        final long cameraCountAfterUpdate = presetsAfterUpdate.stream().map(cp -> cp.getCameraId()).distinct().count();
 
         // 443 has 3 presets, 121 has 2
-        assertEquals(2, allAfterChange.getFeatures().size());
-        int countPresetsAfter = 0;
-        for (final CameraStationFeature cameraStationFeature : allAfterChange.getFeatures()) {
-            countPresetsAfter = countPresetsAfter + cameraStationFeature.getProperties().getPresets().size();
-        }
+        assertEquals(2, cameraCountAfterUpdate);
         // cameras with lotjuId 443 has 2 and 56 has 1 preset
-        assertEquals(5, countPresetsAfter);
+        assertEquals(5, presetsAfterUpdate.size());
 
 
         /*  Before:
@@ -77,72 +71,67 @@ public class CameraStationUpdateJobTest extends AbstractTest {
 
         // lotjuId 443
         // C0852001 is not public
-        assertNotNull(findWithPresetId(allInitial, "C0852001"));
-        assertNull(findWithPresetId(allInitial, "C0852002"));
-        assertNull(findWithPresetId(allInitial, "C0852009")); // preset not exists
+        assertNotNull(findWithPresetId(presetsInitial, "C0852001"));
+        assertNull(findWithPresetId(presetsInitial, "C0852002"));
+        assertNull(findWithPresetId(presetsInitial, "C0852009")); // preset not exists
         // lotjuId 121
-        assertNotNull(findWithPresetId(allInitial, "C0162801"));
-        assertNotNull(findWithPresetId(allInitial, "C0162802"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0162801"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0162802"));
         // lotjuId 2
-        assertNotNull(findWithPresetId(allInitial, "C0150200"));
-        assertNotNull(findWithPresetId(allInitial, "C0150202"));
-        assertNotNull(findWithPresetId(allInitial, "C0150201"));
-        assertNotNull(findWithPresetId(allInitial, "C0150204"));
-        assertNotNull(findWithPresetId(allInitial, "C0150209"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0150200"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0150202"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0150201"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0150204"));
+        assertNotNull(findWithPresetId(presetsInitial, "C0150209"));
         // 56: C0155600
-        assertNull(findWithPresetId(allInitial, "C0155600"));
+        assertNull(findWithPresetId(presetsInitial, "C0155600"));
 
         // 443: C0852001, C0852002 C0852009
-        assertNotNull(findWithPresetId(allAfterChange, "C0852001"));
-        assertNotNull(findWithPresetId(allAfterChange, "C0852002"));
-        assertNotNull(findWithPresetId(allAfterChange, "C0852009"));
+        assertNotNull(findWithPresetId(presetsAfterUpdate, "C0852001"));
+        assertNotNull(findWithPresetId(presetsAfterUpdate, "C0852002"));
+        assertNotNull(findWithPresetId(presetsAfterUpdate, "C0852009"));
         // 121: C0162801, C0162802
-        assertNotNull(findWithPresetId(allAfterChange, "C0162801"));
-        assertNotNull(findWithPresetId(allAfterChange, "C0162802"));
+        assertNotNull(findWithPresetId(presetsAfterUpdate, "C0162801"));
+        assertNotNull(findWithPresetId(presetsAfterUpdate, "C0162802"));
         // 2
-        assertNull(findWithPresetId(allAfterChange, "C0150200"));
-        assertNull(findWithPresetId(allAfterChange, "C0150202"));
-        assertNull(findWithPresetId(allAfterChange, "C0150201"));
-        assertNull(findWithPresetId(allAfterChange, "C0150204"));
-        assertNull(findWithPresetId(allAfterChange, "C0150209"));
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0150200"));
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0150202"));
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0150201"));
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0150204"));
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0150209"));
         // 56
-        assertNull(findWithPresetId(allAfterChange, "C0155600")); // removed from data set
+        assertNull(findWithPresetId(presetsAfterUpdate, "C0155600")); // removed from data set
 
         // Test C0852002/C0852003 changes
-        final CameraPresetDto before = findWithPresetId(allInitial, "C0852001");
-        final CameraPresetDto after = findWithPresetId(allAfterChange, "C0852002");
+        final CameraPreset before = findWithPresetId(presetsInitial, "C0852001");
+        final CameraPreset after = findWithPresetId(presetsAfterUpdate, "C0852002");
 
         assertTrue(EqualsBuilder.reflectionEquals(before,
                                                   after,
-             "resolution", "presetId", "directionCode", "imageUrl"));
+             false,
+             CameraPreset.class,
+             "id", "compression", "direction", "resolution", "presetId", "directionCode", "imageUrl", "roadStation", "nearestWeatherStation"));
         assertEquals("704x576", before.getResolution());
         assertEquals("1200x900", after.getResolution());
+        assertEquals("1", before.getDirection());
+        assertEquals("2", after.getDirection());
+
 
         // 443 Kunta changed
-        final CameraStationFeature beforeCam = findWithCameraId(allInitial, "C08520");
-        final CameraStationFeature afterCam = findWithCameraId(allAfterChange, "C08520");
-        assertEquals("Iisalmi", beforeCam.getProperties().getMunicipality());
-        assertEquals("Iidensalmi", afterCam.getProperties().getMunicipality());
+        final CameraPreset beforeCam = findWithCameraId(presetsInitial, "C08520");
+        final CameraPreset afterCam = findWithCameraId(presetsAfterUpdate, "C08520");
+        assertEquals("Iisalmi", beforeCam.getRoadStation().getMunicipality());
+        assertEquals("Iidensalmi", afterCam.getRoadStation().getMunicipality());
 
-        assertEquals("keli", beforeCam.getProperties().getPurpose());
-        assertEquals("liikenne", afterCam.getProperties().getPurpose());
+        assertEquals("keli", beforeCam.getRoadStation().getPurpose());
+        assertEquals("liikenne", afterCam.getRoadStation().getPurpose());
     }
 
-    private CameraPresetDto findWithPresetId(final CameraStationFeatureCollection collection, final String presetId) {
-
-        for (final CameraStationFeature cameraStationFeature : collection) {
-            final Optional<CameraPresetDto> initial =
-                    cameraStationFeature.getProperties().getPresets().stream()
-                            .filter(x -> x.getPresetId().equals(presetId))
-                            .findFirst();
-            if (initial.isPresent()) {
-                return initial.get();
-            }
-        }
-        return null;
+    private CameraPreset findWithPresetId(final List<CameraPreset> collection, final String presetId) {
+        return collection.stream().filter(cp -> cp.getPresetId().equals(presetId)).findFirst().orElseGet(() -> null);
     }
 
-    private CameraStationFeature findWithCameraId(final CameraStationFeatureCollection collection, final String cameraId) {
-        return collection.getFeatures().stream().filter(x -> x.getProperties().getCameraId().endsWith(cameraId)).findFirst().orElseGet(null);
+    private CameraPreset findWithCameraId(final List<CameraPreset> collection, final String cameraId) {
+        return collection.stream().filter(cp -> cp.getCameraId().equals(cameraId)).findFirst().orElseGet(() -> null);
     }
 }

@@ -9,32 +9,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
-    private LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceMock;
+    private RoadStationService roadStationService;
 
     @Autowired
-    private CameraStationUpdater cameraStationUpdater;
+    private CameraPresetService cameraPresetService;
+
+    @Before
+    public void initData() {
+        // Obsolete all existing stations
+        roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.CAMERA_STATION, Collections.emptyList());
+        CameraPreset cp = generateDummyPreset();
+
+        cameraPresetService.save(cp);
+    }
 
     @Test
     public void testCameraPresetMetadataRestApi() throws Exception {
-
-        // initialize state
-        lotjuKameraPerustiedotServiceMock.initStateAndService();
-        cameraStationUpdater.updateCameras();
 
         final ArrayList<String> cameraTypes = new ArrayList<>();
         for (final CameraType cameraType : CameraType.values()) {
@@ -46,8 +55,8 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
             directions.add(direction.name());
         }
 
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                            RoadApplicationConfiguration.API_METADATA_PART_PATH +
+        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadWebApplicationConfiguration.API_METADATA_PART_PATH +
                             MetadataController.CAMERA_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))

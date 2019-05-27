@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,8 @@ public class MaintenanceDataServiceTest extends AbstractWorkmachineDataServiceTe
      * For development
      */
     @Rollback(false)
-//    @Test
+    @Test
+    @Ignore("For manual integration testing")
     public void devTestConvertAllUnhandledWorkMachineTrackingsInDbToObservations() throws JsonProcessingException {
         int count = 0;
         do {
@@ -47,7 +49,8 @@ public class MaintenanceDataServiceTest extends AbstractWorkmachineDataServiceTe
      * For development
      */
     @Rollback(false)
-//    @Test
+    @Test
+    @Ignore("For manual integration testing")
     public void devTestConvertNext100UnhandledWorkMachineTrackingsInDbToObservations() throws JsonProcessingException {
         final int count = maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
         log.info("handleUnhandledWorkMachineTrackings handledCount={} trackings", count);

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.conf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @ConditionalOnProperty("mqtt.weather.enabled")
+@ConditionalOnNotWebApplication
 @Component
 public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(WeatherMqttConfiguration.class);

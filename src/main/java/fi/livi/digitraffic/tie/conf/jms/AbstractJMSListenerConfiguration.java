@@ -16,8 +16,6 @@ import javax.jms.Session;
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
@@ -28,8 +26,6 @@ import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
-@ConditionalOnProperty("jms.sonja.connection.enabled")
-@ConditionalOnNotWebApplication
 public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
     private static String STATISTICS_PREFIX = "STATISTICS:";

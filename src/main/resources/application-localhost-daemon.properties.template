@@ -1,10 +1,13 @@
-# Http-server port
-server.port = 9010
-
 # Datasource
-road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
+road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName==road-local-daemon
 road.datasource.username=road
 road.datasource.password=road
+
+# daemon or web
+app.type=daemon
+
+# Web application type. Should be none for daemon process and servlet for web application
+spring.main.web-application-type=none
 
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
@@ -42,9 +45,6 @@ dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
 dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
 dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
-# Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
-
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = aineistot.liikennevirasto.fi
 camera-image-uploader.sftp.user = digitraffic-aws-test
@@ -65,21 +65,15 @@ jms.datex2.userId=
 jms.datex2.password=
 
 # JMS topics
-jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
+jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
-jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
+jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 
 # Services enabled/disabled
 
-# daemon or web
-app.type=web
-
-# Web application type. Should be none for daemon process
-spring.main.web-application-type=servlet
-
 # Is Quartz scheduler enabled. Should be true only for daemon process.
-dt.job.scheduler.enabled=false
+dt.job.scheduler.enabled=true
 
 # if set to false no messages are sent to mqtt.  Should be true for daemon process
 mqtt.enabled=true
@@ -89,9 +83,9 @@ mqtt.tms.enabled=true
 mqtt.weather.enabled=true
 
 # JMS queue enabled/disabled (Only daemon should have these enabled)
-jms.weather.enabled=false
-jms.tms.enabled=false
-jms.camera.enabled=false
+jms.weather.enabled=true
+jms.tms.enabled=true
+jms.camera.enabled=true
 jms.datex2.enabled=false
 
 # Developer life improvements

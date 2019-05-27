@@ -22,6 +22,12 @@ public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHtt
     private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class,
         TmsDataDatex2Response.class, RoadworksDatex2Response.class, WeightRestrictionsDatex2Response.class);
 
+    private final String schemaDomainUrlAndPath;
+
+    public Jaxb2Datex2ResponseHttpMessageConverter(final String schemaDomainUrlAndPath) {
+        this.schemaDomainUrlAndPath = schemaDomainUrlAndPath;
+    }
+
     @Override
     public boolean canRead(final Class<?> clazz, final MediaType mediaType) {
         return supports(clazz) && super.canRead(clazz, mediaType);
@@ -43,10 +49,11 @@ public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHtt
         try {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,
-                    "http://tie.digitraffic.fi/schemas " +
-                    "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIIResponseSchema_1_0.xsd " +
-                    "http://datex2.eu/schema/2/2_0 " +
-                    "https://raw.githubusercontent.com/finnishtransportagency/metadata/master/schema/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
+                "https://tie.digitraffic.fi/schemas/ " +
+                schemaDomainUrlAndPath + "DATEXIIResponseSchema_1_1.xsd " +
+                "http://datex2.eu/schema/2/2_0 " +
+                schemaDomainUrlAndPath + "DATEXIISchema_2_2_3_with_definitions_FI.xsd"
+            );
         } catch (final PropertyException e) {
             log.error("setProperty failed", e);
         }
