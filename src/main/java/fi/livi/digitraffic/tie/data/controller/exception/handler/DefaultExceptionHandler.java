@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.google.common.collect.Iterables;
 
@@ -40,13 +41,21 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(TypeMismatchException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(final TypeMismatchException exception, final ServletWebRequest request) {
+
+        String parameterName = exception.getPropertyName();
+        if (exception instanceof MethodArgumentTypeMismatchException) {
+            MethodArgumentTypeMismatchException e = (MethodArgumentTypeMismatchException) exception;
+            parameterName = e.getName();
+        }
+
+
         final String parameterValue = exception.getValue().toString();
         final String requiredType = exception.getRequiredType().getSimpleName();
 
         return getErrorResponseEntityAndLogError(
             request,
-            String.format("Query parameter type mismatch. queryString=%s, parameterValue=%s, expectedType=%s",
-                          request.getRequest().getQueryString(), requiredType, parameterValue),
+            String.format("Query parameter type mismatch: queryString=%s, parameterName=%s parameterValue=%s, expectedType=%s",
+                          request.getRequest().getQueryString(), parameterName, parameterValue, requiredType),
             HttpStatus.BAD_REQUEST, exception);
     }
 
@@ -58,7 +67,7 @@ public class DefaultExceptionHandler {
 
         return getErrorResponseEntityAndLogError(
             request,
-            String.format("Query parameter missing. queryString=%s, parameterName=%s, expectedType=%S",
+            String.format("Query parameter missing: queryString=%s, parameterName=%s, expectedType=%S",
                           request.getRequest().getQueryString(), parameterName, requiredType),
             HttpStatus.BAD_REQUEST, exception);
     }
