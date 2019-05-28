@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import javax.xml.bind.MarshalException;
 
 import org.slf4j.Logger;
@@ -166,9 +167,11 @@ public class DefaultExceptionHandler {
     }
 
     private static String getViolationMessage(final ConstraintViolation<?> violation) {
-        return String.format("violatingParameter=%s, parameterValue=%s, violationMessage=%s",
-            Iterables.getLast(violation.getPropertyPath()), violation.getInvalidValue(),
-                             violation.getMessage());
+        final Path.Node paramPath = Iterables.getLast(violation.getPropertyPath());
+        final String paramName = paramPath != null ? paramPath.toString() : null;
+        return String.format("violatingParameter=%s, parameterValue=%s, violationMessage=%s %s",
+                             paramName, violation.getInvalidValue(),
+                             paramName, violation.getMessage());
     }
 
     private boolean isClientAbortException(final Throwable exception) {
