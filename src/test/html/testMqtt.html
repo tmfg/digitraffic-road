@@ -12,11 +12,20 @@
         function connect() {
             console.log('trying to connect to road mqtt...');
 
-            client = new Paho.MQTT.Client("tie-aws-mqtt-test.digitraffic.fi", 61619, 'testclient_' + Date.now());
+            const local = false;
+
+            if (local) {
+                console.info('Connect to local');
+                client = new Paho.MQTT.Client("127.0.0.1", 9001, 'testclient_' + Date.now());
+            } else {
+                console.info('Connect to road-test');
+                client = new Paho.MQTT.Client("tie-aws-mqtt-test.digitraffic.fi", 61619, 'testclient_' + Date.now());
+            }
 
             client.onConnectionLost = function (response) {
                 console.info(Date.now() + ' Connection lost:' + response.errorMessage);
             };
+
             client.onMessageArrived = function(message) {
                 messagesLastMinuteCount++;
 
@@ -25,15 +34,23 @@
                 updateList();
             };
 
-            const connectionProperties = {
+            const connectionPropertiesAWS = {
                 onSuccess:onConnect,
+                onFailure:onConnectError,
                 mqttVersion:4,
                 useSSL:true,
                 userName:"digitraffic",
                 password:"digitrafficPassword"
             };
 
-            client.connect(connectionProperties);
+            const connectionPropertiesLocal = {
+                onSuccess:onConnect,
+                onFailure:onConnectError,
+                mqttVersion:4,
+                useSSL:false
+            };
+
+            client.connect(local ? connectionPropertiesLocal : connectionPropertiesAWS);
 
             window.setInterval(logMessageCount, 60*1000);
         }
@@ -47,6 +64,10 @@
         function onConnect() {
             console.info(Date.now() + ' Connection open');
             client.subscribe("tms/#");
+        }
+
+        function onConnectError(e) {
+            console.log(e);
         }
 
         function addMessage(message) {
