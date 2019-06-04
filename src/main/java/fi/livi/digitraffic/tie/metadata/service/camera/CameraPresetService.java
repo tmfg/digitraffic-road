@@ -2,12 +2,12 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -22,14 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
-import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
+
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class CameraPresetService {
@@ -40,13 +37,9 @@ public class CameraPresetService {
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
 
     private final CameraPresetRepository cameraPresetRepository;
-    private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
-    private final DataStatusService dataStatusService;
 
     @Autowired
     public CameraPresetService(final EntityManager entityManager,
-                               final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
-                               final DataStatusService dataStatusService,
                                final CameraPresetRepository cameraPresetRepository,
                                final RoadStationRepository roadStationRepository,
                                final WeatherStationRepository weatherStationRepository) {
@@ -54,8 +47,6 @@ public class CameraPresetService {
         this.roadStationRepository = roadStationRepository;
         this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
-        this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
-        this.dataStatusService = dataStatusService;
     }
 
     private CriteriaBuilder createCriteriaBuilder() {
@@ -94,16 +85,6 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public List<CameraPreset> findAllCameraPresetsWithoutRoadStation() {
         return cameraPresetRepository.findAllCameraPresetsWithoutRoadStation();
-    }
-
-    @Transactional(readOnly = true)
-    public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        return cameraPresetMetadata2FeatureConverter.convert(
-                onlyUpdateInfo ?
-                Collections.emptyList() :
-                findAllPublishableCameraPresets(),
-                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA),
-                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA_CHECK));
     }
 
     @Transactional(readOnly = true)

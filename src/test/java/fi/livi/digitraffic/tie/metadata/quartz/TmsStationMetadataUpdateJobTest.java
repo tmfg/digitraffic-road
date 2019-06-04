@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationSensorDto;
 import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
 
-public class TmsStationMetadataUpdateJobTest extends AbstractTest {
+public class TmsStationMetadataUpdateJobTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(TmsStationMetadataUpdateJobTest.class);
 

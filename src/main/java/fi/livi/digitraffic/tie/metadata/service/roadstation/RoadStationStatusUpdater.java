@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
@@ -14,6 +15,7 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
+@ConditionalOnNotWebApplication
 @Service
 public class RoadStationStatusUpdater {
     private static final Logger log = LoggerFactory.getLogger(RoadStationStatusUpdater.class);

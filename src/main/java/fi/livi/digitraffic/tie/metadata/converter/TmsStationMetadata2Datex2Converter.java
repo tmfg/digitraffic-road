@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -28,6 +29,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.PointCoordinates;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
+@ConditionalOnWebApplication
 @Component
 public class TmsStationMetadata2Datex2Converter {
     public static final String MEASUREMENT_SITE_TABLE_IDENTIFICATION = "DigitrafficFI";
@@ -36,8 +38,8 @@ public class TmsStationMetadata2Datex2Converter {
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationMetadata2Datex2Converter(@Value("${weathercam.baseUrl}") final String camUrl) {
-        this.informationStatus = camUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
+    public TmsStationMetadata2Datex2Converter(@Value("${dt.domain.url}") final String appUrl) {
+        this.informationStatus = appUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
     public D2LogicalModel convert(final List<TmsStation> stations, final ZonedDateTime metadataLastUpdated) {

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
+import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -38,8 +38,8 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testTmsDataRestApi() throws Exception {
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                            RoadApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+                            RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.TMS_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -52,8 +52,8 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void testTmsDataRestApiById() throws Exception {
-        mockMvc.perform(get(RoadApplicationConfiguration.API_V1_BASE_PATH +
-                RoadApplicationConfiguration.API_DATA_PART_PATH +
+        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
+                RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.TMS_DATA_PATH + "/23801"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

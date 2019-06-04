@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
@@ -29,8 +30,9 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 
+@ConditionalOnWebApplication
 @Component
-public final class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
+public class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
     private static final Logger log = LoggerFactory.getLogger( CameraPresetMetadata2FeatureConverter.class );
 
     private final CameraPresetRepository cameraPresetRepository;

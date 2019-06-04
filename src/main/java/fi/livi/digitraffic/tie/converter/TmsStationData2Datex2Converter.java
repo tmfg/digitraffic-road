@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
@@ -37,6 +38,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.VehicleFlowValue;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
+@ConditionalOnWebApplication
 @Component
 public class TmsStationData2Datex2Converter {
 
@@ -44,7 +46,7 @@ public class TmsStationData2Datex2Converter {
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationData2Datex2Converter(@Value("${weathercam.baseUrl}") final String camUrl) {
+    public TmsStationData2Datex2Converter(@Value("${dt.domain.url}") final String camUrl) {
         this.informationStatus = camUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 

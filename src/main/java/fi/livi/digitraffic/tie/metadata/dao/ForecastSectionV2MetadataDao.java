@@ -195,7 +195,7 @@ public class ForecastSectionV2MetadataDao {
                 log.error("method=findForecastSectionV2Features coordinates objectMapper readValue error");
             }
             final ForecastSectionV2Feature feature = featureMap.get(rs.getString("natural_id"));
-            feature.getGeometry().coordinates.add(coordinates);
+            feature.getGeometry().getCoordinates().add(coordinates);
         });
 
         return featureMap.values().stream()

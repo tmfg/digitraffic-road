@@ -1,6 +1,8 @@
 # Http-server port
 server.port = 9000
 
+dt.domain.url=http://localhost:9000
+
 # Datasource
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
 road.datasource.username=road
@@ -80,7 +82,7 @@ jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 # daemon or web
 app.type=web
 
-# Web application type. Should be none for daemon process
+# Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=servlet
 
 # Is metadata updates on. Should be true only for daemon process.

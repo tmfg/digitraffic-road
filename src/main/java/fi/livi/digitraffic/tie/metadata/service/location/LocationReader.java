@@ -19,7 +19,7 @@ public class LocationReader extends AbstractReader<Location> {
     private static final String GEOCODE_FIN_CODE = "FinCode:";
 
     public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version) {
-        super(Charsets.UTF_8, DELIMETER_SEMICOLON, version);
+        super(Charsets.UTF_8, DELIMITER_COMMA, version);
         this.subtypeMap = subtypeMap;
     }
 
@@ -42,8 +42,8 @@ public class LocationReader extends AbstractReader<Location> {
         location.setEtrsTm35FixY(parseEtrsTm35(components[19]));
         location.setPosDirection(parseString(components[21]));
         location.setNegDirection(parseString(components[22]));
-        location.setGeocode(parseGeocode(components[23]));
-        location.setOrderOfPoint(parseInteger(components[24]));
+        location.setGeocode(parseGeocode(components[24]));
+        location.setOrderOfPoint(parseInteger(components[25]));
         location.setSubtypeCode(parseSubtype(components[3], components[4], components[5], subtypeMap));
 
         addAreaRef(location, components[10]);

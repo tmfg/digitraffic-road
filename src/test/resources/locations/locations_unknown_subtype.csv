@@ -1,4 +1,4 @@
-"CountryId";"TableCode";"LocationCode";"Class";"Type";"Subtype";"Road/JunctionNo";"RoadName";"FirstName";"SecondName";"AreaRef";"LinearRef";"NegOffset";"PosOffset";"Urban";"IntersectionRef";"WGS84Lat";"WGS84Long";"Etrs_TM35FinXCoord";"Etrs_TM35FinYCoord";"AlternativeName";"NegativeDirection";"PositiveDirection";"Geocode";"PointOrder"
-15;17;1;"A";1;0;;;"Eurooppa";;0;;;;;;;;;;;;;;
-15;17;12187;"A";2;0;;;"Pohjoismaat";;1;;;;;;;;;;;;;;
-15;17;27;"A";8;0;;;"Lappi";;9;;;;;;;;;;;;;;
+CountryId,TableCode,LocationCode,Class,Type,Subtype,Road/JunctionNo,RoadName,FirstName,SecondName,AreaRef,LinearRef,NegOffset,PosOffset,Urban,IntersectionRef,WGS84Lat,WGS84Long,Etrs_TM35FinXCoord,Etrs_TM35FinYCoord,AlternativeName,NegativeDirection,PositiveDirection,LCD,GEOCODE,ORDER
+15,17,1,"A",1,0,,,"Eurooppa",,0,,,,,,,,,,,,,,,
+15,17,12187,"A",2,0,,,"Pohjoismaat",,1,,,,,,,,,,,,,,,
+15,17,27,"A",8,0,,,"Lappi",,9,,,,,,,,,,,,,,,

@@ -1,64 +1,32 @@
 package fi.livi.digitraffic.tie.conf;
 
-import java.util.List;
 import java.util.Locale;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.util.Assert;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
-
 @Configuration
 @EnableJpaRepositories(basePackages = {"fi.livi.digitraffic.tie.metadata.dao", "fi.livi.digitraffic.tie.data.dao"},
-    enableDefaultTransactions = false)
+                       enableDefaultTransactions = false)
 @EnableTransactionManagement
 @EnableRetry
-public class RoadApplicationConfiguration implements WebMvcConfigurer {
-
-    public static final String API_V1_BASE_PATH = "/api/v1";
-    public static final String API_V2_BASE_PATH = "/api/v2";
-    public static final String API_BETA_BASE_PATH = "/api/beta";
-
-    public static final String API_METADATA_PART_PATH = "/metadata";
-    public static final String API_DATA_PART_PATH = "/data";
-    public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
-
-    private final ConfigurableApplicationContext applicationContext;
-
-    @Autowired
-    public RoadApplicationConfiguration(final ConfigurableApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // put first
-        converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter());
-    }
+public class RoadApplicationConfiguration {
 
     @Bean
     public LocaleResolver localeResolver() {
@@ -72,32 +40,6 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
         final LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
-    }
-
-    /**
-     * Enables bean validation for controller parameters
-     * @return
-     */
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        return new MethodValidationPostProcessor();
-    }
-
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        LocaleChangeInterceptor localeChangeInterceptor = applicationContext.getBean(LocaleChangeInterceptor.class);
-        Assert.notNull(localeChangeInterceptor, "LocaleChangeInterceptor cannot be null");
-        registry.addInterceptor(localeChangeInterceptor);
-    }
-
-    /**
-     * This redirects requests from root to /swagger-ui.html.
-     * After that nginx redirects /swagger-ui.html to /api/v1/metadata/documentation/swagger-ui.html
-     * @param registry
-     */
-    @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("redirect:swagger-ui.html");
     }
 
     @Bean
@@ -137,7 +79,7 @@ public class RoadApplicationConfiguration implements WebMvcConfigurer {
     }
 
     @Bean("conversionService")
-    public org.springframework.core.convert.ConversionService getConversionService() {
+    public ConversionService getConversionService() {
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.afterPropertiesSet();
         ConversionService object = bean.getObject();
