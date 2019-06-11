@@ -9,9 +9,9 @@ app.type=daemon
 # Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=none
 
-mqtt.server.url=tcp://address:port
-mqtt.server.username=
-mqtt.server.password=
+mqtt.server.url=tcp://localhost:1883
+mqtt.server.username=updater
+mqtt.server.password=updater
 
 # Lotju SOAP APIs
 metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
