@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWea
 
 @Service
 public class ForecastSectionDataUpdater {
-
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionDataUpdater.class);
 
     private final ForecastSectionClient forecastSectionClient;
@@ -42,18 +41,24 @@ public class ForecastSectionDataUpdater {
 
         final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(version.getVersion());
 
-        final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId =
-                data.forecastSectionWeatherList.stream().collect(Collectors.toMap(wd -> wd.naturalId, Function.identity()));
+        if(data.forecastSectionWeatherList != null) {
+            final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId = data.forecastSectionWeatherList.stream().collect(
+                Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
-        log.info("Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections. forecastSectionsInDatabase={}",
-                 version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size());
+            log.info(
+                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections. forecastSectionsInDatabase={}",
+                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size());
 
-        final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
+            final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(
+                Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
 
-        updateForecastSectionWeatherData(weatherDataByNaturalId, forecastSectionsByNaturalId);
+            updateForecastSectionWeatherData(weatherDataByNaturalId, forecastSectionsByNaturalId);
 
-        forecastSectionRepository.saveAll(forecastSectionsByNaturalId.values());
-        forecastSectionRepository.flush();
+            forecastSectionRepository.saveAll(forecastSectionsByNaturalId.values());
+            forecastSectionRepository.flush();
+        } else {
+            log.info("No forecast section weather data received");
+        }
 
         return data.messageTimestamp.toInstant();
     }
