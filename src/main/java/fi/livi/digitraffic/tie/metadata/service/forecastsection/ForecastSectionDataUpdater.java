@@ -58,6 +58,8 @@ public class ForecastSectionDataUpdater {
             forecastSectionRepository.flush();
         } else {
             log.info("No forecast section weather data received");
+
+            return null;
         }
 
         return data.messageTimestamp.toInstant();
