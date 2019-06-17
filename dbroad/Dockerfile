@@ -7,4 +7,4 @@ apt-get -y install \
   maven && \
 rm -rf /var/lib/apt/lists/*
 
-COPY files/flyway.conf files/pom.xml files/wait-for-postgres.sh files/init-db.sh /
+COPY files/flyway.conf files/pom.xml files/init-db.sh /

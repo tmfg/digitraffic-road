@@ -12,8 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flyway.version>5.0.7</flyway.version>
-        <postgresql.driver.version>42.2.1</postgresql.driver.version>
+        <flyway.version>5.2.4</flyway.version>
+        <postgresql.driver.version>42.2.5</postgresql.driver.version>
     </properties>
 
     <dependencies>
