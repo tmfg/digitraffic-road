@@ -46,10 +46,13 @@ public class DataStatusService {
     public void updateDataUpdated(final DataType dataType, final Instant updated) {
         final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType);
         log.info("method=updateDataUpdated dataType={}, updatedTime={}", dataType, updated);
-        if (dataUpdated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTimeAtUtc(updated), null));
-        } else {
-            dataUpdated.setUpdatedTime(DateHelper.toZonedDateTimeAtUtc(updated));
+
+        if(updated != null) {
+            if (dataUpdated == null) {
+                dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTimeAtUtc(updated), null));
+            } else {
+                dataUpdated.setUpdatedTime(DateHelper.toZonedDateTimeAtUtc(updated));
+            }
         }
     }
 
