@@ -88,7 +88,11 @@ public abstract class AbstractJMSListenerConfiguration<K> {
      */
     @Scheduled(fixedDelayString = "${jms.queue.pollingIntervalMs}")
     public void drainQueueScheduled() throws JAXBException {
-        getJMSMessageListener().drainQueueScheduled();
+        try {
+            getJMSMessageListener().drainQueueScheduled();
+        } catch (final Exception e) {
+            log.error("drain exception", e);
+        }
     }
 
     /**

@@ -45,21 +45,12 @@ public class LockingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Transactional
     public boolean acquireLock(final String lockName, final String callerInstanceId, final int expirationSeconds) {
         final MapSqlParameterSource params = new MapSqlParameterSource("lockName", lockName)
             .addValue("instanceId", callerInstanceId)
             .addValue("expirationSeconds", expirationSeconds);
 
         jdbcTemplate.update(MERGE, params);
-
-        return hasLock(params);
-    }
-
-    @Transactional
-    public boolean hasLock(final String lockName, final String callerInstanceId) {
-        final MapSqlParameterSource params = new MapSqlParameterSource("lockName", lockName)
-            .addValue("instanceId", callerInstanceId);
 
         return hasLock(params);
     }

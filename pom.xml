@@ -147,6 +147,13 @@
 
         <!-- Helpers and others -->
         <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-ri</artifactId>
+            <version>2.3.0</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
@@ -386,7 +393,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -397,7 +404,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -432,7 +439,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
@@ -471,10 +478,10 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.3.0</version>
                 <configuration>
                     <extensions>
-                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.0.5</extension>
+                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.3.0</extension>
                         <extension>net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8</extension>
                     </extensions>
                 </configuration>
@@ -509,7 +516,7 @@
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
 
                 <configuration>
                     <sourceDirectory>${basedir}/src/main/resources/schemas/json/</sourceDirectory>
