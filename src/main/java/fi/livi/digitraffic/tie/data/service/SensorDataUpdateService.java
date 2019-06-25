@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -170,14 +172,20 @@ public class SensorDataUpdateService {
     }
 
     /**
+     *  Update sensor values to database
      *
      * @param params
      * @param roadStationType
      * @return Pair<updateCount, insertCount>
      */
     private Pair<Integer, Integer> updateSensorData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
-        final StopWatch stopWatch = StopWatch.createStarted();
+        if(CollectionUtils.isEmpty(params)) {
+            log.info("method=updateSensorData for 0 stations updateCount=0 insertCount=0 tookMs=0");
 
+            return ImmutablePair.of(0 ,0);
+        }
+
+        final StopWatch stopWatch = StopWatch.createStarted();
         final OffsetDateTime maxMeasuredTime = getMaxMeasured(params);
 
         // First try to update with given parameters data. 0 value in return array means that parameter in question didn't cause update -> should be inserted.
@@ -193,7 +201,7 @@ public class SensorDataUpdateService {
         final int insertedCount = countSum(inserted);
         log.info("method=updateSensorData for {} stations updateCount={} insertCount={} tookMs={}",
                  roadStationType, updatedCount, insertedCount, stopWatch.getTime());
-        return new ImmutablePair<>(updatedCount, insertedCount);
+        return ImmutablePair.of(updatedCount, insertedCount);
     }
 
     private void updateDataUpdatedTime(RoadStationType roadStationType) {
@@ -251,7 +259,7 @@ public class SensorDataUpdateService {
      */
     private static ArrayList<SensorValueUpdateParameterDto> getSensorValueInsertParameters(final List<SensorValueUpdateParameterDto> params,
                                                                                            final int[] updated) {
-        final ArrayList<SensorValueUpdateParameterDto> toInsert = new ArrayList<>();
+        final ArrayList<SensorValueUpdateParameterDto> toInsert = new ArrayList<>(updated.length);
         for(int i = 0; i < updated.length; i++) {
             if (updated[i] == 0) {
                 toInsert.add(params.get(i));
@@ -265,6 +273,9 @@ public class SensorDataUpdateService {
     }
 
     private OffsetDateTime getMaxMeasured(final List<SensorValueUpdateParameterDto> params) {
-        return params.stream().max(Comparator.comparing(SensorValueUpdateParameterDto::getMeasured)).get().getMeasured();
+        return params.stream()
+                .map(SensorValueUpdateParameterDto::getMeasured)
+                .max(OffsetDateTime::compareTo)
+                .orElse(null);
     }
 }

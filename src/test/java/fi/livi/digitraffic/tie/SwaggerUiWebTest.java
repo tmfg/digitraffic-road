@@ -47,7 +47,6 @@ public class SwaggerUiWebTest extends AbstractTest {
 
     @Test
     public void testSwaggerRestApi() throws Exception {
-        // Swagger resta api: http://localhost:9010/v2/api-docs?group=metadata-api
         mockMvc.perform(get("/v2/api-docs?group=metadata-api"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(restContentType))

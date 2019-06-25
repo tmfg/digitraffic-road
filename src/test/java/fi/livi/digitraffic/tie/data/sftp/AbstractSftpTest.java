@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.interfaces.DSAParams;
@@ -84,7 +86,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
-    public void initSftpServer() throws IOException {
+    public void initSftpServer() throws IOException, GeneralSecurityException {
         log.info("Init Sftp Server with temporary root folder={}, port={}", testFolder.getRoot(), wireMockRule.port());
         httpPort = wireMockRule.port();
 
@@ -116,10 +118,10 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     }
 
     public PublickeyAuthenticator getAuthorizedKeysAuthenticator() throws IOException {
-        return new AuthorizedKeysAuthenticator(resourceLoader.getResource(authorizedKeysPath).getFile());
+        return new AuthorizedKeysAuthenticator(Paths.get(resourceLoader.getResource(authorizedKeysPath).getURI()));
     }
 
-    public SimpleGeneratorHostKeyProvider getOrCreateKeyPairProvider() throws IOException {
+    public SimpleGeneratorHostKeyProvider getOrCreateKeyPairProvider() throws IOException, GeneralSecurityException {
         log.info("Load or generate private key={}", idRsaPrivatePath);
 
         String filePath = resolveResourceFilePath(idRsaPrivatePath);
@@ -128,10 +130,10 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         log.info("Private Key absolute path={}", file.getAbsolutePath());
 
         boolean generate = !file.exists();
-        SimpleGeneratorHostKeyProvider kpProvider = new SimpleGeneratorHostKeyProvider(file);
+        SimpleGeneratorHostKeyProvider kpProvider = new SimpleGeneratorHostKeyProvider(file.toPath());
         kpProvider.setAlgorithm(KeyUtils.RSA_ALGORITHM);
         // This will generate new key if key file doesn't exist
-        KeyPair keyPair = kpProvider.loadKey("ssh-rsa");
+        KeyPair keyPair = kpProvider.loadKey(null,"ssh-rsa");
         PublicKey pub = keyPair.getPublic();
         if (generate) {
             savePublicKey( filePath + ".pub", pub);

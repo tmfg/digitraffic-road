@@ -11,7 +11,7 @@
 
 ### Clone project to your computer
 
-    $ git clone https://github.com/finnishtransportagency/digitraffic-metadata.git
+    $ git clone https://github.com/tmfg/digitraffic-metadata.git
     # Clones a repository to your computer
 
 ### Configure project
