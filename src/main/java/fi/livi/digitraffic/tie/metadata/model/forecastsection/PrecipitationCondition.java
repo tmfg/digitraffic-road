@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel("The quality of precipitation")
 public enum PrecipitationCondition {
-
+    NO_DATA_AVAILABLE(0),
     NO_RAIN_DRY_WEATHER(1),
     LIGHT_RAIN(2),
     RAIN(3),

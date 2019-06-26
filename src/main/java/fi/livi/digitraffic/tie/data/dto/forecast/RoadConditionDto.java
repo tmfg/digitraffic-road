@@ -47,6 +47,9 @@ public class RoadConditionDto {
     private final String type;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ApiModelProperty("Forecast that is used is Foreca’s weather forecast which is initialised from the weather model that performs best " +
+        "for Finland for a period under study. Majority of the times the initialisation is done from ECMWF model data. " +
+        "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.")
     private final ForecastConditionReasonDto forecastConditionReason;
 
     public RoadConditionDto(final String forecastName, final ZonedDateTime time, final Boolean daylight, final OverallRoadCondition overallRoadCondition,

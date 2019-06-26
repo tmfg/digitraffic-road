@@ -14,6 +14,15 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
+    @ApiModelProperty("Precipitation condition: " +
+        "0 = no data available, " +
+        "1 = rain intensity < 0.2 mm/h, " +
+        "2 = rain intensity >= 0.2 mm/h, " +
+        "3 = rain intensity >= 2.5 mm/h, " +
+        "4 = rain intensity >= 7.6 mm/h, " +
+        "5 = snowing intensity >= 0.2 cm/h, " +
+        "6 = snowing intensity >= 1 cm/h, " +
+        "7 = snowing intensity >= 3 cm/h")
     private final PrecipitationCondition precipitationCondition;
 
     @Enumerated(EnumType.STRING)
