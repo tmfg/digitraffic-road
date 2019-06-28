@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @ConditionalOnNotWebApplication
 @Component
 public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(WeatherMqttConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(WeatherMqttConfiguration.class);
 
     // weather/{roadStationId}/{sensorId}
     private static final String WEATHER_TOPIC = "weather/%d/%d";
@@ -31,12 +31,16 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
                                     final ObjectMapper objectMapper,
                                     final LockingService lockingService) {
 
-        super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.WEATHER_STATION, WEATHER_STATUS_TOPIC, WEATHER_TOPIC, logger,
+        super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.WEATHER_STATION, WEATHER_STATUS_TOPIC, WEATHER_TOPIC, log,
               lockingService, WeatherMqttConfiguration.class.getSimpleName());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")
     public void pollData() {
-        handleData();
+        try {
+            handleData();
+        } catch(final Exception e) {
+            log.error("polling failed", e);
+        }
     }
 }
