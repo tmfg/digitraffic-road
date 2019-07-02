@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
@@ -128,7 +129,7 @@ public class CameraImageUpdateService {
         }
         log.info("method=transferKuva readTookMs={}", start.getTime());
         if (image == null) {
-            log.error("Reading image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
+            log.error("Reading image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
             return false;
         }
 
@@ -152,7 +153,7 @@ public class CameraImageUpdateService {
         }
         log.info("method=transferKuva writerTookMs={}", writeStart.getTime());
         if (!writtenSuccessfully) {
-            log.error("Writing image failed for " + ToStringHelper.toString(kuva) + " no retries remaining, transfer aborted.");
+            log.error("Writing image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
             return false;
         }
         log.info("method=transferKuva tookMs={}", start.getTime());
@@ -161,19 +162,16 @@ public class CameraImageUpdateService {
 
     private byte[] readImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
         log.info("Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
-        byte[] result;
-        try {
-            final URL url = new URL(downloadImageUrl);
-            final URLConnection con = url.openConnection();
-            con.setConnectTimeout(connectTimeout);
-            con.setReadTimeout(readTimeout);
-            result = IOUtils.toByteArray(con.getInputStream());
-        } catch (Exception e) {
-            throw e;
+
+        final URL url = new URL(downloadImageUrl);
+        final URLConnection con = url.openConnection();
+        con.setConnectTimeout(connectTimeout);
+        con.setReadTimeout(readTimeout);
+        try (final InputStream is = con.getInputStream()) {
+            final byte[] result = IOUtils.toByteArray(is);
+            log.info("Image read successfully. imageSizeBytes={} bytes", result.length);
+            return result;
         }
-        final byte[] data = result;
-        log.info("Image read successfully. imageSizeBytes={} bytes", data.length);
-        return data;
     }
 
     private void writeImage(byte[] data, String filename) throws IOException {
@@ -210,7 +208,7 @@ public class CameraImageUpdateService {
         }
     }
 
-    public static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
+    static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         return cameraPreset != null ? cameraPreset.getPresetId() : kuva.getNimi().substring(0, 8);
     }
 
