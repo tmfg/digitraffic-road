@@ -42,7 +42,7 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    public int updateCameraData(final List<KuvaProtos.Kuva> data) throws SQLException {
+    public int updateCameraData(final List<KuvaProtos.Kuva> data) {
         final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
         final StopWatch start = StopWatch.createStarted();
@@ -67,7 +67,7 @@ public class CameraDataUpdateService {
                 }
             }).count();
 
-        log.info("Updating success for updateCount={} weather camera images of futuresCount={} tookMs={}", updateCount, futures.size(), start.getTime());
+        log.info("Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={}", updateCount, futures.size(), futures.size()-updateCount, start.getTime());
         return (int) updateCount;
     }
 
@@ -94,10 +94,10 @@ public class CameraDataUpdateService {
 
     private class UpdateJobManager implements Callable<Boolean> {
 
-        protected final long timeout;
-        protected final ImageUpdateTask task;
+        private final long timeout;
+        private final ImageUpdateTask task;
 
-        public UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
+        private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateService);
         }
@@ -126,14 +126,19 @@ public class CameraDataUpdateService {
         private final KuvaProtos.Kuva kuva;
         private final CameraImageUpdateService cameraImageUpdateService;
 
-        public ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
+        private ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
             this.kuva = kuva;
             this.cameraImageUpdateService = cameraImageUpdateService;
         }
 
         @Override
-        public Boolean call() throws InterruptedException {
-            return cameraImageUpdateService.handleKuva(kuva);
+        public Boolean call() {
+            try {
+                return cameraImageUpdateService.handleKuva(kuva);
+            } catch (Exception e) {
+                log.error(String.format("Error while calling cameraImageUpdateService.handleKuva with %s", ToStringHelper.toString(kuva)), e);
+                throw e;
+            }
         }
     }
 }
