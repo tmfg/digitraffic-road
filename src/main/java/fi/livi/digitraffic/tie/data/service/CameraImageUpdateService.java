@@ -92,7 +92,7 @@ public class CameraImageUpdateService {
         if (success) {
             updateCameraPreset(cameraPreset, kuva);
         }
-        log.info("method=handleKuva tookMs={}", start.getTime());
+        log.info("method=handleKuva presetId={} tookMs={}", start.getTime(), presetId);
         return success;
     }
 
