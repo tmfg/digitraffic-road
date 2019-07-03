@@ -212,7 +212,7 @@ public class ToStringHelper {
         JSON_STYLE.append(sb, "esiasennonNimi", kuva.getEsiasennonNimi(), true);
         JSON_STYLE.append(sb, "esiasentoId", kuva.getEsiasentoId());
         JSON_STYLE.append(sb, "kameraId", kuva.getKameraId());
-        JSON_STYLE.append(sb, "aika", kuva.getAikaleima(), true);
+        JSON_STYLE.append(sb, "aika", Instant.ofEpochMilli(kuva.getAikaleima()), true);
         JSON_STYLE.append(sb, "tienumero", kuva.getTienumero(), true);
         JSON_STYLE.append(sb, "tieosa", kuva.getTieosa(), true);
 

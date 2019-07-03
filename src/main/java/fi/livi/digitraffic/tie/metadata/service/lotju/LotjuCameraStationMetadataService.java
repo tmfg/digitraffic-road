@@ -90,7 +90,7 @@ public class LotjuCameraStationMetadataService {
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call() {
             if (kamera.getVanhaId() != null) {
                 final List<EsiasentoVO> esiasennot = getEsiasentos(kamera.getId());
 
