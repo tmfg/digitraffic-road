@@ -68,7 +68,7 @@ public class CameraImageUpdateService {
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
         return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
-            .filter(presetId -> deleteImage(getPresetImageName(presetId)))
+            .filter(presetId -> deleteImage(getPresetImageName(presetId)).isFileExistsAndDeleteSuccess())
             .count();
     }
 
@@ -99,12 +99,16 @@ public class CameraImageUpdateService {
         return success;
     }
 
+    /**
+     * @return success (true) if file doesn't exist or delete success for existing file. Otherwise failure (false);
+     */
     private boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
         log.info("method=deleteKuva Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
                 "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
             CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
 
-        return deleteImage(filename);
+        final DeleteInfo result = deleteImage(filename);
+        return !result.isFileExists() || result.isDeleteSuccess();
     }
 
     private boolean transferKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
@@ -199,18 +203,22 @@ public class CameraImageUpdateService {
         }
     }
 
-    private boolean deleteImage(final String deleteImageFileName) {
+    /**
+     * @param deleteImageFileName file name to delete
+     * @return Info if the file exists and delete success. For non existing images success is false.
+     */
+    private DeleteInfo deleteImage(final String deleteImageFileName) {
         try (final Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath) ) {
                 log.info("Delete imagePath={}", imageRemotePath);
                 session.remove(imageRemotePath);
-                return true;
+                return new DeleteInfo(true, true);
             }
-            return false;
+            return new DeleteInfo(false, false);
         } catch (IOException e) {
             log.error(String.format("Failed to remove remote file deleteImageFileName=%s", getImageFullPath(deleteImageFileName)), e);
-            return false;
+            return new DeleteInfo(true, false);
         }
     }
 
@@ -229,4 +237,39 @@ public class CameraImageUpdateService {
     private String getCameraDownloadUrl(final KuvaProtos.Kuva kuva) {
         return StringUtils.appendIfMissing(camera_url, "/") + kuva.getKuvaId();
     }
+
+    private static class DeleteInfo {
+        private final boolean fileExists;
+        private final boolean deleteSuccess;
+
+        private DeleteInfo(boolean fileExists, boolean deleteSuccess) {
+            this.fileExists = fileExists;
+            this.deleteSuccess = deleteSuccess;
+        }
+
+        public boolean isFileExists() {
+            return fileExists;
+        }
+
+        public boolean isDeleteSuccess() {
+            return deleteSuccess;
+        }
+        public boolean isFileExistsAndDeleteSuccess() {
+            return fileExists && deleteSuccess;
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
