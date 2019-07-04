@@ -209,7 +209,7 @@ public class CameraImageUpdateService {
             }
             return false;
         } catch (IOException e) {
-            log.error("Failed to remove remote file deleteImageFileName={}", getImageFullPath(deleteImageFileName));
+            log.error(String.format("Failed to remove remote file deleteImageFileName=%s", getImageFullPath(deleteImageFileName)), e);
             return false;
         }
     }
