@@ -1,11 +1,11 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -63,6 +63,7 @@ public class CameraDataUpdateService {
                 try {
                     return p.get();
                 } catch (Exception e) {
+                    log.error("method=updateCameraData UpdateJobManager task failed with error" , e);
                     return false;
                 }
             }).count();
@@ -116,7 +117,6 @@ public class CameraDataUpdateService {
                 // This is safe even if task is already finished
                 future.cancel(true);
             }
-
             return false;
         }
     }

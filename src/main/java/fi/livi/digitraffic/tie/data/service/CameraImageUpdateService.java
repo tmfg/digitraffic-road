@@ -75,7 +75,7 @@ public class CameraImageUpdateService {
     @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
         final StopWatch start = StopWatch.createStarted();
-        log.info("Handling {}", ToStringHelper.toString(kuva));
+        log.info("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
 
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
 
@@ -91,8 +91,10 @@ public class CameraImageUpdateService {
 
         if (success) {
             updateCameraPreset(cameraPreset, kuva);
+        } else {
+            log.error("method=handleKuva failed presetId={} {}", presetId, ToStringHelper.toString(kuva));
         }
-        log.info("method=handleKuva presetId={} tookMs={}", start.getTime(), presetId);
+        log.info("method=handleKuva {} presetId={} tookMs={}", success ? "":"failed", start.getTime(), presetId);
         return success;
     }
 
