@@ -85,21 +85,24 @@ public class CameraImageUpdateService {
         final boolean success;
         if (cameraPreset != null) {
             success = transferKuva(kuva, presetId, filename);
+            if (success) {
+                updateCameraPreset(cameraPreset, kuva);
+            }
         } else {
             success = deleteKuva(kuva, presetId, filename);
         }
 
-        if (success) {
-            updateCameraPreset(cameraPreset, kuva);
-        } else {
-            log.error("method=handleKuva failed presetId={} {}", presetId, ToStringHelper.toString(kuva));
+        if (!success) {
+            log.error("method=handleKuva failed to {} for presetId={} {}", cameraPreset != null ? "transferKuva":"deleteKuva", presetId,
+                                                                           ToStringHelper.toString(kuva));
         }
-        log.info("method=handleKuva {} presetId={} tookMs={}", success ? "":"failed", start.getTime(), presetId);
+        log.info("method=handleKuva {} for presetId={} tookMs={} {}", success ? "success" : "failed", start.getTime(), presetId,
+                                                                      success ? "" : ToStringHelper.toString(kuva));
         return success;
     }
 
     private boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
-        log.info("Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
+        log.info("method=deleteKuva Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
                 "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
             CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
 
@@ -116,11 +119,11 @@ public class CameraImageUpdateService {
                 if (image.length > 0) {
                     break;
                 } else {
-                    log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes. triesLeft={} .",
+                    log.warn("method=transferKuva Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes. triesLeft={} .",
                         presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1);
                 }
             } catch (final Exception e) {
-                log.warn("Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={} . exceptionMessage={} .",
+                log.warn("method=transferKuva Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={} . exceptionMessage={} .",
                     presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), readTries - 1, e.getMessage());
             }
             try {
@@ -131,7 +134,7 @@ public class CameraImageUpdateService {
         }
         log.info("method=transferKuva readTookMs={}", start.getTime());
         if (image == null) {
-            log.error("Reading image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
+            log.error("method=transferKuva Reading image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
             return false;
         }
 
@@ -144,7 +147,7 @@ public class CameraImageUpdateService {
                 writtenSuccessfully = true;
                 break;
             } catch (final Exception e) {
-                log.warn("Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={}. exceptionMessage={}.",
+                log.warn("method=transferKuva Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. triesLeft={}. exceptionMessage={}.",
                     presetId, getCameraDownloadUrl(kuva), getImageFullPath(filename), writeTries - 1, e.getMessage());
             }
             try {
@@ -155,7 +158,7 @@ public class CameraImageUpdateService {
         }
         log.info("method=transferKuva writerTookMs={}", writeStart.getTime());
         if (!writtenSuccessfully) {
-            log.error("Writing image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
+            log.error("method=transferKuva Writing image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
             return false;
         }
         log.info("method=transferKuva tookMs={}", start.getTime());
@@ -163,7 +166,7 @@ public class CameraImageUpdateService {
     }
 
     private byte[] readImage(final String downloadImageUrl, final String uploadImageFileName) throws IOException {
-        log.info("Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
+        log.info("method=readImage Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
 
         final URL url = new URL(downloadImageUrl);
         final URLConnection con = url.openConnection();
@@ -171,7 +174,7 @@ public class CameraImageUpdateService {
         con.setReadTimeout(readTimeout);
         try (final InputStream is = con.getInputStream()) {
             final byte[] result = IOUtils.toByteArray(is);
-            log.info("Image read successfully. imageSizeBytes={} bytes", result.length);
+            log.info("method=readImage Image read successfully. imageSizeBytes={} bytes", result.length);
             return result;
         }
     }
@@ -179,20 +182,18 @@ public class CameraImageUpdateService {
     private void writeImage(byte[] data, String filename) throws IOException {
         final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
-            log.info("Writing image to sftpServerPath={} started", uploadPath);
+            log.info("method=writeImage Writing image to sftpServerPath={} started", uploadPath);
             session.write(new ByteArrayInputStream(data), uploadPath);
-            log.info("Writing image to sftpServerPath={} ended successfully", uploadPath);
+            log.info("method=writeImage Writing image to sftpServerPath={} ended successfully", uploadPath);
         } catch (Exception e) {
-            log.warn("Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
+            log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
-        if (cameraPreset != null) {
-            cameraPreset.setPublicExternal(kuva.getJulkinen());
-            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
-        }
+        cameraPreset.setPublicExternal(kuva.getJulkinen());
+        cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
     }
 
     private boolean deleteImage(final String deleteImageFileName) {
