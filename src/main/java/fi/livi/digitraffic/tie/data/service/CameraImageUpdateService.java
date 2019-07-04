@@ -85,9 +85,7 @@ public class CameraImageUpdateService {
         final boolean success;
         if (cameraPreset != null) {
             success = transferKuva(kuva, presetId, filename);
-            if (success) {
-                updateCameraPreset(cameraPreset, kuva);
-            }
+            updateCameraPreset(cameraPreset, kuva, success);
         } else {
             success = deleteKuva(kuva, presetId, filename);
         }
@@ -191,9 +189,14 @@ public class CameraImageUpdateService {
         }
     }
 
-    private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
-        cameraPreset.setPublicExternal(kuva.getJulkinen());
-        cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
+    private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva, final boolean success) {
+        if (cameraPreset.isPublicExternal() != kuva.getJulkinen()) {
+            cameraPreset.setPublicExternal(kuva.getJulkinen());
+            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
+            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} ", cameraPreset.getPresetId(), !kuva.getJulkinen(), kuva.getJulkinen());
+        } else if (success) {
+            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
+        }
     }
 
     private boolean deleteImage(final String deleteImageFileName) {
