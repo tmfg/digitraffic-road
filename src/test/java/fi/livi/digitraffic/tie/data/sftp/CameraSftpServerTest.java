@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,6 +33,9 @@ import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.SftpATTRS;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
@@ -160,6 +164,9 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
         try (final Session session = this.sftpSessionFactory.getSession()) {
             assertTrue("Publishable preset image should exist: " + presetToDelete, session.exists(getSftpPath(presetToDelete.getPresetId())));
+            final SftpATTRS stat = ((ChannelSftp) session.getClientInstance()).stat(getSftpPath(presetToDelete.getPresetId()));
+            log.info("Kuva timestamp {} vs image timestamp {}", Instant.ofEpochMilli(kuvaToDelete.getAikaleima()), Instant.ofEpochSecond(stat.getMTime()));
+            Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, stat.getMTime());
         }
 
         presetToDelete.setPublicExternal(false);

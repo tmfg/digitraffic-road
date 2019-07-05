@@ -23,6 +23,9 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.SftpException;
+
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -145,7 +148,7 @@ public class CameraImageUpdateService {
         boolean writtenSuccessfully = false;
         for (int writeTries = 3; writeTries > 0; writeTries--) {
             try {
-                writeImage(image, filename);
+                writeImage(image, filename, (int)(kuva.getAikaleima()/1000));
                 writtenSuccessfully = true;
                 break;
             } catch (final Exception e) {
@@ -158,12 +161,12 @@ public class CameraImageUpdateService {
                 throw new Error(e);
             }
         }
-        log.info("method=transferKuva writerTookMs={}", writeStart.getTime());
+        log.info("method=transferKuva presetId={} writerTookMs={}", presetId, writeStart.getTime());
         if (!writtenSuccessfully) {
             log.error("method=transferKuva Writing image failed for {} no retries remaining, transfer aborted.", ToStringHelper.toString(kuva));
             return false;
         }
-        log.info("method=transferKuva tookMs={}", start.getTime());
+        log.info("method=transferKuva presetId={} tookMs={}", presetId, start.getTime());
         return true;
     }
 
@@ -181,12 +184,14 @@ public class CameraImageUpdateService {
         }
     }
 
-    private void writeImage(byte[] data, String filename) throws IOException {
+    private void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
         final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             log.info("method=writeImage Writing image to sftpServerPath={} started", uploadPath);
             session.write(new ByteArrayInputStream(data), uploadPath);
-            log.info("method=writeImage Writing image to sftpServerPath={} ended successfully", uploadPath);
+            ((ChannelSftp)session.getClientInstance()).setMtime(uploadPath, timestampEpochSecond);
+            log.info("method=writeImage Writing image to sftpServerPath={} fileTimestamp={} ended successfully",
+                     uploadPath, Instant.ofEpochSecond(timestampEpochSecond));
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}", uploadPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
