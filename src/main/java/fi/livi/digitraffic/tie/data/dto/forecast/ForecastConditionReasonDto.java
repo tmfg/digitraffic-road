@@ -21,13 +21,14 @@ public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
     @ApiModelProperty("Precipitation condition:\n" +
         "0 = no data available,\n" +
-        "1 = rain intensity < 0.2 mm/h,\n" +
-        "2 = rain intensity >= 0.2 mm/h,\n" +
-        "3 = rain intensity >= 2.5 mm/h,\n" +
-        "4 = rain intensity >= 7.6 mm/h,\n" +
-        "5 = snowing intensity >= 0.2 cm/h,\n" +
-        "6 = snowing intensity >= 1 cm/h,\n" +
-        "7 = snowing intensity >= 3 cm/h")
+        "1 = rain intensity lt 0.2 mm/h,\n" +
+        "2 = rain intensity ge 0.2 mm/h,\n" +
+        "3 = rain intensity ge 2.5 mm/h,\n" +
+        "4 = rain intensity ge 7.6 mm/h,\n" +
+        "5 = snowing intensity ge 0.2 cm/h,\n" +
+        "6 = snowing intensity ge 1 cm/h,\n" +
+        "7 = snowing intensity ge 3 cm/h\n" +
+        "(lt = lower than, ge = greater or equal)")
     private final PrecipitationCondition precipitationCondition;
 
     @Enumerated(EnumType.STRING)
