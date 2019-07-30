@@ -3,7 +3,6 @@ alter table forecast_section drop constraint forecast_section_unique; -- unique 
 drop index forecast_section_ui;
 
 create unique index forecast_section_natural_version_id_key on forecast_section(natural_id, version, id) where obsolete_date is null;
-alter table forecast_section add constraint forecast_section_unique unique using index forecast_section_natural_version_id_key; -- recreate unique constraint
 
 -- duplicate
 drop index forecast_section_version;
