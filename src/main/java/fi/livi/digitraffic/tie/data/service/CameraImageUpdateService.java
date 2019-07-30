@@ -93,12 +93,9 @@ public class CameraImageUpdateService {
             success = deleteKuva(kuva, presetId, filename);
         }
 
-        if (!success) {
-            log.error("method=handleKuva failed to {} for presetId={} {}", cameraPreset != null ? "transferKuva":"deleteKuva", presetId,
-                                                                           ToStringHelper.toString(kuva));
-        }
-        log.info("method=handleKuva {} for presetId={} tookMs={} {}",
+        log.info("method=handleKuva {} for {} presetId={} tookMs={} {}",
             success ? "success" : "failed",
+            cameraPreset != null ? "transferKuva":"deleteKuva",
             presetId,
             start.getTime(),
             ToStringHelper.toString(kuva));
