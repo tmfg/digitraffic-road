@@ -1,6 +1,5 @@
 -- rewrite as partial index
-alter table forecast_section drop constraint forecast_section_unique; -- unique constraint
-drop index forecast_section_unique; -- unique constraint
+alter table forecast_section drop constraint forecast_section_unique; -- unique constraint, drops index
 drop index forecast_section_ui;
 
 create index forecast_section_natural_version_id_key on forecast_section(natural_id, version, id) where obsolete_date is null;
