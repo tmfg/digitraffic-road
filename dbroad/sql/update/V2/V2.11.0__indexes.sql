@@ -17,7 +17,3 @@ drop index work_machine_tracking_handled_created_i;
 
 create index work_machine_tracking_created_idx on work_machine_tracking (created) where handled is null;
 create index work_machine_tracking_type2_idx on work_machine_tracking(id) where type is null;
-
--- recreate as unique
-drop index forecast_section_version;
-create unique index forecast_section_id_natural_version_key on forecast_section(id, natural_id, version);
