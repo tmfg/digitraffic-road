@@ -69,25 +69,29 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
     /** Log statistics once in minute */
     @Scheduled(cron = "0 * * * * ?")
-    public void logMessagesReceived() throws JAXBException {
-        final JMSMessageListener<K> listener = getJMSMessageListener();
-        final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
-        final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
-        final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
+    public void logMessagesReceived() {
+        try {
+            final JMSMessageListener<K> listener = getJMSMessageListener();
+            final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
+            final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
+            final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
-        log.info("prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" +
-                " times per minute ( instanceId={} )",
-                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, lockingService.getInstanceId());
-        log.info("prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" +
-                " db rows per minute. Current in memory queue size queueSize={}.",
-                 STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
+            log.info(
+                "prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" + " times per minute ( instanceId={} )",
+                STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, lockingService.getInstanceId());
+            log.info(
+                "prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" + " db rows per minute. Current in memory queue size queueSize={}.",
+                STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
+        } catch(final Exception e) {
+            log.error("logging statistics failed", e);
+        }
     }
 
     /**
      * Drain queue and calls handleData if data available.
      */
     @Scheduled(fixedDelayString = "${jms.queue.pollingIntervalMs}")
-    public void drainQueueScheduled() throws JAXBException {
+    public void drainQueueScheduled() {
         try {
             getJMSMessageListener().drainQueueScheduled();
         } catch (final Exception e) {

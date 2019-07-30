@@ -147,7 +147,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             int updated = 0;
             try {
                 updated = cameraDataUpdateService.updateCameraData(data);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 Assert.fail("Data updating failed");
             }
             TestTransaction.flagForCommit();
@@ -275,16 +275,11 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
         }
     }
 
-    String getImportDir() {
+    private String getImportDir() {
         return testFolder.getRoot().getPath();
     }
 
-    private byte[] readCameraDataFromDisk(final String presetId) throws IOException {
-        final File imageFile = new File(getImportDir() + "/" + presetId + ".jpg");
-        return FileUtils.readFileToByteArray(imageFile);
-    }
-
-    private void createHttpResponseStubFor(int kuvaId) throws IOException {
+    private void createHttpResponseStubFor(int kuvaId) {
         log.info("Create mock with url: " + REQUEST_PATH + kuvaId);
         stubFor(get(urlEqualTo(REQUEST_PATH + kuvaId))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuvaId + IMAGE_SUFFIX))

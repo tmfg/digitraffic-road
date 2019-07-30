@@ -51,7 +51,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> handleData = data -> {
             try {
                 return cameraDataUpdateService.updateCameraData(data);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("Error while handling Camera data", e);
                 return 0;
             }

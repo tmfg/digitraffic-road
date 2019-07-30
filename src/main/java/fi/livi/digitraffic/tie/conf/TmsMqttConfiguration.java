@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @ConditionalOnNotWebApplication
 @Component
 public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(TmsMqttConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsMqttConfiguration.class);
 
     // tms/{roadStationId}/{sensorId}
     private static final String TMS_TOPIC = "tms/%d/%d";
@@ -31,12 +31,16 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
                                 final ObjectMapper objectMapper,
                                 final LockingService lockingService) {
 
-        super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_STATUS_TOPIC, TMS_TOPIC, logger,
+        super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_STATUS_TOPIC, TMS_TOPIC, log,
               lockingService, TmsMqttConfiguration.class.getSimpleName());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
     public void pollData() {
-        handleData();
+        try {
+            handleData();
+        } catch(final Exception e) {
+            log.error("polling failed", e);
+        }
     }
 }

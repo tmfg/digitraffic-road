@@ -57,6 +57,7 @@ public class DataV2Controller {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
+        @ApiParam(value = "RoadNumber to get data for")
         @PathVariable("roadNumber") final int roadNumber) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, roadNumber,
             null, null, null, null,
@@ -67,9 +68,13 @@ public class DataV2Controller {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
+        @ApiParam(value = "Minimum longitude in WGS84 format in decimal degrees")
         @PathVariable("minLongitude") final double minLongitude,
+        @ApiParam(value = "Minimum latitude in WGS84 format in decimal degrees")
         @PathVariable("minLatitude") final double minLatitude,
+        @ApiParam(value = "Maximum longitude in WGS84 format in decimal degrees")
         @PathVariable("maxLongitude") final double maxLongitude,
+        @ApiParam(value = "Maximum latitude in WGS84 format in decimal degrees")
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);

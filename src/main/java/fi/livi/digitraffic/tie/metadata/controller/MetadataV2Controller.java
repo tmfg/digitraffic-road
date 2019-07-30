@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.*;
 import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FORECAST_SECTIONS_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -36,7 +37,9 @@ public class MetadataV2Controller {
         this.forecastSectionV2MetadataService = forecastSectionV2MetadataService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
+                                                                                            MEDIA_TYPE_APPLICATION_GEO_JSON,
+                                                                                            MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
@@ -50,7 +53,9 @@ public class MetadataV2Controller {
             null,null, naturalIds);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
+                                                                                                              MEDIA_TYPE_APPLICATION_GEO_JSON,
+                                                                                                              MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2 by road number")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
@@ -59,7 +64,9 @@ public class MetadataV2Controller {
             null, null, null);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
+                                                                                                                                                           MEDIA_TYPE_APPLICATION_GEO_JSON,
+                                                                                                                                                           MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2 by bounding box")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(

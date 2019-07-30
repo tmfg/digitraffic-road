@@ -1,11 +1,11 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -42,7 +42,7 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
-    public int updateCameraData(final List<KuvaProtos.Kuva> data) throws SQLException {
+    public int updateCameraData(final List<KuvaProtos.Kuva> data) {
         final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();
         final StopWatch start = StopWatch.createStarted();
@@ -63,11 +63,12 @@ public class CameraDataUpdateService {
                 try {
                     return p.get();
                 } catch (Exception e) {
+                    log.error("method=updateCameraData UpdateJobManager task failed with error" , e);
                     return false;
                 }
             }).count();
 
-        log.info("Updating success for updateCount={} weather camera images of futuresCount={} tookMs={}", updateCount, futures.size(), start.getTime());
+        log.info("Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={}", updateCount, futures.size(), futures.size()-updateCount, start.getTime());
         return (int) updateCount;
     }
 
@@ -94,29 +95,32 @@ public class CameraDataUpdateService {
 
     private class UpdateJobManager implements Callable<Boolean> {
 
-        protected final long timeout;
-        protected final ImageUpdateTask task;
+        private final long timeout;
+        private final ImageUpdateTask task;
 
-        public UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
+        private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateService cameraImageUpdateService, final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateService);
         }
 
         @Override
         public Boolean call() {
-            final Future<Boolean> future = updateTaskThreadPool.submit(task);
-            final String presetId =  CameraImageUpdateService.resolvePresetIdFrom(null, task.kuva);
+            Future<Boolean> future = null;
+            String presetId = null;
             try {
+                presetId = CameraImageUpdateService.resolvePresetIdFrom(null, task.kuva);
+                future = updateTaskThreadPool.submit(task);
                 return future.get(timeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 log.error("ImageUpdateTasks failed to complete for presetId={} before timeoutMs={} ms", presetId, timeout);
             } catch (Exception e) {
-                log.error("ImageUpdateTasks failed to complete for " + presetId + " with exception", e);
+                log.error(String.format("ImageUpdateTasks failed to complete for presetId=%s with exception", presetId), e);
             } finally {
                 // This is safe even if task is already finished
-                future.cancel(true);
+                if (future != null) {
+                    future.cancel(true);
+                }
             }
-
             return false;
         }
     }
@@ -126,14 +130,19 @@ public class CameraDataUpdateService {
         private final KuvaProtos.Kuva kuva;
         private final CameraImageUpdateService cameraImageUpdateService;
 
-        public ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
+        private ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateService cameraImageUpdateService) {
             this.kuva = kuva;
             this.cameraImageUpdateService = cameraImageUpdateService;
         }
 
         @Override
-        public Boolean call() throws InterruptedException {
-            return cameraImageUpdateService.handleKuva(kuva);
+        public Boolean call() {
+            try {
+                return cameraImageUpdateService.handleKuva(kuva);
+            } catch (Exception e) {
+                log.error(String.format("Error while calling cameraImageUpdateService.handleKuva with %s", ToStringHelper.toString(kuva)), e);
+                throw e;
+            }
         }
     }
 }
