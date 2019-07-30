@@ -97,8 +97,11 @@ public class CameraImageUpdateService {
             log.error("method=handleKuva failed to {} for presetId={} {}", cameraPreset != null ? "transferKuva":"deleteKuva", presetId,
                                                                            ToStringHelper.toString(kuva));
         }
-        log.info("method=handleKuva {} for presetId={} tookMs={} {}", success ? "success" : "failed", start.getTime(), presetId,
-                                                                      success ? "" : ToStringHelper.toString(kuva));
+        log.info("method=handleKuva {} for presetId={} tookMs={} {}",
+            success ? "success" : "failed",
+            presetId,
+            start.getTime(),
+            ToStringHelper.toString(kuva));
         return success;
     }
 
