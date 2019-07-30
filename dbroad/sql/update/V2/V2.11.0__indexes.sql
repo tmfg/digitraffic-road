@@ -4,6 +4,10 @@ drop index forecast_section_ui;
 
 create unique index forecast_section_natural_version_id_key on forecast_section(natural_id, version, id) where obsolete_date is null;
 
+ALTER TABLE forecast_section
+  ADD CONSTRAINT forecast_section_unique EXCLUDE (natural_id WITH =, version WITH =) where (obsolete_date is null);
+
+
 -- duplicate
 drop index forecast_section_version;
 
@@ -13,3 +17,7 @@ drop index work_machine_tracking_handled_created_i;
 
 create index work_machine_tracking_created_idx on work_machine_tracking (created) where handled is null;
 create index work_machine_tracking_type2_idx on work_machine_tracking(id) where type is null;
+
+-- recreate as unique
+drop index forecast_section_version;
+create unique index forecast_section_id_natural_version_key on forecast_section(id, natural_id, version);
