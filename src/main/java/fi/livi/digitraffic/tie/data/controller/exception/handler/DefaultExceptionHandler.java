@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 import javax.xml.bind.MarshalException;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -30,7 +30,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.google.common.collect.Iterables;
-
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 
@@ -41,14 +40,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(TypeMismatchException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(final TypeMismatchException exception, final ServletWebRequest request) {
-
-        String parameterName = exception.getPropertyName();
-        if (exception instanceof MethodArgumentTypeMismatchException) {
-            MethodArgumentTypeMismatchException e = (MethodArgumentTypeMismatchException) exception;
-            parameterName = e.getName();
-        }
-
-
+        final String parameterName = getExceptionPropertyName(exception);
         final String parameterValue = exception.getValue().toString();
         final String requiredType = exception.getRequiredType().getSimpleName();
 
@@ -57,6 +49,14 @@ public class DefaultExceptionHandler {
             String.format("Query parameter type mismatch: queryString=%s, parameterName=%s parameterValue=%s, expectedType=%s",
                           request.getRequest().getQueryString(), parameterName, parameterValue, requiredType),
             HttpStatus.BAD_REQUEST, exception);
+    }
+
+    private String getExceptionPropertyName(final TypeMismatchException exception) {
+        if (exception instanceof MethodArgumentTypeMismatchException) {
+            return ((MethodArgumentTypeMismatchException) exception).getName();
+        }
+
+        return exception.getPropertyName();
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -74,8 +74,9 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolation(final ConstraintViolationException exception, final ServletWebRequest request) {
-        final String message = exception.getConstraintViolations().stream().map(v -> getViolationMessage(v)).collect(Collectors.joining
-            (","));
+        final String message = exception.getConstraintViolations().stream()
+            .map(DefaultExceptionHandler::getViolationMessage)
+            .collect(Collectors.joining(","));
 
         return getErrorResponseEntityAndLogError(
             request,
@@ -164,9 +165,10 @@ public class DefaultExceptionHandler {
                                                                             final String errorMsg,
                                                                             final HttpStatus httpStatus,
                                                                             final Exception exception) {
-        log.error(String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage=%s",
-                                httpStatus.value(), httpStatus.getReasonPhrase(),
-                                request.getRequest().getRequestURI(), errorMsg), exception);
+        if(log.isErrorEnabled()) {
+            log.error(String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage=%s", httpStatus.value(), httpStatus.getReasonPhrase(),
+                request.getRequest().getRequestURI(), errorMsg), exception);
+        }
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
                                     httpStatus.value(),
                                     httpStatus.getReasonPhrase(),
@@ -184,6 +186,6 @@ public class DefaultExceptionHandler {
     }
 
     private boolean isClientAbortException(final Throwable exception) {
-        return exception != null && exception.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException");
+        return exception instanceof ClientAbortException;
     }
 }
