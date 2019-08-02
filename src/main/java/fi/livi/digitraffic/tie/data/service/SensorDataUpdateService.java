@@ -6,7 +6,7 @@ import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,10 +37,10 @@ import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSen
 @Service
 public class SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateService.class);
+    private static final long ALLOWED_SENSOR_EXPIRATION_MILLIS = 300000; // 5min
 
-    private final HashMap<RoadStationType, Set<Long>> allowedSensorsLotjuIds = new HashMap<>();
-    private final HashMap<RoadStationType, Long> allowedSensorsLastUpdatedTimeMillis = new HashMap<>();
-    private static final long allowedSensorExpirationMillis = 300000; // 5min
+    private final Map<RoadStationType, Set<Long>> allowedSensorsLotjuIds = new EnumMap<RoadStationType, Set<Long>>(RoadStationType.class);
+    private final Map<RoadStationType, Long> allowedSensorsLastUpdatedTimeMillis = new EnumMap<RoadStationType, Long>(RoadStationType.class);
 
     private final SensorValueDao sensorValueDao;
     private final RoadStationSensorService roadStationSensorService;
@@ -58,11 +57,11 @@ public class SensorDataUpdateService {
     }
 
     private Set<Long> getAllowedRoadStationSensorsLotjuIds(final RoadStationType roadStationType) {
-        if (allowedSensorsLotjuIds.get(roadStationType) == null || allowedSensorsLastUpdatedTimeMillis.get(roadStationType) < System.currentTimeMillis() - allowedSensorExpirationMillis) {
+        if (allowedSensorsLotjuIds.get(roadStationType) == null || allowedSensorsLastUpdatedTimeMillis.get(roadStationType) < System.currentTimeMillis() - ALLOWED_SENSOR_EXPIRATION_MILLIS) {
             final List<RoadStationSensor> allowedTmsSensors =
                 roadStationSensorService.findAllPublishableRoadStationSensors(roadStationType);
 
-            allowedSensorsLotjuIds.put(roadStationType, allowedTmsSensors.stream().map(s -> s.getLotjuId()).collect(Collectors.toSet()));
+            allowedSensorsLotjuIds.put(roadStationType, allowedTmsSensors.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toSet()));
 
             allowedSensorsLastUpdatedTimeMillis.put(roadStationType, System.currentTimeMillis());
             log.info("method=getAllowedRoadStationSensorsLotjuIds fetched sensorCount={} for roadStationType={}", allowedSensorsLotjuIds.get(roadStationType).size(), roadStationType);
@@ -100,7 +99,7 @@ public class SensorDataUpdateService {
                      filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
         }
 
-        final long stationsCount = filteredByNewest.stream().map(a -> a.getAsemaLotjuId()).distinct().count();
+        final long stationsCount = filteredByNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
 
         final TimestampCache timestampCache = new TimestampCache();
 
@@ -116,7 +115,11 @@ public class SensorDataUpdateService {
         log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}",
                  initialDataRowCount, filteredByNewest.size());
         log.info("method=updateLamData update tms sensors data for updateCount={} insertCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
-                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount, filteredByStation.stream().anyMatch(lam -> lam.getIsRealtime()), filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()), stopWatch.getTime());
+                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount,
+            filteredByStation.stream().anyMatch(Lam::getIsRealtime),
+            filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()),
+            stopWatch.getTime());
+
         return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
     }
 
@@ -153,7 +156,7 @@ public class SensorDataUpdateService {
 
         final TimestampCache timestampCache = new TimestampCache();
 
-        final long stationsCount = filteredByNewest.stream().map(a -> a.getAsemaLotjuId()).distinct().count();
+        final long stationsCount = filteredByNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
 
         final List<SensorValueUpdateParameterDto> params =
             filteredByNewest.stream()
