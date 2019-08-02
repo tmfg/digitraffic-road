@@ -80,7 +80,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
                               "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. \n" +
                               "3 = Increasing direction of the crossing road. \n" +
                               "4 = Decreasing direction of the crossing road.\n" +
-                              "5-99 = Special directions)", required = true, position = 1)
+                              "5-99 = Special directions", required = true, position = 1)
     private String directionCode;
 
     @ApiModelProperty(value = "Image url")
