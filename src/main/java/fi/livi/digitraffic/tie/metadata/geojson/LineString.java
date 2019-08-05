@@ -9,7 +9,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson LineString Geometry Object", value = "LineStringGeometry")
+@ApiModel(description = "GeoJson LineString Geometry Object")
 @JsonPropertyOrder({ "type", "coordinates"})
     public class LineString extends Geometry<List<Double>> {
 
@@ -24,10 +24,8 @@ import io.swagger.annotations.ApiModelProperty;
         return super.getType();
     }
 
-    @ApiModelProperty(required = true, position = 2, example = "[[26.976774926733796, 65.34673850731987], [26.984330656240413, 65.35836767060651]]",
-        value = "List of coordinates [[LONGITUDE, LATITUDE, {ALTITUDE}], [LONGITUDE, LATITUDE, {ALTITUDE}]]. " +
-                "Coordinates are in WGS84 format in decimal degrees. Altitude is optional and measured in meters.",
-                      dataType = "List")
+    @ApiModelProperty(required = true, position = 2, example = "[ [26.976774926733796, 65.34673850731987], [26.984330656240413, 65.35836767060651] ]",
+                      value = "An array of Point coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
     @Override
     public List<List<Double>> getCoordinates() {
         return super.getCoordinates();

@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson Point Geometry Object", value = "PointGeometry", parent = Geometry.class)
+@ApiModel(description = "GeoJson Point Geometry Object", parent = Geometry.class)
 @JsonPropertyOrder({ "type", "coordinates"})
 public class Point extends Geometry<Double> implements Serializable {
 
@@ -43,8 +43,7 @@ public class Point extends Geometry<Double> implements Serializable {
     }
 
     @ApiModelProperty(required = true, position = 2, example = "[26.976774926733796, 65.34673850731987]",
-                      value = "List of coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. " +
-                              "Coordinates are in WGS84 format in decimal degrees. Altitude is optional and measured in meters.")
+                      value = "An array of coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT)
     @Override
     public List<Double> getCoordinates() {
         return super.getCoordinates();

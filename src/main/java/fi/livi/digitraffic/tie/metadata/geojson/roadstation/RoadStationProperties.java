@@ -92,8 +92,8 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Purpose of the road station")
     private String purpose;
 
-    @ApiModelProperty(value = "Road station coordinates (LONGITUDE, LATITUDE, ALTITUDE. Coordinates are in ETRS89 / ETRS-TM35FIN format. Altitude is optional and measured in metres.)" +
-                              "Point's coordinates  (Coordinates in WGS84. Altitude is optional [m])", required = true)
+    @ApiModelProperty(value = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
+                              "Altitude is optional and measured in metres.)", required = true)
     private List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {

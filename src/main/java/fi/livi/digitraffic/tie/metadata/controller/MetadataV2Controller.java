@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_M
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.*;
 import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FORECAST_SECTIONS_PATH;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
@@ -70,9 +71,13 @@ public class MetadataV2Controller {
     @ApiOperation("The static information of weather forecast sections V2 by bounding box")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
+        @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLongitude") final double minLongitude,
+        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLatitude") final double minLatitude,
+        @ApiParam(value = "Maximum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLongitude") final double maxLongitude,
+        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);

@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,6 +26,10 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
 public abstract class Geometry<T> implements Serializable {
+
+    public static final String COORD_FORMAT_WGS84 = "Coordinates are in WGS84 format in decimal degrees.";
+    public static final String COORD_FORMAT_WGS84_LONG = "Coordinates are in WGS84 format in decimal degrees: [LONGITUDE, LATITUDE, {ALTITUDE}].";
+    public static final String COORD_FORMAT_WGS84_LONG_INC_ALT = COORD_FORMAT_WGS84_LONG + " Altitude is optional and measured in meters.";
 
     private Type type;
 

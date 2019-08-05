@@ -23,10 +23,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
+import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
 
 import fi.livi.digitraffic.tie.data.controller.DataController;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.LineString;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -71,6 +76,7 @@ public class SwaggerConfiguration {
     }
 
     private Docket getDocket(final String groupName, Predicate<String> apiPaths) {
+        final TypeResolver typeResolver = new TypeResolver();
         return new Docket(DocumentationType.SWAGGER_2)
             .groupName(groupName)
             // Issue: https://github.com/springfox/springfox/issues/1021#issuecomment-178626396
@@ -78,6 +84,13 @@ public class SwaggerConfiguration {
             .directModelSubstitute(LocalDateTime.class, java.util.Date.class)
             .directModelSubstitute(LocalDate.class, java.sql.Date.class)
             .directModelSubstitute(Date.class, java.sql.Date.class)
+            // Inheritance not working as expected
+            // https://github.com/springfox/springfox/issues/2407#issuecomment-462319647
+            .additionalModels(typeResolver.resolve(Geometry.class),
+                typeResolver.resolve(LineString.class),
+                typeResolver.resolve(MultiLineString.class),
+                typeResolver.resolve(Point.class)
+            )
             .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
             .apiInfo(metadataApiInfoService.getApiInfo())
             .select()

@@ -32,6 +32,11 @@
 
     <repositories>
         <!-- PLACEHOLDER -->
+        <repository>
+            <id>jcenter-snapshots</id>
+            <name>jcenter</name>
+            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+        </repository>
     </repositories>
 
     <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
@@ -201,9 +206,10 @@
         </dependency>
 
         <dependency>
+            <!-- From jcenter-snapshots repository -->
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <version>3.0.0-20190527.223435-24</version>
         </dependency>
 
         <!-- https://github.com/springfox/springfox/issues/2265 -->

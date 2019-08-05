@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_D
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.data.controller.DataController.FORECAST_SECTION_WEATHER_DATA_PATH;
 import static fi.livi.digitraffic.tie.data.controller.DataController.LAST_UPDATED_PARAM;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
@@ -68,13 +69,13 @@ public class DataV2Controller {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
-        @ApiParam(value = "Minimum longitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLongitude") final double minLongitude,
-        @ApiParam(value = "Minimum latitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLatitude") final double minLatitude,
-        @ApiParam(value = "Maximum longitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Maximum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLongitude") final double maxLongitude,
-        @ApiParam(value = "Maximum latitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Maximum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
