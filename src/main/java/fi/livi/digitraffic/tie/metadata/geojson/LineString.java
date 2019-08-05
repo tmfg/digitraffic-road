@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
         return super.getType();
     }
 
-    @ApiModelProperty(required = true, position = 2, example = "[ [26.976774926733796, 65.34673850731987], [26.984330656240413, 65.35836767060651] ]",
+    @ApiModelProperty(required = true, position = 2, example = "[ [26.97677492, 65.34673850], [26.98433065, 65.35836767] ]",
                       value = "An array of Point coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
     @Override
     public List<List<Double>> getCoordinates() {

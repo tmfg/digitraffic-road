@@ -26,7 +26,7 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
         return super.getType();
     }
 
-    @ApiModelProperty(required = true, position = 2, example = "[ [ [100.0, 0.0], [101.0, 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ]",
+    @ApiModelProperty(required = true, position = 2, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
                       value = "An array of LineString coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
     @Override
     public List<List<List<Double>>> getCoordinates() {
