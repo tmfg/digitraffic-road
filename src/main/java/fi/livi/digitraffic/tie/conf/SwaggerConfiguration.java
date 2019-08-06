@@ -72,7 +72,8 @@ public class SwaggerConfiguration {
         return UiConfigurationBuilder.builder()
             .docExpansion(DocExpansion.LIST)
             .defaultModelRendering(ModelRendering.MODEL)
-            .validatorUrl("https://online.swagger.io/validator")
+            // There is bugs in online validator, so not use it at the moment ie. https://github.com/swagger-api/validator-badge/issues/97
+            //.validatorUrl("https://online.swagger.io/validator")
             .build();
     }
 
