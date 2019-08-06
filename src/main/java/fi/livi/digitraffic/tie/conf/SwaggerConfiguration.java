@@ -72,6 +72,7 @@ public class SwaggerConfiguration {
         return UiConfigurationBuilder.builder()
             .docExpansion(DocExpansion.LIST)
             .defaultModelRendering(ModelRendering.MODEL)
+            .validatorUrl("https://online.swagger.io/validator")
             .build();
     }
 
