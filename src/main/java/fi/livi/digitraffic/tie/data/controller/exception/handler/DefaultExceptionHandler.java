@@ -86,13 +86,14 @@ public class DefaultExceptionHandler {
             exception);
     }
 
-    @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class })
+    @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class,
+        IllegalArgumentException.class })
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleObjectNotFoundException(final Exception exception, final ServletWebRequest request) {
         final HttpStatus status;
         if (exception instanceof ObjectNotFoundException) {
             status = HttpStatus.NOT_FOUND;
-        } else if (exception instanceof BadRequestException) {
+        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException) {
             status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -122,8 +123,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(HttpMessageNotWritableException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpMessageNotWritableException(final Exception exception, final ServletWebRequest request) {
-
-        if (exception.getCause() != null && exception.getCause() instanceof javax.xml.bind.MarshalException) {
+        if (exception.getCause() != null && exception.getCause() instanceof MarshalException) {
             final MarshalException cause = (MarshalException) exception.getCause();
 
             if ( isClientAbortException(cause.getLinkedException()) ) {
@@ -165,7 +165,7 @@ public class DefaultExceptionHandler {
                                                                             final String errorMsg,
                                                                             final HttpStatus httpStatus,
                                                                             final Exception exception) {
-        if(log.isErrorEnabled()) {
+        if(log.isErrorEnabled() && isErrorLoggableException(exception)) {
             log.error(String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage=%s", httpStatus.value(), httpStatus.getReasonPhrase(),
                 request.getRequest().getRequestURI(), errorMsg), exception);
         }
@@ -185,7 +185,9 @@ public class DefaultExceptionHandler {
                              paramName, violation.getMessage());
     }
 
-    private boolean isClientAbortException(final Throwable exception) {
+    private static boolean isClientAbortException(final Throwable exception) {
         return exception instanceof ClientAbortException;
     }
+
+    private static boolean isErrorLoggableException(final Throwable exception) { return exception != null && !(exception instanceof ObjectNotFoundException); }
 }
