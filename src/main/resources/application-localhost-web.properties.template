@@ -2,7 +2,6 @@
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=road-local-web
 road.datasource.username=road
 road.datasource.password=road
-road.datasource.pool_size=6
 
 # daemon or web
 app.type=web
