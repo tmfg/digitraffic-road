@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -23,6 +24,9 @@ import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 
+@TestPropertySource(properties = {
+    "road.datasource.hikari.maximum-pool-size=1",
+})
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
     private TmsDataService tmsDataService;
