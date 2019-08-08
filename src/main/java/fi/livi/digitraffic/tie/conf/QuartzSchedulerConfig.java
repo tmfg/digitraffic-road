@@ -83,14 +83,15 @@ public class QuartzSchedulerConfig {
     @QuartzDataSource
     public DataSource quartzDataSource(final @Value("${road.datasource.url}") String url,
         final @Value("${road.datasource.username}") String username,
-        final @Value("${road.datasource.password}") String password) {
+        final @Value("${road.datasource.password}") String password,
+        final @Value("${road.datasource.pool_size}") int poolSize) {
 
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
 
-        config.setMaximumPoolSize(12);
+        config.setMaximumPoolSize(poolSize);
 
         config.setMaxLifetime(570000);
         config.setIdleTimeout(500000);
