@@ -7,7 +7,7 @@ dt.domain.url=http://localhost:9000
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
 road.datasource.username=road
 road.datasource.password=road
-road.datasource.pool_size=6
+road.datasource.hikari.maximum-pool-size=6
 
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
