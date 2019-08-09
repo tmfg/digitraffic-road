@@ -6,12 +6,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 
-@Import(CameraPresetService.class)
 public class CameraPresetServiceTest extends AbstractServiceTest {
 
     @Autowired

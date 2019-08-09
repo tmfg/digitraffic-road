@@ -13,7 +13,6 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
-@Import({RoadStationSensorService.class, DataStatusService.class})
 public class RoadStationSensorServiceTest extends AbstractServiceTest {
     @Autowired
     private RoadStationSensorService roadStationSensorService;

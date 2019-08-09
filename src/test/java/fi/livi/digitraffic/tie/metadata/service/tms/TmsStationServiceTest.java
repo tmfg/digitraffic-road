@@ -24,8 +24,6 @@ import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 
-@Import({TmsStationService.class, DataStatusService.class, RoadStationService.class, RoadDistrictService.class,
-    TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class})
 public class TmsStationServiceTest extends AbstractServiceTest {
 
     @Autowired

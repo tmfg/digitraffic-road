@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 
-@Import(RoadDistrictService.class)
 public class RoadDistrictServiceTest extends AbstractServiceTest {
 
     @Autowired

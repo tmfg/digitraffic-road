@@ -14,7 +14,6 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
-@Import(RoadStationService.class)
 public class RoadStationServiceTest extends AbstractServiceTest {
     @Autowired
     private RoadStationService roadStationService;
