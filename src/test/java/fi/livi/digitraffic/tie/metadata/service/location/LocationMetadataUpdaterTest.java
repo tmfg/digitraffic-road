@@ -14,13 +14,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class LocationMetadataUpdaterTest extends AbstractTest {
+@Import({LocationMetadataUpdater.class, LocationUpdater.class, LocationTypeUpdater.class, LocationSubtypeUpdater.class,
+    MetadataFileFetcher.class})
+public class LocationMetadataUpdaterTest extends AbstractJpaTest {
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
 

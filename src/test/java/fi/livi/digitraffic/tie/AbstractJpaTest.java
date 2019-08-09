@@ -2,7 +2,9 @@ package fi.livi.digitraffic.tie;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import javax.transaction.Transactional;
 
 import org.apache.commons.io.FileUtils;
@@ -39,5 +41,9 @@ public abstract class AbstractJpaTest {
 
     protected Resource loadResource(final String pattern) {
         return resourceLoader.getResource(pattern);
+    }
+
+    protected Path getPath(final String filename) {
+        return new File(getClass().getResource(filename).getFile()).toPath();
     }
 }
