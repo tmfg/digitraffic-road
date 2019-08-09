@@ -6,20 +6,21 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.conf.MessageConverterConfig;
+import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
-public abstract class AbstractWorkmachineDataServiceTest extends AbstractTest {
+@Import({MaintenanceDataService.class, WorkMachineObservationService.class, WorkMachineObservationDao.class,
+    MessageConverterConfig.class, ObjectMapper.class, Jackson2ObjectMapperBuilder.class})
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractWorkmachineDataServiceTest.class);
-
+public abstract class AbstractWorkmachineDataServiceTest extends AbstractServiceTest {
     @Autowired
     protected MaintenanceDataService maintenanceDataService;
 

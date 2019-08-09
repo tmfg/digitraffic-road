@@ -159,11 +159,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public boolean tmsStationExistsWithRoadStationNaturalId(long roadStationNaturalId) {
-        return tmsStationRepository.tmsExistsWithRoadStationNaturalId(roadStationNaturalId);
-    }
-
-    @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId() {
         final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
 

@@ -3,11 +3,14 @@ package fi.livi.digitraffic.tie.data.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
-public class FreeFlowSpeedServiceTest extends AbstractTest {
+@Import({FreeFlowSpeedService.class, DataStatusService.class})
+public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
 
     @Autowired
     private FreeFlowSpeedService freeFlowSpeedService;

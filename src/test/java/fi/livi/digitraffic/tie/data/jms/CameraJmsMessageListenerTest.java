@@ -11,16 +11,15 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
@@ -65,6 +64,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 

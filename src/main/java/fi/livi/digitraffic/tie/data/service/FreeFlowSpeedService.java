@@ -8,22 +8,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
+import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
 
 @Service
 public class FreeFlowSpeedService {
     private final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository;
-    private final TmsStationService tmsStationService;
+    private final TmsStationRepository tmsStationRepository;
     private final DataStatusService dataStatusService;
 
     @Autowired
-    public FreeFlowSpeedService(final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository,
-                                final TmsStationService tmsStationService,
-                                final DataStatusService dataStatusService) {
+    public FreeFlowSpeedService(final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository, final TmsStationRepository tmsStationRepository, final DataStatusService dataStatusService) {
         this.tmsFreeFlowSpeedRepository = tmsFreeFlowSpeedRepository;
-        this.tmsStationService = tmsStationService;
+        this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
     }
 
@@ -43,7 +41,7 @@ public class FreeFlowSpeedService {
 
     @Transactional(readOnly = true)
     public FreeFlowSpeedRootDataObjectDto listTmsPublicFreeFlowSpeeds(final long roadStationNaturalId) {
-        if (!tmsStationService.tmsStationExistsWithRoadStationNaturalId(roadStationNaturalId)) {
+        if (!tmsStationRepository.tmsExistsWithRoadStationNaturalId(roadStationNaturalId)) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }
 

@@ -67,7 +67,7 @@ public abstract class AbstractTest {
         final List<Resource> datex2Resources = loadResources(resourcePattern);
         final ArrayList<String> contents = new ArrayList<>();
 
-        for (Resource datex2Resource : datex2Resources) {
+        for (final Resource datex2Resource : datex2Resources) {
             contents.add(FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8));
         }
         return contents;
@@ -79,7 +79,7 @@ public abstract class AbstractTest {
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 
-    protected CameraPreset generateDummyPreset() {
+    public static CameraPreset generateDummyPreset() {
         final RoadStation rs = generateDummyRoadStation(RoadStationType.CAMERA_STATION);
 
         final CameraPreset cp = new CameraPreset();
@@ -126,7 +126,7 @@ public abstract class AbstractTest {
         return ts;
     }
 
-    protected RoadStation generateDummyRoadStation(final RoadStationType roadStationType) {
+    public static RoadStation generateDummyRoadStation(final RoadStationType roadStationType) {
         final RoadStation rs = new RoadStation(roadStationType);
         rs.setNaturalId(80000  + RandomUtils.nextLong(1000, 10000));
         rs.setName(roadStationType.name());
@@ -152,7 +152,7 @@ public abstract class AbstractTest {
         return rs;
     }
 
-    private RoadAddress generateDummyRoadAddres() {
+    public static RoadAddress generateDummyRoadAddres() {
         final RoadAddress ra = new RoadAddress();
         ra.setCarriagewayCode(1);
         ra.setSideCode(1);

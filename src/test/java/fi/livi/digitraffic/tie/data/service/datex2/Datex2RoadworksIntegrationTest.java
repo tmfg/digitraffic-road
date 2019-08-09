@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -19,17 +18,22 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
+import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class Datex2RoadworksIntegrationTest extends AbstractTest {
+@Import({Datex2UpdateService.class, Datex2RoadworksHttpClient.class, FileGetService.class, RestTemplate.class, RetryTemplate.class})
+public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     private Datex2SimpleMessageUpdater messageUpdater;
 
     @Autowired
