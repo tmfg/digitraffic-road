@@ -8,12 +8,14 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
-public class RoadStationServiceTest extends AbstractTest {
+@Import(RoadStationService.class)
+public class RoadStationServiceTest extends AbstractServiceTest {
     @Autowired
     private RoadStationService roadStationService;
 

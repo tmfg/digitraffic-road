@@ -10,14 +10,23 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
+import fi.livi.digitraffic.tie.metadata.converter.StationSensorConverter;
+import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
+import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 
-public class TmsStationServiceTest extends AbstractTest {
+@Import({TmsStationService.class, DataStatusService.class, RoadStationService.class, RoadDistrictService.class,
+    TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class})
+public class TmsStationServiceTest extends AbstractServiceTest {
 
     @Autowired
     private TmsStationService tmsStationService;

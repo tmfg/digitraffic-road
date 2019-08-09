@@ -51,7 +51,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
     private final RoadAddressRepository roadAddressRepository;
-    private ZonedDateTime metadataLastChecked;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
