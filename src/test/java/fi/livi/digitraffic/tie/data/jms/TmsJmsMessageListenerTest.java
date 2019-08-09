@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.jms;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;

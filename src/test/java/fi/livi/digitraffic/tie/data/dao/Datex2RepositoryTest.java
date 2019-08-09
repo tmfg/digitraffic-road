@@ -1,18 +1,19 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 
-public class Datex2RepositoryTest extends AbstractTest {
+public class Datex2RepositoryTest extends AbstractJpaTest {
 
     @Autowired
     private Datex2Repository datex2Repository;

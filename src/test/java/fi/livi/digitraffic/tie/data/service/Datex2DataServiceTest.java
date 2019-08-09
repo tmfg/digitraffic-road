@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -73,7 +74,7 @@ public class Datex2DataServiceTest extends AbstractTest {
     }
 
     @Test
-    public void updateTrafficAlerts() throws JAXBException, IOException {
+    public void updateTrafficAlerts() {
         deleteAllDatex2();
 
         updateTrafficAlerts(disorder1);

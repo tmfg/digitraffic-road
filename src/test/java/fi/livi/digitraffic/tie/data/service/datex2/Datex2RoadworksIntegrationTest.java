@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;

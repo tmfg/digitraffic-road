@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ACTIVE;
 import static fi.livi.digitraffic.tie.metadata.controller.TmsState.ALL;
 import static fi.livi.digitraffic.tie.metadata.controller.TmsState.REMOVED;
