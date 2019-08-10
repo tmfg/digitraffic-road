@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.MetadataMarshallerConfiguration;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
 import fi.livi.digitraffic.tie.metadata.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
@@ -22,6 +23,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
     // services
     LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
     RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
+    TmsDataService.class,
 
     // converters
     TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
