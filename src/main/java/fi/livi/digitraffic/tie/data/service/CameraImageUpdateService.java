@@ -50,6 +50,8 @@ public class CameraImageUpdateService {
     @Value("${camera-image-download.url}")
     private String camera_url;
 
+    private enum Status { SUCCESS, FAILED }
+
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
                              final String sftpUploadFolder,
@@ -131,11 +133,11 @@ public class CameraImageUpdateService {
         }
 
         if (image != null) {
-            log.info("method=transferKuva phase=readImage presetId={} readTookMs={} readImage url={} uploadFileName={} imageSizeBytes={}",
-                     presetId, start.getTime(), imageDownloadUrl, imageFullPath, image.length);
+            log.info("method=transferKuva phase=readImage readStatus={} presetId={} readTookMs={} readImage url={} uploadFileName={} imageSizeBytes={}",
+                     Status.SUCCESS, presetId, start.getTime(), imageDownloadUrl, imageFullPath, image.length);
         } else {
-            log.error(String.format("method=transferKuva phase=readImage presetId=%s readTookMs=%d url=%s uploadFileName=%s retried %d times but reading image failed for %s, transfer aborted.",
-                                    presetId, start.getTime(), imageDownloadUrl, imageFullPath, MAX_IMG_READ_ATTEMPTS, ToStringHelper.toString(kuva)),
+            log.error(String.format("method=transferKuva phase=readImage readStatus={} presetId=%s readTookMs=%d url=%s uploadFileName=%s retried %d times but reading image failed for %s, transfer aborted.",
+                                    Status.FAILED, presetId, start.getTime(), imageDownloadUrl, imageFullPath, MAX_IMG_READ_ATTEMPTS, ToStringHelper.toString(kuva)),
                       lastReadException);
             return false;
         }
@@ -162,10 +164,11 @@ public class CameraImageUpdateService {
         }
 
         if (writtenSuccessfully) {
-            log.info("method=transferKuva phase=writeImage presetId={} writerTookMs={} uploadFileName={} imageTimestamp={}", presetId, writeStart.getTime(), imageFullPath, Instant.ofEpochSecond(imageTimestampEpochSecond));
+            log.info("method=transferKuva phase=writeImage writeStatus={} presetId={} writerTookMs={} uploadFileName={} imageTimestamp={}",
+                     Status.SUCCESS, presetId, writeStart.getTime(), imageFullPath, Instant.ofEpochSecond(imageTimestampEpochSecond));
         } else {
-            log.error(String.format("method=transferKuva phase=writeImage presetId=%s writerTookMs=%d retried %d times but writing image failed for %s, transfer aborted.",
-                                    presetId, writeStart.getTime(), MAX_IMG_WRITE_ATTEMPTS, ToStringHelper.toString(kuva)),
+            log.error(String.format("method=transferKuva phase=writeImage writeStatus={} presetId=%s writerTookMs=%d retried %d times for %s, transfer aborted.",
+                                    Status.FAILED, presetId, writeStart.getTime(), MAX_IMG_WRITE_ATTEMPTS, ToStringHelper.toString(kuva)),
                       lastWriteException);
             return false;
         }
