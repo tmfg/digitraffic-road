@@ -50,7 +50,12 @@ public class CameraImageUpdateService {
     @Value("${camera-image-download.url}")
     private String camera_url;
 
-    private enum Status { SUCCESS, FAILED }
+    private enum Status { SUCCESS, FAILED, NONE;
+
+        public boolean isSuccess() {
+            return this.equals(SUCCESS);
+        }
+    }
 
     @Autowired
     CameraImageUpdateService(@Value("${camera-image-uploader.sftp.uploadFolder}")
@@ -81,8 +86,9 @@ public class CameraImageUpdateService {
 
     @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
-        final StopWatch start = StopWatch.createStarted();
-        log.info("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
+        if (log.isDebugEnabled()) {
+            log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
+        }
 
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
 
@@ -90,36 +96,46 @@ public class CameraImageUpdateService {
         final String filename = getPresetImageName(presetId);
         final String imageFullPath = getImageFullPath(filename);
 
-        final boolean success;
         if (cameraPreset != null) {
-            success = transferKuva(kuva, presetId, imageFullPath);
-            updateCameraPreset(cameraPreset, kuva, success);
-        } else {
-            final DeleteInfo result = deleteImage(imageFullPath);
-            success = !result.isFileExists() || result.isDeleteSuccess();
-        }
+            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageFullPath);
+            updateCameraPreset(cameraPreset, kuva, transferInfo.isSuccess());
 
-        log.info("method=handleKuva {} for {} presetId={} tookMs={} {}",
-            success ? "success" : "failed",
-            cameraPreset != null ? "transferKuva":"deleteKuva",
-            presetId,
-            start.getTime(),
-            ToStringHelper.toString(kuva));
-        return success;
+            log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
+                    "readTookMs={} writeTooksMs={} tookMs={} " +
+                    "downloadImageUrl={} imageSizeBytes={}",
+                presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
+                transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
+                transferInfo.getDownloadUrl(), transferInfo.getSizeBytes());
+            return transferInfo.isSuccess();
+        } else {
+            final DeleteInfo deleteInfo = deleteImage(imageFullPath);
+            log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
+                presetId, imageFullPath, deleteInfo.isFileExists(), deleteInfo.isDeleteSuccess(), deleteInfo.getDurationMs());
+            return deleteInfo.isSuccess();
+        }
     }
 
-    private boolean transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String imageFullPath) {
+    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String imageFullPath) {
         final StopWatch start = StopWatch.createStarted();
+
         // Read the image
         byte[] image = null;
 
         Exception lastReadException = null;
         final String imageDownloadUrl = getCameraDownloadUrl(kuva);
 
+        final ImageUpdateInfo info = new ImageUpdateInfo();
+        info.setDownloadUrl(imageDownloadUrl);
+        info.setPresetId(presetId);
+        info.setFullPath(imageFullPath);
+
         for (int readAttempts = MAX_IMG_READ_ATTEMPTS; readAttempts > 0; readAttempts--) {
             try {
                 image = readImage(imageDownloadUrl);
                 if (image.length > 0) {
+                    lastReadException = null;
+                    info.setSizeBytes(image.length);
+                    info.setReadStatus(Status.SUCCESS);
                     break;
                 }
             } catch (final Exception e) {
@@ -132,26 +148,29 @@ public class CameraImageUpdateService {
             }
         }
 
-        if (image != null) {
-            log.info("method=transferKuva phase=readImage readStatus={} presetId={} readTookMs={} readImage url={} uploadFileName={} imageSizeBytes={}",
-                     Status.SUCCESS, presetId, start.getTime(), imageDownloadUrl, imageFullPath, image.length);
+        info.setReadDurationMs(start.getTime());
+
+        if (info.getReadStatus().isSuccess()) {
+            log.debug("method=transferKuva phase=readImage readStatus={} presetId={} readTookMs={} readImage url={} uploadFileName={} imageSizeBytes={}",
+                      Status.SUCCESS, presetId, start.getTime(), imageDownloadUrl, imageFullPath, image.length);
         } else {
             log.error(String.format("method=transferKuva phase=readImage readStatus={} presetId=%s readTookMs=%d url=%s uploadFileName=%s retried %d times but reading image failed for %s, transfer aborted.",
                                     Status.FAILED, presetId, start.getTime(), imageDownloadUrl, imageFullPath, MAX_IMG_READ_ATTEMPTS, ToStringHelper.toString(kuva)),
                       lastReadException);
-            return false;
+            return info;
         }
 
         // Write the image
         final StopWatch writeStart = StopWatch.createStarted();
-        boolean writtenSuccessfully = false;
         Exception lastWriteException = null;
         final int imageTimestampEpochSecond = (int) (kuva.getAikaleima() / 1000);
+        info.setImageTimestampEpochSecond(imageTimestampEpochSecond);
 
         for (int writeAttempts = MAX_IMG_WRITE_ATTEMPTS; writeAttempts > 0; writeAttempts--) {
             try {
                 writeImage(image, imageFullPath, imageTimestampEpochSecond);
-                writtenSuccessfully = true;
+                lastWriteException = null;
+                info.setWriteStatus(Status.SUCCESS);
                 break;
             } catch (final Exception e) {
                 lastWriteException = e;
@@ -163,17 +182,19 @@ public class CameraImageUpdateService {
             }
         }
 
-        if (writtenSuccessfully) {
-            log.info("method=transferKuva phase=writeImage writeStatus={} presetId={} writerTookMs={} uploadFileName={} imageTimestamp={}",
+        info.setWriteDurationMs(writeStart.getTime());
+
+        if (info.getWriteStatus().isSuccess()) {
+            log.debug("method=transferKuva phase=writeImage writeStatus={} presetId={} writerTookMs={} uploadFileName={} imageTimestamp={}",
                      Status.SUCCESS, presetId, writeStart.getTime(), imageFullPath, Instant.ofEpochSecond(imageTimestampEpochSecond));
         } else {
             log.error(String.format("method=transferKuva phase=writeImage writeStatus={} presetId=%s writerTookMs=%d retried %d times for %s, transfer aborted.",
                                     Status.FAILED, presetId, writeStart.getTime(), MAX_IMG_WRITE_ATTEMPTS, ToStringHelper.toString(kuva)),
                       lastWriteException);
-            return false;
         }
-        log.info("method=transferKuva presetId={} tookMs={}", presetId, start.getTime());
-        return true;
+        log.debug("method=transferKuva presetId={} tookMs={}", presetId, start.getTime());
+
+        return info;
     }
 
     private byte[] readImage(final String imageDownloadUrl) throws IOException {
@@ -213,16 +234,17 @@ public class CameraImageUpdateService {
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
     private DeleteInfo deleteImage(final String imageFullPath) {
+        final StopWatch start = StopWatch.createStarted();
         try (final Session session = sftpSessionFactory.getSession()) {
             if (session.exists(imageFullPath) ) {
                 log.info("method=deleteImage presetId={} imagePath={}", resolvePresetIdFromImageFullPath(imageFullPath), imageFullPath);
                 session.remove(imageFullPath);
-                return new DeleteInfo(true, true);
+                return new DeleteInfo(true, true, start.getTime());
             }
-            return new DeleteInfo(false, false);
+            return new DeleteInfo(false, false, start.getTime());
         } catch (IOException e) {
             log.error(String.format("Failed to remove remote file deleteImageFileName=%s", imageFullPath), e);
-            return new DeleteInfo(true, false);
+            return new DeleteInfo(true, false, start.getTime());
         }
     }
 
@@ -250,10 +272,12 @@ public class CameraImageUpdateService {
     private static class DeleteInfo {
         private final boolean fileExists;
         private final boolean deleteSuccess;
+        private final long durationMs;
 
-        private DeleteInfo(boolean fileExists, boolean deleteSuccess) {
+        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs) {
             this.fileExists = fileExists;
             this.deleteSuccess = deleteSuccess;
+            this.durationMs = durationMs;
         }
 
         public boolean isFileExists() {
@@ -265,6 +289,107 @@ public class CameraImageUpdateService {
         }
         public boolean isFileExistsAndDeleteSuccess() {
             return fileExists && deleteSuccess;
+        }
+
+        public boolean isSuccess() {
+            return !isFileExists() || isDeleteSuccess();
+        }
+
+        public long getDurationMs() {
+            return durationMs;
+        }
+    }
+
+    private class ImageUpdateInfo {
+
+        private long readDurationMs = 0;
+        private long writeDurationMs = 0;
+        private String downloadUrl;
+        private String presetId;
+        private String fullPath;
+        private int sizeBytes = -1;
+        private Status readStatus;
+        private Status writeStatus = Status.NONE;
+        private int imageTimestampEpochSecond;
+
+        public void setReadDurationMs(final long readDurationMs) {
+            this.readDurationMs = readDurationMs;
+        }
+
+        public long getReadDurationMs() {
+            return readDurationMs;
+        }
+
+        public void setDownloadUrl(final String downloadUrl) {
+            this.downloadUrl = downloadUrl;
+        }
+
+        public String getDownloadUrl() {
+            return downloadUrl;
+        }
+
+        public void setPresetId(final String presetId) {
+            this.presetId = presetId;
+        }
+
+        public String getPresetId() {
+            return presetId;
+        }
+
+        public void setFullPath(final String fullPath) {
+            this.fullPath = fullPath;
+        }
+
+        public String getFullPath() {
+            return fullPath;
+        }
+
+        public void setSizeBytes(final int sizeBytes) {
+            this.sizeBytes = sizeBytes;
+        }
+
+        public int getSizeBytes() {
+            return sizeBytes;
+        }
+
+        public void setWriteDurationMs(final long writeDurationMs) {
+            this.writeDurationMs = writeDurationMs;
+        }
+
+        public long getWriteDurationMs() {
+            return writeDurationMs;
+        }
+
+        public void setReadStatus(final Status readStatus) {
+            this.readStatus = readStatus;
+        }
+
+        public Status getReadStatus() {
+            return readStatus;
+        }
+
+        public void setWriteStatus(final Status writeStatus) {
+            this.writeStatus = writeStatus;
+        }
+
+        public Status getWriteStatus() {
+            return writeStatus;
+        }
+
+        public boolean isSuccess() {
+            return getReadStatus().isSuccess() && getWriteStatus().isSuccess();
+        }
+
+        public long getDurationMs() {
+            return getReadDurationMs() + getWriteDurationMs();
+        }
+
+        public void setImageTimestampEpochSecond(final int imageTimestampEpochSecond) {
+            this.imageTimestampEpochSecond = imageTimestampEpochSecond;
+        }
+
+        public int getImageTimestampEpochSecond() {
+            return imageTimestampEpochSecond;
         }
     }
 }
