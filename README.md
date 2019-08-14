@@ -1,4 +1,4 @@
-# digitraffic-metadata
+# digitraffic-road
 
 ## Development
 
