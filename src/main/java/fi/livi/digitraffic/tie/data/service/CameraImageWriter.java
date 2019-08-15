@@ -36,7 +36,6 @@ public class CameraImageWriter {
     private final SessionFactory sftpSessionFactory;
     private final String sftpUploadFolder;
 
-
     CameraImageWriter(
         @Qualifier("sftpSessionFactory")
         final SessionFactory sftpSessionFactory,
