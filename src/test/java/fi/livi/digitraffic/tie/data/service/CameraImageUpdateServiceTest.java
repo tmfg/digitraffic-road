@@ -32,7 +32,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void retryOnImageReadError() throws Exception {
-        KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
+        final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(any(), any())).thenThrow(new RuntimeException());
 
@@ -43,7 +43,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void retryOnZeroByteImage() throws Exception {
-        KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
+        final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {});
         doThrow(new RuntimeException()).when(cameraImageWriter).writeImage(any(), any(), anyInt());
@@ -55,7 +55,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void retryOnImageWriteError() throws Exception {
-        KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
+        final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {1});
         doThrow(new RuntimeException()).when(cameraImageWriter).writeImage(any(), any(), anyInt());
@@ -66,7 +66,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
     }
 
     private CameraPreset createPreset() {
-        CameraPreset preset = new CameraPreset();
+        final CameraPreset preset = new CameraPreset();
         preset.setPresetId("some preset");
         return preset;
     }
