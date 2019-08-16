@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie;
 
 import org.springframework.context.annotation.Import;
 
+import fi.livi.digitraffic.tie.conf.CameraImageUploaderSftpConnectionFactoryBuilder;
 import fi.livi.digitraffic.tie.conf.jaxb2.MetadataMarshallerConfiguration;
 import fi.livi.digitraffic.tie.data.service.CameraImageReader;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
@@ -32,7 +33,10 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
 
           // daos
-          TmsSensorConstantDao.class
+          TmsSensorConstantDao.class,
+
+          // configurations
+          CameraImageUploaderSftpConnectionFactoryBuilder.class
 })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 }
