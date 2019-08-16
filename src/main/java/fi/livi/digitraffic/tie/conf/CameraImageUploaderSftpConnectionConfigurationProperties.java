@@ -8,15 +8,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CameraImageUploaderSftpConnectionConfigurationProperties {
 
     private String host;
-    private Integer port;
-    private String privateKeyPath;
-    private String knownHostsPath;
+    private int port = 22;
+    private String privateKeyPath = "file:id_rsa";
+    private String knownHostsPath = "file:known_hosts";
     private String privateKeyPassphrase;
-    private Boolean allowUnknownKeys;
+    private boolean allowUnknownKeys = false;
     private String user;
-    private Integer poolSize;
-    private Long sessionWaitTimeout;
-    private Integer connectionTimeout;
+    private int poolSize = 10;
+    private long sessionWaitTimeout = 1000;
+    private int connectionTimeout = 2000;
 
     public String getHost() {
         return host;
