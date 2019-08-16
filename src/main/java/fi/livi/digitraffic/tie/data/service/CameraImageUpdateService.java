@@ -34,6 +34,10 @@ public class CameraImageUpdateService {
 
     static final int RETRY_COUNT = 6;
 
+    private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
+        put(Error.class, true);
+    }};
+
     @Autowired
     CameraImageUpdateService(
         @Value("${camera-image-uploader.retry.delay.ms}")
@@ -50,7 +54,8 @@ public class CameraImageUpdateService {
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
         return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
-            .filter(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)).isFileExistsAndDeleteSuccess())
+            .map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
+            .filter(CameraImageWriter.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
     }
 
@@ -82,14 +87,11 @@ public class CameraImageUpdateService {
     }
 
     private boolean transferKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        final RetryTemplate retryTemplate = new RetryTemplate();
+        final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
         backOffPolicy.setBackOffPeriod(retryDelayMs);
         retryTemplate.setBackOffPolicy(backOffPolicy);
-        Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
-           put(Error.class, true);
-        }};
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
+        final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
         retryTemplate.setRetryPolicy(retryPolicy);
 
         return retryTemplate.execute(args -> {

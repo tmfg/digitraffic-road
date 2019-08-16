@@ -46,7 +46,7 @@ public class CameraImageWriter {
         this.sftpUploadFolder = sftpUploadFolder;
     }
 
-    void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
+    final void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
         final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             log.info("method=writeImage Writing image to sftpServerPath={} started", uploadPath);
@@ -66,7 +66,7 @@ public class CameraImageWriter {
      * @param deleteImageFileName file name to delete
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
-    DeleteInfo deleteImage(final String deleteImageFileName) {
+    final DeleteInfo deleteImage(final String deleteImageFileName) {
         try (final Session session = sftpSessionFactory.getSession()) {
             final String imageRemotePath = getImageFullPath(deleteImageFileName);
             if (session.exists(imageRemotePath)) {
@@ -84,7 +84,7 @@ public class CameraImageWriter {
     /**
      * @return success (true) if file doesn't exist or delete success for existing file. Otherwise failure (false);
      */
-    boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
+    final boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
         log.info(
             "method=deleteKuva Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
                 "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),

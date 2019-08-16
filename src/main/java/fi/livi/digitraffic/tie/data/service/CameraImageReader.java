@@ -23,7 +23,7 @@ public class CameraImageReader {
 
     private final int connectTimeout;
     private final int readTimeout;
-    private final String camera_url;
+    private final String cameraUrl;
 
     CameraImageReader(
         @Value("${camera-image-uploader.http.connectTimeout}")
@@ -31,14 +31,14 @@ public class CameraImageReader {
         @Value("${camera-image-uploader.http.readTimeout}")
         final int readTimeout,
         @Value("${camera-image-download.url}")
-        final String camera_url
+        final String cameraUrl
     ) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
-        this.camera_url = camera_url;
+        this.cameraUrl = cameraUrl;
     }
 
-    byte[] readImage(KuvaProtos.Kuva kuva, String uploadImageFileName) throws IOException {
+    final byte[] readImage(KuvaProtos.Kuva kuva, String uploadImageFileName) throws IOException {
         final String downloadImageUrl = getCameraDownloadUrl(kuva);
         log.info("method=readImage Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
 
@@ -54,7 +54,7 @@ public class CameraImageReader {
     }
 
     private String getCameraDownloadUrl(final KuvaProtos.Kuva kuva) {
-        return StringUtils.appendIfMissing(camera_url, "/") + kuva.getKuvaId();
+        return StringUtils.appendIfMissing(cameraUrl, "/") + kuva.getKuvaId();
     }
 
 }

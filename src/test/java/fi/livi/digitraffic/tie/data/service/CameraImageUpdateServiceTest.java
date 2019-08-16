@@ -3,32 +3,32 @@ package fi.livi.digitraffic.tie.data.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
-public class CameraImageUpdateServiceTest extends AbstractServiceTest {
+public class CameraImageUpdateServiceTest {
 
-    @MockBean
     private CameraImageReader cameraImageReader;
-
-    @MockBean
     private CameraImageWriter cameraImageWriter;
-
-    @MockBean
     private CameraPresetService cameraPresetService;
-
-    @Autowired
     private CameraImageUpdateService service;
+
+    @Before
+    public void setup() {
+        cameraImageReader = mock(CameraImageReader.class);
+        cameraImageWriter = mock(CameraImageWriter.class);
+        cameraPresetService = mock(CameraPresetService.class);
+        service = new CameraImageUpdateService(1, cameraPresetService, cameraImageReader, cameraImageWriter);
+    }
 
     @Test
     public void retryOnImageReadError() throws Exception {
