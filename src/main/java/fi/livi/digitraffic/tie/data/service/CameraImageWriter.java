@@ -46,7 +46,7 @@ public class CameraImageWriter {
         this.sftpUploadFolder = sftpUploadFolder;
     }
 
-    final void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
+    void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
         final String uploadPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             log.info("method=writeImage Writing image to sftpServerPath={} started", uploadPath);

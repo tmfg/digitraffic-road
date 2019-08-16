@@ -38,7 +38,7 @@ public class CameraImageReader {
         this.cameraUrl = cameraUrl;
     }
 
-    final byte[] readImage(KuvaProtos.Kuva kuva, String uploadImageFileName) throws IOException {
+    byte[] readImage(KuvaProtos.Kuva kuva, String uploadImageFileName) throws IOException {
         final String downloadImageUrl = getCameraDownloadUrl(kuva);
         log.info("method=readImage Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
 
