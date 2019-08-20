@@ -118,16 +118,16 @@ public class CameraImageUpdateService {
             try {
                 image = imageReader.readImage(kuva, info);
                 info.setSizeBytes(image.length);
-                info.setReadStatusSuccess();
+                info.updateReadStatusSuccess();
                 // TODO count here all attempts to read including errors
                 info.setReadDurationMs(start.getTime());
             } catch (final Exception e) {
-                info.setReadStatusFailed(e);
+                info.updateReadStatusFailed(e);
                 throw new Error(e);
             }
             if (image.length <= 0) {
                 final Error e = new Error("Image was 0 bytes");
-                info.setReadStatusFailed(e);
+                info.updateReadStatusFailed(e);
                 throw e;
             }
 
@@ -135,11 +135,11 @@ public class CameraImageUpdateService {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
                 imageWriter.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
-                info.setWriteStatusSuccess();
+                info.updateWriteStatusSuccess();
                 // TODO count here all attempts to write including errors
                 info.setWriteDurationMs(writeStart.getTime());
             } catch (final Exception e) {
-                info.setWriteStatusFailed(e);
+                info.updateWriteStatusFailed(e);
                 throw new Error(e);
             }
             return info;

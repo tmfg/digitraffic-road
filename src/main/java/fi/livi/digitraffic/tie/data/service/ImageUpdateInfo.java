@@ -82,7 +82,7 @@ public class ImageUpdateInfo {
         return readStatus;
     }
 
-    void setReadStatusSuccess() {
+    void updateReadStatusSuccess() {
         setReadStatus(Status.SUCCESS);
         setReadError(null);
     }
@@ -95,7 +95,7 @@ public class ImageUpdateInfo {
         return writeStatus;
     }
 
-    void setWriteStatusSuccess() {
+    void updateWriteStatusSuccess() {
         setWriteStatus(Status.SUCCESS);
         setWriteError(null);
     }
@@ -116,7 +116,7 @@ public class ImageUpdateInfo {
         return imageTimestampEpochSecond;
     }
 
-    void setReadStatusFailed(final Throwable readException) {
+    void updateReadStatusFailed(final Throwable readException) {
         setReadStatus(Status.FAILED);
         setReadError(readException);
         setSizeBytes(-1);
@@ -126,11 +126,11 @@ public class ImageUpdateInfo {
         return readError;
     }
 
-    private void setReadError(Throwable readError) {
+    private void setReadError(final Throwable readError) {
         this.readError = readError;
     }
 
-    void setWriteStatusFailed(final Throwable writeError) {
+    void updateWriteStatusFailed(final Throwable writeError) {
         setWriteStatus(Status.FAILED);
         setWriteError(writeError);
     }
