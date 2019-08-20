@@ -38,18 +38,16 @@ public class CameraImageReader {
         this.cameraUrl = cameraUrl;
     }
 
-    byte[] readImage(KuvaProtos.Kuva kuva, String uploadImageFileName) throws IOException {
-        final String downloadImageUrl = getCameraDownloadUrl(kuva);
-        log.info("method=readImage Read image url={} ( uploadFileName={} )", downloadImageUrl, uploadImageFileName);
+    byte[] readImage(final KuvaProtos.Kuva kuva, final ImageUpdateInfo info) throws IOException {
+        final String imageDownloadUrl = getCameraDownloadUrl(kuva);
+        info.setDownloadUrl(imageDownloadUrl);
 
-        final URL url = new URL(downloadImageUrl);
+        final URL url = new URL(imageDownloadUrl);
         final URLConnection con = url.openConnection();
         con.setConnectTimeout(connectTimeout);
         con.setReadTimeout(readTimeout);
         try (final InputStream is = con.getInputStream()) {
-            final byte[] result = IOUtils.toByteArray(is);
-            log.info("method=readImage Image read successfully. imageSizeBytes={} bytes", result.length);
-            return result;
+            return IOUtils.toByteArray(is);
         }
     }
 

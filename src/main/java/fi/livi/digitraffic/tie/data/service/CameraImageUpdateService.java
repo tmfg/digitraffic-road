@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,32 +62,46 @@ public class CameraImageUpdateService {
 
     @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
-        final StopWatch start = StopWatch.createStarted();
-        log.info("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
+        if (log.isDebugEnabled()) {
+            log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
+        }
 
         final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
 
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
-        final boolean success;
         if (cameraPreset != null) {
-            success = transferKuva(kuva, presetId, filename);
-            updateCameraPreset(cameraPreset, kuva, success);
-        } else {
-            success = imageWriter.deleteKuva(kuva, presetId, filename);
-        }
+            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename);
+            updateCameraPreset(cameraPreset, kuva, transferInfo.isSuccess());
 
-        log.info("method=handleKuva {} for {} presetId={} tookMs={} {}",
-            success ? "success" : "failed",
-            cameraPreset != null ? "transferKuva" : "deleteKuva",
-            presetId,
-            start.getTime(),
-            ToStringHelper.toString(kuva));
-        return success;
+            if (transferInfo.isSuccess()) {
+                log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
+                        "readTookMs={} writeTooksMs={} tookMs={} " +
+                        "downloadImageUrl={} imageSizeBytes={}",
+                    presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
+                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
+                    transferInfo.getDownloadUrl(), transferInfo.getSizeBytes());
+            } else {
+                log.error("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
+                        "readTookMs={} writeTooksMs={} tookMs={} " +
+                        "downloadImageUrl={} imageSizeBytes={} " +
+                        "readErro={} writeError={}",
+                    presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
+                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
+                    transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
+                    transferInfo.getReadError(), transferInfo.getWriteError());
+            }
+            return transferInfo.isSuccess();
+        } else {
+            final CameraImageWriter.DeleteInfo deleteInfo = imageWriter.deleteImage(filename);
+            log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
+                presetId, deleteInfo.getFullPath(), deleteInfo.isFileExists(), deleteInfo.isDeleteSuccess(), deleteInfo.getDurationMs());
+            return deleteInfo.isSuccess();
+        }
     }
 
-    private boolean transferKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
+    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename) {
         final RetryTemplate retryTemplate = new RetryTemplate();
         final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
         backOffPolicy.setBackOffPeriod(retryDelayMs);
@@ -94,52 +109,57 @@ public class CameraImageUpdateService {
         final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
         retryTemplate.setRetryPolicy(retryPolicy);
 
+        final ImageUpdateInfo info = new ImageUpdateInfo();
+        info.setPresetId(presetId);
+        info.setFullPath(imageWriter.getImageFullPath(filename));
+
         return retryTemplate.execute(args -> {
             final StopWatch start = StopWatch.createStarted();
             // Read the image
             byte[] image;
             try {
-                image = imageReader.readImage(kuva, filename);
+                image = imageReader.readImage(kuva, info);
+                info.setSizeBytes(image.length);
+                info.setReadStatusSuccess();
+                // TODO count here all attempts to read including errors
+                info.setReadDurationMs(start.getTime());
             } catch (final Exception e) {
-                log.warn(
-                    "method=transferKuva Reading image for presetId={} from srcUri={} to sftpServerPath={} failed. exceptionMessage={} .",
-                    presetId, kuva.getKuvaId(), filename, e.getMessage());
+                info.setReadStatusFailed(e);
                 throw new Error(e);
             }
-            if (image.length == 0) {
-                log.warn("method=transferKuva Reading image for presetId={} from srcUri={} to sftpServerPath={} returned 0 bytes.",
-                    presetId, kuva.getKuvaId(), filename);
-                throw new Error("image was 0 bytes");
+            if (image.length <= 0) {
+                final Error e = new Error("Image was 0 bytes");
+                info.setReadStatusFailed(e);
+                throw e;
             }
-            log.info("method=transferKuva readTookMs={}", start.getTime());
 
             // Write the image
             final StopWatch writeStart = StopWatch.createStarted();
             try {
                 imageWriter.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
+                info.setWriteStatusSuccess();
+                // TODO count here all attempts to write including errors
+                info.setWriteDurationMs(writeStart.getTime());
             } catch (final Exception e) {
-                log.warn(
-                    "method=transferKuva Writing image for presetId={} from srcUri={} to sftpServerPath={} failed. exceptionMessage={}.",
-                    presetId, kuva.getKuvaId(), filename, e.getMessage());
+                info.setWriteStatusFailed(e);
                 throw new Error(e);
             }
-            log.info("method=transferKuva presetId={} writerTookMs={}", presetId, writeStart.getTime());
-            log.info("method=transferKuva presetId={} tookMs={}", presetId, start.getTime());
-            return true;
+            return info;
         }, args -> {
             // recover
-            return false;
+            return info;
         });
     }
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva, final boolean success) {
+        final ZonedDateTime lastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima()));
         if (cameraPreset.isPublicExternal() != kuva.getJulkinen()) {
             cameraPreset.setPublicExternal(kuva.getJulkinen());
-            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
-            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} ", cameraPreset.getPresetId(), !kuva.getJulkinen(),
-                kuva.getJulkinen());
+            cameraPreset.setPictureLastModified(lastModified);
+            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
+                cameraPreset.getPresetId(), !kuva.getJulkinen(), kuva.getJulkinen(), lastModified);
         } else if (success) {
-            cameraPreset.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima())));
+            cameraPreset.setPictureLastModified(lastModified);
         }
     }
 
@@ -150,18 +170,4 @@ public class CameraImageUpdateService {
     private static String getPresetImageName(final String presetId) {
         return presetId + ".jpg";
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
