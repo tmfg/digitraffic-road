@@ -9,6 +9,11 @@ public class ImageUpdateInfo {
         }
     }
 
+    public ImageUpdateInfo(final String presetId, final String fullPath) {
+        this.presetId = presetId;
+        this.fullPath = fullPath;
+    }
+
     private long readDurationMs = 0;
     private long writeDurationMs = 0;
     private String downloadUrl;

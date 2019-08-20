@@ -109,9 +109,7 @@ public class CameraImageUpdateService {
         final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
         retryTemplate.setRetryPolicy(retryPolicy);
 
-        final ImageUpdateInfo info = new ImageUpdateInfo();
-        info.setPresetId(presetId);
-        info.setFullPath(imageWriter.getImageFullPath(filename));
+        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename));
 
         return retryTemplate.execute(args -> {
             final StopWatch start = StopWatch.createStarted();
