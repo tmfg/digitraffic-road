@@ -70,6 +70,14 @@ public class CameraImageWriter {
         }
     }
 
+    private static String resolvePresetIdFromImageFullPath(final String imageFullPath) {
+        return StringUtils.substringBeforeLast(StringUtils.substringAfterLast(imageFullPath,"/"), ".");
+    }
+
+    String getImageFullPath(final String imageFileName) {
+        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
+    }
+
     static class DeleteInfo {
         private final boolean fileExists;
         private final boolean deleteSuccess;
@@ -106,13 +114,5 @@ public class CameraImageWriter {
         String getFullPath() {
             return fullPath;
         }
-    }
-
-    private static String resolvePresetIdFromImageFullPath(final String imageFullPath) {
-        return StringUtils.substringBeforeLast(StringUtils.substringAfterLast(imageFullPath,"/"), ".");
-    }
-
-    String getImageFullPath(final String imageFileName) {
-        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
 }
