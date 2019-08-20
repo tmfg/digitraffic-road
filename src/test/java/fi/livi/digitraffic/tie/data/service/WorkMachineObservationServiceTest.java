@@ -4,17 +4,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 
 public class WorkMachineObservationServiceTest extends AbstractWorkmachineDataServiceTest {
-
     private static final Logger log = LoggerFactory.getLogger(WorkMachineObservationServiceTest.class);
+
+    @Autowired
+    protected EntityManager entityManager;
 
     @Test
     public void findWorkMachineObservationByWorkMachineHarjaIdAndHarjaUrakkaId() throws IOException {

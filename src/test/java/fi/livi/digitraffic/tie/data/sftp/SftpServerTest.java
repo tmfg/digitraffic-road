@@ -20,13 +20,10 @@ import org.springframework.integration.file.remote.session.CachingSessionFactory
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.util.PoolItemNotAvailableException;
-import org.springframework.messaging.MessagingException;
 import org.springframework.util.ReflectionUtils;
 
-import fi.livi.digitraffic.tie.AbstractTest;
-
 public class SftpServerTest extends AbstractSftpTest {
-    private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
+    private static final Logger log = LoggerFactory.getLogger(SftpServerTest.class);
 
     @Autowired
     private SessionFactory sftpSessionFactory;

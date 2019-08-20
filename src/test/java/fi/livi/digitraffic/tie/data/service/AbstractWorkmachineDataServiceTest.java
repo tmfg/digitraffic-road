@@ -6,20 +6,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
 public abstract class AbstractWorkmachineDataServiceTest extends AbstractTest {
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractWorkmachineDataServiceTest.class);
-
     @Autowired
     protected MaintenanceDataService maintenanceDataService;
 

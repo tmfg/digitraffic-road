@@ -1,17 +1,18 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 
-public class RoadStationSensorRepositoryTest extends AbstractTest {
+public class RoadStationSensorRepositoryTest extends AbstractJpaTest {
 
     @Autowired
     private RoadStationSensorRepository roadStationSensorRepository;

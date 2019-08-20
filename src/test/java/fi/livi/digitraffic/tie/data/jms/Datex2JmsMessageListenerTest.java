@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.jms;
 
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
