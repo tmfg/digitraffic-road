@@ -100,7 +100,7 @@ public class CameraImageWriter {
         }
 
         boolean isFileExistsAndDeleteSuccess() {
-            return fileExists && deleteSuccess;
+            return isFileExists() && isDeleteSuccess();
         }
 
         boolean isSuccess() {
