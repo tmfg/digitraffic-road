@@ -10,7 +10,7 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
     private final String serverUri;
 
-    public AbstractLotjuMetadataClient(Jaxb2Marshaller marshaller, String serverAddress, Logger log) {
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String serverAddress, final Logger log) {
 
         serverUri = serverAddress;
         if ( StringUtils.isNotBlank(serverAddress) &&
