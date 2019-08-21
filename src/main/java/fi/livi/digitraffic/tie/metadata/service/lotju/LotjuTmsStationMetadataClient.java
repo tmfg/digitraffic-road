@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,11 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
                 getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
         log.info("lamFetchedCount={} LamAsemas", response.getValue().getAsemat().size());
         return response.getValue().getAsemat();
+    }
+
+    @Recover
+    void recover(Throwable e) {
+        log.error("Error when getting data from lotu", e);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
