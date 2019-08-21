@@ -2,14 +2,10 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.time.Instant;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,10 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
-
-import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
 
 @Component
 @ConditionalOnNotWebApplication
@@ -46,61 +38,57 @@ public class CameraImageWriter {
         this.sftpUploadFolder = sftpUploadFolder;
     }
 
-    void writeImage(byte[] data, String filename, int timestampEpochSecond) throws IOException, SftpException {
-        final String uploadPath = getImageFullPath(filename);
+    void writeImage(final byte[] data, final String filename, final int timestampEpochSecond) throws IOException, SftpException {
+        final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
-            log.info("method=writeImage Writing image to sftpServerPath={} started", uploadPath);
-            session.write(new ByteArrayInputStream(data), uploadPath);
-            ((ChannelSftp) session.getClientInstance()).setMtime(uploadPath, timestampEpochSecond);
-            log.info("method=writeImage Writing image to sftpServerPath={} fileTimestamp={} ended successfully",
-                uploadPath, Instant.ofEpochSecond(timestampEpochSecond));
+            session.write(new ByteArrayInputStream(data), imageFullPath);
+            ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, timestampEpochSecond);
         } catch (Exception e) {
-            log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}", uploadPath,
-                NestedExceptionUtils
-                    .getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
+            log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}",
+                imageFullPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
 
     /**
-     * @param deleteImageFileName file name to delete
+     * @param filename file name to delete
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
-    final DeleteInfo deleteImage(final String deleteImageFileName) {
+    final DeleteInfo deleteImage(final String filename) {
+        final StopWatch start = StopWatch.createStarted();
+        final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
-            final String imageRemotePath = getImageFullPath(deleteImageFileName);
-            if (session.exists(imageRemotePath)) {
-                log.info("Delete imagePath={}", imageRemotePath);
-                session.remove(imageRemotePath);
-                return new DeleteInfo(true, true);
+            if (session.exists(imageFullPath) ) {
+                log.info("method=deleteImage presetId={} imagePath={}", resolvePresetIdFromImageFullPath(imageFullPath), imageFullPath);
+                session.remove(imageFullPath);
+                return new DeleteInfo(true, true, start.getTime(), imageFullPath);
             }
-            return new DeleteInfo(false, false);
+            return new DeleteInfo(false, false, start.getTime(), imageFullPath);
         } catch (IOException e) {
-            log.error(String.format("Failed to remove remote file deleteImageFileName=%s", getImageFullPath(deleteImageFileName)), e);
-            return new DeleteInfo(true, false);
+            log.error(String.format("Failed to remove remote file deleteImageFileName=%s", imageFullPath), e);
+            return new DeleteInfo(true, false, start.getTime(), imageFullPath);
         }
     }
 
-    /**
-     * @return success (true) if file doesn't exist or delete success for existing file. Otherwise failure (false);
-     */
-    final boolean deleteKuva(KuvaProtos.Kuva kuva, String presetId, String filename) {
-        log.info(
-            "method=deleteKuva Deleting presetId={} remote imagePath={}. The image is not publishable or preset was not included in previous run of" +
-                "clazz={}. Kuva from incoming JMS: {}", presetId, getImageFullPath(filename),
-            CameraMetadataUpdateJob.class.getName(), ToStringHelper.toString(kuva));
+    private static String resolvePresetIdFromImageFullPath(final String imageFullPath) {
+        return StringUtils.substringBeforeLast(StringUtils.substringAfterLast(imageFullPath,"/"), ".");
+    }
 
-        final DeleteInfo result = deleteImage(filename);
-        return !result.isFileExists() || result.isDeleteSuccess();
+    String getImageFullPath(final String imageFileName) {
+        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
     }
 
     static class DeleteInfo {
         private final boolean fileExists;
         private final boolean deleteSuccess;
+        private final long durationMs;
+        private final String fullPath;
 
-        private DeleteInfo(boolean fileExists, boolean deleteSuccess) {
+        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs, final String fullPath) {
             this.fileExists = fileExists;
             this.deleteSuccess = deleteSuccess;
+            this.durationMs = durationMs;
+            this.fullPath = fullPath;
         }
 
         boolean isFileExists() {
@@ -112,11 +100,19 @@ public class CameraImageWriter {
         }
 
         boolean isFileExistsAndDeleteSuccess() {
-            return fileExists && deleteSuccess;
+            return isFileExists() && isDeleteSuccess();
         }
-    }
 
-    private String getImageFullPath(final String imageFileName) {
-        return StringUtils.appendIfMissing(sftpUploadFolder, "/") + imageFileName;
+        boolean isSuccess() {
+            return !isFileExists() || isDeleteSuccess();
+        }
+
+        long getDurationMs() {
+            return durationMs;
+        }
+
+        String getFullPath() {
+            return fullPath;
+        }
     }
 }

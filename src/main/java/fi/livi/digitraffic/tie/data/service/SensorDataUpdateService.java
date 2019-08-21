@@ -82,29 +82,29 @@ public class SensorDataUpdateService {
 
         final long initialDataRowCount = data.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
-        final List<Lam> filteredByStation =
+        final List<Lam> filteredByMissingStation =
             data.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
-        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
+        final long filteredByStationRowCount = filteredByMissingStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
-        if (filteredByStation.size() < data.size()) {
+        if (filteredByMissingStation.size() < data.size()) {
             log.warn("method=updateLamData filter data from originalCount={} with missingTmsStationsCount={} to resultCount={}" ,
-                     data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
+                     data.size(), data.size()-filteredByMissingStation.size(), filteredByMissingStation.size());
         }
 
-        final List<LotjuAnturiWrapper<Lam.Anturi>> wrappedAnturiValues = wrapLamData(filteredByStation);
-        final List<LotjuAnturiWrapper<Lam.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
+        final List<LotjuAnturiWrapper<Lam.Anturi>> wrappedAnturiValues = wrapLamData(filteredByMissingStation);
+        final List<LotjuAnturiWrapper<Lam.Anturi>> filteredByOnlyNewest = filterNewestAnturiValues(wrappedAnturiValues);
 
-        if (filteredByNewest.size() < filteredByStationRowCount) {
+        if (filteredByOnlyNewest.size() < filteredByStationRowCount) {
             log.info("method=updateLamData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
-                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
+                     filteredByStationRowCount, filteredByStationRowCount-filteredByOnlyNewest.size(), filteredByOnlyNewest.size());
         }
 
-        final long stationsCount = filteredByNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
+        final long stationsCount = filteredByOnlyNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
 
         final TimestampCache timestampCache = new TimestampCache();
 
         final List<SensorValueUpdateParameterDto> params =
-            filteredByNewest.stream()
+            filteredByOnlyNewest.stream()
             .filter(wrapper -> getAllowedRoadStationSensorsLotjuIds(RoadStationType.TMS_STATION).contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
                             .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
@@ -112,12 +112,11 @@ public class SensorDataUpdateService {
         final Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.TMS_STATION);
         stopWatch.stop();
 
-        log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}",
-                 initialDataRowCount, filteredByNewest.size());
-        log.info("method=updateLamData update tms sensors data for updateCount={} insertCount={} sensors of stationCount={} stations . hasRealtime={} . hasNonRealtime={} tookMs={}",
-                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount,
-            filteredByStation.stream().anyMatch(Lam::getIsRealtime),
-            filteredByStation.stream().anyMatch(lam -> !lam.getIsRealtime()),
+        log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}. Sensors updateCount={} insertCount={} of sations stationCount={} . hasRealtime={} . hasNonRealtime={} tookMs={}",
+            initialDataRowCount, filteredByOnlyNewest.size(),
+            updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount,
+            filteredByMissingStation.stream().anyMatch(Lam::getIsRealtime),
+            filteredByMissingStation.stream().anyMatch(lam -> !lam.getIsRealtime()),
             stopWatch.getTime());
 
         return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
@@ -136,30 +135,25 @@ public class SensorDataUpdateService {
 
         final long initialDataRowCount = data.stream().mapToLong(tiesaa -> tiesaa.getAnturiList().size()).sum();
 
-        final List<TiesaaMittatieto> filteredByStation =
+        final List<TiesaaMittatieto> filteredByMissingStation =
             data.stream().filter(tiesaa -> allowedStationsLotjuIdtoIds.containsKey(tiesaa.getAsemaId())).collect(Collectors.toList());
 
-        final long filteredByStationRowCount = filteredByStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
+        final long filteredByMissingStationRowCount = filteredByMissingStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
-        if (filteredByStation.size() < data.size()) {
-            log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} to resultCount={}" ,
-                     data.size(), data.size()-filteredByStation.size(), filteredByStation.size());
-        }
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrappedAnturiValues = wrapTiesaaData(filteredByMissingStation);
+        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByOnlyNewest = filterNewestAnturiValues(wrappedAnturiValues);
 
-        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrappedAnturiValues = wrapTiesaaData(filteredByStation);
-        final List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> filteredByNewest = filterNewestAnturiValues(wrappedAnturiValues);
-
-        if (filteredByNewest.size() < filteredByStationRowCount) {
-            log.info("method=updateWeatherData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
-                     filteredByStationRowCount, filteredByStationRowCount-filteredByNewest.size(), filteredByNewest.size());
+        if (filteredByMissingStation.size() < data.size() || filteredByOnlyNewest.size() < filteredByMissingStationRowCount) {
+            log.warn("method=updateWeatherData filter data from originalCount={} with missingWeatherStationsCount={} and oldDataCount={} to resultCount={}" ,
+                data.size(), data.size()-filteredByMissingStation.size(), filteredByMissingStationRowCount-filteredByOnlyNewest.size(), filteredByOnlyNewest.size());
         }
 
         final TimestampCache timestampCache = new TimestampCache();
 
-        final long stationsCount = filteredByNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
+        final long stationsCount = filteredByOnlyNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
 
         final List<SensorValueUpdateParameterDto> params =
-            filteredByNewest.stream()
+            filteredByOnlyNewest.stream()
                 .filter(wrapper -> getAllowedRoadStationSensorsLotjuIds(RoadStationType.WEATHER_STATION).contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
                 .map(anturi -> new SensorValueUpdateParameterDto(anturi, timestampCache, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId())))
                 .collect(Collectors.toList());
@@ -167,10 +161,10 @@ public class SensorDataUpdateService {
         final Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.WEATHER_STATION);
 
         stopWatch.stop();
-        log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}",
-                 initialDataRowCount, filteredByNewest.size());
-        log.info("method=updateWeatherData update weather sensors data for updateCount={} insertCount={} sensors of stationCount={} stations tookMs={}",
-                 updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount, stopWatch.getTime());
+        log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}. Sensors updateCount={} insertCount={} of stations stationCount={} tookMs={}",
+            initialDataRowCount, filteredByOnlyNewest.size(),
+            updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(),
+            stationsCount, stopWatch.getTime());
         return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
     }
 
