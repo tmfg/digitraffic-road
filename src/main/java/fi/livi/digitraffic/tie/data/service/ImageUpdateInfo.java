@@ -14,6 +14,8 @@ public class ImageUpdateInfo {
         this.fullPath = fullPath;
     }
 
+    private long readTotalDurationMs = 0;
+    private long writeTotalDurationMs = 0;
     private long readDurationMs = 0;
     private long writeDurationMs = 0;
     private String downloadUrl;
@@ -25,6 +27,22 @@ public class ImageUpdateInfo {
     private Throwable readError;
     private Throwable writeError;
     private int imageTimestampEpochSecond;
+
+    public void updateReadTotalDurationMs(final long currentReadDurationMs) {
+        readTotalDurationMs += currentReadDurationMs;
+    }
+
+    public long getReadTotalDurationMs() {
+        return readTotalDurationMs;
+    }
+
+    public void updateWriteTotalDurationMs(final long currentWriteDurationMs) {
+        writeTotalDurationMs += currentWriteDurationMs;
+    }
+
+    public long getWriteTotalDurationMs() {
+        return writeTotalDurationMs;
+    }
 
     void setReadDurationMs(final long readDurationMs) {
         this.readDurationMs = readDurationMs;
