@@ -8,8 +8,11 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
+    private final String serverUri;
+
     public AbstractLotjuMetadataClient(Jaxb2Marshaller marshaller, String serverAddress, Logger log) {
 
+        serverUri = serverAddress;
         if ( StringUtils.isNotBlank(serverAddress) &&
              StringUtils.containsNone(serverAddress, '$', '{', '}') ) {
             log.info("Init name={} with server address={}", getClass().getSimpleName(), serverAddress);
@@ -24,5 +27,9 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
         } else {
             log.warn("Not setting up beanName={} because server addressProperty={} was not set.", getClass().getSimpleName(), serverAddress);
         }
+    }
+
+    public String getServerAddress() {
+        return serverUri;
     }
 }
