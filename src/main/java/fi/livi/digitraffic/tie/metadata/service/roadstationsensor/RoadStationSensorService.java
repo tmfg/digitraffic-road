@@ -290,7 +290,6 @@ public class RoadStationSensorService {
         final Root<RoadStationSensor> root = update.from(RoadStationSensor.class);
         EntityType<RoadStationSensor> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
-        update.set("obsolete", true);
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));

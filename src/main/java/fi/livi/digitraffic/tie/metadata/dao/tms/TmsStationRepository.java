@@ -37,7 +37,7 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     @Query("SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM TmsStation tms\n" +
            "WHERE tms.roadStation.naturalId = ?1\n" +
-           "  AND tms.roadStation.obsolete = false\n" +
+           "  AND tms.roadStation.obsolete_date is null\n" +
            "  AND tms.roadStation.isPublic = true")
     boolean tmsExistsWithRoadStationNaturalId(final long roadStationNaturalId);
 

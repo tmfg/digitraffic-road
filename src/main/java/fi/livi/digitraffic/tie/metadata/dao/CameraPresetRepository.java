@@ -70,8 +70,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @Modifying(clearAutomatically = true)
     @Query(value =
                "UPDATE ROAD_STATION\n" +
-               "SET OBSOLETE = false\n" +
-               "  , OBSOLETE_DATE = NULL\n" +
+               "SET OBSOLETE_DATE = NULL\n" +
                "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
                "  AND OBSOLETE_DATE IS NOT NULL\n" +
                "  AND EXISTS(\n" +
@@ -85,8 +84,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @Modifying(clearAutomatically = true)
     @Query(value =
                "UPDATE ROAD_STATION\n" +
-               "SET OBSOLETE = true\n" +
-               "  , OBSOLETE_DATE = current_timestamp\n" +
+               "SET OBSOLETE_DATE = current_timestamp\n" +
                "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
                "  AND OBSOLETE_DATE IS NULL\n" +
                "  AND NOT EXISTS(\n" +
