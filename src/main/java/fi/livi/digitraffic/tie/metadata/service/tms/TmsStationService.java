@@ -283,7 +283,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
         // Update RoadStation
         final boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
-        to.setObsolete(to.getRoadStation().isObsolete());
         to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
 
         return updated ||

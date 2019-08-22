@@ -43,8 +43,6 @@ public class TmsStation {
 
     private String name;
 
-    private boolean obsolete;
-
     private LocalDate obsoleteDate;
 
     @Column(name="summer_free_flow_speed_1")
@@ -118,14 +116,6 @@ public class TmsStation {
         this.name = name;
     }
 
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
-    }
-
     public LocalDate getObsoleteDate() {
         return obsoleteDate;
     }
@@ -179,7 +169,6 @@ public class TmsStation {
             roadStation.obsolete();
             setObsoleteDate(roadStation.getObsoleteDate());
         }
-        setObsolete(true);
     }
 
     public double getWinterFreeFlowSpeed2() {
