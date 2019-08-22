@@ -39,6 +39,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
+        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
     }
 
     @Test
@@ -51,6 +52,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
+        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
     }
 
     @Test

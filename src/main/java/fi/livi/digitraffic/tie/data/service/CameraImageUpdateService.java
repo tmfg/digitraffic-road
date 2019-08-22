@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.retry.RetryContext;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -33,10 +34,11 @@ public class CameraImageUpdateService {
     private final CameraImageReader imageReader;
     private final CameraImageWriter imageWriter;
 
-    static final int RETRY_COUNT = 6;
+    static final int RETRY_COUNT = 3;
 
     private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
-        put(Error.class, true);
+        put(CameraImageReadFailureException.class, true);
+        put(CameraImageWriteFailureException.class, true);
     }};
 
     @Autowired
@@ -84,11 +86,14 @@ public class CameraImageUpdateService {
                     transferInfo.getDownloadUrl(), transferInfo.getSizeBytes());
             } else {
                 log.error("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
-                        "readTookMs={} writeTooksMs={} tookMs={} " +
+                        "readTookMs={} readTotalTookMs={} " +
+                        "writeTooksMs={} writeTotalTookMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
                         "readErro={} writeError={}",
                     presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
-                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
+                    transferInfo.getReadDurationMs(), transferInfo.getReadTotalDurationMs(),
+                    transferInfo.getWriteDurationMs(), transferInfo.getWriteTotalDurationMs(),
+                    transferInfo.getDurationMs(),
                     transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
                     transferInfo.getReadError(), transferInfo.getWriteError());
             }
@@ -102,16 +107,21 @@ public class CameraImageUpdateService {
     }
 
     private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename) {
-        final RetryTemplate retryTemplate = new RetryTemplate();
-        final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-        backOffPolicy.setBackOffPeriod(retryDelayMs);
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-        final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
-        retryTemplate.setRetryPolicy(retryPolicy);
-
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename));
+        try {
+            byte[] image = readKuva(kuva, info);
+            writeKuva(image, kuva, filename, info);
+        } catch (CameraImageReadFailureException e) {
+            // read attempts exhausted
+        } catch (CameraImageWriteFailureException e) {
+            // write attempts exhausted
+        }
+        return info;
+    }
 
-        return retryTemplate.execute(args -> {
+    private byte[] readKuva(KuvaProtos.Kuva kuva, final ImageUpdateInfo info) {
+        final RetryTemplate retryTemplate = getRetryTemplate();
+        return retryTemplate.execute(retryContext -> {
             final StopWatch start = StopWatch.createStarted();
             // Read the image
             byte[] image;
@@ -119,34 +129,48 @@ public class CameraImageUpdateService {
                 image = imageReader.readImage(kuva, info);
                 info.setSizeBytes(image.length);
                 info.updateReadStatusSuccess();
-                // TODO count here all attempts to read including errors
-                info.setReadDurationMs(start.getTime());
+                final long readEnd = start.getTime();
+                info.updateReadTotalDurationMs(readEnd);
+                info.setReadDurationMs(readEnd);
             } catch (final Exception e) {
                 info.updateReadStatusFailed(e);
-                throw new Error(e);
+                throw new CameraImageReadFailureException(e);
             }
             if (image.length <= 0) {
-                final Error e = new Error("Image was 0 bytes");
+                final CameraImageReadFailureException e = new CameraImageReadFailureException("Image was 0 bytes");
                 info.updateReadStatusFailed(e);
                 throw e;
             }
+            return image;
+        });
+    }
 
-            // Write the image
+    private void writeKuva(byte[] image, KuvaProtos.Kuva kuva, String filename, ImageUpdateInfo info) {
+        final RetryTemplate retryTemplate = getRetryTemplate();
+        retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
                 imageWriter.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
                 info.updateWriteStatusSuccess();
-                // TODO count here all attempts to write including errors
-                info.setWriteDurationMs(writeStart.getTime());
+                final long writeEnd = writeStart.getTime();
+                info.updateWriteTotalDurationMs(writeEnd);
+                info.setWriteDurationMs(writeEnd);
             } catch (final Exception e) {
                 info.updateWriteStatusFailed(e);
-                throw new Error(e);
+                throw new CameraImageWriteFailureException(e);
             }
-            return info;
-        }, args -> {
-            // recover
-            return info;
+            return null;
         });
+    }
+
+    private RetryTemplate getRetryTemplate() {
+        final RetryTemplate retryTemplate = new RetryTemplate();
+        final FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(retryDelayMs);
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+        final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
+        retryTemplate.setRetryPolicy(retryPolicy);
+        return retryTemplate;
     }
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva, final boolean success) {
@@ -167,5 +191,24 @@ public class CameraImageUpdateService {
 
     private static String getPresetImageName(final String presetId) {
         return presetId + ".jpg";
+    }
+
+    static class CameraImageReadFailureException extends RuntimeException {
+
+        CameraImageReadFailureException(String message) {
+            super(message);
+        }
+
+        CameraImageReadFailureException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    static class CameraImageWriteFailureException extends RuntimeException {
+
+        CameraImageWriteFailureException(Throwable cause) {
+            super(cause);
+        }
+
     }
 }
