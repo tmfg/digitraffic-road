@@ -16,3 +16,6 @@ ALTER TABLE road_section
 
 ALTER TABLE road_station
     DROP COLUMN obsolete;
+
+ALTER TABLE road_station_sensor
+    DROP COLUMN obsolete;

@@ -62,9 +62,6 @@ public class RoadStationSensor {
     private String unit;
 
     @JsonIgnore
-    private boolean obsolete;
-
-    @JsonIgnore
     private LocalDate obsoleteDate;
 
     @ApiModelProperty(value = "Sensor description [fi]")
@@ -161,14 +158,6 @@ public class RoadStationSensor {
         this.name = name;
     }
 
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
-    }
-
     public LocalDate getObsoleteDate() {
         return obsoleteDate;
     }
@@ -178,9 +167,8 @@ public class RoadStationSensor {
     }
 
     public boolean obsolete() {
-        if (obsoleteDate == null || !obsolete ) {
+        if (obsoleteDate == null) {
             obsoleteDate = LocalDate.now();
-            obsolete = true;
             return true;
         }
         return false;
