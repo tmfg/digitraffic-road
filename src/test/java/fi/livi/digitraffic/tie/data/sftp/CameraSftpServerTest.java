@@ -75,8 +75,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
-    //private Map<String, byte[]> imageFilesMap = new HashMap<>();
-
     private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
 
     @Before

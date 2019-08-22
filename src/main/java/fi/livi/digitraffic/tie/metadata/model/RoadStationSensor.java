@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
-public class RoadStationSensor implements Comparable<RoadStationSensor> {
+public class RoadStationSensor {
 
     /** These id:s are for station status sensors */
     protected static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
@@ -283,16 +283,6 @@ public class RoadStationSensor implements Comparable<RoadStationSensor> {
                     this.roadStationType + " to " + roadStationType + ". (" + this.toString() + ")");
         }
         this.roadStationType = roadStationType;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    @Override
-    public int compareTo(final RoadStationSensor o) {
-        return Long.compare(getNaturalId(), o.getNaturalId());
     }
 
     public void setPresentationNameFi(final String presentationNameFi) {
