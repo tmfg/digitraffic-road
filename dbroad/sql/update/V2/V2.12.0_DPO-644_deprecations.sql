@@ -4,3 +4,6 @@ ALTER TABLE camera_preset
 
 ALTER TABLE lam_station
     DROP COLUMN obsolete;
+
+ALTER TABLE road
+    DROP COLUMN obsolete;
