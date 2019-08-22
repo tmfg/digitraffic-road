@@ -54,7 +54,7 @@ public class BetaController {
 
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"))
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Stations Datex2 metadata"))
     public TmsStationDatex2Response tmsStationsDatex2(
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
@@ -67,7 +67,7 @@ public class BetaController {
 
     @ApiOperation("Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"))
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Stations Datex2 data"))
     public TmsDataDatex2Response tmsDataDatex2() {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }

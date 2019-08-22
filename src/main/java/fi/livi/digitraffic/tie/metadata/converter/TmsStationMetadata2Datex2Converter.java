@@ -66,10 +66,8 @@ public class TmsStationMetadata2Datex2Converter {
                 .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
         stations.stream().forEach(station -> {
-            final List<RoadStationSensor> sensors =
-                station.getRoadStation().getRoadStationSensors().stream().sorted(Comparator.comparingLong(RoadStationSensor::getNaturalId)).collect(Collectors.toList());
-
-            sensors.stream().forEach(sensor -> siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor)));
+                station.getRoadStation().getRoadStationSensors().stream().sorted(Comparator.comparingLong(RoadStationSensor::getNaturalId))
+                .forEach(sensor -> siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor)));
         });
 
         measurementSiteTablePublication.getMeasurementSiteTable().add(siteTable);
