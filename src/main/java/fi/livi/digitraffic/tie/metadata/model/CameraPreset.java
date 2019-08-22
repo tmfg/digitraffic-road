@@ -36,13 +36,6 @@ public class CameraPreset {
 
     private Long lotjuId;
 
-    /** Only for legacy soap-api = road station naturalId */
-    @Column(name="ROADSTATION_ID")
-    private Long roadStationId;
-    /** Old field, means weather station? */
-    @Column(name="NEAREST_ROADSTATION_ID")
-    private Long nearestRoadstationId;
-
     /**
      * presetName1 == presentationName == nimiEsitys
      */
@@ -245,9 +238,6 @@ public class CameraPreset {
     }
 
     public void setRoadStation(final RoadStation roadStation) {
-        if (roadStation != null) {
-            setRoadStationId(roadStation.getNaturalId());
-        }
         this.roadStation = roadStation;
     }
 
@@ -293,16 +283,6 @@ public class CameraPreset {
      */
     public void setPublicInternal(final boolean publicInternal) {
         this.publicInternal = publicInternal;
-    }
-
-    /** Only for legacy soap-api */
-    public Long getRoadStationId() {
-        return roadStation != null ? roadStation.getId() : null;
-    }
-
-    /** Only for legacy soap-api */
-    public void setRoadStationId(Long roadStationId) {
-        this.roadStationId = roadStationId;
     }
 
     public Long getRoadStationNaturalId() {
@@ -354,7 +334,6 @@ public class CameraPreset {
                 .appendField("lotjuId", lotjuId)
                 .appendField("obsoleteDate", obsoleteDate)
                 .appendField("roadStationLotjuId", getRoadStationLotjuId())
-                .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();
     }
