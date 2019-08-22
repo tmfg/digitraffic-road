@@ -7,3 +7,6 @@ ALTER TABLE lam_station
 
 ALTER TABLE road
     DROP COLUMN obsolete;
+
+ALTER TABLE road_district
+    DROP COLUMN obsolete;

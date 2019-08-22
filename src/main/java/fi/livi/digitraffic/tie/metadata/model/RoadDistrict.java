@@ -37,9 +37,6 @@ public class RoadDistrict {
     private String name;
 
     @JsonIgnore
-    private boolean obsolete;
-
-    @JsonIgnore
     private LocalDate obsoleteDate;
 
     @JsonIgnore
@@ -73,14 +70,6 @@ public class RoadDistrict {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
     }
 
     public LocalDate getObsoleteDate() {
