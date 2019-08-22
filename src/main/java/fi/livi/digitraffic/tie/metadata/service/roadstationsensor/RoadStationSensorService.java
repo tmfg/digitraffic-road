@@ -333,7 +333,6 @@ public class RoadStationSensorService {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.TMS_STATION);
-        to.setObsolete(false);
         to.setObsoleteDate(null);
         to.setPublic(from.isJulkinen());
 
@@ -363,7 +362,6 @@ public class RoadStationSensorService {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.WEATHER_STATION);
-        to.setObsolete(false);
         to.setObsoleteDate(null);
         to.setPublic(from.isJulkinen());
 
