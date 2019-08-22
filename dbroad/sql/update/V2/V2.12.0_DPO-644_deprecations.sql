@@ -10,3 +10,6 @@ ALTER TABLE road
 
 ALTER TABLE road_district
     DROP COLUMN obsolete;
+
+ALTER TABLE road_section
+    DROP COLUMN obsolete;

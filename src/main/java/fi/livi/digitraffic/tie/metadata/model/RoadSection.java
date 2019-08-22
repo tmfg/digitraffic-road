@@ -34,9 +34,6 @@ public class RoadSection {
     @JsonProperty(value = "id")
     private String naturalId;
 
-    @JsonIgnore
-    private boolean obsolete;
-
     @ApiModelProperty(value = "Distance from the beginning of the road section. Always 0.")
     @JsonIgnore
     private Integer beginDistance;
@@ -68,14 +65,6 @@ public class RoadSection {
 
     public void setNaturalId(String naturalId) {
         this.naturalId = naturalId;
-    }
-
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
     }
 
     public Integer getBeginDistance() {
