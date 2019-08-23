@@ -48,3 +48,5 @@ CREATE UNIQUE INDEX road_station_sensor_uki_name
         USING BTREE (name ASC, road_station_type ASC, natural_id ASC, obsolete_date ASC);
 ALTER TABLE road_station_sensor
     DROP COLUMN obsolete;
+
+DROP TABLE static_data_status;

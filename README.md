@@ -39,7 +39,8 @@ Download Oracle JDBC driver and add it to your local Maven repository.
 
 ### Build project
 
-Before building application with tests enabled install test db for it! (**See ci-db -project.**)
+Before building application with tests enabled, start dbroad instance.
+See [dbroad/README.md](dbroad/README.md).
 
     $ mvn clean install
     
