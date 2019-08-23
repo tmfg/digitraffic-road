@@ -38,18 +38,14 @@ import fi.livi.digitraffic.tie.service.BadRequestException;
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
     private TmsDataService tmsDataService;
-
+    
     @MockBean
-    private ILoggerFactory loggerFactory;
-
-    @MockBean
-    private Logger logger;
+    private Logger exceptionHandlerLogger;
 
     @Before
     public void setUp() {
-        when(loggerFactory.getLogger(anyString())).thenReturn(logger);
-        when(logger.isErrorEnabled()).thenReturn(true);
-        when(logger.isInfoEnabled()).thenReturn(true);
+        when(exceptionHandlerLogger.isErrorEnabled()).thenReturn(true);
+        when(exceptionHandlerLogger.isInfoEnabled()).thenReturn(true);
     }
 
     private ResultActions performQuery() throws Exception {
@@ -79,16 +75,16 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
 
         switch (logMode) {
             case ERROR:
-                verify(logger).error(anyString(), any(Throwable.class));
-                verify(logger, times(0)).info(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger).error(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger, times(0)).info(anyString(), any(Throwable.class));
                 break;
             case INFO:
-                verify(logger).info(anyString(), any(Throwable.class));
-                verify(logger, times(0)).error(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger).info(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger, times(0)).error(anyString(), any(Throwable.class));
                 break;
             case NONE:
-                verify(logger, times(0)).error(anyString(), any(Throwable.class));
-                verify(logger, times(0)).info(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger, times(0)).error(anyString(), any(Throwable.class));
+                verify(exceptionHandlerLogger, times(0)).info(anyString(), any(Throwable.class));
         }
     }
 

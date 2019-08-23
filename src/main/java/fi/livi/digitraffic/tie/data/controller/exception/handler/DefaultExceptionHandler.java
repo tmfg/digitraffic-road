@@ -11,7 +11,6 @@ import javax.validation.Path;
 import javax.xml.bind.MarshalException;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -36,8 +35,7 @@ import fi.livi.digitraffic.tie.service.BadRequestException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
-    private Logger logger = null;
-    private final ILoggerFactory loggerFactory;
+    private final Logger logger;
 
     // log these exceptions with error
     private static final Set<Class> errorLoggableExceptions = Set.of(
@@ -49,16 +47,8 @@ public class DefaultExceptionHandler {
         ObjectNotFoundException.class
     );
 
-    public DefaultExceptionHandler(final ILoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
-    }
-
-    private Logger logger() {
-        if(logger == null) {
-            logger = loggerFactory.getLogger(this.getClass().getName());
-        }
-
-        return logger;
+    public DefaultExceptionHandler(final Logger logger) {
+        this.logger = logger;
     }
 
     @ExceptionHandler(TypeMismatchException.class)
@@ -137,7 +127,7 @@ public class DefaultExceptionHandler {
     {
         // avoids compile/runtime dependency by using class name
         if (isClientAbortException(exception)) {
-            logger().warn("500 Internal Server Error: exceptionClass={}", exception.getClass().getName());
+            logger.warn("500 Internal Server Error: exceptionClass={}", exception.getClass().getName());
             return null;
         }
 
@@ -151,7 +141,7 @@ public class DefaultExceptionHandler {
             final MarshalException cause = (MarshalException) exception.getCause();
 
             if ( isClientAbortException(cause.getLinkedException()) ) {
-                logger().warn("500 Internal Server Error: exceptionClass={} exceptionMessage={}", exception.getClass().getName(),
+                logger.warn("500 Internal Server Error: exceptionClass={} exceptionMessage={}", exception.getClass().getName(),
                     exception.getMessage());
                 return null;
             }
@@ -195,9 +185,9 @@ public class DefaultExceptionHandler {
             request.getRequest().getRequestURI(), errorMsg);
 
         if(isErrorLoggableException(exception)) {
-            logger().error(logMessage, exception);
+            logger.error(logMessage, exception);
         } else if(isInfoLoggableException(exception)) {
-            logger().info(logMessage, exception);
+            logger.info(logMessage, exception);
         }
 
         return getErrorResponseEntity(httpStatus, errorMsg, request);
