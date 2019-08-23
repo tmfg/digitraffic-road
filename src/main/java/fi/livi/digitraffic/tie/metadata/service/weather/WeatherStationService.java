@@ -56,7 +56,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllPublishableWeatherStationsMappedByLotjuId() {
         final List<WeatherStation> all = findAllPublishableWeatherStations();
-        return all.parallelStream().collect(Collectors.toMap(p -> p.getLotjuId(), p -> p));
+        return all.parallelStream().collect(Collectors.toMap(WeatherStation::getLotjuId, p -> p));
     }
 
     @Transactional(readOnly = true)
@@ -72,32 +72,6 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     @Transactional(readOnly = true)
     public List<WeatherStation> findAllPublishableWeatherStations() {
         return weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, WeatherStation> findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId() {
-        final List<WeatherStation> allStations = weatherStationRepository.findByLotjuIdIsNull();
-        return allStations.stream().filter(ws -> ws.getRoadStationNaturalId() != null).collect(Collectors.toMap(WeatherStation::getRoadStationNaturalId, Function.identity()));
-    }
-
-    @Transactional
-    public void fixNullLotjuIds(final List<TiesaaAsemaVO> tiesaaAsemas) {
-        Map<Long, WeatherStation> naturalIdToWeatherStationMap =
-            findAllWeatherStationsWithoutLotjuIdMappedByByRoadStationNaturalId();
-
-        int updated = 0;
-        for( TiesaaAsemaVO tiesaaAsema : tiesaaAsemas) {
-            WeatherStation ws = tiesaaAsema.getVanhaId() != null ?
-                                naturalIdToWeatherStationMap.get(tiesaaAsema.getVanhaId().longValue()) : null;
-            if (ws != null) {
-                ws.setLotjuId(tiesaaAsema.getId());
-                ws.getRoadStation().setLotjuId(tiesaaAsema.getId());
-                updated++;
-            }
-        }
-        if (updated > 0) {
-            log.info("Fixed null lotjuIds for updatedCount={} weather stations", updated);
-        }
     }
 
     @Transactional(readOnly = true)
@@ -157,7 +131,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
         return getNewest(sensorsUpdated, stationsUpdated);
     }
 
-    public ZonedDateTime getMetadataLastChecked() {
+    private ZonedDateTime getMetadataLastChecked() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA_CHECK);
         return getNewest(sensorsUpdated, stationsUpdated);
