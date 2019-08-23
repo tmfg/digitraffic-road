@@ -81,11 +81,6 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     public void setUpTestData() throws IOException {
 
         log.info("Init test data");
-        kuvas.clear();
-        // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
-        entityManager.flush();
-        entityManager.clear();
 
         // Init minimum TEST_UPLOADS non obsolete presets
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();

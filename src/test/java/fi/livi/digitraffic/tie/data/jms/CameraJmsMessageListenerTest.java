@@ -73,11 +73,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     @Before
     public void initData() throws IOException {
 
-        // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
-        entityManager.flush();
-        entityManager.clear();
-
         int i = 5;
         while (i > 0) {
             final String imageName = i + IMAGE_SUFFIX;
