@@ -33,7 +33,7 @@ ALTER TABLE road_section
 DROP INDEX road_station_ui;
 CREATE UNIQUE INDEX road_station_ui
 ON road_station
-    USING BTREE (natural_id ASC, (CASE WHEN obsolete_date IS NOT NULL THEN id ELSE 1 END) ASC);
+    USING BTREE (natural_id ASC) where obsolete_date is null;
 ALTER TABLE road_station
     DROP COLUMN obsolete;
 
