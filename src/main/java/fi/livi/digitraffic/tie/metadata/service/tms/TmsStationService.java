@@ -157,33 +157,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return entity;
     }
 
-    @Transactional(readOnly = true)
-    public Map<Long, TmsStation> findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId() {
-        final List<TmsStation> all = tmsStationRepository.findByLotjuIdIsNull();
-
-        return all.stream().collect(Collectors.toMap(TmsStation::getNaturalId, Function.identity()));
-    }
-
-    @Transactional
-    public int fixNullLotjuIds(List<LamAsemaVO> lamAsemas) {
-        Map<Long, TmsStation> naturalIdToWeatherStationMap =
-            findAllTmsStationsWithoutLotjuIdMappedByTmsNaturalId();
-        int updated = 0;
-        for (LamAsemaVO lamAsema : lamAsemas) {
-            TmsStation ws = lamAsema.getVanhaId() != null ?
-                                naturalIdToWeatherStationMap.get(lamAsema.getVanhaId().longValue()) : null;
-            if (ws != null) {
-                ws.setLotjuId(lamAsema.getId());
-                ws.getRoadStation().setLotjuId(lamAsema.getId());
-                updated++;
-            }
-        }
-        if (updated > 0) {
-            log.info("Fixed null lotjuIds for updatedCount={} tms stations", updated);
-        }
-        return updated;
-    }
-
     @Transactional
     public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
         TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
