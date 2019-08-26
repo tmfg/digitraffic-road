@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller.exception.handler;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -11,7 +12,6 @@ import javax.xml.bind.MarshalException;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,21 @@ import fi.livi.digitraffic.tie.service.BadRequestException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+    private final Logger logger;
+
+    // log these exceptions with error
+    private static final Set<Class> errorLoggableExceptions = Set.of(
+        ConstraintViolationException.class,
+        ResourceAccessException.class);
+
+    // no need to log these exceptions at all
+    private static final Set<Class> nonLoggableExceptions = Set.of(
+        ObjectNotFoundException.class
+    );
+
+    public DefaultExceptionHandler(final Logger logger) {
+        this.logger = logger;
+    }
 
     @ExceptionHandler(TypeMismatchException.class)
     @ResponseBody
@@ -44,7 +58,7 @@ public class DefaultExceptionHandler {
         final String parameterValue = exception.getValue().toString();
         final String requiredType = exception.getRequiredType().getSimpleName();
 
-        return getErrorResponseEntityAndLogError(
+        return getErrorResponseEntityAndLogException(
             request,
             String.format("Query parameter type mismatch: queryString=%s, parameterName=%s parameterValue=%s, expectedType=%s",
                           request.getRequest().getQueryString(), parameterName, parameterValue, requiredType),
@@ -65,7 +79,7 @@ public class DefaultExceptionHandler {
         final String parameterName = exception.getParameterName();
         final String requiredType = exception.getParameterType();
 
-        return getErrorResponseEntityAndLogError(
+        return getErrorResponseEntityAndLogException(
             request,
             String.format("Query parameter missing: queryString=%s, parameterName=%s, expectedType=%S",
                           request.getRequest().getQueryString(), parameterName, requiredType),
@@ -78,7 +92,7 @@ public class DefaultExceptionHandler {
             .map(DefaultExceptionHandler::getViolationMessage)
             .collect(Collectors.joining(","));
 
-        return getErrorResponseEntityAndLogError(
+        return getErrorResponseEntityAndLogException(
             request,
             String.format("Constraint violation. queryString=%s, errorMessage=%s",
                           request.getRequest().getQueryString(), message),
@@ -87,25 +101,25 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class,
-        IllegalArgumentException.class })
+        IllegalArgumentException.class, MethodArgumentTypeMismatchException.class })
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleObjectNotFoundException(final Exception exception, final ServletWebRequest request) {
         final HttpStatus status;
         if (exception instanceof ObjectNotFoundException) {
             status = HttpStatus.NOT_FOUND;
-        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException) {
+        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException || exception instanceof MethodArgumentTypeMismatchException) {
             status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return getErrorResponseEntityAndLogError(request, exception.getMessage(), status, exception);
+        return getErrorResponseEntityAndLogException(request, exception.getMessage(), status, exception);
     }
 
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleMediaTypeNotAcceptable(final Exception exception, final ServletWebRequest request) {
-        return getErrorResponseEntityAndLogError(request, "Media type not acceptable", HttpStatus.NOT_ACCEPTABLE, exception);
+        return getErrorResponseEntityAndLogException(request, "Media type not acceptable", HttpStatus.NOT_ACCEPTABLE, exception);
     }
 
     @ExceptionHandler(IOException.class)
@@ -113,11 +127,11 @@ public class DefaultExceptionHandler {
     {
         // avoids compile/runtime dependency by using class name
         if (isClientAbortException(exception)) {
-            log.warn("500 Internal Server Error: exceptionClass={}", exception.getClass().getName());
+            logger.warn("500 Internal Server Error: exceptionClass={}", exception.getClass().getName());
             return null;
         }
 
-        return getErrorResponseEntityAndLogError(request, "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR, exception);
+        return getErrorResponseEntityAndLogException(request, "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
@@ -127,24 +141,25 @@ public class DefaultExceptionHandler {
             final MarshalException cause = (MarshalException) exception.getCause();
 
             if ( isClientAbortException(cause.getLinkedException()) ) {
-                log.warn("500 Internal Server Error: exceptionClass={} exceptionMessage={}", exception.getClass().getName(), exception.getMessage());
+                logger.warn("500 Internal Server Error: exceptionClass={} exceptionMessage={}", exception.getClass().getName(),
+                    exception.getMessage());
                 return null;
             }
         }
 
-        return getErrorResponseEntityAndLogError(request, exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, exception);
+        return getErrorResponseEntityAndLogException(request, exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(final Exception exception, final ServletWebRequest request) {
-        return getErrorResponseEntityAndLogError(request, exception.getMessage(), HttpStatus.BAD_REQUEST, exception);
+        return getErrorResponseEntityAndLogException(request, exception.getMessage(), HttpStatus.BAD_REQUEST, exception);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleMethodNotSupportedException(final Exception exception, final ServletWebRequest request) {
-        return getErrorResponseEntityAndLogError(request, "Method not allowed", HttpStatus.METHOD_NOT_ALLOWED, exception);
+        return getErrorResponseEntityAndLogException(request, "Method not allowed", HttpStatus.METHOD_NOT_ALLOWED, exception);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
@@ -152,29 +167,39 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(final HttpMediaTypeNotSupportedException exception, final ServletWebRequest request) {
         final String errorMsg = String.format("Illegal %s: %s. Supported types: %s",
                                               HttpHeaders.CONTENT_TYPE, request.getHeader(HttpHeaders.CONTENT_TYPE), exception.getSupportedMediaTypes());
-        return getErrorResponseEntityAndLogError(request, errorMsg, HttpStatus.INTERNAL_SERVER_ERROR, exception);
+        return getErrorResponseEntityAndLogException(request, errorMsg, HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleException(final Exception exception, final ServletWebRequest request) {
-        return getErrorResponseEntityAndLogError(request, "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR, exception);
+        return getErrorResponseEntityAndLogException(request, "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
 
-    private ResponseEntity<ErrorResponse> getErrorResponseEntityAndLogError(final ServletWebRequest request,
+    private ResponseEntity<ErrorResponse> getErrorResponseEntityAndLogException(final ServletWebRequest request,
                                                                             final String errorMsg,
                                                                             final HttpStatus httpStatus,
                                                                             final Exception exception) {
-        if(log.isErrorEnabled() && isErrorLoggableException(exception)) {
-            log.error(String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage=%s", httpStatus.value(), httpStatus.getReasonPhrase(),
-                request.getRequest().getRequestURI(), errorMsg), exception);
+        final String logMessage = String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage=%s", httpStatus.value(),
+            httpStatus.getReasonPhrase(),
+            request.getRequest().getRequestURI(), errorMsg);
+
+        if(isErrorLoggableException(exception)) {
+            logger.error(logMessage, exception);
+        } else if(isInfoLoggableException(exception)) {
+            logger.info(logMessage, exception);
         }
+
+        return getErrorResponseEntity(httpStatus, errorMsg, request);
+    }
+
+    private ResponseEntity getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
         return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
-                                    httpStatus.value(),
-                                    httpStatus.getReasonPhrase(),
-                                    errorMsg,
-                                    request.getRequest().getRequestURI()),
-                                    httpStatus);
+            httpStatus.value(),
+            httpStatus.getReasonPhrase(),
+            errorMsg,
+            request.getRequest().getRequestURI()),
+            httpStatus);
     }
 
     private static String getViolationMessage(final ConstraintViolation<?> violation) {
@@ -189,5 +214,11 @@ public class DefaultExceptionHandler {
         return exception instanceof ClientAbortException;
     }
 
-    private static boolean isErrorLoggableException(final Throwable exception) { return exception != null && !(exception instanceof ObjectNotFoundException); }
+    private static boolean isErrorLoggableException(final Throwable throwable) {
+        return errorLoggableExceptions.stream().anyMatch(e -> e.isAssignableFrom(throwable.getClass()));
+    }
+
+    private static boolean isInfoLoggableException(final Throwable throwable) {
+        return nonLoggableExceptions.stream().noneMatch(e -> e.isAssignableFrom(throwable.getClass()));
+    }
 }
