@@ -15,7 +15,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -38,7 +37,7 @@ import fi.livi.digitraffic.tie.service.BadRequestException;
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
     private TmsDataService tmsDataService;
-    
+
     @MockBean
     private Logger exceptionHandlerLogger;
 

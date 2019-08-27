@@ -47,8 +47,8 @@ public class DefaultExceptionHandler {
         ObjectNotFoundException.class
     );
 
-    public DefaultExceptionHandler(final Logger logger) {
-        this.logger = logger;
+    public DefaultExceptionHandler(final Logger exceptionHandlerLogger) {
+        this.logger = exceptionHandlerLogger;
     }
 
     @ExceptionHandler(TypeMismatchException.class)
