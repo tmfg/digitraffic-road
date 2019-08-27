@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -194,13 +195,15 @@ public class DefaultExceptionHandler {
     }
 
     private ResponseEntity getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
-        return new ResponseEntity<>(new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()),
-            httpStatus.value(),
-            httpStatus.getReasonPhrase(),
-            errorMsg,
-            request.getRequest().getRequestURI()),
-            httpStatus);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+
+        final ErrorResponse response = new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()), httpStatus.value(), httpStatus.getReasonPhrase(), errorMsg,
+            request.getRequest().getRequestURI());
+
+        return new ResponseEntity<>(response, headers, httpStatus);
     }
+
 
     private static String getViolationMessage(final ConstraintViolation<?> violation) {
         final Path.Node paramPath = Iterables.getLast(violation.getPropertyPath());
