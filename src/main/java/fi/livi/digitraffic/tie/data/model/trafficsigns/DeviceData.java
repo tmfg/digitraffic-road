@@ -1,0 +1,73 @@
+package fi.livi.digitraffic.tie.data.model.trafficsigns;
+
+import java.time.ZonedDateTime;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.Immutable;
+
+@Entity
+@Immutable
+public class DeviceData {
+    @Id
+    @Generated(GenerationTime.INSERT)
+    private long id;
+    private String deviceId; // this is a foreign key
+
+    private String displayValue;
+    private String additionalInformation;
+
+    private ZonedDateTime effectDate;
+
+    private String cause;
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
+
+    public void setDisplayValue(final String displayValue) {
+        this.displayValue = displayValue;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(final String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
+
+    public ZonedDateTime getEffectDate() {
+        return effectDate;
+    }
+
+    public void setEffectDate(final ZonedDateTime effectDate) {
+        this.effectDate = effectDate;
+    }
+
+    public String getCause() {
+        return cause;
+    }
+
+    public void setCause(final String cause) {
+        this.cause = cause;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(final String deviceId) {
+        this.deviceId = deviceId;
+    }
+}

@@ -1,11 +1,11 @@
 {
     "liikennemerkit": [
         {
-            "tunnus": "KRM015551",
+            "tunnus": "id1",
             "nayttama": "100",
-            "lisatieto": null,
+            "lisatieto": "full speed!",
             "voimaan": "2019-09-02T14:14:49.818Z",
-            "syy": null
+            "syy": "nice weather"
         }
     ]
 }

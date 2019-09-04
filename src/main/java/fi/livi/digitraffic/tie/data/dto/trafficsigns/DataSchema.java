@@ -6,5 +6,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataSchema {
     @JsonProperty
-    List<DeviceDataSchema> liikennemerkit;
+    public List<DeviceDataSchema> liikennemerkit;
 }

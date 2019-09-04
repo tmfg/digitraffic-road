@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DeviceDataSchema {
     @JsonProperty
-    private String tunnus;
+    public String tunnus;
     @JsonProperty
-    private String nayttama;
+    public String nayttama;
     @JsonProperty
-    private String lisatieto;
+    public String lisatieto;
     @JsonProperty
-    private ZonedDateTime voimaan;
+    public ZonedDateTime voimaan;
     @JsonProperty
-    private String syy;
+    public String syy;
 }

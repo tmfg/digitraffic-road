@@ -11,20 +11,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.DataSchema;
+import fi.livi.digitraffic.tie.data.dto.trafficsigns.*;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.DeviceMetadataSchema;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.MetadataSchema;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
+import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 
 @Service
 public class TrafficSignsService {
     private static final Logger log = LoggerFactory.getLogger(TrafficSignsService.class);
 
     private final DeviceRepository deviceRepository;
+    private final DeviceDataRepository deviceDataRepository;
 
-    public TrafficSignsService(final DeviceRepository deviceRepository) {
+    public TrafficSignsService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository) {
         this.deviceRepository = deviceRepository;
+        this.deviceDataRepository = deviceDataRepository;
     }
 
     @Transactional
@@ -44,13 +47,13 @@ public class TrafficSignsService {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
-            deviceRepository.saveAll(idMap.values().stream().map(this::convert).collect(Collectors.toList()));
+            deviceRepository.saveAll(idMap.values().stream().map(this::convertDevice).collect(Collectors.toList()));
         } finally {
             log.info("insertDeviceMetadataCount={} tookMs={}", idMap.size(), sw.getTime());
         }
     }
 
-    private Device convert(final DeviceMetadataSchema md) {
+    private Device convertDevice(final DeviceMetadataSchema md) {
         final Device d = new Device();
 
         d.setId(md.tunnus);
@@ -91,6 +94,24 @@ public class TrafficSignsService {
     }
 
     public void saveData(final DataSchema data) {
-        // TODO
+        final StopWatch sw = StopWatch.createStarted();
+
+        try {
+            deviceDataRepository.saveAll(data.liikennemerkit.stream().map(this::convertData).collect(Collectors.toList()));
+        } finally {
+            log.info("updateDeviceDataCount={} tookMs={}", data.liikennemerkit.size(), sw.getTime());
+        }
+    }
+
+    private DeviceData convertData(final DeviceDataSchema ds) {
+        final DeviceData d = new DeviceData();
+
+        d.setAdditionalInformation(ds.lisatieto);
+        d.setCause(ds.syy);
+        d.setDeviceId(ds.tunnus);
+        d.setDisplayValue(ds.nayttama);
+        d.setEffectDate(ds.voimaan);
+
+        return d;
     }
 }

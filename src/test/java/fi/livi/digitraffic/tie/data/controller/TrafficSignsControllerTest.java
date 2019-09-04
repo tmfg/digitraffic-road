@@ -15,11 +15,15 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
+import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
 
 public class TrafficSignsControllerTest extends AbstractRestWebTest {
     @Autowired
     public DeviceRepository deviceRepository;
+
+    @Autowired
+    public DeviceDataRepository deviceDataRepository;
 
     private void postJson(final String fileName, final String function) throws Exception {
         postJson(fileName, function, status().isOk());
@@ -41,6 +45,10 @@ public class TrafficSignsControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(count, deviceRepository.count());
     }
 
+    private void assertDeviceDataCountInDb(final int count) {
+        Assert.assertEquals(count, deviceDataRepository.count());
+    }
+
     @Test
     @Rollback
     public void okMetadataFile() throws Exception {
@@ -59,7 +67,17 @@ public class TrafficSignsControllerTest extends AbstractRestWebTest {
 
     @Test
     @Rollback
-    public void okMDataFile() throws Exception {
+    public void okDataFile() throws Exception {
+        assertDeviceDataCountInDb(2);
         postJson("ok_data.json", DATA_PATH);
+        assertDeviceDataCountInDb(3);
+    }
+    
+    @Test
+    @Rollback
+    public void brokenDataFile() throws Exception {
+        assertDeviceDataCountInDb(2);
+        postJson("broken_data.json", DATA_PATH, status().is4xxClientError());
+        assertDeviceDataCountInDb(2);
     }
 }
