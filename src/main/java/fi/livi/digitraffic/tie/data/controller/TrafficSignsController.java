@@ -35,11 +35,9 @@ public class TrafficSignsController {
     public static final String METADATA_PATH = "/metadata";
     public static final String DATA_PATH = "/data";
 
-    private final ObjectMapper objectMapper;
     private final TrafficSignsService trafficSignsService;
 
-    public TrafficSignsController(final ObjectMapper objectMapper, final TrafficSignsService trafficSignsService) {
-        this.objectMapper = objectMapper;
+    public TrafficSignsController(final TrafficSignsService trafficSignsService) {
         this.trafficSignsService = trafficSignsService;
     }
 
@@ -47,8 +45,6 @@ public class TrafficSignsController {
     @RequestMapping(method = RequestMethod.POST, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of traffic signs metadata from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsMetadata(@RequestBody MetadataSchema metadata) throws JsonProcessingException {
-        log.info("method=postTrafficSignsData JSON=\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(metadata));
-
         trafficSignsService.saveMetadata(metadata);
 
         return ResponseEntity.ok().build();
@@ -58,8 +54,6 @@ public class TrafficSignsController {
     @RequestMapping(method = RequestMethod.POST, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of traffic signs data from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsData(@RequestBody DataSchema data) throws JsonProcessingException {
-        log.info("method=postTrafficSignsData JSON=\n{}", objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data));
-
         trafficSignsService.saveData(data);
 
         return ResponseEntity.ok().build();

@@ -12,12 +12,12 @@ public class DeviceMetadataSchema {
 
     public String tieosoite;
     public Double etrsTm35FinX;
-    public Double etrsTm35FixY;
+    public Double etrsTm35FinY;
 
     @JsonProperty("sijainti")
     public void setSijainti(final Map<String, Object> map) {
         this.tieosoite = (String) map.get("tieosoite");
         this.etrsTm35FinX = (Double) map.get("n");
-        this.etrsTm35FixY = (Double) map.get("e");
+        this.etrsTm35FinY = (Double) map.get("e");
     }
 }

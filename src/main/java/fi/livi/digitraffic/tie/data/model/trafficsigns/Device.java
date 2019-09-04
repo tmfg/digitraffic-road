@@ -5,7 +5,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 @Entity
+@DynamicUpdate
 public class Device {
     @Id
     private String id;
@@ -18,7 +21,7 @@ public class Device {
     private BigDecimal etrsTm35FinX;
 
     @Column(name = "etrs_tm35fin_y")
-    private BigDecimal etrsTm35FixY;
+    private BigDecimal etrsTm35FinY;
 
     public String getId() {
         return id;
@@ -52,11 +55,11 @@ public class Device {
         this.etrsTm35FinX = etrsTm35FinX;
     }
 
-    public BigDecimal getEtrsTm35FixY() {
-        return etrsTm35FixY;
+    public BigDecimal getEtrsTm35FinY() {
+        return etrsTm35FinY;
     }
 
-    public void setEtrsTm35FixY(final BigDecimal etrsTm35FixY) {
-        this.etrsTm35FixY = etrsTm35FixY;
+    public void setEtrsTm35FinY(final BigDecimal etrsTm35FinY) {
+        this.etrsTm35FinY = etrsTm35FinY;
     }
 }
