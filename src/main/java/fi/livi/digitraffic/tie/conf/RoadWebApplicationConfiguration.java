@@ -34,6 +34,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
+    public static final String API_TRAFFIC_SIGNS_PART_PATH = "/traffic-signs";
 
     private final ConfigurableApplicationContext applicationContext;
 

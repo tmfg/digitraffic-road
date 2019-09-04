@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dao;
+package fi.livi.digitraffic.tie.data.dao;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.metadata.model.traffic_signs.Device;
+import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 
 public class DeviceRepositoryTest extends AbstractJpaTest {
     @Autowired

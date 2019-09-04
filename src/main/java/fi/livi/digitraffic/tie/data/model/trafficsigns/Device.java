@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.model.traffic_signs;
+package fi.livi.digitraffic.tie.data.model.trafficsigns;
 
 import java.math.BigDecimal;
 import javax.persistence.Column;
