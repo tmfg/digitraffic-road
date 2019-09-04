@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class TrafficSignsService {
 
         d.setId(md.tunnus);
         d.setType(md.tyyppi);
+        d.setUpdatedDate(ZonedDateTime.now());
         d.setRoadAddress(md.tieosoite);
         d.setEtrsTm35FinX(doubleToBD(md.etrsTm35FinX));
         d.setEtrsTm35FinY(doubleToBD(md.etrsTm35FinY));
@@ -106,6 +108,7 @@ public class TrafficSignsService {
     private DeviceData convertData(final DeviceDataSchema ds) {
         final DeviceData d = new DeviceData();
 
+        d.setCreatedDate(ZonedDateTime.now());
         d.setAdditionalInformation(ds.lisatieto);
         d.setCause(ds.syy);
         d.setDeviceId(ds.tunnus);

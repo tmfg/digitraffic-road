@@ -72,7 +72,7 @@ public class TrafficSignsControllerTest extends AbstractRestWebTest {
         postJson("ok_data.json", DATA_PATH);
         assertDeviceDataCountInDb(3);
     }
-    
+
     @Test
     @Rollback
     public void brokenDataFile() throws Exception {

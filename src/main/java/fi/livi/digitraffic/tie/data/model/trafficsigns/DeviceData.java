@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.model.trafficsigns;
 
 import java.time.ZonedDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -14,6 +15,9 @@ public class DeviceData {
     @Id
     @Generated(GenerationTime.INSERT)
     private long id;
+
+    private ZonedDateTime createdDate;
+
     private String deviceId; // this is a foreign key
 
     private String displayValue;
@@ -69,5 +73,13 @@ public class DeviceData {
 
     public void setDeviceId(final String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(final ZonedDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }

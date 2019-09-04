@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.model.trafficsigns;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,6 +13,8 @@ import org.hibernate.annotations.DynamicUpdate;
 public class Device {
     @Id
     private String id;
+
+    private ZonedDateTime updatedDate;
 
     private String type;
 
@@ -61,5 +64,13 @@ public class Device {
 
     public void setEtrsTm35FinY(final BigDecimal etrsTm35FinY) {
         this.etrsTm35FinY = etrsTm35FinY;
+    }
+
+    public ZonedDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(final ZonedDateTime updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }
