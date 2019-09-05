@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: road
     ports:
       - 54322:5432
-    command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all
+    command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=100
 
   db-init:
     build: .
