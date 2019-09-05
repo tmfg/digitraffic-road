@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.data.service.TrafficSignsService;
+import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignsFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,11 +34,14 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataV2Controller {
+    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs";
 
     private final ForecastSectionDataService forecastSectionDataService;
+    private final TrafficSignsService trafficSignsService;
 
-    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService) {
+    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService, final TrafficSignsService trafficSignsService) {
         this.forecastSectionDataService = forecastSectionDataService;
+        this.trafficSignsService = trafficSignsService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
@@ -79,5 +84,12 @@ public class DataV2Controller {
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
+    }
+
+    @ApiOperation("List of traffic signs")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Traffic Signs"))
+    public TrafficSignsFeatureCollection trafficSigns() {
+        return trafficSignsService.returnAllActiveTrafficSigns();
     }
 }
