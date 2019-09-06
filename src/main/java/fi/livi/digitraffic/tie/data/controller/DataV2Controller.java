@@ -36,14 +36,10 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataV2Controller {
-    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs-data";
-
     private final ForecastSectionDataService forecastSectionDataService;
-    private final TrafficSignsService trafficSignsService;
 
-    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService, final TrafficSignsService trafficSignsService) {
+    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService) {
         this.forecastSectionDataService = forecastSectionDataService;
-        this.trafficSignsService = trafficSignsService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
