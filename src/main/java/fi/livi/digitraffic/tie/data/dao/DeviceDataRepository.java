@@ -19,5 +19,5 @@ public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
         nativeQuery = true)
     List<DeviceData> findLatestData();
 
-    List<TrafficSignHistory> getDeviceDataByDeviceId(final String deviceId);
+    List<TrafficSignHistory> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
 }

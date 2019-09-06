@@ -12,6 +12,7 @@ import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignsFeatureCollection;
@@ -41,12 +42,12 @@ public class TrafficSignsService {
             data == null ? null : data.getAdditionalInformation(),
             data == null ? null : data.getEffectDate(),
             data == null ? null : data.getCause());
-        final Point point = new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY());
+        final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new TrafficSignFeature(point, properties);
     }
 
     public List<TrafficSignHistory> listTrafficSignHistory(final String deviceId) {
-        return deviceDataRepository.getDeviceDataByDeviceId(deviceId);
+        return deviceDataRepository.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
     }
 }
