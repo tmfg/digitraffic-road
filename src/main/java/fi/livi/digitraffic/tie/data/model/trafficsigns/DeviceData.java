@@ -1,19 +1,19 @@
 package fi.livi.digitraffic.tie.data.model.trafficsigns;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.time.ZonedDateTime;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Immutable;
 
 @Entity
 @Immutable
 public class DeviceData {
     @Id
-    @Generated(GenerationTime.INSERT)
+    @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     private ZonedDateTime createdDate;
