@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "Data v2", description = "Data of Digitraffic services (Api version 2)")
+@Api(tags = "Data v2")
 @RestController
 @Validated
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
@@ -82,19 +82,5 @@ public class DataV2Controller {
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
-    }
-
-    @ApiOperation("List the latest values of traffic signs")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
-    public TrafficSignsFeatureCollection trafficSigns() {
-        return trafficSignsService.listLatestValues();
-    }
-
-    @ApiOperation("List the history of traffic sign values")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign history"))
-    public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
-        return trafficSignsService.listTrafficSignHistory(deviceId);
     }
 }

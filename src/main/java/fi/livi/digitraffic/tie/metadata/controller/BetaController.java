@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignsFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV2MetadataService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
