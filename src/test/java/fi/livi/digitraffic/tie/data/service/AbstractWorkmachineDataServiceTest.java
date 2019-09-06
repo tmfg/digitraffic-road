@@ -7,13 +7,17 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import fi.livi.digitraffic.tie.AbstractTest;
+
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.data.model.maintenance.harja.converter.TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
-public abstract class AbstractWorkmachineDataServiceTest extends AbstractTest {
+@Import({ TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter.class })
+public abstract class AbstractWorkmachineDataServiceTest extends AbstractRestWebTest {
     @Autowired
     protected MaintenanceDataService maintenanceDataService;
 

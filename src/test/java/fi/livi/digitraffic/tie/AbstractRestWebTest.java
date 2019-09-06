@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+@TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractRestWebTest extends AbstractTest {
 
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8;

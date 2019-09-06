@@ -5,10 +5,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@SpringBootTest(classes = RoadApplication.class,
-                properties = { "config.test=true", "app.type=daemon",
-                               "spring.main.web-application-type=none" })
-public class ContextLoadsDaemonTest extends AbstractTest {
+@SpringBootTest(classes = RoadApplication.class)
+public class ContextLoadsDaemonTest extends AbstractDaemonTestWithoutS3 {
 
     @Test
     public void contextLoads() {

@@ -30,20 +30,32 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.test.context.TestPropertySource;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.jcraft.jsch.SftpException;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.RoadApplication;
+import fi.livi.digitraffic.tie.conf.amazon.SpringLocalstackDockerRunnerWithVersion;
+import xyz.fabiano.spring.localstack.LocalstackService;
+import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
 
+@RunWith(SpringLocalstackDockerRunnerWithVersion.class)
+@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", pullNewImage = true)
+@SpringBootTest(classes = RoadApplication.class)
 public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSftpTest.class);
@@ -76,6 +88,12 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     @Autowired
     protected SessionFactory sftpSessionFactory;
 
+    @Autowired
+    protected AmazonS3 s3;
+
+    @Value("${dt.amazon.s3.weathercamBucketName}")
+    protected String weathercamBucketName;
+
     String host = "localhost";
 
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
@@ -84,6 +102,17 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
+
+    @Before
+    public void initS3Bucket() {
+        try {
+            log.info("Init S3 Bucket {}", weathercamBucketName);
+            s3.createBucket(weathercamBucketName);
+        } catch (Exception e) {
+            log.error("Failed to create bucket", e);
+            throw e;
+        }
+    }
 
     @Before
     public void initSftpServer() throws IOException, GeneralSecurityException {

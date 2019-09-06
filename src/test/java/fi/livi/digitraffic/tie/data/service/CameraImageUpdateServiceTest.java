@@ -25,6 +25,9 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
     private CameraImageWriter cameraImageWriter;
 
     @MockBean
+    private CameraImageS3Writer cameraImageS3Writer;
+
+    @MockBean
     private CameraPresetService cameraPresetService;
 
     @Autowired
@@ -40,6 +43,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
         verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
+        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), anyInt());
     }
 
     @Test
@@ -47,12 +51,13 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {});
-        doThrow(new RuntimeException()).when(cameraImageWriter).writeImage(any(), any(), anyInt());
+        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), anyInt());
 
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
         verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
+        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), anyInt());
     }
 
     @Test
@@ -60,11 +65,12 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {1});
-        doThrow(new RuntimeException()).when(cameraImageWriter).writeImage(any(), any(), anyInt());
+        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), anyInt());
 
         service.handleKuva(kuva);
 
         verify(cameraImageWriter, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyInt());
+        verify(cameraImageS3Writer, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyInt());
     }
 
     private CameraPreset createPreset() {

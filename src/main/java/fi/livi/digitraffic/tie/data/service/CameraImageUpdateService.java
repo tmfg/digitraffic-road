@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.retry.RetryContext;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -33,6 +32,7 @@ public class CameraImageUpdateService {
     private final CameraPresetService cameraPresetService;
     private final CameraImageReader imageReader;
     private final CameraImageWriter imageWriter;
+    private final CameraImageS3Writer cameraImageS3Writer;
 
     static final int RETRY_COUNT = 3;
 
@@ -47,18 +47,25 @@ public class CameraImageUpdateService {
         final int retryDelayMs,
         final CameraPresetService cameraPresetService,
         final CameraImageReader imageReader,
-        final CameraImageWriter imageWriter) {
+        final CameraImageWriter imageWriter,
+        final CameraImageS3Writer cameraImageS3Writer) {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.imageWriter = imageWriter;
+        this.cameraImageS3Writer = cameraImageS3Writer;
     }
 
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
-        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
+        cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
             .map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
             .filter(CameraImageWriter.DeleteInfo::isFileExistsAndDeleteSuccess)
+            .count();
+
+        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
+            .map(presetId -> cameraImageS3Writer.deleteImage(getPresetImageName(presetId)))
+            .filter(CameraImageS3Writer.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
     }
 
@@ -100,8 +107,11 @@ public class CameraImageUpdateService {
             return transferInfo.isSuccess();
         } else {
             final CameraImageWriter.DeleteInfo deleteInfo = imageWriter.deleteImage(filename);
+            final CameraImageS3Writer.DeleteInfo deleteInfoS3 = cameraImageS3Writer.deleteImage(filename);
             log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
                 presetId, deleteInfo.getFullPath(), deleteInfo.isFileExists(), deleteInfo.isDeleteSuccess(), deleteInfo.getDurationMs());
+            log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
+                presetId, deleteInfo.getFullPath(), deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(), deleteInfoS3.getDurationMs());
             return deleteInfo.isSuccess();
         }
     }
@@ -151,6 +161,7 @@ public class CameraImageUpdateService {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
                 imageWriter.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
+                cameraImageS3Writer.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
                 info.updateWriteStatusSuccess();
                 final long writeEnd = writeStart.getTime();
                 info.updateWriteTotalDurationMs(writeEnd);

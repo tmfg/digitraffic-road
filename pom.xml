@@ -290,6 +290,12 @@
             <version>6.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.11.623</version>
+        </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -355,6 +361,12 @@
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-scp</artifactId>
             <version>2.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xyz.fabiano</groupId>
+            <artifactId>spring-localstack</artifactId>
+            <version>0.0.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
