@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
+import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
@@ -25,7 +26,7 @@ public class TrafficSignsService {
         this.deviceDataRepository = deviceDataRepository;
     }
 
-    public TrafficSignsFeatureCollection returnAllActiveTrafficSigns() {
+    public TrafficSignsFeatureCollection listLatestValues() {
         final List<Device> devices = deviceRepository.findAll();
         final List<DeviceData> data = deviceDataRepository.findLatestData();
         final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
@@ -43,5 +44,9 @@ public class TrafficSignsService {
         final Point point = new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY());
 
         return new TrafficSignFeature(point, properties);
+    }
+
+    public List<TrafficSignHistory> listTrafficSignHistory(final String deviceId) {
+        return deviceDataRepository.getDeviceDataByDeviceId(deviceId);
     }
 }

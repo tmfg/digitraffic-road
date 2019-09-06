@@ -40,7 +40,7 @@ public class TrafficSignsUpdateController {
     }
 
     @ApiOperation("Posting variable speed limits from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of traffic signs metadata from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsMetadata(@RequestBody MetadataSchema metadata) {
         trafficSignsService.saveMetadata(metadata);
@@ -49,7 +49,7 @@ public class TrafficSignsUpdateController {
     }
 
     @ApiOperation("Posting variable speed limits from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of traffic signs data from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsData(@RequestBody DataSchema data) {
         trafficSignsService.saveData(data);

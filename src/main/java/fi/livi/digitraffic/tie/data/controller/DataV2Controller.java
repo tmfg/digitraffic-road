@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.TrafficSignsService;
 import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignsFeatureCollection;
@@ -35,7 +36,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataV2Controller {
-    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs";
+    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs-data";
 
     private final ForecastSectionDataService forecastSectionDataService;
     private final TrafficSignsService trafficSignsService;
@@ -87,10 +88,17 @@ public class DataV2Controller {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
-    @ApiOperation("List of traffic signs")
+    @ApiOperation("List the latest values of traffic signs")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Signs"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
     public TrafficSignsFeatureCollection trafficSigns() {
-        return trafficSignsService.returnAllActiveTrafficSigns();
+        return trafficSignsService.listLatestValues();
+    }
+
+    @ApiOperation("List the history of traffic sign values")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign history"))
+    public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
+        return trafficSignsService.listTrafficSignHistory(deviceId);
     }
 }

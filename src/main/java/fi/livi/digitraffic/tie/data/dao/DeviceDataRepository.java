@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 
 @Repository
@@ -17,4 +18,6 @@ public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
         ")",
         nativeQuery = true)
     List<DeviceData> findLatestData();
+
+    List<TrafficSignHistory> getDeviceDataByDeviceId(final String deviceId);
 }
