@@ -97,6 +97,7 @@ public class TrafficSignsUpdateService {
         }
     }
 
+    @Transactional
     public void saveData(final DataSchema data) {
         final StopWatch sw = StopWatch.createStarted();
 
