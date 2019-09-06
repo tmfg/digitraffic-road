@@ -14,7 +14,7 @@ public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
     @Query(value =
         "select id, created_date, device_id, display_value, additional_information, effect_date, cause\n" +
         "from device_data where id in(\n" +
-        "select max(id) over (partition by device_id order by effect_date) from device_data\n" +
+        "select first_value(id) over (partition by device_id order by effect_date desc) from device_data\n" +
         ")",
         nativeQuery = true)
     List<DeviceData> findLatestData();
