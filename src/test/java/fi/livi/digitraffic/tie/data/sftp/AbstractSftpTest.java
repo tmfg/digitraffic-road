@@ -15,6 +15,7 @@ import java.security.interfaces.DSAParams;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,7 @@ import xyz.fabiano.spring.localstack.LocalstackService;
 import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
 
 @RunWith(SpringLocalstackDockerRunnerWithVersion.class)
-@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", pullNewImage = true)
+@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1")
 @SpringBootTest(classes = RoadApplication.class)
 public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
@@ -74,13 +75,13 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
-    protected Integer testPort = 62859;
+    private Integer testPort = 62859;
 
     // NOTE! Rules uses fixed port. see DPO-489
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort));
 
-    protected int httpPort;
+    private int httpPort;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -94,7 +95,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     @Value("${dt.amazon.s3.weathercamBucketName}")
     protected String weathercamBucketName;
 
-    String host = "localhost";
+    private String host = "localhost";
 
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
@@ -129,7 +130,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         testSftpServer.setFileSystemFactory(fsFactory);
 
         testSftpServer.setCommandFactory(new ScpCommandFactory());
-        testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
+        testSftpServer.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
         log.info("Start Sftp Server on port {}", port);
         testSftpServer.start();
         log.info("Sftp Server started");
@@ -208,7 +209,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
      * @param publicKey DSA or RSA encoded
      * @param user username for output authorized_keys like string
      * @return authorized_keys like string
-     * @throws IOException
+     * @throws IOException when write fails.
      */
     private static String encodePublicKey(PublicKey publicKey, String user)
             throws IOException {
@@ -253,7 +254,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         }
     }
 
-    protected String getSftpPath(final KuvaProtos.Kuva kuva) {
+    String getSftpPath(final KuvaProtos.Kuva kuva) {
         return getSftpPath(kuva.getNimi());
     }
 
@@ -261,7 +262,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + presetId + ".jpg";
     }
 
-    protected String getImageUrlPath(final Long imageId) {
+    String getImageUrlPath(final Long imageId) {
         return REQUEST_PATH + imageId;
     }
 }
