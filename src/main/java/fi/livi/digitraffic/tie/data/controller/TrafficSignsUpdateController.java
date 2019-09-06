@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_TRAFFIC_SIGNS_UPDATE_PART_PATH;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +30,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_TRAFFIC_SIGNS_UPDATE_PART_PATH)
 @ConditionalOnWebApplication
 public class TrafficSignsUpdateController {
-    private static final Logger log = LoggerFactory.getLogger(TrafficSignsUpdateController.class);
-
     public static final String METADATA_PATH = "/metadata";
     public static final String DATA_PATH = "/data";
 
@@ -42,7 +41,7 @@ public class TrafficSignsUpdateController {
 
     @ApiOperation("Posting variable speed limits from HARJA")
     @RequestMapping(method = RequestMethod.POST, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful post of traffic signs metadata from TLOIK"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of traffic signs metadata from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsMetadata(@RequestBody MetadataSchema metadata) {
         trafficSignsService.saveMetadata(metadata);
 
@@ -51,7 +50,7 @@ public class TrafficSignsUpdateController {
 
     @ApiOperation("Posting variable speed limits from HARJA")
     @RequestMapping(method = RequestMethod.POST, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful post of traffic signs data from TLOIK"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of traffic signs data from TLOIK"))
     public ResponseEntity<Void> postTrafficSignsData(@RequestBody DataSchema data) {
         trafficSignsService.saveData(data);
 
