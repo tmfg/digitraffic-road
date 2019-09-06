@@ -17,7 +17,7 @@ public class DeviceMetadataSchema {
     @JsonProperty("sijainti")
     public void setSijainti(final Map<String, Object> map) {
         this.tieosoite = (String) map.get("tieosoite");
-        this.etrsTm35FinX = (Double) map.get("n");
-        this.etrsTm35FinY = (Double) map.get("e");
+        this.etrsTm35FinX = (Double) map.get("e");
+        this.etrsTm35FinY = (Double) map.get("n");
     }
 }
