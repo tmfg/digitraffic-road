@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -37,6 +38,11 @@ public class TrafficSignsService {
 
     private TrafficSignFeature convert(final Device device, final Map<String, DeviceData> dataMap) {
         final DeviceData data = dataMap.get(device.getId());
+
+        return convert(device, data);
+    }
+
+    private TrafficSignFeature convert(final Device device, final DeviceData data) {
         final TrafficSignProperties properties = new TrafficSignProperties(device.getId(), device.getType(), device.getRoadAddress(),
             data == null ? null : data.getDisplayValue(),
             data == null ? null : data.getAdditionalInformation(),
@@ -49,5 +55,17 @@ public class TrafficSignsService {
 
     public List<TrafficSignHistory> listTrafficSignHistory(final String deviceId) {
         return deviceDataRepository.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+    }
+
+    public TrafficSignsFeatureCollection listLatestValue(final String deviceId) {
+        final Optional<Device> device = deviceRepository.findById(deviceId);
+
+        if(device.isPresent()) {
+            return new TrafficSignsFeatureCollection(deviceDataRepository.findLatestData(deviceId).stream()
+                .map(d -> convert(device.get(), d))
+                .collect(Collectors.toList()));
+        }
+
+        throw new ObjectNotFoundException(Device.class, deviceId);
     }
 }

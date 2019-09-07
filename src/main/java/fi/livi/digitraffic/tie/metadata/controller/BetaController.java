@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs-data";
+    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs";
 
     private final TrafficSignsService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
@@ -79,8 +79,16 @@ public class BetaController {
         return trafficSignsService.listLatestValues();
     }
 
-    @ApiOperation("List the history of traffic sign values")
+    @ApiOperation("List the latest value of a traffic sign")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
+    public TrafficSignsFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
+        return trafficSignsService.listLatestValue(deviceId);
+    }
+
+    @ApiOperation("List the history of traffic sign values")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/history/{deviceId}", produces =
+        APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listTrafficSignHistory(deviceId);

@@ -19,5 +19,13 @@ public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
         nativeQuery = true)
     List<DeviceData> findLatestData();
 
+    @Query(value =
+        "select id, created_date, device_id, display_value, additional_information, effect_date, cause\n" +
+            "from device_data where id in(\n" +
+            "select first_value(id) over (order by effect_date desc) from device_data where device_id = :deviceId\n" +
+            ")",
+        nativeQuery = true)
+    List<DeviceData> findLatestData(final String deviceId);
+
     List<TrafficSignHistory> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
 }
