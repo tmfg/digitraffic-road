@@ -3,6 +3,8 @@
         {
             "sijainti": {
                 "tieosoite": "0 0 0",
+                "ajosuunta": "KASVAVA",
+                "ajorata": "OIKEANPUOLEINEN",
                 "n": 6685056.206,
                 "e": 408687.78
             },

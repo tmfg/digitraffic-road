@@ -68,13 +68,9 @@ public class TrafficSignsUpdateService {
 
     private Device convertDevice(final Laite laite) {
         final Device d = new Device();
-
         d.setId(laite.getTunnus());
-        d.setType(laite.getTyyppi());
-        d.setUpdatedDate(ZonedDateTime.now());
-        d.setRoadAddress(laite.getSijainti().getTieosoite());
-        d.setEtrsTm35FinX(laite.getSijainti().getE());
-        d.setEtrsTm35FinY(laite.getSijainti().getN());
+
+        updateDeviceInformation(d, laite);
 
         return d;
     }
@@ -90,10 +86,7 @@ public class TrafficSignsUpdateService {
                 if (laite == null) {
                     log.error("Could not find device " + d.getId());
                 } else {
-                    d.setType(laite.getTyyppi());
-                    d.setRoadAddress(laite.getSijainti().getTieosoite());
-                    d.setEtrsTm35FinX(laite.getSijainti().getE());
-                    d.setEtrsTm35FinY(laite.getSijainti().getN());
+                    updateDeviceInformation(d, laite);
 
                     idMap.remove(d.getId());
                 }

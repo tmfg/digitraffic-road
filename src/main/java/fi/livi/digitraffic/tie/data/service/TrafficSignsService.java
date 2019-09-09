@@ -45,8 +45,8 @@ public class TrafficSignsService {
     private TrafficSignFeature convert(final Device device, final DeviceData data) {
         final TrafficSignProperties properties = new TrafficSignProperties(
             device.getId(), device.getType(), device.getRoadAddress(),
-            device.getDirection(),
-            device.getCarriageway(),
+            TrafficSignProperties.Direction.byValue(device.getDirection()),
+            TrafficSignProperties.Carriageway.byValue(device.getCarriageway()),
             data == null ? null : data.getDisplayValue(),
             data == null ? null : data.getAdditionalInformation(),
             data == null ? null : data.getEffectDate(),
