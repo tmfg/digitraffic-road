@@ -21,7 +21,7 @@ public class Device {
 
     private String direction;
 
-    private Integer lane;
+    private Integer carriageway;
 
     @Column(name = "etrs_tm35fin_x")
     private Double etrsTm35FinX;
@@ -85,11 +85,11 @@ public class Device {
         this.direction = direction;
     }
 
-    public Integer getLane() {
-        return lane;
+    public Integer getCarriageway() {
+        return carriageway;
     }
 
-    public void setLane(final Integer lane) {
-        this.lane = lane;
+    public void setCarriageway(final Integer carriageway) {
+        this.carriageway = carriageway;
     }
 }

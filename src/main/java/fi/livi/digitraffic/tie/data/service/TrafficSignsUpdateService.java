@@ -63,7 +63,7 @@ public class TrafficSignsUpdateService {
         d.setEtrsTm35FinX(l.getSijainti().getE());
         d.setEtrsTm35FinY(l.getSijainti().getN());
         d.setDirection(l.getSijainti().getAjosuunta());
-        d.setLane(l.getSijainti().getAjorata());
+        d.setCarriageway(l.getSijainti().getAjorata());
     }
 
     private Device convertDevice(final Laite laite) {
