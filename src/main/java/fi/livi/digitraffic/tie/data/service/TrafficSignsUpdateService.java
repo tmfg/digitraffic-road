@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.DataSchema;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.DeviceDataSchema;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.DeviceMetadataSchema;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.MetadataSchema;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.external.tloik.Laite;
+import fi.livi.digitraffic.tie.external.tloik.LiikennemerkinTila;
+import fi.livi.digitraffic.tie.external.tloik.Metatiedot;
+import fi.livi.digitraffic.tie.external.tloik.Tilatiedot;
 
 @Service
 public class TrafficSignsUpdateService {
@@ -34,8 +33,9 @@ public class TrafficSignsUpdateService {
     }
 
     @Transactional
-    public void saveMetadata(final MetadataSchema metadata) {
-        final Map<String, DeviceMetadataSchema> idMap = metadata.laitteet.stream().collect(Collectors.toMap(l -> l.tunnus, l -> l));
+    public void saveMetadata(final Metatiedot metadata) {
+        final Map<String, Laite> idMap = metadata.getLaitteet().stream()
+            .collect(Collectors.toMap(l -> l.getTunnus(), l -> l));
 
         final List<Device> devices = deviceRepository.findAllById(idMap.keySet());
 
@@ -46,7 +46,7 @@ public class TrafficSignsUpdateService {
         log.debug(idMap.toString());
     }
 
-    private void insertDevices(final Map<String, DeviceMetadataSchema> idMap) {
+    private void insertDevices(final Map<String, Laite> idMap) {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
@@ -56,38 +56,34 @@ public class TrafficSignsUpdateService {
         }
     }
 
-    private Device convertDevice(final DeviceMetadataSchema md) {
+    private Device convertDevice(final Laite laite) {
         final Device d = new Device();
 
-        d.setId(md.tunnus);
-        d.setType(md.tyyppi);
+        d.setId(laite.getTunnus());
+        d.setType(laite.getTyyppi());
         d.setUpdatedDate(ZonedDateTime.now());
-        d.setRoadAddress(md.tieosoite);
-        d.setEtrsTm35FinX(md.etrsTm35FinX);
-        d.setEtrsTm35FinY(md.etrsTm35FinY);
+        d.setRoadAddress(laite.getSijainti().getTieosoite());
+        d.setEtrsTm35FinX(laite.getSijainti().getE());
+        d.setEtrsTm35FinY(laite.getSijainti().getN());
 
         return d;
     }
 
-    private BigDecimal doubleToBD(final Double d) {
-        return d == null ? null : BigDecimal.valueOf(d);
-    }
-
-    private void updateDevices(final List<Device> devices, final Map<String, DeviceMetadataSchema> idMap) {
+    private void updateDevices(final List<Device> devices, final Map<String, Laite> idMap) {
         final int updateCount = devices.size();
         final StopWatch sw = StopWatch.createStarted();
 
         try {
             devices.forEach(d -> {
-                final DeviceMetadataSchema ms = idMap.get(d.getId());
+                final Laite laite = idMap.get(d.getId());
 
-                if (ms == null) {
+                if (laite == null) {
                     log.error("Could not find device " + d.getId());
                 } else {
-                    d.setType(ms.tyyppi);
-                    d.setRoadAddress(ms.tieosoite);
-                    d.setEtrsTm35FinX(ms.etrsTm35FinX);
-                    d.setEtrsTm35FinY(ms.etrsTm35FinY);
+                    d.setType(laite.getTyyppi());
+                    d.setRoadAddress(laite.getSijainti().getTieosoite());
+                    d.setEtrsTm35FinX(laite.getSijainti().getE());
+                    d.setEtrsTm35FinY(laite.getSijainti().getN());
 
                     idMap.remove(d.getId());
                 }
@@ -98,25 +94,27 @@ public class TrafficSignsUpdateService {
     }
 
     @Transactional
-    public void saveData(final DataSchema data) {
+    public void saveData(final Tilatiedot data) {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
-            deviceDataRepository.saveAll(data.liikennemerkit.stream().map(this::convertData).collect(Collectors.toList()));
+            deviceDataRepository.saveAll(data.getLiikennemerkit().stream()
+                .map(this::convertData)
+                .collect(Collectors.toList()));
         } finally {
-            log.info("updateDeviceDataCount={} tookMs={}", data.liikennemerkit.size(), sw.getTime());
+            log.info("updateDeviceDataCount={} tookMs={}", data.getLiikennemerkit().size(), sw.getTime());
         }
     }
 
-    private DeviceData convertData(final DeviceDataSchema ds) {
+    private DeviceData convertData(final LiikennemerkinTila lt) {
         final DeviceData d = new DeviceData();
 
         d.setCreatedDate(ZonedDateTime.now());
-        d.setAdditionalInformation(ds.lisatieto);
-        d.setCause(ds.syy);
-        d.setDeviceId(ds.tunnus);
-        d.setDisplayValue(ds.nayttama);
-        d.setEffectDate(ds.voimaan);
+        d.setAdditionalInformation(lt.getLisatieto());
+        d.setCause(lt.getSyy());
+        d.setDeviceId(lt.getTunnus());
+        d.setDisplayValue(lt.getNayttama());
+        d.setEffectDate(lt.getVoimaan());
 
         return d;
     }
