@@ -34,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
@@ -47,6 +49,9 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
+// Dirty but S3 must be cleared every time as port changes
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 

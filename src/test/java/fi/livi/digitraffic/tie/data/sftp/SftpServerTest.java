@@ -20,8 +20,11 @@ import org.springframework.integration.file.remote.session.CachingSessionFactory
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.util.PoolItemNotAvailableException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.ReflectionUtils;
 
+// Dirty but S3 must be cleared every time as port changes
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class SftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(SftpServerTest.class);
 

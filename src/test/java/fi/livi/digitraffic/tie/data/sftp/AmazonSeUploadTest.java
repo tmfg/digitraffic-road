@@ -23,7 +23,8 @@ import com.jcraft.jsch.SftpException;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@Ignore
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class AmazonSeUploadTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(AmazonSeUploadTest.class);

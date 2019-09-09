@@ -50,7 +50,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+// Dirty but S3 must be cleared every time as port changes
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class CameraSftpServerTest extends AbstractSftpTest {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);

@@ -51,7 +51,6 @@ public class SpringLocalstackDockerRunnerWithVersion extends SpringJUnit4ClassRu
             try {
                 docker.stop();
             } catch (Throwable t) {
-                //TODO FIXME
                 t.printStackTrace();
             }
         }

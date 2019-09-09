@@ -14,7 +14,6 @@ import java.security.PublicKey;
 import java.security.interfaces.DSAParams;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.commons.codec.binary.Base64;
@@ -41,11 +40,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
-import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.jcraft.jsch.SftpException;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
@@ -105,13 +102,17 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
-    public void initS3Bucket() {
+    public void initS3Bucket() throws InterruptedException {
+        log.info("Init S3 Bucket {} with S3: {}", weathercamBucketName, s3);
         try {
-            log.info("Init S3 Bucket {}", weathercamBucketName);
-            s3.createBucket(weathercamBucketName);
+            if( s3.doesBucketExistV2(weathercamBucketName)) {
+                log.info("Bucket {} exists already", weathercamBucketName);
+            } else {
+                s3.createBucket(weathercamBucketName);
+                log.info("Bucket {} created", weathercamBucketName);
+            }
         } catch (Exception e) {
-            log.error("Failed to create bucket", e);
-            throw e;
+            log.error("Failed to create bucket 1, try again", e);
         }
     }
 
