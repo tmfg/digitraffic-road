@@ -56,6 +56,16 @@ public class TrafficSignsUpdateService {
         }
     }
 
+    private void updateDeviceInformation(final Device d, final Laite l) {
+        d.setType(l.getTyyppi());
+        d.setUpdatedDate(ZonedDateTime.now());
+        d.setRoadAddress(l.getSijainti().getTieosoite());
+        d.setEtrsTm35FinX(l.getSijainti().getE());
+        d.setEtrsTm35FinY(l.getSijainti().getN());
+        d.setDirection(l.getSijainti().getAjosuunta());
+        d.setLane(l.getSijainti().getAjorata());
+    }
+
     private Device convertDevice(final Laite laite) {
         final Device d = new Device();
 

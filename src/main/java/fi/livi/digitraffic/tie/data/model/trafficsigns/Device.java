@@ -19,6 +19,10 @@ public class Device {
 
     private String roadAddress;
 
+    private String direction;
+
+    private Integer lane;
+
     @Column(name = "etrs_tm35fin_x")
     private Double etrsTm35FinX;
 
@@ -71,5 +75,21 @@ public class Device {
 
     public void setUpdatedDate(final ZonedDateTime updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(final String direction) {
+        this.direction = direction;
+    }
+
+    public Integer getLane() {
+        return lane;
+    }
+
+    public void setLane(final Integer lane) {
+        this.lane = lane;
     }
 }
