@@ -18,10 +18,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
@@ -192,6 +195,35 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
         }
         assertFalse("Not publishable preset image should not exist in S3", s3.doesObjectExist(weathercamBucketName, getImageFilename(presetToDelete.getPresetId())));
+    }
+
+    @Test
+    public void testS3Versioning() {
+
+        final String key = "C1234567.jpg";
+        long ts = Instant.now().getEpochSecond();
+        final List<Pair<String, byte[]>> dataWritten = new ArrayList<>();
+        IntStream.range(0, 5).forEach(i -> {
+            final byte[] img = new byte[] { (byte) i };
+            final String versionId = cameraImageS3Writer.writeImage(img, key, (int)ts + i);
+            dataWritten.add(Pair.of(versionId, img));
+        });
+
+        dataWritten.forEach(p -> {
+            final byte[] dataRead = readS3VersionData(key, p.getKey());
+            Assert.assertArrayEquals("Data written differs from data read", p.getValue(), dataRead);
+        });
+    }
+
+    private byte[] readS3VersionData(final String key, String versionId) {
+        final GetObjectRequest gor = new GetObjectRequest(weathercamBucketName, key);
+        gor.setVersionId(versionId);
+        final S3Object version = s3.getObject(gor);
+        try {
+            return version.getObjectContent().readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private KuvaProtos.Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data, final int httpResponseDelay) {

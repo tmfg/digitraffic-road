@@ -42,6 +42,8 @@ import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
+import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
@@ -103,13 +105,26 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
     @Before
     public void initS3Bucket() throws InterruptedException {
-        log.info("Init S3 Bucket {} with S3: {}", weathercamBucketName, s3);
+        log.info("Init versioned S3 Bucket {} with S3: {}", weathercamBucketName, s3);
         try {
             if( s3.doesBucketExistV2(weathercamBucketName)) {
                 log.info("Bucket {} exists already", weathercamBucketName);
             } else {
                 s3.createBucket(weathercamBucketName);
                 log.info("Bucket {} created", weathercamBucketName);
+
+                // Enable versioning on the bucket.
+                BucketVersioningConfiguration configuration =
+                    new BucketVersioningConfiguration().withStatus("Enabled");
+
+                SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest =
+                    new SetBucketVersioningConfigurationRequest(weathercamBucketName, configuration);
+
+                s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
+
+                // 2. Get bucket versioning configuration information.
+                BucketVersioningConfiguration conf = s3.getBucketVersioningConfiguration(weathercamBucketName);
+                log.info("Bucket {} versioning configuration status: {}", weathercamBucketName, conf.getStatus());
             }
         } catch (Exception e) {
             log.error("Failed to create bucket 1, try again", e);

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
 @Component
 @ConditionalOnNotWebApplication
@@ -47,7 +48,10 @@ public class CameraImageS3Writer {
         this.bucketName = bucketName;
     }
 
-    public void writeImage(final byte[] data, final String key, final int timestampEpochSecond) {
+    /**
+     * @return S3 versionId
+     */
+    public String writeImage(final byte[] data, final String key, final int timestampEpochSecond) {
 
         try {
 
@@ -56,7 +60,8 @@ public class CameraImageS3Writer {
             log.info("writeImage {} LAST-MODIFIED: {} {}", key, getInLastModifiedHeaderFormat(Instant.ofEpochSecond(timestampEpochSecond)), Instant.ofEpochSecond(timestampEpochSecond));
             metadata.setContentType("image/jpeg");
             metadata.setContentLength(data.length);
-            amazonS3Client.putObject(bucketName, key, new ByteArrayInputStream(data), metadata);
+            PutObjectResult result = amazonS3Client.putObject(bucketName, key, new ByteArrayInputStream(data), metadata);
+            return result.getVersionId();
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
                      key, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
