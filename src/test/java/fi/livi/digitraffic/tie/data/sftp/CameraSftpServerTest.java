@@ -198,7 +198,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     }
 
     @Test
-    public void testS3Versioning() {
+    public void testS3Versioning() throws IOException {
 
         final String key = "C1234567.jpg";
         long ts = Instant.now().getEpochSecond();
@@ -210,9 +210,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         });
 
         dataWritten.forEach(p -> {
-            final byte[] dataRead = readS3VersionData(key, p.getKey());
-            Assert.assertArrayEquals("Data written differs from data read", p.getValue(), dataRead);
+            final byte[] dataRead = readS3VersionData(CameraImageS3Writer.getVersionedKey(key), p.getKey());
+            Assert.assertArrayEquals("Data written differs from data read for versions", p.getValue(), dataRead);
         });
+        // Test latest
+        S3Object latest = s3.getObject(weathercamBucketName, key);
+        final byte[] dataRead = latest.getObjectContent().readAllBytes();
+        Assert.assertArrayEquals("Data written differs from data read for latest image", dataWritten.get(dataWritten.size()-1).getValue(), dataRead);
     }
 
     private byte[] readS3VersionData(final String key, String versionId) {

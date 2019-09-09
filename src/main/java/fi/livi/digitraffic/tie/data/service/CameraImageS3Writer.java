@@ -26,6 +26,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 public class CameraImageS3Writer {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
+    public static final String VERSIONS_SUFFIX = "-versions";
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
@@ -54,13 +55,16 @@ public class CameraImageS3Writer {
     public String writeImage(final byte[] data, final String key, final int timestampEpochSecond) {
 
         try {
-
+            String versionKey = getVersionedKey(key);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.addUserMetadata(LAST_MODIFIED_METADATA_HEADER, getInLastModifiedHeaderFormat(Instant.ofEpochSecond(timestampEpochSecond)));
             log.info("writeImage {} LAST-MODIFIED: {} {}", key, getInLastModifiedHeaderFormat(Instant.ofEpochSecond(timestampEpochSecond)), Instant.ofEpochSecond(timestampEpochSecond));
             metadata.setContentType("image/jpeg");
             metadata.setContentLength(data.length);
-            PutObjectResult result = amazonS3Client.putObject(bucketName, key, new ByteArrayInputStream(data), metadata);
+            // Put current image
+            amazonS3Client.putObject(bucketName, key, new ByteArrayInputStream(data), metadata);
+            // Put versions image
+            PutObjectResult result = amazonS3Client.putObject(bucketName, versionKey, new ByteArrayInputStream(data), metadata);
             return result.getVersionId();
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
@@ -81,7 +85,7 @@ public class CameraImageS3Writer {
         final StopWatch start = StopWatch.createStarted();
         try  {
             if (amazonS3Client.doesObjectExist(bucketName, key)) {
-                log.info("method=deleteImage presetId={} imagePath={}", resolvePresetIdFromImageFullPath(key), key);
+                log.info("method=deleteImage presetId={} imagePath={}", resolvePresetIdFromKey(key), key);
                 amazonS3Client.deleteObject(bucketName, key);
                 return new DeleteInfo(true, true, start.getTime(), key);
             }
@@ -92,11 +96,18 @@ public class CameraImageS3Writer {
         }
     }
 
-    private static String resolvePresetIdFromImageFullPath(final String imageFullPath) {
-        return StringUtils.substringBeforeLast(StringUtils.substringAfterLast(imageFullPath,"/"), ".");
+    public static String resolvePresetIdFromKey(final String key) {
+        // Key ie. C0650802.jpg
+        return StringUtils.substringBeforeLast(key, ".");
+    }
+
+    public static String getVersionedKey(String key) {
+        // Key ie. C0650802.jpg
+        return resolvePresetIdFromKey(key) + VERSIONS_SUFFIX + ".jpg";
     }
 
     static class DeleteInfo {
+
         private final boolean fileExists;
         private final boolean deleteSuccess;
         private final long durationMs;
