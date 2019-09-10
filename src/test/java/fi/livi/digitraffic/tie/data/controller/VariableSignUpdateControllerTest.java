@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
 
-public class TrafficSignsUpdateControllerTest extends AbstractRestWebTest {
+public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     @Autowired
     public DeviceRepository deviceRepository;
 
@@ -30,7 +30,7 @@ public class TrafficSignsUpdateControllerTest extends AbstractRestWebTest {
     }
 
     private void postJson(final String fileName, final String function, final ResultMatcher expectResult) throws Exception {
-        final String jsonContent = readResourceContent("classpath:lotju/trafficsigns/" + fileName);
+        final String jsonContent = readResourceContent("classpath:lotju/variable_signs/" + fileName);
 
         final MockHttpServletRequestBuilder post = post(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
             RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH + function)
