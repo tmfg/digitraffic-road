@@ -15,11 +15,15 @@ import io.swagger.annotations.ApiModelProperty;
 public class TrafficSignProperties {
     // device properties
     public final String id;
+    @ApiModelProperty(value = "Traffic sign type",
+        allowableValues = "NOPEUSRAJOITUS,VAIHTUVAVAROITUSMERKKI")
     public final String type;
     public final String roadAddress;
-    @ApiModelProperty("Direction of traffic sign, increasing or decreasing road address")
+    @ApiModelProperty(value = "Direction of traffic sign, increasing or decreasing road address",
+        allowableValues = "INCREASING,DECREASING")
     public final Direction direction;
-    @ApiModelProperty("Traffic sign placement")
+    @ApiModelProperty(value = "Traffic sign placement",
+        allowableValues = "NORMAL,RIGHT,LEFT,BETWEEN,END_OF_ROAD,ALONG,ACROSS")
     public final Carriageway carriageway;
 
     // data properties
@@ -42,6 +46,7 @@ public class TrafficSignProperties {
         this.cause = cause;
     }
 
+    @ApiModel
     public enum Direction {
         INCREASING,
         DECREASING;
@@ -60,6 +65,7 @@ public class TrafficSignProperties {
         }
     }
 
+    @ApiModel
     public enum Carriageway {
         NORMAL("NORMAALI"),
         RIGHT("OIKEANPUOLEINEN"),
