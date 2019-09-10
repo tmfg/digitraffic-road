@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,46 +36,46 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
     @Test
     public void retryOnImageReadError() throws Exception {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
-        when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
-        when(cameraImageReader.readImage(any(), any())).thenThrow(new RuntimeException());
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
+        when(cameraImageReader.readImage(anyLong(), any())).thenThrow(new RuntimeException());
 
         service.handleKuva(kuva);
 
-        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
-        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
-        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), anyInt());
+        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
+        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), any(), anyLong());
     }
 
     @Test
     public void retryOnZeroByteImage() throws Exception {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
-        when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
-        when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {});
-        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), anyInt());
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
+        when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {});
+        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
 
         service.handleKuva(kuva);
 
-        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(any(), any());
-        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyInt());
-        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), anyInt());
+        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
+        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(),any(), anyLong());
     }
 
     @Test
     public void retryOnImageWriteError() throws Exception {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
-        when(cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
-        when(cameraImageReader.readImage(any(), any())).thenReturn(new byte[] {1});
-        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), anyInt());
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
+        when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
+        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
 
         service.handleKuva(kuva);
 
-        verify(cameraImageWriter, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyInt());
-        verify(cameraImageS3Writer, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyInt());
+        verify(cameraImageWriter, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), any(), anyLong());
     }
 
     private CameraPreset createPreset() {
         final CameraPreset preset = new CameraPreset();
-        preset.setPresetId("some preset");
+        preset.setPresetId("C9876501");
         return preset;
     }
 

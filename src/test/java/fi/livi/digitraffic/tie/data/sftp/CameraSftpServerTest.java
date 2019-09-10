@@ -154,7 +154,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
                 Session otherSession = this.sftpSessionFactory.getSession();
                 assertTrue("Image not found on sftp server", otherSession.exists(imageFullPath));
                 otherSession.close();
-                cameraImageS3Writer.writeImage(bytes, getImageFilename(kuva.getNimi()), (int) ( kuva.getAikaleima() / 1000));
+                cameraImageS3Writer.writeImage(bytes, bytes, getImageFilename(kuva.getNimi()), kuva.getAikaleima());
             }
         }
         session.close();
@@ -205,7 +205,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         final List<Pair<String, byte[]>> dataWritten = new ArrayList<>();
         IntStream.range(0, 5).forEach(i -> {
             final byte[] img = new byte[] { (byte) i };
-            final String versionId = cameraImageS3Writer.writeImage(img, key, (int)ts + i);
+            final String versionId = cameraImageS3Writer.writeImage(img, img, key, ts + i);
             dataWritten.add(Pair.of(versionId, img));
         });
 
@@ -278,7 +278,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     }
 
     private long getLastModifiedSeconds(final S3Object s3Object) throws ParseException {
-        final String lastModified = s3Object.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_METADATA_HEADER);
+        final String lastModified = s3Object.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER);
         final Date lastModifiedS3Date = s3Object.getObjectMetadata().getLastModified();
         Date time = CameraImageS3Writer.LAST_MODIFIED_FORMAT.parse(lastModified);
         log.info("User meta : {} S3 meta: {}", time.toInstant(), lastModifiedS3Date.toInstant());

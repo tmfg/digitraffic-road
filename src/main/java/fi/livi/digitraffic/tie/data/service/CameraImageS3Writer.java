@@ -31,7 +31,7 @@ public class CameraImageS3Writer {
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
 
-    public final static String LAST_MODIFIED_METADATA_HEADER = "last-modified";
+    public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
 
     // Tue, 03 Sep 2019 13:56:36 GMT
@@ -52,29 +52,30 @@ public class CameraImageS3Writer {
     /**
      * @return S3 versionId
      */
-    public String writeImage(final byte[] data, final String key, final int timestampEpochSecond) {
-
+    public String writeImage(final byte[] currentImageData, final byte[] versionedImageData,
+                             final String imageKey, final long timestampEpochMillis) {
         try {
-            String versionKey = getVersionedKey(key);
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.addUserMetadata(LAST_MODIFIED_METADATA_HEADER, getInLastModifiedHeaderFormat(Instant.ofEpochSecond(timestampEpochSecond)));
-            log.info("writeImage {} LAST-MODIFIED: {} {}", key, getInLastModifiedHeaderFormat(Instant.ofEpochSecond(timestampEpochSecond)), Instant.ofEpochSecond(timestampEpochSecond));
+            final String versionedKey = getVersionedKey(imageKey);
+            final ObjectMetadata metadata = new ObjectMetadata();
+            final String lastModifiedInHeaderFormat = getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
+            metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
+            log.debug("method=writeImage s3Key={} lastModified: {}", imageKey, lastModifiedInHeaderFormat);
             metadata.setContentType("image/jpeg");
-            metadata.setContentLength(data.length);
+
             // Put current image
-            amazonS3Client.putObject(bucketName, key, new ByteArrayInputStream(data), metadata);
+            metadata.setContentLength(currentImageData.length);
+            amazonS3Client.putObject(bucketName, imageKey, new ByteArrayInputStream(currentImageData), metadata);
+
             // Put versions image
-            PutObjectResult result = amazonS3Client.putObject(bucketName, versionKey, new ByteArrayInputStream(data), metadata);
+            metadata.setContentLength(versionedImageData.length);
+            PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
+
             return result.getVersionId();
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
-                     key, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
+                     imageKey, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
-    }
-
-    private static String getInLastModifiedHeaderFormat(Instant instant) {
-        return LAST_MODIFIED_FORMAT.format(Date.from(instant));
     }
 
     /**
@@ -96,13 +97,17 @@ public class CameraImageS3Writer {
         }
     }
 
+    private static String getInLastModifiedHeaderFormat(final Instant instant) {
+        return LAST_MODIFIED_FORMAT.format(Date.from(instant));
+    }
+
     public static String resolvePresetIdFromKey(final String key) {
-        // Key ie. C0650802.jpg
+        // Key ie. C0650802.jpg -> C0650802
         return StringUtils.substringBeforeLast(key, ".");
     }
 
     public static String getVersionedKey(String key) {
-        // Key ie. C0650802.jpg
+        // Key ie. C0650802.jpg -> C0650802-versions.jpg
         return resolvePresetIdFromKey(key) + VERSIONS_SUFFIX + ".jpg";
     }
 

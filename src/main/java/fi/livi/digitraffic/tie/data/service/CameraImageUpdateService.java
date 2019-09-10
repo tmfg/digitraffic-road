@@ -1,16 +1,21 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -33,13 +38,16 @@ public class CameraImageUpdateService {
     private final CameraImageReader imageReader;
     private final CameraImageWriter imageWriter;
     private final CameraImageS3Writer cameraImageS3Writer;
+    private final byte[] noiseImage;
+    private ResourceLoader resourceLoader;
 
     static final int RETRY_COUNT = 3;
 
-    private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
+    private final static Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
         put(CameraImageReadFailureException.class, true);
         put(CameraImageWriteFailureException.class, true);
     }};
+    private final static String NOISE_IMG = "img/noise.jpg";
 
     @Autowired
     CameraImageUpdateService(
@@ -48,12 +56,22 @@ public class CameraImageUpdateService {
         final CameraPresetService cameraPresetService,
         final CameraImageReader imageReader,
         final CameraImageWriter imageWriter,
-        final CameraImageS3Writer cameraImageS3Writer) {
+        final CameraImageS3Writer cameraImageS3Writer,
+        final ResourceLoader resourceLoader) throws IOException {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.imageWriter = imageWriter;
         this.cameraImageS3Writer = cameraImageS3Writer;
+        this.resourceLoader = resourceLoader;
+        this.noiseImage = readImageFromResource(NOISE_IMG);
+    }
+
+    private byte[] readImageFromResource(final String imagePath) throws IOException {
+        log.info("Read image from {}", imagePath);
+        final Resource resource = resourceLoader.getResource("classpath:" + imagePath);
+        final File imageFile = resource.getFile();
+        return FileUtils.readFileToByteArray(imageFile);
     }
 
     public long deleteAllImagesForNonPublishablePresets() {
@@ -75,14 +93,14 @@ public class CameraImageUpdateService {
             log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
         }
 
-        final CameraPreset cameraPreset = cameraPresetService.findPublishableCameraPresetByLotjuId(kuva.getEsiasentoId());
+        final CameraPreset cameraPreset = cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId());
 
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
         if (cameraPreset != null) {
-            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename);
-            updateCameraPreset(cameraPreset, kuva, transferInfo.isSuccess());
+            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, kuva.getJulkinen());
+            updateCameraPresetAndHistory(cameraPreset, kuva.getAikaleima(), kuva.getJulkinen(), transferInfo.isSuccess());
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
@@ -116,11 +134,11 @@ public class CameraImageUpdateService {
         }
     }
 
-    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename) {
+    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename, boolean isPublic) {
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename));
         try {
-            byte[] image = readKuva(kuva, info);
-            writeKuva(image, kuva, filename, info);
+            byte[] image = readKuva(kuva.getKuvaId(), info);
+            writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
         } catch (CameraImageReadFailureException e) {
             // read attempts exhausted
         } catch (CameraImageWriteFailureException e) {
@@ -129,14 +147,14 @@ public class CameraImageUpdateService {
         return info;
     }
 
-    private byte[] readKuva(KuvaProtos.Kuva kuva, final ImageUpdateInfo info) {
+    private byte[] readKuva(final long kuvaId, final ImageUpdateInfo info) {
         final RetryTemplate retryTemplate = getRetryTemplate();
         return retryTemplate.execute(retryContext -> {
             final StopWatch start = StopWatch.createStarted();
             // Read the image
             byte[] image;
             try {
-                image = imageReader.readImage(kuva, info);
+                image = imageReader.readImage(kuvaId, info);
                 info.setSizeBytes(image.length);
                 info.updateReadStatusSuccess();
                 final long readEnd = start.getTime();
@@ -155,17 +173,23 @@ public class CameraImageUpdateService {
         });
     }
 
-    private void writeKuva(byte[] image, KuvaProtos.Kuva kuva, String filename, ImageUpdateInfo info) {
+    private void writeKuva(byte[] realImage, long timestampEpochMillis, String filename, ImageUpdateInfo info, boolean isPublic) {
         final RetryTemplate retryTemplate = getRetryTemplate();
         retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
-                imageWriter.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
-                cameraImageS3Writer.writeImage(image, filename, (int) (kuva.getAikaleima() / 1000));
+                final byte[] currentImageToWrite = isPublic ? realImage : noiseImage;
+
+                imageWriter.writeImage(currentImageToWrite, filename, timestampEpochMillis);
+
+                final String versionId = cameraImageS3Writer.writeImage(currentImageToWrite, realImage,
+                                                                        filename, timestampEpochMillis);
+                info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
                 final long writeEnd = writeStart.getTime();
                 info.updateWriteTotalDurationMs(writeEnd);
                 info.setWriteDurationMs(writeEnd);
+
             } catch (final Exception e) {
                 info.updateWriteStatusFailed(e);
                 throw new CameraImageWriteFailureException(e);
@@ -184,13 +208,15 @@ public class CameraImageUpdateService {
         return retryTemplate;
     }
 
-    private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva, final boolean success) {
-        final ZonedDateTime lastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima()));
-        if (cameraPreset.isPublicExternal() != kuva.getJulkinen()) {
-            cameraPreset.setPublicExternal(kuva.getJulkinen());
+    private static void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final long imageTimestampEpoch,
+                                                     final boolean publicImage, final boolean success) {
+        final ZonedDateTime lastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(imageTimestampEpoch));
+
+        if (cameraPreset.isPublicExternal() != publicImage) {
+            cameraPreset.setPublicExternal(publicImage);
             cameraPreset.setPictureLastModified(lastModified);
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                cameraPreset.getPresetId(), !kuva.getJulkinen(), kuva.getJulkinen(), lastModified);
+                cameraPreset.getPresetId(), !publicImage, publicImage, lastModified);
         } else if (success) {
             cameraPreset.setPictureLastModified(lastModified);
         }

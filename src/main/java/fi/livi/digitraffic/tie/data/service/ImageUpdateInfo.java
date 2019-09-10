@@ -7,13 +7,10 @@ public class ImageUpdateInfo {
         public boolean isSuccess() {
             return this.equals(SUCCESS);
         }
+
     }
 
-    public ImageUpdateInfo(final String presetId, final String fullPath) {
-        this.presetId = presetId;
-        this.fullPath = fullPath;
-    }
-
+    private String versionId;
     private long readTotalDurationMs = 0;
     private long writeTotalDurationMs = 0;
     private long readDurationMs = 0;
@@ -26,7 +23,20 @@ public class ImageUpdateInfo {
     private Status writeStatus = Status.NONE;
     private Throwable readError;
     private Throwable writeError;
-    private int imageTimestampEpochSecond;
+    private long imageTimestampEpochMillis;
+
+    public ImageUpdateInfo(final String presetId, final String fullPath) {
+        this.presetId = presetId;
+        this.fullPath = fullPath;
+    }
+
+    public void setVersionId(final String versionId) {
+        this.versionId = versionId;
+    }
+
+    public String getVersionId() {
+        return versionId;
+    }
 
     public void updateReadTotalDurationMs(final long currentReadDurationMs) {
         readTotalDurationMs += currentReadDurationMs;
@@ -126,12 +136,12 @@ public class ImageUpdateInfo {
         return getReadDurationMs() + getWriteDurationMs();
     }
 
-    public void setImageTimestampEpochSecond(final int imageTimestampEpochSecond) {
-        this.imageTimestampEpochSecond = imageTimestampEpochSecond;
+    public void setImageTimestampEpochMillis(final long imageTimestampEpochMillis) {
+        this.imageTimestampEpochMillis = imageTimestampEpochMillis;
     }
 
-    public int getImageTimestampEpochSecond() {
-        return imageTimestampEpochSecond;
+    public long getImageTimestampEpochMillis() {
+        return imageTimestampEpochMillis;
     }
 
     void updateReadStatusFailed(final Throwable readException) {

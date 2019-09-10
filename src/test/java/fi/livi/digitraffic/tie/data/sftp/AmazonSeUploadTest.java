@@ -23,7 +23,7 @@ import com.jcraft.jsch.SftpException;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 
-@Ignore
+@Ignore("Manual testing purposes only")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
 public class AmazonSeUploadTest extends AbstractSftpTest {
@@ -60,7 +60,7 @@ public class AmazonSeUploadTest extends AbstractSftpTest {
             final File imageFile = resource.getFile();
             final byte[] bytes = FileUtils.readFileToByteArray(imageFile);
 
-            cameraImageS3Writer.writeImage(bytes, "C0650802.jpg", (int) (Instant.now().minusSeconds(60).toEpochMilli() / 1000));
+            cameraImageS3Writer.writeImage(bytes, bytes,"C0650802.jpg", (int) (Instant.now().minusSeconds(60).toEpochMilli() / 1000));
             Thread.sleep(2000);
         }
 

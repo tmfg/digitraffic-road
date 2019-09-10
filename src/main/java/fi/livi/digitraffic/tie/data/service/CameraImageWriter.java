@@ -38,11 +38,11 @@ public class CameraImageWriter {
         this.sftpUploadFolder = sftpUploadFolder;
     }
 
-    void writeImage(final byte[] data, final String filename, final int timestampEpochSecond) throws IOException, SftpException {
+    void writeImage(final byte[] data, final String filename, final long timestampEpochMillis) throws IOException, SftpException {
         final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             session.write(new ByteArrayInputStream(data), imageFullPath);
-            ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, timestampEpochSecond);
+            ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, (int) (timestampEpochMillis/1000));
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}",
                 imageFullPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));

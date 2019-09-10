@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
-
 @Component
 @ConditionalOnNotWebApplication
 public class CameraImageReader {
@@ -38,8 +36,8 @@ public class CameraImageReader {
         this.cameraUrl = cameraUrl;
     }
 
-    byte[] readImage(final KuvaProtos.Kuva kuva, final ImageUpdateInfo info) throws IOException {
-        final String imageDownloadUrl = getCameraDownloadUrl(kuva);
+    byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {
+        final String imageDownloadUrl = getCameraDownloadUrl(kuvaId);
         info.setDownloadUrl(imageDownloadUrl);
 
         final URL url = new URL(imageDownloadUrl);
@@ -51,8 +49,8 @@ public class CameraImageReader {
         }
     }
 
-    private String getCameraDownloadUrl(final KuvaProtos.Kuva kuva) {
-        return StringUtils.appendIfMissing(cameraUrl, "/") + kuva.getKuvaId();
+    private String getCameraDownloadUrl(final long kuvaId) {
+        return StringUtils.appendIfMissing(cameraUrl, "/") + kuvaId;
     }
 
 }

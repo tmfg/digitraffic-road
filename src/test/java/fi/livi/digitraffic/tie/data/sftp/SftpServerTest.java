@@ -68,7 +68,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 sessions.add(this.sftpSessionFactory.getSession());
             } else {
                 // getting session out of pool fails
-                log.info("Getting session of full should fail after timeout");
+                log.info("Getting session of full pool should fail after timeout");
                 StopWatch time = StopWatch.createStarted();
                 boolean fail = false;
                 try {
