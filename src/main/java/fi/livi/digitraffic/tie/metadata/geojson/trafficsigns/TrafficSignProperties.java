@@ -57,8 +57,8 @@ public class TrafficSignProperties {
             } else if(StringUtils.equals("KASVAVA", value)) {
                 return INCREASING;
             }
-            else if(StringUtils.equals("KASVAVA", value)) {
-                return INCREASING;
+            else if(StringUtils.equals("LASKEVA", value)) {
+                return DECREASING;
             }
 
             throw new IllegalArgumentException("No Direction by value " + value);
