@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+
 public class ImageUpdateInfo {
 
     public enum Status { SUCCESS, FAILED, NONE;
@@ -8,7 +11,12 @@ public class ImageUpdateInfo {
             return this.equals(SUCCESS);
         }
 
+
     }
+
+    private final String presetId;
+    private final String fullPath;
+    private final ZonedDateTime lastUpdated;
 
     private String versionId;
     private long readTotalDurationMs = 0;
@@ -16,8 +24,6 @@ public class ImageUpdateInfo {
     private long readDurationMs = 0;
     private long writeDurationMs = 0;
     private String downloadUrl;
-    private String presetId;
-    private String fullPath;
     private int sizeBytes = -1;
     private Status readStatus = Status.NONE;
     private Status writeStatus = Status.NONE;
@@ -25,9 +31,22 @@ public class ImageUpdateInfo {
     private Throwable writeError;
     private long imageTimestampEpochMillis;
 
-    public ImageUpdateInfo(final String presetId, final String fullPath) {
+    public ImageUpdateInfo(final String presetId, final String fullPath, final ZonedDateTime lastUpdated) {
         this.presetId = presetId;
         this.fullPath = fullPath;
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getPresetId() {
+        return presetId;
+    }
+
+    String getFullPath() {
+        return fullPath;
+    }
+
+    public ZonedDateTime getLastUpdated() {
+        return lastUpdated;
     }
 
     public void setVersionId(final String versionId) {
@@ -68,22 +87,6 @@ public class ImageUpdateInfo {
 
     String getDownloadUrl() {
         return downloadUrl;
-    }
-
-    public void setPresetId(final String presetId) {
-        this.presetId = presetId;
-    }
-
-    public String getPresetId() {
-        return presetId;
-    }
-
-    void setFullPath(final String fullPath) {
-        this.fullPath = fullPath;
-    }
-
-    String getFullPath() {
-        return fullPath;
     }
 
     void setSizeBytes(final int sizeBytes) {
@@ -134,14 +137,6 @@ public class ImageUpdateInfo {
 
     long getDurationMs() {
         return getReadDurationMs() + getWriteDurationMs();
-    }
-
-    public void setImageTimestampEpochMillis(final long imageTimestampEpochMillis) {
-        this.imageTimestampEpochMillis = imageTimestampEpochMillis;
-    }
-
-    public long getImageTimestampEpochMillis() {
-        return imageTimestampEpochMillis;
     }
 
     void updateReadStatusFailed(final Throwable readException) {

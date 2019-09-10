@@ -11,4 +11,15 @@ public class CameraPresetHistory {
     private Boolean publishable;
     private Integer size;
     private ZonedDateTime created;
+
+    public CameraPresetHistory(final long cameraPresetId, final String presetId, final String versionId, final ZonedDateTime lastModified,
+                               final boolean publishable, final int size, final ZonedDateTime created) {
+        this.cameraPresetId = cameraPresetId;
+        this.presetId = presetId;
+        this.versionId = versionId;
+        this.lastModified = lastModified;
+        this.publishable = publishable;
+        this.size = size;
+        this.created = created;
+    }
 }
