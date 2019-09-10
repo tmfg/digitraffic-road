@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.data.controller.TrafficSignsUpdateController.DATA_PATH;
-import static fi.livi.digitraffic.tie.data.controller.TrafficSignsUpdateController.METADATA_PATH;
+import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.DATA_PATH;
+import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.METADATA_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +33,7 @@ public class TrafficSignsUpdateControllerTest extends AbstractRestWebTest {
         final String jsonContent = readResourceContent("classpath:lotju/trafficsigns/" + fileName);
 
         final MockHttpServletRequestBuilder post = post(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-            RoadWebApplicationConfiguration.API_TRAFFIC_SIGNS_UPDATE_PART_PATH + function)
+            RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH + function)
             .content(jsonContent);
 
         post.contentType(MediaType.APPLICATION_JSON);

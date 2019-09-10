@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.geojson.trafficsigns;
+package fi.livi.digitraffic.tie.metadata.geojson.variablesigns;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -10,19 +10,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "Properties", description = "Traffic Sign properties")
+@ApiModel(value = "Properties", description = "Variable Sign properties")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TrafficSignProperties {
+public class VariableSignProperties {
     // device properties
     public final String id;
-    @ApiModelProperty(value = "Traffic sign type",
+    @ApiModelProperty(value = "Variable sign type",
         allowableValues = "NOPEUSRAJOITUS,VAIHTUVAVAROITUSMERKKI")
     public final String type;
     public final String roadAddress;
-    @ApiModelProperty(value = "Direction of traffic sign, increasing or decreasing road address",
+    @ApiModelProperty(value = "Direction of variable sign, increasing or decreasing road address",
         allowableValues = "INCREASING,DECREASING")
     public final Direction direction;
-    @ApiModelProperty(value = "Traffic sign placement",
+    @ApiModelProperty(value = "Variable sign placement",
         allowableValues = "NORMAL,RIGHT,LEFT,BETWEEN,END_OF_ROAD,ALONG,ACROSS")
     public final Carriageway carriageway;
 
@@ -33,7 +33,7 @@ public class TrafficSignProperties {
     public final ZonedDateTime effectDate;
     public final String cause;
 
-    public TrafficSignProperties(final String id, final String type, final String roadAddress, final Direction direction,
+    public VariableSignProperties(final String id, final String type, final String roadAddress, final Direction direction,
         final Carriageway carriageway, final String displayInformation, final String additionalInformation, final ZonedDateTime effectDate, final String cause) {
         this.id = id;
         this.type = type;

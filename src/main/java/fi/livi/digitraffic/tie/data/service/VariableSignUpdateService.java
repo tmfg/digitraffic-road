@@ -21,13 +21,13 @@ import fi.livi.digitraffic.tie.external.tloik.Metatiedot;
 import fi.livi.digitraffic.tie.external.tloik.Tilatiedot;
 
 @Service
-public class TrafficSignsUpdateService {
-    private static final Logger log = LoggerFactory.getLogger(TrafficSignsUpdateService.class);
+public class VariableSignUpdateService {
+    private static final Logger log = LoggerFactory.getLogger(VariableSignUpdateService.class);
 
     private final DeviceRepository deviceRepository;
     private final DeviceDataRepository deviceDataRepository;
 
-    public TrafficSignsUpdateService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository) {
+    public VariableSignUpdateService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository) {
         this.deviceRepository = deviceRepository;
         this.deviceDataRepository = deviceDataRepository;
     }

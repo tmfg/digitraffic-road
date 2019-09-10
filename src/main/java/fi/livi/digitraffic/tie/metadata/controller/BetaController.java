@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
-import fi.livi.digitraffic.tie.data.service.TrafficSignsService;
+import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
-import fi.livi.digitraffic.tie.metadata.geojson.trafficsigns.TrafficSignsFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,14 +38,14 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String TRAFFIC_SIGNS_DATA_PATH = "/traffic-signs";
+    public static final String VARIABLE_SIGNS_DATA_PATH = "/variable-signs";
 
-    private final TrafficSignsService trafficSignsService;
+    private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
 
     @Autowired
-    public BetaController(final TrafficSignsService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
+    public BetaController(final VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
         final TmsDataDatex2Service tmsDataDatex2Service) {
         this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
@@ -72,25 +72,25 @@ public class BetaController {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 
-    @ApiOperation("List the latest values of traffic signs")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("List the latest data of variable signs")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
-    public TrafficSignsFeatureCollection trafficSigns() {
+    public VariableSignFeatureCollection variableSigns() {
         return trafficSignsService.listLatestValues();
     }
 
-    @ApiOperation("List the latest value of a traffic sign")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
-    public TrafficSignsFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
+    @ApiOperation("List the latest value of a variable sign")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
+    public VariableSignFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listLatestValue(deviceId);
     }
 
-    @ApiOperation("List the history of traffic sign values")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_SIGNS_DATA_PATH + "/history/{deviceId}", produces =
+    @ApiOperation("List the history of variable sign data")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH + "/history/{deviceId}", produces =
         APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign history"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
-        return trafficSignsService.listTrafficSignHistory(deviceId);
+        return trafficSignsService.listVariableSignHistory(deviceId);
     }
 }
