@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.data.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
@@ -100,7 +101,7 @@ public class CameraImageUpdateService {
 
         if (cameraPreset != null) {
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, kuva.getJulkinen());
-            updateCameraPresetAndHistory(cameraPreset, kuva.getAikaleima(), kuva.getJulkinen(), transferInfo.isSuccess());
+            updateCameraPresetAndHistory(cameraPreset, kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
@@ -135,7 +136,8 @@ public class CameraImageUpdateService {
     }
 
     private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename, boolean isPublic) {
-        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename));
+        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename),
+                                                         DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
@@ -208,17 +210,19 @@ public class CameraImageUpdateService {
         return retryTemplate;
     }
 
-    private static void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final long imageTimestampEpoch,
-                                                     final boolean publicImage, final boolean success) {
-        final ZonedDateTime lastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(imageTimestampEpoch));
+    private static void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean publicImage,
+                                                     final ImageUpdateInfo updateInfo) {
+
+        new CameraPresetHistory(cameraPreset.getId(), cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getLastUpdated(),
+                                publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
 
         if (cameraPreset.isPublicExternal() != publicImage) {
             cameraPreset.setPublicExternal(publicImage);
-            cameraPreset.setPictureLastModified(lastModified);
+            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                cameraPreset.getPresetId(), !publicImage, publicImage, lastModified);
-        } else if (success) {
-            cameraPreset.setPictureLastModified(lastModified);
+                     cameraPreset.getPresetId(), !publicImage, publicImage, updateInfo.getLastUpdated());
+        } else if (updateInfo.isSuccess()) {
+            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }
     }
 
