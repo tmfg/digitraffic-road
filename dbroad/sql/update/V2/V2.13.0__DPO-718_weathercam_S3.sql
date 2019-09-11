@@ -1,7 +1,7 @@
 CREATE TABLE CAMERA_PRESET_HISTORY (
-    camera_preset_id    NUMERIC(10,0) NOT NULL REFERENCES CAMERA_PRESET (id),
     preset_id           CHARACTER VARYING(32) NOT NULL,
     version_id          CHARACTER VARYING(32) NOT NULL,
+    camera_preset_id    NUMERIC(10,0) NOT NULL REFERENCES CAMERA_PRESET (id),
     last_modified       TIMESTAMP(6) WITH TIME ZONE  NOT NULL,
     publishable         BOOLEAN NOT NULL,
     size                INTEGER NOT NULL,

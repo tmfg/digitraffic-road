@@ -5,8 +5,6 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.conf.CameraImageUploaderSftpConnectionFactoryBuilder;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.MetadataMarshallerConfiguration;
@@ -17,9 +15,7 @@ import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.data.service.CameraImageWriter;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
-import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
-import fi.livi.digitraffic.tie.data.service.WorkMachineObservationService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2TrafficAlertHttpClient;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2TrafficAlertMessageUpdater;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
@@ -30,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
@@ -43,6 +40,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageWriter.class, CameraImageS3Writer.class,
           Datex2TrafficAlertMessageUpdater.class, Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
+          CameraPresetHistoryService.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,

@@ -84,15 +84,16 @@ public class CameraImageS3Writer {
      */
     final DeleteInfo deleteImage(final String key) {
         final StopWatch start = StopWatch.createStarted();
+        // Hide current image and last from history
         try  {
             if (amazonS3Client.doesObjectExist(bucketName, key)) {
-                log.info("method=deleteImage presetId={} imagePath={}", resolvePresetIdFromKey(key), key);
+                log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(key), key);
                 amazonS3Client.deleteObject(bucketName, key);
                 return new DeleteInfo(true, true, start.getTime(), key);
             }
             return new DeleteInfo(false, false, start.getTime(), key);
         } catch (SdkClientException e) {
-            log.error(String.format("Failed to remove remote file deleteImageFileName=%s", key), e);
+            log.error(String.format("Failed to remove s3 file s3Key=%s", key), e);
             return new DeleteInfo(true, false, start.getTime(), key);
         }
     }

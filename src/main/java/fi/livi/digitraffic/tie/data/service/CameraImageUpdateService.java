@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -23,10 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.data.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @ConditionalOnNotWebApplication
@@ -40,7 +42,8 @@ public class CameraImageUpdateService {
     private final CameraImageWriter imageWriter;
     private final CameraImageS3Writer cameraImageS3Writer;
     private final byte[] noiseImage;
-    private ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     static final int RETRY_COUNT = 3;
 
@@ -58,13 +61,15 @@ public class CameraImageUpdateService {
         final CameraImageReader imageReader,
         final CameraImageWriter imageWriter,
         final CameraImageS3Writer cameraImageS3Writer,
-        final ResourceLoader resourceLoader) throws IOException {
+        final ResourceLoader resourceLoader,
+        final CameraPresetHistoryService cameraPresetHistoryService) throws IOException {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.imageWriter = imageWriter;
         this.cameraImageS3Writer = cameraImageS3Writer;
         this.resourceLoader = resourceLoader;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.noiseImage = readImageFromResource(NOISE_IMG);
     }
 
@@ -77,15 +82,28 @@ public class CameraImageUpdateService {
 
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
-        cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
-            .map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
+        final List<String> npIds = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
+
+        final long count = npIds.stream().map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
             .filter(CameraImageWriter.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
 
-        return cameraPresetService.findAllNotPublishableCameraPresetsPresetIds().stream()
-            .map(presetId -> cameraImageS3Writer.deleteImage(getPresetImageName(presetId)))
+        // TODO amazon s3?
+        /*
+        npIds.stream().map(presetId -> {
+            final String key = getPresetImageName(presetId);
+            final CameraPresetHistory latest = cameraPresetHistoryService.findLatestWithPresetId(presetId);
+            if (latest.getPublishable()) {
+                latest.setPublishable(false);
+
+                cameraImageS3Writer.deleteImage(getPresetImageName(presetId))
+            }
+        })
             .filter(CameraImageS3Writer.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
+
+         */
+        return count;
     }
 
     @Transactional
@@ -95,10 +113,10 @@ public class CameraImageUpdateService {
         }
 
         final CameraPreset cameraPreset = cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId());
-
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
+        // If preset exists in db, update image
         if (cameraPreset != null) {
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, kuva.getJulkinen());
             updateCameraPresetAndHistory(cameraPreset, kuva.getJulkinen(), transferInfo);
@@ -125,13 +143,14 @@ public class CameraImageUpdateService {
             }
             return transferInfo.isSuccess();
         } else {
+            // Preset doesn't exist, so we delete image
             final CameraImageWriter.DeleteInfo deleteInfo = imageWriter.deleteImage(filename);
+            log.info("method=handleKuva preset does not exists presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
+                presetId, deleteInfo.getKey(), deleteInfo.isFileExists(), deleteInfo.isDeleteSuccess(), deleteInfo.getDurationMs());
             final CameraImageS3Writer.DeleteInfo deleteInfoS3 = cameraImageS3Writer.deleteImage(filename);
-            log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
-                presetId, deleteInfo.getFullPath(), deleteInfo.isFileExists(), deleteInfo.isDeleteSuccess(), deleteInfo.getDurationMs());
-            log.info("method=handleKuva presetId={} deleteFileName={} fileExists={} deleteSuccess={} tookMs={}",
-                presetId, deleteInfo.getFullPath(), deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(), deleteInfoS3.getDurationMs());
-            return deleteInfo.isSuccess();
+            log.info("method=handleKuva preset does not exists presetId={} deleteFileS3Key={} fileExists={} deleteSuccess={} tookMs={}",
+                presetId, deleteInfo.getKey(), deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(), deleteInfoS3.getDurationMs());
+            return deleteInfoS3.isSuccess();
         }
     }
 
@@ -210,11 +229,13 @@ public class CameraImageUpdateService {
         return retryTemplate;
     }
 
-    private static void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean publicImage,
-                                                     final ImageUpdateInfo updateInfo) {
+    private void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean publicImage,
+                                              final ImageUpdateInfo updateInfo) {
 
-        new CameraPresetHistory(cameraPreset.getId(), cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getLastUpdated(),
-                                publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+        final CameraPresetHistory history =
+            new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
+                                    publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+        cameraPresetHistoryService.saveHistory(history);
 
         if (cameraPreset.isPublicExternal() != publicImage) {
             cameraPreset.setPublicExternal(publicImage);

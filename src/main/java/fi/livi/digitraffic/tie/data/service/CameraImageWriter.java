@@ -82,13 +82,13 @@ public class CameraImageWriter {
         private final boolean fileExists;
         private final boolean deleteSuccess;
         private final long durationMs;
-        private final String fullPath;
+        private final String key;
 
-        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs, final String fullPath) {
+        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs, final String key) {
             this.fileExists = fileExists;
             this.deleteSuccess = deleteSuccess;
             this.durationMs = durationMs;
-            this.fullPath = fullPath;
+            this.key = key;
         }
 
         boolean isFileExists() {
@@ -111,8 +111,8 @@ public class CameraImageWriter {
             return durationMs;
         }
 
-        String getFullPath() {
-            return fullPath;
+        String getKey() {
+            return key;
         }
     }
 }
