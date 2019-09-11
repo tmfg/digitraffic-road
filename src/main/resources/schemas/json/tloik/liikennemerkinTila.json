@@ -20,6 +20,10 @@
         },
         "syy": {
             "type": "string"
+        },
+        "luotettavuus": {
+            "type": "string",
+            "required": "true"
         }
     }
 }

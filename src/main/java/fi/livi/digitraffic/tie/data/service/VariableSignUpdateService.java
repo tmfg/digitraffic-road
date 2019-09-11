@@ -118,6 +118,7 @@ public class VariableSignUpdateService {
         d.setDeviceId(lt.getTunnus());
         d.setDisplayValue(lt.getNayttama());
         d.setEffectDate(lt.getVoimaan());
+        d.setReliability(lt.getLuotettavuus());
 
         return d;
     }

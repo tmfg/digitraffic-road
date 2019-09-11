@@ -26,6 +26,7 @@ public class DeviceData {
     private ZonedDateTime effectDate;
 
     private String cause;
+    private String reliability;
 
     public String getDisplayValue() {
         return displayValue;
@@ -81,5 +82,13 @@ public class DeviceData {
 
     public void setCreatedDate(final ZonedDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getReliability() {
+        return reliability;
+    }
+
+    public void setReliability(final String reliability) {
+        this.reliability = reliability;
     }
 }

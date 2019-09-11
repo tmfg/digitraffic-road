@@ -32,9 +32,11 @@ public class VariableSignProperties {
     @ApiModelProperty("Information is effect after this date")
     public final ZonedDateTime effectDate;
     public final String cause;
+    public final Reliability reliability;
 
     public VariableSignProperties(final String id, final String type, final String roadAddress, final Direction direction,
-        final Carriageway carriageway, final String displayInformation, final String additionalInformation, final ZonedDateTime effectDate, final String cause) {
+        final Carriageway carriageway, final String displayInformation, final String additionalInformation, final ZonedDateTime effectDate,
+        final String cause, final Reliability reliability) {
         this.id = id;
         this.type = type;
         this.roadAddress = roadAddress;
@@ -44,6 +46,7 @@ public class VariableSignProperties {
         this.additionalInformation = additionalInformation;
         this.effectDate = effectDate;
         this.cause = cause;
+        this.reliability = reliability;
     }
 
     @ApiModel
@@ -91,4 +94,28 @@ public class VariableSignProperties {
             return first.orElseThrow(() -> new IllegalArgumentException("No Carriageway by value " + value));
         }
     }
+
+    @ApiModel
+    public enum Reliability {
+        NORMAL("NORMAALI"),
+        DISCONNECTED("YHTEYSKATKO"),
+        MALFUNCTION("LAITEVIKA");
+
+        private final String value;
+
+        Reliability(final String value) {
+            this.value = value;
+        }
+
+        public static Reliability byValue(final String value) {
+            if(value == null) {
+                return null;
+            }
+
+            final Optional<Reliability> first = Arrays.stream(Reliability.values()).filter(c -> StringUtils.equals(c.value, value)).findFirst();
+
+            return first.orElseThrow(() -> new IllegalArgumentException("No Reliability by value " + value));
+        }
+
+        }
 }

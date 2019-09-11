@@ -50,7 +50,8 @@ public class VariableSignService {
             data == null ? null : data.getDisplayValue(),
             data == null ? null : data.getAdditionalInformation(),
             data == null ? null : data.getEffectDate(),
-            data == null ? null : data.getCause());
+            data == null ? null : data.getCause(),
+            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()));
         final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new VariableSignFeature(point, properties);
