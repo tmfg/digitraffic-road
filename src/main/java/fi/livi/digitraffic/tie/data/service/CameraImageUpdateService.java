@@ -273,4 +273,8 @@ public class CameraImageUpdateService {
         }
 
     }
+
+    byte[] getNoiseImage() {
+        return noiseImage;
+    }
 }

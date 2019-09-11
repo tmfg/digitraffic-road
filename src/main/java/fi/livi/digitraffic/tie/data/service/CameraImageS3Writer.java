@@ -26,7 +26,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 public class CameraImageS3Writer {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
-    public static final String VERSIONS_SUFFIX = "-versions";
+    private static final String VERSIONS_SUFFIX = "-versions";
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
@@ -98,11 +98,11 @@ public class CameraImageS3Writer {
         }
     }
 
-    private static String getInLastModifiedHeaderFormat(final Instant instant) {
+    static String getInLastModifiedHeaderFormat(final Instant instant) {
         return LAST_MODIFIED_FORMAT.format(Date.from(instant));
     }
 
-    public static String resolvePresetIdFromKey(final String key) {
+    private static String resolvePresetIdFromKey(final String key) {
         // Key ie. C0650802.jpg -> C0650802
         return StringUtils.substringBeforeLast(key, ".");
     }

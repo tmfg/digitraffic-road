@@ -43,6 +43,8 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -104,7 +106,8 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Before
-    public void initS3Bucket() throws InterruptedException {
+    public void initS3Bucket() {
+
         log.info("Init versioned S3 Bucket {} with S3: {}", weathercamBucketName, s3);
         try {
             if( s3.doesBucketExistV2(weathercamBucketName)) {
@@ -161,6 +164,31 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     public void onShutdown() throws IOException {
         log.info("Shutdown testSftpServer");
         testSftpServer.close();
+    }
+
+    protected S3Object readWeathercamS3Object(final String key) {
+        return readWeathercamS3ObjectVersion(key, null);
+    }
+
+    protected S3Object readWeathercamS3ObjectVersion(final String key, final String versionId) {
+        final GetObjectRequest gor = new GetObjectRequest(weathercamBucketName, key);
+        if (versionId != null) {
+            gor.setVersionId(versionId);
+        }
+        return s3.getObject(gor);
+    }
+
+    protected byte[] readWeathercamS3Data(final String key) {
+        return readWeathercamS3DataVersion(key, null);
+    }
+
+    protected byte[] readWeathercamS3DataVersion(final String key, final String versionId) {
+        final S3Object version = readWeathercamS3ObjectVersion(key, versionId);
+        try {
+            return version.getObjectContent().readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public PublickeyAuthenticator getAuthorizedKeysAuthenticator() throws IOException {

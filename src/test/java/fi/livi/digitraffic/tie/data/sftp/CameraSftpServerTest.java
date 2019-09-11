@@ -38,7 +38,6 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
@@ -87,7 +86,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Autowired
     CameraImageS3Writer cameraImageS3Writer;
 
-    private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
+    private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList<>();
 
     @Before
     public void setUpTestData() throws IOException, SftpException {
@@ -210,24 +209,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         });
 
         dataWritten.forEach(p -> {
-            final byte[] dataRead = readS3VersionData(CameraImageS3Writer.getVersionedKey(key), p.getKey());
+            final byte[] dataRead = readWeathercamS3DataVersion(CameraImageS3Writer.getVersionedKey(key), p.getKey());
             Assert.assertArrayEquals("Data written differs from data read for versions", p.getValue(), dataRead);
         });
         // Test latest
         S3Object latest = s3.getObject(weathercamBucketName, key);
         final byte[] dataRead = latest.getObjectContent().readAllBytes();
         Assert.assertArrayEquals("Data written differs from data read for latest image", dataWritten.get(dataWritten.size()-1).getValue(), dataRead);
-    }
-
-    private byte[] readS3VersionData(final String key, String versionId) {
-        final GetObjectRequest gor = new GetObjectRequest(weathercamBucketName, key);
-        gor.setVersionId(versionId);
-        final S3Object version = s3.getObject(gor);
-        try {
-            return version.getObjectContent().readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private KuvaProtos.Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data, final int httpResponseDelay) {
@@ -269,7 +257,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
                         .withFixedDelay(httpResponseDelay)));
     }
 
-    protected String getImageFilename(final String presetId) {
+    private String getImageFilename(final String presetId) {
         return presetId + ".jpg";
     }
 

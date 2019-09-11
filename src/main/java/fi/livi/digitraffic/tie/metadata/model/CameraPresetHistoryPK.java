@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Embeddable
 public class CameraPresetHistoryPK implements Serializable {
 
@@ -20,7 +22,7 @@ public class CameraPresetHistoryPK implements Serializable {
     public CameraPresetHistoryPK() {
     }
 
-    public CameraPresetHistoryPK(final @NotNull String presetId, final @NotNull String versionId) {
+    CameraPresetHistoryPK(final @NotNull String presetId, final @NotNull String versionId) {
         this.presetId = presetId;
         this.versionId = versionId;
     }
@@ -53,5 +55,10 @@ public class CameraPresetHistoryPK implements Serializable {
                 .append(presetId)
                 .append(versionId)
                 .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
     }
 }

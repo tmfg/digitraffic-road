@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Entity
 @DynamicUpdate
 public class CameraPresetHistory {
@@ -26,6 +28,7 @@ public class CameraPresetHistory {
     @Column(nullable = false)
     private ZonedDateTime created;
 
+    // For Hibernate
     public CameraPresetHistory() {
     }
 
@@ -94,5 +97,10 @@ public class CameraPresetHistory {
 
     public void setCreated(ZonedDateTime created) {
         this.created = created;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
     }
 }
