@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
@@ -61,25 +60,32 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
     @Test
     public void testHistoryVersions() {
 
-        Set<String> presetIds = new HashSet<>();
+        Map<String, List<CameraPresetHistory>> presetIdsToOldHistory = new HashMap<>();
+        // Create 5 history item for 2 presets
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
+
+            List<CameraPresetHistory> oldHistory = cameraPresetHistoryService.findAllByPresetId(cp.getPresetId());
+            presetIdsToOldHistory.put(cp.getPresetId(), oldHistory);
+
             final ZonedDateTime lastModified = ZonedDateTime.now();
             IntStream.range(0, 5).forEach(i -> {
                 log.info("Create history nr. {} for preset {}", i, cp.getPresetId());
                 final CameraPresetHistory history = generateHistory(cp, lastModified.plusSeconds(i * 10));
                 cameraPresetHistoryService.saveHistory(history);
-                presetIds.add(cp.getPresetId());
             });
         });
 
-        presetIds.forEach(id -> {
-            log.info("Check history for preset {}", id);
-            List<CameraPresetHistory> histories = cameraPresetHistoryService.findAllByPresetId(id);
-            assertTrue(histories.size() == 5);
+        presetIdsToOldHistory.entrySet().forEach(t -> {
+            final String presetId = t.getKey();
+            log.info("Check history for preset {}", presetId);
+            final List<CameraPresetHistory> histories = cameraPresetHistoryService.findAllByPresetId(presetId);
+            // Remove earlier histories in db
+            log.info("Delete history: {}", histories.removeAll(t.getValue()));
+            assertEquals(5,histories.size());
 
             ZonedDateTime prevDate = null;
             for (CameraPresetHistory h : histories) {
-                assertEquals(id, h.getPresetId());
+                assertEquals(presetId, h.getPresetId());
                 if (prevDate != null) {
                     Assert.assertTrue("Previous history date must be before next", prevDate.isBefore(h.getLastModified()));
                 }

@@ -89,20 +89,17 @@ public class CameraImageUpdateService {
             .count();
 
         // TODO amazon s3?
-        /*
         npIds.stream().map(presetId -> {
             final String key = getPresetImageName(presetId);
             final CameraPresetHistory latest = cameraPresetHistoryService.findLatestWithPresetId(presetId);
-            if (latest.getPublishable()) {
+            if (latest != null && latest.getPublishable()) {
                 latest.setPublishable(false);
-
-                cameraImageS3Writer.deleteImage(getPresetImageName(presetId))
             }
-        })
-            .filter(CameraImageS3Writer.DeleteInfo::isFileExistsAndDeleteSuccess)
+            return cameraImageS3Writer.deleteImage(getPresetImageName(presetId));
+        }).filter(CameraImageS3Writer.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
 
-         */
+
         return count;
     }
 
@@ -229,13 +226,16 @@ public class CameraImageUpdateService {
         return retryTemplate;
     }
 
-    private void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean publicImage,
+    private void updateCameraPresetAndHistory(final CameraPreset cameraPreset,
+                                              final boolean publicImage,
                                               final ImageUpdateInfo updateInfo) {
-
-        final CameraPresetHistory history =
-            new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                                    publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
-        cameraPresetHistoryService.saveHistory(history);
+        // Update version data only if write has succeeded
+        if (updateInfo.isSuccess()) {
+            final CameraPresetHistory history =
+                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
+                    publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+            cameraPresetHistoryService.saveHistory(history);
+        }
 
         if (cameraPreset.isPublicExternal() != publicImage) {
             cameraPreset.setPublicExternal(publicImage);
