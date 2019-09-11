@@ -32,6 +32,8 @@ public class VariableSignProperties {
     @ApiModelProperty("Information is effect after this date")
     public final ZonedDateTime effectDate;
     public final String cause;
+    @ApiModelProperty(value = "Variable sign reliability",
+        allowableValues = "NORMAL,DISCONNECTED,MALFUNCTION")
     public final Reliability reliability;
 
     public VariableSignProperties(final String id, final String type, final String roadAddress, final Direction direction,
