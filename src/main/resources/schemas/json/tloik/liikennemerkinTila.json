@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "id": "urn:tloik/liikennemerkinTila",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "tunnus": {
+            "type": "string",
+            "required": "true"
+        },
+        "nayttama": {
+            "type": "string"
+        },
+        "lisatieto": {
+            "type": "string"
+        },
+        "voimaan": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "syy": {
+            "type": "string"
+        },
+        "luotettavuus": {
+            "type": "string",
+            "required": "true"
+        }
+    }
+}
