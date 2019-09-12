@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0" targetNamespace="http://livi.fi/tloik/digitraffic"
+elementFormDefault="qualified"   xmlns:dt="http://livi.fi/tloik/digitraffic"
+  
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="laite" type="dt:laite"/>
+  <xs:element name="liikennemerkinTila" type="dt:liikennemerkinTila"/>
+  <xs:element name="metatiedot" type="dt:metatiedot"/>
+  <xs:element name="sijainti" type="dt:sijainti"/>
+  <xs:element name="tilatiedot" type="dt:tilatiedot"/>
+<xs:complexType name="laite">
+  <xs:annotation>
+    <xs:documentation>
+      <![CDATA[Laitteen metatiedot.]]>
+    </xs:documentation>
+  </xs:annotation>
+       <xs:sequence>
+              <xs:element name="sijainti" type="dt:sijainti" minOccurs="1">
+              <xs:annotation>
+                <xs:documentation>
+                  <![CDATA[Laitteen sijaintitiedot.]]>
+                </xs:documentation>
+              </xs:annotation>
+              </xs:element>
+      </xs:sequence>
+      <xs:attribute name="tunnus" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Laitteen tunniste, yleensä muodossa KRM012356.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="tyyppi" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Laitteen tyyppi, esim. nopeusrajoitus.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+</xs:complexType>
+
+<xs:complexType name="liikennemerkinTila">
+       <xs:attribute name="tunnus" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Liikennemerkin tunniste.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="nayttama" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Liikennemerkin näyttämä.
+
+Arvo on esim. nopeusrajoituslukema tai varoitusmerkin numerotunnus.
+Mikäli liikennemerkki on ohjattu tyhjäksi, tätä tietoa ei anneta.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="lisatieto" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Mikäli liikennemerkki sisältää lisätiedon antamiseen tarkoitetun lisäkilven, lisätieto ilmoitetaan tässä.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="voimaan" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Tilan voimaantulo UTC-aikaa käyttäen ISO8601 formaattia, esim. 2007-04-05T14:30:15Z.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="syy" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Syy, minkä vuoksi kyseinen tila on ohjattu liikennemerkkiin. Syy voi olla esim. 'heikentyneet keliolosuhteet', 'perustila' tai 'talvinopeusrajoitus'.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+</xs:complexType>
+
+<xs:complexType name="metatiedot">
+       <xs:sequence>
+        <xs:element name="laitteet" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="laitteet" type="dt:laite" minOccurs="0" maxOccurs="unbounded">
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="sijainti">
+       <xs:attribute name="tieosoite" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[Laitteen sijainti tieosoitemuodossa.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="n" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[ETRS-TM35FIN koordinaatti.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="e" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            <![CDATA[ETRS-TM35FIN koordinaatti.]]>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+</xs:complexType>
+
+<xs:complexType name="tilatiedot">
+       <xs:sequence>
+        <xs:element name="liikennemerkit" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="liikennemerkit" type="dt:liikennemerkinTila" minOccurs="0" maxOccurs="unbounded">
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+</xs:complexType>
+
+</xs:schema>
