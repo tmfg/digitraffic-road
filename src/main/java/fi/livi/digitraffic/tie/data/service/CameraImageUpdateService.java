@@ -110,13 +110,16 @@ public class CameraImageUpdateService {
         }
 
         final CameraPreset cameraPreset = cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId());
+
         final String presetId = resolvePresetIdFrom(cameraPreset, kuva);
         final String filename = getPresetImageName(presetId);
 
         // If preset exists in db, update image
         if (cameraPreset != null) {
-            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, kuva.getJulkinen());
-            updateCameraPresetAndHistory(cameraPreset, kuva.getJulkinen(), transferInfo);
+            final boolean roadStationPublic = cameraPreset.getRoadStation().isPublic();
+            final boolean resultPublic = kuva.getJulkinen() && roadStationPublic;
+            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, resultPublic);
+            updateCameraPresetAndHistory(cameraPreset, resultPublic, transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +

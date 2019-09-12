@@ -14,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 public class CameraImageUpdateServiceTest extends AbstractServiceTest {
@@ -75,7 +77,9 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
     private CameraPreset createPreset() {
         final CameraPreset preset = new CameraPreset();
+        preset.setRoadStation(new RoadStation(RoadStationType.CAMERA_STATION));
         preset.setPresetId("C9876501");
+        preset.getRoadStation().setPublic(true);
         return preset;
     }
 

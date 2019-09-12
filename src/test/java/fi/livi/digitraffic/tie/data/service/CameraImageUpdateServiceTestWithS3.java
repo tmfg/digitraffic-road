@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -30,6 +31,8 @@ import com.jcraft.jsch.SftpException;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
@@ -53,13 +56,24 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
     private CameraPresetHistoryService cameraPresetHistoryService;
 
     @Test
-    public void versionHistoryUpdated() throws IOException, SftpException {
+    public void versionHistoryAndPresetPublicityForTwoPresets() throws IOException, SftpException {
 
+        /**
+         * Create 5 images for 2 presets.
+         * Use loopIndex i with values 1-5 to generate publicity (i mod 2), image data array and lastModified offset.
+         */
         final ZonedDateTime initialLastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochSecond(Instant.now().getEpochSecond()));
-        Set<String> presetIds = new HashSet<>();
+        final Map<String, List<CameraPresetHistory>> presetIdToOldHistoryMap = new HashMap<>();
 
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
+            // Set station to public
+            cp.getRoadStation().setPublic(true);
+            cameraPresetService.save(cp);
 
+            // Get old history so we can iqnore it in the test
+            presetIdToOldHistoryMap.put(cp.getPresetId(), cameraPresetHistoryService.findAllByPresetId(cp.getPresetId()));
+
+            // Init image data for all loop indexes
             try {
                 when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
                     .thenReturn(getAsByteArray(1),
@@ -71,48 +85,34 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
                 throw new RuntimeException();
             }
 
-            presetIds.add(cp.getPresetId());
             IntStream.range(1, 6).forEach(loopIndex -> {
-                // All even kuvaIds are public
-                final boolean isPublic = isPublic(loopIndex);
-                final KuvaProtos.Kuva kuva = createKuva(initialLastModified.plusMinutes(loopIndex), cp.getPresetId(), cp.getLotjuId(), isPublic);
+                // All even kuvaIds are public. Generate kuva and handle it to save history and image.
+                final boolean isPublicPreset = isPublicPreset(loopIndex);
+                final ZonedDateTime lastModified = initialLastModified.plusMinutes(loopIndex);
+                final KuvaProtos.Kuva kuva = createKuva(lastModified, cp.getPresetId(), cp.getLotjuId(), isPublicPreset);
                 service.handleKuva(kuva);
 
-                // Check that latest image data is correct after update
-                final String key = cp.getPresetId() + ".jpg";
-                // Image bytes equals with actual (public) or noise image (hidden)
-                final byte[] image = readWeathercamS3Data(key);
-                assertBytes(isPublic ? getAsByteArray(loopIndex) : service.getNoiseImage(), image);
-                // S3 Object lastmodified is correct
-                final S3Object imageS3Object = readWeathercamS3Object(key);
-                assertLastModified(initialLastModified.plusMinutes(loopIndex), imageS3Object);
+                // Now we have new latest image and also new history item. Check them.
+                checkLatestS3ObjectAndHistory(cp.getPresetId(), lastModified, true, isPublicPreset, loopIndex);
+
+                // Check version history
+                final CameraPresetHistory latestHistory = cameraPresetHistoryService.findLatestWithPresetId(cp.getPresetId());
+                checkVersionedS3ObjectAndHistory(cp.getPresetId(), lastModified, true, isPublicPreset, loopIndex, latestHistory);
             });
         });
 
-        presetIds.forEach(presetId -> {
-            cameraPresetHistoryService.findAllByPresetId(presetId).forEach(h -> log.info(h.toString()));
+        // Now check that full history haven't changed
+        presetIdToOldHistoryMap.entrySet().forEach(entry -> {
             final AtomicInteger loopIndex = new AtomicInteger(1);
+            final String presetId = entry.getKey();
+            final List<CameraPresetHistory> history = findHistoryAndRemoveOld(presetId, entry.getValue());
 
-            cameraPresetHistoryService.findAllByPresetId(presetId).forEach(h -> {
-                log.info(h.toString());
+            history.forEach(h -> {
 
-                // Check history data
                 // All even versions are public
-                final boolean shouldBePublic = isPublic(loopIndex.get());
-                Assert.assertEquals(h.getPublishable(), shouldBePublic);
-                // Last modified should equal
-                final ZonedDateTime historyLastModified = h.getLastModified();
-                Assert.assertEquals(initialLastModified.plusMinutes(loopIndex.get()), historyLastModified);
+                final boolean shouldBePublic = isPublicPreset(loopIndex.get());
 
-                // Check S3 image versioned data
-                final byte[] image = readWeathercamS3DataVersion( CameraImageS3Writer.getVersionedKey(h.getPresetId()), h.getVersionId());
-                Assert.assertEquals(image.length, h.getSize().intValue());
-                // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
-                assertBytes(getAsByteArray(loopIndex.get()), image);
-
-                // S3 Object last modified should be equals with history
-                final S3Object imageObject = readWeathercamS3ObjectVersion(h.getPresetId() + ".jpg", h.getVersionId());
-                assertLastModified(historyLastModified, imageObject);
+                checkVersionedS3ObjectAndHistory(h.getPresetId(), initialLastModified.plusMinutes(loopIndex.get()), true, shouldBePublic, loopIndex.get(), h);
 
                 // update loop index
                 loopIndex.getAndSet(loopIndex.get() + 1);
@@ -121,6 +121,113 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
 
         verify(cameraImageReader, times(10)).readImage(anyLong(), any());
         verify(cameraImageWriter, times(10)).writeImage(any(), any(), anyLong());
+    }
+
+    @Test
+    public void versionHistoryAndCameraPublicity() {
+
+        final ZonedDateTime initialLastModified =
+            DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochSecond(Instant.now().getEpochSecond()));
+
+        final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().get();
+        final List<CameraPresetHistory> oldHistory =
+            cameraPresetHistoryService.findAllByPresetId(cp.getPresetId());
+
+        try {
+            when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
+                .thenReturn(getAsByteArray(1),
+                    getAsByteArray(2),
+                    getAsByteArray(3),
+                    getAsByteArray(4));
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+
+        final String presetId = cp.getPresetId();
+
+        /* Create image history with following publicity matrix
+           Camera, Image, result
+              T      T      T
+              T      F      F
+              F      F      F
+              F      T      F
+         */
+        handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(1), true, true, 1);
+        handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(2), true, false, 2);
+        handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(3), false, true, 3);
+        handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(4), false, false, 4);
+
+        // Get history and check it is still correct
+        final List<CameraPresetHistory> history = findHistoryAndRemoveOld(cp.getPresetId(), oldHistory);
+        Assert.assertEquals(4, history.size());
+
+        // Check version history to match matrix
+        checkVersionedS3ObjectAndHistory(presetId, initialLastModified.plusMinutes(1), true, true, 1, history.get(0));
+        checkVersionedS3ObjectAndHistory(presetId, initialLastModified.plusMinutes(2), true, false, 2, history.get(1));
+        checkVersionedS3ObjectAndHistory(presetId, initialLastModified.plusMinutes(3), false, false, 3, history.get(2));
+        checkVersionedS3ObjectAndHistory(presetId, initialLastModified.plusMinutes(4), false, true, 4, history.get(3));
+    }
+
+    private void handleKuvaAndCheckLatestS3ObjectAndHistory(CameraPreset cp, ZonedDateTime lastModified, boolean cameraPublicity, boolean presetPublicity, int imageDataIndex) {
+        handleKuva(cp, lastModified, cameraPublicity, presetPublicity, imageDataIndex);
+        checkLatestS3ObjectAndHistory(cp.getPresetId(), lastModified, cameraPublicity, presetPublicity, imageDataIndex);
+
+    }
+
+    private List<CameraPresetHistory> findHistoryAndRemoveOld(String presetId, List<CameraPresetHistory> value) {
+        final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetId(presetId);
+        final int size = history.size();
+        history.removeAll(value);
+        if (size > history.size()) {
+            log.info("Removed {} old items from history for preset {}", size - history.size(), presetId);
+        }
+        return history;
+    }
+
+    private void checkVersionedS3ObjectAndHistory(final String presetId, final ZonedDateTime lastModified,
+                                                  final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex,
+                                                  CameraPresetHistory history) {
+        // Check history data
+        final boolean shouldBePublic = cameraPublicity && presetPublicity;
+        Assert.assertEquals(shouldBePublic, history.getPublishable());
+        // Last modified should equal
+        final ZonedDateTime historyLastModified = history.getLastModified();
+        Assert.assertEquals(lastModified, historyLastModified);
+
+        // Check S3 image versioned data
+        final byte[] image = readWeathercamS3DataVersion( CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
+        Assert.assertEquals(image.length, history.getSize().intValue());
+        // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
+        assertBytes(getAsByteArray(imageDataIndex), image);
+
+        // S3 Object last modified should be equals with history
+        final S3Object imageObject = readWeathercamS3ObjectVersion(history.getPresetId() + ".jpg", history.getVersionId());
+        assertLastModified(historyLastModified, imageObject);
+    }
+
+    private void handleKuva(final CameraPreset cp, final ZonedDateTime lastModified, final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex) {
+        final KuvaProtos.Kuva kuva = createKuva(lastModified, cp.getPresetId(), cp.getLotjuId(), presetPublicity);
+        cp.getRoadStation().setPublic(cameraPublicity);
+        cameraPresetService.save(cp);
+        service.handleKuva(kuva);
+    }
+
+    private void checkLatestS3ObjectAndHistory(final String presetId, ZonedDateTime lastModified, final boolean cameraPublicity,
+                                               final boolean presetPublicity, int imageDataIndex) {
+        final boolean shouldBePublic = cameraPublicity && presetPublicity;
+        final String key = presetId + ".jpg";
+        // Check that latest image data is correct after update
+        // Latest image's bytes equals with actual (public) or noise image (hidden)
+        final byte[] image = readWeathercamS3Data(key);
+        assertBytes(shouldBePublic ? getAsByteArray(imageDataIndex) : service.getNoiseImage(), image);
+        // S3 Object lastmodified is correct
+        final S3Object imageS3Object = readWeathercamS3Object(key);
+        assertLastModified(lastModified, imageS3Object);
+
+        // Check latest history data
+        final CameraPresetHistory latestHistory = cameraPresetHistoryService.findLatestWithPresetId(key.substring(0, key.length()-4));
+        Assert.assertEquals(shouldBePublic, latestHistory.getPublishable());
+        Assert.assertEquals(lastModified, latestHistory.getLastModified());
     }
 
     private void assertLastModified(final ZonedDateTime expected, final S3Object imageObject) {
@@ -132,7 +239,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
     /**
      * @return true if parameter is even
      */
-    private boolean isPublic(final int i) {
+    private boolean isPublicPreset(final int i) {
         return i % 2 == 0;
     }
 
