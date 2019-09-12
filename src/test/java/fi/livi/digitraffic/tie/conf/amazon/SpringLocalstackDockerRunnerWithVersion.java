@@ -29,7 +29,7 @@ public class SpringLocalstackDockerRunnerWithVersion extends SpringJUnit4ClassRu
     }
 
     @Override
-    public void run(RunNotifier notifier) {
+    public void run(final RunNotifier notifier) {
         LocalstackDockerBuilder builder = new LocalstackDockerBuilder();
 
         this.properties.ifPresent(p -> {
@@ -43,7 +43,8 @@ public class SpringLocalstackDockerRunnerWithVersion extends SpringJUnit4ClassRu
         builder.withVersion("0.9.1");
 
         LocalstackDocker docker = builder.build();
-
+        // Stop Docker also if runtime is killed softly
+        Runtime.getRuntime().addShutdownHook(new DockerStopper(docker));
         try {
             docker.startup();
             super.run(notifier);
@@ -74,5 +75,23 @@ public class SpringLocalstackDockerRunnerWithVersion extends SpringJUnit4ClassRu
         }
 
         return options;
+    }
+
+    private class DockerStopper extends Thread {
+
+        private final LocalstackDocker docker;
+
+        private DockerStopper(LocalstackDocker docker) {
+            this.docker = docker;
+        }
+
+        @Override
+        public void run() {
+            try {
+                docker.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

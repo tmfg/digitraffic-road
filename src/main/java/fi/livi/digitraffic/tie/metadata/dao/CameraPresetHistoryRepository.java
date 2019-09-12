@@ -28,4 +28,6 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
+
+    int deleteByIdPresetId(final String presetId);
 }

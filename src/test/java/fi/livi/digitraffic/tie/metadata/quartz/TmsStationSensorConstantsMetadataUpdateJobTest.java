@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantValueDto;
@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceE
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorConstantUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 
-public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractDaemonTest {
+public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
     private static final String MS1 = "MS1";
     private static final String MS2 = "MS2";

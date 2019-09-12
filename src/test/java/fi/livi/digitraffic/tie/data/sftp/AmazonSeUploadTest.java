@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -24,9 +23,8 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 
 @Ignore("Manual testing purposes only")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class AmazonSeUploadTest extends AbstractSftpTest {
+public class AmazonSeUploadTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(AmazonSeUploadTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
@@ -45,11 +43,9 @@ public class AmazonSeUploadTest extends AbstractSftpTest {
     @Value("${dt.amazon.s3.weathercamBucketName}")
     private String weathercamBucketName;
 
-    private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
-
     @Ignore("Test is ignored as a demonstration")
     @Test
-    public void testSendCameraImageVersionsToAwsS3() throws IOException, SftpException, InterruptedException {
+    public void testSendCameraImageVersionsToAwsS3() throws IOException, InterruptedException {
 
         log.info("Init test data");
 

@@ -20,12 +20,9 @@ import org.springframework.integration.file.remote.session.CachingSessionFactory
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.util.PoolItemNotAvailableException;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.ReflectionUtils;
 
-// Dirty but S3 must be cleared every time as port changes
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class SftpServerTest extends AbstractSftpTest {
+public class SftpServerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(SftpServerTest.class);
 
     @Autowired
@@ -102,9 +99,7 @@ public class SftpServerTest extends AbstractSftpTest {
         Field sessionField = ReflectionUtils.findField(CachingSessionFactory.CachedSession.class, "targetSession");
         sessionField.setAccessible(true);
         Set<Session> newRealSessions = new HashSet<>();
-        newSessions.forEach(s -> {
-            newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
+        newSessions.forEach(s -> newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s)));
 
         HashSet<Session> cachedSessions = new HashSet<>();
         while(cachedSessions.size() < poolSize) {
@@ -112,9 +107,7 @@ public class SftpServerTest extends AbstractSftpTest {
             cachedSessions.add(this.sftpSessionFactory.getSession());
         }
         Set<Session> cachedRealSessions = new HashSet<>();
-        cachedSessions.forEach(s -> {
-            cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
+        cachedSessions.forEach(s -> cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s)));
 
         assertTrue("All sessions should be found from cachedSessions", cachedRealSessions.containsAll(newRealSessions));
         cachedSessions.forEach(Session::close);

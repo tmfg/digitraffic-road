@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 
 @Ignore
-public class Datex2WeightRestrictionsIntegrationTest extends AbstractTest {
+public class Datex2WeightRestrictionsIntegrationTest extends AbstractDaemonTestWithoutS3 {
     @Autowired
     private Datex2SimpleMessageUpdater messageUpdater;
 

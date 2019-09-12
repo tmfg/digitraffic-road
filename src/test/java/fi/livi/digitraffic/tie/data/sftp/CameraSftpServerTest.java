@@ -35,7 +35,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.model.S3Object;
@@ -52,10 +51,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-// Dirty but S3 must be cleared every time as port changes
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class CameraSftpServerTest extends AbstractSftpTest {
+public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";

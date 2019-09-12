@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -29,14 +29,14 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.jcraft.jsch.SftpException;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
+import fi.livi.digitraffic.tie.data.sftp.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
-public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
+public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3 {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateServiceTestWithS3.class);
 
@@ -58,20 +58,21 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
     @Test
     public void versionHistoryAndPresetPublicityForTwoPresets() throws IOException, SftpException {
 
-        /**
+        /*
          * Create 5 images for 2 presets.
          * Use loopIndex i with values 1-5 to generate publicity (i mod 2), image data array and lastModified offset.
          */
         final ZonedDateTime initialLastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochSecond(Instant.now().getEpochSecond()));
-        final Map<String, List<CameraPresetHistory>> presetIdToOldHistoryMap = new HashMap<>();
+        final Set<String> presetIds = new HashSet<>();
 
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
             // Set station to public
             cp.getRoadStation().setPublic(true);
             cameraPresetService.save(cp);
+            presetIds.add(cp.getPresetId());
 
-            // Get old history so we can iqnore it in the test
-            presetIdToOldHistoryMap.put(cp.getPresetId(), cameraPresetHistoryService.findAllByPresetId(cp.getPresetId()));
+            cameraPresetHistoryService.deleteAllWithPresetId(cp.getPresetId());
+            Assert.assertTrue(cameraPresetHistoryService.findAllByPresetId(cp.getPresetId()).isEmpty());
 
             // Init image data for all loop indexes
             try {
@@ -102,10 +103,9 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
         });
 
         // Now check that full history haven't changed
-        presetIdToOldHistoryMap.entrySet().forEach(entry -> {
+        presetIds.forEach(presetId -> {
             final AtomicInteger loopIndex = new AtomicInteger(1);
-            final String presetId = entry.getKey();
-            final List<CameraPresetHistory> history = findHistoryAndRemoveOld(presetId, entry.getValue());
+            final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetId(presetId);
 
             history.forEach(h -> {
 
@@ -130,8 +130,9 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
             DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochSecond(Instant.now().getEpochSecond()));
 
         final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().get();
-        final List<CameraPresetHistory> oldHistory =
-            cameraPresetHistoryService.findAllByPresetId(cp.getPresetId());
+
+        cameraPresetHistoryService.deleteAllWithPresetId(cp.getPresetId());
+        Assert.assertTrue(cameraPresetHistoryService.findAllByPresetId(cp.getPresetId()).isEmpty());
 
         try {
             when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
@@ -158,7 +159,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
         handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(4), false, false, 4);
 
         // Get history and check it is still correct
-        final List<CameraPresetHistory> history = findHistoryAndRemoveOld(cp.getPresetId(), oldHistory);
+        final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetId(presetId);
         Assert.assertEquals(4, history.size());
 
         // Check version history to match matrix
@@ -172,16 +173,6 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractSftpTest {
         handleKuva(cp, lastModified, cameraPublicity, presetPublicity, imageDataIndex);
         checkLatestS3ObjectAndHistory(cp.getPresetId(), lastModified, cameraPublicity, presetPublicity, imageDataIndex);
 
-    }
-
-    private List<CameraPresetHistory> findHistoryAndRemoveOld(String presetId, List<CameraPresetHistory> value) {
-        final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetId(presetId);
-        final int size = history.size();
-        history.removeAll(value);
-        if (size > history.size()) {
-            log.info("Removed {} old items from history for preset {}", size - history.size(), presetId);
-        }
-        return history;
     }
 
     private void checkVersionedS3ObjectAndHistory(final String presetId, final ZonedDateTime lastModified,

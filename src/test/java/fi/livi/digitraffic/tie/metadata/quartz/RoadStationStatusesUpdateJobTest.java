@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpd
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
-public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTest {
+public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
     @Autowired
     private RoadStationService roadStationService;
@@ -47,7 +47,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTest {
     private CameraStationUpdater cameraStationUpdater;
 
     @Test
-    public void testUpdateRoadStationStatuses() throws Exception {
+    public void testUpdateRoadStationStatuses() {
 
         lotjuLAMMetatiedotServiceMock.initStateAndService();
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();

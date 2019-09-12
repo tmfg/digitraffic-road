@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
@@ -18,20 +19,29 @@ public class CameraPresetHistoryService {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
     }
 
+    @Transactional
     public void saveHistory(final CameraPresetHistory history) {
         cameraPresetHistoryRepository.save(history);
     }
 
+    @Transactional(readOnly = true)
     public CameraPresetHistory findHistory(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public CameraPresetHistory findLatestWithPresetId(final String presetId) {
         return cameraPresetHistoryRepository.findLatestByPresetId(presetId).orElse(null);
     }
 
     /** Orderer from oldest to newest */
+    @Transactional(readOnly = true)
     public List<CameraPresetHistory> findAllByPresetId(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
+    }
+
+    @Transactional
+    public int deleteAllWithPresetId(final String presetId) {
+        return cameraPresetHistoryRepository.deleteByIdPresetId(presetId);
     }
 }

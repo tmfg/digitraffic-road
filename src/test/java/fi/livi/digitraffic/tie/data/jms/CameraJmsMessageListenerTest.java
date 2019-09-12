@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.persistence.EntityManager;
@@ -34,14 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
+import fi.livi.digitraffic.tie.data.sftp.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -49,10 +49,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-// Dirty but S3 must be cleared every time as port changes
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class CameraJmsMessageListenerTest extends AbstractSftpTest {
+public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
     private static final String IMAGE_SUFFIX = "image.jpg";
@@ -123,12 +121,9 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
     /**
      * Send some data bursts to jms handler and test performance of database updates.
-     * @throws IOException
-     * @throws JMSException
-     * @throws DatatypeConfigurationException
      */
     @Test
-    public void testPerformanceForReceivedMessages() throws IOException, JMSException, DatatypeConfigurationException {
+    public void testPerformanceForReceivedMessages() throws IOException, JMSException {
         log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
         log.info("Mock server port={}", port);
@@ -158,7 +153,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             return updated;
         };
 
-        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener = new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
+        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
+            new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
 
         Instant time = Instant.now();
 
