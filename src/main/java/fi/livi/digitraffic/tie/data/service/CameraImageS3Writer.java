@@ -68,7 +68,7 @@ public class CameraImageS3Writer {
 
             // Put versions image
             metadata.setContentLength(versionedImageData.length);
-            PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
+            final PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
 
             return result.getVersionId();
         } catch (Exception e) {
