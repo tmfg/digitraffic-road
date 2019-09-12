@@ -44,7 +44,9 @@ public class VariableSignService {
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
         final VariableSignProperties properties = new VariableSignProperties(
-            device.getId(), device.getType(), device.getRoadAddress(),
+            device.getId(),
+            VariableSignProperties.SignType.byValue(device.getType()),
+            device.getRoadAddress(),
             VariableSignProperties.Direction.byValue(device.getDirection()),
             VariableSignProperties.Carriageway.byValue(device.getCarriageway()),
             data == null ? null : data.getDisplayValue(),

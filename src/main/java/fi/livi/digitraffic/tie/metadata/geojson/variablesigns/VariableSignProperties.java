@@ -16,14 +16,18 @@ public class VariableSignProperties {
     // device properties
     public final String id;
     @ApiModelProperty(value = "Variable sign type",
-        allowableValues = "NOPEUSRAJOITUS,VAIHTUVAVAROITUSMERKKI")
-    public final String type;
+        allowableValues = "SPEEDLIMIT,WARNING")
+    public final SignType type;
     public final String roadAddress;
     @ApiModelProperty(value = "Direction of variable sign, increasing or decreasing road address",
         allowableValues = "INCREASING,DECREASING")
     public final Direction direction;
-    @ApiModelProperty(value = "Variable sign placement",
-        allowableValues = "NORMAL,RIGHT,LEFT,BETWEEN,END_OF_ROAD,ALONG,ACROSS")
+    @ApiModelProperty(value = "Variable sign placement:\n" +
+        "SINGLE = Single carriageway rod\n" +
+        "RIGHT = First carriageway on the right in the direction of the road number\n" +
+        "LEFT = Second carriageway on the left in the direction of the road number\n" +
+        "BETWEEN = Between the carriageways",
+        allowableValues = "SINGLE,RIGHT,LEFT,BETWEEN")
     public final Carriageway carriageway;
 
     // data properties
@@ -36,7 +40,7 @@ public class VariableSignProperties {
         allowableValues = "NORMAL,DISCONNECTED,MALFUNCTION")
     public final Reliability reliability;
 
-    public VariableSignProperties(final String id, final String type, final String roadAddress, final Direction direction,
+    public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,
         final Carriageway carriageway, final String displayInformation, final String additionalInformation, final ZonedDateTime effectDate,
         final String cause, final Reliability reliability) {
         this.id = id;
@@ -49,6 +53,23 @@ public class VariableSignProperties {
         this.effectDate = effectDate;
         this.cause = cause;
         this.reliability = reliability;
+    }
+
+    @ApiModel
+    public enum SignType {
+        SPEEDLIMIT, WARNING;
+
+        public static SignType byValue(final String value) {
+            if(value == null)  {
+                return null;
+            } else if (StringUtils.equals("NOPEUSRAJOITUS", value)) {
+                return SPEEDLIMIT;
+            } else if (StringUtils.equals("VAIHTUVAVAROITUSMERKKI", value)) {
+                return WARNING;
+            }
+
+            throw new IllegalArgumentException("No SignType by value " + value);
+        }
     }
 
     @ApiModel
@@ -72,7 +93,7 @@ public class VariableSignProperties {
 
     @ApiModel
     public enum Carriageway {
-        NORMAL("NORMAALI"),
+        SINGLE("NORMAALI"),
         RIGHT("OIKEANPUOLEINEN"),
         LEFT("VASEMMANPUOLEINEN"),
         BETWEEN("AJORATOJEN_VALISSA"),
