@@ -54,8 +54,8 @@ camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
 # AWS settings
 dt.amazon.s3.weathercamRegion = eu-west-1
 dt.amazon.s3.weathercamBucketName = weathercam-road-test
-dt.amazon.s3.weathercamAccessKey =
-dt.amazon.s3.weathercamSecretKey =
+dt.amazon.s3.weathercamUserAccessKey =
+dt.amazon.s3.weathercamUserSecretKey =
 
 # JMS settings
 

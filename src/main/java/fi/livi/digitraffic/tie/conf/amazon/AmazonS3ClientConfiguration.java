@@ -18,8 +18,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 public class AmazonS3ClientConfiguration {
 
     @Bean
-    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercamAccessKey}") String accessKey,
-                             final @Value("${dt.amazon.s3.weathercamSecretKey}") String secretKey,
+    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercamUserAccessKey}") String accessKey,
+                             final @Value("${dt.amazon.s3.weathercamUserSecretKey}") String secretKey,
                              final @Value("${dt.amazon.s3.weathercamRegion}") String region) {
 
         final AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -28,8 +28,6 @@ public class AmazonS3ClientConfiguration {
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region);
-        final AmazonS3 s3 = builder.build();
-        System.out.println("amazonS3Client: " + s3);
-        return s3;
+        return builder.build();
     }
 }
