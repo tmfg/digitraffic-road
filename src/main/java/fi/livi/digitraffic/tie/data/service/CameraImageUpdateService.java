@@ -117,9 +117,9 @@ public class CameraImageUpdateService {
         // If preset exists in db, update image
         if (cameraPreset != null) {
             final boolean roadStationPublic = cameraPreset.getRoadStation().isPublic();
-            final boolean resultPublic = kuva.getJulkinen() && roadStationPublic;
-            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, resultPublic);
-            updateCameraPresetAndHistory(cameraPreset, resultPublic, transferInfo);
+            final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
+            final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, isResultPublic);
+            updateCameraPresetAndHistory(cameraPreset, isResultPublic, transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
@@ -230,21 +230,21 @@ public class CameraImageUpdateService {
     }
 
     private void updateCameraPresetAndHistory(final CameraPreset cameraPreset,
-                                              final boolean publicImage,
+                                              final boolean isImagePublic,
                                               final ImageUpdateInfo updateInfo) {
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                    publicImage, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+                                        isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
             cameraPresetHistoryService.saveHistory(history);
         }
 
-        if (cameraPreset.isPublicExternal() != publicImage) {
-            cameraPreset.setPublicExternal(publicImage);
+        if (cameraPreset.isPublicExternal() != isImagePublic) {
+            cameraPreset.setPublicExternal(isImagePublic);
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                     cameraPreset.getPresetId(), !publicImage, publicImage, updateInfo.getLastUpdated());
+                     cameraPreset.getPresetId(), !isImagePublic, isImagePublic, updateInfo.getLastUpdated());
         } else if (updateInfo.isSuccess()) {
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }

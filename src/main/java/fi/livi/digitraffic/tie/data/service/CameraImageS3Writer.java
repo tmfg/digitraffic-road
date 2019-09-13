@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -27,6 +26,7 @@ public class CameraImageS3Writer {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
     private static final String VERSIONS_SUFFIX = "-versions";
+    private static final String KEY_REGEXP = "^C([0-9]{7})\\.jpg$";
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
@@ -55,6 +55,7 @@ public class CameraImageS3Writer {
     public String writeImage(final byte[] currentImageData, final byte[] versionedImageData,
                              final String imageKey, final long timestampEpochMillis) {
         try {
+            checkS3KeyFormat(imageKey);
             final String versionedKey = getVersionedKey(imageKey);
             final ObjectMetadata metadata = new ObjectMetadata();
             final String lastModifiedInHeaderFormat = getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
@@ -86,15 +87,16 @@ public class CameraImageS3Writer {
         final StopWatch start = StopWatch.createStarted();
         // Hide current image and last from history
         try  {
+            checkS3KeyFormat(key);
             if (amazonS3Client.doesObjectExist(bucketName, key)) {
                 log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(key), key);
                 amazonS3Client.deleteObject(bucketName, key);
-                return new DeleteInfo(true, true, start.getTime(), key);
+                return DeleteInfo.success(start.getTime(), key);
             }
-            return new DeleteInfo(false, false, start.getTime(), key);
-        } catch (SdkClientException e) {
+            return DeleteInfo.doesNotExist(start.getTime(), key);
+        } catch (Exception e) {
             log.error(String.format("Failed to remove s3 file s3Key=%s", key), e);
-            return new DeleteInfo(true, false, start.getTime(), key);
+            return DeleteInfo.failed(start.getTime(), key);
         }
     }
 
@@ -126,6 +128,18 @@ public class CameraImageS3Writer {
             this.fullPath = fullPath;
         }
 
+        public static DeleteInfo failed(final long durationMs, final String key) {
+            return new DeleteInfo(true, false, durationMs, key);
+        }
+
+        public static DeleteInfo doesNotExist(final long durationMs, final String key) {
+            return new DeleteInfo(false, false, durationMs, key);
+        }
+
+        public static DeleteInfo success(final long durationMs, final String key) {
+            return new DeleteInfo(true, true, durationMs, key);
+        }
+
         boolean isFileExists() {
             return fileExists;
         }
@@ -148,6 +162,12 @@ public class CameraImageS3Writer {
 
         String getFullPath() {
             return fullPath;
+        }
+    }
+
+    static void checkS3KeyFormat(final String key) {
+        if (!key.matches(KEY_REGEXP)) {
+            throw new IllegalArgumentException(String.format("S3 key should match regexp format \"%s\" ie. \"C1234567.jpg\" but was \"%s\"", KEY_REGEXP, key));
         }
     }
 }
