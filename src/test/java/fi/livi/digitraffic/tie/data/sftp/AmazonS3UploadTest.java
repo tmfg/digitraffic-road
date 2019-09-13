@@ -22,8 +22,8 @@ import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 
 @Ignore("Manual testing purposes only")
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class AmazonSeUploadTest extends AbstractDaemonTestWithoutS3 {
-    private static final Logger log = LoggerFactory.getLogger(AmazonSeUploadTest.class);
+public class AmazonS3UploadTest extends AbstractDaemonTestWithoutS3 {
+    private static final Logger log = LoggerFactory.getLogger(AmazonS3UploadTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";
