@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @TestPropertySource(properties = {
-    "marine.datasource.hikari.maximum-pool-size=1",
+    "road.datasource.hikari.maximum-pool-size=1",
 })
 public abstract class AbstractRestWebTest extends AbstractTest {
 
