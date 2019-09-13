@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.data.sftp;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
@@ -17,19 +16,17 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.jcraft.jsch.SftpException;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 
 @Ignore("Manual testing purposes only")
 @TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class AmazonSeUploadTest extends AbstractCameraTestWithS3 {
+public class AmazonSeUploadTest extends AbstractDaemonTestWithoutS3 {
     private static final Logger log = LoggerFactory.getLogger(AmazonSeUploadTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";
-    private static final int TEST_UPLOADS = 10;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -47,7 +44,7 @@ public class AmazonSeUploadTest extends AbstractCameraTestWithS3 {
     @Test
     public void testSendCameraImageVersionsToAwsS3() throws IOException, InterruptedException {
 
-        log.info("Init test data");
+        log.info("Send images to S3 bucket {}", weathercamBucketName);
 
         int i = 0;
         while (i < 5) {
