@@ -55,18 +55,10 @@ public class CameraPreset {
     private Integer presetOrder;
 
     /**
-     * Web application's public value. If false, OVERRIDES LODJU (publicExternal).
-     * If true this is ignored.
-     *
-     * P(public) =: publicInternal && publicExternal
-     *
-     */
-    private boolean publicInternal;
-
-    /**
      * Lotju's Esiasento#isJulkinen()
      */
-    private boolean publicExternal;
+    @Column(name="IS_PUBLIC")
+    private boolean isPublic;
 
     private Boolean inCollection;
     private Integer compression;
@@ -182,15 +174,15 @@ public class CameraPreset {
     /**
      * Lotju's Esiasento#isJulkinen()
      */
-    public boolean isPublicExternal() {
-        return publicExternal;
+    public boolean isPublic() {
+        return isPublic;
     }
 
     /**
      * Lotju's Esiasento#isJulkinen()
      */
-    public void setPublicExternal(final Boolean publicExternal) {
-        this.publicExternal = publicExternal;
+    public void setPublic(final Boolean aPublic) {
+        this.isPublic = aPublic;
     }
 
     public Boolean isInCollection() {
@@ -271,20 +263,6 @@ public class CameraPreset {
         return false;
     }
 
-    /**
-     * Web application's public value
-     */
-    public boolean isPublicInternal() {
-        return publicInternal;
-    }
-
-    /**
-     * Web application's public value
-     */
-    public void setPublicInternal(final boolean publicInternal) {
-        this.publicInternal = publicInternal;
-    }
-
     public Long getRoadStationNaturalId() {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
@@ -315,10 +293,6 @@ public class CameraPreset {
 
     public boolean isObsolete() {
         return obsoleteDate != null;
-    }
-
-    public boolean isPublic() {
-        return isPublicInternal() && isPublicExternal();
     }
 
     public boolean isPublishable() {

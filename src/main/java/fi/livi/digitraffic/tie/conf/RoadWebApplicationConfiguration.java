@@ -35,6 +35,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
 
+    public static final String WEATHERCAM_PATH = "/weathercam";
+
     private final ConfigurableApplicationContext applicationContext;
 
     // Match when there is no http in location start

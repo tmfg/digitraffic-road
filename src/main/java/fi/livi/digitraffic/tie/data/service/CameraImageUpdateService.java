@@ -240,8 +240,8 @@ public class CameraImageUpdateService {
             cameraPresetHistoryService.saveHistory(history);
         }
 
-        if (cameraPreset.isPublicExternal() != isImagePublic) {
-            cameraPreset.setPublicExternal(isImagePublic);
+        if (cameraPreset.isPublic() != isImagePublic) {
+            cameraPreset.setPublic(isImagePublic);
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
                      cameraPreset.getPresetId(), !isImagePublic, isImagePublic, updateInfo.getLastUpdated());

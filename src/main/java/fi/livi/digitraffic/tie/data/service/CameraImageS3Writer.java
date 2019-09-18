@@ -26,10 +26,10 @@ public class CameraImageS3Writer {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
     private static final String VERSIONS_SUFFIX = "-versions";
-    private static final String KEY_REGEXP = "^C([0-9]{7})\\.jpg$";
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
+    private String s3WeathercamKeyRegexp;
 
     public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
@@ -43,10 +43,11 @@ public class CameraImageS3Writer {
 
     CameraImageS3Writer(
         final AmazonS3 amazonS3Client,
-        final @Value("${dt.amazon.s3.weathercamBucketName}") String bucketName
-    ) {
+        @Value("${dt.amazon.s3.weathercamBucketName}") final String bucketName,
+        @Value("${dt.amazon.s3.weathercamKey.regexp}") final String s3WeathercamKeyRegexp) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
+        this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
     }
 
     /**
@@ -165,9 +166,9 @@ public class CameraImageS3Writer {
         }
     }
 
-    static void checkS3KeyFormat(final String key) {
-        if (!key.matches(KEY_REGEXP)) {
-            throw new IllegalArgumentException(String.format("S3 key should match regexp format \"%s\" ie. \"C1234567.jpg\" but was \"%s\"", KEY_REGEXP, key));
+    void checkS3KeyFormat(final String key) {
+        if (!key.matches(s3WeathercamKeyRegexp)) {
+            throw new IllegalArgumentException(String.format("S3 key should match regexp format \"%s\" ie. \"C1234567.jpg\" but was \"%s\"", s3WeathercamKeyRegexp, key));
         }
     }
 }

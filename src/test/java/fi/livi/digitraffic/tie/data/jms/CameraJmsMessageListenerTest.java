@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.persistence.EntityManager;
-import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -110,8 +109,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicExternal(true);
-            cp.setPublicInternal(true);
+            cp.setPublic(true);
         }
         entityManager.flush();
         entityManager.clear();
