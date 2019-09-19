@@ -61,10 +61,10 @@ camera-image-uploader.sftp.sessionWaitTimeout = 5000
 camera-image-download.url = http://localhost:62859/kamerakuva/
 
 # AWS settings
-dt.amazon.s3.weathercamRegion = eu-west-1
-dt.amazon.s3.weathercamBucketName = weathercam-road-test
-dt.amazon.s3.weathercamUserAccessKey = dummy
-dt.amazon.s3.weathercamUserSecretKey = dummy
+dt.amazon.s3.weathercam.region = eu-west-1
+dt.amazon.s3.weathercam.bucketName = weathercam-road-test
+dt.amazon.s3.weathercam.userAccessKey = dummy
+dt.amazon.s3.weathercam.userSecretKey = dummy
 
 # JMS settings
 

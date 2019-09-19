@@ -80,27 +80,15 @@ public class CameraImageUpdateService {
         return FileUtils.readFileToByteArray(imageFile);
     }
 
+    // TODO DPO-462 remove when done and S3 in use
+    @Transactional
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
         final List<String> npIds = cameraPresetService.findAllNotPublishableCameraPresetsPresetIds();
 
-        final long count = npIds.stream().map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
+        return npIds.stream().map(presetId -> imageWriter.deleteImage(getPresetImageName(presetId)))
             .filter(CameraImageWriter.DeleteInfo::isFileExistsAndDeleteSuccess)
             .count();
-
-        // TODO amazon s3?
-        npIds.stream().map(presetId -> {
-            final String key = getPresetImageName(presetId);
-            final CameraPresetHistory latest = cameraPresetHistoryService.findLatestWithPresetId(presetId);
-            if (latest != null && latest.getPublishable()) {
-                latest.setPublishable(false);
-            }
-            return cameraImageS3Writer.deleteImage(getPresetImageName(presetId));
-        }).filter(CameraImageS3Writer.DeleteInfo::isFileExistsAndDeleteSuccess)
-            .count();
-
-
-        return count;
     }
 
     @Transactional

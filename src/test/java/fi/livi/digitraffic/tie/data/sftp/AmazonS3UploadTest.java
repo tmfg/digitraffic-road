@@ -37,7 +37,7 @@ public class AmazonS3UploadTest extends AbstractDaemonTestWithoutS3 {
     @Autowired
     CameraImageS3Writer cameraImageS3Writer;
 
-    @Value("${dt.amazon.s3.weathercamBucketName}")
+    @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String weathercamBucketName;
 
     @Ignore("Test is ignored as a demonstration")

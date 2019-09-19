@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 @Service
 public class CameraPresetHistoryService {
@@ -43,5 +44,12 @@ public class CameraPresetHistoryService {
     @Transactional
     public int deleteAllWithPresetId(final String presetId) {
         return cameraPresetHistoryRepository.deleteByIdPresetId(presetId);
+    }
+
+    @Transactional
+    public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
+        // TODO DPO-462 get start time of public / not public state and update history acordingly
+        // rs.isPublic() && rs.GetPublicStartTime() etc.?
+        // getPresets and update presetHistory
     }
 }

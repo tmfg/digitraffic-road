@@ -26,7 +26,7 @@ public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
     @Autowired
     protected AmazonS3 s3;
 
-    @Value("${dt.amazon.s3.weathercamBucketName}")
+    @Value("${dt.amazon.s3.weathercam.bucketName}")
     protected String weathercamBucketName;
 
     @Before

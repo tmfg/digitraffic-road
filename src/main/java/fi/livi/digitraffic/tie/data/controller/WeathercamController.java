@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.WEATHERCAM_PATH;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +33,28 @@ public class WeathercamController {
 
     private static final String VERSION_ID_PARAM = "versionId";
     private final String s3WeathercamBucketUrl;
-    private String s3WeathercamKeyRegexp;
+    private final String s3WeathercamKeyRegexp;
+    private final int historyMaxAgeHours;
 
     private CameraPresetHistoryService cameraPresetHistoryService;
 
+    private enum HistoryStatus {
+        PUBLIC,
+        SECRET,
+        NOT_FOUND,
+        TOO_OLD,
+        ILLEGAL_KEY
+    }
+
     @Autowired
     public WeathercamController(final CameraPresetHistoryService cameraPresetHistoryService,
-                                @Value("${dt.amazon.s3.weathercamBucketName}") final String s3WeathercamBucketName,
-                                @Value("${dt.amazon.s3.weathercamRegion}") final String s3WeathercamRegion,
-                                @Value("${dt.amazon.s3.weathercamKey.regexp}") final String s3WeathercamKeyRegexp) {
+                                @Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
+                                @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
+                                @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp,
+                                @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours) {
         this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
+        this.historyMaxAgeHours = historyMaxAgeHours;
         this.s3WeathercamBucketUrl = String.format("http://%s.s3-%s.amazonaws.com", s3WeathercamBucketName, s3WeathercamRegion);
     }
 
@@ -51,26 +63,43 @@ public class WeathercamController {
         @PathVariable final String imageName,
         @RequestParam(value=VERSION_ID_PARAM) final String versionId) {
 
-        log.info("method=imageVersion imageName={} versionId={}", imageName, versionId);
-        if (!imageName.matches(s3WeathercamKeyRegexp)) {
-            log.warn("metdhod=imageVersion S3 key should match regexp format \"{}}\" ie. \"C1234567.jpg\" but was \"{}\"", s3WeathercamKeyRegexp, imageName);
-            createNotFoundResponse();
-        }
-        // C1234567.jpg -> C1234567
-        final String presetId  = imageName.substring(0,8);
-        final CameraPresetHistory history = cameraPresetHistoryService.findHistory(presetId, versionId);
-        if (history == null || !history.getPublishable()) {
-            log.info("method=imageVersion history of s3Key={} notFoundReason={}", imageName, history != null ? "SECRET" : "NOT_FOUND");
+        final HistoryStatus historyStatus = resolveHistoryStatus(imageName, versionId);
+        log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
+
+        if ( !historyStatus.equals(HistoryStatus.PUBLIC) ) {
             return createNotFoundResponse();
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(String.format("%s/%s?%s=%s", s3WeathercamBucketUrl, createImageVersionKey(presetId), VERSION_ID_PARAM, versionId)))
+            .location(URI.create(String.format("%s/%s?%s=%s", s3WeathercamBucketUrl, createImageVersionKey(getPresetId(imageName)), VERSION_ID_PARAM, versionId)))
             .build();
 
         log.info("method=imageVersion response={}", response);
 
         return response;
+    }
+
+    private HistoryStatus resolveHistoryStatus(final String imageName, final String versionId) {
+
+        if (!imageName.matches(s3WeathercamKeyRegexp)) {
+            return HistoryStatus.ILLEGAL_KEY;
+        }
+        // C1234567.jpg -> C1234567
+        final CameraPresetHistory history = cameraPresetHistoryService.findHistory(getPresetId(imageName), versionId);
+        final ZonedDateTime oldestLimit = ZonedDateTime.now().minusHours(historyMaxAgeHours);
+
+        if (history == null) {
+            return HistoryStatus.NOT_FOUND;
+        } else if (!history.getPublishable()) {
+            return HistoryStatus.SECRET;
+        } else if (history.getLastModified().isBefore(oldestLimit)) {
+            return HistoryStatus.TOO_OLD;
+        }
+        return HistoryStatus.PUBLIC;
+    }
+
+    private String getPresetId(final String imageName) {
+        return imageName.substring(0,8);
     }
 
     private String createImageVersionKey(String presetId) {

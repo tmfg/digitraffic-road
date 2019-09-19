@@ -18,9 +18,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 public class AmazonS3ClientConfiguration {
 
     @Bean
-    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercamUserAccessKey}") String accessKey,
-                             final @Value("${dt.amazon.s3.weathercamUserSecretKey}") String secretKey,
-                             final @Value("${dt.amazon.s3.weathercamRegion}") String region) {
+    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercam.userAccessKey}") String accessKey,
+                             final @Value("${dt.amazon.s3.weathercam.userSecretKey}") String secretKey,
+                             final @Value("${dt.amazon.s3.weathercam.region}") String region) {
 
         final AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         final AmazonS3ClientBuilder builder =

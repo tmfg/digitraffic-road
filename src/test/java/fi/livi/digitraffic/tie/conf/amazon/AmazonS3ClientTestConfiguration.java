@@ -19,7 +19,7 @@ import xyz.fabiano.spring.localstack.support.AmazonDockerClientsHolder;
 @Configuration
 public class AmazonS3ClientTestConfiguration {
 
-    @Value("${dt.amazon.s3.weathercamBucketName}")
+    @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String weathercamBucketName;
 
     @Bean
@@ -34,7 +34,7 @@ public class AmazonS3ClientTestConfiguration {
 
     @ConditionalOnExpression("'${spring.localstack.enabled}' == 'false'")
     @Bean
-    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercamRegion}") String region) {
+    public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercam.region}") String region) {
 
         final AWSCredentials credentials = new BasicAWSCredentials( "dummy",  "dummy");
         final AmazonS3ClientBuilder builder =
@@ -42,7 +42,6 @@ public class AmazonS3ClientTestConfiguration {
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region);
-        final AmazonS3 s3 = builder.build();
-        return s3;
+        return builder.build();
     }
 }

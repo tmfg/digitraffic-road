@@ -52,10 +52,10 @@ camera-image-uploader.sftp.privateKeyPassphrase = tyokaverisi-halusi-kiittaa
 camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
 
 # AWS settings
-dt.amazon.s3.weathercamRegion = eu-west-1
-dt.amazon.s3.weathercamBucketName = weathercam-road-test
-dt.amazon.s3.weathercamUserAccessKey =
-dt.amazon.s3.weathercamUserSecretKey =
+dt.amazon.s3.weathercam.region = eu-west-1
+dt.amazon.s3.weathercam.bucketName = weathercam-road-test
+dt.amazon.s3.weathercam.userAccessKey =
+dt.amazon.s3.weathercam.userSecretKey =
 
 # JMS settings
 

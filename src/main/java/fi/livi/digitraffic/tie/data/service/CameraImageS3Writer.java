@@ -43,8 +43,8 @@ public class CameraImageS3Writer {
 
     CameraImageS3Writer(
         final AmazonS3 amazonS3Client,
-        @Value("${dt.amazon.s3.weathercamBucketName}") final String bucketName,
-        @Value("${dt.amazon.s3.weathercamKey.regexp}") final String s3WeathercamKeyRegexp) {
+        @Value("${dt.amazon.s3.weathercam.bucketName}") final String bucketName,
+        @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp) {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
         this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
@@ -129,15 +129,15 @@ public class CameraImageS3Writer {
             this.fullPath = fullPath;
         }
 
-        public static DeleteInfo failed(final long durationMs, final String key) {
+        static DeleteInfo failed(final long durationMs, final String key) {
             return new DeleteInfo(true, false, durationMs, key);
         }
 
-        public static DeleteInfo doesNotExist(final long durationMs, final String key) {
+        static DeleteInfo doesNotExist(final long durationMs, final String key) {
             return new DeleteInfo(false, false, durationMs, key);
         }
 
-        public static DeleteInfo success(final long durationMs, final String key) {
+        static DeleteInfo success(final long durationMs, final String key) {
             return new DeleteInfo(true, true, durationMs, key);
         }
 
@@ -166,7 +166,7 @@ public class CameraImageS3Writer {
         }
     }
 
-    void checkS3KeyFormat(final String key) {
+    private void checkS3KeyFormat(final String key) {
         if (!key.matches(s3WeathercamKeyRegexp)) {
             throw new IllegalArgumentException(String.format("S3 key should match regexp format \"%s\" ie. \"C1234567.jpg\" but was \"%s\"", s3WeathercamKeyRegexp, key));
         }

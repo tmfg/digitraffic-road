@@ -27,6 +27,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.AbstractWeatherStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
@@ -42,14 +43,17 @@ public class RoadStationService {
 
     private final RoadAddressRepository roadAddressRepository;
     private final EntityManager entityManager;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     @Autowired
     public RoadStationService(final RoadStationRepository roadStationRepository,
                               final RoadAddressRepository roadAddressRepository,
-                              final EntityManager entityManager) {
+                              final EntityManager entityManager,
+                              final CameraPresetHistoryService cameraPresetHistoryService) {
         this.roadStationRepository = roadStationRepository;
         this.roadAddressRepository = roadAddressRepository;
         this.entityManager = entityManager;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
     }
 
     @Transactional(readOnly = true)
@@ -147,7 +151,14 @@ public class RoadStationService {
                      from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
-        return AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        final boolean wasPublic = rs.isPublic();
+        final boolean updated = AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+
+        if (wasPublic != rs.isPublic()) {
+            cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
+        }
+
+        return updated;
     }
 
     @Transactional
