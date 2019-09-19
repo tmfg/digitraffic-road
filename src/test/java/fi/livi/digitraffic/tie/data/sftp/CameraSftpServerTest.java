@@ -180,7 +180,6 @@ public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
         log.info("Kuva timestamp {} vs S3 image timestamp {}", Instant.ofEpochMilli(kuvaToDelete.getAikaleima()), Instant.ofEpochSecond(lastModifiedSecondsFromEpoch));
         Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, lastModifiedSecondsFromEpoch);
 
-
         presetToDelete.setPublic(false);
         entityManager.flush();
 
@@ -189,7 +188,6 @@ public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
         try (final Session session = this.sftpSessionFactory.getSession()) {
             assertFalse("Not publishable preset image should not exist", session.exists(getSftpPath(presetToDelete.getPresetId())));
         }
-        assertFalse("Not publishable preset image should not exist in S3", s3.doesObjectExist(weathercamBucketName, getImageFilename(presetToDelete.getPresetId())));
     }
 
     @Test

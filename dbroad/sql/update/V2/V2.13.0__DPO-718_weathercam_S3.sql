@@ -31,7 +31,7 @@ $BODY$
 BEGIN
     NEW.publishable :=
             CASE
-                WHEN (NEW.obsolete_date IS NULL AND NEW.lotju_id IS NOT NULL AND NEW.camera_lotju_id IS NOT NULL AND NEW.public_external = true) THEN true
+                WHEN (NEW.obsolete_date IS NULL AND NEW.lotju_id IS NOT NULL AND NEW.camera_lotju_id IS NOT NULL AND NEW.is_public = true) THEN true
                 ELSE false
                 END;
     RETURN NEW;
