@@ -1,8 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +18,13 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 public class CameraPresetHistoryService {
 
     private CameraPresetHistoryRepository cameraPresetHistoryRepository;
+    private final int historyMaxAgeHours;
 
     @Autowired
-    public CameraPresetHistoryService(final CameraPresetHistoryRepository cameraPresetHistoryRepository) {
+    public CameraPresetHistoryService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
+                                      @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
+        this.historyMaxAgeHours = historyMaxAgeHours;
     }
 
     @Transactional
@@ -28,6 +35,13 @@ public class CameraPresetHistoryService {
     @Transactional(readOnly = true)
     public CameraPresetHistory findHistory(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public CameraPresetHistory findHistory(final String presetId, final ZonedDateTime atTime) {
+        return cameraPresetHistoryRepository
+            .findLatestByPresetIdAndTime(presetId, atTime.toInstant(), Instant.now().minus(historyMaxAgeHours, ChronoUnit.HOURS) )
+            .orElse(null);
     }
 
     @Transactional(readOnly = true)

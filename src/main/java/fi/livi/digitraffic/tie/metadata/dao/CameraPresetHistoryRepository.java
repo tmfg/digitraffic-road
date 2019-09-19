@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,16 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                    "ORDER BY history.preset_id, history.last_modified DESC",
            nativeQuery = true)
     Optional<CameraPresetHistory> findLatestByPresetId(final String presetId);
+
+    @Query(value = "SELECT DISTINCT ON (preset_id)\n" +
+                   "history.*\n" +
+                   "FROM camera_preset_history history\n" +
+                   "where history.preset_id = :presetId\n" +
+                   "  AND history.last_modified <= :atTime\n" +
+                   "  AND history.last_modified >= :maxTime\n" +
+                   "ORDER BY history.preset_id, history.last_modified DESC",
+           nativeQuery = true)
+    Optional<CameraPresetHistory> findLatestByPresetIdAndTime(final String presetId, Instant atTime, Instant maxTime);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
