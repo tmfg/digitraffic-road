@@ -30,7 +30,7 @@ public class WeathercamController {
 
     private static final Logger log = LoggerFactory.getLogger(WeathercamController.class);
 
-    public static final String VERSION_ID_PARAM = "versionId";
+    private static final String VERSION_ID_PARAM = "versionId";
     private final String s3WeathercamBucketUrl;
     private String s3WeathercamKeyRegexp;
 
@@ -59,7 +59,7 @@ public class WeathercamController {
 
         final CameraPresetHistory history = cameraPresetHistoryService.findHistory(imageName.substring(0,8), versionId);
         if (history == null || !history.getPublishable()) {
-            log.info("metdhod=imageVersion history of s3Key={} notFound={}", imageName, history != null ? "SECRET" : "NOT_FOUND");
+            log.info("method=imageVersion history of s3Key={} notFoundReason={}", imageName, history != null ? "SECRET" : "NOT_FOUND");
             return createNotFoundResponse();
         }
 
