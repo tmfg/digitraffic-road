@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
-import io.swagger.annotations.Api;
 
 @RestController
 @Validated
@@ -56,20 +56,25 @@ public class WeathercamController {
             log.warn("metdhod=imageVersion S3 key should match regexp format \"{}}\" ie. \"C1234567.jpg\" but was \"{}\"", s3WeathercamKeyRegexp, imageName);
             createNotFoundResponse();
         }
-
-        final CameraPresetHistory history = cameraPresetHistoryService.findHistory(imageName.substring(0,8), versionId);
+        // C1234567.jpg -> C1234567
+        final String presetId  = imageName.substring(0,8);
+        final CameraPresetHistory history = cameraPresetHistoryService.findHistory(presetId, versionId);
         if (history == null || !history.getPublishable()) {
             log.info("method=imageVersion history of s3Key={} notFoundReason={}", imageName, history != null ? "SECRET" : "NOT_FOUND");
             return createNotFoundResponse();
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(String.format("%s/%s?%s=%s", s3WeathercamBucketUrl, imageName, VERSION_ID_PARAM, versionId)))
+            .location(URI.create(String.format("%s/%s?%s=%s", s3WeathercamBucketUrl, createImageVersionKey(presetId), VERSION_ID_PARAM, versionId)))
             .build();
 
         log.info("method=imageVersion response={}", response);
 
         return response;
+    }
+
+    private String createImageVersionKey(String presetId) {
+        return presetId + CameraImageS3Writer.IMAGE_VERSION_KEY_SUFFIX;
     }
 
     private ResponseEntity<Void> createNotFoundResponse() {

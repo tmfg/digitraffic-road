@@ -25,7 +25,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 public class CameraImageS3Writer {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
-    private static final String VERSIONS_SUFFIX = "-versions";
+    public static final String IMAGE_VERSION_KEY_SUFFIX = "-versions.jpg";
 
     private final AmazonS3 amazonS3Client;
     private final String bucketName;
@@ -112,7 +112,7 @@ public class CameraImageS3Writer {
 
     public static String getVersionedKey(String key) {
         // Key ie. C0650802.jpg -> C0650802-versions.jpg
-        return resolvePresetIdFromKey(key) + VERSIONS_SUFFIX + ".jpg";
+        return resolvePresetIdFromKey(key) + IMAGE_VERSION_KEY_SUFFIX;
     }
 
     static class DeleteInfo {
