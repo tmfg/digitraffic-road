@@ -5,14 +5,10 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -101,9 +97,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             } else { // New preset
 
-                // Default setPublicInternal(true); external is read from esiasento
                 final CameraPreset cp = new CameraPreset();
-                cp.setPublicInternal(true);
 
                 // Do not remove from map. because one roadstation can have multiple presets
                 final long cameraNaturalId = kamera.getVanhaId().longValue();
@@ -166,7 +160,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             to.unobsolete();
         }
         to.setPresetOrder(esiasentoFrom.getJarjestys());
-        to.setPublicExternal(isPublic(esiasentoFrom));
+        to.setPublic(isPublic(esiasentoFrom));
         to.setInCollection(esiasentoFrom.isKeruussa());
         to.setCompression(esiasentoFrom.getKompressio());
         to.setLotjuId(esiasentoFrom.getId());

@@ -175,8 +175,8 @@ public class CameraImageUpdateService {
 
     private static void updateCameraPreset(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva, final boolean success) {
         final ZonedDateTime lastModified = DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochMilli(kuva.getAikaleima()));
-        if (cameraPreset.isPublicExternal() != kuva.getJulkinen()) {
-            cameraPreset.setPublicExternal(kuva.getJulkinen());
+        if (cameraPreset.isPublic() != kuva.getJulkinen()) {
+            cameraPreset.setPublic(kuva.getJulkinen());
             cameraPreset.setPictureLastModified(lastModified);
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
                 cameraPreset.getPresetId(), !kuva.getJulkinen(), kuva.getJulkinen(), lastModified);

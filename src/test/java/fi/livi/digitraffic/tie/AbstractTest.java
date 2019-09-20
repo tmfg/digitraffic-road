@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -89,8 +90,7 @@ public abstract class AbstractTest {
         final String direction = String.valueOf(RandomUtils.nextLong(10, 100));
         cp.setPresetId(cameraId + direction);
         cp.setCameraId(cameraId);
-        cp.setPublicExternal(true);
-        cp.setPublicInternal(true);
+        cp.setPublic(true);
         cp.setLotjuId(RandomUtils.nextLong(100000000, 1000000000) * -1);
         cp.setInCollection(true);
         cp.setCameraType(CameraType.VAPIX);

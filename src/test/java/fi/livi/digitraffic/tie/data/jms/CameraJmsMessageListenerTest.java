@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.persistence.EntityManager;
@@ -107,8 +108,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicExternal(true);
-            cp.setPublicInternal(true);
+            cp.setPublic(true);
         }
         entityManager.flush();
         entityManager.clear();
@@ -123,7 +123,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
      * @throws DatatypeConfigurationException
      */
     @Test
-    public void testPerformanceForReceivedMessages() throws IOException, JMSException, DatatypeConfigurationException {
+    public void testPerformanceForReceivedMessages() throws IOException, JMSException {
         log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
         log.info("Mock server port={}", port);

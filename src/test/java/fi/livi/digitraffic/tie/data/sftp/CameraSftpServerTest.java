@@ -92,14 +92,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         while (missingCount > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
-            if ( rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() || !cp.isPublicExternal()) {
+            if ( rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() ) {
                 missingCount--;
             }
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicInternal(true);
-            cp.setPublicExternal(true);
+            cp.setPublic(true);
         }
 
         // Active presets
@@ -162,7 +161,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, stat.getMTime());
         }
 
-        presetToDelete.setPublicExternal(false);
+        presetToDelete.setPublic(false);
         entityManager.flush();
 
         cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
