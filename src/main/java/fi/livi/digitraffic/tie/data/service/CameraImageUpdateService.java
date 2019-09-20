@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +78,8 @@ public class CameraImageUpdateService {
     private byte[] readImageFromResource(final String imagePath) throws IOException {
         log.info("Read image from {}", imagePath);
         final Resource resource = resourceLoader.getResource("classpath:" + imagePath);
-        final File imageFile = resource.getFile();
-        return FileUtils.readFileToByteArray(imageFile);
+        final InputStream imageIs = resource.getInputStream();
+        return IOUtils.toByteArray(imageIs);
     }
 
     // TODO DPO-462 remove when done and S3 in use
