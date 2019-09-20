@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,9 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -106,7 +108,7 @@ public class BetaController {
         final String presetId,
         @ApiParam("Return port calls received after given time in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} e.g. 2016-10-31T06:30:00.000Z. " +
                       "Default value is now minus 24 hours if all parameters are empty.")
-        @DateTimeFormat(iso = DATE_TIME)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @PathVariable final ZonedDateTime atTime) {
 
         CameraPresetHistory history = cameraPresetHistoryService.findHistory(presetId, atTime);
