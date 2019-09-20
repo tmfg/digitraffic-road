@@ -100,14 +100,13 @@ public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
         while (missingCount > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
-            if ( rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() || !cp.isPublicExternal()) {
+            if ( rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() ) {
                 missingCount--;
             }
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicInternal(true);
-            cp.setPublicExternal(true);
+            cp.setPublic(true);
         }
 
         // Active presets
