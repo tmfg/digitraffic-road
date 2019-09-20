@@ -112,10 +112,12 @@ public class CameraImageUpdateService {
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} writeTooksMs={} tookMs={} " +
-                        "downloadImageUrl={} imageSizeBytes={}",
+                        "downloadImageUrl={} imageSizeBytes={} " +
+                        "s3VersionId={}",
                     presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
-                    transferInfo.getDownloadUrl(), transferInfo.getSizeBytes());
+                    transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
+                    transferInfo.getVersionId());
             } else {
                 log.error("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} " +
