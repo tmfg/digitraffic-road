@@ -65,6 +65,11 @@ public final class DateHelper {
         return instant == null ? null : instant.atZone(UTC);
     }
 
+    public static ZonedDateTime toZonedDateTimeAtUtc(final long epochMillis) {
+        return toZonedDateTimeAtUtc(Instant.ofEpochMilli(epochMillis));
+    }
+
+
     public static ZonedDateTime toZonedDateTimeAtUtc(final Date from) {
         return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }

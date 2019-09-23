@@ -141,4 +141,9 @@ public class CameraPresetService {
     public CameraPreset findPublishableCameraPresetByLotjuId(final long presetLotjuId) {
         return cameraPresetRepository.findByPublishableTrueAndLotjuId(presetLotjuId);
     }
+
+    @Transactional(readOnly = true)
+    public CameraPreset findCameraPresetByLotjuId(final long presetLotjuId) {
+        return cameraPresetRepository.findByLotjuId(presetLotjuId);
+    }
 }

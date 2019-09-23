@@ -14,7 +14,7 @@ import java.security.PublicKey;
 import java.security.interfaces.DSAParams;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -39,14 +39,16 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
 
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 
-public abstract class AbstractSftpTest extends AbstractDaemonTest {
+public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractSftpTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraTestWithS3.class);
 
     protected static final String REQUEST_PATH = "/kamerakuva/";
 
@@ -62,13 +64,13 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     @Value("${camera-image-uploader.sftp.user}")
     String user;
 
-    protected Integer testPort = 62859;
+    private Integer testPort = 62859;
 
     // NOTE! Rules uses fixed port. see DPO-489
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(testPort));
 
-    protected int httpPort;
+    private int httpPort;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -76,7 +78,8 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     @Autowired
     protected SessionFactory sftpSessionFactory;
 
-    String host = "localhost";
+
+    private String host = "localhost";
 
     private final String idRsaPrivatePath = "classpath:sftp/server_id_rsa";
     private final String authorizedKeysPath = "classpath:sftp/server_authorized_keys";
@@ -84,6 +87,8 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
+
+
 
     @Before
     public void initSftpServer() throws IOException, GeneralSecurityException {
@@ -100,7 +105,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         testSftpServer.setFileSystemFactory(fsFactory);
 
         testSftpServer.setCommandFactory(new ScpCommandFactory());
-        testSftpServer.setSubsystemFactories(Arrays.asList(new SftpSubsystemFactory()));
+        testSftpServer.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
         log.info("Start Sftp Server on port {}", port);
         testSftpServer.start();
         log.info("Sftp Server started");
@@ -115,6 +120,31 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
     public void onShutdown() throws IOException {
         log.info("Shutdown testSftpServer");
         testSftpServer.close();
+    }
+
+    protected S3Object readWeathercamS3Object(final String key) {
+        return readWeathercamS3ObjectVersion(key, null);
+    }
+
+    protected S3Object readWeathercamS3ObjectVersion(final String key, final String versionId) {
+        final GetObjectRequest gor = new GetObjectRequest(weathercamBucketName, key);
+        if (versionId != null) {
+            gor.setVersionId(versionId);
+        }
+        return s3.getObject(gor);
+    }
+
+    protected byte[] readWeathercamS3Data(final String key) {
+        return readWeathercamS3DataVersion(key, null);
+    }
+
+    protected byte[] readWeathercamS3DataVersion(final String key, final String versionId) {
+        final S3Object version = readWeathercamS3ObjectVersion(key, versionId);
+        try {
+            return version.getObjectContent().readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public PublickeyAuthenticator getAuthorizedKeysAuthenticator() throws IOException {
@@ -179,7 +209,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
      * @param publicKey DSA or RSA encoded
      * @param user username for output authorized_keys like string
      * @return authorized_keys like string
-     * @throws IOException
+     * @throws IOException when write fails.
      */
     private static String encodePublicKey(PublicKey publicKey, String user)
             throws IOException {
@@ -224,7 +254,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         }
     }
 
-    protected String getSftpPath(final KuvaProtos.Kuva kuva) {
+    String getSftpPath(final KuvaProtos.Kuva kuva) {
         return getSftpPath(kuva.getNimi());
     }
 
@@ -232,7 +262,7 @@ public abstract class AbstractSftpTest extends AbstractDaemonTest {
         return StringUtils.appendIfMissing(sftpUploadFolder, "/") + presetId + ".jpg";
     }
 
-    protected String getImageUrlPath(final Long imageId) {
+    String getImageUrlPath(final Long imageId) {
         return REQUEST_PATH + imageId;
     }
 }

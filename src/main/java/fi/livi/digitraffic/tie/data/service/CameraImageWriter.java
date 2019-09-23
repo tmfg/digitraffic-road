@@ -38,11 +38,11 @@ public class CameraImageWriter {
         this.sftpUploadFolder = sftpUploadFolder;
     }
 
-    void writeImage(final byte[] data, final String filename, final int timestampEpochSecond) throws IOException, SftpException {
+    void writeImage(final byte[] data, final String filename, final long timestampEpochMillis) throws IOException, SftpException {
         final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             session.write(new ByteArrayInputStream(data), imageFullPath);
-            ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, timestampEpochSecond);
+            ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, (int) (timestampEpochMillis/1000));
         } catch (Exception e) {
             log.warn("method=writeImage Failed to write image to sftpServerPath={} . mostSpecificCauseMessage={} . stackTrace={}",
                 imageFullPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
@@ -82,13 +82,13 @@ public class CameraImageWriter {
         private final boolean fileExists;
         private final boolean deleteSuccess;
         private final long durationMs;
-        private final String fullPath;
+        private final String key;
 
-        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs, final String fullPath) {
+        private DeleteInfo(final boolean fileExists, final boolean deleteSuccess, final long durationMs, final String key) {
             this.fileExists = fileExists;
             this.deleteSuccess = deleteSuccess;
             this.durationMs = durationMs;
-            this.fullPath = fullPath;
+            this.key = key;
         }
 
         boolean isFileExists() {
@@ -111,8 +111,8 @@ public class CameraImageWriter {
             return durationMs;
         }
 
-        String getFullPath() {
-            return fullPath;
+        String getKey() {
+            return key;
         }
     }
 }

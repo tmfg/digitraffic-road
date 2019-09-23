@@ -18,7 +18,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
-public class ForecastSectionV2MetadataUpdaterTest extends AbstractTest {
+public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionClient forecastSectionClient;

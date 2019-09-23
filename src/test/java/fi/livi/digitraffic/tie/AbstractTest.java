@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
@@ -35,8 +37,8 @@ import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RoadApplication.class,
-                properties = { "config.test=true" },
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = { "config.test=true" })
 @Transactional
 public abstract class AbstractTest {
     @Autowired
@@ -89,8 +91,7 @@ public abstract class AbstractTest {
         final String direction = String.valueOf(RandomUtils.nextLong(10, 100));
         cp.setPresetId(cameraId + direction);
         cp.setCameraId(cameraId);
-        cp.setPublicExternal(true);
-        cp.setPublicInternal(true);
+        cp.setPublic(true);
         cp.setLotjuId(RandomUtils.nextLong(100000000, 1000000000) * -1);
         cp.setInCollection(true);
         cp.setCameraType(CameraType.VAPIX);

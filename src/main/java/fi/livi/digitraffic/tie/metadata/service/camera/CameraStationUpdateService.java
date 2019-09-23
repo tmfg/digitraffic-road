@@ -5,14 +5,10 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -38,17 +34,20 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
     private final EntityManager entityManager;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     @Autowired
     public CameraStationUpdateService(final CameraPresetService cameraPresetService,
                                       final RoadStationService roadStationService,
                                       final WeatherStationService weatherStationService,
-                                      final EntityManager entityManager) {
+                                      final EntityManager entityManager,
+                                      final CameraPresetHistoryService cameraPresetHistoryService) {
         super(LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
         this.entityManager = entityManager;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
     }
 
     /**
@@ -63,7 +62,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // DPO-567 and DPO-681: Obsolete all presets before upgrading. Preset's LotjuIds and directions might change once in a while
         // so we want to get rid of ghosts and overlapping presetIds.
-        presets.values().stream().forEach(e -> e.obsolete());
+        presets.values().forEach(CameraPreset::obsolete);
         entityManager.flush();
 
         for (EsiasentoVO esiasento : esiasentos) {
@@ -101,9 +100,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             } else { // New preset
 
-                // Default setPublicInternal(true); external is read from esiasento
                 final CameraPreset cp = new CameraPreset();
-                cp.setPublicInternal(true);
 
                 // Do not remove from map. because one roadstation can have multiple presets
                 final long cameraNaturalId = kamera.getVanhaId().longValue();
@@ -166,7 +163,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             to.unobsolete();
         }
         to.setPresetOrder(esiasentoFrom.getJarjestys());
-        to.setPublicExternal(isPublic(esiasentoFrom));
+        to.setPublic(isPublic(esiasentoFrom));
         to.setInCollection(esiasentoFrom.isKeruussa());
         to.setCompression(esiasentoFrom.getKompressio());
         to.setLotjuId(esiasentoFrom.getId());
@@ -197,8 +194,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // Update RoadStation
         try {
-            return updateRoadStationAttributes(kameraFrom, to.getRoadStation()) ||
-                hash != HashCodeBuilder.reflectionHashCode(to);
+            final RoadStation rs = to.getRoadStation();
+            final boolean wasPublic = rs.isPublic();
+            final boolean updated = updateRoadStationAttributes(kameraFrom, rs);
+            if (wasPublic != rs.isPublic()) {
+                cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
+            }
+            return updated || hash != HashCodeBuilder.reflectionHashCode(to);
         } catch (Exception e) {
             log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
                 kameraFrom.getNimiFi(), kameraFrom.getId(), kameraFrom.getVanhaId(), kameraFrom.getKeruunTila());

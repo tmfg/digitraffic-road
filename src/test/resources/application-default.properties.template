@@ -60,6 +60,12 @@ camera-image-uploader.sftp.sessionWaitTimeout = 5000
 # Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
 camera-image-download.url = http://localhost:62859/kamerakuva/
 
+# AWS settings
+dt.amazon.s3.weathercam.region = eu-west-1
+dt.amazon.s3.weathercam.bucketName = weathercam-road-test
+dt.amazon.s3.weathercam.userAccessKey = dummy
+dt.amazon.s3.weathercam.userSecretKey = dummy
+
 # JMS settings
 
 # Sonja

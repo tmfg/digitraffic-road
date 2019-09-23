@@ -96,4 +96,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     int obsoleteCameraRoadStationsWithoutPublishablePresets();
 
     CameraPreset findByPublishableTrueAndLotjuId(long presetLotjuId);
+
+    CameraPreset findByLotjuId(final long presetLotjuId);
 }

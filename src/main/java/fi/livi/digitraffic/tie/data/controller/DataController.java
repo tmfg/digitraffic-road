@@ -42,10 +42,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-/*
- * REST/JSON replacement api for Digitraffic SOAP-api
- *
- */
 @Api(tags = "Data v1", description = "Data of Digitraffic services (Api version 1)")
 @RestController
 @Validated

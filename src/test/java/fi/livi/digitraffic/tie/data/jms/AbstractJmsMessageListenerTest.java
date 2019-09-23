@@ -9,12 +9,12 @@ import javax.jms.TextMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
-public abstract class AbstractJmsMessageListenerTest extends AbstractTest {
+public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutS3 {
 
     @Autowired
     protected RoadStationSensorService roadStationSensorService;
