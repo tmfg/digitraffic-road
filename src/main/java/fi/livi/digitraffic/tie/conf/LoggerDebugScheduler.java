@@ -36,7 +36,10 @@ public class LoggerDebugScheduler {
 
             long total = loopDirectory(tmp, builder);
 
-            builder.append("mount free space: " + (tmp.getFreeSpace() / 1024 / 1024) + "M, logs: " + (total  / 1024 / 1024) + "M");
+            File tmp2 = new File("/app/logs");
+            loopDirectory(tmp2, builder);
+
+            builder.append("mount free_space=" + (tmp.getFreeSpace() / 1024 / 1024) + " M, logs=" + (total  / 1024 / 1024) + " M");
 
             log.info(builder.toString());
         } catch (Exception e) {
@@ -69,7 +72,7 @@ public class LoggerDebugScheduler {
         }
 
         builder.append(file.getName());
-        builder.append(": ");
+        builder.append("=");
         builder.append(file.length());
         builder.append("\n");
 
