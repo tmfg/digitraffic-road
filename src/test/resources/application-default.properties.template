@@ -44,7 +44,7 @@ dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
 dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam-aws-test.digitraffic.fi/
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # SFTP settings for camera image upload
 camera-image-uploader.sftp.host = localhost

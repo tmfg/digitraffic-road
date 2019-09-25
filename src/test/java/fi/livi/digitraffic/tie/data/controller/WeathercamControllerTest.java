@@ -8,6 +8,7 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -40,6 +42,13 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     private final String imageName = "C7777701.jpg";
     private final String versionId = "qwerty";
 
+    @Before
+    public void setUp() {
+        final String url = ReflectionTestUtils.invokeMethod(cameraPresetHistoryService, "createS3WeathercamBucketUrl",
+                                                            s3WeathercamBucketName, s3WeathercamRegion);
+        ReflectionTestUtils.setField(cameraPresetHistoryService, "s3WeathercamBucketUrl", url);
+    }
+
     @Test
     public void getPublicImage() throws Exception {
 
@@ -49,9 +58,11 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryService.resolveHistoryStatus(eq(imageName), eq(versionId)))
             .thenReturn(CameraPresetHistoryService.HistoryStatus.PUBLIC);
 
+        Mockito.when(cameraPresetHistoryService.createS3UriForVersion(eq(imageName), eq(versionId)))
+            .thenCallRealMethod();
+
         MockHttpServletResponse response = requestImage(imageName, versionId);
-        assertResponse(response, HttpStatus.FOUND, null);
-        //assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
+        assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
+import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
@@ -25,7 +26,6 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
@@ -43,7 +43,7 @@ public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String VARIABLE_SIGNS_DATA_PATH = "/variable-signs";
-    public static final String CAMERA_IMAGE_HISTORY_PATH = "/camera-image-history";
+    public static final String CAMERA_PRESET_HISTORY_PATH = "/camera-preset-history";
 
     private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
@@ -102,16 +102,20 @@ public class BetaController {
         return trafficSignsService.listVariableSignHistory(deviceId);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_IMAGE_HISTORY_PATH + "/{presetId}/{atTime}")
-    public CameraPresetHistory getPresetImageHistory(
+    @ApiOperation("List the history of camera preset images")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces =
+        APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
+    public PresetHistoryDto getPresetHistory(
+        @ApiParam("Camera preset id")
         @PathVariable
         final String presetId,
-        @ApiParam("Return port calls received after given time in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} e.g. 2016-10-31T06:30:00.000Z. " +
-                      "Default value is now minus 24 hours if all parameters are empty.")
+        @ApiParam("Return the history at given time. Time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} e.g. 2016-10-31T06:30:00.000Z. " +
+                  "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @PathVariable final ZonedDateTime atTime) {
+        @RequestParam(value = "atTime", required = false)
+        final ZonedDateTime atTime) {
 
-        CameraPresetHistory history = cameraPresetHistoryService.findHistory(presetId, atTime);
-        return history;
+        return cameraPresetHistoryService.findHistory(presetId, atTime);
     }
 }
