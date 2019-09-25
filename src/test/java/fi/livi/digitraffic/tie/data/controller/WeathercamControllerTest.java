@@ -46,8 +46,12 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryService.findHistory(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now()));
 
+        Mockito.when(cameraPresetHistoryService.resolveHistoryStatus(eq(imageName), eq(versionId)))
+            .thenReturn(CameraPresetHistoryService.HistoryStatus.PUBLIC);
+
         MockHttpServletResponse response = requestImage(imageName, versionId);
-        assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
+        assertResponse(response, HttpStatus.FOUND, null);
+        //assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
     }
 
     @Test
@@ -55,6 +59,9 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
 
         Mockito.when(cameraPresetHistoryService.findHistory(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, false, ZonedDateTime.now()));
+
+        Mockito.when(cameraPresetHistoryService.resolveHistoryStatus(eq(imageName), eq(versionId)))
+            .thenReturn(CameraPresetHistoryService.HistoryStatus.SECRET);
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
@@ -66,6 +73,9 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryService.findHistory(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now().minusHours(25)));
 
+        Mockito.when(cameraPresetHistoryService.resolveHistoryStatus(eq(imageName), eq(versionId)))
+            .thenReturn(CameraPresetHistoryService.HistoryStatus.TOO_OLD);
+
         MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
     }
@@ -75,6 +85,9 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
 
         Mockito.when(cameraPresetHistoryService.findHistory(anyString(), anyString()))
             .thenReturn(null);
+
+        Mockito.when(cameraPresetHistoryService.resolveHistoryStatus(eq(imageName), eq(versionId)))
+            .thenReturn(CameraPresetHistoryService.HistoryStatus.NOT_FOUND);
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
