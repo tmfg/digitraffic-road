@@ -75,19 +75,12 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
-    //private Map<String, byte[]> imageFilesMap = new HashMap<>();
-
     private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
 
     @Before
     public void setUpTestData() throws IOException {
 
         log.info("Init test data");
-        kuvas.clear();
-        // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
-        entityManager.flush();
-        entityManager.clear();
 
         // Init minimum TEST_UPLOADS non obsolete presets
         List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
@@ -99,14 +92,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         while (missingCount > 0 && iter.hasNext()) {
             CameraPreset cp = iter.next();
             RoadStation rs = cp.getRoadStation();
-            if (rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() || !cp.isPublicExternal()) {
+            if ( rs.isObsolete() || cp.isObsolete() || !rs.isPublic() || !cp.isPublic() ) {
                 missingCount--;
             }
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicInternal(true);
-            cp.setPublicExternal(true);
+            cp.setPublic(true);
         }
 
         // Active presets
@@ -169,7 +161,7 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, stat.getMTime());
         }
 
-        presetToDelete.setPublicExternal(false);
+        presetToDelete.setPublic(false);
         entityManager.flush();
 
         cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();

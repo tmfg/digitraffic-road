@@ -10,12 +10,14 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
 
-public class ForecastSectionClientTest extends AbstractTest {
+@Import(ForecastSectionClient.class)
+public class ForecastSectionClientTest extends AbstractServiceTest {
 
     @Autowired
     private ForecastSectionClient forecastSectionClient;

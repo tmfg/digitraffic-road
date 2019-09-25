@@ -7,7 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
@@ -15,14 +14,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.LockingDao;
 
-@Transactional(value = Transactional.TxType.NOT_SUPPORTED)
-public class LockingServiceTest extends AbstractTest {
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
+@Import(LockingDao.class)
+public class LockingServiceTest extends AbstractJpaTest {
+    private static final Logger log = LoggerFactory.getLogger(LockingServiceTest.class);
 
     private List<Long> lockStarts = new CopyOnWriteArrayList<>();
     private List<String> lockerInstanceIds  = new CopyOnWriteArrayList<>();

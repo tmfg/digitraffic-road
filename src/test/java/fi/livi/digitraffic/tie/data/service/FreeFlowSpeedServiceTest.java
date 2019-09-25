@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 
-public class FreeFlowSpeedServiceTest extends AbstractTest {
+public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
 
     @Autowired
     private FreeFlowSpeedService freeFlowSpeedService;

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,14 +65,11 @@ public class TmsStationMetadata2Datex2Converter {
                 .withMeasurementSiteTableIdentification(MEASUREMENT_SITE_TABLE_IDENTIFICATION)
                 .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
-        for (final TmsStation station : stations) {
-            final List<RoadStationSensor> sensors =
-                station.getRoadStation().getRoadStationSensors().stream().sorted(RoadStationSensor::compareTo).collect(Collectors.toList());
+        stations.stream().forEach(station -> {
+                station.getRoadStation().getRoadStationSensors().stream().sorted(Comparator.comparingLong(RoadStationSensor::getNaturalId))
+                .forEach(sensor -> siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor)));
+        });
 
-            for (final RoadStationSensor sensor : sensors) {
-                siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor));
-            }
-        }
         measurementSiteTablePublication.getMeasurementSiteTable().add(siteTable);
 
         return model;

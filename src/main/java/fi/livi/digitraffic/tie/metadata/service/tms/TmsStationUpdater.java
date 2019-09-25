@@ -51,19 +51,18 @@ public class TmsStationUpdater {
     }
 
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {
-        final int fixed = tmsStationService.fixNullLotjuIds(lamAsemas);
 
         int updated = 0;
         int inserted = 0;
 
         final List<LamAsemaVO> toUpdate =
-            lamAsemas.stream().filter(lam -> validate(lam)).collect(Collectors.toList());
+            lamAsemas.stream().filter(this::validate).collect(Collectors.toList());
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamAsemaVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
         log.info("Not to obsolete lotju ids {}", notToObsoleteLotjuIds);
 
-        final Collection invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
+        final Collection<LamAsemaVO> invalid = (Collection<LamAsemaVO>)CollectionUtils.subtract(lamAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
 
         for (LamAsemaVO tsa : toUpdate) {
@@ -83,7 +82,7 @@ public class TmsStationUpdater {
             log.warn("Invalid WeatherStations from lotju invalidCount={}", invalid.size());
         }
 
-        return obsoleted > 0 || inserted > 0 || updated > 0 || fixed > 0;
+        return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
     private boolean validate(final LamAsemaVO lamAsema) {

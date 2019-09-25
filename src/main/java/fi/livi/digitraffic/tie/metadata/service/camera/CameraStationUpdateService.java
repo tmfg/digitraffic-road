@@ -5,14 +5,10 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -49,107 +45,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
         this.entityManager = entityManager;
-    }
-
-    /**
-     * Adds road stations for presets without road station
-     */
-    @Transactional
-    public boolean fixCameraPresetsWithMissingRoadStations() {
-
-        final List<CameraPreset> currentCameraPresetsWithoutRoadStation =
-            cameraPresetService.findAllCameraPresetsWithoutRoadStation();
-
-        if (currentCameraPresetsWithoutRoadStation.isEmpty()) {
-            return false;
-        }
-
-        final Map<Long, RoadStation> cameraRoadStationseMappedByNaturalId =
-            roadStationService.findByTypeMappedByNaturalId(RoadStationType.CAMERA_STATION);
-
-        for (CameraPreset cameraPreset : currentCameraPresetsWithoutRoadStation) {
-            // Convert presetId to naturalId because using cameraId is not reliable before first run
-            final long naturalId = CameraHelper.convertPresetIdToVanhaId(cameraPreset.getPresetId());
-            // Fix cameraId for all
-            cameraPreset.setCameraId(CameraHelper.convertPresetIdToCameraId(cameraPreset.getPresetId()));
-
-            RoadStation rs = cameraRoadStationseMappedByNaturalId.get(naturalId);
-
-            if (rs != null) {
-                cameraPreset.setRoadStation(rs);
-                log.info("Fixed cameraPreset={} missing RoadStation with exiting {}", cameraPreset, rs);
-            } else {
-                rs = new RoadStation(RoadStationType.CAMERA_STATION);
-                rs.setName("GENERATED");
-                rs.setNaturalId(naturalId);
-                cameraPreset.setRoadStation(rs);
-                rs.obsolete();
-                cameraRoadStationseMappedByNaturalId.put(naturalId, rs);
-                log.info("Fixed {} missing RoadStation with new {}", cameraPreset, rs);
-            }
-            cameraPresetService.save(cameraPreset);
-        }
-        return !currentCameraPresetsWithoutRoadStation.isEmpty();
-    }
-
-    /**
-     * Sets presets and road stations lotjuIds and obsoletes missing
-     */
-    @Transactional
-    public boolean fixPresetsWithoutLotjuIds(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasento) {
-
-        // CameraPresets in db without lotjuId
-        Map<String, List<CameraPreset>> cameraPresetsWithoutLotjuId = cameraPresetService.findWithoutLotjuIdMappedByCameraId();
-
-        if (cameraPresetsWithoutLotjuId.isEmpty()) {
-            return false;
-        }
-
-        // Kameras and esiasentos from lotju mapped by cameraId
-        Map<String, Pair<KameraVO, List<EsiasentoVO>>> cameraIdToKameraEsiasentosPair =
-            lotjuIdToKameraAndEsiasento.values().stream().collect(Collectors.toMap(
-                p -> CameraHelper.convertVanhaIdToKameraId(p.getKey().getVanhaId()),
-                Function.identity()));
-
-        int updated = 0;
-        int obsoleted = 0;
-
-        for (Map.Entry<String, List<CameraPreset>> entry : cameraPresetsWithoutLotjuId.entrySet()) {
-            String cameraId = entry.getKey();
-            Pair<KameraVO, List<EsiasentoVO>> kameraPair = cameraIdToKameraEsiasentosPair.get(cameraId);
-
-            if (kameraPair == null) {
-                // If kamera not found in lotju -> obsolete all presets
-                obsoleted += entry.getValue().stream().filter(CameraPreset::obsolete).count();
-            } else {
-                // loop camera's presets and set their lotjuIds
-                for (CameraPreset cameraPreset : entry.getValue()) {
-                    String direction = CameraHelper.getDirectionFromPresetId(cameraPreset.getPresetId());
-                    // Find esiasento for preset
-                    Optional<EsiasentoVO> found =
-                        kameraPair.getValue().stream().filter(esiasento -> CameraHelper.leftPadDirection(esiasento.getSuunta()).equals(direction))
-                            .findFirst();
-
-                    if (found.isPresent()) {
-                        String before = ReflectionToStringBuilder.toString(cameraPreset);
-                        final long cameraLotjuId = kameraPair.getKey().getId();
-                        cameraPreset.setCameraLotjuId(cameraLotjuId);
-                        cameraPreset.getRoadStation().setLotjuId(cameraLotjuId);
-                        cameraPreset.setLotjuId(found.get().getId());
-                        updated++;
-                        log.info("Updated CameraPreset lotju id:\n{} -> \n{}", before, ReflectionToStringBuilder.toString(cameraPreset));
-                        // if esiasento is not found -> obsolete preset
-                    } else if (cameraPreset.obsolete()) {
-                        obsoleted++;
-                    }
-                }
-            }
-        }
-
-        log.info("obsoletedCameraPresets={} camera presets", obsoleted);
-        log.info("fixedCameraPresets={} camera presets without lotjuId", updated);
-
-        return updated > 0 || obsoleted > 0;
     }
 
     /**
@@ -202,9 +97,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             } else { // New preset
 
-                // Default setPublicInternal(true); external is read from esiasento
                 final CameraPreset cp = new CameraPreset();
-                cp.setPublicInternal(true);
 
                 // Do not remove from map. because one roadstation can have multiple presets
                 final long cameraNaturalId = kamera.getVanhaId().longValue();
@@ -267,7 +160,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             to.unobsolete();
         }
         to.setPresetOrder(esiasentoFrom.getJarjestys());
-        to.setPublicExternal(isPublic(esiasentoFrom));
+        to.setPublic(isPublic(esiasentoFrom));
         to.setInCollection(esiasentoFrom.isKeruussa());
         to.setCompression(esiasentoFrom.getKompressio());
         to.setLotjuId(esiasentoFrom.getId());
@@ -281,9 +174,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         to.setCameraId(cameraId);
         to.setCameraLotjuId(kameraFrom.getId());
         to.setCameraType(CameraType.convertFromKameraTyyppi(kameraFrom.getTyyppi()));
-
-        // For legacy
-        to.setRoadStationId(kameraFrom.getVanhaId().longValue());
 
         final Long tsaLotjuId = kameraFrom.getLahinTiesaaAsemaId();
         if (tsaLotjuId != null) {

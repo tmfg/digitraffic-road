@@ -290,7 +290,6 @@ public class RoadStationSensorService {
         final Root<RoadStationSensor> root = update.from(RoadStationSensor.class);
         EntityType<RoadStationSensor> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
-        update.set("obsolete", true);
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
@@ -333,7 +332,6 @@ public class RoadStationSensorService {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.TMS_STATION);
-        to.setObsolete(false);
         to.setObsoleteDate(null);
         to.setPublic(from.isJulkinen());
 
@@ -363,7 +361,6 @@ public class RoadStationSensorService {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.WEATHER_STATION);
-        to.setObsolete(false);
         to.setObsoleteDate(null);
         to.setPublic(from.isJulkinen());
 

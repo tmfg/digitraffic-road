@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel
 public final class LocationFeature {
     public final String type = "Feature";
 

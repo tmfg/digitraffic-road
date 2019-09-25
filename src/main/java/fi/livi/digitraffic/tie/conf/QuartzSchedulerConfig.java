@@ -93,7 +93,6 @@ public class QuartzSchedulerConfig {
         config.setMaximumPoolSize(12);
 
         config.setMaxLifetime(570000);
-        config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
         config.setPoolName("quartz_pool");
 

@@ -36,13 +36,6 @@ public class CameraPreset {
 
     private Long lotjuId;
 
-    /** Only for legacy soap-api = road station naturalId */
-    @Column(name="ROADSTATION_ID")
-    private Long roadStationId;
-    /** Old field, means weather station? */
-    @Column(name="NEAREST_ROADSTATION_ID")
-    private Long nearestRoadstationId;
-
     /**
      * presetName1 == presentationName == nimiEsitys
      */
@@ -62,18 +55,10 @@ public class CameraPreset {
     private Integer presetOrder;
 
     /**
-     * Web application's public value. If false, OVERRIDES LODJU (publicExternal).
-     * If true this is ignored.
-     *
-     * P(public) =: publicInternal && publicExternal
-     *
-     */
-    private boolean publicInternal;
-
-    /**
      * Lotju's Esiasento#isJulkinen()
      */
-    private boolean publicExternal;
+    @Column(name="IS_PUBLIC")
+    private boolean isPublic;
 
     private Boolean inCollection;
     private Integer compression;
@@ -189,15 +174,15 @@ public class CameraPreset {
     /**
      * Lotju's Esiasento#isJulkinen()
      */
-    public boolean isPublicExternal() {
-        return publicExternal;
+    public boolean isPublic() {
+        return isPublic;
     }
 
     /**
      * Lotju's Esiasento#isJulkinen()
      */
-    public void setPublicExternal(final Boolean publicExternal) {
-        this.publicExternal = publicExternal;
+    public void setPublic(final Boolean aPublic) {
+        this.isPublic = aPublic;
     }
 
     public Boolean isInCollection() {
@@ -245,9 +230,6 @@ public class CameraPreset {
     }
 
     public void setRoadStation(final RoadStation roadStation) {
-        if (roadStation != null) {
-            setRoadStationId(roadStation.getNaturalId());
-        }
         this.roadStation = roadStation;
     }
 
@@ -279,30 +261,6 @@ public class CameraPreset {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Web application's public value
-     */
-    public boolean isPublicInternal() {
-        return publicInternal;
-    }
-
-    /**
-     * Web application's public value
-     */
-    public void setPublicInternal(final boolean publicInternal) {
-        this.publicInternal = publicInternal;
-    }
-
-    /** Only for legacy soap-api */
-    public Long getRoadStationId() {
-        return roadStation != null ? roadStation.getId() : null;
-    }
-
-    /** Only for legacy soap-api */
-    public void setRoadStationId(Long roadStationId) {
-        this.roadStationId = roadStationId;
     }
 
     public Long getRoadStationNaturalId() {
@@ -337,10 +295,6 @@ public class CameraPreset {
         return obsoleteDate != null;
     }
 
-    public boolean isPublic() {
-        return isPublicInternal() && isPublicExternal();
-    }
-
     public boolean isPublishable() {
         return publishable;
     }
@@ -354,7 +308,6 @@ public class CameraPreset {
                 .appendField("lotjuId", lotjuId)
                 .appendField("obsoleteDate", obsoleteDate)
                 .appendField("roadStationLotjuId", getRoadStationLotjuId())
-                .appendField("roadStationId", getRoadStationId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();
     }

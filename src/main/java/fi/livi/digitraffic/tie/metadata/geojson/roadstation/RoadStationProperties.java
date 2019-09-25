@@ -56,7 +56,12 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Province code")
     private String provinceCode;
 
-    @ApiModelProperty(value = "Map of names [fi, sv, en]")
+    @ApiModelProperty(value = "Map of names [fi, sv, en]",
+                      example = "\"names\": {\n" +
+                                "          \"fi\": \"Tie 7 Porvoo\",\n" +
+                                "          \"sv\": \"Väg 7 Borgå\",\n" +
+                                "          \"en\": \"Road 7 Porvoo\"\n" +
+                                "        },")
     private Map<String, String> names = new HashMap<>();
 
     private RoadAddress roadAddress = new RoadAddress();
@@ -87,8 +92,8 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Purpose of the road station")
     private String purpose;
 
-    @ApiModelProperty(value = "Road station coordinates (LONGITUDE, LATITUDE, ALTITUDE. Coordinates are in ETRS89 / ETRS-TM35FIN format. Altitude is optional and measured in metres.)" +
-                              "Point's coordinates  (Coordinates in WGS84. Altitude is optional [m])", required = true)
+    @ApiModelProperty(value = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
+                              "Altitude is optional and measured in metres.)", required = true)
     private List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {

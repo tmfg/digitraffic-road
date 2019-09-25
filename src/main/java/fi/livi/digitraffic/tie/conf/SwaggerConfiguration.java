@@ -23,14 +23,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
+import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
 
 import fi.livi.digitraffic.tie.data.controller.DataController;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.LineString;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.ModelRendering;
 import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @ConditionalOnWebApplication
@@ -61,24 +69,30 @@ public class SwaggerConfiguration {
 
     @Bean
     UiConfiguration uiConfiguration() {
-        return new UiConfiguration(
-            "validatorUrl",// url
-            "list",       // docExpansion          => none | list
-            "alpha",      // apiSorter             => alpha
-            "model",     // defaultModelRendering => schema
-            UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS,
-            false,        // enableJsonEditor      => true | false
-            true,         // showRequestHeaders    => true | false
-            60000L);      // requestTimeout => in milliseconds, defaults to null (uses jquery xh timeout)
+        return UiConfigurationBuilder.builder()
+            .docExpansion(DocExpansion.LIST)
+            .defaultModelRendering(ModelRendering.MODEL)
+            // There is bugs in online validator, so not use it at the moment ie. https://github.com/swagger-api/validator-badge/issues/97
+            //.validatorUrl("https://online.swagger.io/validator")
+            .build();
     }
 
     private Docket getDocket(final String groupName, Predicate<String> apiPaths) {
+        final TypeResolver typeResolver = new TypeResolver();
         return new Docket(DocumentationType.SWAGGER_2)
             .groupName(groupName)
-            .directModelSubstitute(ZonedDateTime.class, String.class)
-            .directModelSubstitute(LocalDateTime.class, String.class)
-            .directModelSubstitute(LocalDate.class, String.class)
-            .directModelSubstitute(Date.class, String.class)
+            // Issue: https://github.com/springfox/springfox/issues/1021#issuecomment-178626396
+            .directModelSubstitute(ZonedDateTime.class, java.util.Date.class)
+            .directModelSubstitute(LocalDateTime.class, java.util.Date.class)
+            .directModelSubstitute(LocalDate.class, java.sql.Date.class)
+            .directModelSubstitute(Date.class, java.sql.Date.class)
+            // Inheritance not working as expected
+            // https://github.com/springfox/springfox/issues/2407#issuecomment-462319647
+            .additionalModels(typeResolver.resolve(Geometry.class),
+                typeResolver.resolve(LineString.class),
+                typeResolver.resolve(MultiLineString.class),
+                typeResolver.resolve(Point.class)
+            )
             .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
             .apiInfo(metadataApiInfoService.getApiInfo())
             .select()

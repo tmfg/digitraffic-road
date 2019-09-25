@@ -7,8 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -21,71 +21,35 @@ import com.jcraft.jsch.ChannelSftp;
 
 @ConditionalOnNotWebApplication
 @Configuration
+@EnableConfigurationProperties(CameraImageUploaderSftpConnectionConfigurationProperties.class)
 public class CameraImageUploaderSftpConnectionFactoryBuilder {
     private static final Logger log = LoggerFactory.getLogger(CameraImageUploaderSftpConnectionFactoryBuilder.class);
 
-    private final String host;
-    private final Integer port;
-    private final String privateKeyPath;
-    private final String knownHostsPath;
-    private final String privateKeyPassphrase;
-    private final Boolean allowUnknownKeys;
-    private final String user;
-    private final Integer poolSize;
-    private final Long sessionWaitTimeout;
-    private final Integer connectionTimeout;
+    private final CameraImageUploaderSftpConnectionConfigurationProperties config;
     private final ResourceLoader resourceLoader;
 
     @Autowired
     public CameraImageUploaderSftpConnectionFactoryBuilder(
-            @Value("${camera-image-uploader.sftp.host}")
-            final String host,
-            @Value("${camera-image-uploader.sftp.port}")
-            final Integer port,
-            @Value("${camera-image-uploader.sftp.privateKeyPath}")
-            final String privateKeyPath,
-            @Value("${camera-image-uploader.sftp.privateKeyPassphrase}")
-            final String privateKeyPassphrase,
-            @Value("${camera-image-uploader.sftp.knownHostsPath}")
-            final String knownHostsPath,
-            @Value("${camera-image-uploader.sftp.allowUnknownKeys}")
-            final Boolean allowUnknownKeys,
-            @Value("${camera-image-uploader.sftp.user}")
-            final String user,
-            @Value("${camera-image-uploader.sftp.poolSize}")
-            final Integer poolSize,
-            @Value("${camera-image-uploader.sftp.sessionWaitTimeout}")
-            final Long sessionWaitTimeout,
-            @Value("${camera-image-uploader.sftp.connectionTimeout}")
-            final Integer connectionTimeout,
-            final ResourceLoader resourceLoader) {
-
-        this.host = host;
-        this.port = port;
-        this.privateKeyPath = privateKeyPath;
-        this.privateKeyPassphrase = privateKeyPassphrase;
-        this.knownHostsPath = knownHostsPath;
-        this.allowUnknownKeys = allowUnknownKeys;
-        this.user = user;
-        this.poolSize = poolSize;
-        this.sessionWaitTimeout = sessionWaitTimeout;
-        this.connectionTimeout = connectionTimeout;
+        CameraImageUploaderSftpConnectionConfigurationProperties config,
+        ResourceLoader resourceLoader) {
+        this.config = config;
         this.resourceLoader = resourceLoader;
     }
 
     private DefaultSftpSessionFactory getDefaultSftpSessionFactory() throws IOException {
         // Create "shared session" session factory then it must be used with cached session factory
         DefaultSftpSessionFactory defaultSftpSessionFactory = new DefaultSftpSessionFactory(false);
-        defaultSftpSessionFactory.setHost(host);
-        defaultSftpSessionFactory.setPort(port);
+        defaultSftpSessionFactory.setHost(config.getHost());
+        defaultSftpSessionFactory.setPort(config.getPort());
         defaultSftpSessionFactory.setPrivateKey(getPrivateKey());
-        defaultSftpSessionFactory.setPrivateKeyPassphrase(privateKeyPassphrase);
-        defaultSftpSessionFactory.setUser(user);
-        defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(knownHostsPath));
-        defaultSftpSessionFactory.setAllowUnknownKeys(allowUnknownKeys);
-        defaultSftpSessionFactory.setTimeout(connectionTimeout);
+        defaultSftpSessionFactory.setPrivateKeyPassphrase(config.getPrivateKeyPassphrase());
+        defaultSftpSessionFactory.setUser(config.getUser());
+        defaultSftpSessionFactory.setKnownHosts(resolveResourceAbsolutePath(config.getKnownHostsPath()));
+        defaultSftpSessionFactory.setAllowUnknownKeys(config.getAllowUnknownKeys());
+        defaultSftpSessionFactory.setTimeout(config.getConnectionTimeout());
         log.info("Initialized DefaultSftpSessionFactory host={}, port={}, privateKey={}, user={}, knownHostsPath={}, allowUnknownKeys={}",
-                 host, port, resolveResourceAbsolutePath(privateKeyPath), user, resolveResourceAbsolutePath(knownHostsPath), allowUnknownKeys);
+            config.getHost(), config.getPort(), resolveResourceAbsolutePath(config.getPrivateKeyPath()), config.getUser(),
+            resolveResourceAbsolutePath(config.getKnownHostsPath()), config.getAllowUnknownKeys());
         return defaultSftpSessionFactory;
     }
 
@@ -93,12 +57,12 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     @Bean(name = "sftpSessionFactory")
     public CachingSessionFactory<ChannelSftp.LsEntry> getCachingSessionFactory() throws IOException {
         try {
-            log.info("Init CachingSessionFactory for sftp with poolSize={} and sessionWaitTimeoutMs={}", poolSize, sessionWaitTimeout);
+            log.info("Init CachingSessionFactory for sftp with poolSize={} and sessionWaitTimeoutMs={}", config.getPoolSize(), config.getSessionWaitTimeout());
             CachingSessionFactory<ChannelSftp.LsEntry> cachingSessionFactory = new CachingSessionFactory<>(getDefaultSftpSessionFactory(),
-                poolSize);
-            cachingSessionFactory.setSessionWaitTimeout(sessionWaitTimeout);
+                config.getPoolSize());
+            cachingSessionFactory.setSessionWaitTimeout(config.getSessionWaitTimeout());
             return cachingSessionFactory;
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             log.error("error initializing", e);
         }
 
@@ -106,8 +70,8 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
     }
 
     private Resource getPrivateKey() throws IOException {
-        log.info("Load private keyPath={}", privateKeyPath);
-        String absolutePath = resolveResourceAbsolutePath(privateKeyPath);
+        log.info("Load private keyPath={}", config.getPrivateKeyPath());
+        String absolutePath = resolveResourceAbsolutePath(config.getPrivateKeyPath());
         return loadResource(absolutePath);
     }
 
@@ -132,7 +96,7 @@ public class CameraImageUploaderSftpConnectionFactoryBuilder {
             log.info("Resolved resource resource={} to absolutePath={}", resource, absolutePath);
             return absolutePath;
         } catch (Exception e) {
-            log.error("Could not resolve resource=" + resource +" absolute path");
+            log.error("Could not resolve resource=" + resource + " absolute path");
             throw e;
         }
     }

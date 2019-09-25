@@ -62,13 +62,11 @@ public class WeatherStationUpdater  {
 
     private boolean updateWeatherStationsMetadata(final List<TiesaaAsemaVO> tiesaaAsemas) {
 
-        weatherStationService.fixNullLotjuIds(tiesaaAsemas);
-
         int updated = 0;
         int inserted = 0;
 
         final List<TiesaaAsemaVO> toUpdate =
-            tiesaaAsemas.stream().filter(tsa -> validate(tsa)).collect(Collectors.toList());
+            tiesaaAsemas.stream().filter(this::validate).collect(Collectors.toList());
 
         final Collection invalid = CollectionUtils.subtract(tiesaaAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));

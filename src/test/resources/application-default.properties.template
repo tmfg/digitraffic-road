@@ -7,15 +7,16 @@ dt.domain.url=http://localhost:9000
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
 road.datasource.username=road
 road.datasource.password=road
+road.datasource.hikari.maximum-pool-size=6
 
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
 mqtt.server.password=
 
 # Lotju SOAP APIs
-metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
-metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v7
-metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
+metadata.server.address.tms=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/LAMMetatiedot/v5
+metadata.server.address.camera=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/KameraPerustiedot/v7
+metadata.server.address.weather=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/TiesaaPerustiedot/v4
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html

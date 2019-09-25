@@ -31,9 +31,6 @@ public class Road {
     private String naturalId;
 
     @JsonIgnore
-    private boolean obsolete;
-
-    @JsonIgnore
     private Date obsoleteDate;
 
     @ApiModelProperty(value = "Road name")
@@ -56,14 +53,6 @@ public class Road {
 
     public void setNaturalId(String naturalId) {
         this.naturalId = naturalId;
-    }
-
-    public boolean isObsolete() {
-        return obsolete;
-    }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
     }
 
     public Date getObsoleteDate() {

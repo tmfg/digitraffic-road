@@ -7,13 +7,15 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
-public class LocationUpdaterTest extends AbstractTest {
+@Import(LocationUpdater.class)
+public class LocationUpdaterTest extends AbstractJpaTest {
 
     @Autowired
     private LocationUpdater locationUpdater;

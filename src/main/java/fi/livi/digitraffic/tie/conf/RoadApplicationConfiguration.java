@@ -48,7 +48,6 @@ public class RoadApplicationConfiguration {
                                  final @Value("${road.datasource.username}") String username,
                                  final @Value("${road.datasource.password}") String password,
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
-
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
@@ -57,7 +56,6 @@ public class RoadApplicationConfiguration {
         config.setMaximumPoolSize(maximumPoolSize);
 
         config.setMaxLifetime(570000);
-        config.setIdleTimeout(500000);
         config.setConnectionTimeout(60000);
         config.setPoolName("application_pool");
 

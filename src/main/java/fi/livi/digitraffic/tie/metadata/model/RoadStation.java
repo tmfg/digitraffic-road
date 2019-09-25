@@ -59,8 +59,6 @@ public class RoadStation {
     @Enumerated(EnumType.STRING)
     private RoadStationState state;
 
-    private boolean obsolete;
-
     private LocalDate obsoleteDate;
 
     @Column(name="IS_PUBLIC")
@@ -172,25 +170,16 @@ public class RoadStation {
     }
 
     public boolean isObsolete() {
-        return obsolete;
+        return obsoleteDate != null;
     }
-
-    public void setObsolete(final boolean obsolete) {
-        this.obsolete = obsolete;
-    }
-
     public void obsolete() {
-        if (obsoleteDate == null || !obsolete) {
+        if (obsoleteDate == null) {
             setObsoleteDate(LocalDate.now());
-            setObsolete(true);
         }
     }
 
     public void unobsolete() {
-        if (obsoleteDate != null || obsolete) {
-            setObsoleteDate(null);
-            setObsolete(false);
-        }
+        setObsoleteDate(null);
     }
 
     public LocalDate getObsoleteDate() {

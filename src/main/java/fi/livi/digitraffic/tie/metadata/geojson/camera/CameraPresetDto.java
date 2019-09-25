@@ -74,13 +74,13 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @JsonIgnore
     private Long cameraLotjuId;
 
-    @ApiModelProperty(value = "Preset direction " +
-                              "(0 = Unknown direction. " +
-                              "1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. " +
-                              "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. " +
-                              "3 = Increasing direction of the crossing road. " +
-                              "4 = Decreasing direction of the crossing road" +
-                              "5-99 = Special directions)", required = true, position = 1)
+    @ApiModelProperty(value = "Preset direction\n" +
+                              "0 = Unknown direction. \n" +
+                              "1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. \n" +
+                              "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. \n" +
+                              "3 = Increasing direction of the crossing road. \n" +
+                              "4 = Decreasing direction of the crossing road.\n" +
+                              "5-99 = Special directions", required = true, position = 1)
     private String directionCode;
 
     @ApiModelProperty(value = "Image url")

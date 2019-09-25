@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -8,23 +9,24 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
-public class Datex2DataServiceTest extends AbstractTest {
+@Import({Datex2DataService.class, Datex2UpdateService.class})
+public class Datex2DataServiceTest extends AbstractServiceTest {
     @Autowired
     private Datex2DataService datex2DataService;
 
@@ -51,7 +53,7 @@ public class Datex2DataServiceTest extends AbstractTest {
     private static final String NOT_FOUND_GUID = "NOT_FOUND";
 
     @Before
-    public void init() throws JAXBException, IOException {
+    public void init() throws IOException {
         disorder1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");
         disorder2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
 
@@ -73,7 +75,7 @@ public class Datex2DataServiceTest extends AbstractTest {
     }
 
     @Test
-    public void updateTrafficAlerts() throws JAXBException, IOException {
+    public void updateTrafficAlerts() {
         deleteAllDatex2();
 
         updateTrafficAlerts(disorder1);

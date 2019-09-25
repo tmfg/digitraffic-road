@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import java.util.Map;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
@@ -66,15 +66,13 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
 
     @Before
     public void initData() throws IOException {
-
-        // Creates also new road stations so run before generating lotjuIds
-        cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
-        entityManager.flush();
-        entityManager.clear();
 
         int i = 5;
         while (i > 0) {
@@ -110,8 +108,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             rs.unobsolete();
             rs.setPublic(true);
             cp.unobsolete();
-            cp.setPublicExternal(true);
-            cp.setPublicInternal(true);
+            cp.setPublic(true);
         }
         entityManager.flush();
         entityManager.clear();
@@ -126,7 +123,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
      * @throws DatatypeConfigurationException
      */
     @Test
-    public void testPerformanceForReceivedMessages() throws IOException, JMSException, DatatypeConfigurationException {
+    public void testPerformanceForReceivedMessages() throws IOException, JMSException {
         log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
         log.info("Init mock http-server for images");
         log.info("Mock server port={}", port);

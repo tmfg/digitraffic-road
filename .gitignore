@@ -13,6 +13,7 @@
 # Käännösartifaktit
 /target
 /buildNumber.properties
+/src/test/resources/sftp/client_known_hosts
 
 # Lokitiedostot
 **/*.log

@@ -4,6 +4,8 @@ import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_D
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.data.controller.DataController.FORECAST_SECTION_WEATHER_DATA_PATH;
 import static fi.livi.digitraffic.tie.data.controller.DataController.LAST_UPDATED_PARAM;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import java.util.List;
@@ -25,13 +27,12 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "Data v2", description = "Data of Digitraffic services (Api version 2)")
+@Api(tags = "Data v2")
 @RestController
 @Validated
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataV2Controller {
-
     private final ForecastSectionDataService forecastSectionDataService;
 
     public DataV2Controller(final ForecastSectionDataService forecastSectionDataService) {
@@ -40,7 +41,7 @@ public class DataV2Controller {
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam("If parameter is given result will only contain update status")
         @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
@@ -55,7 +56,7 @@ public class DataV2Controller {
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam(value = "RoadNumber to get data for")
         @PathVariable("roadNumber") final int roadNumber) {
@@ -66,15 +67,15 @@ public class DataV2Controller {
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by bounding box")
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section V2 data"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
-        @ApiParam(value = "Minimum longitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLongitude") final double minLongitude,
-        @ApiParam(value = "Minimum latitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLatitude") final double minLatitude,
-        @ApiParam(value = "Maximum longitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Maximum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLongitude") final double maxLongitude,
-        @ApiParam(value = "Maximum latitude in WGS84 format in decimal degrees")
+        @ApiParam(value = "Maximum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);

@@ -43,13 +43,10 @@ public class CameraStationUpdater {
         final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
             lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
 
-        final boolean fixedRoadStations = cameraStationUpdateService.fixCameraPresetsWithMissingRoadStations();
-        final boolean fixedPresets = cameraStationUpdateService.fixPresetsWithoutLotjuIds(lotjuIdToKameraAndEsiasentos);
         final boolean updatedCameras = updateCamerasAndPresets(lotjuIdToKameraAndEsiasentos);
-        final boolean updated = fixedRoadStations || fixedPresets || updatedCameras;
 
         log.info("UpdateCameras end");
-        return updated;
+        return updatedCameras;
     }
 
     public boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {

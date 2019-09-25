@@ -1,18 +1,19 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstationsensor;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-public class RoadStationSensorServiceTest extends AbstractTest {
+public class RoadStationSensorServiceTest extends AbstractServiceTest {
     @Autowired
     private RoadStationSensorService roadStationSensorService;
 
