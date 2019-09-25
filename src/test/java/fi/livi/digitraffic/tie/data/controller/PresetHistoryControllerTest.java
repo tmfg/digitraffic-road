@@ -50,6 +50,11 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         return versionId;
     }
 
+    private Matcher<String> matchUrl(String presetId, String versionId) {
+        // TODO remove s3/ when weathercam servers s3 from root
+        return Matchers.is(String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId));
+    }
+
     @Test
     public void notFoundForNotExistingPreset() throws Exception {
         getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/C0000000")
@@ -87,10 +92,6 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(jsonPath("history[1].url", matchUrl(presetId, versionId1)))
             .andExpect(jsonPath("history[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
         ;
-    }
-
-    private Matcher<String> matchUrl(String presetId, String versionId) {
-        return Matchers.is(String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId));
     }
 
     @Test
