@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneOffset;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -26,10 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
@@ -115,13 +113,12 @@ public class CameraImageUpdateService {
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
-                        "readTookMs={} writeTooksMs={} tookMs={} " +
+                        "readTookMs={} writeTooksMs={} s3WriteTooksMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
                         "s3VersionId={}",
                     presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
-                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getDurationMs(),
-                    transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
-                    transferInfo.getVersionId());
+                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getS3WriteDurationMs(),
+                    transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getS3VersionId());
             } else {
                 log.error("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} " +
@@ -196,14 +193,15 @@ public class CameraImageUpdateService {
                 final byte[] currentImageToWrite = isPublic ? realImage : noiseImage;
 
                 imageWriter.writeImage(currentImageToWrite, filename, timestampEpochMillis);
-
+                final long writeDuration = writeStart.getTime();
                 final String versionId = cameraImageS3Writer.writeImage(currentImageToWrite, realImage,
                                                                         filename, timestampEpochMillis);
-                info.setVersionId(versionId);
+                info.setS3VersionId(versionId);
                 info.updateWriteStatusSuccess();
-                final long writeEnd = writeStart.getTime();
-                info.updateWriteTotalDurationMs(writeEnd);
-                info.setWriteDurationMs(writeEnd);
+                final long s3WriteDuration = writeStart.getTime()-writeDuration;
+                info.updateWriteTotalDurationMs(writeDuration + s3WriteDuration);
+                info.setWriteDurationMs(writeDuration);
+                info.setS3WriteDurationMs(s3WriteDuration);
 
             } catch (final Exception e) {
                 info.updateWriteStatusFailed(e);
@@ -229,7 +227,7 @@ public class CameraImageUpdateService {
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
-                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
+                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getS3VersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
             cameraPresetHistoryService.saveHistory(history);
         }

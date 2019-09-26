@@ -1,24 +1,21 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 
 public class ImageUpdateInfo {
 
-    public enum Status { SUCCESS, FAILED, NONE;
+    public enum Status {
+        SUCCESS, FAILED, NONE;
 
         public boolean isSuccess() {
             return this.equals(SUCCESS);
         }
-
-
     }
 
     private final String presetId;
     private final String fullPath;
     private final ZonedDateTime lastUpdated;
 
-    private String versionId;
     private long readTotalDurationMs = 0;
     private long writeTotalDurationMs = 0;
     private long readDurationMs = 0;
@@ -30,6 +27,9 @@ public class ImageUpdateInfo {
     private Throwable readError;
     private Throwable writeError;
     private long imageTimestampEpochMillis;
+
+    private String s3VersionId;
+    private long s3WriteDurationMs;
 
     public ImageUpdateInfo(final String presetId, final String fullPath, final ZonedDateTime lastUpdated) {
         this.presetId = presetId;
@@ -49,12 +49,20 @@ public class ImageUpdateInfo {
         return lastUpdated;
     }
 
-    public void setVersionId(final String versionId) {
-        this.versionId = versionId;
+    public void setS3VersionId(final String versionId) {
+        this.s3VersionId = versionId;
     }
 
-    public String getVersionId() {
-        return versionId;
+    public String getS3VersionId() {
+        return s3VersionId;
+    }
+
+    public void setS3WriteDurationMs(final long s3WriteDurationMs) {
+        this.s3WriteDurationMs = s3WriteDurationMs;
+    }
+
+    public long getS3WriteDurationMs() {
+        return s3WriteDurationMs;
     }
 
     public void updateReadTotalDurationMs(final long currentReadDurationMs) {
