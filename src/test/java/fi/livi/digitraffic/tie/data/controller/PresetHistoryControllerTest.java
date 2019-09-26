@@ -27,6 +27,8 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
     @Value("${weathercam.baseUrl}")
     private String weathercamBaseUrl;
 
+    private static final int SIZE = 100000;
+
     private ResultActions getJson(final String url) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(RoadWebApplicationConfiguration.API_BETA_BASE_PATH + url);
 
@@ -45,7 +47,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
         entityManager.createNativeQuery(
             "insert into camera_preset_history(preset_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
-            "VALUES ('" + presetId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", 100000, NOW())")
+            "VALUES ('" + presetId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " + SIZE + ", NOW())")
             .executeUpdate();
         return versionId;
     }
@@ -87,10 +89,12 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("history", Matchers.hasSize(2)))
-            .andExpect(jsonPath("history[0].url", matchUrl(presetId, versionId0)))
+            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId0)))
             .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now)))
-            .andExpect(jsonPath("history[1].url", matchUrl(presetId, versionId1)))
+            .andExpect(jsonPath("history[0].sizeBytes", Matchers.is(SIZE)))
+            .andExpect(jsonPath("history[1].imageUrl", matchUrl(presetId, versionId1)))
             .andExpect(jsonPath("history[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
+            .andExpect(jsonPath("history[1].sizeBytes", Matchers.is(SIZE)))
         ;
     }
 
@@ -120,7 +124,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("history", Matchers.hasSize(1)))
-            .andExpect(jsonPath("history[0].url", matchUrl(presetId, versionId)))
+            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId)))
             .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
         ;
     }
@@ -138,7 +142,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("history", Matchers.hasSize(1)))
-            .andExpect(jsonPath("history[0].url", matchUrl(presetId, versionId)))
+            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId)))
             .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2))))
         ;
     }

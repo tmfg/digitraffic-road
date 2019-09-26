@@ -163,7 +163,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 2000;
+        long maxHandleTime = testBurstsLeft * 2200;
         final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();
