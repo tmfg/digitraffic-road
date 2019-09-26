@@ -250,7 +250,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                         .findFirst();
                 assertTrue(found.isPresent());
 
-                log.info("asema:{} data vs db: anturi: {} vs {}, data: {} vs {}",
+                log.debug("asema: {} data vs db: anturi: {} vs {}, data: {} vs {}",
                     tiesaa.getAsemaId(),
                     anturi.getLaskennallinenAnturiId(), found.get().getRoadStationSensor().getLotjuId(),
                     NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue());
