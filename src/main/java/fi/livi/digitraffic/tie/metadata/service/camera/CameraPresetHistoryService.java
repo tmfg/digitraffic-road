@@ -103,7 +103,9 @@ public class CameraPresetHistoryService {
             presetId,
             history.stream().map(h ->
                 new PresetHistoryDataDto(h.getLastModified(),
-                                         createPublicUrlForVersion(h.getPresetId(), h.getVersionId()))).collect(Collectors.toList()));
+                                         createPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
+                                         h.getSize()))
+                .collect(Collectors.toList()));
     }
 
     @Transactional(readOnly = true)
