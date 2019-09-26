@@ -127,7 +127,7 @@ public class LockingServiceTest extends AbstractJpaTest {
             locked1Second = lockingService2.acquireLock(LOCK_NAME_1, EXPIRATION_SECONDS);
             long now = System.currentTimeMillis();
             final double timeFromLocking = (double) (now - locked1Time) / 1000.0;
-            if (timeFromLocking > 4.5 ) {
+            if (timeFromLocking > 4.95 ) {
                 log.info("LOCK_NAME_1 acquired: {}, time from locking {} seconds", locked1Second, timeFromLocking);
             }
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {
