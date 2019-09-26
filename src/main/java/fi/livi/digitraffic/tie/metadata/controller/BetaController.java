@@ -102,7 +102,7 @@ public class BetaController {
         return trafficSignsService.listVariableSignHistory(deviceId);
     }
 
-    @ApiOperation("List the history of camera preset images")
+    @ApiOperation("List the history of camera preset imaCameraPresetHistoryServiceCameraPresetHistoryServiceCameraPresetHistoryServiceges")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces =
         APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
@@ -116,6 +116,6 @@ public class BetaController {
         @RequestParam(value = "atTime", required = false)
         final ZonedDateTime atTime) {
 
-        return cameraPresetHistoryService.findHistory(presetId, atTime);
+        return cameraPresetHistoryService.findHistoryInclSecret(presetId, atTime);
     }
 }

@@ -69,12 +69,12 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findHistory(final String presetId, final String versionId) {
+    public CameraPresetHistory findHistoryInclSecret(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
     @Transactional(readOnly = true)
-    public PresetHistoryDto findHistory(final String presetId, final ZonedDateTime atTime) {
+    public PresetHistoryDto findHistoryInclSecret(final String presetId, final ZonedDateTime atTime) {
 
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraPresetHistory", presetId);
@@ -82,7 +82,7 @@ public class CameraPresetHistoryService {
 
         if (atTime != null) {
             final Optional<CameraPresetHistory> latestWithTime = cameraPresetHistoryRepository
-                .findLatestPublishableByPresetIdAndTime(presetId, atTime.toInstant(), Instant.now().minus(historyMaxAgeHours, ChronoUnit.HOURS));
+                .findLatestPublishableByPresetIdAndTime(presetId, atTime.toInstant(), getOldestLimitNow().toInstant());
 
             if (latestWithTime.isPresent()) {
                 return convertToPresetHistory(presetId, Collections.singletonList(latestWithTime.get()));
@@ -92,7 +92,7 @@ public class CameraPresetHistoryService {
 
         } else {
             return convertToPresetHistory(presetId,
-                cameraPresetHistoryRepository.findAllPublishableByPresetIdOrderByLastModifiedDesc(presetId, Instant.now().minus(historyMaxAgeHours, ChronoUnit.HOURS)));
+                cameraPresetHistoryRepository.findAllPublishableByPresetIdOrderByLastModifiedDesc(presetId, getOldestLimitNow().toInstant()));
         }
     }
 
@@ -105,13 +105,14 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findLatestWithPresetId(final String presetId) {
+    public CameraPresetHistory findLatestWithPresetIdIncSecret(final String presetId) {
         return cameraPresetHistoryRepository.findLatestByPresetId(presetId).orElse(null);
     }
 
-    /** Orderer from oldest to newest */
+    /** Orderer from oldest to newest
+     * Only for internal use */
     @Transactional(readOnly = true)
-    public List<CameraPresetHistory> findAllByPresetId(final String presetId) {
+    public List<CameraPresetHistory> findAllByPresetIdInclSecret(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
     }
 
@@ -127,15 +128,27 @@ public class CameraPresetHistoryService {
         // getPresets and update presetHistory
     }
 
+    /**
+     * Resolves history status for given image version.
+     * 1. Checks correct imageName format.
+     * 2. Checks if history exists and
+     * @param presetImageName in regex format ^C([0-9]{7})\\.jpg$
+     * @param versionId version string to check
+     * @return PUBLIC - history version found and it's publishable <br />
+     *         SECRET - history version found but it's not publishable <br />
+     *         NOT_FOUND - no history found for preset at all <br />
+     *         TOO_OLD - history version found but it's too old to be publishable <br />
+     *         ILLEGAL_KEY presetImageName did not match correct regex format ^C([0-9]{7})\\.jpg$
+     */
     @Transactional(readOnly = true)
-    public HistoryStatus resolveHistoryStatus(final String imageName, final String versionId) {
+    public HistoryStatus resolveHistoryStatusForVersion(final String presetImageName, final String versionId) {
 
-        if (!imageName.matches(s3WeathercamKeyRegexp)) {
+        if (!presetImageName.matches(s3WeathercamKeyRegexp)) {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistory(getPresetId(imageName), versionId);
-        final ZonedDateTime oldestLimit = ZonedDateTime.now().minusHours(historyMaxAgeHours);
+        final CameraPresetHistory history = findHistoryInclSecret(getPresetId(presetImageName), versionId);
+        final ZonedDateTime oldestLimit = getOldestLimitNow();
 
         if (history == null) {
             return HistoryStatus.NOT_FOUND;
@@ -145,6 +158,10 @@ public class CameraPresetHistoryService {
             return HistoryStatus.TOO_OLD;
         }
         return HistoryStatus.PUBLIC;
+    }
+
+    private ZonedDateTime getOldestLimitNow() {
+        return ZonedDateTime.now().minusHours(historyMaxAgeHours);
     }
 
     public URI createS3UriForVersion(final String imageName, final String versionId) {

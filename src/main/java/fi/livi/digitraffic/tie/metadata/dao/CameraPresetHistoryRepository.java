@@ -39,12 +39,13 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     Optional<CameraPresetHistory> findLatestPublishableByPresetIdAndTime(final String presetId, Instant atTime, Instant maxTime);
 
     @Query(value = "SELECT history.*\n" +
-        "FROM camera_preset_history history\n" +
-        "where history.publishable = true\n" +
-        "  AND history.preset_id = :presetId\n" +
-        "  AND history.last_modified >= :maxTime\n" +
-        "ORDER BY history.preset_id, history.last_modified DESC",
-           nativeQuery = true)
+                   "FROM camera_preset_history history\n" +
+                   "where history.publishable = true\n" +
+                   "  AND history.preset_id = :presetId\n" +
+                   "  AND history.last_modified >= :maxTime\n" +
+                   "ORDER BY history.preset_id, history.last_modified DESC",
+                   nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findAllPublishableByPresetIdOrderByLastModifiedDesc(final String presetId, Instant maxTime);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

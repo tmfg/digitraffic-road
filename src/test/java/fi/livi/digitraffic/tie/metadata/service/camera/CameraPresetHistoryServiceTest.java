@@ -45,7 +45,7 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
         final CameraPresetHistory history = generateHistory(preset, now.minusMinutes(1));
         cameraPresetHistoryService.saveHistory(history);
 
-        final CameraPresetHistory found = cameraPresetHistoryService.findHistory(preset.getPresetId(), history.getVersionId());
+        final CameraPresetHistory found = cameraPresetHistoryService.findHistoryInclSecret(preset.getPresetId(), history.getVersionId());
         Assert.assertNotNull(found);
         Assert.assertFalse("Can't be same instanse to test", history.equals(found));
         Assert.assertEquals(history.getPresetId(), found.getPresetId());
@@ -64,7 +64,7 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
         // Create 5 history item for 2 presets
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
 
-            List<CameraPresetHistory> oldHistory = cameraPresetHistoryService.findAllByPresetId(cp.getPresetId());
+            List<CameraPresetHistory> oldHistory = cameraPresetHistoryService.findAllByPresetIdInclSecret(cp.getPresetId());
             presetIdsToOldHistory.put(cp.getPresetId(), oldHistory);
 
             final ZonedDateTime lastModified = ZonedDateTime.now();
@@ -78,7 +78,7 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
         presetIdsToOldHistory.entrySet().forEach(t -> {
             final String presetId = t.getKey();
             log.info("Check history for preset {}", presetId);
-            final List<CameraPresetHistory> histories = cameraPresetHistoryService.findAllByPresetId(presetId);
+            final List<CameraPresetHistory> histories = cameraPresetHistoryService.findAllByPresetIdInclSecret(presetId);
             // Remove earlier histories in db
             log.info("Delete history: {}", histories.removeAll(t.getValue()));
             assertEquals(5,histories.size());
