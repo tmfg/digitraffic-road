@@ -129,9 +129,8 @@ public class CameraPresetHistoryService {
     }
 
     /**
-     * Resolves history status for given image version.
-     * 1. Checks correct imageName format.
-     * 2. Checks if history exists and
+     * Resolves history status for given camera preset image version.
+     *
      * @param presetImageName in regex format ^C([0-9]{7})\\.jpg$
      * @param versionId version string to check
      * @return PUBLIC - history version found and it's publishable <br />
