@@ -26,19 +26,23 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 public class CameraPresetHistoryService {
 
     private CameraPresetHistoryRepository cameraPresetHistoryRepository;
-    private final String s3WeathercamBucketName;
-    private final String s3WeathercamRegion;
     private final String s3WeathercamKeyRegexp;
     private final String s3WeathercamBucketUrl;
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
 
     public enum HistoryStatus {
-        PUBLIC,
-        SECRET,
-        NOT_FOUND,
-        TOO_OLD,
-        ILLEGAL_KEY;
+        PUBLIC("History version found and it's publishable"),
+        SECRET("History version found but it's not publishable"),
+        NOT_FOUND("No history found for preset at all"),
+        TOO_OLD("History version is over 24 h old and for that reason not publishable"),
+        ILLEGAL_KEY(" presetImageName did not match correct regex format ^C([0-9]{7})\\.jpg$ for S3 key");
+
+        private final String description;
+
+        HistoryStatus(final String description) {
+            this.description = description;
+        }
     }
 
     @Autowired
@@ -49,8 +53,6 @@ public class CameraPresetHistoryService {
                                       @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
                                       @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
-        this.s3WeathercamBucketName = s3WeathercamBucketName;
-        this.s3WeathercamRegion = s3WeathercamRegion;
         this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
         this.historyMaxAgeHours = historyMaxAgeHours;
         this.weathercamBaseUrl = weathercamBaseUrl;
@@ -133,11 +135,11 @@ public class CameraPresetHistoryService {
      *
      * @param presetImageName in regex format ^C([0-9]{7})\\.jpg$
      * @param versionId version string to check
-     * @return PUBLIC - history version found and it's publishable <br />
-     *         SECRET - history version found but it's not publishable <br />
-     *         NOT_FOUND - no history found for preset at all <br />
-     *         TOO_OLD - history version found but it's too old to be publishable <br />
-     *         ILLEGAL_KEY presetImageName did not match correct regex format ^C([0-9]{7})\\.jpg$
+     * @return PUBLIC - History version found and it's publishable <br />
+     *         SECRET - History version found but it's not publishable <br />
+     *         NOT_FOUND - No history found for preset at all <br />
+     *         TOO_OLD - History version is over 24 h old and for that reason not publishable <br />
+     *         ILLEGAL_KEY presetImageName did not match correct regex format ^C([0-9]{7})\\.jpg$ for S3 key
      */
     @Transactional(readOnly = true)
     public HistoryStatus resolveHistoryStatusForVersion(final String presetImageName, final String versionId) {
