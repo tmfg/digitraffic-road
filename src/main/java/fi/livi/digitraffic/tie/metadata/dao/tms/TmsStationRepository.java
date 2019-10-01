@@ -41,10 +41,6 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
            "  AND tms.roadStation.isPublic = true")
     boolean tmsExistsWithRoadStationNaturalId(final long roadStationNaturalId);
 
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
-    List<TmsStation> findByLotjuIdIsNull();
-
     TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long id);
 
     TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long lamId);
@@ -69,7 +65,6 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @Query("select p.lotjuId\n" +
-           "from #{#entityName} p\n" +
-           "where p.lotjuId is not null")
+           "from #{#entityName} p\n")
     List<Long> findAllTmsStationsLotjuIds();
 }

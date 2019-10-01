@@ -43,12 +43,9 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuWeatherStationMetadataService.getAllTiesaaLaskennallinenAnturis();
 
-        boolean fixedLotjuIds = roadStationSensorService.fixWeatherStationSensorsWithoutLotjuId(
-            allTiesaaLaskennallinenAnturis.stream().filter(WeatherStationSensorUpdater::validate).collect(Collectors.toList()));
-
         boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("Update weather RoadStationSensors end");
-        return fixedLotjuIds || updated;
+        return updated;
     }
 
     private boolean updateAllRoadStationSensors(final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {

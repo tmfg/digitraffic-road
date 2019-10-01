@@ -56,7 +56,7 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public Map<Long, CameraPreset> findAllCameraPresetsMappedByLotjuId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
-        return allStations.stream().filter(cp -> cp.getLotjuId() != null).collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
+        return allStations.stream().collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -83,11 +83,6 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> findAllCameraPresetsWithoutRoadStation() {
-        return cameraPresetRepository.findAllCameraPresetsWithoutRoadStation();
-    }
-
-    @Transactional(readOnly = true)
     public List<CameraPreset> findAllPublishableCameraPresets() {
         return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
     }
@@ -95,12 +90,6 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public List<String> findAllNotPublishableCameraPresetsPresetIds() {
         return cameraPresetRepository.findAllNotPublishableCameraPresetsPresetIds();
-    }
-
-    @Transactional(readOnly = true)
-    public Map<String, List<CameraPreset>> findWithoutLotjuIdMappedByCameraId() {
-        final List<CameraPreset> all = cameraPresetRepository.findByRoadStation_LotjuIdIsNullOrLotjuIdIsNull();
-        return all.stream().collect(Collectors.groupingBy(CameraPreset::getCameraId));
     }
 
     @Transactional(readOnly = true)

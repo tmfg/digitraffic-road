@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
@@ -48,6 +49,7 @@ public class RoadStationSensor {
     private Long id;
 
     @JsonIgnore
+    @NotNull
     private Long lotjuId;
 
     @ApiModelProperty(value = "Sensor id", position = 1)

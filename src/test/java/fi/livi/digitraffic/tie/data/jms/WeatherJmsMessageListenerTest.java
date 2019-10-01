@@ -245,7 +245,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 final Optional<SensorValue> found =
                     sensorValues
                         .stream()
-                        .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
                         .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
                         .findFirst();
                 assertTrue(found.isPresent());

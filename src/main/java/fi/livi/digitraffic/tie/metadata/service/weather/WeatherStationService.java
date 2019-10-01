@@ -50,7 +50,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByLotjuId() {
         final List<WeatherStation> all = weatherStationRepository.findAll();
-        return all.parallelStream().filter(ws -> ws.getLotjuId() != null).collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
+        return all.parallelStream().collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
