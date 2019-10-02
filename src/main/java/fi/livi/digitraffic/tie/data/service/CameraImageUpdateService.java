@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -153,9 +152,9 @@ public class CameraImageUpdateService {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
-            } catch (ImagingException ie) {
+            } catch (Exception e) {
                 // Let's use original
-                log.warn("Failed to remove Exif metadata from image, using original image", ie);
+                log.warn("Failed to remove Exif metadata from image, using original image", e);
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
         } catch (CameraImageReadFailureException e) {
