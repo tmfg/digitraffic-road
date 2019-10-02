@@ -1,11 +1,11 @@
 CREATE TABLE CAMERA_PRESET_HISTORY (
-    preset_id           CHARACTER VARYING(32) NOT NULL,
-    version_id          CHARACTER VARYING(32) NOT NULL,
-    camera_preset_id    NUMERIC(10,0) NOT NULL REFERENCES CAMERA_PRESET (id),
-    last_modified       TIMESTAMP(6) WITH TIME ZONE  NOT NULL,
-    publishable         BOOLEAN NOT NULL,
-    size                INTEGER NOT NULL,
-    created             TIMESTAMP(6) WITH TIME ZONE NOT NULL
+                                       preset_id           CHARACTER VARYING(32) NOT NULL,
+                                       version_id          CHARACTER VARYING(32) NOT NULL,
+                                       camera_preset_id    NUMERIC(10,0) NOT NULL REFERENCES CAMERA_PRESET (id),
+                                       last_modified       TIMESTAMP(6) WITH TIME ZONE  NOT NULL,
+                                       publishable         BOOLEAN NOT NULL,
+                                       size                INTEGER NOT NULL,
+                                       created             TIMESTAMP(6) WITH TIME ZONE NOT NULL
 );
 
 ALTER TABLE CAMERA_PRESET_HISTORY
@@ -37,8 +37,8 @@ BEGIN
     RETURN NEW;
 END;
 $BODY$
-LANGUAGE  plpgsql;
+    LANGUAGE  plpgsql;
 
 CREATE INDEX camera_preset_publishable_i
-ON camera_preset
-USING BTREE (publishable, camera_id) where publishable = TRUE;
+    ON camera_preset
+        USING BTREE (publishable, camera_id) where publishable = TRUE;
