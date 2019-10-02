@@ -151,7 +151,7 @@ public class CameraImageUpdateService {
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
-                image = ImageManipulationService.removeJpgExif(image);
+                image = ImageManipulationService.removeJpgExifMetadata(image);
             } catch (Exception e) {
                 // Let's use original
                 log.warn("Failed to remove Exif metadata from image, using original image", e);

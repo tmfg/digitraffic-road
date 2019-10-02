@@ -19,7 +19,7 @@ public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutS3 {
         final byte[] imageWithExif = FileUtils.readFileToByteArray(loadResource("classpath:/lotju/kuva/exif.jpg").getFile());
         final byte[] imageWithoutExif = FileUtils.readFileToByteArray(loadResource("classpath:/lotju/kuva/noExif.jpg").getFile());
 
-        final byte[] imageExifRemoved = ImageManipulationService.removeJpgExif(imageWithExif);
+        final byte[] imageExifRemoved = ImageManipulationService.removeJpgExifMetadata(imageWithExif);
 
         Assert.assertThat(imageWithExif, IsNot.not(IsEqual.equalTo(imageWithoutExif)));
         Assert.assertThat(imageWithExif, IsNot.not(IsEqual.equalTo(imageExifRemoved)));
@@ -30,7 +30,7 @@ public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutS3 {
     public void imageWithoutExifShouldStaySame() throws IOException, ImagingException {
         final Resource imgResource = loadResource("classpath:/lotju/kuva/noExif.jpg");
         final byte[] withExif = FileUtils.readFileToByteArray(imgResource.getFile());
-        final byte[] withoutExif = ImageManipulationService.removeJpgExif(withExif);
+        final byte[] withoutExif = ImageManipulationService.removeJpgExifMetadata(withExif);
         Assert.assertArrayEquals(withExif, withoutExif);
     }
 }
