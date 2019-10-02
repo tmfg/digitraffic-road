@@ -1,5 +1,10 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.hamcrest.core.IsEqual.*;
+import static org.hamcrest.core.IsNot.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 
 import org.apache.commons.imaging.ImagingException;
@@ -21,9 +26,9 @@ public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutS3 {
 
         final byte[] imageExifRemoved = ImageManipulationService.removeJpgExifMetadata(imageWithExif);
 
-        Assert.assertThat(imageWithExif, IsNot.not(IsEqual.equalTo(imageWithoutExif)));
-        Assert.assertThat(imageWithExif, IsNot.not(IsEqual.equalTo(imageExifRemoved)));
-        Assert.assertArrayEquals(imageWithoutExif, imageExifRemoved);
+        assertThat(imageWithExif, not(equalTo(imageWithoutExif)));
+        assertThat(imageWithExif, not(equalTo(imageExifRemoved)));
+        assertArrayEquals(imageWithoutExif, imageExifRemoved);
     }
 
     @Test
@@ -31,6 +36,6 @@ public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutS3 {
         final Resource imgResource = loadResource("classpath:/lotju/kuva/noExif.jpg");
         final byte[] withExif = FileUtils.readFileToByteArray(imgResource.getFile());
         final byte[] withoutExif = ImageManipulationService.removeJpgExifMetadata(withExif);
-        Assert.assertArrayEquals(withExif, withoutExif);
+        assertArrayEquals(withExif, withoutExif);
     }
 }
