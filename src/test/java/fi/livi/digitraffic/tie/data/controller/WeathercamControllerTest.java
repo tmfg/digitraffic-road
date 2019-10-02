@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         ReflectionTestUtils.setField(cameraPresetHistoryService, "s3WeathercamBucketUrl", url);
     }
 
+    @Ignore("TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done")
     @Test
     public void getPublicImage() throws Exception {
 
