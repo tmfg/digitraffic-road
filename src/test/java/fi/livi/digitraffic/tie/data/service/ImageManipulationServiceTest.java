@@ -28,7 +28,7 @@ public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutS3 {
 
     @Test
     public void imageWithoutExifShouldStaySame() throws IOException, ImagingException {
-        final Resource imgResource = loadResource("classpath:/lotju/kuva/withoutExif.jpg");
+        final Resource imgResource = loadResource("classpath:/lotju/kuva/noExif.jpg");
         final byte[] withExif = FileUtils.readFileToByteArray(imgResource.getFile());
         final byte[] withoutExif = ImageManipulationService.removeJpgExif(withExif);
         Assert.assertArrayEquals(withExif, withoutExif);
