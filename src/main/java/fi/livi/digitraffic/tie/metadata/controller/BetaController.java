@@ -103,8 +103,9 @@ public class BetaController {
     }
 
     @ApiOperation("List the history of camera preset imaCameraPresetHistoryServiceCameraPresetHistoryServiceCameraPresetHistoryServiceges")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces =
-        APPLICATION_JSON_UTF8_VALUE)
+// TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done
+//    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces =
+//        APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
     public PresetHistoryDto getPresetHistory(
         @ApiParam("Camera preset id")

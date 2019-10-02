@@ -468,6 +468,7 @@
                             <defaultOptions>
                                 <extraargs>
                                     <extraarg>-xjc-npa</extraarg>
+                                    <extraarg>-xjc-mark-generated</extraarg>
                                 </extraargs>
                             </defaultOptions>
                             <wsdlOptions>
@@ -524,6 +525,7 @@
                                         <!--Generate withProperty methods-->
                                         <extensionArg>-Xfluent-api</extensionArg>
                                         <extensionArg>-npa</extensionArg>
+                                        <extensionArg>-mark-generated</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
                             </xsdOptions>

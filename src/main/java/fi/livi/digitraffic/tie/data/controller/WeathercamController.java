@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService.HistoryStatus;
 
-@RestController
+// TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done
+//@RestController
 @Validated
 @RequestMapping(WEATHERCAM_PATH)
 @ConditionalOnWebApplication
