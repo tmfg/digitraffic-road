@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FTP_URL_PROD="http://weathercam-test.digitraffic.fi/"
+FTP_URL_PROD="http://weathercam.digitraffic.fi/"
 FTP_URL_TEST="http://weathercam-test.digitraffic.fi/"
 S3_URL="http://weathercam-test.digitraffic.fi/s3/"
 
