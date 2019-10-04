@@ -150,6 +150,12 @@ public class CameraImageUpdateService {
                                                          DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
+            try {
+                image = ImageManipulationService.removeJpgExifMetadata(image);
+            } catch (Exception e) {
+                // Let's use original
+                log.warn("Failed to remove Exif metadata from image, using original image", e);
+            }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
         } catch (CameraImageReadFailureException e) {
             // read attempts exhausted

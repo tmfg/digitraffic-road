@@ -30,6 +30,7 @@ public class WeatherStation {
     @GeneratedValue(generator = "SEQ_ROAD_WEATHER_STATION")
     private Long id;
 
+    @NotNull
     private Long lotjuId;
 
     @Enumerated(EnumType.STRING)

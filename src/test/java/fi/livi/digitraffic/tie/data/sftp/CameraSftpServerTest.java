@@ -219,7 +219,7 @@ public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
         kuva.setAikaleima(Instant.now().toEpochMilli());
         kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 10000));
         kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 10000));
-        kuva.setEsiasentoId(cp.getLotjuId() != null ? cp.getLotjuId() : RandomUtils.nextLong(10000, 100000));
+        kuva.setEsiasentoId(cp.getLotjuId());
         kuva.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
         kuva.setJulkinen(true);
         kuva.setKameraId(Long.parseLong(cp.getCameraId().substring(1)));

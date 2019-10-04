@@ -117,7 +117,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     public Map<Long, TmsStation> findAllTmsStationsMappedByByLotjuId() {
         final List<TmsStation> allStations = tmsStationRepository.findAll();
 
-        return allStations.stream().filter(tms -> tms.getLotjuId() != null).collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
+        return allStations.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -127,22 +127,13 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllTmsStationsByMappedByLotjuId() {
-        final Map<Long, TmsStation> map = new HashMap<>();
         final List<TmsStation> all = tmsStationRepository.findAll();
-        for (final TmsStation tmsStation : all) {
-            if (tmsStation.getLotjuId() != null) {
-                map.put(tmsStation.getLotjuId(), tmsStation);
-            } else {
-                log.warn("Null lotjuId: " + tmsStation);
-            }
-        }
-        return map;
+        return all.stream().collect( Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
     public Map<Long, TmsStation> findAllPublishableTmsStationsMappedByLotjuId() {
         final List<TmsStation> all = findAllPublishableTmsStations();
-
         return all.stream().collect(Collectors.toMap(TmsStation::getLotjuId, Function.identity()));
     }
 

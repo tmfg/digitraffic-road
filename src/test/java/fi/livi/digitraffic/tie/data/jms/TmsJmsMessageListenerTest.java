@@ -220,7 +220,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 final Optional<SensorValue> found =
                     sensorValues
                         .stream()
-                        .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
                         .filter(sensorValue -> anturi.getLaskennallinenAnturiId() == sensorValue.getRoadStationSensor().getLotjuId())
                         .findFirst();
                 assertTrue(found.isPresent());
