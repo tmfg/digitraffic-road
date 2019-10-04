@@ -148,7 +148,7 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getS3VersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                     isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
-            
+
             cameraPresetHistoryRepository.save(history);
         }
 
@@ -160,5 +160,7 @@ public class CameraPresetService {
         } else if (updateInfo.isSuccess()) {
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }
+
+        cameraPresetRepository.save(cameraPreset);
     }
 }
