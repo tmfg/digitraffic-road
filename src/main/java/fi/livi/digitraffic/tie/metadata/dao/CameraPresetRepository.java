@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.dao;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -83,5 +82,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     CameraPreset findByPublishableTrueAndLotjuId(long presetLotjuId);
 
+    @EntityGraph(attributePaths = "roadStation")
     CameraPreset findByLotjuId(final long presetLotjuId);
 }
