@@ -53,7 +53,7 @@ public class MaintenanceController {
     public ResponseEntity<Void> postWorkMachineTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
-        log.info("method=postWorkMachineTrackingData JSON=\n{}",
+        log.debug("method=postWorkMachineTrackingData JSON=\n{}",
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
 
         maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
