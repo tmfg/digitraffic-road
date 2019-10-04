@@ -17,6 +17,10 @@ public class CameraHelper {
         return StringUtils.leftPad(vanhaId.toString(), 6, "C00000");
     }
 
+    public static String convertNaturalIdToCameraId(final Long naturalId) {
+        return convertVanhaIdToKameraId(naturalId.intValue());
+    }
+
     public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
         return cameraId + leftPadDirection(suunta);
     }

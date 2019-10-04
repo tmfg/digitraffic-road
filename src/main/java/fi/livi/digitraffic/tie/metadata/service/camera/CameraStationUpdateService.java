@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 @Service
 public class CameraStationUpdateService extends AbstractCameraStationAttributeUpdater {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
+
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
@@ -42,7 +45,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                                       final WeatherStationService weatherStationService,
                                       final EntityManager entityManager,
                                       final CameraPresetHistoryService cameraPresetHistoryService) {
-        super(LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
@@ -195,11 +197,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         // Update RoadStation
         try {
             final RoadStation rs = to.getRoadStation();
-            final boolean wasPublic = rs.isPublic();
             final boolean updated = updateRoadStationAttributes(kameraFrom, rs);
-            if (wasPublic != rs.isPublic()) {
-                cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
-            }
+            // Update history every time in case JMS message handling has failed
+            cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
+
             return updated || hash != HashCodeBuilder.reflectionHashCode(to);
         } catch (Exception e) {
             log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",

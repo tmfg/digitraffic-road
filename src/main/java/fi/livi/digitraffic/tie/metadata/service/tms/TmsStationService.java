@@ -5,7 +5,6 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -59,7 +58,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
                              final RoadDistrictService roadDistrictService,
                              final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
                              final RoadAddressRepository roadAddressRepository) {
-        super(log);
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
         this.roadStationService = roadStationService;

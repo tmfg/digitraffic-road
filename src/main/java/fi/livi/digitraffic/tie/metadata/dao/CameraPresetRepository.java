@@ -23,6 +23,16 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation", "nearestWeatherStation.roadStation", "nearestWeatherStation.roadStation.roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findAll();
 
+    // TODO DPO-462 Kelikamerakuvien salassapidon toteutus - rewrite to check publicity now, check RoadStation.isPublicNow()
+    /*
+        public boolean isPublicNow() {
+            // If current value is valid now, let's use it
+            if (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) {
+                return isPublic;
+            }
+            return isPublicPrevious;
+            }
+     */
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();

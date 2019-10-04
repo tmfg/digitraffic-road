@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -14,10 +13,6 @@ import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
-
-    public AbstractTmsStationAttributeUpdater(final Logger logger) {
-        super(logger);
-    }
 
     public static boolean updateRoadStationAttributes(final LamAsemaVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);

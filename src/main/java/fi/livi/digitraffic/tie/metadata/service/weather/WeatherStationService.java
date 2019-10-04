@@ -41,7 +41,6 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final DataStatusService dataStatusService,
                                  final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
-        super(log);
         this.weatherStationRepository = weatherStationRepository;
         this.dataStatusService = dataStatusService;
         this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;

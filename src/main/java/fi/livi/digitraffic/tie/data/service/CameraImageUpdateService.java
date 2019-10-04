@@ -100,9 +100,7 @@ public class CameraImageUpdateService {
 
         // If preset exists in db, update image
         if (cameraPreset != null) {
-            // TODO DPO-462 get start time of public / not public state and write image public/secret acordingly
-            // Ie. cameraPreset.getRoadStation().isPublicNow()
-            final boolean roadStationPublic = cameraPreset.getRoadStation().isPublic();
+            final boolean roadStationPublic = cameraPreset.getRoadStation().isPublicNow();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, isResultPublic);
 

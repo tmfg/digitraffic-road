@@ -1,7 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.time.ZonedDateTime;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -18,9 +22,7 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    public AbstractCameraStationAttributeUpdater(final Logger logger) {
-        super(logger);
-    }
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
     public static boolean updateRoadStationAttributes(final KameraVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
@@ -32,7 +34,23 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
+
+        final boolean currentIsPublic = to.isPublic();
+        final ZonedDateTime currentPublicityStartTime = to.getPublicityStartTime();
         to.setPublic(from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso());
+        to.setPublicityStartTime(from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillis(from.getJulkisuus().getAlkaen()) : null);
+        // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
+        // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
+        if ( currentIsPublic != to.isPublic() &&
+            (currentPublicityStartTime == null || !currentPublicityStartTime.isAfter(ZonedDateTime.now())) ) {
+            to.setPublicPrevious(currentIsPublic);
+        }
+
+        if ( currentIsPublic != to.isPublic() || !Objects.equals(currentPublicityStartTime, to.getPublicityStartTime())) {
+            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} previousPublic={} with start time fromPublicStart={} toPublicStart={}",
+                     currentIsPublic, to.isPublic(), currentPublicityStartTime, to.getPublicityStartTime(), to.isPublicPrevious());
+        }
+
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.CAMERA_STATION);
         to.setName(from.getNimi());

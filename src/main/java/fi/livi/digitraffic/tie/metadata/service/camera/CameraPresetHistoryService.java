@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.net.URI;
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +16,7 @@ import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -127,9 +126,13 @@ public class CameraPresetHistoryService {
 
     @Transactional
     public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
-        // TODO DPO-462 get start time of public / not public state and update history acordingly
-        // rs.isPublic() && rs.GetPublicStartTime() etc.?
-        // getPresets and update presetHistory
+        // If statTime is null it means now -> no history to update or
+        // if startTime is in the future -> no history to update
+        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
+            final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
+            cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
+                cameraId, rs.isPublic(), rs.getPublicityStartTime().toInstant());
+        }
     }
 
     /**

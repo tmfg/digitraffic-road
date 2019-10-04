@@ -65,6 +65,14 @@ public class RoadStation {
     @Column(name="IS_PUBLIC")
     private boolean isPublic;
 
+    /**
+     * Previous value for publicity. Used in case when new value is in the future.
+     */
+    @Column(name="IS_PUBLIC_PREVIOUS")
+    private boolean isPublicPrevious;
+
+    private ZonedDateTime publicityStartTime;
+
     private String nameFi, nameSv, nameEn;
 
     /** ETRS89 coordinates */
@@ -169,6 +177,23 @@ public class RoadStation {
     public boolean isPublic() {
         return isPublic;
     }
+
+    public boolean isPublicPrevious() {
+        return isPublicPrevious;
+    }
+
+    public void setPublicPrevious(boolean publicPrevious) {
+        isPublicPrevious = publicPrevious;
+    }
+
+    public void setPublicityStartTime(final ZonedDateTime publicityStartTime) {
+        this.publicityStartTime = publicityStartTime;
+    }
+
+    public ZonedDateTime getPublicityStartTime() {
+        return publicityStartTime;
+    }
+
 
     public boolean isObsolete() {
         return obsoleteDate != null;
@@ -381,5 +406,13 @@ public class RoadStation {
                 .appendField("type", type)
                 .appendField("collectionStatus", collectionStatus)
                 .toString();
+    }
+
+    public boolean isPublicNow() {
+        // If current value is valid now, let's use it
+        if (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) {
+            return isPublic;
+        }
+        return isPublicPrevious;
     }
 }

@@ -54,4 +54,13 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     int deleteByIdPresetId(final String presetId);
 
     boolean existsByIdPresetId(final String presetId);
+
+    @Query(value =
+        "UPDATE camera_preset_history history\n" +
+        "SET publishable = :isPublic\n" +
+        "WHERE history.publishable <> :isPublic\n" +
+        "  AND history.last_modified >= :startTime\n" +
+        "  AND history.preset_id like (:cameraId || '%' )",
+        nativeQuery = true)
+    void updatePresetHistoryPublicityForCameraId(final String cameraId, final boolean isPublic, final Instant startTime);
 }

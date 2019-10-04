@@ -151,12 +151,10 @@ public class RoadStationService {
                      from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
-        final boolean wasPublic = rs.isPublic();
-        final boolean updated = AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
 
-        if (wasPublic != rs.isPublic()) {
-            cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
-        }
+        final boolean updated = AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        // Update history every time in case JMS message handling has failed
+        cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
 
         return updated;
     }
