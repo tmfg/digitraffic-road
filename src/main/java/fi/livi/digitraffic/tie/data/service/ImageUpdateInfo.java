@@ -101,7 +101,7 @@ public class ImageUpdateInfo {
         this.sizeBytes = sizeBytes;
     }
 
-    int getSizeBytes() {
+    public int getSizeBytes() {
         return sizeBytes;
     }
 
@@ -139,7 +139,7 @@ public class ImageUpdateInfo {
         setWriteError(null);
     }
 
-    boolean isSuccess() {
+    public boolean isSuccess() {
         return getReadStatus().isSuccess() && getWriteStatus().isSuccess();
     }
 
