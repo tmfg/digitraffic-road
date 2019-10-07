@@ -127,6 +127,11 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
         assertEquals("liikenne", afterCam.getRoadStation().getPurpose());
     }
 
+    @Test
+    public void testPublicityChange() {
+        lotjuKameraPerustiedotServiceMock.initStateAndService();
+    }
+
     private CameraPreset findWithPresetId(final List<CameraPreset> collection, final String presetId) {
         return collection.stream().filter(cp -> cp.getPresetId().equals(presetId)).findFirst().orElse( null);
     }

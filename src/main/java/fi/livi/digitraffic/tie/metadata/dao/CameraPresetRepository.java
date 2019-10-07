@@ -94,4 +94,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     @EntityGraph(attributePaths = "roadStation")
     CameraPreset findByLotjuId(final long presetLotjuId);
+
+    @EntityGraph(attributePaths = "roadStation")
+    CameraPreset findByPresetId(String presetId);
 }

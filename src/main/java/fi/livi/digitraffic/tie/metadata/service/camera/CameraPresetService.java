@@ -163,4 +163,9 @@ public class CameraPresetService {
 
         cameraPresetRepository.save(cameraPreset);
     }
+
+    @Transactional(readOnly = true)
+    public CameraPreset findCameraPresetByPresetId(String presetId) {
+        return cameraPresetRepository.findByPresetId(presetId);
+    }
 }

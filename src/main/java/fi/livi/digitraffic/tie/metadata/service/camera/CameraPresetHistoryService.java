@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 @Service
 public class CameraPresetHistoryService {
-
+    private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
     private CameraPresetHistoryRepository cameraPresetHistoryRepository;
     private final String s3WeathercamKeyRegexp;
     private final String s3WeathercamBucketUrl;
@@ -115,7 +117,7 @@ public class CameraPresetHistoryService {
     /** Orderer from oldest to newest
      * Only for internal use */
     @Transactional(readOnly = true)
-    public List<CameraPresetHistory> findAllByPresetIdInclSecret(final String presetId) {
+    public List<CameraPresetHistory> findAllByPresetIdInclSecretAsc(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
     }
 

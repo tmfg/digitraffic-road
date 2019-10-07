@@ -38,7 +38,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<KameraVO> getKameras() {
+    public List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
@@ -49,7 +49,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<EsiasentoVO> getEsiasentos(Long kameraId) {
+    public List<EsiasentoVO> getEsiasentos(Long kameraId) {
         final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
                 new HaeEsiasennotKameranTunnuksella();
         haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);

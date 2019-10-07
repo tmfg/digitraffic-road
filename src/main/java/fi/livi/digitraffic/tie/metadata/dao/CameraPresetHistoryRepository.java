@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
@@ -51,10 +52,12 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
 
+    @Modifying
     int deleteByIdPresetId(final String presetId);
 
     boolean existsByIdPresetId(final String presetId);
 
+    @Modifying
     @Query(value =
         "UPDATE camera_preset_history history\n" +
         "SET publishable = :isPublic\n" +
