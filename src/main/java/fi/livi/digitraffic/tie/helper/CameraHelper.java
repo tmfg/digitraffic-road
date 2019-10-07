@@ -13,12 +13,13 @@ public class CameraHelper {
 
     private CameraHelper() {}
 
-    public static String convertVanhaIdToKameraId(final Integer vanhaId) {
-        return StringUtils.leftPad(vanhaId.toString(), 6, "C00000");
-    }
-
-    public static String convertNaturalIdToCameraId(final Long naturalId) {
-        return convertVanhaIdToKameraId(naturalId.intValue());
+    /**
+     *
+     * @param naturalId = vanhaId
+     * @return Camera id
+     */
+    public static String convertNaturalIdToCameraId(final Integer naturalId) {
+        return StringUtils.leftPad(naturalId.toString(), 6, "C00000");
     }
 
     public static String convertCameraIdToPresetId(final String cameraId, final String suunta) {
