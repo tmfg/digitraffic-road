@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +25,6 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
@@ -91,7 +88,6 @@ public class CameraImageUpdateService {
             .count();
     }
 
-    @Transactional
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
         if (log.isDebugEnabled()) {
             log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
@@ -109,7 +105,8 @@ public class CameraImageUpdateService {
             final boolean roadStationPublic = cameraPreset.getRoadStation().isPublic();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, isResultPublic);
-            updateCameraPresetAndHistory(cameraPreset, isResultPublic, transferInfo);
+
+            cameraPresetService.updateCameraPresetAndHistory(cameraPreset, isResultPublic, transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
@@ -145,7 +142,7 @@ public class CameraImageUpdateService {
         }
     }
 
-    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename, boolean isPublic) {
+    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename, final boolean isPublic) {
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, imageWriter.getImageFullPath(filename),
                                                          DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
@@ -157,9 +154,9 @@ public class CameraImageUpdateService {
                 log.warn("Failed to remove Exif metadata from image, using original image", e);
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
-        } catch (CameraImageReadFailureException e) {
+        } catch (final CameraImageReadFailureException e) {
             // read attempts exhausted
-        } catch (CameraImageWriteFailureException e) {
+        } catch (final CameraImageWriteFailureException e) {
             // write attempts exhausted
         }
         return info;
@@ -191,7 +188,7 @@ public class CameraImageUpdateService {
         });
     }
 
-    private void writeKuva(byte[] realImage, long timestampEpochMillis, String filename, ImageUpdateInfo info, boolean isPublic) {
+    private void writeKuva(final byte[] realImage, final long timestampEpochMillis, final String filename, final ImageUpdateInfo info, final boolean isPublic) {
         final RetryTemplate retryTemplate = getRetryTemplate();
         retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
@@ -225,27 +222,6 @@ public class CameraImageUpdateService {
         final SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(RETRY_COUNT, retryableExceptions);
         retryTemplate.setRetryPolicy(retryPolicy);
         return retryTemplate;
-    }
-
-    private void updateCameraPresetAndHistory(final CameraPreset cameraPreset,
-                                              final boolean isImagePublic,
-                                              final ImageUpdateInfo updateInfo) {
-        // Update version data only if write has succeeded
-        if (updateInfo.isSuccess()) {
-            final CameraPresetHistory history =
-                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getS3VersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                                        isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
-            cameraPresetHistoryService.saveHistory(history);
-        }
-
-        if (cameraPreset.isPublic() != isImagePublic) {
-            cameraPreset.setPublic(isImagePublic);
-            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
-            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                     cameraPreset.getPresetId(), !isImagePublic, isImagePublic, updateInfo.getLastUpdated());
-        } else if (updateInfo.isSuccess()) {
-            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
-        }
     }
 
     static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
