@@ -134,7 +134,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                                                 final CameraPreset to) {
 
         final int hash = HashCodeBuilder.reflectionHashCode(to);
-        final String cameraId = CameraHelper.convertNaturalIdToCameraId(kameraFrom.getVanhaId());
+        final String cameraId = CameraHelper.convertNaturalIdToCameraId(kameraFrom.getVanhaId().longValue());
         final String presetId = CameraHelper.convertCameraIdToPresetId(cameraId, esiasentoFrom.getSuunta());
 
         if ( to.getCameraId() != null && !to.getCameraId().equals(cameraId) ) {

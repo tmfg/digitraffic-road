@@ -3,9 +3,8 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 import static org.junit.Assert.assertEquals;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -13,12 +12,14 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 
@@ -30,10 +31,18 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
     private CameraPresetService cameraPresetService;
 
     @Autowired
+    private CameraPresetHistoryRepository cameraPresetHistoryRepository;
+
+    @Autowired
     private CameraPresetHistoryService cameraPresetHistoryService;
 
     @Autowired
     private EntityManager entityManager;
+
+    @Before
+    public void cleanHistory() {
+        cameraPresetHistoryRepository.deleteAll();
+    }
 
     @Test
     public void testSaveHistory() {
@@ -60,27 +69,13 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
     @Test
     public void testHistoryVersions() {
 
-        Map<String, List<CameraPresetHistory>> presetIdsToOldHistory = new HashMap<>();
         // Create 5 history item for 2 presets
-        cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
+        final List<String> presetIds = generateHistoryForPublicPresets(2, 5);
 
-            List<CameraPresetHistory> oldHistory = cameraPresetHistoryService.findAllByPresetIdInclSecret(cp.getPresetId());
-            presetIdsToOldHistory.put(cp.getPresetId(), oldHistory);
+        presetIds.forEach(presetId -> {
 
-            final ZonedDateTime lastModified = ZonedDateTime.now();
-            IntStream.range(0, 5).forEach(i -> {
-                log.info("Create history nr. {} for preset {}", i, cp.getPresetId());
-                final CameraPresetHistory history = generateHistory(cp, lastModified.plusSeconds(i * 10));
-                cameraPresetHistoryService.saveHistory(history);
-            });
-        });
-
-        presetIdsToOldHistory.entrySet().forEach(t -> {
-            final String presetId = t.getKey();
             log.info("Check history for preset {}", presetId);
             final List<CameraPresetHistory> histories = cameraPresetHistoryService.findAllByPresetIdInclSecret(presetId);
-            // Remove earlier histories in db
-            log.info("Delete history: {}", histories.removeAll(t.getValue()));
             assertEquals(5,histories.size());
 
             ZonedDateTime prevDate = null;
@@ -92,6 +87,20 @@ public class CameraPresetHistoryServiceTest extends AbstractServiceTest {
                 prevDate = h.getLastModified();
             }
         });
+    }
+
+    private List<String> generateHistoryForPublicPresets(final int presetCount, final int historyCountPerPreset) {
+        final List<String> presetIds = new ArrayList<>();
+        cameraPresetService.findAllPublishableCameraPresets().stream().limit(presetCount).forEach(cp -> {
+            presetIds.add(cp.getPresetId());
+            final ZonedDateTime lastModified = ZonedDateTime.now();
+            IntStream.range(0, historyCountPerPreset).forEach(i -> {
+                log.info("Create history nr. {} for preset {}", i, cp.getPresetId());
+                final CameraPresetHistory history = generateHistory(cp, lastModified.plusSeconds(i * 10));
+                cameraPresetHistoryService.saveHistory(history);
+            });
+        });
+        return presetIds;
     }
 
     private static CameraPresetHistory generateHistory(final CameraPreset preset, final ZonedDateTime lastModified) {

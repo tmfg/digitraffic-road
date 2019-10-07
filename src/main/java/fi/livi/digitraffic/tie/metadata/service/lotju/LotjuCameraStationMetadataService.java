@@ -94,7 +94,7 @@ public class LotjuCameraStationMetadataService {
             if (kamera.getVanhaId() != null) {
                 final List<EsiasentoVO> esiasennot = getEsiasentos(kamera.getId());
 
-                final String kameraId = CameraHelper.convertNaturalIdToCameraId(kamera.getVanhaId());
+                final String kameraId = CameraHelper.convertNaturalIdToCameraId(kamera.getVanhaId().longValue());
                 esiasennot.forEach(esiasento -> {
 
                     final String presetId = CameraHelper.convertCameraIdToPresetId(kameraId, esiasento.getSuunta());

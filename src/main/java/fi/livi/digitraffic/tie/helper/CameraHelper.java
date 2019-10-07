@@ -18,7 +18,7 @@ public class CameraHelper {
      * @param naturalId = vanhaId
      * @return Camera id
      */
-    public static String convertNaturalIdToCameraId(final Integer naturalId) {
+    public static String convertNaturalIdToCameraId(final Long naturalId) {
         return StringUtils.leftPad(naturalId.toString(), 6, "C00000");
     }
 
