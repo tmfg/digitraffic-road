@@ -105,7 +105,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             }
             rs.setCollectionStatus(CollectionStatus.GATHERING);
             rs.unobsolete();
-            rs.setPublic(true);
+            rs.updatePublicity(true);
             cp.unobsolete();
             cp.setPublic(true);
         }

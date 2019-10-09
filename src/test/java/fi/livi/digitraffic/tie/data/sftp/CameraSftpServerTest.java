@@ -105,7 +105,7 @@ public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
                 missingCount--;
             }
             rs.unobsolete();
-            rs.setPublic(true);
+            rs.updatePublicity(true);
             cp.unobsolete();
             cp.setPublic(true);
         }

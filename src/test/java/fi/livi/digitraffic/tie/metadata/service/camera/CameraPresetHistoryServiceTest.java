@@ -103,9 +103,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         // Public 0. and 1., secret 2., 3. and 4.
         CameraPresetHistory middle = all.get(2);
-        rs.setPublicPrevious(true);
-        rs.setPublic(false);
-        rs.setPublicityStartTime(middle.getLastModified());
+        rs.updatePublicity(true);
+        rs.updatePublicity(false, middle.getLastModified()); // -> previous public
+
         cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(modifiedPresetId);
@@ -131,9 +131,8 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         final CameraPreset cp = cameraPresetService.findCameraPresetByPresetId(presetId);
         final RoadStation rs = cp.getRoadStation();
-        rs.setPublicPrevious(true);
-        rs.setPublic(false);
-        rs.setPublicityStartTime(ZonedDateTime.now().plusDays(1));
+        rs.updatePublicity(true);
+        rs.updatePublicity(false, ZonedDateTime.now().plusDays(1)); // -> previous/now public, future secret
         cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(presetId);

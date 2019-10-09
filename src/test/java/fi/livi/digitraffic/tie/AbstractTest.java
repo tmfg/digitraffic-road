@@ -132,7 +132,7 @@ public abstract class AbstractTest {
         rs.setNaturalId(80000  + RandomUtils.nextLong(1000, 10000));
         rs.setName(roadStationType.name());
         rs.setLotjuId(rs.getNaturalId());
-        rs.setPublic(true);
+        rs.updatePublicity(true);
         rs.setCollectionStatus(CollectionStatus.GATHERING);
         rs.setPurpose("Maisema");
         rs.setLatitude(BigDecimal.valueOf(6687086));

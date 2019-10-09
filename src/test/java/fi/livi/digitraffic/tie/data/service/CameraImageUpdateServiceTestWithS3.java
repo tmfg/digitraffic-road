@@ -67,7 +67,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
 
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(2).forEach(cp -> {
             // Set station to public
-            cp.getRoadStation().setPublic(true);
+            cp.getRoadStation().updatePublicity(true);
             cameraPresetService.save(cp);
             presetIds.add(cp.getPresetId());
 
@@ -198,7 +198,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
 
     private void handleKuva(final CameraPreset cp, final ZonedDateTime lastModified, final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex) {
         final KuvaProtos.Kuva kuva = createKuva(lastModified, cp.getPresetId(), cp.getLotjuId(), presetPublicity);
-        cp.getRoadStation().setPublic(cameraPublicity);
+        cp.getRoadStation().updatePublicity(cameraPublicity);
         cameraPresetService.save(cp);
         service.handleKuva(kuva);
     }

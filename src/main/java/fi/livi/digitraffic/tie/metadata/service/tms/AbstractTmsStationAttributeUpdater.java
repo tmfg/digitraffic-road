@@ -24,7 +24,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
+        to.updatePublicity(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.TMS_STATION);
         to.setName(from.getNimi());

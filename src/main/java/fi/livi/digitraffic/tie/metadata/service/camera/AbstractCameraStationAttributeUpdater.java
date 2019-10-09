@@ -35,20 +35,17 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         }
         to.setLotjuId(from.getId());
 
-        final boolean currentIsPublic = to.isPublic();
-        final ZonedDateTime currentPublicityStartTime = to.getPublicityStartTime();
-        to.setPublic(from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso());
-        to.setPublicityStartTime(from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillis(from.getJulkisuus().getAlkaen()) : null);
-        // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
-        // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
-        if ( currentIsPublic != to.isPublic() &&
-            (currentPublicityStartTime == null || !currentPublicityStartTime.isAfter(ZonedDateTime.now())) ) {
-            to.setPublicPrevious(currentIsPublic);
-        }
+        final boolean isPublicOld = to.isPublic();
+        final boolean isPublicPreviousOld = to.isPublicPrevious();
+        final ZonedDateTime publicityStartTimeOld = to.getPublicityStartTime();
 
-        if ( currentIsPublic != to.isPublic() || !Objects.equals(currentPublicityStartTime, to.getPublicityStartTime())) {
-            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} previousPublic={} with start time fromPublicStart={} toPublicStart={}",
-                     currentIsPublic, to.isPublic(), currentPublicityStartTime, to.getPublicityStartTime(), to.isPublicPrevious());
+        final ZonedDateTime publicityStartTimeNew = from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillis(from.getJulkisuus().getAlkaen()) : null;
+        final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
+        final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
+        if ( changed ) {
+            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
+                     "fromPublicityStartTime={} toPublicityStartTime={}",
+                     isPublicOld, to.isPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
         }
 
         to.setNaturalId(from.getVanhaId().longValue());

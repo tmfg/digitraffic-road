@@ -24,7 +24,7 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
+        to.updatePublicity(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.WEATHER_STATION);
         to.setName(from.getNimi());

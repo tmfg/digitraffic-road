@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -119,9 +120,12 @@ public class RoadStation {
     private boolean publishable;
 
     protected RoadStation() {
+        setPublic(true);
+        setPublicPrevious(true);
     }
 
     public RoadStation(final RoadStationType type) {
+        this();
         setType(type);
     }
 
@@ -170,8 +174,8 @@ public class RoadStation {
         this.roadStationType = type;
     }
 
-    public void setPublic(final boolean aPublic) {
-        this.isPublic = aPublic;
+    private void setPublic(final boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     public boolean isPublic() {
@@ -182,18 +186,17 @@ public class RoadStation {
         return isPublicPrevious;
     }
 
-    public void setPublicPrevious(boolean publicPrevious) {
+    private void setPublicPrevious(boolean publicPrevious) {
         isPublicPrevious = publicPrevious;
     }
 
-    public void setPublicityStartTime(final ZonedDateTime publicityStartTime) {
+    private void setPublicityStartTime(final ZonedDateTime publicityStartTime) {
         this.publicityStartTime = publicityStartTime;
     }
 
     public ZonedDateTime getPublicityStartTime() {
         return publicityStartTime;
     }
-
 
     public boolean isObsolete() {
         return obsoleteDate != null;
@@ -408,11 +411,40 @@ public class RoadStation {
                 .toString();
     }
 
+    /**
+     * Gets current publicity status
+     * @return Is station public at the moment
+     */
     public boolean isPublicNow() {
         // If current value is valid now, let's use it
         if (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) {
             return isPublic;
         }
         return isPublicPrevious;
+    }
+
+    /**
+     * Updates fields: isPublic, publicityStartTime and isPublicPrevious
+     *
+     * @param isPublicNew new publicity value
+     * @param publicityStartTimeNew time when new publicity value is valid from
+     *
+     * @return was there status change
+     */
+    public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
+        final boolean changed = isPublic != isPublicNew || !Objects.equals(publicityStartTime, publicityStartTimeNew);
+        // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
+        // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
+        if ( isPublic != isPublicNew &&
+            (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) ) {
+            setPublicPrevious(isPublic);
+        }
+        setPublic(isPublicNew);
+        setPublicityStartTime(publicityStartTimeNew);
+        return changed;
+    }
+
+    public void updatePublicity(final boolean isPublicNew) {
+        updatePublicity(isPublicNew, null);
     }
 }
