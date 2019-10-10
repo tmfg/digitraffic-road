@@ -22,9 +22,5 @@ public interface WeatherStationRepository extends JpaRepository<WeatherStation, 
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<WeatherStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
-    List<WeatherStation> findByLotjuIdIsNull();
-
     WeatherStation findByLotjuId(Long lotjuId);
 }

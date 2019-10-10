@@ -10,16 +10,20 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,23 +35,25 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
+import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500" })
-public class CameraSftpServerTest extends AbstractSftpTest {
+@TestPropertySource( properties = { "camera-image-uploader.imageUpdateTimeout=500",
+                                    "road.datasource.hikari.maximum-pool-size=6"})
+public class CameraSftpServerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraSftpServerTest.class);
 
     private static final String RESOURCE_IMAGE_SUFFIX = "image.jpg";
@@ -75,10 +81,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
     @Value("${camera-image-uploader.sftp.uploadFolder}")
     private String sftpUploadFolder;
 
-    private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList();
+    @Autowired
+    CameraImageS3Writer cameraImageS3Writer;
+
+    private ArrayList<KuvaProtos.Kuva> kuvas = new ArrayList<>();
 
     @Before
-    public void setUpTestData() throws IOException {
+    public void setUpTestData() throws IOException, SftpException {
 
         log.info("Init test data");
 
@@ -134,15 +143,19 @@ public class CameraSftpServerTest extends AbstractSftpTest {
 
             // Upload missing presets images to server
             if (cp.getPresetId().startsWith("X")) {
-                log.info("Write image to sftp that should be deleted by update sftpPath={}", getSftpPath(kuva));
-                session.write(new ByteArrayInputStream(bytes), getSftpPath(kuva));
+                final String imageFullPath = getSftpPath(kuva);
+                log.info("Write image to sftp that should be deleted by update sftpPath={}", imageFullPath);
+                session.write(new ByteArrayInputStream(bytes), imageFullPath);
+                ((ChannelSftp) session.getClientInstance()).setMtime(imageFullPath, (int ) (kuva.getAikaleima() / 1000) );
                 Session otherSession = this.sftpSessionFactory.getSession();
-                assertTrue("Image not found on sftp server", otherSession.exists(getSftpPath(kuva)));
+                assertTrue("Image not found on sftp server", otherSession.exists(imageFullPath));
                 otherSession.close();
+                cameraImageS3Writer.writeImage(bytes, bytes, getImageFilename(kuva.getNimi()), kuva.getAikaleima());
             }
         }
         session.close();
     }
+
 
     @Test
     public void testDeleteNotPublishableCameraImages() throws Exception {
@@ -161,6 +174,13 @@ public class CameraSftpServerTest extends AbstractSftpTest {
             Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, stat.getMTime());
         }
 
+        assertTrue("Publishable preset image should exist: " + presetToDelete, s3.doesObjectExist(weathercamBucketName, getImageFilename(presetToDelete.getPresetId())));
+        S3Object s3Object = s3.getObject(weathercamBucketName, getImageFilename(presetToDelete.getPresetId()));
+        long lastModifiedSecondsFromEpoch = getLastModifiedSeconds(s3Object);
+
+        log.info("Kuva timestamp {} vs S3 image timestamp {}", Instant.ofEpochMilli(kuvaToDelete.getAikaleima()), Instant.ofEpochSecond(lastModifiedSecondsFromEpoch));
+        Assert.assertEquals(kuvaToDelete.getAikaleima()/1000, lastModifiedSecondsFromEpoch);
+
         presetToDelete.setPublic(false);
         entityManager.flush();
 
@@ -171,13 +191,35 @@ public class CameraSftpServerTest extends AbstractSftpTest {
         }
     }
 
+    @Test
+    public void testS3Versioning() throws IOException {
+
+        final String key = "C1234567.jpg";
+        long ts = Instant.now().getEpochSecond();
+        final List<Pair<String, byte[]>> dataWritten = new ArrayList<>();
+        IntStream.range(0, 5).forEach(i -> {
+            final byte[] img = new byte[] { (byte) i };
+            final String versionId = cameraImageS3Writer.writeImage(img, img, key, ts + i);
+            dataWritten.add(Pair.of(versionId, img));
+        });
+
+        dataWritten.forEach(p -> {
+            final byte[] dataRead = readWeathercamS3DataVersion(CameraImageS3Writer.getVersionedKey(key), p.getKey());
+            Assert.assertArrayEquals("Data written differs from data read for versions", p.getValue(), dataRead);
+        });
+        // Test latest
+        S3Object latest = s3.getObject(weathercamBucketName, key);
+        final byte[] dataRead = latest.getObjectContent().readAllBytes();
+        Assert.assertArrayEquals("Data written differs from data read for latest image", dataWritten.get(dataWritten.size()-1).getValue(), dataRead);
+    }
+
     private KuvaProtos.Kuva createKuvaDataAndHttpStub(final CameraPreset cp, final byte[] data, final int httpResponseDelay) {
         KuvaProtos.Kuva.Builder kuva = KuvaProtos.Kuva.newBuilder();
         kuva.setNimi(cp.getPresetId());
         kuva.setAikaleima(Instant.now().toEpochMilli());
         kuva.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 10000));
         kuva.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 10000));
-        kuva.setEsiasentoId(cp.getLotjuId() != null ? cp.getLotjuId() : RandomUtils.nextLong(10000, 100000));
+        kuva.setEsiasentoId(cp.getLotjuId());
         kuva.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
         kuva.setJulkinen(true);
         kuva.setKameraId(Long.parseLong(cp.getCameraId().substring(1)));
@@ -208,5 +250,21 @@ public class CameraSftpServerTest extends AbstractSftpTest {
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)
                         .withFixedDelay(httpResponseDelay)));
+    }
+
+    private String getImageFilename(final String presetId) {
+        return presetId + ".jpg";
+    }
+
+    private String getImageFilename(final KuvaProtos.Kuva kuva) {
+        return getImageFilename(kuva.getNimi());
+    }
+
+    private long getLastModifiedSeconds(final S3Object s3Object) throws ParseException {
+        final String lastModified = s3Object.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER);
+        final Date lastModifiedS3Date = s3Object.getObjectMetadata().getLastModified();
+        Date time = CameraImageS3Writer.LAST_MODIFIED_FORMAT.parse(lastModified);
+        log.info("User meta : {} S3 meta: {}", time.toInstant(), lastModifiedS3Date.toInstant());
+        return time.toInstant().getEpochSecond();
     }
 }

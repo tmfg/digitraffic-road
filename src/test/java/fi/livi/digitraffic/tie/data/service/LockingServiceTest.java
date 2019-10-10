@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
@@ -17,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.data.dao.LockingDao;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
@@ -87,17 +90,18 @@ public class LockingServiceTest extends AbstractJpaTest {
     }
 
     private void assertNoOverlap(final Long start, final Long prevStart) {
+        ZonedDateTime startZdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(start), ZoneOffset.UTC);
         final long startLimit = prevStart + LOCK_EXPIRATION_S * 1000 - LOCKING_TIME_EXTRA;
-        Assert.assertTrue(String.format("start %d should be ge than %d", start, startLimit),
+        Assert.assertTrue(String.format("start %s should be ge than %s", startZdt,  ZonedDateTime.ofInstant(Instant.ofEpochMilli(startLimit), ZoneOffset.UTC)),
             start >= startLimit);
 
         final long endLimit = prevStart + (LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000;
-        Assert.assertTrue(String.format("Start %d should be le than %d", start, endLimit),
+        Assert.assertTrue(String.format("Start %s should be le than %s", startZdt, ZonedDateTime.ofInstant(Instant.ofEpochMilli(endLimit), ZoneOffset.UTC)),
             start <= endLimit);
     }
 
     @Test
-    public void testLockingExpirationFast2() {
+    public void testLockingAfterExpiration() throws InterruptedException {
         final String LOCK_NAME_1 = "Lock1";
         final String LOCK_NAME_2 = "Lock2";
         final int EXPIRATION_SECONDS = 5;
@@ -122,7 +126,10 @@ public class LockingServiceTest extends AbstractJpaTest {
         while (!locked1Second) {
             locked1Second = lockingService2.acquireLock(LOCK_NAME_1, EXPIRATION_SECONDS);
             long now = System.currentTimeMillis();
-            log.info("LOCK_NAME_1 acquired: " + locked1Second + ", time from locking " +  (double)(now-locked1Time)/1000.0 + " seconds" );
+            final double timeFromLocking = (double) (now - locked1Time) / 1000.0;
+            if (timeFromLocking > 4.95 ) {
+                log.info("LOCK_NAME_1 acquired: {}, time from locking {} seconds", locked1Second, timeFromLocking);
+            }
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {
                 Assert.assertFalse("Lock acquired before expiration", locked1Second);
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
@@ -145,14 +152,16 @@ public class LockingServiceTest extends AbstractJpaTest {
             int counter = 0;
             while (counter < LOCK_COUNT) {
                 final boolean locked = lockingService.acquireLock(lock, LOCK_EXPIRATION_S);
-                final long timestamp = System.currentTimeMillis();
-                if (locked) {
-                    synchronized(LOCK) {
-                        log.info("Acquired Lock=[{}] for instanceId=[{}]", lock, lockingService.getInstanceId());
+                synchronized(LOCK) {
+                    final long timestamp = System.currentTimeMillis();
+                    if (locked) {
+                        log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, lockingService.getInstanceId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
                         lockStarts.add(timestamp);
                         lockerInstanceIds.add(lockingService.getInstanceId());
+                        counter++;
                     }
-                    counter++;
+                }
+                if (locked) {
                     // Sleep little more than expiration time so another thread should get the lock
                     sleep((LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000);
                 }

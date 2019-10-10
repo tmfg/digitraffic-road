@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.persistence.EntityManager;
-import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -35,12 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.data.sftp.AbstractSftpTest;
+import fi.livi.digitraffic.tie.data.sftp.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -48,7 +48,9 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
-public class CameraJmsMessageListenerTest extends AbstractSftpTest {
+@TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
+                                   "road.datasource.hikari.maximum-pool-size=6"})
+public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
     private static final String IMAGE_SUFFIX = "image.jpg";
@@ -101,9 +103,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             if (!rs.isPublishable() || !cp.isPublishable()) {
                 missingMin--;
             }
-            if (rs.getLotjuId() == null) {
-                rs.setLotjuId(rs.getId() * -1);
-            }
             rs.setCollectionStatus(CollectionStatus.GATHERING);
             rs.unobsolete();
             rs.setPublic(true);
@@ -118,9 +117,6 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
     /**
      * Send some data bursts to jms handler and test performance of database updates.
-     * @throws IOException
-     * @throws JMSException
-     * @throws DatatypeConfigurationException
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
@@ -153,7 +149,8 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
             return updated;
         };
 
-        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener = new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
+        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
+            new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
 
         Instant time = Instant.now();
 
@@ -163,7 +160,7 @@ public class CameraJmsMessageListenerTest extends AbstractSftpTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 2000;
+        long maxHandleTime = testBurstsLeft * 2200;
         final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
 
         StopWatch sw = new StopWatch();

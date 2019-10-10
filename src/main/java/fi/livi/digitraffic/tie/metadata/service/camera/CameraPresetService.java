@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
+import fi.livi.digitraffic.tie.data.service.ImageUpdateInfo;
+import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 
 @Service
 public class CameraPresetService {
@@ -36,17 +41,17 @@ public class CameraPresetService {
 
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
 
+    private final CameraPresetHistoryRepository cameraPresetHistoryRepository;
     private final CameraPresetRepository cameraPresetRepository;
 
     @Autowired
-    public CameraPresetService(final EntityManager entityManager,
-                               final CameraPresetRepository cameraPresetRepository,
-                               final RoadStationRepository roadStationRepository,
-                               final WeatherStationRepository weatherStationRepository) {
+    public CameraPresetService(final EntityManager entityManager, final CameraPresetRepository cameraPresetRepository, final RoadStationRepository roadStationRepository,
+        final WeatherStationRepository weatherStationRepository, final CameraPresetHistoryRepository cameraPresetHistoryRepository) {
         this.entityManager = entityManager;
         this.roadStationRepository = roadStationRepository;
         this.weatherStationRepository = weatherStationRepository;
         this.cameraPresetRepository = cameraPresetRepository;
+        this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
     }
 
     private CriteriaBuilder createCriteriaBuilder() {
@@ -56,7 +61,7 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public Map<Long, CameraPreset> findAllCameraPresetsMappedByLotjuId() {
         final List<CameraPreset> allStations = cameraPresetRepository.findAll();
-        return allStations.stream().filter(cp -> cp.getLotjuId() != null).collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
+        return allStations.stream().collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -83,11 +88,6 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public List<CameraPreset> findAllCameraPresetsWithoutRoadStation() {
-        return cameraPresetRepository.findAllCameraPresetsWithoutRoadStation();
-    }
-
-    @Transactional(readOnly = true)
     public List<CameraPreset> findAllPublishableCameraPresets() {
         return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
     }
@@ -95,12 +95,6 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public List<String> findAllNotPublishableCameraPresetsPresetIds() {
         return cameraPresetRepository.findAllNotPublishableCameraPresetsPresetIds();
-    }
-
-    @Transactional(readOnly = true)
-    public Map<String, List<CameraPreset>> findWithoutLotjuIdMappedByCameraId() {
-        final List<CameraPreset> all = cameraPresetRepository.findByRoadStation_LotjuIdIsNullOrLotjuIdIsNull();
-        return all.stream().collect(Collectors.groupingBy(CameraPreset::getCameraId));
     }
 
     @Transactional(readOnly = true)
@@ -140,5 +134,33 @@ public class CameraPresetService {
     @Transactional(readOnly = true)
     public CameraPreset findPublishableCameraPresetByLotjuId(final long presetLotjuId) {
         return cameraPresetRepository.findByPublishableTrueAndLotjuId(presetLotjuId);
+    }
+
+    @Transactional(readOnly = true)
+    public CameraPreset findCameraPresetByLotjuId(final long presetLotjuId) {
+        return cameraPresetRepository.findByLotjuId(presetLotjuId);
+    }
+
+    @Transactional
+    public void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean isImagePublic, final ImageUpdateInfo updateInfo) {
+        // Update version data only if write has succeeded
+        if (updateInfo.isSuccess()) {
+            final CameraPresetHistory history =
+                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getS3VersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
+                    isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+
+            cameraPresetHistoryRepository.save(history);
+        }
+
+        if (cameraPreset.isPublic() != isImagePublic) {
+            cameraPreset.setPublic(isImagePublic);
+            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
+            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
+                cameraPreset.getPresetId(), !isImagePublic, isImagePublic, updateInfo.getLastUpdated());
+        } else if (updateInfo.isSuccess()) {
+            cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
+        }
+
+        cameraPresetRepository.save(cameraPreset);
     }
 }

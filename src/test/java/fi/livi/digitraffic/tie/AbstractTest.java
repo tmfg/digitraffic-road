@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
@@ -36,8 +37,8 @@ import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RoadApplication.class,
-                properties = { "config.test=true" },
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = { "config.test=true" })
 @Transactional
 public abstract class AbstractTest {
     @Autowired

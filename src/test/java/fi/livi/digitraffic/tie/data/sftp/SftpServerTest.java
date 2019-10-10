@@ -22,7 +22,7 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.util.PoolItemNotAvailableException;
 import org.springframework.util.ReflectionUtils;
 
-public class SftpServerTest extends AbstractSftpTest {
+public class SftpServerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(SftpServerTest.class);
 
     @Autowired
@@ -65,7 +65,7 @@ public class SftpServerTest extends AbstractSftpTest {
                 sessions.add(this.sftpSessionFactory.getSession());
             } else {
                 // getting session out of pool fails
-                log.info("Getting session of full should fail after timeout");
+                log.info("Getting session of full pool should fail after timeout");
                 StopWatch time = StopWatch.createStarted();
                 boolean fail = false;
                 try {
@@ -99,9 +99,7 @@ public class SftpServerTest extends AbstractSftpTest {
         Field sessionField = ReflectionUtils.findField(CachingSessionFactory.CachedSession.class, "targetSession");
         sessionField.setAccessible(true);
         Set<Session> newRealSessions = new HashSet<>();
-        newSessions.forEach(s -> {
-            newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
+        newSessions.forEach(s -> newRealSessions.add((Session) ReflectionUtils.getField(sessionField, s)));
 
         HashSet<Session> cachedSessions = new HashSet<>();
         while(cachedSessions.size() < poolSize) {
@@ -109,9 +107,7 @@ public class SftpServerTest extends AbstractSftpTest {
             cachedSessions.add(this.sftpSessionFactory.getSession());
         }
         Set<Session> cachedRealSessions = new HashSet<>();
-        cachedSessions.forEach(s -> {
-            cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s));
-        });
+        cachedSessions.forEach(s -> cachedRealSessions.add((Session) ReflectionUtils.getField(sessionField, s)));
 
         assertTrue("All sessions should be found from cachedSessions", cachedRealSessions.containsAll(newRealSessions));
         cachedSessions.forEach(Session::close);

@@ -1,32 +1,69 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.ZonedDateTime;
+
 public class ImageUpdateInfo {
 
-    public enum Status { SUCCESS, FAILED, NONE;
+    public enum Status {
+        SUCCESS, FAILED, NONE;
 
         public boolean isSuccess() {
             return this.equals(SUCCESS);
         }
     }
 
-    public ImageUpdateInfo(final String presetId, final String fullPath) {
-        this.presetId = presetId;
-        this.fullPath = fullPath;
-    }
+    private final String presetId;
+    private final String fullPath;
+    private final ZonedDateTime lastUpdated;
 
     private long readTotalDurationMs = 0;
     private long writeTotalDurationMs = 0;
     private long readDurationMs = 0;
     private long writeDurationMs = 0;
     private String downloadUrl;
-    private String presetId;
-    private String fullPath;
     private int sizeBytes = -1;
     private Status readStatus = Status.NONE;
     private Status writeStatus = Status.NONE;
     private Throwable readError;
     private Throwable writeError;
-    private int imageTimestampEpochSecond;
+    private long imageTimestampEpochMillis;
+
+    private String s3VersionId;
+    private long s3WriteDurationMs;
+
+    public ImageUpdateInfo(final String presetId, final String fullPath, final ZonedDateTime lastUpdated) {
+        this.presetId = presetId;
+        this.fullPath = fullPath;
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getPresetId() {
+        return presetId;
+    }
+
+    String getFullPath() {
+        return fullPath;
+    }
+
+    public ZonedDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setS3VersionId(final String versionId) {
+        this.s3VersionId = versionId;
+    }
+
+    public String getS3VersionId() {
+        return s3VersionId;
+    }
+
+    public void setS3WriteDurationMs(final long s3WriteDurationMs) {
+        this.s3WriteDurationMs = s3WriteDurationMs;
+    }
+
+    public long getS3WriteDurationMs() {
+        return s3WriteDurationMs;
+    }
 
     public void updateReadTotalDurationMs(final long currentReadDurationMs) {
         readTotalDurationMs += currentReadDurationMs;
@@ -60,27 +97,11 @@ public class ImageUpdateInfo {
         return downloadUrl;
     }
 
-    public void setPresetId(final String presetId) {
-        this.presetId = presetId;
-    }
-
-    public String getPresetId() {
-        return presetId;
-    }
-
-    void setFullPath(final String fullPath) {
-        this.fullPath = fullPath;
-    }
-
-    String getFullPath() {
-        return fullPath;
-    }
-
     void setSizeBytes(final int sizeBytes) {
         this.sizeBytes = sizeBytes;
     }
 
-    int getSizeBytes() {
+    public int getSizeBytes() {
         return sizeBytes;
     }
 
@@ -118,20 +139,12 @@ public class ImageUpdateInfo {
         setWriteError(null);
     }
 
-    boolean isSuccess() {
+    public boolean isSuccess() {
         return getReadStatus().isSuccess() && getWriteStatus().isSuccess();
     }
 
     long getDurationMs() {
         return getReadDurationMs() + getWriteDurationMs();
-    }
-
-    public void setImageTimestampEpochSecond(final int imageTimestampEpochSecond) {
-        this.imageTimestampEpochSecond = imageTimestampEpochSecond;
-    }
-
-    public int getImageTimestampEpochSecond() {
-        return imageTimestampEpochSecond;
     }
 
     void updateReadStatusFailed(final Throwable readException) {

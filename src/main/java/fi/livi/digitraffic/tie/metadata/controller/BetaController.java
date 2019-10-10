@@ -4,10 +4,12 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
+import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
@@ -23,6 +26,7 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,17 +43,21 @@ public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String VARIABLE_SIGNS_DATA_PATH = "/variable-signs";
+    public static final String CAMERA_PRESET_HISTORY_PATH = "/camera-preset-history";
 
     private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     @Autowired
     public BetaController(final VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
-        final TmsDataDatex2Service tmsDataDatex2Service) {
+        final TmsDataDatex2Service tmsDataDatex2Service,
+                          final CameraPresetHistoryService cameraPresetHistoryService) {
         this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
     }
 
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
@@ -92,5 +100,23 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listVariableSignHistory(deviceId);
+    }
+
+    @ApiOperation("List the history of camera preset imaCameraPresetHistoryServiceCameraPresetHistoryServiceCameraPresetHistoryServiceges")
+// TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done
+//    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces =
+//        APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
+    public PresetHistoryDto getPresetHistory(
+        @ApiParam("Camera preset id")
+        @PathVariable
+        final String presetId,
+        @ApiParam("Return the history at given time. Time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} e.g. 2016-10-31T06:30:00.000Z. " +
+                  "If the time is not given then the history of last 24h is returned.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "atTime", required = false)
+        final ZonedDateTime atTime) {
+
+        return cameraPresetHistoryService.findHistoryInclSecret(presetId, atTime);
     }
 }

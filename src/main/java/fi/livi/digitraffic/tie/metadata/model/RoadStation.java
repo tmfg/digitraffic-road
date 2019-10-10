@@ -43,6 +43,7 @@ public class RoadStation {
     @NotNull
     private Long naturalId;
 
+    @NotNull
     private Long lotjuId;
 
     private String name;

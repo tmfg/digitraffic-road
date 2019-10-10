@@ -34,17 +34,20 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
     private final EntityManager entityManager;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     @Autowired
     public CameraStationUpdateService(final CameraPresetService cameraPresetService,
                                       final RoadStationService roadStationService,
                                       final WeatherStationService weatherStationService,
-                                      final EntityManager entityManager) {
+                                      final EntityManager entityManager,
+                                      final CameraPresetHistoryService cameraPresetHistoryService) {
         super(LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class));
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
         this.entityManager = entityManager;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
     }
 
     /**
@@ -59,7 +62,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // DPO-567 and DPO-681: Obsolete all presets before upgrading. Preset's LotjuIds and directions might change once in a while
         // so we want to get rid of ghosts and overlapping presetIds.
-        presets.values().stream().forEach(e -> e.obsolete());
+        presets.values().forEach(CameraPreset::obsolete);
         entityManager.flush();
 
         for (EsiasentoVO esiasento : esiasentos) {
@@ -191,8 +194,13 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // Update RoadStation
         try {
-            return updateRoadStationAttributes(kameraFrom, to.getRoadStation()) ||
-                hash != HashCodeBuilder.reflectionHashCode(to);
+            final RoadStation rs = to.getRoadStation();
+            final boolean wasPublic = rs.isPublic();
+            final boolean updated = updateRoadStationAttributes(kameraFrom, rs);
+            if (wasPublic != rs.isPublic()) {
+                cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
+            }
+            return updated || hash != HashCodeBuilder.reflectionHashCode(to);
         } catch (Exception e) {
             log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
                 kameraFrom.getNimiFi(), kameraFrom.getId(), kameraFrom.getVanhaId(), kameraFrom.getKeruunTila());

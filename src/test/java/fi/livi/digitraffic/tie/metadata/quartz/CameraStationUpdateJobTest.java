@@ -11,13 +11,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 
-public class CameraStationUpdateJobTest extends AbstractDaemonTest {
+public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
@@ -128,10 +128,10 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTest {
     }
 
     private CameraPreset findWithPresetId(final List<CameraPreset> collection, final String presetId) {
-        return collection.stream().filter(cp -> cp.getPresetId().equals(presetId)).findFirst().orElseGet(() -> null);
+        return collection.stream().filter(cp -> cp.getPresetId().equals(presetId)).findFirst().orElse( null);
     }
 
     private CameraPreset findWithCameraId(final List<CameraPreset> collection, final String cameraId) {
-        return collection.stream().filter(cp -> cp.getCameraId().equals(cameraId)).findFirst().orElseGet(() -> null);
+        return collection.stream().filter(cp -> cp.getCameraId().equals(cameraId)).findFirst().orElse(null);
     }
 }

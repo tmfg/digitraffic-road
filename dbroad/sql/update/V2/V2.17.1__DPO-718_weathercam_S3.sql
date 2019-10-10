@@ -1,0 +1,3 @@
+CREATE INDEX CAMERA_PRESET_HISTORY_PRESET_ID_LAST_MODIFIED_I ON camera_preset_history (preset_id, last_modified) where publishable = true;
+
+DROP INDEX CAMERA_PRESET_HISTORY_LAST_MODIFIED_PUBLISHABLE_I;

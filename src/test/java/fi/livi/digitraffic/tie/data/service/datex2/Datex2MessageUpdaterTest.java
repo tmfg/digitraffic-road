@@ -21,13 +21,13 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = "datex2.traffic.alerts.url=Datex2Url")
-public class Datex2MessageUpdaterTest extends AbstractTest {
+public class Datex2MessageUpdaterTest extends AbstractServiceTest {
     @Autowired
     private Datex2TrafficAlertMessageUpdater messageUpdater;
 
