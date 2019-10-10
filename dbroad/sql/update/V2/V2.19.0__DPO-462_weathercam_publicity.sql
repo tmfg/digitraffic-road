@@ -13,3 +13,6 @@ COMMENT ON INDEX CAMERA_PRESET_HISTORY_LAST_MODIFIED_I is 'Updating history uses
 
 ALTER TABLE camera_preset
 ADD CONSTRAINT camera_preset_lotju_id_ui UNIQUE (lotju_id);
+
+-- Duplicate for road_station_lotju_ui (road_station_type, obsolete_date, lotju_id)
+drop index road_station_type_i1;

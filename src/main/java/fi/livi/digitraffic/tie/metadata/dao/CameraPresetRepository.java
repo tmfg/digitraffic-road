@@ -23,22 +23,42 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation", "nearestWeatherStation.roadStation", "nearestWeatherStation.roadStation.roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findAll();
 
-    // TODO DPO-462 Kelikamerakuvien salassapidon toteutus - rewrite to check publicity now, check RoadStation.isPublicNow()
-    /*
-        public boolean isPublicNow() {
-            // If current value is valid now, let's use it
-            if (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) {
-                return isPublic;
-            }
-            return isPublicPrevious;
-            }
-     */
+    @Query(value =
+               "SELECT cp, rs, ra, ws " +
+               "FROM CameraPreset cp " +
+               "inner join cp.roadStation as rs " +
+               "left outer join rs.roadAddress as ra " +
+               "left outer join cp.nearestWeatherStation as ws " +
+               "where cp.publishable = true " +
+               "  AND rs.obsoleteDate IS NULL " +
+               "  AND rs.collectionStatus <> 'REMOVED_PERMANENTLY' " +
+               "  AND ( " +
+               "        (rs.isPublic = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) <= CURRENT_TIMESTAMP) " +
+               "        OR (rs.isPublicPrevious = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) > CURRENT_TIMESTAMP) " +
+               "  ) " +
+               "ORDER BY cp.presetId")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
+    List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId();
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(final String cameraId);
+    @Query(value =
+               "SELECT cp, rs, ra, ws " +
+               "FROM CameraPreset cp " +
+               "inner join cp.roadStation as rs " +
+               "left outer join rs.roadAddress as ra " +
+               "left outer join cp.nearestWeatherStation as ws " +
+               "where cp.publishable = true " +
+               "  AND cp.cameraId=:cameraId " +
+               "  AND rs.obsoleteDate IS NULL " +
+               "  AND rs.collectionStatus <> 'REMOVED_PERMANENTLY' " +
+               "  AND ( " +
+               "        (rs.isPublic = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) <= CURRENT_TIMESTAMP) " +
+               "        OR (rs.isPublicPrevious = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) > CURRENT_TIMESTAMP) " +
+               "  ) " +
+               "ORDER BY cp.presetId")
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="20"))
+    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
+    List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
 
     @Query(value =
             "SELECT MAX(CP.PIC_LAST_MODIFIED) UPDATED\n" +
@@ -89,8 +109,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
                "      AND CP.ROAD_STATION_ID = ROAD_STATION.ID\n" +
                ")", nativeQuery = true)
     int obsoleteCameraRoadStationsWithoutPublishablePresets();
-
-    CameraPreset findByPublishableTrueAndLotjuId(long presetLotjuId);
 
     @EntityGraph(attributePaths = "roadStation")
     CameraPreset findByLotjuId(final long presetLotjuId);

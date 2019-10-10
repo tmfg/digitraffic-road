@@ -64,12 +64,6 @@ public class CameraPresetService {
         return allStations.stream().collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
     }
 
-    @Transactional(readOnly = true)
-    public List<CameraPreset> findAll() {
-        return cameraPresetRepository.findAll();
-    }
-
-    @Transactional
     public CameraPreset save(final CameraPreset cameraPreset) {
         try {
             // Cascade none
@@ -89,7 +83,7 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public List<CameraPreset> findAllPublishableCameraPresets() {
-        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId();
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId();
     }
 
     @Transactional(readOnly = true)
@@ -129,11 +123,6 @@ public class CameraPresetService {
     @Transactional
     public int nonObsoleteCameraRoadStationsWithPublishablePresets() {
         return cameraPresetRepository.nonObsoleteCameraRoadStationsWithPublishablePresets();
-    }
-
-    @Transactional(readOnly = true)
-    public CameraPreset findPublishableCameraPresetByLotjuId(final long presetLotjuId) {
-        return cameraPresetRepository.findByPublishableTrueAndLotjuId(presetLotjuId);
     }
 
     @Transactional(readOnly = true)

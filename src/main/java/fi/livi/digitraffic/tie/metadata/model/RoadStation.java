@@ -424,14 +424,20 @@ public class RoadStation {
     }
 
     /**
-     * Updates fields: isPublic, publicityStartTime and isPublicPrevious
+     * Updates fields: isPublic, publicityStartTime and isPublicPrevious. Used only for camera stations.
      *
      * @param isPublicNew new publicity value
      * @param publicityStartTimeNew time when new publicity value is valid from
      *
      * @return was there status change
+     *
+     * @throws IllegalStateException If called other than camera station
      */
     public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
+        if (!RoadStationType.CAMERA_STATION.equals(getType())) {
+            throw new IllegalStateException(String.format("Only %s can have publicityStartTime. Tried to it set to %s.",
+                                                          RoadStationType.CAMERA_STATION, this.getType()));
+        }
         final boolean changed = isPublic != isPublicNew || !Objects.equals(publicityStartTime, publicityStartTimeNew);
         // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
         // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
@@ -444,7 +450,7 @@ public class RoadStation {
         return changed;
     }
 
-    public void updatePublicity(final boolean isPublicNew) {
-        updatePublicity(isPublicNew, null);
+    public void updatePublicity(final boolean isPublic) {
+        updatePublicity(isPublic, null);
     }
 }

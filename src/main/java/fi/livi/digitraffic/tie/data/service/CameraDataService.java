@@ -35,7 +35,7 @@ public class CameraDataService {
             return new CameraRootDataObjectDto(updated);
         } else {
             return cameraPreset2CameraDataConverter.convert(
-                    cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(),
+                    cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(),
                     updated);
         }
     }
@@ -44,7 +44,7 @@ public class CameraDataService {
     public CameraRootDataObjectDto findPublishableCameraStationsData(final String cameraId) {
         final ZonedDateTime updated = DateHelper.toZonedDateTimeAtUtc(cameraPresetRepository.getLatestMeasurementTime());
         final List<CameraPreset> data = cameraPresetRepository
-                .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableIsTrueOrderByPresetId(cameraId);
+                .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
 
         if (data.isEmpty()) {
             throw new ObjectNotFoundException("CameraStation", cameraId);
