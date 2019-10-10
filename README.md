@@ -1,4 +1,4 @@
-# digitraffic-metadata
+# digitraffic-road
 
 ## Development
 
@@ -58,6 +58,11 @@ Or build the JAR file with:
  And run the JAR by typing:
 
     $ java -Dspring.profiles.active=localhost -jar target/metadata-0.0.1-SNAPSHOT.jar
+
+### Running tests
+
+Copy the template application-default.properties.template to application-default.properties.
+Running may also require to specify the active Spring profile by setting _-Dspring.profiles.active=default_.
 
 ### Generate SchemaSpy schemas from the db with Maven
 
