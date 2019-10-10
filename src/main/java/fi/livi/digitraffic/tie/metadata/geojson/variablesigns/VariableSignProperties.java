@@ -31,6 +31,7 @@ public class VariableSignProperties {
     public final Carriageway carriageway;
 
     // data properties
+    @JsonInclude
     public final String displayInformation;
     public final String additionalInformation;
     @ApiModelProperty("Information is effect after this date")
