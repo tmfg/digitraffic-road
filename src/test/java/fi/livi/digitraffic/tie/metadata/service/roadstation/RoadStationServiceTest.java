@@ -59,11 +59,4 @@ public class RoadStationServiceTest extends AbstractServiceTest {
 
         Assert.assertNull(roadStation);
     }
-
-    @Test
-    public void findOrphansByTypeMappedByNaturalId() {
-        final Map<Long, RoadStation> idMap = roadStationService.findOrphansByTypeMappedByNaturalId(RoadStationType.TMS_STATION);
-
-        assertCollectionSize(0, idMap.entrySet());
-    }
 }

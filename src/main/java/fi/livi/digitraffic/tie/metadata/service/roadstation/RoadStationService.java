@@ -77,26 +77,6 @@ public class RoadStationService {
         return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
     }
 
-    @Transactional(readOnly = true)
-    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> orphans;
-        if (RoadStationType.TMS_STATION == type) {
-            orphans = roadStationRepository.findOrphanTmsRoadStations();
-        } else if (RoadStationType.CAMERA_STATION == type) {
-            orphans = roadStationRepository.findOrphanCameraRoadStations();
-        } else if (RoadStationType.WEATHER_STATION == type) {
-            orphans = roadStationRepository.findOrphanWeatherRoadStations();
-        } else {
-            throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
-        }
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : orphans) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
-    }
-
     @Transactional
     public RoadStation save(final RoadStation roadStation) {
         return roadStationRepository.save(roadStation);
