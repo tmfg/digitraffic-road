@@ -29,7 +29,8 @@ public class RoadStationServiceTest extends AbstractServiceTest {
     public void findAllCameras() {
         final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA_STATION);
 
-        assertCollectionSize(866, cameras);
+        Assert.assertTrue(String.format("Collection size was expected to be %s, was %d", "> 800", cameras.size()),
+                 cameras.size() > 800);
     }
 
     @Test

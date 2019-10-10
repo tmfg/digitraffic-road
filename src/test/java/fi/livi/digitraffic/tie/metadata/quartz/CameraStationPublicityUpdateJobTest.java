@@ -24,6 +24,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,20 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
 
     @MockBean
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
+
+    @After
+    public void restoreData() {
+        cameraPresetService.findAllCameraPresetsMappedByLotjuId().values().forEach(cp -> {
+            final RoadStation rs = cp.getRoadStation();
+            if (rs.getLotjuId() < 99000) {
+                rs.updatePublicity(true);
+                rs.unobsolete();
+                cp.setPublic(true);
+                cp.unobsolete();
+            }
+        });
+        endTransactionAndStartNew();
+    }
 
     @Test
     public void publicityChangeNow() throws KameraPerustiedotException, DatatypeConfigurationException, InterruptedException {
