@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>logs/road-${appType}-daily.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-${appType}-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>2</maxHistory>
-            <totalSizeCap>768MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
-                 Useful if logged only oneliners to one file and full straces to other -->
-            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- Log message format -->
         <encoder>
@@ -37,8 +22,7 @@
     </logger>
 
     <root level="INFO" additivity="false">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>
