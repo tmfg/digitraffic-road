@@ -434,7 +434,7 @@ public class RoadStation {
      * @throws IllegalStateException If called other than camera station
      */
     public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
-        if (!RoadStationType.CAMERA_STATION.equals(getType())) {
+        if (publicityStartTimeNew != null && !RoadStationType.CAMERA_STATION.equals(getType())) {
             throw new IllegalStateException(String.format("Only %s can have publicityStartTime. Tried to it set to %s.",
                                                           RoadStationType.CAMERA_STATION, this.getType()));
         }
