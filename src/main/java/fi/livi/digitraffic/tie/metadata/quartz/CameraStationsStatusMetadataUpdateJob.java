@@ -8,6 +8,9 @@ import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 
+/**
+ * Updates only camera station's (RoadStation) metadata
+ */
 @DisallowConcurrentExecution
 public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
