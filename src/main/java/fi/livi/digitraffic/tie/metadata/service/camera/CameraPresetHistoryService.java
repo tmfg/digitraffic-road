@@ -133,7 +133,7 @@ public class CameraPresetHistoryService {
         if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
             final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
             cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
-                cameraId, rs.isPublic(), rs.getPublicityStartTime().toInstant());
+                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
         }
     }
 

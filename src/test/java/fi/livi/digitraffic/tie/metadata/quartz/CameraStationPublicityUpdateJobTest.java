@@ -74,7 +74,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
     @Test
     public void publicityChangeNow() throws KameraPerustiedotException, DatatypeConfigurationException, InterruptedException {
         // Two cameras, change only first camera: public -> secret -> public, should affect right away
-        // Ohter camera should stay a same all the time
+        // Other camera should stay a same all the time
 
         // Public in past -> valid now
         final Instant initialPublicFrom = getInstant(-60);
@@ -166,7 +166,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         assertEquals(publicityStart, rs.getPublicityStartTime().toInstant());
         Assert.assertEquals(isPublicNow, rs.isPublicNow());
         Assert.assertEquals(previousIsPublic, rs.isPublicPrevious());
-        Assert.assertEquals(isPublic, rs.isPublic());
+        Assert.assertEquals(isPublic, rs.internalIsPublic());
         return rs;
     }
 

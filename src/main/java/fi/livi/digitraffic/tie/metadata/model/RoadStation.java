@@ -120,13 +120,25 @@ public class RoadStation {
     private boolean publishable;
 
     protected RoadStation() {
-        setPublic(true);
+        internalSetPublic(true);
         setPublicPrevious(true);
     }
 
     public RoadStation(final RoadStationType type) {
         this();
         setType(type);
+    }
+
+    public static RoadStation createCameraStation() {
+        return new RoadStation(RoadStationType.CAMERA_STATION);
+    }
+
+    public static RoadStation createTmsStation() {
+        return new RoadStation(RoadStationType.TMS_STATION);
+    }
+
+    public static RoadStation createWeatherStation() {
+        return new RoadStation(RoadStationType.WEATHER_STATION);
     }
 
     public Long getId() {
@@ -174,11 +186,11 @@ public class RoadStation {
         this.roadStationType = type;
     }
 
-    private void setPublic(final boolean isPublic) {
+    private void internalSetPublic(final boolean isPublic) {
         this.isPublic = isPublic;
     }
 
-    public boolean isPublic() {
+    public boolean internalIsPublic() {
         return isPublic;
     }
 
@@ -442,10 +454,10 @@ public class RoadStation {
         // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
         // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
         if ( isPublic != isPublicNew &&
-            (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) ) {
+            (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) ) {
             setPublicPrevious(isPublic);
         }
-        setPublic(isPublicNew);
+        internalSetPublic(isPublicNew);
         setPublicityStartTime(publicityStartTimeNew);
         return changed;
     }

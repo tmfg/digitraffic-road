@@ -35,7 +35,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         }
         to.setLotjuId(from.getId());
 
-        final boolean isPublicOld = to.isPublic();
+        final boolean isPublicOld = to.internalIsPublic();
         final boolean isPublicPreviousOld = to.isPublicPrevious();
         final ZonedDateTime publicityStartTimeOld = to.getPublicityStartTime();
 
@@ -45,7 +45,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         if ( changed ) {
             log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
                      "fromPublicityStartTime={} toPublicityStartTime={}",
-                     isPublicOld, to.isPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
+                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
         }
 
         to.setNaturalId(from.getVanhaId().longValue());

@@ -120,7 +120,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
 
     private void assertPublicity(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final boolean isPublic) {
         final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
-        Assert.assertEquals(isPublic, found.isPublic());
+        Assert.assertEquals(isPublic, found.internalIsPublic());
     }
 
     private void assertCollectionStatus(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final CollectionStatus collectionStatus) {
