@@ -67,11 +67,15 @@ public class RoadStation {
     private boolean isPublic;
 
     /**
-     * Previous value for publicity. Used in case when new value is in the future.
+     * Previous value for publicity. Used in case when new value is in the future
+     * as publicityStartTime > now().
      */
     @Column(name="IS_PUBLIC_PREVIOUS")
     private boolean isPublicPrevious;
 
+    /**
+     * Tells when isPublic value is effective. If null then always effective.
+     */
     private ZonedDateTime publicityStartTime;
 
     private String nameFi, nameSv, nameEn;
