@@ -178,8 +178,7 @@ public class CameraPresetHistoryService {
     }
 
     private String createPublicUrlForVersion(final String presetId, final String versionId) {
-        // TODO DPO-718 remove s3/ when weathercam servers s3 from root
-        return String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId);
+        return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
     }
 
     private String getPresetId(final String imageName) {
