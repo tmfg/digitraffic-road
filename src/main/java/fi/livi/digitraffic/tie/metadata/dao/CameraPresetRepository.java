@@ -23,6 +23,16 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation", "nearestWeatherStation.roadStation", "nearestWeatherStation.roadStation.roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findAll();
 
+    /**
+     * Selects public presets by publicity status of preset and station:
+     * CameraPreset.publishable && RoadStation.isPublicNow()
+     *
+     * RoadStation.isPublicNow() is resolved by checking publicityStartTime:
+     * If publicityStartTime is effective now (null or in the past) then isPublic is used.
+     * If publicityStartTime is in the future, then isPublicPrevious is used (as isPublic os not effective yet).
+     *
+     * @return All publishable presets
+     */
     @Query(value =
                "SELECT cp, rs, ra, ws " +
                "FROM CameraPreset cp " +
@@ -41,6 +51,15 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId();
 
+    /**
+     * Only difference to {@link #findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
+     * is that this query filters result by given cameraId.
+
+     * @param cameraId camera id which presets to fetch.
+     * @return Publishable presets for given camera id
+     *
+     * @see {@link #findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
+     */
     @Query(value =
                "SELECT cp, rs, ra, ws " +
                "FROM CameraPreset cp " +

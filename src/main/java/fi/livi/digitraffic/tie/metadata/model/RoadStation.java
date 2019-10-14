@@ -419,31 +419,48 @@ public class RoadStation {
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("name", name)
                 .appendField("type", type)
+                .appendField("isPublicNow", isPublicNow())
                 .appendField("collectionStatus", collectionStatus)
                 .toString();
     }
 
     /**
-     * Gets current publicity status
+     * Gets current publicity status of the road station.
+     * Only camera stations allows setting publicity status in the future at the moment.
+     *
+     * Current publicity status is resolved by checking publicityStartTime:
+     * If publicityStartTime is effective now (null or in the past) then isPublic is used.
+     * If publicityStartTime is in the future, then isPublicPrevious is used (as isPublic os not effective yet).
+     *
      * @return Is station public at the moment
      */
     public boolean isPublicNow() {
         // If current value is valid now, let's use it
-        if (publicityStartTime == null || !publicityStartTime.isAfter(ZonedDateTime.now())) {
+        if (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) {
             return isPublic;
         }
         return isPublicPrevious;
     }
 
     /**
-     * Updates fields: isPublic, publicityStartTime and isPublicPrevious. Used only for camera stations.
+     * Updates fields: isPublic, publicityStartTime and isPublicPrevious.
+     * Used only for camera stations.
+     *
+     * isPublicPrevious is updated to current isPublic-value if current isPublic is effective now
+     * (=publicityStartTime is null or in the past) as that will be the previous value for the new
+     * incoming isPublicNew parameter value. If current publicityStartTime is in the future, then
+     * isPublicPrevious is not updated as current isPublic haven't become effective at eny point
+     * and that's why parameter value will override it with new isPublicNew and publicityStartTimeNew
+     * values.
+     *
+     * isPublic and publicityStartTime are always updated to given parameter values.
      *
      * @param isPublicNew new publicity value
-     * @param publicityStartTimeNew time when new publicity value is valid from
+     * @param publicityStartTimeNew time when new publicity value is valid from (Only for camera station)
      *
      * @return was there status change
      *
-     * @throws IllegalStateException If called other than camera station
+     * @throws IllegalStateException If called other than camera station with time set
      */
     public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
         if (publicityStartTimeNew != null && !RoadStationType.CAMERA_STATION.equals(getType())) {
@@ -462,6 +479,11 @@ public class RoadStation {
         return changed;
     }
 
+    /**
+     * Updades current publicity status.
+     *
+     * @param isPublic station publicity status at the moment
+     */
     public void updatePublicity(final boolean isPublic) {
         updatePublicity(isPublic, null);
     }
