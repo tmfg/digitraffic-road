@@ -137,7 +137,7 @@ public class RoadStationTest {
 
         // Future public, previous public as secretInFuture not passed
         final ZonedDateTime publicInFuture = getNow().plusSeconds(3);
-        rs.updatePublicity(true, secretInFuture2);
+        rs.updatePublicity(true, publicInFuture);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
         assertTrue(rs.internalIsPublic());
