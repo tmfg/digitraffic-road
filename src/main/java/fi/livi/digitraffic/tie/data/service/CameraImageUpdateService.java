@@ -112,7 +112,7 @@ public class CameraImageUpdateService {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} writeTooksMs={} s3WriteTooksMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
-                        "s3VersionId={} imageTimestamp={} diffModifiedVsUpdated={}",
+                        "s3VersionId={} imageTimestamp={} diffImageModifiedVsUpdatedSeconds={}",
                     presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getS3WriteDurationMs(),
                     transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getS3VersionId(),
