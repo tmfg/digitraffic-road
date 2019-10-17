@@ -2,7 +2,11 @@ package fi.livi.digitraffic.tie.data.service;
 
 import java.time.ZonedDateTime;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
+
 public class ImageUpdateInfo {
+
+    private final ZonedDateTime updateTime;
 
     public enum Status {
         SUCCESS, FAILED, NONE;
@@ -35,6 +39,7 @@ public class ImageUpdateInfo {
         this.presetId = presetId;
         this.fullPath = fullPath;
         this.lastUpdated = lastUpdated;
+        this.updateTime = DateHelper.zonedDateTimeNowAtUtc();
     }
 
     public String getPresetId() {
@@ -172,5 +177,13 @@ public class ImageUpdateInfo {
 
     private void setWriteError(Throwable writeError) {
         this.writeError = writeError;
+    }
+
+    public ZonedDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public long getDiffBetweenModifiedAndUpdated() {
+        return updateTime.toEpochSecond() - lastUpdated.toEpochSecond();
     }
 }
