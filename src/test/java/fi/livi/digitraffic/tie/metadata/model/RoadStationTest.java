@@ -58,12 +58,28 @@ public class RoadStationTest {
     }
 
     @Test
+    public void initialState() {
+        final RoadStation rs = RoadStation.createCameraStation();
+        assertFalse(rs.isPublicPrevious());
+        assertFalse(rs.isPublicNow());
+    }
+
+    @Test
     public void publicityUpdateNow() {
         final RoadStation rs = RoadStation.createCameraStation();
+
+        rs.updatePublicity(true, getNow());
+        assertFalse(rs.isPublicPrevious());
+        assertTrue(rs.isPublicNow());
+
         rs.updatePublicity(false, getNow());
         assertTrue(rs.isPublicPrevious());
         assertFalse(rs.isPublicNow());
-        // Should work also when time is way in the past
+    }
+
+    @Test
+    public void publicityUpdateInPast() {
+        final RoadStation rs = RoadStation.createCameraStation();
         rs.updatePublicity(true, getNow().minusHours(1));
         assertFalse(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
@@ -72,8 +88,8 @@ public class RoadStationTest {
     @Test
     public void publicityUpdateInFuture() throws InterruptedException {
         final RoadStation rs = RoadStation.createCameraStation();
-        assertTrue(rs.isPublicPrevious());
-        assertTrue(rs.isPublicNow());
+        // public at the beginning
+        rs.updatePublicity(true);
 
         final ZonedDateTime secretInFuture = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture);
@@ -91,8 +107,8 @@ public class RoadStationTest {
     @Test
     public void multiplePublicityUpdatesInFuture() throws InterruptedException {
         final RoadStation rs = RoadStation.createCameraStation();
-        assertTrue(rs.isPublicPrevious());
-        assertTrue(rs.isPublicNow());
+        // public at the beginning
+        rs.updatePublicity(true);
 
         final ZonedDateTime secretInFuture1 = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture1);
@@ -124,8 +140,8 @@ public class RoadStationTest {
     @Test
     public void multiplePublicityUpdatesInFutureAndBackToPublic() throws InterruptedException {
         final RoadStation rs = RoadStation.createCameraStation();
-        assertTrue(rs.isPublicPrevious());
-        assertTrue(rs.isPublicNow());
+        // public at the beginning
+        rs.updatePublicity(true);
 
         final ZonedDateTime secretInFuture1 = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture1);

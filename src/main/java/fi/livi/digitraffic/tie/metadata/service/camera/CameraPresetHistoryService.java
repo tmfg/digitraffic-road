@@ -77,7 +77,7 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public PresetHistoryDto findHistoryInclSecret(final String presetId, final ZonedDateTime atTime) {
+    public PresetHistoryDto findPublicHistory(final String presetId, final ZonedDateTime atTime) {
 
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraPresetHistory", presetId);

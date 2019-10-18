@@ -117,6 +117,6 @@ public class BetaController {
         @RequestParam(value = "atTime", required = false)
         final ZonedDateTime atTime) {
 
-        return cameraPresetHistoryService.findHistoryInclSecret(presetId, atTime);
+        return cameraPresetHistoryService.findPublicHistory(presetId, atTime);
     }
 }

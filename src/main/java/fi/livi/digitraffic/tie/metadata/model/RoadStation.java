@@ -124,12 +124,9 @@ public class RoadStation {
     private boolean publishable;
 
     protected RoadStation() {
-        internalSetPublic(true);
-        setPublicPrevious(true);
     }
 
     public RoadStation(final RoadStationType type) {
-        this();
         setType(type);
     }
 
