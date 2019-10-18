@@ -54,8 +54,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
     }
 
     private Matcher<String> matchUrl(String presetId, String versionId) {
-        // TODO DPO-718 remove s3/ when weathercam servers s3 from root
-        return Matchers.is(String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId));
+        return Matchers.is(String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId));
     }
 
     @Test
