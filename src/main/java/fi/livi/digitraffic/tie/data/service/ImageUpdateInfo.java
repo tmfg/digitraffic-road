@@ -183,7 +183,7 @@ public class ImageUpdateInfo {
         return updateTime;
     }
 
-    public long getDiffBetweenModifiedAndUpdated() {
+    public long getImageTimeInPastSeconds() {
         return updateTime.toEpochSecond() - lastUpdated.toEpochSecond();
     }
 }
