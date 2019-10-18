@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 import fi.livi.digitraffic.tie.metadata.controller.BetaController;
 
 // Methods are in BetaController now, but will move later to
-@Ignore("TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done")
 public class PresetHistoryControllerTest extends AbstractRestWebTest {
 
     @Value("${weathercam.baseUrl}")

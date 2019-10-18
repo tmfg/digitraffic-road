@@ -74,6 +74,10 @@ public final class DateHelper {
         return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }
 
+    public static ZonedDateTime zonedDateTimeNowAtUtc() {
+        return toZonedDateTimeAtUtc(Instant.now());
+    }
+
     public static Date toDate(final ZonedDateTime zonedDateTime) {
         if (zonedDateTime != null) {
             return Date.from(zonedDateTime.toInstant());
