@@ -76,7 +76,7 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public PresetHistoryDto findHistoryInclSecret(final String presetId, final ZonedDateTime atTime) {
+    public PresetHistoryDto findPublicHistory(final String presetId, final ZonedDateTime atTime) {
 
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraPresetHistory", presetId);
@@ -173,8 +173,7 @@ public class CameraPresetHistoryService {
     }
 
     private String createPublicUrlForVersion(final String presetId, final String versionId) {
-        // TODO DPO-718 remove s3/ when weathercam servers s3 from root
-        return String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId);
+        return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
     }
 
     private String getPresetId(final String imageName) {
