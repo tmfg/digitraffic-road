@@ -101,14 +101,14 @@ public class BetaController {
         return trafficSignsService.listVariableSignHistory(deviceId);
     }
 
-    @ApiOperation("List the history of camera preset imaCameraPresetHistoryServiceCameraPresetHistoryServiceCameraPresetHistoryServiceges")
+    @ApiOperation("List the history of camera preset")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
     public PresetHistoryDto getPresetHistory(
         @ApiParam("Camera preset id")
         @PathVariable
         final String presetId,
-        @ApiParam("Return the latest image from the history at given time. Time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
+        @ApiParam("Return the latest url for the image from the history at the given time. The time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
                   "e.g. 2016-10-31T06:30:00.000Z. If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "atTime", required = false)
