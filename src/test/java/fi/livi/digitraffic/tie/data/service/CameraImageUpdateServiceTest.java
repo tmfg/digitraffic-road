@@ -77,7 +77,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
     private CameraPreset createPreset() {
         final CameraPreset preset = new CameraPreset();
-        preset.setRoadStation(new RoadStation(RoadStationType.CAMERA_STATION));
+        preset.setRoadStation(RoadStation.createCameraStation());
         preset.setPresetId("C9876501");
         preset.getRoadStation().updatePublicity(true);
         return preset;

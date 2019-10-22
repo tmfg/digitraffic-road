@@ -75,8 +75,16 @@ public class LotjuCameraStationMetadataService {
         return lotjuCameraStationClient.getKameras();
     }
 
-    private List<EsiasentoVO> getEsiasentos(final Long kameraId) {
+    public List<EsiasentoVO> getEsiasentos(final Long kameraId) {
         return lotjuCameraStationClient.getEsiasentos(kameraId);
+    }
+
+    public KameraVO getKamera(final long kameraLotjuId) {
+        return lotjuCameraStationClient.getKamera(kameraLotjuId);
+    }
+
+    public EsiasentoVO getEsiasento(final long esiasentoLotjuId) {
+        return lotjuCameraStationClient.getEsiasento(esiasentoLotjuId);
     }
 
     private class EsiasentoFetcher implements Callable<Integer> {

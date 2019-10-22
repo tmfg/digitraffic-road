@@ -534,6 +534,19 @@
                                         <extensionArg>-mark-generated</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v3/metatietomuutos_kamera_tietovirta.xsd</xsd>
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta</packagename>
+                                    <extensionArgs>
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <extensionArg>-XautoNameResolution</extensionArg>
+                                        <!--Generate withProperty methods-->
+                                        <extensionArg>-Xfluent-api</extensionArg>
+                                        <extensionArg>-npa</extensionArg>
+                                        <extensionArg>-mark-generated</extensionArg>
+                                    </extensionArgs>
+                                </xsdOption>
                             </xsdOptions>
                         </configuration>
                     </execution>

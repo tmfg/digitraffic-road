@@ -126,20 +126,29 @@ public class RoadStation {
     protected RoadStation() {
     }
 
-    public RoadStation(final RoadStationType type) {
+    private RoadStation(final RoadStationType type) {
         setType(type);
     }
 
+    public static RoadStation createRoadStation(final RoadStationType roadStationType) {
+        return new RoadStation(roadStationType).initRoadAddress();
+    }
+
     public static RoadStation createCameraStation() {
-        return new RoadStation(RoadStationType.CAMERA_STATION);
+        return createRoadStation(RoadStationType.CAMERA_STATION);
     }
 
     public static RoadStation createTmsStation() {
-        return new RoadStation(RoadStationType.TMS_STATION);
+        return createRoadStation(RoadStationType.TMS_STATION);
     }
 
     public static RoadStation createWeatherStation() {
-        return new RoadStation(RoadStationType.WEATHER_STATION);
+        return createRoadStation(RoadStationType.WEATHER_STATION);
+    }
+
+    private RoadStation initRoadAddress() {
+        setRoadAddress(new RoadAddress());
+        return this;
     }
 
     public Long getId() {

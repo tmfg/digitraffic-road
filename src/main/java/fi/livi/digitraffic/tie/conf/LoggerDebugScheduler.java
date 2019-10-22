@@ -1,17 +1,18 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.File;
-import java.nio.file.FileStore;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @ConditionalOnNotWebApplication
+@ConditionalOnExpression("'${config.test}' != 'true'")
 @Component
 public class LoggerDebugScheduler {
     private static final Logger log = LoggerFactory.getLogger(LoggerDebugScheduler.class);

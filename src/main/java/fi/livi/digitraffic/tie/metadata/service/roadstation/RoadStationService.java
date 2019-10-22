@@ -62,19 +62,8 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> all = findByType(type);
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : all) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
-    }
-
-    @Transactional(readOnly = true)
-    public RoadStation findByTypeAndNaturalId(final RoadStationType type, Long naturalId) {
-        return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
+    public RoadStation findByTypeAndLotjuId(final RoadStationType type, Long lotjuId) {
+        return roadStationRepository.findByTypeAndLotjuId(type, lotjuId);
     }
 
     @Transactional

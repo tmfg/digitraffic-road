@@ -78,6 +78,7 @@ jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
 jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
+jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
 
 # Services enabled/disabled
 
@@ -96,6 +97,7 @@ jms.weather.enabled=true
 jms.tms.enabled=true
 jms.camera.enabled=true
 jms.datex2.enabled=false
+jms.camera.metadata.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO

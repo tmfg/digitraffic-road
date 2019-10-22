@@ -39,25 +39,4 @@ public class RoadStationServiceTest extends AbstractServiceTest {
 
         assertCollectionSize(880, weatherStations);
     }
-
-    @Test
-    public void findByTypeMappedByNaturalIdTmsStations() {
-        final Map<Long, RoadStation> idMap = roadStationService.findByTypeMappedByNaturalId(RoadStationType.TMS_STATION);
-
-        assertCollectionSize(545, idMap.entrySet());
-    }
-
-    @Test
-    public void findByTypeAndNaturalIdSuccess() {
-        final RoadStation roadStation = roadStationService.findByTypeAndNaturalId(RoadStationType.TMS_STATION, 24450L);
-
-        Assert.assertNotNull(roadStation);
-    }
-
-    @Test
-    public void findByTypeAndNaturalIdFailure() {
-        final RoadStation roadStation = roadStationService.findByTypeAndNaturalId(RoadStationType.WEATHER_STATION, 24450L);
-
-        Assert.assertNull(roadStation);
-    }
 }

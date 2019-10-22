@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -31,6 +33,10 @@ public final class DateHelper {
 
     public static ZonedDateTime toZonedDateTimeAtUtc(final XMLGregorianCalendar calendar) {
         return calendar == null ? null : toZonedDateTimeAtUtc(calendar.toGregorianCalendar().toInstant());
+    }
+
+    public static Instant toInstant(final XMLGregorianCalendar calendar) {
+        return calendar == null ? null : calendar.toGregorianCalendar().toInstant();
     }
 
     /**
@@ -98,13 +104,17 @@ public final class DateHelper {
     }
 
     public static XMLGregorianCalendar toXMLGregorianCalendarUtc(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            final ZonedDateTime utc = ZonedDateTime.ofInstant(zonedDateTime.toInstant(), UTC);
-            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(utc);
+        return toXMLGregorianCalendarAtUtc(zonedDateTime.toInstant());
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendarAtUtc(final Instant from) {
+        if (from != null) {
+            final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            cal.setTimeInMillis(from.toEpochMilli());
             try {
-                return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+                return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
             } catch (DatatypeConfigurationException e) {
-                log.error("Failed to convert ZonedDateTime " + zonedDateTime + " to XMLGregorianCalendar", e);
+                log.error("Failed to convert Instant " + from + " to XMLGregorianCalendar", e);
             }
         }
         return null;

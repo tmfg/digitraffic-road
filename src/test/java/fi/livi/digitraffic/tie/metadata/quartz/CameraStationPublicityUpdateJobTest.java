@@ -10,19 +10,13 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -38,13 +32,8 @@ import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotException;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KeruunTILA;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
@@ -61,7 +50,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
     public void restoreData() {
         cameraPresetService.findAllCameraPresetsMappedByLotjuId().values().forEach(cp -> {
             final RoadStation rs = cp.getRoadStation();
-            if (rs.getLotjuId() < 99000) {
+            if (rs.getLotjuId() < MIN_LOTJU_ID) {
                 rs.updatePublicity(true);
                 rs.unobsolete();
                 cp.setPublic(true);
@@ -220,63 +209,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         TestTransaction.start();
     }
 
-    private List<EsiasentoVO> createEsiasentos(final long kameraId, final int count) {
-        final List<EsiasentoVO> eas = new ArrayList<>();
-        IntStream.range(0, count).forEach(i -> {
-        final EsiasentoVO ea = new EsiasentoVO();
-            ea.setId(getRandomId().longValue());
-            ea.setKameraId(kameraId);
-            ea.setKeruussa(true);
-            ea.setJulkisuus(Julkisuus.JULKINEN);
-            ea.setSuunta("0");
-            eas.add(ea);
-        });
-        return eas;
-    }
 
-    private KameraVO createKamera(final Instant publicityFrom) throws DatatypeConfigurationException {
-        final KameraVO k = new KameraVO();
-        k.setVanhaId(getRandomId());
-        k.setId(k.getVanhaId().longValue());
-        k.setNimi("Kamera-asema");
-        k.setJulkisuus(createKameraJulkisuus(publicityFrom, JULKINEN));
-        k.setKeruunTila(KeruunTILA.KERUUSSA);
-        final TieosoiteVO to = new TieosoiteVO();
-        k.setTieosoite(to);
 
-        return k;
-    }
 
-    private Instant getInstant(int secondsToAdd) {
-        return Instant.now().plusSeconds(secondsToAdd).truncatedTo(ChronoUnit.SECONDS);
-    }
-
-    private JulkisuusVO createKameraJulkisuus(final Instant from, final JulkisuusTaso julkisuusTaso) throws DatatypeConfigurationException {
-        final JulkisuusVO julkisuus = new JulkisuusVO();
-        julkisuus.setJulkisuusTaso(julkisuusTaso);
-        julkisuus.setAlkaen(createXMLGregorianCalendarFromInstant(from));
-        return julkisuus;
-    }
-
-    private XMLGregorianCalendar createXMLGregorianCalendarFromInstant(final Instant from) throws DatatypeConfigurationException {
-        GregorianCalendar cal1 = new GregorianCalendar();
-        cal1.setTimeInMillis(from.toEpochMilli());
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal1);
-    }
-    private CameraPreset findWithPresetId(final List<CameraPreset> collection, final String presetId) {
-        return collection.stream().filter(cp -> cp.getPresetId().equals(presetId)).findFirst().orElse( null);
-    }
-
-    private CameraPreset findWithCameraId(final List<CameraPreset> collection, final String cameraId) {
-        return collection.stream().filter(cp -> cp.getCameraId().equals(cameraId)).findFirst().orElse(null);
-    }
-
-    private static Integer getRandomId() {
-
-        final int min = 99000;
-        final int max = 99999;
-
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
-    }
 }

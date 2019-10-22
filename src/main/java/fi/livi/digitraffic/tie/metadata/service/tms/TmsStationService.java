@@ -154,20 +154,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             final int hash = HashCodeBuilder.reflectionHashCode(existingTms);
             final String before = ReflectionToStringBuilder.toString(existingTms);
 
-            RoadStation rs = existingTms.getRoadStation();
-            if (rs == null) {
-                rs = roadStationService.findByTypeAndNaturalId(RoadStationType.TMS_STATION, lam.getVanhaId().longValue());
-                existingTms.setRoadStation(rs);
-            }
-            if (rs == null) {
-                rs = new RoadStation(RoadStationType.TMS_STATION);
-                existingTms.setRoadStation(rs);
-                roadStationService.save(rs);
-            }
-            if (setRoadAddressIfNotSet(rs)) {
-                roadAddressRepository.save(rs.getRoadAddress());
-            }
-
             if ( updateTmsStationAttributes(lam, existingTms) ||
                 hash != HashCodeBuilder.reflectionHashCode(existingTms) ) {
                 log.info("Updated:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(existingTms));
@@ -176,8 +162,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             return UpdateStatus.NOT_UPDATED;
         } else {
             final TmsStation newTms = new TmsStation();
-            newTms.setRoadStation(new RoadStation(RoadStationType.TMS_STATION));
-            setRoadAddressIfNotSet(newTms.getRoadStation());
+            newTms.setRoadStation(RoadStation.createTmsStation());
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 
