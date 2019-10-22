@@ -87,9 +87,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         kameras.put(kameraOther, esiasentosOther);
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 1);
 
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, initialPublicFrom, true, true);
-        checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, initialPublicFrom, true, true);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, true, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, initialPublicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, initialPublicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
         checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId(), esiasentosOther.get(0).getId());
 
         // Public -> secret in past -> valid now
@@ -99,7 +99,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
 
         checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), false, secretFrom, true, false);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), false, secretFrom, true, false);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, true, true);
+        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
         checkAllPublishableCameraPresetsContainsOnly(esiasentosOther.get(0).getId());
 
         // Secret -> public now
@@ -109,7 +109,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
 
         checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, publicFrom, false, true);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, publicFrom, false, true);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, true, true);
+        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
         checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId(), esiasentosOther.get(0).getId());
     }
 
@@ -125,8 +125,8 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 1);
 
         // Check presets are public
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, publicFrom, true, true);
-        checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, publicFrom, true, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, publicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, publicFrom, false, true);
         checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId());
 
         // Public -> secret in future -> No change to current publicity
