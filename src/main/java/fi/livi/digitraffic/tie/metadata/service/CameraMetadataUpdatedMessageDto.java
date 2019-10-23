@@ -35,8 +35,8 @@ public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     private final EntityType entityType;
 
-    public CameraMetadataUpdatedMessageDto(final Long messageLotjuId, final Set<Long> lotjuIds, final UpdateType updateType, final Instant updateTime, final EntityType entityType) {
-        super(messageLotjuId, lotjuIds, updateType, updateTime);
+    public CameraMetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemmaLotjuIds, final UpdateType updateType, final Instant updateTime, final EntityType entityType) {
+        super(lotjuId, asemmaLotjuIds, updateType, updateTime);
         this.entityType = entityType;
     }
 

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta.Metatietomuutos;
 import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.metadata.service.MetadataUpdatedMessageDto.UpdateType;
@@ -24,7 +25,7 @@ public class CameraMetadataUpdatedMessageMarshaller extends TextMessageMarshalle
 
     @Override
     protected List<CameraMetadataUpdatedMessageDto> transform(final Object object, final String text) {
-        log.info("method=transform text={} object={}", text, object);
+        log.debug("method=transform text={} object={}", text, ToStringHelper.toStringFull(object));
         final Metatietomuutos muutos = (Metatietomuutos) object;
         final CameraMetadataUpdatedMessageDto dto =
             new CameraMetadataUpdatedMessageDto(muutos.getId(),

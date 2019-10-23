@@ -16,7 +16,6 @@ import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServ
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
@@ -24,9 +23,6 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
 
     @Autowired
     private RoadStationService roadStationService;
-
-    @Autowired
-    private RoadStationStatusUpdater roadStationStatusUpdater;
 
     @Autowired
     private LotjuTiesaaPerustiedotServiceEndpointMock lotjuTiesaaPerustiedotServiceMock;
@@ -68,9 +64,9 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
         lotjuTiesaaPerustiedotServiceMock.setStateAfterChange(true);
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
 
-        roadStationStatusUpdater.updateTmsStationsStatuses();
-        roadStationStatusUpdater.updateWeatherStationsStatuses();
-        roadStationStatusUpdater.updateCameraStationsStatuses();
+        tmsStationUpdater.updateTmsStationsStatuses();
+        weatherStationUpdater.updateWeatherStationsStatuses();
+        cameraStationUpdater.updateCameraStationsStatuses();
 
         List<RoadStation> allAfterChange = roadStationService.findAll();
 
