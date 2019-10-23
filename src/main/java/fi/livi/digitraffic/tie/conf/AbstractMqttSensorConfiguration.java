@@ -33,9 +33,9 @@ public abstract class AbstractMqttSensorConfiguration {
 
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-    private AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
-    private AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
-    private MqttRelayService.StatisticsType statisticsType;
+    private final AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
+    private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
+    private final MqttRelayService.StatisticsType statisticsType;
 
     public AbstractMqttSensorConfiguration(final MqttRelayService mqttRelay,
                                            final RoadStationSensorService roadStationSensorService,
@@ -95,7 +95,7 @@ public abstract class AbstractMqttSensorConfiguration {
 
                     messagesCount.incrementAndGet();
 
-                    lastError = null;
+                    lastError.set(null);
                 } catch (final Exception e) {
                     lastError.set(ZonedDateTime.now());
                     logger.error("error sending message", e);
@@ -111,14 +111,15 @@ public abstract class AbstractMqttSensorConfiguration {
 
         if(lockingService.acquireLock(mqttClassName, 60)) {
             try {
-                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(
-                    new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString())));
+                final StatusMessage message = new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString());
+
+                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
             } catch (final Exception e) {
                 logger.error("error sending message", e);
             }
         }
-        
-        logger.debug("sendStatus tookMs={}", sw.getTime());
+
+        logger.info("sendStatus tookMs={}", sw.getTime());
     }
 
     protected class StatusMessage {
