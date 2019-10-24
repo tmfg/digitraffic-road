@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,29 +32,29 @@ public class CameraMetadataMessageHandler {
 
 
     public int updateCameraMetadata(List<CameraMetadataUpdatedMessageDto> cameraUpdates) {
-        final AtomicInteger updateCount = new AtomicInteger();
+        int updateCount = 0;
 
-        cameraUpdates.forEach(u -> {
-            log.info("method=updateCameraMetadata {}", ToStringHelper.toStringFull(u));
+        for (CameraMetadataUpdatedMessageDto u : cameraUpdates) {
+            log.debug("method=updateCameraMetadata {}", ToStringHelper.toStringFull(u));
             final EntityType type = u.getEntityType();
 
             switch (type) {
             case CAMERA:
                 if ( cameraStationUpdater.updateCameraStation(u.getLotjuId(), u.getUpdateType()) ) {
-                    updateCount.incrementAndGet();
+                    updateCount++;
                 }
                 break;
             case PRESET:
                 if ( cameraStationUpdater.updateCameraPreset(u.getLotjuId(), u.getUpdateType()) ) {
-                    updateCount.incrementAndGet();
+                    updateCount++;
                 }
                 break;
             case ROAD_ADDRESS:
-                u.getAsemmaLotjuIds().forEach(lotjuId -> {
+                for(long lotjuId : u.getAsemmaLotjuIds()) {
                     if ( cameraStationUpdater.updateCameraStation(lotjuId, u.getUpdateType()) ) {
-                        updateCount.incrementAndGet();
+                        updateCount++;
                     }
-                });
+                }
                 break;
             case MASTER_STORAGE:
             case VIDEO_SERVER:
@@ -66,11 +65,11 @@ public class CameraMetadataMessageHandler {
                 throw new IllegalArgumentException("Unknown EntityType " + type);
             }
 
-        });
+        }
 
-        if (updateCount.get() > 0) {
+        if (updateCount > 0) {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
-        return updateCount.get();
+        return updateCount;
     }
 }
