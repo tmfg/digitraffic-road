@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -50,138 +51,112 @@ public class CameraStationUpdater {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 450000)
     public boolean updateCameras() {
-        boolean updatedCameras;
-        lock.lock();
-        try {
-            log.info("method=updateCameras got the lock");
-            final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
-                lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
-            updatedCameras = updateCamerasAndPresets(lotjuIdToKameraAndEsiasentos);
-            log.info("method=updateCameras end updated={}", updatedCameras);
-        } finally {
-            lock.unlock();
-        }
-        return updatedCameras;
-    }
+        log.info("method=updateCameras start");
 
-    private boolean updateCamerasAndPresets(final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos) {
-        final Set<Long> presetsLotjuIdsNotToObsolete = new HashSet<>();
-        int updated = 0;
-        int inserted = 0;
-        int invalidCount = 0;
+        Set<Long> camerasLotjuIds = lotjuCameraStationMetadataService.getKamerasLotjuids();
+        final Pair<Integer, Integer> updatedInsertedCount =
+            camerasLotjuIds.stream().map(lotjuId -> updateCameraStationAndPresets(lotjuId))
+                .collect(Collectors.reducing((p1, p2) -> Pair.of(p1.getLeft() + p2.getLeft(), p1.getRight() + p2.getRight())))
+                .orElse(Pair.of(0, 0));
 
-        for (Pair<KameraVO, List<EsiasentoVO>> kameraAndEsiasento : lotjuIdToKameraAndEsiasentos.values()) {
-
-            final KameraVO kamera = kameraAndEsiasento.getLeft();
-            final List<EsiasentoVO> esiasentos = kameraAndEsiasento.getRight();
-
-            if (validate(kamera)) {
-                presetsLotjuIdsNotToObsolete.addAll(esiasentos.stream().map(EsiasentoVO::getId).collect(Collectors.toList()));
-                try {
-                    Pair<Integer, Integer> updatedObsoleted =
-                        cameraStationUpdateService.updateOrInsert(kamera, esiasentos);
-                    updated += updatedObsoleted.getLeft();
-                    inserted += updatedObsoleted.getRight();
-                } catch (Exception e) {
-                    log.error("Update or insert {} failed", ToStringHelper.toString(kamera));
-                    throw e;
-                }
-
-            } else {
-                invalidCount++;
-            }
-        }
-
-        if (invalidCount > 0) {
-            log.error("invalidCount={} invalid Kameras from LOTJU", invalidCount);
-        }
-
-        // camera presets in database, but not in server
-        long obsoletePresets = cameraPresetService.obsoletePresetsExcludingLotjuIds(presetsLotjuIdsNotToObsolete);
-
+        long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
         long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
-        long nonOsoletedRoadStations = cameraPresetService.nonObsoleteCameraRoadStationsWithPublishablePresets();
 
         log.info("obsoletedCameraPresetsCount={} CameraPresets that are not active", obsoletePresets);
         log.info("obsoletedRoadStationsCount={} Camera RoadStations without active presets", obsoletedRoadStations);
-        log.info("nonObsoletedCameraRoadStationsCount={} Camera RoadStations with active presets", nonOsoletedRoadStations);
-        log.info("updatedCameraPresetsCount={} CameraPresets", updated);
-        log.info("insertedCameraPresetsCount={} CameraPresets", inserted);
+        log.info("updatedCameraPresetsCount={} CameraPresets", updatedInsertedCount.getLeft());
+        log.info("insertedCameraPresetsCount={} CameraPresets", updatedInsertedCount.getRight());
+        final boolean updatedCameras = updatedInsertedCount.getLeft() > 0 || updatedInsertedCount.getRight() > 0;
+        log.info("method=updateCameras end updated={}", updatedCameras);
 
-        return obsoletePresets > 0 || obsoletedRoadStations > 0 || nonOsoletedRoadStations > 0 || updated > 0 || inserted > 0;
+        return updatedCameras;
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateCameraStationsStatuses() {
 
         int updated = 0;
-        lock.lock();
-        try {
-            log.info("method=updateCameraStationsStatuses got the lock");
-            final List<KameraVO> allKameras = lotjuCameraStationMetadataService.getKameras();
-            for (KameraVO from : allKameras) {
-                try {
-                    if (validate(from) && roadStationService.updateRoadStation(from)) {
-                        updated++;
-                    }
-                } catch (Exception e) {
-                    log.error("method=updateCameraStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
-                        from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
-                    throw e;
-                }
+        log.info("method=updateCameraStationsStatuses start");
+        final Set<Long> kamerasLotjuids = lotjuCameraStationMetadataService.getKamerasLotjuids();
+
+        for (Long kameraLotjuId : kamerasLotjuids) {
+            if (updateCameraStation(kameraLotjuId) ) {
+                updated++;
             }
-        } finally {
-            lock.unlock();
         }
+
         return updated;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
-    public boolean updateCameraStation(final long lotjuId, final UpdateType updateType) {
-
+    /**
+     * @param kameraLotjuId to update
+     * @return Pair of updated and inserted count of presets
+     */
+    private Pair<Integer, Integer> updateCameraStationAndPresets(final long kameraLotjuId) {
         lock.lock();
         try {
-            log.info("method=updateCameraStation got the lock");
-            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(lotjuId);
 
+            log.info("method=updateCameraStationAndPresets got the lock");
+            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
             if (!validate(kamera)) {
-                return false;
+                return Pair.of(0,0);
             }
+            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kameraLotjuId);
+            return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
 
-            if (UpdateType.INSERT.equals(updateType) ||
-                roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, lotjuId) == null) {
-                // Update station and presets metadata
-                final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(lotjuId);
-                Pair<Integer, Integer> result = cameraStationUpdateService.updateOrInsert(kamera, eas);
-                return result.getKey() > 0 || result.getValue() > 0;
-            } else {
-                // Update only station metadata
-                return cameraStationUpdateService.updateCamera(kamera);
-            }
         } finally {
             lock.unlock();
         }
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
-    public boolean updateCameraPreset(final Long lotjuId, final UpdateType updateType) {
+    public boolean updateCameraStation(final long cameraLotjuId) {
 
         lock.lock();
         try {
-            log.info("method=updateCameraPreset got the lock");
-            final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(lotjuId);
-            if (UpdateType.INSERT.equals(updateType) ||
-                cameraPresetService.findCameraPresetByLotjuId(lotjuId) == null) {
-                // Update station and presets metadata
-                return updateCameraStation(esiasento.getKameraId(), UpdateType.INSERT);
-            } else {
-                final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
-                if (validate(kamera)) {
-                    return cameraStationUpdateService.updatePreset(esiasento, kamera);
-                } else {
-                    return false;
-                }
+
+            log.info("method=updateCameraStation start");
+            // If camera station doesn't exist, we have to create it and the presets.
+            if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, cameraLotjuId) == null) {
+                final Pair<Integer, Integer> updated = updateCameraStationAndPresets(cameraLotjuId);
+                return updated.getLeft() > 0 || updated.getRight() > 0;
             }
+
+            // Otherwise we update only the station
+            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
+            if (!validate(kamera)) {
+                return false;
+            }
+            return cameraStationUpdateService.updateCamera(kamera);
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    public boolean updateCameraPreset(final long presetLotjuId) {
+
+        lock.lock();
+        try {
+
+            log.info("method=updateCameraPreset got the lock");
+            final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
+
+            // If camera preset doesn't exist, we have to create it -> just update the whole station
+            if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
+                final Pair<Integer, Integer> updated = updateCameraStationAndPresets(esiasento.getKameraId());
+                return updated.getLeft() > 0 || updated.getRight() > 0;
+            }
+
+            // Otherwise update only the given preset
+            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
+            if (validate(kamera)) {
+                return cameraStationUpdateService.updatePreset(esiasento, kamera);
+            } else {
+                return false;
+            }
+
         } finally {
             lock.unlock();
         }

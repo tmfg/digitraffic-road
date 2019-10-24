@@ -98,7 +98,7 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public int obsoletePresetsExcludingLotjuIds(final Set<Long> presetsLotjuIdsNotToObsolete) {
+    public int obsoleteCameraPresetsExcludingCameraLotjuIds(final Set<Long> camerasLotjuIds) {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<CameraPreset> update = cb.createCriteriaUpdate(CameraPreset.class);
         final Root<CameraPreset> root = update.from(CameraPreset.class);
@@ -107,8 +107,8 @@ public class CameraPresetService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
-        for (List<Long> ids : Iterables.partition(presetsLotjuIdsNotToObsolete, 1000)) {
-            predicates.add(cb.not(root.get("lotjuId").in(ids)));
+        for (List<Long> ids : Iterables.partition(camerasLotjuIds, 1000)) {
+            predicates.add(cb.not(root.get("cameraLotjuId").in(ids)));
         }
         update.where(cb.and(predicates.toArray(new Predicate[0])));
 
@@ -118,11 +118,6 @@ public class CameraPresetService {
     @Transactional
     public int obsoleteCameraRoadStationsWithoutPublishablePresets() {
         return cameraPresetRepository.obsoleteCameraRoadStationsWithoutPublishablePresets();
-    }
-
-    @Transactional
-    public int nonObsoleteCameraRoadStationsWithPublishablePresets() {
-        return cameraPresetRepository.nonObsoleteCameraRoadStationsWithPublishablePresets();
     }
 
     @Transactional(readOnly = true)

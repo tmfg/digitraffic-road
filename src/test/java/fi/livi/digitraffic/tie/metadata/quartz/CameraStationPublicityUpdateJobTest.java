@@ -179,8 +179,10 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
      * @throws InterruptedException
      */
     private void updateCameraMetadataAndVerifyLotjuCalls(final Map<KameraVO, List<EsiasentoVO>> kameras, final int times) {
+
         when(lotjuCameraStationMetadataClient.getKameras()).thenReturn(new ArrayList<>(kameras.keySet()));
         kameras.entrySet().forEach(e -> {
+            when(lotjuCameraStationMetadataClient.getKamera(e.getKey().getId())).thenReturn(e.getKey());
             when(lotjuCameraStationMetadataClient.getEsiasentos(e.getKey().getId())).thenReturn(e.getValue());
         });
         // Update cameras from lotju

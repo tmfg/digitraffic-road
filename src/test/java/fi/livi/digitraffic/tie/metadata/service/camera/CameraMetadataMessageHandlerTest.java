@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -66,28 +67,30 @@ public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutS
                                                  final EntityType entityType) {
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(entityType, updateType));
         verifyZeroInteractions(cameraStationUpdater);
-
     }
 
     private void verifyCameraMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStation(1L, updateType)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraStation(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.CAMERA, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(1L), eq(updateType));
+        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(1L));
         verifyNoMoreInteractions(cameraStationUpdater);
+        reset(cameraStationUpdater);
     }
 
     private void verifyPresetaMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraPreset(1L, updateType)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraPreset(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.PRESET, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraPreset(eq(1L), eq(updateType));
+        verify(cameraStationUpdater, times(1)).updateCameraPreset(eq(1L));
         verifyNoMoreInteractions(cameraStationUpdater);
+        reset(cameraStationUpdater);
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStation(2L, updateType)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraStation(2L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.ROAD_ADDRESS, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(2L), eq(updateType));
+        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(2L));
         verifyNoMoreInteractions(cameraStationUpdater);
+        reset(cameraStationUpdater);
     }
 
     private List<CameraMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType) {

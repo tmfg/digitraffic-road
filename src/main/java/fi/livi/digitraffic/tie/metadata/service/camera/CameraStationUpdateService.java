@@ -53,11 +53,12 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     }
 
     /**
+     * Updates or inserts camera station and it's presets. Marks non existing presets as obsolete.
      *
      * @return Pair of updated and inserted count of presets
      */
     @Transactional
-    public Pair<Integer, Integer> updateOrInsert(final KameraVO kamera, final List<EsiasentoVO> esiasentos) {
+    public Pair<Integer, Integer> updateOrInsertRoadStationAndPresets(final KameraVO kamera, final List<EsiasentoVO> esiasentos) {
         Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(kamera.getId());
         int updated = 0;
         int inserted = 0;
@@ -109,7 +110,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 inserted++;
             }
         }
-
         return Pair.of(updated, inserted);
     }
 
