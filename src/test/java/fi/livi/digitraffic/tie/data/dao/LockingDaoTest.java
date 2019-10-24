@@ -19,10 +19,10 @@ public class LockingDaoTest extends AbstractJpaTest {
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 
     private static final String LOCK_NAME_1 = LockingDaoTest.class.getSimpleName()+"1";
-    private static final String INSTANCE_ID_1 = "1";
+    private static final long INSTANCE_ID_1 = 1L;
     private static final int EXPIRATION_SECONDS = 5;
     private static final String LOCK_NAME_2 = LockingDaoTest.class.getSimpleName()+"2";
-    private static final String INSTANCE_ID_2 = "2";
+    private static final long INSTANCE_ID_2 = 2L;
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
@@ -73,7 +73,7 @@ public class LockingDaoTest extends AbstractJpaTest {
     }
 
     @Transactional
-    private boolean acquireLock(final String lockName, final String instanceId) {
+    private boolean acquireLock(final String lockName, final long instanceId) {
         return lockingDao.acquireLock(lockName, instanceId, EXPIRATION_SECONDS);
     }
 

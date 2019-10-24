@@ -70,7 +70,7 @@ public abstract class AbstractMqttSensorConfiguration {
 
     protected void handleData() {
 
-        final boolean lockAcquired = lockingService.acquireLock(mqttClassName, 60);
+        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60);
 
         if (lockAcquired) {
 
