@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,6 +35,8 @@ public class CameraStationUpdater {
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
 
+    private final ReentrantLock lock = new ReentrantLock();
+
     @Autowired
     public CameraStationUpdater(final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
                                 final CameraStationUpdateService cameraStationUpdateService,
@@ -48,14 +51,16 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 450000)
     public boolean updateCameras() {
         boolean updatedCameras;
-        synchronized (this) {
+        lock.lock();
+        try {
             log.info("method=updateCameras got the lock");
             final Map<Long, Pair<KameraVO, List<EsiasentoVO>>> lotjuIdToKameraAndEsiasentos =
                 lotjuCameraStationMetadataService.getLotjuIdToKameraAndEsiasentoMap();
-
             updatedCameras = updateCamerasAndPresets(lotjuIdToKameraAndEsiasentos);
+            log.info("method=updateCameras end updated={}", updatedCameras);
+        } finally {
+            lock.unlock();
         }
-        log.info("method=updateCameras end updated={}", updatedCameras);
         return updatedCameras;
     }
 
@@ -110,7 +115,8 @@ public class CameraStationUpdater {
     public int updateCameraStationsStatuses() {
 
         int updated = 0;
-        synchronized (this) {
+        lock.lock();
+        try {
             log.info("method=updateCameraStationsStatuses got the lock");
             final List<KameraVO> allKameras = lotjuCameraStationMetadataService.getKameras();
             for (KameraVO from : allKameras) {
@@ -124,6 +130,8 @@ public class CameraStationUpdater {
                     throw e;
                 }
             }
+        } finally {
+            lock.unlock();
         }
         return updated;
     }
@@ -131,7 +139,8 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraStation(final long lotjuId, final UpdateType updateType) {
 
-        synchronized (this) {
+        lock.lock();
+        try {
             log.info("method=updateCameraStation got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(lotjuId);
 
@@ -149,13 +158,16 @@ public class CameraStationUpdater {
                 // Update only station metadata
                 return cameraStationUpdateService.updateCamera(kamera);
             }
+        } finally {
+            lock.unlock();
         }
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraPreset(final Long lotjuId, final UpdateType updateType) {
 
-        synchronized (this) {
+        lock.lock();
+        try {
             log.info("method=updateCameraPreset got the lock");
             final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(lotjuId);
             if (UpdateType.INSERT.equals(updateType) ||
@@ -170,6 +182,8 @@ public class CameraStationUpdater {
                     return false;
                 }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
