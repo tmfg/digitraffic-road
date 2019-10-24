@@ -107,9 +107,9 @@ public abstract class AbstractMqttSensorConfiguration {
     }
 
     private void sendStatus() {
-        final StopWatch sw = StopWatch.createStarted();
-
         if(lockingService.acquireLock(mqttClassName, 60)) {
+            final StopWatch sw = StopWatch.createStarted();
+
             try {
                 final StatusMessage message = new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString());
 
@@ -117,9 +117,9 @@ public abstract class AbstractMqttSensorConfiguration {
             } catch (final Exception e) {
                 logger.error("error sending message", e);
             }
-        }
 
-        logger.info("sendStatus tookMs={}", sw.getTime());
+            logger.info("sendStatus tookMs={}", sw.getTime());
+        }
     }
 
     protected class StatusMessage {
