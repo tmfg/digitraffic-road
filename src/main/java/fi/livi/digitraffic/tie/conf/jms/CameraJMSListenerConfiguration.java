@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,7 @@ import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.camera.enabled")
+@ConditionalOnProperty(name = "jms.camera.inQueue")
 @Configuration
 public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfiguration<KuvaProtos.Kuva> {
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
@@ -38,7 +36,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           CameraJMSListenerConfiguration.class.getSimpleName(),
-                                          UUID.randomUUID().toString());
+                                          LockingService.generateInstanceId());
     }
 
     @Override

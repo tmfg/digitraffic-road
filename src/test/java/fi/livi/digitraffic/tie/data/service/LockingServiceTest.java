@@ -5,12 +5,15 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
@@ -40,6 +43,16 @@ public class LockingServiceTest extends AbstractJpaTest {
 
     @Autowired
     private LockingService lockingService;
+
+    @Test
+    public void testGenerate() {
+        Set<Long> ids = new HashSet<>();
+        IntStream.range(0,20).forEach(i -> {
+            long id = LockingService.generateInstanceId();
+            Assert.assertFalse(ids.contains(id));
+            ids.add(id);
+        });
+    }
 
     @Test
     public void multipleInstancesLockingNotOverlapping() {

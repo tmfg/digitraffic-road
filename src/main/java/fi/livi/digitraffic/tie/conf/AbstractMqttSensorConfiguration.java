@@ -25,6 +25,7 @@ public abstract class AbstractMqttSensorConfiguration {
     private final String messageTopic;
     private final LockingService lockingService;
     private final String mqttClassName;
+    private final long instanceId;
 
     private ZonedDateTime lastUpdated;
     private ZonedDateTime lastError;
@@ -63,6 +64,7 @@ public abstract class AbstractMqttSensorConfiguration {
         if (lastUpdated == null) {
             lastUpdated = ZonedDateTime.now();
         }
+        instanceId = LockingService.generateInstanceId();
     }
 
     // Implement this with @Scheduled
@@ -70,7 +72,7 @@ public abstract class AbstractMqttSensorConfiguration {
 
     protected void handleData() {
 
-        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60);
+        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
 
         if (lockAcquired) {
 

@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
@@ -21,7 +20,7 @@ import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraMetadataMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.camera.metadata.enabled")
+@ConditionalOnProperty(name = "jms.camera.meta.inQueue")
 @Configuration
 public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerConfiguration<CameraMetadataUpdatedMessageDto> {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataJMSListenerConfiguration.class);
@@ -42,8 +41,8 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
         this.jaxb2Marshaller = jaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-            Datex2JMSListenerConfiguration.class.getSimpleName(),
-            UUID.randomUUID().toString());
+            CameraMetadataJMSListenerConfiguration.class.getSimpleName(),
+            LockingService.generateInstanceId());
         }
 
         @Override

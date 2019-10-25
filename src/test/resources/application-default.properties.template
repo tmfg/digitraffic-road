@@ -79,11 +79,12 @@ jms.datex2.userId=
 jms.datex2.password=
 
 # JMS topics
-jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
-jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
-jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
-jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
-jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
+# Comment out to disable (Only daemon should have these enabled)
+#jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
+#jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
+#jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
+#jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
+#jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
 
 # Services enabled/disabled
 
@@ -100,13 +101,6 @@ dt.job.scheduler.enabled=false
 mqtt.enabled=false
 # Is TMS messages available. Should be true for daemon process
 mqtt.tms.enabled=false
-
-# JMS queue enabled/disabled (Only daemon should have these enabled)
-jms.weather.enabled=false
-jms.tms.enabled=false
-jms.camera.enabled=false
-jms.datex2.enabled=false
-jms.camera.metadata.enabled=false
 
 # Developer life improvements
 logging.level.root=INFO
