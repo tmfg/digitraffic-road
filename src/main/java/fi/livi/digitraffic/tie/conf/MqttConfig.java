@@ -53,7 +53,20 @@ public class MqttConfig {
     }
 
     @Bean
+    @ServiceActivator(inputChannel = "mqttStatusOutboundChannel", async = "true")
+    public MessageHandler mqttStatusOutbound(final MqttPahoClientFactory mqttPahoClientFactory) {
+        final MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttPahoClientFactory);
+
+        return messageHandler;
+    }
+
+    @Bean
     public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public MessageChannel mqttStatusOutboundChannel() {
         return new DirectChannel();
     }
 
@@ -62,4 +75,11 @@ public class MqttConfig {
         // Paho does not support concurrency, all calls to this must be synchronized!
         void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
     }
+
+    @MessagingGateway(defaultRequestChannel = "mqttStatusOutboundChannel", defaultRequestTimeout = "2000", defaultReplyTimeout = "2000")
+    public interface MqttStatusGateway {
+        // Paho does not support concurrency, all calls to this must be synchronized!
+        void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
+    }
+
 }

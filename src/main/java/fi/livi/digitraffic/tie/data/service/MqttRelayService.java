@@ -6,11 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.conf.MqttConfig;
 
@@ -21,8 +19,7 @@ public class MqttRelayService {
 
     private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
 
-    @Lazy // this will not be available if mqtt is not enabled
-    private final MqttConfig.MqttGateway mqttGateway;
+    private final MqttConfig.MqttStatusGateway mqttStatusGateway;
 
     public enum StatisticsType {TMS, WEATHER}
 
@@ -30,8 +27,8 @@ public class MqttRelayService {
     public static final String statusNOCONTENT = "{\"status\": \"no content\"}";
 
     @Autowired
-    public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
-        this.mqttGateway = mqttGateway;
+    public MqttRelayService(final MqttConfig.MqttStatusGateway mqttStatusGateway) {
+        this.mqttStatusGateway = mqttStatusGateway;
     }
 
     /**
@@ -40,7 +37,7 @@ public class MqttRelayService {
      * @param payLoad
      */
     public synchronized void sendMqttMessage(final String topic, final String payLoad) {
-        mqttGateway.sendToMqtt(topic, payLoad);
+        mqttStatusGateway.sendToMqtt(topic, payLoad);
     }
 
     /**
