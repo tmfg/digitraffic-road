@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanen
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -65,9 +64,10 @@ public class CameraStationUpdater {
         }
 
         protected void unlock() {
-            log.info("method=unlock lockedTimeMs={}", stopWatch.getTime());
+            final long time = stopWatch.getTime();
             stopWatch.reset();
             lockingService.unlock(lockName);
+            log.info("method=unlock lockedTimeMs={}", time);
         }
     }
 
@@ -75,11 +75,10 @@ public class CameraStationUpdater {
     public boolean updateCameras() {
         log.info("method=updateCameras start");
 
-        Set<Long> camerasLotjuIds = lotjuCameraStationMetadataService.getKamerasLotjuids();
+        final Set<Long> camerasLotjuIds = lotjuCameraStationMetadataService.getKamerasLotjuids();
         final Pair<Integer, Integer> updatedInsertedCount =
             camerasLotjuIds.stream().map(lotjuId -> updateCameraStationAndPresets(lotjuId))
-                .collect(Collectors.reducing((p1, p2) -> Pair.of(p1.getLeft() + p2.getLeft(), p1.getRight() + p2.getRight())))
-                .orElse(Pair.of(0, 0));
+                .reduce(Pair.of(0, 0), (p1, p2) -> Pair.of(p1.getLeft() + p2.getLeft(), p1.getRight() + p2.getRight()));
 
         long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
         long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
@@ -96,18 +95,9 @@ public class CameraStationUpdater {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateCameraStationsStatuses() {
-
-        int updated = 0;
         log.info("method=updateCameraStationsStatuses start");
         final Set<Long> kamerasLotjuids = lotjuCameraStationMetadataService.getKamerasLotjuids();
-
-        for (Long kameraLotjuId : kamerasLotjuids) {
-            if (updateCameraStation(kameraLotjuId) ) {
-                updated++;
-            }
-        }
-
-        return updated;
+        return kamerasLotjuids.stream().collect(Collectors.summingInt(lotjuId -> updateCameraStation(lotjuId.longValue()) ? 1 : 0));
     }
 
     /**

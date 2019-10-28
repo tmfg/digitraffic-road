@@ -1,8 +1,13 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -33,7 +38,7 @@ public class LockingService {
     }
 
     public void lock(final String lockName, final int expirationSeconds, final long overrideInstanceId) {
-        StopWatch start = StopWatch.createStarted();
+        final StopWatch start = StopWatch.createStarted();
         while (!tryLock(lockName, expirationSeconds, overrideInstanceId)) {
             try {
                 Thread.sleep(100);
@@ -48,7 +53,8 @@ public class LockingService {
     }
 
     /**
-     * Acquires the lock only if it is free at the time of invocation.
+     * Acquires the lock only if it is free at the time of invocation
+     * or the caller already have it.
      *
      * <p>Acquires the lock if it is available and returns immediately
      * with the value {@code true}.
@@ -65,7 +71,7 @@ public class LockingService {
     }
 
     public boolean tryLock(String lockName, int expirationSeconds, final long overrideInstanceId) {
-        StopWatch start = StopWatch.createStarted();
+        final StopWatch start = StopWatch.createStarted();
         final boolean locked = lockingServiceInternal.tryLock(lockName, expirationSeconds, overrideInstanceId);
         if (log.isDebugEnabled()) {
             log.debug("method=tryLock lockName={} tookMs={} forThreadId={}", lockName, start.getTime(), overrideInstanceId);
@@ -83,12 +89,13 @@ public class LockingService {
     }
 
     public void unlock(final String lockName, final long overrideInstanceId) {
-        StopWatch start = StopWatch.createStarted();
+        final StopWatch start = StopWatch.createStarted();
         lockingServiceInternal.unlock(lockName, overrideInstanceId);
         if (log.isDebugEnabled()) {
             log.debug("method=unlock lockName={} tookMs={} forThreadId={}", lockName, start.getTime(), overrideInstanceId);
         }
     }
+
     /**
      * Unique instance id per thread.
      *
@@ -101,14 +108,7 @@ public class LockingService {
     /**
      * Generates unique id
      */
-    public static long generateInstanceId() {
-        final Instant now = Instant.now();
-        final long instanceId = now.getEpochSecond() * 1000_000 + now.getNano() / 1000;
-        if (generatedInstanceIds.contains(instanceId)) {
-            return generateInstanceId();
-        } else {
-            generatedInstanceIds.add(instanceId);
-            return instanceId;
-        }
+    public synchronized static long generateInstanceId() {
+        return UUID.randomUUID().getMostSignificantBits();
     }
 }
