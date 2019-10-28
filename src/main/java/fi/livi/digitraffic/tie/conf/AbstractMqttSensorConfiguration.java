@@ -113,7 +113,7 @@ public abstract class AbstractMqttSensorConfiguration {
             try {
                 final StatusMessage message = new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString());
 
-                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
+                mqttRelay.sendMqttStatusMessage(statusTopic, objectMapper.writeValueAsString(message));
             } catch (final Exception e) {
                 logger.error("error sending message", e);
             }
