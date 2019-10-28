@@ -45,6 +45,22 @@ public class MqttConfig {
     }
 
     @Bean
+    public MqttPahoClientFactory mqttStatusClientFactory(
+        @Value("${mqtt.server.url}") final String serverUrl,
+        @Value("${mqtt.server.username}") final String username,
+        @Value("${mqtt.server.password}")final String password) {
+
+        final DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        factory.getConnectionOptions().setServerURIs(serverUrl.split(","));
+        factory.getConnectionOptions().setUserName(username);
+        factory.getConnectionOptions().setPassword(password.toCharArray());
+        factory.getConnectionOptions().setMaxInflight(10000);
+        factory.getConnectionOptions().setConnectionTimeout(5);
+
+        return factory;
+    }
+
+    @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel", async = "true")
     public MessageHandler mqttOutbound(final MqttPahoClientFactory mqttPahoClientFactory) {
         final MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttPahoClientFactory);
@@ -54,7 +70,7 @@ public class MqttConfig {
 
     @Bean
     @ServiceActivator(inputChannel = "mqttStatusOutboundChannel", async = "true")
-    public MessageHandler mqttStatusOutbound(final MqttPahoClientFactory mqttPahoClientFactory) {
+    public MessageHandler mqttStatusOutbound(final MqttPahoClientFactory mqttStatusClientFactory) {
         final MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttPahoClientFactory);
 
         return messageHandler;
