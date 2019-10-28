@@ -45,33 +45,9 @@ public class MqttConfig {
     }
 
     @Bean
-    public MqttPahoClientFactory mqttStatusClientFactory(
-        @Value("${mqtt.server.url}") final String serverUrl,
-        @Value("${mqtt.server.username}") final String username,
-        @Value("${mqtt.server.password}")final String password) {
-
-        final DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-        factory.getConnectionOptions().setServerURIs(serverUrl.split(","));
-        factory.getConnectionOptions().setUserName(username);
-        factory.getConnectionOptions().setPassword(password.toCharArray());
-        factory.getConnectionOptions().setMaxInflight(10000);
-        factory.getConnectionOptions().setConnectionTimeout(5);
-
-        return factory;
-    }
-
-    @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel", async = "true")
     public MessageHandler mqttOutbound(final MqttPahoClientFactory mqttClientFactory) {
         final MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory);
-
-        return messageHandler;
-    }
-
-    @Bean
-    @ServiceActivator(inputChannel = "mqttStatusOutboundChannel", async = "true")
-    public MessageHandler mqttStatusOutbound(final MqttPahoClientFactory mqttStatusClientFactory) {
-        final MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttStatusClientFactory);
 
         return messageHandler;
     }
@@ -81,21 +57,9 @@ public class MqttConfig {
         return new DirectChannel();
     }
 
-    @Bean
-    public MessageChannel mqttStatusOutboundChannel() {
-        return new DirectChannel();
-    }
-
     @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel", defaultRequestTimeout = "2000", defaultReplyTimeout = "2000")
     public interface MqttGateway {
         // Paho does not support concurrency, all calls to this must be synchronized!
         void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
     }
-
-    @MessagingGateway(defaultRequestChannel = "mqttStatusOutboundChannel", defaultRequestTimeout = "2000", defaultReplyTimeout = "2000")
-    public interface MqttStatusGateway {
-        // Paho does not support concurrency, all calls to this must be synchronized!
-        void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
-    }
-
 }

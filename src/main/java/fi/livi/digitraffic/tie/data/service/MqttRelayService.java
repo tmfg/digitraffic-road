@@ -1,8 +1,11 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +21,28 @@ public class MqttRelayService {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayService.class);
 
     private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
-
-    private final MqttConfig.MqttGateway mqttGateway;
-    private final MqttConfig.MqttStatusGateway mqttStatusGateway;
+    private final BlockingQueue<Pair<String, String>> messageList = new LinkedBlockingQueue<>();
 
     public enum StatisticsType {TMS, WEATHER}
 
-    public static final String statusOK = "{\"status\": \"OK\"}";
-    public static final String statusNOCONTENT = "{\"status\": \"no content\"}";
-
     @Autowired
-    public MqttRelayService(final MqttConfig.MqttGateway mqttGateway, final MqttConfig.MqttStatusGateway mqttStatusGateway) {
-        this.mqttGateway = mqttGateway;
-        this.mqttStatusGateway = mqttStatusGateway;
+    public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
+        new Thread(() -> {
+            while(true) {
+                try {
+                    final Pair<String, String> pair = messageList.take();
+
+                    mqttGateway.sendToMqtt(pair.getLeft(), pair.getRight());
+                } catch (final Exception e) {
+                    logger.error("mqtt failure", e);
+                }
+            }
+        }).start();
+    }
+
+    @Scheduled(fixedRate = 1000)
+    private void logMqttQueue() {
+        logger.info("MqttQueueLength={}", messageList.size());
     }
 
     /**
@@ -38,12 +50,8 @@ public class MqttRelayService {
      * @param topic
      * @param payLoad
      */
-    public synchronized void sendMqttMessage(final String topic, final String payLoad) {
-        mqttGateway.sendToMqtt(topic, payLoad);
-    }
-
-    public synchronized void sendMqttStatusMessage(final String topic, final String payLoad) {
-        mqttStatusGateway.sendToMqtt(topic, payLoad);
+    public void sendMqttMessage(final String topic, final String payLoad) {
+        messageList.add(Pair.of(topic, payLoad));
     }
 
     /**
