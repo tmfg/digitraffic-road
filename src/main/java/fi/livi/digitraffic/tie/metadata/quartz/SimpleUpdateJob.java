@@ -17,15 +17,19 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
+        Exception lastError = null;
         try {
             doExecute(context);
         } catch(final Exception e) {
+            lastError = e;
             log.error("Exception executing jobName=" + jobName, e);
         }
 
         stopWatch.stop();
 
-        log.info("Quartz jobName={} end (took jobTimeMs={} ms)", jobName, stopWatch.getTime());
+        log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={} last error: {} {}",
+                 jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime(),
+                 lastError != null ? lastError.getClass() : null,  lastError != null ? lastError.getMessage() : "");
     }
 
     protected abstract void doExecute(final JobExecutionContext context) throws Exception;

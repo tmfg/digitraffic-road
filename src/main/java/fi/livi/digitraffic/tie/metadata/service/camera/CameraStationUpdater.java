@@ -107,7 +107,7 @@ public class CameraStationUpdater {
     private Pair<Integer, Integer> updateCameraStationAndPresets(final long kameraLotjuId) {
         lock.lock();
         try {
-            log.info("method=updateCameraStationAndPresets got the lock");
+            log.debug("method=updateCameraStationAndPresets got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
             if (!validate(kamera)) {
                 return Pair.of(0,0);
@@ -133,7 +133,7 @@ public class CameraStationUpdater {
         // Otherwise we update only the station
         lock.lock();
         try {
-            log.info("method=updateCameraStation got the lock");
+            log.debug("method=updateCameraStation got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
             if (!validate(kamera)) {
                 return false;
@@ -159,7 +159,7 @@ public class CameraStationUpdater {
         // Otherwise update only the given preset
         lock.lock();
         try {
-            log.info("method=updateCameraPreset got the lock");
+            log.debug("method=updateCameraPreset got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
             if (validate(kamera)) {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
