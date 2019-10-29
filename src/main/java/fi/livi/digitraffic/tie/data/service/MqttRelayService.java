@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.LongAccumulator;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class MqttRelayService {
 
     private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
     private final BlockingQueue<Pair<String, String>> messageList = new LinkedBlockingQueue<>();
+    private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
     public enum StatisticsType {TMS, WEATHER}
 
@@ -41,9 +43,9 @@ public class MqttRelayService {
         }).start();
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 60000)
     private void logMqttQueue() {
-        logger.info("MqttQueueLength={}", messageList.size());
+        logger.info("MqttQueueLength={}", maxQueueLength.getThenReset());
     }
 
     /**
@@ -53,6 +55,8 @@ public class MqttRelayService {
      */
     public void sendMqttMessage(final String topic, final String payLoad) {
         messageList.add(Pair.of(topic, payLoad));
+
+        maxQueueLength.accumulate(messageList.size());
     }
 
     /**
