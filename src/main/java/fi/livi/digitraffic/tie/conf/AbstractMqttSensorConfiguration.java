@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -108,8 +107,6 @@ public abstract class AbstractMqttSensorConfiguration {
 
     private void sendStatus() {
         if(lockingService.acquireLock(mqttClassName, 60)) {
-            final StopWatch sw = StopWatch.createStarted();
-
             try {
                 final StatusMessage message = new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString());
 
@@ -117,8 +114,6 @@ public abstract class AbstractMqttSensorConfiguration {
             } catch (final Exception e) {
                 logger.error("error sending message", e);
             }
-
-            logger.info("sendStatus tookMs={}", sw.getTime());
         }
     }
 
