@@ -27,6 +27,7 @@ public class MqttRelayService {
 
     @Autowired
     public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
+        // in a threadsafe way, take messages from lessagelist and send them to mqtt gateway
         new Thread(() -> {
             while(true) {
                 try {
@@ -46,7 +47,7 @@ public class MqttRelayService {
     }
 
     /**
-     * Send mqtt message. NOTE! This must be synchronized, because Paho does not support concurrency!
+     * Add mqtt message to messagelist.  Messagelist is synchronized and threadsafe.
      * @param topic
      * @param payLoad
      */
