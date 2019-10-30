@@ -88,7 +88,7 @@ public class CameraStationUpdater {
         log.info("updatedCameraPresetsCount={} CameraPresets", updatedInsertedCount.getLeft());
         log.info("insertedCameraPresetsCount={} CameraPresets", updatedInsertedCount.getRight());
         final boolean updatedCameras = updatedInsertedCount.getLeft() > 0 || updatedInsertedCount.getRight() > 0;
-        log.info("method=updateCameras end updated={}", updatedCameras);
+        log.info("method=updateCameras end updatedBoolean={}", updatedCameras);
 
         return updatedCameras;
     }
