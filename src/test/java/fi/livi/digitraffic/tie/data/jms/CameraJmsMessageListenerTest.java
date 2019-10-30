@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -31,11 +30,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.integration.file.remote.session.Session;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
@@ -46,7 +48,6 @@ import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdateService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
                                    "road.datasource.hikari.maximum-pool-size=6"})
@@ -63,16 +64,18 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private CameraDataUpdateService cameraDataUpdateService;
 
     @Autowired
-    private CameraStationUpdateService cameraStationUpdateService;
-
-    @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
     private EntityManager entityManager;
 
-    private Map<String, byte[]> imageFilesMap = new HashMap<>();
+    @Autowired
+    private AmazonS3 amazonS3Client;
 
+    @Value("${dt.amazon.s3.weathercam.bucketName}")
+    private String bucketName;
+
+    private Map<String, byte[]> imageFilesMap = new HashMap<>();
     @Before
     public void initData() throws IOException {
 
@@ -242,7 +245,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         for (KuvaProtos.Kuva kuva : data) {
             String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
-            byte[] dst = readCameraDataFromSftp(presetId);
+            byte[] dst = readCameraImageFromS3(presetId);
             byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
             Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
@@ -259,14 +262,12 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
                 handleDataTotalTime <= maxHandleTime);
     }
 
-    private byte[] readCameraDataFromSftp(final String presetId) throws IOException {
-        try(final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            final Session s = sftpSessionFactory.getSession();
-            s.read(getSftpPath(presetId), out);
-            s.close();
-
-            return out.toByteArray();
-        }
+    private byte[] readCameraImageFromS3(final String presetId) throws IOException {
+        final String key = presetId + ".jpg";
+        final S3Object o = amazonS3Client.getObject(bucketName, key);
+        final byte[] imageData = o.getObjectContent().readAllBytes();
+        o.getObjectContent().close();
+        return imageData;
     }
 
     private String getImportDir() {
