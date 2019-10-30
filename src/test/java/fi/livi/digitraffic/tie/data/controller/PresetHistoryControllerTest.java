@@ -8,7 +8,6 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -22,7 +21,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 import fi.livi.digitraffic.tie.metadata.controller.BetaController;
 
-// Methods are in BetaController now, but will move later to
+// Methods are in BetaController now
 public class PresetHistoryControllerTest extends AbstractRestWebTest {
 
     @Value("${weathercam.baseUrl}")
@@ -46,9 +45,10 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
     /** @return versionId */
     private String insertTestData(final String presetId, final ZonedDateTime lastModified, final boolean isPublic) {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
+        final String cameraId = presetId.substring(0,6);
         entityManager.createNativeQuery(
-            "insert into camera_preset_history(preset_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
-            "VALUES ('" + presetId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " + SIZE + ", NOW())")
+            "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
+            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " + SIZE + ", NOW())")
             .executeUpdate();
         return versionId;
     }
@@ -59,7 +59,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
 
     @Test
     public void notFoundForNotExistingPreset() throws Exception {
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/C0000000")
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/C0000000")
             .andExpect(status().isNotFound());
     }
 
@@ -68,10 +68,10 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         final String presetId = "C0000001";
         insertTestData(presetId, ZonedDateTime.now().minusHours(25));
 
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/" + presetId)
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("presetId", Matchers.is(presetId)))
-            .andExpect(jsonPath("history", Matchers.hasSize(0)))
+            .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistory", Matchers.hasSize(0)))
         ;
     }
 
@@ -85,16 +85,17 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now.minusHours(25)); // This is too old
         insertTestData("C1234567", now); // This is for another preset
 
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/" + presetId)
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("presetId", Matchers.is(presetId)))
-            .andExpect(jsonPath("history", Matchers.hasSize(2)))
-            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId0)))
-            .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now)))
-            .andExpect(jsonPath("history[0].sizeBytes", Matchers.is(SIZE)))
-            .andExpect(jsonPath("history[1].imageUrl", matchUrl(presetId, versionId1)))
-            .andExpect(jsonPath("history[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
-            .andExpect(jsonPath("history[1].sizeBytes", Matchers.is(SIZE)))
+            .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory", Matchers.hasSize(2)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId0)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].sizeBytes", Matchers.is(SIZE)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].imageUrl", matchUrl(presetId, versionId1)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].sizeBytes", Matchers.is(SIZE)))
         ;
     }
 
@@ -104,11 +105,11 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         final ZonedDateTime tooOld = ZonedDateTime.now().minusHours(25);
         insertTestData(presetId, tooOld);
 
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
             DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("presetId", Matchers.is(presetId)))
-            .andExpect(jsonPath("history", Matchers.hasSize(0)))
+            .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistory", Matchers.hasSize(0)))
         ;
     }
 
@@ -119,13 +120,14 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now);
         final String versionId = insertTestData(presetId, now.minusHours(1));
 
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
                 DateHelper.toZonedDateTimeAtUtc(now.minusHours(1)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("presetId", Matchers.is(presetId)))
-            .andExpect(jsonPath("history", Matchers.hasSize(1)))
-            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId)))
-            .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
+            .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory", Matchers.hasSize(1)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
         ;
     }
 
@@ -137,13 +139,42 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now.minusHours(1), false); // This is skipped as not public
         final String versionId = insertTestData(presetId, now.minusHours(2));
 
-        getJson(BetaController.CAMERA_PRESET_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
             DateHelper.toZonedDateTimeAtUtc(now.minusSeconds(1)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("presetId", Matchers.is(presetId)))
-            .andExpect(jsonPath("history", Matchers.hasSize(1)))
-            .andExpect(jsonPath("history[0].imageUrl", matchUrl(presetId, versionId)))
-            .andExpect(jsonPath("history[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2))))
+            .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory", Matchers.hasSize(1)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2))))
+        ;
+    }
+
+    @Test
+    public void historyForCamera() throws Exception {
+        final String cameraId = "C00000";
+        final String presetId1 = cameraId + "01";
+        final String presetId2 = cameraId + "02";
+        final ZonedDateTime now = ZonedDateTime.now();
+        insertTestData(presetId1, now);
+        insertTestData(presetId1, now.minusHours(1), false); // This is skipped as not public
+        insertTestData(presetId1, now.minusHours(2));
+        insertTestData(presetId2, now);
+        insertTestData(presetId2, now.minusHours(1));
+        insertTestData(presetId2, now.minusHours(2));
+
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + cameraId)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("cameraId", Matchers.is(cameraId)))
+            .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId1)))
+            .andExpect(jsonPath("cameraHistory[1].presetId", Matchers.is(presetId2)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory", Matchers.hasSize(2)))
+            .andExpect(jsonPath("cameraHistory[1].presetHistory", Matchers.hasSize(3)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2))))
+            .andExpect(jsonPath("cameraHistory[1].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now)))
+            .andExpect(jsonPath("cameraHistory[1].presetHistory[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
+            .andExpect(jsonPath("cameraHistory[1].presetHistory[2].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2))))
         ;
     }
 

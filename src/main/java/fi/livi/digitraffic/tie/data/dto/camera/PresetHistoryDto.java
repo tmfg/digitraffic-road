@@ -9,14 +9,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class PresetHistoryDto {
 
     public final String presetId;
-    public final List<PresetHistoryDataDto> history;
+    public final List<PresetHistoryDataDto> presetHistory;
 
-    public PresetHistoryDto(final String presetId, final List<PresetHistoryDataDto> history) {
+    public PresetHistoryDto(final String presetId, final List<PresetHistoryDataDto> presetHistory) {
         this.presetId = presetId;
-        this.history = history;
+        this.presetHistory = presetHistory;
     }
 
     public PresetHistoryDto(String presetId) {
         this(presetId, Collections.emptyList());
+    }
+
+    public String getPresetId() {
+        return presetId;
     }
 }

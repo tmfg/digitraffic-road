@@ -37,7 +37,20 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                    "  AND history.last_modified >= :maxTime\n" +
                    "ORDER BY history.preset_id, history.last_modified DESC",
            nativeQuery = true)
-    Optional<CameraPresetHistory> findLatestPublishableByPresetIdAndTime(final String presetId, Instant atTime, Instant maxTime);
+    Optional<CameraPresetHistory> findLatestPublishableByPresetIdAndTimeOrderByPresetIdAndLastModifiedDesc(
+        final String presetId, final Instant atTime, final Instant maxTime);
+
+    @Query(value = "SELECT DISTINCT ON (preset_id)\n" +
+                   "history.*\n" +
+                   "FROM camera_preset_history history\n" +
+                   "where history.publishable = true\n" +
+                   "  AND history.camera_id = :cameraId\n" +
+                   "  AND history.last_modified <= :atTime\n" +
+                   "  AND history.last_modified >= :maxTime\n" +
+                   "ORDER BY history.preset_id, history.last_modified DESC",
+           nativeQuery = true)
+    List<CameraPresetHistory> findLatestPublishableByCameraIdAndTimeOrderByPresetIdAndLastModifiedDesc(
+        final String cameraId, final Instant atTime, final Instant maxTime);
 
     @Query(value = "SELECT history.*\n" +
                    "FROM camera_preset_history history\n" +
@@ -48,6 +61,16 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                    nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findAllPublishableByPresetIdOrderByLastModifiedDesc(final String presetId, Instant maxTime);
+
+    @Query(value = "SELECT history.*\n" +
+        "FROM camera_preset_history history\n" +
+        "where history.publishable = true\n" +
+        "  AND history.camera_id = :cameraId\n" +
+        "  AND history.last_modified >= :maxTime\n" +
+        "ORDER BY history.preset_id, history.last_modified DESC",
+           nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<CameraPresetHistory> findAllPublishableByCameraIdOrderByLastModifiedDesc(final String cameraId, final Instant maxTime);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
@@ -66,4 +89,6 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
         "  AND history.preset_id like (:cameraId || '%' )",
         nativeQuery = true)
     void updatePresetHistoryPublicityForCameraId(final String cameraId, final boolean isPublic, final Instant startTime);
+
+    boolean existsByCameraId(final String cameraId);
 }
