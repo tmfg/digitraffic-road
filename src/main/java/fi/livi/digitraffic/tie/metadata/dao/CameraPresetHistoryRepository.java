@@ -86,7 +86,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
         "SET publishable = :isPublic\n" +
         "WHERE history.publishable <> :isPublic\n" +
         "  AND history.last_modified >= :startTime\n" +
-        "  AND history.preset_id like (:cameraId || '%' )",
+        "  AND history.camera_id = :cameraId",
         nativeQuery = true)
     void updatePresetHistoryPublicityForCameraId(final String cameraId, final boolean isPublic, final Instant startTime);
 

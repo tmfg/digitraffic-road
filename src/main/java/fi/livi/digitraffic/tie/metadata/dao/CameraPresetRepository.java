@@ -104,20 +104,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @Modifying(clearAutomatically = true)
     @Query(value =
                "UPDATE ROAD_STATION\n" +
-               "SET OBSOLETE_DATE = NULL\n" +
-               "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
-               "  AND OBSOLETE_DATE IS NOT NULL\n" +
-               "  AND EXISTS(\n" +
-               "    SELECT NULL\n" +
-               "    FROM CAMERA_PRESET CP\n" +
-               "    WHERE CP.PUBLISHABLE = true\n" +
-               "      AND CP.ROAD_STATION_ID = ROAD_STATION.ID\n" +
-               ")", nativeQuery = true)
-    int nonObsoleteCameraRoadStationsWithPublishablePresets();
-
-    @Modifying(clearAutomatically = true)
-    @Query(value =
-               "UPDATE ROAD_STATION\n" +
                "SET OBSOLETE_DATE = current_timestamp\n" +
                "WHERE ROAD_STATION_TYPE = 'CAMERA_STATION'\n" +
                "  AND OBSOLETE_DATE IS NULL\n" +

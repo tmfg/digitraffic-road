@@ -202,7 +202,7 @@ public class CameraImageUpdateService {
                 info.updateWriteStatusSuccess();
                 final long s3WriteDuration = writeStart.getTime()-writeDuration;
                 info.updateWriteTotalDurationMs(writeDuration + s3WriteDuration);
-                info.setWriteDurationMs(0);
+                info.setWriteDurationMs(-1);
                 info.setS3WriteDurationMs(s3WriteDuration);
 
             } catch (final Exception e) {
