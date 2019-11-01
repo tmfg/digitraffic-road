@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.data.dto.camera;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,9 +13,5 @@ public class CameraHistoryDto {
     public CameraHistoryDto(final String cameraId, final List<PresetHistoryDto> cameraHistory) {
         this.cameraId = cameraId;
         this.cameraHistory = cameraHistory;
-    }
-
-    public CameraHistoryDto(String presetId) {
-        this(presetId, Collections.emptyList());
     }
 }

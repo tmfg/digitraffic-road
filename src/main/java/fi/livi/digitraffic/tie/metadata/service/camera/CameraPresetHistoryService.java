@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,11 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryStatusDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryStatusesDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
+import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryStatusDto;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
@@ -82,14 +87,83 @@ public class CameraPresetHistoryService {
     @Transactional(readOnly = true)
     public CameraHistoryDto findCameraOrPresetPublicHistory(final String cameraOrPresetId, final ZonedDateTime atTime) {
 
-        if (cameraOrPresetId.length() == 8) {
+        if (isPresetId(cameraOrPresetId)) {
             return findPresetPublicHistory(cameraOrPresetId, atTime);
-        } else if (cameraOrPresetId.length() == 6) {
+        } else if (isCameraId(cameraOrPresetId)) {
             return findCameraPublicHistory(cameraOrPresetId, atTime);
         } else {
             throw new IllegalArgumentException(String.format("Parameter cameraOrPresetId should be either 6 or 8 chars long. Was %d long.",
                                                              cameraOrPresetId.length()));
         }
+    }
+
+    @Transactional(readOnly = true)
+    public CameraHistoryStatusesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, ZonedDateTime fromTime, ZonedDateTime toTime) {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+
+        final ZonedDateTime fromLimit = now.minus(historyMaxAgeHours, ChronoUnit.HOURS);
+        if (fromTime == null || fromTime.isBefore(fromLimit)) {
+            fromTime = fromLimit;
+        }
+        if (toTime == null) {
+            toTime = now;
+        }
+        if (cameraOrPresetId == null) {
+            return findCameraHistoryStatus(fromTime, toTime);
+        } else if (isPresetId(cameraOrPresetId)) {
+            return findCameraPresetHistoryStatus(cameraOrPresetId, fromTime, toTime);
+        } else if (isCameraId(cameraOrPresetId)) {
+            return findCameraHistoryStatus(cameraOrPresetId, fromTime, toTime);
+        } else {
+            throw new IllegalArgumentException(String.format("Parameter cameraOrPresetId should be either 6 or 8 chars long. Was %d long.",
+                cameraOrPresetId.length()));
+        }
+    }
+
+    private CameraHistoryStatusesDto findCameraHistoryStatus(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+        List<PresetHistoryStatusDto> presetsHistoryStatuses =
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByTime(fromTime.toInstant(), toTime.toInstant());
+        return convertToCameraHistoryStatus(presetsHistoryStatuses, fromTime, toTime);
+    }
+
+    private CameraHistoryStatusesDto findCameraHistoryStatus(final String cameraId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+        if (!cameraPresetHistoryRepository.existsByCameraId(cameraId)) {
+            throw new ObjectNotFoundException("CameraHistory", cameraId);
+        }
+        List<PresetHistoryStatusDto> history =
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant());
+        return convertToCameraHistoryStatus(history, fromTime, toTime);
+    }
+
+    private CameraHistoryStatusesDto findCameraPresetHistoryStatus(final String presetId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+        if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
+            throw new ObjectNotFoundException("CameraHistory", presetId);
+        }
+        List<PresetHistoryStatusDto> history =
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant());
+        return convertToCameraHistoryStatus(history, fromTime, toTime);
+    }
+
+    private static CameraHistoryStatusesDto convertToCameraHistoryStatus(final List<PresetHistoryStatusDto> presetsHistoryStatuses,
+                                                                             final ZonedDateTime fromTime,
+                                                                             final ZonedDateTime toTime) {
+
+        Map<String, List<PresetHistoryStatusDto>> cameraIdToPresetHistoryStatus = presetsHistoryStatuses.parallelStream()
+            .collect(Collectors.groupingBy(PresetHistoryStatusDto::getCameraId));
+        /*
+        Map<String, List<PresetHistoryStatusDto>> cameraIdToPresetHistoryStatus =
+            history.parallelStream().collect(Collectors.groupingBy(CameraPresetHistory::getPresetId))
+                .entrySet().parallelStream().map(entry ->
+                new PresetHistoryStatusDto(entry.getKey(),
+                    entry.getValue().stream().map(cp -> cp.getPublishable())
+                        .filter(Boolean::booleanValue).findFirst().orElse(false)))
+                .collect(Collectors.groupingBy(ph -> getCameraIdFromPresetId(ph.presetId)));
+*/
+        List<CameraHistoryStatusDto> result =
+            cameraIdToPresetHistoryStatus.entrySet().stream().map(e -> new CameraHistoryStatusDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+        result.sort(Comparator.comparing(o -> o.cameraId));
+        return new CameraHistoryStatusesDto(fromTime, toTime, result);
     }
 
     private CameraHistoryDto findCameraPublicHistory(final String cameraId, final ZonedDateTime atTime) {
@@ -117,8 +191,7 @@ public class CameraPresetHistoryService {
         return new CameraHistoryDto(cameraId, presetsHistories);
     }
 
-    @Transactional(readOnly = true)
-    public CameraHistoryDto findPresetPublicHistory(final String presetId, final ZonedDateTime atTime) {
+    private CameraHistoryDto findPresetPublicHistory(final String presetId, final ZonedDateTime atTime) {
 
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraPresetHistory", presetId);
@@ -224,12 +297,20 @@ public class CameraPresetHistoryService {
         return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
     }
 
+    private static boolean isCameraId(final String cameraId) {
+        return cameraId.length() == 6;
+    }
+
+    private static boolean isPresetId(final String presetId) {
+        return presetId.length() == 8;
+    }
+
     private static String getPresetIdFromImageName(final String imageName) {
         return imageName.substring(0,8);
     }
 
-    private static String getCameraIdFromPresetId(final String imageName) {
-        return imageName.substring(0,6);
+    private static String getCameraIdFromPresetId(final String presetId) {
+        return presetId.substring(0,6);
     }
 
     private static String createImageVersionKey(String presetId) {
