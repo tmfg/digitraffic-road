@@ -97,16 +97,18 @@ public class CameraPresetHistoryService {
         }
     }
 
+    private ZonedDateTime getOldestTimeLimit() {
+        return DateHelper.getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
+    }
+
     @Transactional(readOnly = true)
     public CameraHistoryStatusesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, ZonedDateTime fromTime, ZonedDateTime toTime) {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
-
-        final ZonedDateTime fromLimit = now.minus(historyMaxAgeHours, ChronoUnit.HOURS);
+        final ZonedDateTime fromLimit = getOldestTimeLimit();
         if (fromTime == null || fromTime.isBefore(fromLimit)) {
             fromTime = fromLimit;
         }
         if (toTime == null) {
-            toTime = now;
+            toTime = DateHelper.getZonedDateTimeNowAtUtc();;
         }
         if (cameraOrPresetId == null) {
             return findCameraHistoryStatus(fromTime, toTime);
@@ -122,7 +124,8 @@ public class CameraPresetHistoryService {
 
     private CameraHistoryStatusesDto findCameraHistoryStatus(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
         List<PresetHistoryStatusDto> presetsHistoryStatuses =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByTime(fromTime.toInstant(), toTime.toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByTime(fromTime.toInstant(), toTime.toInstant(),
+                                                                              getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(presetsHistoryStatuses, fromTime, toTime);
     }
 
@@ -131,7 +134,8 @@ public class CameraPresetHistoryService {
             throw new ObjectNotFoundException("CameraHistory", cameraId);
         }
         List<PresetHistoryStatusDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant(),
+                                                                                         getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(history, fromTime, toTime);
     }
 
@@ -140,7 +144,8 @@ public class CameraPresetHistoryService {
             throw new ObjectNotFoundException("CameraHistory", presetId);
         }
         List<PresetHistoryStatusDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant(),
+                                                                                         getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(history, fromTime, toTime);
     }
 
@@ -172,8 +177,9 @@ public class CameraPresetHistoryService {
         }
 
         final List<CameraPresetHistory> latestWithTime = atTime != null ?
-                cameraPresetHistoryRepository.findLatestPublishableByCameraIdAndTimeOrderByPresetIdAndLastModifiedDesc(cameraId, atTime.toInstant(), getOldestLimitNow().toInstant()) :
-                cameraPresetHistoryRepository.findAllPublishableByCameraIdOrderByLastModifiedDesc(cameraId, getOldestLimitNow().toInstant());
+                cameraPresetHistoryRepository.findLatestPublishableByCameraIdAndTimeOrderByPresetIdAndLastModifiedDesc(cameraId, atTime.toInstant(),
+                                                                                                                       getOldestTimeLimit().toInstant()) :
+                cameraPresetHistoryRepository.findAllPublishableByCameraIdOrderByLastModifiedDesc(cameraId, getOldestTimeLimit().toInstant());
 
         return convertToCameraHistory(cameraId, latestWithTime);
     }
@@ -201,7 +207,8 @@ public class CameraPresetHistoryService {
 
         if (atTime != null) {
             final Optional<CameraPresetHistory> latestWithTime = cameraPresetHistoryRepository
-                .findLatestPublishableByPresetIdAndTimeOrderByPresetIdAndLastModifiedDesc(presetId, atTime.toInstant(), getOldestLimitNow().toInstant());
+                .findLatestPublishableByPresetIdAndTimeOrderByPresetIdAndLastModifiedDesc(presetId, atTime.toInstant(),
+                                                                                          getOldestTimeLimit().toInstant());
 
             if (latestWithTime.isPresent()) {
                 return convertToCameraHistory(cameraId, Collections.singletonList(latestWithTime.get()));
@@ -211,7 +218,7 @@ public class CameraPresetHistoryService {
 
         } else {
             return convertToCameraHistory(cameraId,
-                cameraPresetHistoryRepository.findAllPublishableByPresetIdOrderByLastModifiedDesc(presetId, getOldestLimitNow().toInstant()));
+                cameraPresetHistoryRepository.findAllPublishableByPresetIdOrderByLastModifiedDesc(presetId, getOldestTimeLimit().toInstant()));
         }
     }
 
@@ -272,7 +279,7 @@ public class CameraPresetHistoryService {
         }
         // C1234567.jpg -> C1234567
         final CameraPresetHistory history = findHistoryInclSecret(getPresetIdFromImageName(presetImageName), versionId);
-        final ZonedDateTime oldestLimit = getOldestLimitNow();
+        final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {
             return HistoryStatus.NOT_FOUND;
@@ -282,10 +289,6 @@ public class CameraPresetHistoryService {
             return HistoryStatus.TOO_OLD;
         }
         return HistoryStatus.PUBLIC;
-    }
-
-    private ZonedDateTime getOldestLimitNow() {
-        return ZonedDateTime.now().minusHours(historyMaxAgeHours);
     }
 
     public URI createS3UriForVersion(final String imageName, final String versionId) {
