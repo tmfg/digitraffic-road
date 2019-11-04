@@ -10,11 +10,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
@@ -25,6 +28,7 @@ import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
+import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
@@ -44,6 +48,7 @@ public class BetaController {
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String VARIABLE_SIGNS_DATA_PATH = "/variable-signs";
     public static final String CAMERA_PRESET_HISTORY_PATH = "/camera-preset-history";
+    public static final String CODE_DESCRIPTIONS = "/code-descriptions";
 
     private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
@@ -100,6 +105,14 @@ public class BetaController {
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listVariableSignHistory(deviceId);
     }
+
+    @ApiOperation("Return all code descriptions.")
+    @GetMapping(path = CODE_DESCRIPTIONS, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public List<CodeDescriptionJson> listCodeDescriptions() {
+        return trafficSignsService.listCodeDescriptions();
+    }
+
 
     @ApiOperation("List the history of camera preset")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces = APPLICATION_JSON_UTF8_VALUE)
