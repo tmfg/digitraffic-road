@@ -77,7 +77,7 @@ public class CameraImageUpdateService {
         return IOUtils.toByteArray(imageIs);
     }
 
-    // TODO DPO-462 remove when done and S3 in use
+    // TODO DPO-927 remove
     @Transactional
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
