@@ -21,7 +21,7 @@ public class AbstractMetadataToFeatureConverter {
 
     protected static void setRoadStationProperties(final RoadStationProperties properties, final RoadStation roadStation)
             throws NonPublicRoadStationException {
-        if (!roadStation.isPublic()) {
+        if (!roadStation.isPublicNow()) {
             throw new NonPublicRoadStationException("Non public RoadStation fetched for api: " + roadStation);
         }
         properties.setNaturalId(roadStation.getNaturalId());

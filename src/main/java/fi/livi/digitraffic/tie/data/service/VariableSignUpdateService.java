@@ -58,7 +58,6 @@ public class VariableSignUpdateService {
 
     private void updateDeviceInformation(final Device d, final Laite l) {
         d.setType(l.getTyyppi());
-        d.setUpdatedDate(ZonedDateTime.now());
         d.setRoadAddress(l.getSijainti().getTieosoite());
         d.setEtrsTm35FinX(l.getSijainti().getE());
         d.setEtrsTm35FinY(l.getSijainti().getN());

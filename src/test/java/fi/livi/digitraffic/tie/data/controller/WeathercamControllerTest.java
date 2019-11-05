@@ -50,7 +50,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         ReflectionTestUtils.setField(cameraPresetHistoryService, "s3WeathercamBucketUrl", url);
     }
 
-    @Ignore("TODO restore when DPO-462 Kelikamerakuvien salassapidon toteutus is done")
+    @Ignore("TODO DPO-949 restore")
     @Test
     public void getPublicImage() throws Exception {
 

@@ -1,7 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import java.time.ZonedDateTime;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -18,9 +22,7 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    public AbstractCameraStationAttributeUpdater(final Logger logger) {
-        super(logger);
-    }
+    private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
     public static boolean updateRoadStationAttributes(final KameraVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
@@ -32,7 +34,20 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso());
+
+        final boolean isPublicOld = to.internalIsPublic();
+        final boolean isPublicPreviousOld = to.isPublicPrevious();
+        final ZonedDateTime publicityStartTimeOld = to.getPublicityStartTime();
+
+        final ZonedDateTime publicityStartTimeNew = from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillis(from.getJulkisuus().getAlkaen()) : null;
+        final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
+        final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
+        if ( changed ) {
+            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
+                     "fromPublicityStartTime={} toPublicityStartTime={}",
+                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
+        }
+
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.CAMERA_STATION);
         to.setName(from.getNimi());

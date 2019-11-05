@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.18.0</version>
+    <version>2.19.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.2</version>
         </dependency>
 
         <!-- Spring Retry -->
@@ -524,6 +524,19 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
+                                    <extensionArgs>
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <extensionArg>-XautoNameResolution</extensionArg>
+                                        <!--Generate withProperty methods-->
+                                        <extensionArg>-Xfluent-api</extensionArg>
+                                        <extensionArg>-npa</extensionArg>
+                                        <extensionArg>-mark-generated</extensionArg>
+                                    </extensionArgs>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v3/metatietomuutos_kamera_tietovirta.xsd</xsd>
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta</packagename>
                                     <extensionArgs>
                                         <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->

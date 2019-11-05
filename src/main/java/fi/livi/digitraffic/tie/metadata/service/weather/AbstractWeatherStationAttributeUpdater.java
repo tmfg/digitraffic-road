@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.weather;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -15,10 +14,6 @@ import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    public AbstractWeatherStationAttributeUpdater(final Logger logger) {
-        super(logger);
-    }
-
     public static boolean updateRoadStationAttributes(final TiesaaAsemaVO from, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
@@ -29,7 +24,7 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
             to.unobsolete();
         }
         to.setLotjuId(from.getId());
-        to.setPublic(from.isJulkinen() == null || from.isJulkinen());
+        to.updatePublicity(from.isJulkinen() == null || from.isJulkinen());
         to.setNaturalId(from.getVanhaId().longValue());
         to.setType(RoadStationType.WEATHER_STATION);
         to.setName(from.getNimi());

@@ -18,8 +18,12 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksella;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasento;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasentoResponse;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKamerat;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKameratResponse;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKamera;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKameraResponse;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.ObjectFactory;
 
@@ -38,7 +42,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    List<KameraVO> getKameras() {
+    public List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
@@ -49,7 +53,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<EsiasentoVO> getEsiasentos(Long kameraId) {
+    public List<EsiasentoVO> getEsiasentos(Long kameraId) {
         final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
                 new HaeEsiasennotKameranTunnuksella();
         haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);
@@ -60,4 +64,27 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         return haeEsiasennotResponse.getValue().getEsiasennot();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    @Retryable(maxAttempts = 5)
+    public KameraVO getKamera(final long lotjuId) {
+        final HaeKamera request = new HaeKamera();
+        request.setId(lotjuId);
+        final StopWatch start = StopWatch.createStarted();
+        final JAXBElement<HaeKameraResponse> response = (JAXBElement<HaeKameraResponse>)
+            getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKamera(request));
+        log.info("Fetched cameraLotjuId={} tookMs={}", lotjuId, start.getTime());
+        return response.getValue().getKamera();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    @Retryable(maxAttempts = 5)
+    public EsiasentoVO getEsiasento(final long lotjuId) {
+        final HaeEsiasento request = new HaeEsiasento();
+        request.setId(lotjuId);
+        final StopWatch start = StopWatch.createStarted();
+        final JAXBElement<HaeEsiasentoResponse> response = (JAXBElement<HaeEsiasentoResponse>)
+            getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasento(request));
+        log.info("Fetched cameraPresetLotjuId={} tookMs={}", lotjuId, start.getTime());
+        return response.getValue().getEsiasento();
+    }
 }

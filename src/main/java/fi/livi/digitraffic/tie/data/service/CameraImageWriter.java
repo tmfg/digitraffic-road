@@ -39,6 +39,7 @@ public class CameraImageWriter {
     }
 
     void writeImage(final byte[] data, final String filename, final long timestampEpochMillis) throws IOException, SftpException {
+        /*
         final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
             session.write(new ByteArrayInputStream(data), imageFullPath);
@@ -48,6 +49,7 @@ public class CameraImageWriter {
                 imageFullPath, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
+        */
     }
 
     /**
@@ -55,6 +57,8 @@ public class CameraImageWriter {
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
     final DeleteInfo deleteImage(final String filename) {
+        return new DeleteInfo(false, false, -1, null);
+        /*
         final StopWatch start = StopWatch.createStarted();
         final String imageFullPath = getImageFullPath(filename);
         try (final Session session = sftpSessionFactory.getSession()) {
@@ -68,6 +72,7 @@ public class CameraImageWriter {
             log.error(String.format("Failed to remove remote file deleteImageFileName=%s", imageFullPath), e);
             return new DeleteInfo(true, false, start.getTime(), imageFullPath);
         }
+        */
     }
 
     private static String resolvePresetIdFromImageFullPath(final String imageFullPath) {

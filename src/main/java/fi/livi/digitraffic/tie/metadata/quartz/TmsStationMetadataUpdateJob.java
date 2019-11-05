@@ -46,7 +46,7 @@ public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
 
-        log.info("UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateWeatherStations took: stationsTimeMs={} ms, updateWeatherStationsSensors took: stationsSensorsTimeMs={} ms",
+        log.info("UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateTmsStations took: stationsTimeMs={} ms, updateTmsStationsSensors took: stationsSensorsTimeMs={} ms",
                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
     }
 }

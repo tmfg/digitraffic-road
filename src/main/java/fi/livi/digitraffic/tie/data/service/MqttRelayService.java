@@ -1,16 +1,18 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.LongAccumulator;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.conf.MqttConfig;
 
@@ -20,27 +22,41 @@ public class MqttRelayService {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayService.class);
 
     private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
-
-    @Lazy // this will not be available if mqtt is not enabled
-    private final MqttConfig.MqttGateway mqttGateway;
+    private final BlockingQueue<Pair<String, String>> messageList = new LinkedBlockingQueue<>();
+    private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
     public enum StatisticsType {TMS, WEATHER}
 
-    public static final String statusOK = "{\"status\": \"OK\"}";
-    public static final String statusNOCONTENT = "{\"status\": \"no content\"}";
-
     @Autowired
     public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
-        this.mqttGateway = mqttGateway;
+        // in a threadsafe way, take messages from lessagelist and send them to mqtt gateway
+        new Thread(() -> {
+            while(true) {
+                try {
+                    final Pair<String, String> pair = messageList.take();
+
+                    mqttGateway.sendToMqtt(pair.getLeft(), pair.getRight());
+                } catch (final Exception e) {
+                    logger.error("mqtt failure", e);
+                }
+            }
+        }).start();
+    }
+
+    @Scheduled(fixedRate = 60000)
+    private void logMqttQueue() {
+        logger.info("MqttQueueLength={}", maxQueueLength.getThenReset());
     }
 
     /**
-     * Send mqtt message. NOTE! This must be synchronized, because Paho does not support concurrency!
+     * Add mqtt message to messagelist.  Messagelist is synchronized and threadsafe.
      * @param topic
      * @param payLoad
      */
-    public synchronized void sendMqttMessage(final String topic, final String payLoad) {
-        mqttGateway.sendToMqtt(topic, payLoad);
+    public void sendMqttMessage(final String topic, final String payLoad) {
+        messageList.add(Pair.of(topic, payLoad));
+
+        maxQueueLength.accumulate(messageList.size());
     }
 
     /**

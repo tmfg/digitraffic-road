@@ -5,17 +5,17 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationStatusUpdater;
+import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
 
 @DisallowConcurrentExecution
 public class WeatherStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
-    private RoadStationStatusUpdater roadStationStatusUpdater;
+    private WeatherStationUpdater weatherStationUpdater;
 
     @Override
     protected void doExecute(JobExecutionContext context) {
-        final int wsCount = roadStationStatusUpdater.updateWeatherStationsStatuses();
+        final int wsCount = weatherStationUpdater.updateWeatherStationsStatuses();
         if (wsCount > 0) {
             dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         }

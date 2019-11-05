@@ -77,7 +77,7 @@ public class CameraImageUpdateService {
         return IOUtils.toByteArray(imageIs);
     }
 
-    // TODO DPO-462 remove when done and S3 in use
+    // TODO DPO-927 remove
     @Transactional
     public long deleteAllImagesForNonPublishablePresets() {
         // return count of succesful deletes
@@ -100,9 +100,7 @@ public class CameraImageUpdateService {
 
         // If preset exists in db, update image
         if (cameraPreset != null) {
-            // TODO DPO-462 get start time of public / not public state and write image public/secret acordingly
-            // Ie. cameraPreset.getRoadStation().isPublicNow()
-            final boolean roadStationPublic = cameraPreset.getRoadStation().isPublic();
+            final boolean roadStationPublic = cameraPreset.getRoadStation().isPublicNow();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, filename, isResultPublic);
 
@@ -112,10 +110,11 @@ public class CameraImageUpdateService {
                 log.info("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} writeTooksMs={} s3WriteTooksMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
-                        "s3VersionId={}",
+                        "s3VersionId={} imageTimestamp={} imageTimeInPastSeconds={}",
                     presetId, transferInfo.getFullPath(), transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(), transferInfo.getS3WriteDurationMs(),
-                    transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getS3VersionId());
+                    transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getS3VersionId(),
+                    transferInfo.getLastUpdated(), transferInfo.getImageTimeInPastSeconds());
             } else {
                 log.error("method=handleKuva presetId={} uploadFileName={} readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} " +
@@ -203,7 +202,7 @@ public class CameraImageUpdateService {
                 info.updateWriteStatusSuccess();
                 final long s3WriteDuration = writeStart.getTime()-writeDuration;
                 info.updateWriteTotalDurationMs(writeDuration + s3WriteDuration);
-                info.setWriteDurationMs(writeDuration);
+                info.setWriteDurationMs(-1);
                 info.setS3WriteDurationMs(s3WriteDuration);
 
             } catch (final Exception e) {

@@ -22,7 +22,7 @@
     </logger>
 
     <root level="INFO" additivity="false">
-            <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>

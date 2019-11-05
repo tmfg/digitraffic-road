@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.weather.enabled")
+@ConditionalOnProperty(name = "jms.weather.inQueue")
 @Configuration
 public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<TiesaaProtos.TiesaaMittatieto> {
     private static final Logger log = LoggerFactory.getLogger(WeatherJMSListenerConfiguration.class);
@@ -39,7 +38,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
 
         jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
                                           WeatherJMSListenerConfiguration.class.getSimpleName(),
-                                          UUID.randomUUID().toString());
+                                          LockingService.generateInstanceId());
     }
 
     @Override

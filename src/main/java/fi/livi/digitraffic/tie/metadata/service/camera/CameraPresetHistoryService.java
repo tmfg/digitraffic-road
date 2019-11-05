@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.net.URI;
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,13 +18,14 @@ import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 
 @Service
 public class CameraPresetHistoryService {
-
+    private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
     private CameraPresetHistoryRepository cameraPresetHistoryRepository;
     private final String s3WeathercamKeyRegexp;
     private final String s3WeathercamBucketUrl;
@@ -76,7 +77,7 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public PresetHistoryDto findHistoryInclSecret(final String presetId, final ZonedDateTime atTime) {
+    public PresetHistoryDto findPublicHistory(final String presetId, final ZonedDateTime atTime) {
 
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraPresetHistory", presetId);
@@ -116,7 +117,7 @@ public class CameraPresetHistoryService {
     /** Orderer from oldest to newest
      * Only for internal use */
     @Transactional(readOnly = true)
-    public List<CameraPresetHistory> findAllByPresetIdInclSecret(final String presetId) {
+    public List<CameraPresetHistory> findAllByPresetIdInclSecretAsc(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
     }
 
@@ -127,9 +128,13 @@ public class CameraPresetHistoryService {
 
     @Transactional
     public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
-        // TODO DPO-462 get start time of public / not public state and update history acordingly
-        // rs.isPublic() && rs.GetPublicStartTime() etc.?
-        // getPresets and update presetHistory
+        // If statTime is null it means now -> no history to update or
+        // if startTime is in the future -> no history to update
+        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
+            final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
+            cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
+                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
+        }
     }
 
     /**
@@ -173,8 +178,7 @@ public class CameraPresetHistoryService {
     }
 
     private String createPublicUrlForVersion(final String presetId, final String versionId) {
-        // TODO DPO-718 remove s3/ when weathercam servers s3 from root
-        return String.format("%s%s%s.jpg?versionId=%s", weathercamBaseUrl, "s3/", presetId, versionId);
+        return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
     }
 
     private String getPresetId(final String imageName) {
