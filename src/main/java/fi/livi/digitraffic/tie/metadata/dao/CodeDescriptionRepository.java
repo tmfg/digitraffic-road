@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.metadata.dao;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
