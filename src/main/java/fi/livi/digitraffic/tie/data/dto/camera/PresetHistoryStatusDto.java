@@ -16,7 +16,7 @@ public interface PresetHistoryStatusDto {
     @ApiModelProperty("Camera preset id")
     String getPresetId();
 
-    @ApiModelProperty("History existence status for preset at given time interval.")
+    @ApiModelProperty("If true then there is history for the preset at given time interval.")
     boolean getHistory();
 
 }

@@ -119,8 +119,8 @@ public class BetaController {
         return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, atTime);
     }
 
-    @ApiOperation(value = "Weather camera history for all cameras, for given camera or given preset",
-                  notes = "Returns info weather or not history exist for given period")
+    @ApiOperation(value = "Find weather camera history status",
+                  notes = "History status tells if history exists for given time interval.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
     public CameraHistoryStatusesDto getCameraOrPresetHistoryStatus(

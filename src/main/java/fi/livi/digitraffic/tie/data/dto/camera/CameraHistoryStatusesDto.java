@@ -10,17 +10,17 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({"from", "to"})
-@ApiModel(value = "CameraHistoryStatusesDto", description = "Contains history existence status for cameras and presets at given time interval.")
+@ApiModel(value = "CameraHistoryStatuses", description = "Contains history status for cameras and presets at given time interval.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryStatusesDto {
 
     @ApiModelProperty("Camera history statuses")
     public final List<CameraHistoryStatusDto> cameraHistoryStatuses;
 
-    @ApiModelProperty("Begining of time interval")
+    @ApiModelProperty("Beginning of the time interval")
     public final ZonedDateTime from;
 
-    @ApiModelProperty("End of time interval")
+    @ApiModelProperty("End of the time interval")
     public final ZonedDateTime to;
 
     public CameraHistoryStatusesDto(final ZonedDateTime from, final ZonedDateTime to, final List<CameraHistoryStatusDto> cameraHistoryStatuses) {

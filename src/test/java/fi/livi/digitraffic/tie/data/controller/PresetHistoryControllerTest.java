@@ -59,7 +59,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
 
     @Test
     public void notFoundForNotExistingPreset() throws Exception {
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/C0000000")
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/C0000000")
             .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         final String presetId = "C0000001";
         insertTestData(presetId, ZonedDateTime.now().minusHours(25));
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId)
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + presetId)
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
             .andExpect(jsonPath("cameraHistory", Matchers.hasSize(0)))
@@ -85,7 +85,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now.minusHours(25)); // This is too old
         insertTestData("C1234567", now); // This is for another preset
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId)
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + presetId)
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
             .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId)))
@@ -105,7 +105,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         final ZonedDateTime tooOld = ZonedDateTime.now().minusHours(25);
         insertTestData(presetId, tooOld);
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + presetId + "?atTime=" +
             DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
@@ -120,7 +120,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now);
         final String versionId = insertTestData(presetId, now.minusHours(1));
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + presetId + "?atTime=" +
                 DateHelper.toZonedDateTimeAtUtc(now.minusHours(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
@@ -139,7 +139,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId, now.minusHours(1), false); // This is skipped as not public
         final String versionId = insertTestData(presetId, now.minusHours(2));
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + presetId + "?atTime=" +
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + presetId + "?atTime=" +
             DateHelper.toZonedDateTimeAtUtc(now.minusSeconds(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
@@ -163,7 +163,7 @@ public class PresetHistoryControllerTest extends AbstractRestWebTest {
         insertTestData(presetId2, now.minusHours(1));
         insertTestData(presetId2, now.minusHours(2));
 
-        getJson(BetaController.CAMERA_HISTORY_PATH + "/" + cameraId)
+        getJson(BetaController.CAMERA_HISTORY_PATH + "/history/" + cameraId)
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(cameraId)))
             .andExpect(jsonPath("cameraHistory[0].presetId", Matchers.is(presetId1)))

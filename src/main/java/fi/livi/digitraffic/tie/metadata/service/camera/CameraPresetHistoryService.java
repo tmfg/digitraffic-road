@@ -101,21 +101,32 @@ public class CameraPresetHistoryService {
         return DateHelper.getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
     }
 
+    /**
+     * Finds cameras' and presets' history status. History status tells if
+     * history exists for given time interval.
+     *
+     * @param cameraOrPresetId
+     * @param fromTime
+     * @param toTime
+     * @return
+     */
     @Transactional(readOnly = true)
-    public CameraHistoryStatusesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, ZonedDateTime fromTime, ZonedDateTime toTime) {
+    public CameraHistoryStatusesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
         final ZonedDateTime fromLimit = getOldestTimeLimit();
-        if (fromTime == null || fromTime.isBefore(fromLimit)) {
-            fromTime = fromLimit;
+        ZonedDateTime fromTimeActual = fromTime;
+        ZonedDateTime toTimeActual = toTime;
+        if (fromTimeActual == null || fromTimeActual.isBefore(fromLimit)) {
+            fromTimeActual = fromLimit;
         }
-        if (toTime == null) {
-            toTime = DateHelper.getZonedDateTimeNowAtUtc();;
+        if (toTimeActual == null) {
+            toTimeActual = DateHelper.getZonedDateTimeNowAtUtc();
         }
         if (cameraOrPresetId == null) {
-            return findCameraHistoryStatus(fromTime, toTime);
+            return findCameraHistoryStatus(fromTimeActual, toTimeActual);
         } else if (isPresetId(cameraOrPresetId)) {
-            return findCameraPresetHistoryStatus(cameraOrPresetId, fromTime, toTime);
+            return findCameraPresetHistoryStatus(cameraOrPresetId, fromTimeActual, toTimeActual);
         } else if (isCameraId(cameraOrPresetId)) {
-            return findCameraHistoryStatus(cameraOrPresetId, fromTime, toTime);
+            return findCameraHistoryStatus(cameraOrPresetId, fromTimeActual, toTimeActual);
         } else {
             throw new IllegalArgumentException(String.format("Parameter cameraOrPresetId should be either 6 or 8 chars long. Was %d long.",
                 cameraOrPresetId.length()));
@@ -184,7 +195,7 @@ public class CameraPresetHistoryService {
         return convertToCameraHistory(cameraId, latestWithTime);
     }
 
-    private CameraHistoryDto convertToCameraHistory(String cameraId, List<CameraPresetHistory> latestWithTime) {
+    private CameraHistoryDto convertToCameraHistory(final String cameraId, final List<CameraPresetHistory> latestWithTime) {
 
         Map<String, List<CameraPresetHistory>> historyPerPreset =
             latestWithTime.stream()

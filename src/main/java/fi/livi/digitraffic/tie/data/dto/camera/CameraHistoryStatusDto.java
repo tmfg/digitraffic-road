@@ -7,20 +7,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "CameraHistoryStatus", description = "History existence status for camera and it's presets at given time interval.")
+@ApiModel(value = "CameraHistoryStatus", description = "History status for camera and it's presets at given time interval.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryStatusDto {
 
+    @ApiModelProperty("Camera id.")
     public final String cameraId;
-    @ApiModelProperty("Status of camera history existence at given time interval")
+
+    @ApiModelProperty("If true then there is history for the camera at given time interval.")
     public final boolean history;
-    @ApiModelProperty("History existense statuses of camera presets at given time interval")
+
+    @ApiModelProperty("History statuses of the camera presets at given time interval.")
     public final List<PresetHistoryStatusDto> presetHistoryStatuses;
 
     public CameraHistoryStatusDto(final String cameraId, final List<PresetHistoryStatusDto> presetHistoryStatuses) {
         this.cameraId = cameraId;
         this.presetHistoryStatuses = presetHistoryStatuses;
-        this.history = presetHistoryStatuses.parallelStream().map(ph -> ph.getHistory()).filter(Boolean::booleanValue).findFirst().orElse(false);
+        this.history = presetHistoryStatuses.stream().map(ph -> ph.getHistory()).filter(Boolean::booleanValue).findFirst().orElse(false);
     }
 
 }
