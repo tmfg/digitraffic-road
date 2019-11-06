@@ -68,7 +68,11 @@ public final class DateHelper {
     }
 
     public static ZonedDateTime toZonedDateTimeAtUtc(final ZonedDateTime zonedDateTime) {
-        return zonedDateTime == null ? null : toZonedDateTimeAtUtc(zonedDateTime.toInstant());
+        return zonedDateTime == null ?
+                null :
+                zonedDateTime.getZone().getId().equals(UTC.getId()) ?
+                    zonedDateTime :
+                    toZonedDateTimeAtUtc(zonedDateTime.toInstant());
     }
 
     public static ZonedDateTime toZonedDateTimeAtUtc(final Instant instant) {

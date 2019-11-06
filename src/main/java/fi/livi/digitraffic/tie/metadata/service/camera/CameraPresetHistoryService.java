@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -98,7 +101,7 @@ public class CameraPresetHistoryService {
     }
 
     private ZonedDateTime getOldestTimeLimit() {
-        return DateHelper.getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
+        return getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
     }
 
     /**
@@ -131,14 +134,14 @@ public class CameraPresetHistoryService {
         if (fromTime == null || fromTime.isBefore(fromLimit)) {
             return fromLimit;
         }
-        return fromLimit;
+        return toZonedDateTimeAtUtc(fromTime);
     }
 
     private ZonedDateTime checkAndFixToTime(final ZonedDateTime toTime) {
         if (toTime == null) {
-            return DateHelper.getZonedDateTimeNowAtUtc();
+            return getZonedDateTimeNowAtUtc();
         }
-        return toTime;
+        return toZonedDateTimeAtUtc(toTime);
     }
 
     private CameraHistoryStatusesDto findCameraHistoryStatus(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
@@ -236,7 +239,7 @@ public class CameraPresetHistoryService {
         return new PresetHistoryDto(
             presetId,
             history.stream().map(h ->
-                new PresetHistoryDataDto(h.getLastModified(),
+                new PresetHistoryDataDto(DateHelper.toZonedDateTimeAtUtc(h.getLastModified()),
                                          createPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
                                          h.getSize()))
                 .collect(Collectors.toList()));
