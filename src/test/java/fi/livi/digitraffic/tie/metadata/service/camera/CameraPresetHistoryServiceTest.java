@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +61,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         assertTrue(cp.isPresent());
 
         final CameraPreset preset = cp.get();
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = getZonedDateTimeNowAtUtc();
         final CameraPresetHistory history = generateHistory(preset, now.minusMinutes(1));
         cameraPresetHistoryService.saveHistory(history);
 
@@ -141,7 +142,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final CameraPreset cp = cameraPresetService.findCameraPresetByPresetId(presetId);
         final RoadStation rs = cp.getRoadStation();
         rs.updatePublicity(true);
-        rs.updatePublicity(false, ZonedDateTime.now().plusDays(1)); // -> previous/now public, future secret
+        rs.updatePublicity(false, getZonedDateTimeNowAtUtc().plusDays(1)); // -> previous/now public, future secret
         cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(presetId);
@@ -155,7 +156,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test
     public void cameraOrPresetPublicHistory() {
         final int historySize = RandomUtils.nextInt(21, 28);
-        final ZonedDateTime lastModified = ZonedDateTime.now();
+        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtc();
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
         // Get history for last 24 h
@@ -208,7 +209,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final List<String> presetIds = new ArrayList<>();
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(presetCount).forEach(cp -> {
             presetIds.add(cp.getPresetId());
-            final ZonedDateTime lastModified = ZonedDateTime.now();
+            final ZonedDateTime lastModified = getZonedDateTimeNowAtUtc();
             IntStream.range(0, historyCountPerPreset).map(i -> historyCountPerPreset - i - 1).forEach(i -> {
                 log.info("Create history nr. {} for preset {}", i, cp.getPresetId());
                 generateHistory(cp, lastModified.minusMinutes(i));
@@ -220,7 +221,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     private CameraPresetHistory generateHistory(final CameraPreset preset, final ZonedDateTime lastModified) {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
         final CameraPresetHistory history =
-            new CameraPresetHistory(preset.getPresetId(), versionId, preset.getId(), lastModified, true, 10, ZonedDateTime.now());
+            new CameraPresetHistory(preset.getPresetId(), versionId, preset.getId(), lastModified, true, 10, getZonedDateTimeNowAtUtc());
         cameraPresetHistoryService.saveHistory(history);
         entityManager.flush();
         return history;
