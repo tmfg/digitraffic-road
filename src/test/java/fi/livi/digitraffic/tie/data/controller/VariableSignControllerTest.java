@@ -59,6 +59,23 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    public void historyNotExists() throws Exception {
+        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/history/unknown")
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", Matchers.empty()));
+    }
+
+    @Test
+    public void historyExists() throws Exception {
+        insertTestData();
+
+        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/history/ID1")
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", Matchers.hasSize(1)));
+    }
+
+
+    @Test
     public void codeDescriptions() throws Exception {
         getJson(BetaController.CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
