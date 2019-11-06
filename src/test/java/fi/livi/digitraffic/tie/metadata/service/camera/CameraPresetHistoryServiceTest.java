@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -54,7 +57,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test
     public void saveHistory() {
         final Optional<CameraPreset> cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst();
-        Assert.assertTrue(cp.isPresent());
+        assertTrue(cp.isPresent());
 
         final CameraPreset preset = cp.get();
         final ZonedDateTime now = ZonedDateTime.now();
@@ -62,14 +65,14 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         cameraPresetHistoryService.saveHistory(history);
 
         final CameraPresetHistory found = cameraPresetHistoryService.findHistoryInclSecret(preset.getPresetId(), history.getVersionId());
-        Assert.assertNotNull(found);
-        Assert.assertFalse("Can't be same instanse to test", history.equals(found));
-        Assert.assertEquals(history.getPresetId(), found.getPresetId());
-        Assert.assertEquals(history.getVersionId(), found.getVersionId());
-        Assert.assertEquals(history.getCameraPresetId(), found.getCameraPresetId());
-        Assert.assertEquals(history.getLastModified(), found.getLastModified());
-        Assert.assertEquals(history.getSize(), found.getSize());
-        Assert.assertEquals(history.getCreated(), found.getCreated());
+        assertNotNull(found);
+        assertFalse("Can't be same instanse to test", history.equals(found));
+        assertEquals(history.getPresetId(), found.getPresetId());
+        assertEquals(history.getVersionId(), found.getVersionId());
+        assertEquals(history.getCameraPresetId(), found.getCameraPresetId());
+        assertEquals(history.getLastModified(), found.getLastModified());
+        assertEquals(history.getSize(), found.getSize());
+        assertEquals(history.getCreated(), found.getCreated());
     }
 
 
@@ -89,7 +92,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             for (CameraPresetHistory h : histories) {
                 assertEquals(presetId, h.getPresetId());
                 if (prevDate != null) {
-                    Assert.assertTrue("Previous history date must be before next", prevDate.isBefore(h.getLastModified()));
+                    assertTrue("Previous history date must be before next", prevDate.isBefore(h.getLastModified()));
                 }
                 prevDate = h.getLastModified();
             }
@@ -115,19 +118,19 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(modifiedPresetId);
-        Assert.assertEquals(true, allUpdated.get(0).getPublishable());
-        Assert.assertEquals(true, allUpdated.get(1).getPublishable());
-        Assert.assertEquals(false, allUpdated.get(2).getPublishable());
-        Assert.assertEquals(false, allUpdated.get(3).getPublishable());
-        Assert.assertEquals(false, allUpdated.get(4).getPublishable());
+        assertEquals(true, allUpdated.get(0).getPublishable());
+        assertEquals(true, allUpdated.get(1).getPublishable());
+        assertEquals(false, allUpdated.get(2).getPublishable());
+        assertEquals(false, allUpdated.get(3).getPublishable());
+        assertEquals(false, allUpdated.get(4).getPublishable());
 
 
         final List<CameraPresetHistory> allNotUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(notModifiedPresetId);
-        Assert.assertEquals(true, allNotUpdated.get(0).getPublishable());
-        Assert.assertEquals(true, allNotUpdated.get(1).getPublishable());
-        Assert.assertEquals(true, allNotUpdated.get(2).getPublishable());
-        Assert.assertEquals(true, allNotUpdated.get(3).getPublishable());
-        Assert.assertEquals(true, allNotUpdated.get(4).getPublishable());
+        assertEquals(true, allNotUpdated.get(0).getPublishable());
+        assertEquals(true, allNotUpdated.get(1).getPublishable());
+        assertEquals(true, allNotUpdated.get(2).getPublishable());
+        assertEquals(true, allNotUpdated.get(3).getPublishable());
+        assertEquals(true, allNotUpdated.get(4).getPublishable());
     }
 
     @Test
@@ -142,37 +145,62 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(presetId);
-        Assert.assertEquals(true, allUpdated.get(0).getPublishable());
-        Assert.assertEquals(true, allUpdated.get(1).getPublishable());
-        Assert.assertEquals(true, allUpdated.get(2).getPublishable());
-        Assert.assertEquals(true, allUpdated.get(3).getPublishable());
-        Assert.assertEquals(true, allUpdated.get(4).getPublishable());
+        assertEquals(true, allUpdated.get(0).getPublishable());
+        assertEquals(true, allUpdated.get(1).getPublishable());
+        assertEquals(true, allUpdated.get(2).getPublishable());
+        assertEquals(true, allUpdated.get(3).getPublishable());
+        assertEquals(true, allUpdated.get(4).getPublishable());
     }
 
     @Test
     public void cameraOrPresetPublicHistory() {
-        final String cameraId = generateHistoryForCamera();
+        final int historySize = RandomUtils.nextInt(21, 28);
+        final ZonedDateTime lastModified = ZonedDateTime.now();
+        final String cameraId = generateHistoryForCamera(historySize, lastModified);
+        log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
+        // Get history for last 24 h
         CameraHistoryDto history = cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraId, null);
+        assertEquals(cameraId, history.cameraId);
         List<PresetHistoryDto> presetsHistories = history.cameraHistory;
-        Assert.assertTrue(presetsHistories.size() >= 2);
-        Assert.assertNotEquals(presetsHistories.get(0).getPresetId(), presetsHistories.get(1).getPresetId());
+        assertTrue(presetsHistories.size() >= 2);
 
+        // Every preset only once
+        Set<String> cameraPesetIds = new HashSet<>();
+        presetsHistories.forEach(ph -> {
+            assertFalse(cameraPesetIds.contains(ph.getPresetId()));
+            cameraPesetIds.add(ph.getPresetId());
+        });
+
+        final int expectedHistorySize = Math.min(24, historySize);
+        // Check history size/preset and history timestamps
+        presetsHistories.stream().forEach(ph -> {
+            // Generation creates history for ever hour and oldest is 24h -> max 24 stk.
+            if (historySize > 24) {
+                assertEquals(24, ph.presetHistory.size());
+            } else  {
+                assertEquals(historySize, ph.presetHistory.size());
+            }
+            IntStream.range(0, expectedHistorySize).forEach(i ->
+                assertEquals(lastModified.minusHours(i), ph.presetHistory.get(i).getLastModified()));
+        });
+
+        // Check that every url to image is unique
         Set<String> versions = new HashSet<>();
         presetsHistories.stream().forEach(ph -> ph.presetHistory.stream().forEach(h -> {
-            System.out.println(h.getImageUrl());
-            Assert.assertFalse(versions.contains(h.getImageUrl()));
+            assertFalse(versions.contains(h.getImageUrl()));
             versions.add(h.getImageUrl());
         }));
-        Assert.assertTrue(versions.size() >= 10);
+        // Check history versions size
+        assertTrue(versions.size() == expectedHistorySize * presetsHistories.size());
     }
 
-    private String generateHistoryForCamera() {
+    private String generateHistoryForCamera(final int historySize, final ZonedDateTime lastModified) {
         Map.Entry<String, List<CameraPreset>> camera = cameraPresetService.findAllPublishableCameraPresets().stream()
             .collect(Collectors.groupingBy(CameraPreset::getCameraId))
             .entrySet().stream().filter(e -> e.getValue().size() > 1).findFirst().get();
 
-        final ZonedDateTime lastModified = ZonedDateTime.now();
-        camera.getValue().stream().forEach(p -> IntStream.range(0,5).forEach(i -> generateHistory(p, lastModified.minusHours(i))));
+        camera.getValue().stream().forEach(cameraPreset -> IntStream.range(0,historySize)
+            .forEach(i -> generateHistory(cameraPreset, lastModified.minusHours(i))));
         return camera.getKey();
     }
 
