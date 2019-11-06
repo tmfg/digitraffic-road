@@ -67,7 +67,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         final CameraPresetHistory found = cameraPresetHistoryService.findHistoryInclSecret(preset.getPresetId(), history.getVersionId());
         assertNotNull(found);
-        assertFalse("Can't be same instanse to test", history.equals(found));
+        assertFalse("Can't be same instance to test", history.equals(found));
         assertEquals(history.getPresetId(), found.getPresetId());
         assertEquals(history.getVersionId(), found.getVersionId());
         assertEquals(history.getCameraPresetId(), found.getCameraPresetId());
