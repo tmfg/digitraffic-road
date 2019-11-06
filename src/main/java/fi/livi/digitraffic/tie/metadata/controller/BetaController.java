@@ -110,8 +110,8 @@ public class BetaController {
         @PathVariable
         final String cameraOrPresetId,
 
-        @ApiParam("Return the latest url for the image from the history at the given time. The time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
-                  "e.g. 2016-10-31T06:30:00.000Z. If the time is not given then the history of last 24h is returned.")
+        @ApiParam("Return the latest url for the image from the history at the given date time. " +
+                  "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "atTime", required = false)
         final ZonedDateTime atTime) {
@@ -129,14 +129,14 @@ public class BetaController {
         @RequestParam(required = false)
         final String cameraOrPresetId,
 
-        @ApiParam("Return history existens the latest url for the image from the history at the given time. The time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
-                  "e.g. 2016-10-31T06:30:00.000Z. If the time is not given then the history of last 24h is returned.")
+        @ApiParam("Return history status from given date time onwards. " +
+                  "If the time is not given then now-24h is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "fromTime", required = false)
         final ZonedDateTime fromTime,
 
-        @ApiParam("Return the latest url for the image from the history at the given time. The time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
-                      "e.g. 2016-10-31T06:30:00.000Z. If the time is not given then the history of last 24h is returned.")
+        @ApiParam("Return the latest url for the image from the history at the given date time. " +
+                  "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "toTime", required = false)
         final ZonedDateTime toTime) {

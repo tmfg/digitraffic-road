@@ -7,14 +7,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "CameraHistoryStatus", description = "History status for camera and it's presets at given time interval.")
+@ApiModel(value = "CameraHistoryStatus", description = "Image history status for camera and it's presets at given time interval.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryStatusDto {
 
     @ApiModelProperty("Camera id.")
     public final String cameraId;
 
-    @ApiModelProperty("If true then there is history for the camera at given time interval.")
+    @ApiModelProperty("If true then there is image history for the camera at given time interval.")
     public final boolean history;
 
     @ApiModelProperty("History statuses of the camera presets at given time interval.")

@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -19,10 +18,10 @@ public class ForecastSectionV2FeatureCollection implements Iterable<ForecastSect
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
 
-    @ApiModelProperty(value = "Data last updated " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Data last updated date time", required = true)
     public final ZonedDateTime dataUpdatedTime;
 
-    @ApiModelProperty(value = "Data last checked " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE, required = true)
+    @ApiModelProperty(value = "Data last checked date time", required = true)
     public final ZonedDateTime dataLastCheckedTime;
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
