@@ -268,16 +268,6 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionV1MetadataUpdateJobDetail) {
-        return createTrigger(forecastSectionV1MetadataUpdateJobDetail);
-    }
-
-    @Bean
-    public FactoryBean<? extends Trigger> forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJobDetail) {
-        return createTrigger(forecastSectionV1DataUpdateJobDetail);
-    }
-
-    @Bean
     public FactoryBean<? extends Trigger> datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJobDetail) {
         return createTrigger(datex2TrafficAlertMessageUpdateJobDetail);
     }
@@ -293,8 +283,18 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public FactoryBean<? extends Trigger> forecastSectionV1MetadataUpdateJobTrigger(final JobDetail forecastSectionV1MetadataUpdateJobDetail) {
+        return createTrigger(forecastSectionV1MetadataUpdateJobDetail);
+    }
+
+    @Bean
     public FactoryBean<? extends Trigger> forecastSectionV2MetadataUpdateJobTrigger(final JobDetail forecastSectionV2MetadataUpdateJobDetail) {
         return createTrigger(forecastSectionV2MetadataUpdateJobDetail);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> forecastSectionV1DataUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJobDetail) {
+        return createTrigger(forecastSectionV1DataUpdateJobDetail);
     }
 
     @Bean

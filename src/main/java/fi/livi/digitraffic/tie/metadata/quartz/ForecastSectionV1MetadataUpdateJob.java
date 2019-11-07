@@ -18,8 +18,6 @@ public class ForecastSectionV1MetadataUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) {
-        final boolean updated = forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
-        final String updateStatus = updated ? "Coordinates were updated." : "Coordinates were up-to-date.";
-        log.info(updateStatus);
+        forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
     }
 }
