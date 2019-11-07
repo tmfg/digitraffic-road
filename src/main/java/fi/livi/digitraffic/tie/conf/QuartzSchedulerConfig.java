@@ -48,10 +48,10 @@ import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdat
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.Datex2WeightRestrictionsMessageUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionCoordinatesMetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV1MetadataUpdateJob;
+import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV1DataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2DataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2MetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionWeatherUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.metadata.quartz.TmsStationSensorConstantsMetadataUpdateJob;
@@ -193,16 +193,6 @@ public class QuartzSchedulerConfig {
     public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionCoordinatesMetadataUpdateJobDetail() {
-        return createJobDetail(ForecastSectionCoordinatesMetadataUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean forecastSectionWeatherUpdateJobDetail() {
-        return createJobDetail(ForecastSectionWeatherUpdateJob.class);
-    }
-
-    @Bean
     public JobDetailFactoryBean datex2TrafficAlertMessageUpdateJobDetail() {
         return createJobDetail(Datex2TrafficAlertMessageUpdateJob.class);
     }
@@ -218,8 +208,18 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean forecastSectionV1MetadataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV1MetadataUpdateJob.class);
+    }
+
+    @Bean
     public JobDetailFactoryBean forecastSectionV2MetadataUpdateJobDetail() {
         return createJobDetail(ForecastSectionV2MetadataUpdateJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean forecastSectionV1DataUpdateJobDetail() {
+        return createJobDetail(ForecastSectionV1DataUpdateJob.class);
     }
 
     @Bean
@@ -268,13 +268,13 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionCoordinatesMetadataUpdateJobDetail) {
-        return createTrigger(forecastSectionCoordinatesMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> forecastSectionCoordinatesMetadataUpdateJobTrigger(final JobDetail forecastSectionV1MetadataUpdateJobDetail) {
+        return createTrigger(forecastSectionV1MetadataUpdateJobDetail);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionWeatherUpdateJobDetail) {
-        return createTrigger(forecastSectionWeatherUpdateJobDetail);
+    public FactoryBean<? extends Trigger> forecastSectionWeatherUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJobDetail) {
+        return createTrigger(forecastSectionV1DataUpdateJobDetail);
     }
 
     @Bean

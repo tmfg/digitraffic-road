@@ -5,6 +5,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -24,6 +25,7 @@ import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
@@ -67,7 +69,10 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWith
             .andRespond(
                 MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2.json"), MediaType.APPLICATION_JSON));
 
-        forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        final Instant updated = forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
+
+        assertEquals(updated, lastUpdated);
 
         final ForecastSectionV2FeatureCollection featureCollection =
             forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
