@@ -16,6 +16,6 @@ while true; do
 
   printf "%s\t%s\t%s\t%s\n" "${NOW}" "${FORECA}" "${API}" "${DB}"
 
-  sleep 10;
+  sleep 5;
 done
 

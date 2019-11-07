@@ -58,7 +58,7 @@ public class ForecastSectionV2MetadataUpdater {
         forecastSectionRepository.deleteLinkIds(ForecastSectionApiVersion.V2.getVersion());
         forecastSectionV2MetadataDao.insertLinkIds(metadata.getFeatures());
 
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime().toInstant());
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_V2_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_V2_METADATA, metadata.getDataUpdatedTime().toInstant());
     }
 }
