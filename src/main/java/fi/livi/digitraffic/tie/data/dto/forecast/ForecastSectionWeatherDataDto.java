@@ -4,9 +4,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({ "naturalId", "roadConditions" })
+@ApiModel(value = "ForecastSectionWeatherData")
 public class ForecastSectionWeatherDataDto {
 
     @ApiModelProperty(

@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description =
     "Forecast that is used is Foreca’s weather forecast which is initialised from the weather model that performs best " +
     "for Finland for a period under study. Majority of the times the initialisation is done from ECMWF model data. " +
-    "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.")
+    "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.", value = "ForecastConditionReason")
 public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
     @ApiModelProperty("Precipitation condition:\n" +
