@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,13 +13,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.controller.BetaController;
 
-// methods are in BetaController now, but will move later
 public class VariableSignControllerTest extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(RoadWebApplicationConfiguration.API_BETA_BASE_PATH + url);
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + url);
 
         get.contentType(MediaType.APPLICATION_JSON);
 
@@ -36,7 +35,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void noData() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_PATH)
+        getJson(DataV2Controller.VARIABLE_SIGNS_PATH)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", Matchers.empty()));
@@ -44,7 +43,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void notExists() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_PATH + "/unknown")
+        getJson(DataV2Controller.VARIABLE_SIGNS_PATH + "/unknown")
             .andExpect(status().isNotFound());
     }
 
@@ -52,7 +51,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void deviceWithData() throws Exception {
         insertTestData();
 
-        getJson(BetaController.VARIABLE_SIGNS_PATH + "/ID1")
+        getJson(DataV2Controller.VARIABLE_SIGNS_PATH + "/ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("features", Matchers.hasSize(1)))
             .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
@@ -60,7 +59,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void historyNotExists() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_PATH + "/history/unknown")
+        getJson(DataV2Controller.VARIABLE_SIGNS_PATH + "/history/unknown")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.empty()));
     }
@@ -69,7 +68,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void historyExists() throws Exception {
         insertTestData();
 
-        getJson(BetaController.VARIABLE_SIGNS_PATH + "/history/ID1")
+        getJson(DataV2Controller.VARIABLE_SIGNS_PATH + "/history/ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
@@ -77,7 +76,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void codeDescriptions() throws Exception {
-        getJson(BetaController.CODE_DESCRIPTIONS)
+        getJson(DataV2Controller.CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
             .andExpect(jsonPath("signTypes", Matchers.hasSize(6)));
     }
