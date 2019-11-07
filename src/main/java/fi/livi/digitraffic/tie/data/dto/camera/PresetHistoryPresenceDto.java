@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "PresetHistoryStatus", description = "Image history status for preset at given time interval.")
+@ApiModel(value = "PresetHistoryPresence", description = "Image history status for preset at given time interval.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public interface PresetHistoryStatusDto {
+public interface PresetHistoryPresenceDto {
 
     @JsonIgnore
     String getCameraId();
@@ -16,7 +16,7 @@ public interface PresetHistoryStatusDto {
     @ApiModelProperty("Camera preset id")
     String getPresetId();
 
-    @ApiModelProperty("If true then there is image history for the preset at given time interval.")
-    boolean getHistory();
+    @ApiModelProperty("If true then there is image history present for the preset at given time interval.")
+    boolean isHistoryPresent();
 
 }

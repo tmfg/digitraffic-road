@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
-import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryStatusesDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
@@ -123,7 +123,7 @@ public class BetaController {
                   notes = "History status tells if history exists for given time interval.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public CameraHistoryStatusesDto getCameraOrPresetHistoryStatus(
+    public CameraHistoryPresencesDto getCameraOrPresetHistoryStatus(
 
         @ApiParam(value = "Camera or preset id")
         @RequestParam(required = false)
@@ -132,13 +132,13 @@ public class BetaController {
         @ApiParam("Return history status from given date time onwards. " +
                   "If the time is not given then now-24h is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "fromTime", required = false)
+        @RequestParam(value = "from", required = false)
         final ZonedDateTime from,
 
         @ApiParam("Return the latest url for the image from the history at the given date time. " +
                   "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "toTime", required = false)
+        @RequestParam(value = "to", required = false)
         final ZonedDateTime to) {
 
         return cameraPresetHistoryService.findCameraOrPresetHistoryStatus(cameraOrPresetId, from, to);

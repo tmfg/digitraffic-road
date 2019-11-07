@@ -72,7 +72,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void emptyForTooOldHistory() throws Exception {
         final String presetId = "C0000001";
-        insertTestData(presetId, ZonedDateTime.now().minusHours(25));
+        insertTestData(presetId, DateHelper.getZonedDateTimeNowAtUtc().minusHours(25));
 
         getJson("/history/" + presetId)
             .andExpect(status().isOk())
@@ -84,7 +84,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyExistsWithoutSecret() throws Exception {
         final String presetId = "C0000002";
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         final String versionId0 = insertTestData(presetId, now);
         insertTestData(presetId, now.minusMinutes(30), false); // this is not public
         final String versionId1 = insertTestData(presetId, now.minusHours(1));
@@ -108,11 +108,11 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTimeTooOld() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime tooOld = ZonedDateTime.now().minusHours(25);
+        final ZonedDateTime tooOld = DateHelper.getZonedDateTimeNowAtUtc().minusHours(25);
         insertTestData(presetId, tooOld);
 
-        getJson("/history/" + presetId + "?atTime=" +
-            DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now()))
+        getJson("/history/" + presetId + "?at=" +
+            DateHelper.getZonedDateTimeNowAtUtc())
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
             .andExpect(jsonPath("cameraHistory", Matchers.hasSize(0)))
@@ -122,11 +122,11 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTime() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();;
         insertTestData(presetId, now);
         final String versionId = insertTestData(presetId, now.minusHours(1));
 
-        getJson("/history/" + presetId + "?atTime=" +
+        getJson("/history/" + presetId + "?at=" +
                 DateHelper.toZonedDateTimeAtUtc(now.minusHours(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
@@ -140,12 +140,12 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTimeWithSecret() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         insertTestData(presetId, now);
         insertTestData(presetId, now.minusHours(1), false); // This is skipped as not public
         final String versionId = insertTestData(presetId, now.minusHours(2));
 
-        getJson("/history/" + presetId + "?atTime=" +
+        getJson("/history/" + presetId + "?at=" +
             DateHelper.toZonedDateTimeAtUtc(now.minusSeconds(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraId", Matchers.is(presetId.substring(0,6))))
@@ -161,7 +161,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         final String cameraId = "C00000";
         final String presetId1 = cameraId + "01";
         final String presetId2 = cameraId + "02";
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         insertTestData(presetId1, now);
         insertTestData(presetId1, now.minusHours(1), false); // This is skipped as not public
         insertTestData(presetId1, now.minusHours(2));
@@ -207,16 +207,17 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         throws Exception {
         getJson("/status?cameraOrPresetId=" + cameraId + "&from=" + fromTime.toString() +"&to=" + toTime)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("cameraHistoryStatuses[0].cameraId", Matchers.is(cameraId)))
-            .andExpect(jsonPath("cameraHistoryStatuses[0].history", Matchers.is(status)));
+            .andExpect(jsonPath("cameraHistoryPresences[0].cameraId", Matchers.is(cameraId)))
+            .andExpect(jsonPath("cameraHistoryPresences[0].historyPresent", Matchers.is(status)));
     }
 
     private void assertHistoryStatusForCameraPreset(final String presetId,  final boolean status, final ZonedDateTime fromTime, final ZonedDateTime toTime)
         throws Exception {
-        getJson("/status?cameraOrPresetId=" + presetId + "&from=" + fromTime.toString() +"&to=" + toTime)
+        log.info(fromTime.toString() + " -> " + toTime.toString());
+        getJson("/status?cameraOrPresetId=" + presetId + "&from=" + fromTime.toString() +"&to=" + toTime.toString())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("cameraHistoryStatuses[0].cameraId", Matchers.is(presetId.substring(0,6))))
-            .andExpect(jsonPath("cameraHistoryStatuses[0]..presetHistoryStatuses[?(@.presetId == \"" + presetId + "\")].history", Matchers.contains(status)))
+            .andExpect(jsonPath("cameraHistoryPresences[0].cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistoryPresences[0]..presetHistoryPresences[?(@.presetId == \"" + presetId + "\")].historyPresent", Matchers.contains(status)))
         ;
     }
 

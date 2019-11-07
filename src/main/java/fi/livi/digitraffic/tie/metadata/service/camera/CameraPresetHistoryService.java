@@ -21,11 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
-import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryStatusDto;
-import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryStatusesDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresenceDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
-import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryStatusDto;
+import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
@@ -114,8 +114,8 @@ public class CameraPresetHistoryService {
      * @return
      */
     @Transactional(readOnly = true)
-    public CameraHistoryStatusesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, final ZonedDateTime fromTime,
-                                                                    final ZonedDateTime toTime) {
+    public CameraHistoryPresencesDto findCameraOrPresetHistoryStatus(final String cameraOrPresetId, final ZonedDateTime fromTime,
+                                                                     final ZonedDateTime toTime) {
 
         if (cameraOrPresetId == null) {
             return findCameraHistoryStatus(checkAndFixFromTime(fromTime), checkAndFixToTime(toTime));
@@ -144,44 +144,44 @@ public class CameraPresetHistoryService {
         return toZonedDateTimeAtUtc(toTime);
     }
 
-    private CameraHistoryStatusesDto findCameraHistoryStatus(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
-        List<PresetHistoryStatusDto> presetsHistoryStatuses =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByTime(fromTime.toInstant(), toTime.toInstant(),
+    private CameraHistoryPresencesDto findCameraHistoryStatus(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+        List<PresetHistoryPresenceDto> presetsHistoryStatuses =
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByTime(fromTime.toInstant(), toTime.toInstant(),
                                                                               getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(presetsHistoryStatuses, fromTime, toTime);
     }
 
-    private CameraHistoryStatusesDto findCameraHistoryStatus(final String cameraId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private CameraHistoryPresencesDto findCameraHistoryStatus(final String cameraId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
         if (!cameraPresetHistoryRepository.existsByCameraId(cameraId)) {
             throw new ObjectNotFoundException("CameraHistory", cameraId);
         }
-        final List<PresetHistoryStatusDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant(),
+        final List<PresetHistoryPresenceDto> history =
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant(),
                                                                                          getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(history, fromTime, toTime);
     }
 
-    private CameraHistoryStatusesDto findCameraPresetHistoryStatus(final String presetId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private CameraHistoryPresencesDto findCameraPresetHistoryStatus(final String presetId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraHistory", presetId);
         }
-        final List<PresetHistoryStatusDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryStatusByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant(),
+        final List<PresetHistoryPresenceDto> history =
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant(),
                                                                                          getOldestTimeLimit().toInstant());
         return convertToCameraHistoryStatus(history, fromTime, toTime);
     }
 
-    private static CameraHistoryStatusesDto convertToCameraHistoryStatus(final List<PresetHistoryStatusDto> presetsHistoryStatuses,
-                                                                         final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private static CameraHistoryPresencesDto convertToCameraHistoryStatus(final List<PresetHistoryPresenceDto> presetsHistoryStatuses,
+                                                                          final ZonedDateTime fromTime, final ZonedDateTime toTime) {
 
-        final Map<String, List<PresetHistoryStatusDto>> cameraIdToPresetHistoryStatus = presetsHistoryStatuses.parallelStream()
-            .collect(Collectors.groupingBy(PresetHistoryStatusDto::getCameraId));
+        final Map<String, List<PresetHistoryPresenceDto>> cameraIdToPresetHistoryStatus = presetsHistoryStatuses.parallelStream()
+            .collect(Collectors.groupingBy(PresetHistoryPresenceDto::getCameraId));
 
-        final List<CameraHistoryStatusDto> result =
-            cameraIdToPresetHistoryStatus.entrySet().stream().map(e -> new CameraHistoryStatusDto(e.getKey(), e.getValue()))
+        final List<CameraHistoryPresenceDto> result =
+            cameraIdToPresetHistoryStatus.entrySet().stream().map(e -> new CameraHistoryPresenceDto(e.getKey(), e.getValue()))
                 .sorted(Comparator.comparing(o -> o.cameraId))
                 .collect(Collectors.toList());
-        return new CameraHistoryStatusesDto(fromTime, toTime, result);
+        return new CameraHistoryPresencesDto(fromTime, toTime, result);
     }
 
     private CameraHistoryDto findCameraPublicHistory(final String cameraId, final ZonedDateTime atTime) {
