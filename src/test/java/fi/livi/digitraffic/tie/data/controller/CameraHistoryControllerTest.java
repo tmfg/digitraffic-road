@@ -31,7 +31,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Value("${weathercam.baseUrl}")
     private String weathercamBaseUrl;
 
-    private static final int SIZE = 100000;
+    private static final int IMAGE_SIZE = 100000;
 
     private ResultActions getJson(final String url) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_BETA_BASE_PATH + CAMERA_HISTORY_PATH + url);
@@ -53,7 +53,8 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         final String cameraId = presetId.substring(0,6);
         entityManager.createNativeQuery(
             "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
-            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " + SIZE + ", NOW())")
+            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " +
+                IMAGE_SIZE + ", NOW())")
             .executeUpdate();
         return versionId;
     }
@@ -97,10 +98,10 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(jsonPath("cameraHistory[0].presetHistory", Matchers.hasSize(2)))
             .andExpect(jsonPath("cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId0)))
             .andExpect(jsonPath("cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now)))
-            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].sizeBytes", Matchers.is(SIZE)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[0].sizeBytes", Matchers.is(IMAGE_SIZE)))
             .andExpect(jsonPath("cameraHistory[0].presetHistory[1].imageUrl", matchUrl(presetId, versionId1)))
             .andExpect(jsonPath("cameraHistory[0].presetHistory[1].lastModified", ZonedDateTimeMatcher.of(now.minusHours(1))))
-            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].sizeBytes", Matchers.is(SIZE)))
+            .andExpect(jsonPath("cameraHistory[0].presetHistory[1].sizeBytes", Matchers.is(IMAGE_SIZE)))
         ;
     }
 
@@ -204,7 +205,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
     private void assertHistoryStatusForCamera(final String cameraId,  final boolean status, final ZonedDateTime fromTime, final ZonedDateTime toTime)
         throws Exception {
-        getJson("/status?cameraOrPresetId=" + cameraId + "&fromTime=" + fromTime.toString() +"&toTime=" + toTime)
+        getJson("/status?cameraOrPresetId=" + cameraId + "&from=" + fromTime.toString() +"&to=" + toTime)
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraHistoryStatuses[0].cameraId", Matchers.is(cameraId)))
             .andExpect(jsonPath("cameraHistoryStatuses[0].history", Matchers.is(status)));
@@ -212,7 +213,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
     private void assertHistoryStatusForCameraPreset(final String presetId,  final boolean status, final ZonedDateTime fromTime, final ZonedDateTime toTime)
         throws Exception {
-        getJson("/status?cameraOrPresetId=" + presetId + "&fromTime=" + fromTime.toString() +"&toTime=" + toTime)
+        getJson("/status?cameraOrPresetId=" + presetId + "&from=" + fromTime.toString() +"&to=" + toTime)
             .andExpect(status().isOk())
             .andExpect(jsonPath("cameraHistoryStatuses[0].cameraId", Matchers.is(presetId.substring(0,6))))
             .andExpect(jsonPath("cameraHistoryStatuses[0]..presetHistoryStatuses[?(@.presetId == \"" + presetId + "\")].history", Matchers.contains(status)))

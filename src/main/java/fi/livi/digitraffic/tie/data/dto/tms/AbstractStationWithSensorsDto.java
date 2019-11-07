@@ -21,7 +21,7 @@ public abstract class AbstractStationWithSensorsDto {
     @ApiModelProperty(value = "Measured sensor values of the Weather Station", required = true)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
-    @ApiModelProperty(value = "Values measured date time")
+    @ApiModelProperty(value = "Date and time of the sensor's measurement")
     private ZonedDateTime measuredTime;
 
     public long getRoadStationNaturalId() {

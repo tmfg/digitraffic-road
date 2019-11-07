@@ -17,7 +17,7 @@ public class CameraHistoryStatusesDto {
     @ApiModelProperty("Camera history statuses")
     public final List<CameraHistoryStatusDto> cameraHistoryStatuses;
 
-    @ApiModelProperty("Beginning of the time interval")
+    @ApiModelProperty("Start of the time interval")
     public final ZonedDateTime from;
 
     @ApiModelProperty("End of the time interval")

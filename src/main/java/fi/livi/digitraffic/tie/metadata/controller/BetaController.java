@@ -113,10 +113,10 @@ public class BetaController {
         @ApiParam("Return the latest url for the image from the history at the given date time. " +
                   "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "atTime", required = false)
-        final ZonedDateTime atTime) {
+        @RequestParam(value = "at", required = false)
+        final ZonedDateTime at) {
 
-        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, atTime);
+        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, at);
     }
 
     @ApiOperation(value = "Find weather camera history status",
@@ -133,14 +133,14 @@ public class BetaController {
                   "If the time is not given then now-24h is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "fromTime", required = false)
-        final ZonedDateTime fromTime,
+        final ZonedDateTime from,
 
         @ApiParam("Return the latest url for the image from the history at the given date time. " +
                   "If the time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "toTime", required = false)
-        final ZonedDateTime toTime) {
+        final ZonedDateTime to) {
 
-        return cameraPresetHistoryService.findCameraOrPresetHistoryStatus(cameraOrPresetId, fromTime, toTime);
+        return cameraPresetHistoryService.findCameraOrPresetHistoryStatus(cameraOrPresetId, from, to);
     }
 }
