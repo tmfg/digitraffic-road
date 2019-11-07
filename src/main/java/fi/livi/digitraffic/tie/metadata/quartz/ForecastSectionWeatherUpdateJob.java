@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.quartz;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -20,6 +21,12 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
     @Override
     protected void doExecute(JobExecutionContext context) {
         final Instant messageTimestamp = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
+        final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA);
+
+        if (previousTimestamp != null && messageTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
+            log.error("FORECAST_SECTION_WEATHER_DATA timestamp error: previousTimestamp={} > currentTimestamp={} tsDiff={}",
+                      previousTimestamp.toInstant(), messageTimestamp);
+        }
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA, messageTimestamp);
     }

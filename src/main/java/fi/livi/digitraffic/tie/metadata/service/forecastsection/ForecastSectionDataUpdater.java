@@ -46,8 +46,9 @@ public class ForecastSectionDataUpdater {
                 Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
             log.info(
-                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections. forecastSectionsInDatabase={}",
-                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size());
+                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections," +
+                " forecastSectionsInDatabase={} messageTimestamp={}",
+                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp.toInstant());
 
             final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(
                 Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
