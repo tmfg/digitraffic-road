@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
-import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
+import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
@@ -46,9 +46,9 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String VARIABLE_SIGNS_DATA_PATH = "/variable-signs";
+    public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
     public static final String CAMERA_PRESET_HISTORY_PATH = "/camera-preset-history";
-    public static final String CODE_DESCRIPTIONS = "/code-descriptions";
+    public static final String CODE_DESCRIPTIONS = VARIABLE_SIGNS_PATH + "/code-descriptions";
 
     private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
@@ -86,21 +86,21 @@ public class BetaController {
     }
 
     @ApiOperation("List the latest data of variable signs")
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
     public VariableSignFeatureCollection variableSigns() {
         return trafficSignsService.listLatestValues();
     }
 
     @ApiOperation("List the latest value of a variable sign")
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
     public VariableSignFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listLatestValue(deviceId);
     }
 
     @ApiOperation("List the history of variable sign data")
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_DATA_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return trafficSignsService.listVariableSignHistory(deviceId);
@@ -109,10 +109,9 @@ public class BetaController {
     @ApiOperation("Return all code descriptions.")
     @GetMapping(path = CODE_DESCRIPTIONS, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public List<CodeDescriptionJson> listCodeDescriptions() {
-        return trafficSignsService.listCodeDescriptions();
+    public VariableSignDescriptions listCodeDescriptions() {
+        return new VariableSignDescriptions(trafficSignsService.listVariableSignTypes());
     }
-
 
     @ApiOperation("List the history of camera preset")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces = APPLICATION_JSON_UTF8_VALUE)

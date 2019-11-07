@@ -36,7 +36,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void noData() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH)
+        getJson(BetaController.VARIABLE_SIGNS_PATH)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", Matchers.empty()));
@@ -44,7 +44,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void notExists() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/unknown")
+        getJson(BetaController.VARIABLE_SIGNS_PATH + "/unknown")
             .andExpect(status().isNotFound());
     }
 
@@ -52,7 +52,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void deviceWithData() throws Exception {
         insertTestData();
 
-        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/ID1")
+        getJson(BetaController.VARIABLE_SIGNS_PATH + "/ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("features", Matchers.hasSize(1)))
             .andExpect(jsonPath("features[0].properties.displayInformation", Matchers.equalTo("80")));
@@ -60,7 +60,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void historyNotExists() throws Exception {
-        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/history/unknown")
+        getJson(BetaController.VARIABLE_SIGNS_PATH + "/history/unknown")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.empty()));
     }
@@ -69,7 +69,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void historyExists() throws Exception {
         insertTestData();
 
-        getJson(BetaController.VARIABLE_SIGNS_DATA_PATH + "/history/ID1")
+        getJson(BetaController.VARIABLE_SIGNS_PATH + "/history/ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
@@ -79,6 +79,6 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void codeDescriptions() throws Exception {
         getJson(BetaController.CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(6)));
+            .andExpect(jsonPath("signTypes", Matchers.hasSize(6)));
     }
 }

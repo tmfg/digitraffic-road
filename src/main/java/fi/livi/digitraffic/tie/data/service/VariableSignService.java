@@ -86,7 +86,7 @@ public class VariableSignService {
     }
 
     @Transactional(readOnly = true)
-    public List<CodeDescriptionJson> listCodeDescriptions() {
+    public List<CodeDescriptionJson> listVariableSignTypes() {
         return codeDescriptionRepository.listAllVariableSignTypes();
     }
 }
