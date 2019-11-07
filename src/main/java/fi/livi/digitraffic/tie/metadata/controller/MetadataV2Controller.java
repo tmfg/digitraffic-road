@@ -2,21 +2,28 @@ package fi.livi.digitraffic.tie.metadata.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.*;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON_UTF8;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
 import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FORECAST_SECTIONS_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.data.controller.DataV2Controller;
+import fi.livi.digitraffic.tie.data.service.VariableSignService;
+import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV2MetadataService;
 import io.swagger.annotations.Api;
@@ -30,12 +37,16 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
 public class MetadataV2Controller {
+    public static final String CODE_DESCRIPTIONS = DataV2Controller.VARIABLE_SIGNS_PATH + "/code-descriptions";
 
     private final ForecastSectionV2MetadataService forecastSectionV2MetadataService;
+    private final VariableSignService variableSignService;
 
     @Autowired
-    public MetadataV2Controller(final ForecastSectionV2MetadataService forecastSectionV2MetadataService) {
+    public MetadataV2Controller(final ForecastSectionV2MetadataService forecastSectionV2MetadataService,
+        final VariableSignService variableSignService) {
         this.forecastSectionV2MetadataService = forecastSectionV2MetadataService;
+        this.variableSignService = variableSignService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
@@ -81,5 +92,12 @@ public class MetadataV2Controller {
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
+    }
+
+    @ApiOperation("Return all code descriptions.")
+    @GetMapping(path = CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public VariableSignDescriptions listCodeDescriptions() {
+        return new VariableSignDescriptions(variableSignService.listVariableSignTypes());
     }
 }

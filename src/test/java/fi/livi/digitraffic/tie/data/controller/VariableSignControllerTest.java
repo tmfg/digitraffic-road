@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,10 +14,15 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.metadata.controller.MetadataV2Controller;
 
 public class VariableSignControllerTest extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + url);
+        return getJson(API_V2_BASE_PATH + API_DATA_PART_PATH, url);
+    }
+
+    private ResultActions getJson(final String basePath, final String url) throws Exception {
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get( basePath + url);
 
         get.contentType(MediaType.APPLICATION_JSON);
 
@@ -76,7 +82,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     @Test
     public void codeDescriptions() throws Exception {
-        getJson(DataV2Controller.CODE_DESCRIPTIONS)
+        getJson(API_V2_BASE_PATH + API_METADATA_PART_PATH, MetadataV2Controller.CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
             .andExpect(jsonPath("signTypes", Matchers.hasSize(6)));
     }

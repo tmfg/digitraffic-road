@@ -13,19 +13,16 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
-import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
@@ -41,7 +38,6 @@ import io.swagger.annotations.ApiResponses;
 @ConditionalOnWebApplication
 public class DataV2Controller {
     public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
-    public static final String CODE_DESCRIPTIONS = VARIABLE_SIGNS_PATH + "/code-descriptions";
 
     private final ForecastSectionDataService forecastSectionDataService;
     private final VariableSignService variableSignService;
@@ -113,12 +109,4 @@ public class DataV2Controller {
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return variableSignService.listVariableSignHistory(deviceId);
     }
-
-    @ApiOperation("Return all code descriptions.")
-    @GetMapping(path = CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public VariableSignDescriptions listCodeDescriptions() {
-        return new VariableSignDescriptions(variableSignService.listVariableSignTypes());
-    }
-
 }
