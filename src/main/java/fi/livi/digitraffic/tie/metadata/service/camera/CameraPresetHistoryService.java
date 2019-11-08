@@ -48,7 +48,7 @@ public class CameraPresetHistoryService {
         SECRET("History version found but it's not publishable"),
         NOT_FOUND("No history found for preset at all"),
         TOO_OLD("History version is over 24 h old and for that reason not publishable"),
-        ILLEGAL_KEY(" presetImageName did not match correct regex format ^C([0-9]{7})\\.jpg$ for S3 key");
+        ILLEGAL_KEY("Preset image name did not match correct regex format ^C([0-9]{7})\\.jpg$ for S3 key");
 
         private final String description;
 
