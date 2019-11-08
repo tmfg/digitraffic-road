@@ -11,8 +11,6 @@ import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV
 @DisallowConcurrentExecution
 public class ForecastSectionV1MetadataUpdateJob extends SimpleUpdateJob {
 
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionV1MetadataUpdateJob.class);
-
     @Autowired
     private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
 
