@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Camera road address", value = "RoadAddress")
+@ApiModel(description = "Road station road address", value = "RoadAddress")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
 @Entity

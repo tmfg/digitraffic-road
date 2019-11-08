@@ -27,6 +27,8 @@ public class CameraPresetHistory {
     private Integer size;
     @Column(nullable = false)
     private ZonedDateTime created;
+    @Column(nullable = false)
+    private String cameraId;
 
     // For Hibernate
     public CameraPresetHistory() {
@@ -41,6 +43,7 @@ public class CameraPresetHistory {
         this.publishable = publishable;
         this.size = size;
         this.created = created;
+        this.cameraId = presetId.substring(0,6);
     }
 
     public CameraPresetHistoryPK getId() {

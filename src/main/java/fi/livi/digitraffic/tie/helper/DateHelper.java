@@ -39,6 +39,10 @@ public final class DateHelper {
         return calendar == null ? null : calendar.toGregorianCalendar().toInstant();
     }
 
+    public static Instant toInstant(final ZonedDateTime from) {
+        return from != null ? from.toInstant() : null;
+    }
+
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */
@@ -118,5 +122,9 @@ public final class DateHelper {
             }
         }
         return null;
+    }
+
+    public static ZonedDateTime getZonedDateTimeNowAtUtc() {
+        return toZonedDateTimeAtUtc(Instant.now());
     }
 }

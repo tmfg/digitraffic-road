@@ -31,8 +31,6 @@ public class ToStringHelper {
     private final StringBuffer sb;
     private boolean toStringCalled;
 
-    public static final String ISO_8601_OFFSET_TIMESTAMP_EXAMPLE = "timestamp in ISO 8601 format with time offsets from UTC (eg. 2016-04-20T12:38:16.328+03:00 or 2018-11-09T09:41:09Z)";
-
     public ToStringHelper(final Object object) {
         sb = createStartSb(object);
     }
@@ -248,11 +246,5 @@ public class ToStringHelper {
 
     public static String nullSafeToString(final Object o) {
         return o != null ? o.toString() : null;
-    }
-
-
-    public enum TimestampFormat {
-        ISO_8601_UTC,
-        ISO_8601_WITH_ZONE_OFFSET;
     }
 }
