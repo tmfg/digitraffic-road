@@ -32,7 +32,7 @@ public class VariableSignProperties {
 
     // data properties
     @JsonInclude
-    public final String displayInformation;
+    public final String displayValue;
     public final String additionalInformation;
     @ApiModelProperty("Information is effect after this date")
     public final ZonedDateTime effectDate;
@@ -42,14 +42,14 @@ public class VariableSignProperties {
     public final Reliability reliability;
 
     public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,
-        final Carriageway carriageway, final String displayInformation, final String additionalInformation, final ZonedDateTime effectDate,
+        final Carriageway carriageway, final String displayValue, final String additionalInformation, final ZonedDateTime effectDate,
         final String cause, final Reliability reliability) {
         this.id = id;
         this.type = type;
         this.roadAddress = roadAddress;
         this.direction = direction;
         this.carriageway = carriageway;
-        this.displayInformation = displayInformation;
+        this.displayValue = displayValue;
         this.additionalInformation = additionalInformation;
         this.effectDate = effectDate;
         this.cause = cause;
@@ -140,6 +140,5 @@ public class VariableSignProperties {
 
             return first.orElseThrow(() -> new IllegalArgumentException("No Reliability by value " + value));
         }
-
-        }
+    }
 }
