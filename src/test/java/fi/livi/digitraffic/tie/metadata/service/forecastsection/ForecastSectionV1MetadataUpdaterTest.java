@@ -66,7 +66,9 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
         final Instant lastUpdate = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA).toInstant();
         final Instant now = Instant.now();
         assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
-        assertTrue(now.isAfter(lastUpdate));
+        System.out.println("now " + now + " vs " + lastUpdate);
+        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
+        assertTrue(now.plusSeconds(2).isAfter(lastUpdate));
 
         final ForecastSectionFeatureCollection collection = forecastSectionService.findForecastSectionsV1Metadata();
 
