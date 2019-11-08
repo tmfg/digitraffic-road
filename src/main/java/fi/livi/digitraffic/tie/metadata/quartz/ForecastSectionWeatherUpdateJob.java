@@ -24,7 +24,7 @@ public class ForecastSectionWeatherUpdateJob extends SimpleUpdateJob {
         final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA);
 
         if (previousTimestamp != null && messageTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
-            log.error("FORECAST_SECTION_WEATHER_DATA timestamp error: previousTimestamp={} > currentTimestamp={} tsDiff={}",
+            log.error("FORECAST_SECTION_WEATHER_DATA timestamp error: previousTimestamp={} > currentTimestamp={}",
                       previousTimestamp.toInstant(), messageTimestamp);
         }
 
