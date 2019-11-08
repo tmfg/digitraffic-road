@@ -119,11 +119,11 @@ public class BetaController {
         return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, at);
     }
 
-    @ApiOperation(value = "Find weather camera history status",
+    @ApiOperation(value = "Find weather camera history presences",
                   notes = "History status tells if history exists for given time interval.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public CameraHistoryPresencesDto getCameraOrPresetHistoryStatus(
+    public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
 
         @ApiParam(value = "Camera or preset id")
         @RequestParam(required = false)
@@ -141,6 +141,6 @@ public class BetaController {
         @RequestParam(value = "to", required = false)
         final ZonedDateTime to) {
 
-        return cameraPresetHistoryService.findCameraOrPresetHistoryStatus(cameraOrPresetId, from, to);
+        return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 }
