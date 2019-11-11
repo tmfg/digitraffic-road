@@ -95,7 +95,7 @@ public class BetaController {
     }
 
     @ApiOperation(value = "Find weather camera history presences",
-                  notes = "History status tells if history exists for given time interval.")
+                  notes = "History presence tells if history exists for given time interval.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
     public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
@@ -104,14 +104,14 @@ public class BetaController {
         @RequestParam(required = false)
         final String cameraOrPresetId,
 
-        @ApiParam("Return history status from given date time onwards. " +
-                      "If the time is not given then now-24h is used.")
+        @ApiParam("Return history presence from given date time onwards. " +
+                  "If the time is not given then current time is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "from", required = false)
         final ZonedDateTime from,
 
-        @ApiParam("Return the latest url for the image from the history at the given date time. " +
-                      "If the time is not given then the history of last 24h is returned.")
+        @ApiParam("Return history presence ending to given date time. " +
+                  "If the end time is not given then the history of last 24h is returned.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "to", required = false)
         final ZonedDateTime to) {
