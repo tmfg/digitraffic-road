@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -160,7 +162,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
         // Get history for last 24 h
-        CameraHistoryDto history = cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraId, null);
+        List<CameraHistoryDto> allHistory = cameraPresetHistoryService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
+        assertEquals(1, allHistory.size());
+        CameraHistoryDto history = allHistory.get(0);
         assertEquals(cameraId, history.cameraId);
         List<PresetHistoryDto> presetsHistories = history.cameraHistory;
         assertTrue(presetsHistories.size() >= 2);

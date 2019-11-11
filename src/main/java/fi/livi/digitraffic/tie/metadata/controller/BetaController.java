@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -78,12 +79,12 @@ public class BetaController {
     }
 
     @ApiOperation("Weather camera history for given camera or preset")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history/{cameraOrPresetId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public CameraHistoryDto getCameraOrPresetHistory(
-        @ApiParam("Camera or preset id")
-        @PathVariable
-        final String cameraOrPresetId,
+    public List<CameraHistoryDto> getCameraOrPresetHistory(
+        @ApiParam(value = "Camera or preset id(s)", required = true)
+        @RequestParam(value = "id")
+        final List<String> cameraOrPresetIds,
 
         @ApiParam("Return the latest url for the image from the history at the given date time. " +
                       "If the time is not given then the history of last 24h is returned.")
@@ -91,12 +92,12 @@ public class BetaController {
         @RequestParam(value = "at", required = false)
         final ZonedDateTime at) {
 
-        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, at);
+        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
     }
 
     @ApiOperation(value = "Find weather camera history presences",
                   notes = "History presence tells if history exists for given time interval.")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/presences", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
     public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
 
