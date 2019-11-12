@@ -104,6 +104,6 @@ mqtt.tms.enabled=false
 
 # Developer life improvements
 logging.level.root=INFO
-logging.level.org.hibernate.SQL=DEBUG
-logging.level.org.hibernate.type=TRACE
-logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type=TRACE
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

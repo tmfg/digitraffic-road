@@ -114,7 +114,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         all.forEach(e -> entityManager.detach(e));
 
         // Public 0. and 1., secret 2., 3. and 4.
-        CameraPresetHistory middle = all.get(2);
+        final CameraPresetHistory middle = all.get(2);
         rs.updatePublicity(true);
         rs.updatePublicity(false, middle.getLastModified()); // -> previous public
 
@@ -162,15 +162,15 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
         // Get history for last 24 h
-        List<CameraHistoryDto> allHistory = cameraPresetHistoryService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
+        final List<CameraHistoryDto> allHistory = cameraPresetHistoryService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
         assertEquals(1, allHistory.size());
-        CameraHistoryDto history = allHistory.get(0);
+        final CameraHistoryDto history = allHistory.get(0);
         assertEquals(cameraId, history.cameraId);
-        List<PresetHistoryDto> presetsHistories = history.cameraHistory;
+        final List<PresetHistoryDto> presetsHistories = history.cameraHistory;
         assertTrue(presetsHistories.size() >= 2);
 
         // Every preset only once
-        Set<String> cameraPesetIds = new HashSet<>();
+        final Set<String> cameraPesetIds = new HashSet<>();
         presetsHistories.forEach(ph -> {
             assertFalse(cameraPesetIds.contains(ph.getPresetId()));
             cameraPesetIds.add(ph.getPresetId());
@@ -190,7 +190,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         });
 
         // Check that every url to image is unique
-        Set<String> versions = new HashSet<>();
+        final Set<String> versions = new HashSet<>();
         presetsHistories.stream().forEach(ph -> ph.presetHistory.stream().forEach(h -> {
             assertFalse(versions.contains(h.getImageUrl()));
             versions.add(h.getImageUrl());
@@ -200,7 +200,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     }
 
     private String generateHistoryForCamera(final int historySize, final ZonedDateTime lastModified) {
-        Map.Entry<String, List<CameraPreset>> camera = cameraPresetService.findAllPublishableCameraPresets().stream()
+        final Map.Entry<String, List<CameraPreset>> camera = cameraPresetService.findAllPublishableCameraPresets().stream()
             .collect(Collectors.groupingBy(CameraPreset::getCameraId))
             .entrySet().stream().filter(e -> e.getValue().size() > 1).findFirst().get();
 
