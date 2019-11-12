@@ -50,7 +50,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     /** @return versionId */
     private String insertTestData(final String presetId, final ZonedDateTime lastModified, final boolean isPublic) {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
-        final String cameraId = presetId.substring(0,6);
+        final String cameraId = getCameraIdFromPresetId(presetId);
         entityManager.createNativeQuery(
             "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
             "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " +
@@ -93,7 +93,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
         getJson("/history?id=" + presetId)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("[0].cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory", Matchers.hasSize(2)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId0)))
@@ -128,7 +128,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         getJson("/history?id=" + presetId + "&at=" +
                 DateHelper.toZonedDateTimeAtUtc(now.minusHours(1)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("[0].cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory", Matchers.hasSize(1)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId)))
@@ -147,7 +147,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         getJson("/history?id=" + presetId + "&at=" +
             DateHelper.toZonedDateTimeAtUtc(now.minusSeconds(1)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("[0].cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(presetId)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory", Matchers.hasSize(1)))
             .andExpect(jsonPath("[0].cameraHistory[0].presetHistory[0].imageUrl", matchUrl(presetId, versionId)))
@@ -203,8 +203,42 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void findWithCameraAndPresetIds() {
-//        TODO
+    public void findWithCameraAndPresetIds() throws Exception {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        // 2 presets for camera 1 and 2
+        final String c1P1 = "C0000101";
+        insertTestData(c1P1, now);
+        final String c1P2 = "C0000102";
+        insertTestData(c1P2, now.minusHours(1));
+        final String c2P1 = "C0000201";
+        insertTestData(c2P1, now.minusHours(2));
+        final String c2P2 = "C0000202";
+        insertTestData(c2P2, now.minusHours(3));
+        // camera 3 should not exist in restult as it is not requested
+        final String c3P1 = "C0000301";
+        insertTestData(c3P1, now);
+
+        final String c1 = getCameraIdFromPresetId(c1P1);
+        final String c2 = getCameraIdFromPresetId(c2P1);
+
+        // History data for camera 1 preset 1 and camera 2 all presets
+        getJson("/history?id=" + c1P1 + "&id=" + c2)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", Matchers.hasSize(2))) // 2 cameras
+            .andExpect(jsonPath("[0].cameraId", Matchers.is(c1))) // camera 1
+            .andExpect(jsonPath("[0].cameraHistory", Matchers.hasSize(1))) // only this c1P1 preset asked
+            .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(c1P1)))
+            .andExpect(jsonPath("[1].cameraId", Matchers.is(c2))) // camera 2
+            .andExpect(jsonPath("[1].cameraHistory", Matchers.hasSize(2))) // all presets as camera was asked
+            .andExpect(jsonPath("[1].cameraHistory[0].presetId", Matchers.is(c2P1)))
+            .andExpect(jsonPath("[1].cameraHistory[0].presetHistory", Matchers.hasSize(1)))
+            .andExpect(jsonPath("[1].cameraHistory[1].presetId", Matchers.is(c2P2)))
+            .andExpect(jsonPath("[1].cameraHistory[1].presetHistory", Matchers.hasSize(1)))
+
+            .andExpect(jsonPath("[0].cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now))) // c1P1
+            .andExpect(jsonPath("[1].cameraHistory[0].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(2)))) // c2P1
+            .andExpect(jsonPath("[1].cameraHistory[1].presetHistory[0].lastModified", ZonedDateTimeMatcher.of(now.minusHours(3)))) // c2P2
+        ;
     }
 
     private void assertHistoryPresenceStatusForCamera(final String cameraId, final boolean status, final ZonedDateTime fromTime, final ZonedDateTime toTime)
@@ -220,9 +254,12 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         log.info(fromTime.toString() + " -> " + toTime.toString());
         getJson("/presences?cameraOrPresetId=" + presetId + "&from=" + fromTime.toString() +"&to=" + toTime.toString())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("cameraHistoryPresences[0].cameraId", Matchers.is(presetId.substring(0,6))))
+            .andExpect(jsonPath("cameraHistoryPresences[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("cameraHistoryPresences[0]..presetHistoryPresences[?(@.presetId == \"" + presetId + "\")].historyPresent", Matchers.contains(status)))
         ;
     }
 
+    private String getCameraIdFromPresetId(String presetId) {
+        return presetId.substring(0, 6);
+    }
 }
