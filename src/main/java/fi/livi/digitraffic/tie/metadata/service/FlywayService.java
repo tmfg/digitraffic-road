@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.conf.RoadCacheConfiguration;
 import fi.livi.digitraffic.tie.metadata.dao.FlywayRepository;
 import fi.livi.digitraffic.tie.metadata.dto.FlywayVersion;
 
@@ -18,7 +20,9 @@ public class FlywayService {
     }
 
     @Transactional
+    @Cacheable(RoadCacheConfiguration.FLYWAY_VERSION_CACHE)
     public FlywayVersion getLatestVersion() {
+        System.out.println("Not from cache");
         return flywayRepository.findLatest();
     }
 }
