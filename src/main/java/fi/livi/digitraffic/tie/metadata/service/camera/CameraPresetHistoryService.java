@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +42,8 @@ public class CameraPresetHistoryService {
     private final String s3WeathercamBucketUrl;
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
+
+    public static final int MAX_IDS_SIZE = 5000;
 
     public enum HistoryStatus {
         PUBLIC("History version found and it's publishable"),
@@ -93,7 +94,7 @@ public class CameraPresetHistoryService {
 
         final List<String> cameraIds = parseCameraIds(cameraOrPresetIds);
         final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
-        checkAllParametersUsed(cameraOrPresetIds, cameraIds, presetIds);
+        checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
 
         final List<CameraPresetHistory> history =
             atTime != null ?
@@ -105,8 +106,14 @@ public class CameraPresetHistoryService {
         return convertToCameraHistory(history);
     }
 
-    private void checkAllParametersUsed(final List<String> cameraOrPresetIds,
-                                        final List<String> usedCameraIds, final List<String> usedPresetIds) {
+    private void checkAllParametersUsedAndNotTooLong(final List<String> cameraOrPresetIds,
+                                                     final List<String> usedCameraIds, final List<String> usedPresetIds) {
+
+        if (cameraOrPresetIds.size() > MAX_IDS_SIZE) {
+            throw new IllegalArgumentException(
+                String.format("Too long list of id parameters. Maximum is %d pcs and was %d pcs.",
+                              MAX_IDS_SIZE, cameraOrPresetIds.size()));
+        }
 
         final List<String> illegalIds = cameraOrPresetIds.stream().filter(id -> !usedCameraIds.contains(id) && !usedPresetIds.contains(id)).collect(Collectors.toList());
 

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+import static fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService.MAX_IDS_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,6 +23,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -105,6 +107,16 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test(expected = IllegalArgumentException.class)
     public void illegalIdParameter() {
         cameraPresetHistoryService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tooLongListOfIdParameters() {
+        cameraPresetHistoryService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE+1), null);
+    }
+
+    @Test
+    public void maxListOfIdParameters() {
+        cameraPresetHistoryService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE), null);
     }
 
     @Test
@@ -234,5 +246,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         cameraPresetHistoryService.saveHistory(history);
         entityManager.flush();
         return history;
+    }
+
+    private static List<String> generateCameraIds(final int count) {
+        return IntStream.range(0, count).mapToObj(i -> String.format("C%s", StringUtils.leftPad(String.valueOf(i), 5, "0"))).collect(Collectors.toList());
     }
 }
