@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.livi.digitraffic.tie.data.dto.RootDataObjectDto;
+import io.swagger.annotations.ApiModel;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(value = "ForecastSectionWeatherRoot")
 public class ForecastSectionWeatherRootDto extends RootDataObjectDto {
     public final List<ForecastSectionWeatherDataDto> weatherData;
 

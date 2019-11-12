@@ -50,8 +50,8 @@ public class ForecastSectionV2MetadataService {
     }
 
     private ForecastSectionV2FeatureCollection getFeatureCollection() {
-        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA);
-        final ZonedDateTime metadataChecked = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA_CHECK);
+        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA);
+        final ZonedDateTime metadataChecked = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA_CHECK);
 
         return new ForecastSectionV2FeatureCollection(metadataUpdated, metadataChecked);
     }

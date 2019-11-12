@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
-import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
+import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
@@ -39,7 +40,7 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String CAMERA_PRESET_HISTORY_PATH = "/camera-preset-history";
+    public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
     private final VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
@@ -76,19 +77,45 @@ public class BetaController {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 
-    @ApiOperation("List the history of camera preset")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_PRESET_HISTORY_PATH + "/{presetId}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Weather camera history for given camera or preset")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history/{cameraOrPresetId}", produces = APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public PresetHistoryDto getPresetHistory(
-        @ApiParam("Camera preset id")
+    public CameraHistoryDto getCameraOrPresetHistory(
+        @ApiParam("Camera or preset id")
         @PathVariable
-        final String presetId,
-        @ApiParam("Return the latest url for the image from the history at the given time. The time is given in ISO date format {yyyy-MM-dd'T'HH:mm:ss.SSSZ} " +
-                  "e.g. 2016-10-31T06:30:00.000Z. If the time is not given then the history of last 24h is returned.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "atTime", required = false)
-        final ZonedDateTime atTime) {
+        final String cameraOrPresetId,
 
-        return cameraPresetHistoryService.findPublicHistory(presetId, atTime);
+        @ApiParam("Return the latest url for the image from the history at the given date time. " +
+                      "If the time is not given then the history of last 24h is returned.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "at", required = false)
+        final ZonedDateTime at) {
+
+        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetId, at);
+    }
+
+    @ApiOperation(value = "Find weather camera history presences",
+                  notes = "History status tells if history exists for given time interval.")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/status", produces = APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
+    public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
+
+        @ApiParam(value = "Camera or preset id")
+        @RequestParam(required = false)
+        final String cameraOrPresetId,
+
+        @ApiParam("Return history status from given date time onwards. " +
+                      "If the time is not given then now-24h is used.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "from", required = false)
+        final ZonedDateTime from,
+
+        @ApiParam("Return the latest url for the image from the history at the given date time. " +
+                      "If the time is not given then the history of last 24h is returned.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "to", required = false)
+        final ZonedDateTime to) {
+
+        return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 }
