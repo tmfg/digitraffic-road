@@ -29,17 +29,6 @@ public class ActuatorInfo implements InfoContributor {
         final Map<String, String> db = new HashMap<>();
         try {
             final FlywayVersion first = flywayService.getLatestVersion();
-            System.out.println(first.getInstalledRank());
-            System.out.println(first.getVersion());
-            System.out.println(first.getChecksum());
-            System.out.println(first.getDescription());
-            System.out.println(first.getExecutionTime());
-            System.out.println(first.getInstalledBy());
-            System.out.println(first.getInstalledOn());
-            System.out.println(first.getScript());
-            System.out.println(first.getSuccess());
-            System.out.println(first.getType());
-
             db.put("version", first.getVersion());
             db.put("installedOn", first.getInstalledOn().toString());
             db.put("success", first.getSuccess().toString());
