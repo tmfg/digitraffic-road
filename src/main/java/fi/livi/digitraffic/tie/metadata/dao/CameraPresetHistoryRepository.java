@@ -39,6 +39,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                     "       history.preset_id in (:presetIds))    " +
                     "ORDER BY history.preset_id, history.last_modified DESC",
            nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     List<CameraPresetHistory> findLatestPublishableByCameraAndPresetIdsAndTimeOrderByPresetIdAndLastModifiedDesc(
             final List<String> cameraIds, final List<String> presetIds,
             final Instant atTime, final Instant oldestTimeLimit);
@@ -51,6 +52,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                     "       history.preset_id in (:presetIds))    " +
                     "ORDER BY history.preset_id, history.last_modified DESC",
            nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     List<CameraPresetHistory> findAllPublishableByCameraAndPresetIdsOrderByPresetIdAndLastModifiedDesc(
         final List<String> cameraIds, final List<String> presetIds, final Instant oldestTimeLimit);
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -100,6 +100,11 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
                 prevDate = h.getLastModified();
             }
         });
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void illegalIdParameter() {
+        cameraPresetHistoryService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
     }
 
     @Test

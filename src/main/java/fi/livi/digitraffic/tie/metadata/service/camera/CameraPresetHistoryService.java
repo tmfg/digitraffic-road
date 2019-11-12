@@ -107,13 +107,13 @@ public class CameraPresetHistoryService {
 
     private void checkAllParametersUsed(final List<String> cameraOrPresetIds,
                                         final List<String> usedCameraIds, final List<String> usedPresetIds) {
-        ArrayList<String> tmpCameraOrPresetIds = new ArrayList<>(cameraOrPresetIds);
-        tmpCameraOrPresetIds.removeAll(usedCameraIds);
-        tmpCameraOrPresetIds.removeAll(usedPresetIds);
-        if (!tmpCameraOrPresetIds.isEmpty()) {
+
+        final List<String> illegalIds = cameraOrPresetIds.stream().filter(id -> !usedCameraIds.contains(id) && !usedPresetIds.contains(id)).collect(Collectors.toList());
+
+        if (!illegalIds.isEmpty()) {
             throw new IllegalArgumentException(
                 String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
-                    tmpCameraOrPresetIds.stream().collect(Collectors.joining(", "))));
+                    illegalIds.stream().collect(Collectors.joining(", "))));
         }
     }
 
