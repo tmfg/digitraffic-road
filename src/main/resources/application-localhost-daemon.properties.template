@@ -27,7 +27,7 @@ metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
 # Every 3 min
 dt.job.Datex2TrafficAlertMessageUpdateJob.schedule =           0 0/3 * * * ?
 # Every 5 min
-dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
+dt.job.ForecastSectionV1DataUpdateJob.schedule =               0 0/5 * * * ?
 dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
 # Every 1 h
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
@@ -42,7 +42,7 @@ dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
 # Every 24 h
 dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 0 3 * * ?
 dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
-dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
+dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 0 3 * * ?
 dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
 # SFTP settings for camera image upload
@@ -50,6 +50,9 @@ camera-image-uploader.sftp.host = aineistot.liikennevirasto.fi
 camera-image-uploader.sftp.user = digitraffic-aws-test
 camera-image-uploader.sftp.privateKeyPassphrase = tyokaverisi-halusi-kiittaa
 camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
+
+# Weathercam url for public fetch. Append camera preset + .jpg to get image url
+weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
 # AWS settings
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test
@@ -71,10 +74,12 @@ jms.datex2.userId=
 jms.datex2.password=
 
 # JMS topics
+# Comment out to disable (Only daemon should have these enabled)
 jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
-jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
+#jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
+jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
 
 # Services enabled/disabled
 
@@ -87,12 +92,6 @@ mqtt.enabled=true
 mqtt.tms.enabled=true
 # Is WEATHER messages available
 mqtt.weather.enabled=true
-
-# JMS queue enabled/disabled (Only daemon should have these enabled)
-jms.weather.enabled=true
-jms.tms.enabled=true
-jms.camera.enabled=true
-jms.datex2.enabled=false
 
 # Developer life improvements
 logging.level.root=INFO

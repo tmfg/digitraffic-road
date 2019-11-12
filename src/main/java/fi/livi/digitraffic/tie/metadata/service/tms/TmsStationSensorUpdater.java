@@ -43,12 +43,9 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
                 lotjuTmsStationMetadataService.getAllLamLaskennallinenAnturis();
 
-        boolean fixedLotjuIds = roadStationSensorService.fixTmsStationSensorsWithoutLotjuId(
-            allLamLaskennallinenAnturis.stream().filter(TmsStationSensorUpdater::validate).collect(Collectors.toList()));
-
         boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
         log.info("Update TMS RoadStationSensors end");
-        return fixedLotjuIds || updated;
+        return updated;
     }
 
     private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {

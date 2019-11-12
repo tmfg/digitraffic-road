@@ -62,39 +62,8 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStation> findByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> all = findByType(type);
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : all) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
-    }
-
-    @Transactional(readOnly = true)
-    public RoadStation findByTypeAndNaturalId(final RoadStationType type, Long naturalId) {
-        return roadStationRepository.findByTypeAndNaturalId(type, naturalId);
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, RoadStation> findOrphansByTypeMappedByNaturalId(final RoadStationType type) {
-        final List<RoadStation> orphans;
-        if (RoadStationType.TMS_STATION == type) {
-            orphans = roadStationRepository.findOrphanTmsRoadStations();
-        } else if (RoadStationType.CAMERA_STATION == type) {
-            orphans = roadStationRepository.findOrphanCameraRoadStations();
-        } else if (RoadStationType.WEATHER_STATION == type) {
-            orphans = roadStationRepository.findOrphanWeatherRoadStations();
-        } else {
-            throw new IllegalArgumentException("RoadStationType " + type + " is unknown");
-        }
-
-        final Map<Long, RoadStation> map = new HashMap<>();
-        for (final RoadStation roadStation : orphans) {
-            map.put(roadStation.getNaturalId(), roadStation);
-        }
-        return map;
+    public RoadStation findByTypeAndLotjuId(final RoadStationType type, Long lotjuId) {
+        return roadStationRepository.findByTypeAndLotjuId(type, lotjuId);
     }
 
     @Transactional
@@ -151,12 +120,10 @@ public class RoadStationService {
                      from.getId(), rs.getNaturalId(), rs.getId());
             return false;
         }
-        final boolean wasPublic = rs.isPublic();
-        final boolean updated = AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
 
-        if (wasPublic != rs.isPublic()) {
-            cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
-        }
+        final boolean updated = AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        // Update history every time in case JMS message handling has failed
+        cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
 
         return updated;
     }

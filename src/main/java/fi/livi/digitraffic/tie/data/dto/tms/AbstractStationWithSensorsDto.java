@@ -9,7 +9,6 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Immutable
@@ -22,7 +21,7 @@ public abstract class AbstractStationWithSensorsDto {
     @ApiModelProperty(value = "Measured sensor values of the Weather Station", required = true)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
-    @ApiModelProperty(value = "Values measured " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Date and time of the sensor's measurement")
     private ZonedDateTime measuredTime;
 
     public long getRoadStationNaturalId() {

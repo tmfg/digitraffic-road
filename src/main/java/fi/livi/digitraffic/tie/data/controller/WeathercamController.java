@@ -5,7 +5,6 @@ import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.WEATH
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService.HistoryStatus;
 
-@RestController
+// TODO DPO-949 restore
+//@RestController
 @Validated
 @RequestMapping(WEATHERCAM_PATH)
 @ConditionalOnWebApplication
@@ -41,7 +41,7 @@ public class WeathercamController {
         @PathVariable final String imageName,
         @RequestParam(value=VERSION_ID_PARAM) final String versionId) {
 
-        final HistoryStatus historyStatus = cameraPresetHistoryService.resolveHistoryStatus(imageName, versionId);
+        final HistoryStatus historyStatus = cameraPresetHistoryService.resolveHistoryStatusForVersion(imageName, versionId);
         log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
         if ( !historyStatus.equals(HistoryStatus.PUBLIC) ) {

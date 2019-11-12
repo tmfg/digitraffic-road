@@ -55,9 +55,4 @@ public class ForecastSectionV2MetadataService {
 
         return new ForecastSectionV2FeatureCollection(metadataUpdated, metadataChecked);
     }
-
-    // FIXME turha?
-    private static ForecastSectionV2Feature forecastSectionV2Feature(final ForecastSection forecastSection) {
-        return ForecastSectionV2ToFeatureConverter.convert(forecastSection);
-    }
 }

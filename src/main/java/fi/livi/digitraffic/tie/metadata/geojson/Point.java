@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson Point Geometry Object", parent = Geometry.class)
+@ApiModel(description = "GeoJson Point Geometry Object", value = "Point", parent = Geometry.class)
 @JsonPropertyOrder({ "type", "coordinates"})
 public class Point extends Geometry<Double> implements Serializable {
 

@@ -1,24 +1,25 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
+
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 public class ImageUpdateInfo {
 
-    public enum Status { SUCCESS, FAILED, NONE;
+    private final ZonedDateTime updateTime;
+
+    public enum Status {
+        SUCCESS, FAILED, NONE;
 
         public boolean isSuccess() {
             return this.equals(SUCCESS);
         }
-
-
     }
 
     private final String presetId;
     private final String fullPath;
     private final ZonedDateTime lastUpdated;
 
-    private String versionId;
     private long readTotalDurationMs = 0;
     private long writeTotalDurationMs = 0;
     private long readDurationMs = 0;
@@ -31,10 +32,14 @@ public class ImageUpdateInfo {
     private Throwable writeError;
     private long imageTimestampEpochMillis;
 
+    private String s3VersionId;
+    private long s3WriteDurationMs;
+
     public ImageUpdateInfo(final String presetId, final String fullPath, final ZonedDateTime lastUpdated) {
         this.presetId = presetId;
         this.fullPath = fullPath;
         this.lastUpdated = lastUpdated;
+        this.updateTime = DateHelper.zonedDateTimeNowAtUtc();
     }
 
     public String getPresetId() {
@@ -49,12 +54,20 @@ public class ImageUpdateInfo {
         return lastUpdated;
     }
 
-    public void setVersionId(final String versionId) {
-        this.versionId = versionId;
+    public void setS3VersionId(final String versionId) {
+        this.s3VersionId = versionId;
     }
 
-    public String getVersionId() {
-        return versionId;
+    public String getS3VersionId() {
+        return s3VersionId;
+    }
+
+    public void setS3WriteDurationMs(final long s3WriteDurationMs) {
+        this.s3WriteDurationMs = s3WriteDurationMs;
+    }
+
+    public long getS3WriteDurationMs() {
+        return s3WriteDurationMs;
     }
 
     public void updateReadTotalDurationMs(final long currentReadDurationMs) {
@@ -93,7 +106,7 @@ public class ImageUpdateInfo {
         this.sizeBytes = sizeBytes;
     }
 
-    int getSizeBytes() {
+    public int getSizeBytes() {
         return sizeBytes;
     }
 
@@ -131,7 +144,7 @@ public class ImageUpdateInfo {
         setWriteError(null);
     }
 
-    boolean isSuccess() {
+    public boolean isSuccess() {
         return getReadStatus().isSuccess() && getWriteStatus().isSuccess();
     }
 
@@ -164,5 +177,13 @@ public class ImageUpdateInfo {
 
     private void setWriteError(Throwable writeError) {
         this.writeError = writeError;
+    }
+
+    public ZonedDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public long getImageTimeInPastSeconds() {
+        return updateTime.toEpochSecond() - lastUpdated.toEpochSecond();
     }
 }

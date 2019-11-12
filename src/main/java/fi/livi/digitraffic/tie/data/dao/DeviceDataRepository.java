@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +18,7 @@ public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
         "select first_value(id) over (partition by device_id order by effect_date desc) from device_data\n" +
         ")",
         nativeQuery = true)
-    List<DeviceData> findLatestData();
+    Stream<DeviceData> streamLatestData();
 
     @Query(value =
         "select id, created_date, device_id, display_value, additional_information, effect_date, cause, reliability\n" +

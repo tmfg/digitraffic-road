@@ -12,7 +12,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
@@ -72,13 +71,13 @@ public abstract class RoadStationProperties {
     @ApiModelProperty(value = "Country where station is located")
     private String country;
 
-    @ApiModelProperty(value = "Station established " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Station established date time")
     private ZonedDateTime startTime;
 
-    @ApiModelProperty(value = "Repair maintenance " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Repair maintenance date time")
     private ZonedDateTime repairMaintenanceTime;
 
-    @ApiModelProperty(value = "Annual maintenance " + ToStringHelper.ISO_8601_OFFSET_TIMESTAMP_EXAMPLE)
+    @ApiModelProperty(value = "Annual maintenance date time")
     private ZonedDateTime annualMaintenanceTime;
 
     // Removed temporary until LOTJU data is fixed

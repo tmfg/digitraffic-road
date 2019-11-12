@@ -41,7 +41,6 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     public WeatherStationService(final WeatherStationRepository weatherStationRepository,
                                  final DataStatusService dataStatusService,
                                  final WeatherStationMetadata2FeatureConverter weatherStationMetadata2FeatureConverter) {
-        super(log);
         this.weatherStationRepository = weatherStationRepository;
         this.dataStatusService = dataStatusService;
         this.weatherStationMetadata2FeatureConverter = weatherStationMetadata2FeatureConverter;
@@ -50,7 +49,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     @Transactional(readOnly = true)
     public Map<Long, WeatherStation> findAllWeatherStationsMappedByLotjuId() {
         final List<WeatherStation> all = weatherStationRepository.findAll();
-        return all.parallelStream().filter(ws -> ws.getLotjuId() != null).collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
+        return all.parallelStream().collect(Collectors.toMap(WeatherStation::getLotjuId, Function.identity()));
     }
 
     @Transactional(readOnly = true)
@@ -88,9 +87,6 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
                 final int hash = HashCodeBuilder.reflectionHashCode(rws);
                 final String before = ReflectionToStringBuilder.toString(rws);
 
-                final RoadStation rs = rws.getRoadStation();
-                setRoadAddressIfNotSet(rs);
-
                 if (updateWeatherStationAttributes(tiesaaAsema, rws) ||
                     hash != HashCodeBuilder.reflectionHashCode(rws)) {
                     log.info("Updated: \n{} -> \n{}", before, ReflectionToStringBuilder.toString(rws));
@@ -99,8 +95,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
                 return UpdateStatus.NOT_UPDATED;
             } else {
                 rws = new WeatherStation();
-                rws.setRoadStation(new RoadStation(RoadStationType.WEATHER_STATION));
-                setRoadAddressIfNotSet(rws.getRoadStation());
+                rws.setRoadStation(RoadStation.createWeatherStation());
                 updateWeatherStationAttributes(tiesaaAsema, rws);
                 weatherStationRepository.save(rws);
                 log.info("Created new {}", rws);

@@ -1,13 +1,19 @@
 package fi.livi.digitraffic.tie;
 
+import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.JULKINEN;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,6 +21,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +32,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CameraType;
@@ -34,6 +42,13 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
+import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KeruunTILA;
+import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RoadApplication.class,
@@ -52,6 +67,10 @@ public abstract class AbstractTest {
 
     @Autowired
     protected RoadDistrictService roadDistrictService;
+
+    protected static final int MIN_LOTJU_ID = 10000;
+    protected static final int MAX_LOTJU_ID = 99999;
+    protected static final String PRESET_PRESENTATION_NAME = "PresentationName";
 
     protected Path getPath(final String filename) {
         return new File(getClass().getResource(filename).getFile()).toPath();
@@ -128,11 +147,12 @@ public abstract class AbstractTest {
     }
 
     public static RoadStation generateDummyRoadStation(final RoadStationType roadStationType) {
-        final RoadStation rs = new RoadStation(roadStationType);
+
+        final RoadStation rs = RoadStation.createRoadStation(roadStationType);
         rs.setNaturalId(80000  + RandomUtils.nextLong(1000, 10000));
         rs.setName(roadStationType.name());
         rs.setLotjuId(rs.getNaturalId());
-        rs.setPublic(true);
+        rs.updatePublicity(true);
         rs.setCollectionStatus(CollectionStatus.GATHERING);
         rs.setPurpose("Maisema");
         rs.setLatitude(BigDecimal.valueOf(6687086));
@@ -166,4 +186,52 @@ public abstract class AbstractTest {
         return ra;
     }
 
+    protected static Integer getRandomId(final int min, final int max) {
+        Assert.assertTrue(max > min);
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
+    protected static List<EsiasentoVO> createEsiasentos(final long kameraId, final int count) {
+        final List<EsiasentoVO> eas = new ArrayList<>();
+        IntStream.range(0, count).forEach(i -> {
+            final EsiasentoVO ea = new EsiasentoVO();
+            ea.setId(getRandomLotjuId().longValue());
+            ea.setKameraId(kameraId);
+            ea.setKeruussa(true);
+            ea.setJulkisuus(Julkisuus.JULKINEN);
+            ea.setSuunta("0");
+            ea.setNimiEsitys(PRESET_PRESENTATION_NAME + ea.getId());
+            eas.add(ea);
+        });
+        return eas;
+    }
+
+    protected static KameraVO createKamera(final Instant publicFrom) {
+        final KameraVO k = new KameraVO();
+        k.setVanhaId(getRandomLotjuId());
+        k.setId(Long.valueOf(k.getVanhaId()));
+        k.setNimi("Kamera-asema");
+        k.setJulkisuus(createKameraJulkisuus(publicFrom, JULKINEN));
+        k.setKeruunTila(KeruunTILA.KERUUSSA);
+        final TieosoiteVO to = new TieosoiteVO();
+        k.setTieosoite(to);
+
+        return k;
+    }
+
+    protected static Instant getInstant(int secondsToAdd) {
+        return Instant.now().plusSeconds(secondsToAdd).truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    protected static JulkisuusVO createKameraJulkisuus(final Instant from, final JulkisuusTaso julkisuusTaso) {
+        final JulkisuusVO julkisuus = new JulkisuusVO();
+        julkisuus.setJulkisuusTaso(julkisuusTaso);
+        julkisuus.setAlkaen(DateHelper.toXMLGregorianCalendarAtUtc(from));
+        return julkisuus;
+    }
+
+    private static Integer getRandomLotjuId() {
+        return getRandomId(MIN_LOTJU_ID, MAX_LOTJU_ID);
+    }
 }

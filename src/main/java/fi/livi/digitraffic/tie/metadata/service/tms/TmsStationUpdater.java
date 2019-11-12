@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
@@ -40,14 +41,28 @@ public class TmsStationUpdater {
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 60000)
     public boolean updateTmsStations() {
-        log.info("Update tms Stations start");
-
         final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
-        final boolean updatedTmsStations = updateTmsStationsMetadata(asemas);
+        return updateTmsStationsMetadata(asemas);
+    }
 
-        log.info("UpdateTmsStations end");
-        return updatedTmsStations;
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    public int updateTmsStationsStatuses() {
+        final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
+
+        int updated = 0;
+        for(LamAsemaVO from : allLams) {
+            try {
+                if (roadStationService.updateRoadStation(from)) {
+                    updated++;
+                }
+            } catch (Exception e) {
+                log.error("method=updateTmsStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
+                throw e;
+            }
+        }
+        return updated;
     }
 
     private boolean updateTmsStationsMetadata(final List<LamAsemaVO> lamAsemas) {

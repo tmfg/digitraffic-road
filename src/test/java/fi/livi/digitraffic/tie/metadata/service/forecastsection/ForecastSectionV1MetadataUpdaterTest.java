@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
@@ -35,6 +39,9 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private ForecastSectionV1MetadataService forecastSectionService;
 
+    @Autowired
+    private DataStatusService dataStatusService;
+
     private MockRestServiceServer server;
 
     @Autowired
@@ -43,7 +50,7 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
     @Before
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
-        forecastSectionMetadataUpdater = new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository);
+        forecastSectionMetadataUpdater = new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -56,12 +63,19 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
 
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
 
+        final Instant lastUpdate = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA).toInstant();
+        final Instant now = Instant.now();
+        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
+        System.out.println("now " + now + " vs " + lastUpdate);
+        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
+        assertTrue(now.plusSeconds(2).isAfter(lastUpdate));
+
         final ForecastSectionFeatureCollection collection = forecastSectionService.findForecastSectionsV1Metadata();
 
         assertEquals(277, collection.getFeatures().size());
         assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
         assertEquals(10, collection.getFeatures().get(0).getGeometry().getCoordinates().size());
-        assertEquals(new Double("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0));
-        assertEquals(new Double("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1));
+        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).doubleValue(), 0.01);
+        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1).doubleValue(), 0.01);
     }
 }

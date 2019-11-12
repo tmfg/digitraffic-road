@@ -50,14 +50,26 @@ public class WeatherStationUpdater  {
      */
     @PerformanceMonitor(maxWarnExcecutionTime = 60000, maxErroExcecutionTime = 90000)
     public boolean updateWeatherStations() {
-        log.info("Update WeatherStations start");
-
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemas();
+        return updateWeatherStationsMetadata(tiesaaAsemas);
+    }
 
-        final boolean updateStaticDataStatus = updateWeatherStationsMetadata(tiesaaAsemas);
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    public int updateWeatherStationsStatuses() {
+        final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataService.getTiesaaAsemas();
 
-        log.info("Update WeatherStations end");
-        return updateStaticDataStatus;
+        int updated = 0;
+        for (TiesaaAsemaVO from : allTiesaaAsemas) {
+            try {
+                if (roadStationService.updateRoadStation(from)) {
+                    updated++;
+                }
+            } catch (Exception e) {
+                log.error("method=updateWeatherStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
+                throw e;
+            }
+        }
+        return updated;
     }
 
     private boolean updateWeatherStationsMetadata(final List<TiesaaAsemaVO> tiesaaAsemas) {

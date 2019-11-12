@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
-import java.util.UUID;
+
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.tms.enabled")
+@ConditionalOnProperty(name = "jms.tms.inQueue")
 @Configuration
 public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
     private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
@@ -41,7 +41,7 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
         this.sensorDataUpdateService = sensorDataUpdateService;
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           TmsJMSListenerConfiguration.class.getSimpleName(),
-                                          UUID.randomUUID().toString());
+                                          LockingService.generateInstanceId());
     }
 
     @Override

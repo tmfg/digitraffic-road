@@ -31,13 +31,13 @@ public class LockingDao {
     private static final String RELEASE =
         "DELETE FROM LOCKING_TABLE LT\n" +
         "WHERE LT.LOCK_NAME = :lockName\n" +
-        "  AND LT.INSTANCE_ID = :instanceId";
+        "  AND LT.instance_id = :instanceId";
 
     private static final String SELECT =
         "SELECT LOCK_NAME\n" +
         "FROM LOCKING_TABLE LT\n" +
         "WHERE LT.LOCK_NAME = :lockName\n" +
-        "  AND LT.INSTANCE_ID = :instanceId\n" +
+        "  AND LT.instance_id = :instanceId\n" +
         "  AND LT.LOCK_EXPIRES > clock_timestamp()";
 
     @Autowired
@@ -45,9 +45,9 @@ public class LockingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean acquireLock(final String lockName, final String callerInstanceId, final int expirationSeconds) {
+    public boolean acquireLock(final String lockName, final long instanceId, final int expirationSeconds) {
         final MapSqlParameterSource params = new MapSqlParameterSource("lockName", lockName)
-            .addValue("instanceId", callerInstanceId)
+            .addValue("instanceId", instanceId)
             .addValue("expirationSeconds", expirationSeconds);
 
         jdbcTemplate.update(MERGE, params);
@@ -60,9 +60,9 @@ public class LockingDao {
         return jdbcTemplate.queryForList(SELECT, params, String.class).size() == 1;
     }
 
-    public void releaseLock(final String lockName, final String callerInstanceId) {
+    public void releaseLock(final String lockName, final long instanceId) {
         final MapSqlParameterSource params = new MapSqlParameterSource("lockName", lockName)
-            .addValue("instanceId", callerInstanceId);
+            .addValue("instanceId", instanceId);
 
         jdbcTemplate.update(RELEASE, params);
     }

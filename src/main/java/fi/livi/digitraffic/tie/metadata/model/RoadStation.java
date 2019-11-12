@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,6 +44,7 @@ public class RoadStation {
     @NotNull
     private Long naturalId;
 
+    @NotNull
     private Long lotjuId;
 
     private String name;
@@ -63,6 +65,18 @@ public class RoadStation {
 
     @Column(name="IS_PUBLIC")
     private boolean isPublic;
+
+    /**
+     * Previous value for publicity. Used in case when new value is in the future
+     * as publicityStartTime > now().
+     */
+    @Column(name="IS_PUBLIC_PREVIOUS")
+    private boolean isPublicPrevious;
+
+    /**
+     * Tells when isPublic value is effective. If null then always effective.
+     */
+    private ZonedDateTime publicityStartTime;
 
     private String nameFi, nameSv, nameEn;
 
@@ -112,8 +126,29 @@ public class RoadStation {
     protected RoadStation() {
     }
 
-    public RoadStation(final RoadStationType type) {
+    private RoadStation(final RoadStationType type) {
         setType(type);
+    }
+
+    public static RoadStation createRoadStation(final RoadStationType roadStationType) {
+        return new RoadStation(roadStationType).initRoadAddress();
+    }
+
+    public static RoadStation createCameraStation() {
+        return createRoadStation(RoadStationType.CAMERA_STATION);
+    }
+
+    public static RoadStation createTmsStation() {
+        return createRoadStation(RoadStationType.TMS_STATION);
+    }
+
+    public static RoadStation createWeatherStation() {
+        return createRoadStation(RoadStationType.WEATHER_STATION);
+    }
+
+    private RoadStation initRoadAddress() {
+        setRoadAddress(new RoadAddress());
+        return this;
     }
 
     public Long getId() {
@@ -161,12 +196,28 @@ public class RoadStation {
         this.roadStationType = type;
     }
 
-    public void setPublic(final boolean aPublic) {
-        this.isPublic = aPublic;
+    private void internalSetPublic(final boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
-    public boolean isPublic() {
+    public boolean internalIsPublic() {
         return isPublic;
+    }
+
+    public boolean isPublicPrevious() {
+        return isPublicPrevious;
+    }
+
+    private void setPublicPrevious(boolean publicPrevious) {
+        isPublicPrevious = publicPrevious;
+    }
+
+    private void setPublicityStartTime(final ZonedDateTime publicityStartTime) {
+        this.publicityStartTime = publicityStartTime;
+    }
+
+    public ZonedDateTime getPublicityStartTime() {
+        return publicityStartTime;
     }
 
     public boolean isObsolete() {
@@ -378,7 +429,72 @@ public class RoadStation {
                 .appendField("lotjuId", this.getLotjuId())
                 .appendField("name", name)
                 .appendField("type", type)
+                .appendField("isPublicNow", isPublicNow())
                 .appendField("collectionStatus", collectionStatus)
                 .toString();
+    }
+
+    /**
+     * Gets current publicity status of the road station.
+     * Only camera stations allows setting publicity status in the future at the moment.
+     *
+     * Current publicity status is resolved by checking publicityStartTime:
+     * If publicityStartTime is effective now (null or in the past) then isPublic is used.
+     * If publicityStartTime is in the future, then isPublicPrevious is used (as isPublic os not effective yet).
+     *
+     * @return Is station public at the moment
+     */
+    public boolean isPublicNow() {
+        // If current value is valid now, let's use it
+        if (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) {
+            return isPublic;
+        }
+        return isPublicPrevious;
+    }
+
+    /**
+     * Updates fields: isPublic, publicityStartTime and isPublicPrevious.
+     * Used only for camera stations.
+     *
+     * isPublicPrevious is updated to current isPublic-value if current isPublic is effective now
+     * (=publicityStartTime is null or in the past) as that will be the previous value for the new
+     * incoming isPublicNew parameter value. If current publicityStartTime is in the future, then
+     * isPublicPrevious is not updated as current isPublic haven't become effective at eny point
+     * and that's why parameter value will override it with new isPublicNew and publicityStartTimeNew
+     * values.
+     *
+     * isPublic and publicityStartTime are always updated to given parameter values.
+     *
+     * @param isPublicNew new publicity value
+     * @param publicityStartTimeNew time when new publicity value is valid from (Only for camera station)
+     *
+     * @return was there status change
+     *
+     * @throws IllegalStateException If called other than camera station with time set
+     */
+    public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
+        if (publicityStartTimeNew != null && !RoadStationType.CAMERA_STATION.equals(getType())) {
+            throw new IllegalStateException(String.format("Only %s can have publicityStartTime. Tried to it set to %s.",
+                                                          RoadStationType.CAMERA_STATION, this.getType()));
+        }
+        final boolean changed = isPublic != isPublicNew || !Objects.equals(publicityStartTime, publicityStartTimeNew);
+        // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
+        // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
+        if ( isPublic != isPublicNew &&
+            (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) ) {
+            setPublicPrevious(isPublic);
+        }
+        internalSetPublic(isPublicNew);
+        setPublicityStartTime(publicityStartTimeNew);
+        return changed;
+    }
+
+    /**
+     * Updades current publicity status.
+     *
+     * @param isPublic station publicity status at the moment
+     */
+    public void updatePublicity(final boolean isPublic) {
+        updatePublicity(isPublic, null);
     }
 }

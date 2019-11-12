@@ -2,12 +2,16 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.MqttRelayService;
@@ -25,11 +29,13 @@ public abstract class AbstractMqttSensorConfiguration {
     private final String messageTopic;
     private final LockingService lockingService;
     private final String mqttClassName;
+    private final long instanceId;
 
-    private ZonedDateTime lastUpdated;
-    private ZonedDateTime lastError;
-    private MqttRelayService.StatisticsType statisticsType;
-    private int messageCounter = 0;
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+    private final AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
+    private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
+    private final MqttRelayService.StatisticsType statisticsType;
 
     public AbstractMqttSensorConfiguration(final MqttRelayService mqttRelay,
                                            final RoadStationSensorService roadStationSensorService,
@@ -58,43 +64,31 @@ public abstract class AbstractMqttSensorConfiguration {
             statisticsType = MqttRelayService.StatisticsType.WEATHER;
         }
 
-        lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(roadStationType);
+        lastUpdated.set(Objects.requireNonNullElse(
+            roadStationSensorService.getLatestSensorValueUpdatedTime(roadStationType),
+            ZonedDateTime.now())
+        );
 
-        if (lastUpdated == null) {
-            lastUpdated = ZonedDateTime.now();
-        }
+        instanceId = LockingService.generateInstanceId();
+
+        executor.scheduleAtFixedRate(this::sendStatus, 30, 10, TimeUnit.SECONDS);
     }
 
     // Implement this with @Scheduled
     public abstract void pollData();
 
     protected void handleData() {
-
-        final boolean lockAcquired = lockingService.acquireLock(mqttClassName, 60);
+        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
 
         if (lockAcquired) {
-
-            messageCounter++;
-
             final List<SensorValueDto> data = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
-                lastUpdated,
+                lastUpdated.get(),
                 roadStationType);
-
-            // Listeners are notified every 10th time
-            if (messageCounter >= 10) {
-                try {
-                    mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(new StatusMessage(lastUpdated, lastError, "Ok", statisticsType.toString())));
-                } catch (Exception e) {
-                    logger.error("error sending status", e);
-                }
-
-                messageCounter = 0;
-            }
 
             final AtomicInteger messagesCount = new AtomicInteger(0);
 
             data.forEach(sensorValueDto -> {
-                lastUpdated = DateHelper.getNewest(lastUpdated, sensorValueDto.getUpdatedTime());
+                lastUpdated.set(DateHelper.getNewest(lastUpdated.get(), sensorValueDto.getUpdatedTime()));
 
                 try {
                     mqttRelay.sendMqttMessage(
@@ -103,14 +97,26 @@ public abstract class AbstractMqttSensorConfiguration {
 
                     messagesCount.incrementAndGet();
 
-                    lastError = null;
-                } catch (Exception e) {
-                    lastError = ZonedDateTime.now();
+                    lastError.set(null);
+                } catch (final Exception e) {
+                    lastError.set(ZonedDateTime.now());
                     logger.error("error sending message", e);
                 }
             });
 
             mqttRelay.sentMqttStatistics(statisticsType, messagesCount.get());
+        }
+    }
+
+    private void sendStatus() {
+        if(lockingService.tryLock(mqttClassName, 60, instanceId)) {
+            try {
+                final StatusMessage message = new StatusMessage(lastUpdated.get(), lastError.get(), "Ok", statisticsType.toString());
+
+                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
+            } catch (final Exception e) {
+                logger.error("error sending message", e);
+            }
         }
     }
 

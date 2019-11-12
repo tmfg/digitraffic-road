@@ -245,12 +245,11 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 final Optional<SensorValue> found =
                     sensorValues
                         .stream()
-                        .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() != null)
                         .filter(sensorValue -> sensorValue.getRoadStationSensor().getLotjuId() == anturi.getLaskennallinenAnturiId())
                         .findFirst();
                 assertTrue(found.isPresent());
 
-                log.info("asema:{} data vs db: anturi: {} vs {}, data: {} vs {}",
+                log.debug("asema: {} data vs db: anturi: {} vs {}, data: {} vs {}",
                     tiesaa.getAsemaId(),
                     anturi.getLaskennallinenAnturiId(), found.get().getRoadStationSensor().getLotjuId(),
                     NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue());

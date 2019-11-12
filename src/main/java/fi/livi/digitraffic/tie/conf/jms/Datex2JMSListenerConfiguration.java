@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
-import java.util.UUID;
+
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 
-@ConditionalOnProperty(name = "jms.datex2.enabled")
+@ConditionalOnProperty(name = "jms.datex2.inQueue")
 @Configuration
 public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Datex2MessageDto> {
     private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
@@ -43,7 +43,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           Datex2JMSListenerConfiguration.class.getSimpleName(),
-                                          UUID.randomUUID().toString());
+                                          LockingService.generateInstanceId());
     }
 
     @Override

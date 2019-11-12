@@ -67,7 +67,7 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public KameraVO haeKamera(final Long id) throws KameraPerustiedotException {
-        throw new NotImplementedException("haeKamera");
+        return haeKaikkiKamerat().stream().filter(k -> k.getId().equals(id)).findFirst().orElse(null);
     }
 
     @Override

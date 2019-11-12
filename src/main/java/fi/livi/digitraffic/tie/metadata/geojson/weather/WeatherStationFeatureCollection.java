@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.data.dto.RootMetadataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection of Weather Stations", value = "FeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of Weather Stations", value = "WeatherStationFeatureCollection")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class WeatherStationFeatureCollection extends RootMetadataObjectDto implements Iterable<WeatherStationFeature> {
 

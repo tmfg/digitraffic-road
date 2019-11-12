@@ -106,15 +106,8 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
-        return all.stream().filter(rss -> rss.getLotjuId() != null).collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
+        return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }
-
-    @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(RoadStationType roadStationType) {
-        final List<RoadStationSensor> all = roadStationSensorRepository.findDistinctByRoadStationTypeAndLotjuIdIsNull(roadStationType);
-        return all.stream().filter(rss -> rss.getLotjuId() == null).collect(Collectors.toMap(RoadStationSensor::getNaturalId, Function.identity()));
-    }
-
 
     @Transactional(readOnly = true)
     public WeatherRoadStationsSensorsMetadata findWeatherRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
@@ -230,18 +223,6 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public boolean fixTmsStationSensorsWithoutLotjuId(final Collection<LamLaskennallinenAnturiVO> anturis) {
-        List<Pair<Integer, Long>> naturalIdLotjuId = anturis.stream().map(a -> Pair.of(a.getVanhaId(), a.getId())).collect(toList());
-        return updateRoadStationSensorsWithOutLotjuIds(RoadStationType.TMS_STATION, naturalIdLotjuId);
-    }
-
-    @Transactional
-    public boolean fixWeatherStationSensorsWithoutLotjuId(final Collection<TiesaaLaskennallinenAnturiVO> anturis) {
-        List<Pair<Integer, Long>> naturalIdLotjuId = anturis.stream().map(a -> Pair.of(a.getVanhaId(), a.getId())).collect(toList());
-        return updateRoadStationSensorsWithOutLotjuIds(RoadStationType.WEATHER_STATION, naturalIdLotjuId);
-    }
-
-    @Transactional
     public UpdateStatus updateOrInsert(final TiesaaLaskennallinenAnturiVO anturi) {
 
         final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, anturi.getId());
@@ -299,33 +280,6 @@ public class RoadStationSensorService {
         update.where(cb.and(predicates.toArray(new Predicate[0])));
 
         return this.entityManager.createQuery(update).executeUpdate();
-    }
-
-    private boolean updateRoadStationSensorsWithOutLotjuIds(final RoadStationType roadStationType, final List<Pair<Integer, Long>> naturalIdLotjuId) {
-        final Map<Long, RoadStationSensor> currentSensorsMappedByNaturalId =
-            findAllRoadStationSensorsWithOutLotjuIdMappedByNaturalId(roadStationType);
-
-        int updated = 0;
-        for(Pair<Integer, Long> vanhaIdLotjuId : naturalIdLotjuId) {
-            {
-                final RoadStationSensor currentSaved = currentSensorsMappedByNaturalId.remove(Long.valueOf(vanhaIdLotjuId.getLeft()));
-                if ( currentSaved != null ) {
-                    currentSaved.setLotjuId(vanhaIdLotjuId.getRight());
-                    updated++;
-                }
-            }
-        }
-        // Obsolete not found sensors
-        final long obsoleted = obsoleteSensors(currentSensorsMappedByNaturalId.values());
-
-        log.info("method=updateRoadStationSensorsWithOutLotjuIds roadStationSensors obsoletedCount={} fixedCount={} roadStationType={}",
-                 obsoleted, updated, roadStationType);
-
-        return obsoleted > 0 || updated > 0;
-    }
-
-    private static long obsoleteSensors(Collection<RoadStationSensor> sensors) {
-        return sensors.stream().filter(RoadStationSensor::obsolete).count();
     }
 
     private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {
