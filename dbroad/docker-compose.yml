@@ -1,33 +1,46 @@
 version: '2.0' # docker-compose version
 
+networks:
+    db_network:
+        external:
+            name: dnet1
+
 services:
+    db:
+        image: postgres:9.6.12-alpine
+        restart: always
+        environment:
+            POSTGRES_USER: road
+            POSTGRES_PASSWORD: road
+            POSTGRES_DB: road
+        networks:
+            - db_network
+        ports:
+            - 54322:5432
+        command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all
+        build:
+            context: ./postgis
+            dockerfile: Dockerfile_postgis
 
-  db:
-    image: postgres:9.6.12-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: road
-      POSTGRES_PASSWORD: road
-      POSTGRES_DB: road
-    ports:
-      - 54322:5432
-    command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=200
+    db-init:
+        build: .
+        networks:
+            - db_network
+        volumes:
+            - "./sql:/sql"
+            - "~/.m2:/root/.m2"
+        links:
+            - "db:db"
+        command: ["./init-db.sh"]
 
-  db-init:
-    build: .
-    volumes:
-      - "./sql:/sql"
-      - "~/.m2:/root/.m2"
-    links:
-      - "db:db"
-    command: ["./init-db.sh"]
-
-  pghero:
-    image: ankane/pghero
-    restart: always
-    environment:
-      DATABASE_URL: postgres://road:road@db:5432/road
-    links:
-    - "db:database" # postgres is reachable for pghero from web at the hostnames db and database
-    ports:
-    - 8081:8080
+    pghero:
+        image: ankane/pghero
+        restart: always
+        networks:
+            - db_network
+        environment:
+            DATABASE_URL: postgres://road:road@db:5432/road
+        links:
+            - "db:database" # postgres is reachable for pghero from web at the hostnames db and database
+        ports:
+            - 8082:8080
