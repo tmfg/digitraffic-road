@@ -22,7 +22,6 @@ public class FlywayService {
     @Transactional
     @Cacheable(RoadCacheConfiguration.FLYWAY_VERSION_CACHE)
     public FlywayVersion getLatestVersion() {
-        System.out.println("Not from cache");
         return flywayRepository.findLatest();
     }
 }

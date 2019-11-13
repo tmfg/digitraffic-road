@@ -15,7 +15,7 @@ public class RoadCacheConfiguration implements CacheManagerCustomizer<Concurrent
 
     public static final String FLYWAY_VERSION_CACHE = "FLYWAY_VERSION_CACHE";
 
-    @CacheEvict(allEntries = true, cacheNames = { "FLYWAY_VERSION_CACHE" })
+    @CacheEvict(allEntries = true, cacheNames = { FLYWAY_VERSION_CACHE })
     @Scheduled(fixedDelay = 5 * 60 * 1000) // 5 min
     public void cacheEvict() {
         // Empty. Purpose is only to clear cache ever 5 minutes
