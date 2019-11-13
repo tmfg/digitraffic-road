@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.conf;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +33,9 @@ public class ActuatorInfo implements InfoContributor {
         try {
             final FlywayVersion first = flywayService.getLatestVersion();
             db.put("version", first.getVersion());
-            db.put("installedOn", first.getInstalledOn().toString());
             db.put("success", first.getSuccess().toString());
+            final Instant instant = first.getInstalledOn().truncatedTo(ChronoUnit.SECONDS).atZone(ZoneOffset.UTC).toInstant();
+            db.put("installedOn", instant.toString());
         } catch (Exception e) {
             log.error("Could not get db version info", e);
             db.put("error", "Could not get db version info");
