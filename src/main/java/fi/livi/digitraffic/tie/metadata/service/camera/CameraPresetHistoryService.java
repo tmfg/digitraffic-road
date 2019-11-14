@@ -85,7 +85,7 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findHistoryInclSecret(final String presetId, final String versionId) {
+    public CameraPresetHistory findHistoryVersionInclSecret(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
@@ -289,7 +289,7 @@ public class CameraPresetHistoryService {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistoryInclSecret(getPresetIdFromImageName(presetImageName), versionId);
+        final CameraPresetHistory history = findHistoryVersionInclSecret(getPresetIdFromImageName(presetImageName), versionId);
         final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {

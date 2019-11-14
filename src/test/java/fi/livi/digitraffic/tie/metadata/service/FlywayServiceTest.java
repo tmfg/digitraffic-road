@@ -16,7 +16,7 @@ public class FlywayServiceTest extends AbstractServiceTest {
     private FlywayService flywayService;
 
     @Test
-    public void test() {
+    public void latestVersion() {
         final FlywayVersion lv = flywayService.getLatestVersion();
         assertTrue(lv.getInstalledOn().isBefore(DateHelper.getZonedDateTimeNowAtUtc().toLocalDateTime()));
         assertTrue(lv.getSuccess());
