@@ -123,7 +123,7 @@ public class DateHelperTest extends AbstractTest {
 
     @Test
     public void instantToXMLGregorianCalendarAtUtc() {
-        final Instant instant = Instant.parse(DATE_STRING_OFFSET_2);
+        final Instant instant = Instant.parse(DATE_STRING_Z);
         final XMLGregorianCalendar xmlUtc = DateHelper.toXMLGregorianCalendarAtUtc(instant);
         Assert.assertEquals(XML_DATE_STRING_Z, xmlUtc.toString());
         ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
