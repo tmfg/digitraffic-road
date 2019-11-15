@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionF
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
+@TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)

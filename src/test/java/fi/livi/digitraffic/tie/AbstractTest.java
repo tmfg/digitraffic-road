@@ -53,7 +53,7 @@ import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RoadApplication.class,
                 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = { "config.test=true" })
+@TestPropertySource(properties = { "config.test=true", "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 @Transactional
 public abstract class AbstractTest {
     @Autowired

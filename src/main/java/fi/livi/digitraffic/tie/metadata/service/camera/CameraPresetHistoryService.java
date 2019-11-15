@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,8 @@ public class CameraPresetHistoryService {
     private final String s3WeathercamBucketUrl;
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
+
+    public static final int MAX_IDS_SIZE = 5000;
 
     public enum HistoryStatus {
         PUBLIC("History version found and it's publishable"),
@@ -83,21 +85,54 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findHistoryInclSecret(final String presetId, final String versionId) {
+    public CameraPresetHistory findHistoryVersionInclSecret(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
     @Transactional(readOnly = true)
-    public CameraHistoryDto findCameraOrPresetPublicHistory(final String cameraOrPresetId, final ZonedDateTime atTime) {
+    public List<CameraHistoryDto> findCameraOrPresetPublicHistory(final List<String> cameraOrPresetIds, final ZonedDateTime atTime) {
 
-        if (isPresetId(cameraOrPresetId)) {
-            return findPresetPublicHistory(cameraOrPresetId, atTime);
-        } else if (isCameraId(cameraOrPresetId)) {
-            return findCameraPublicHistory(cameraOrPresetId, atTime);
-        } else {
-            throw new IllegalArgumentException(String.format("Parameter cameraOrPresetId should be either 6 or 8 chars long. Was %d long.",
-                                                             cameraOrPresetId.length()));
+        final List<String> cameraIds = parseCameraIds(cameraOrPresetIds);
+        final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
+        checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
+
+        final List<CameraPresetHistory> history =
+            atTime != null ?
+                cameraPresetHistoryRepository.findLatestPublishableByCameraAndPresetIdsAndTimeOrderByPresetIdAndLastModifiedDesc(
+                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), atTime.toInstant(), getOldestTimeLimit().toInstant()) :
+                cameraPresetHistoryRepository.findAllPublishableByCameraAndPresetIdsOrderByPresetIdAndLastModifiedDesc(
+                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), getOldestTimeLimit().toInstant());
+
+        return convertToCameraHistory(history);
+    }
+
+    private void checkAllParametersUsedAndNotTooLong(final List<String> cameraOrPresetIds,
+                                                     final List<String> usedCameraIds, final List<String> usedPresetIds) {
+
+        if (cameraOrPresetIds.size() > MAX_IDS_SIZE) {
+            throw new IllegalArgumentException(
+                String.format("Too long list of id parameters. Maximum is %d pcs and was %d pcs.",
+                              MAX_IDS_SIZE, cameraOrPresetIds.size()));
         }
+
+        final List<String> illegalIds = cameraOrPresetIds.stream().filter(id -> !usedCameraIds.contains(id) && !usedPresetIds.contains(id)).collect(Collectors.toList());
+
+        if (!illegalIds.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
+                    illegalIds.stream().collect(Collectors.joining(", "))));
+        }
+    }
+
+    private List<String> fixEmptyIdsList(List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.isEmpty() ? Collections.singletonList("NONE") : cameraOrPresetIds;
+    }
+
+    private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(id -> id.length() == 6).collect(Collectors.toList());
+    }
+    private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(id -> id.length() == 8).collect(Collectors.toList());
     }
 
     private ZonedDateTime getOldestTimeLimit() {
@@ -184,55 +219,18 @@ public class CameraPresetHistoryService {
         return new CameraHistoryPresencesDto(fromTime, toTime, result);
     }
 
-    private CameraHistoryDto findCameraPublicHistory(final String cameraId, final ZonedDateTime atTime) {
-        if (!cameraPresetHistoryRepository.existsByCameraId(cameraId)) {
-            throw new ObjectNotFoundException("CameraHistory", cameraId);
-        }
-
-        final List<CameraPresetHistory> latestWithTime = atTime != null ?
-                cameraPresetHistoryRepository.findLatestPublishableByCameraIdAndTimeOrderByPresetIdAndLastModifiedDesc(cameraId, atTime.toInstant(),
-                                                                                                                       getOldestTimeLimit().toInstant()) :
-                cameraPresetHistoryRepository.findAllPublishableByCameraIdOrderByLastModifiedDesc(cameraId, getOldestTimeLimit().toInstant());
-
-            return convertToCameraHistory(cameraId, latestWithTime);
-    }
-
-    private CameraHistoryDto convertToCameraHistory(final String cameraId, final List<CameraPresetHistory> latestWithTime) {
-
-        Map<String, List<CameraPresetHistory>> historyPerPreset =
-            latestWithTime.stream()
-            .collect(Collectors.groupingBy(CameraPresetHistory::getPresetId));
-
-        List<PresetHistoryDto> presetsHistories = historyPerPreset.entrySet().stream().map(e -> convertToPresetHistory(e.getKey(), e.getValue()))
+    private List<CameraHistoryDto> convertToCameraHistory(List<CameraPresetHistory> history) {
+        return history.stream()
+            // Map<presetId, List<CameraPresetHistory>
+            .collect(Collectors.groupingBy(CameraPresetHistory::getPresetId))
+            // Map<cameraId, List<PresetHistoryDto>>
+            .entrySet().stream().map(e -> convertToPresetHistory(e.getKey(), e.getValue()))
             .sorted(Comparator.comparing(PresetHistoryDto::getPresetId))
+            .collect(Collectors.groupingBy(ph -> StringUtils.substring(ph.getPresetId(), 0, 6)))
+            // List<CameraHistoryDto>
+            .entrySet().stream().map(e -> new CameraHistoryDto(e.getKey(), e.getValue()))
+            .sorted(Comparator.comparing(CameraHistoryDto::getCameraId))
             .collect(Collectors.toList());
-
-        return new CameraHistoryDto(cameraId, presetsHistories);
-    }
-
-    private CameraHistoryDto findPresetPublicHistory(final String presetId, final ZonedDateTime atTime) {
-
-        if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
-            throw new ObjectNotFoundException("CameraPresetHistory", presetId);
-        }
-
-        final String cameraId = getCameraIdFromPresetId(presetId);
-
-        if (atTime != null) {
-            final Optional<CameraPresetHistory> latestWithTime = cameraPresetHistoryRepository
-                .findLatestPublishableByPresetIdAndTimeOrderByPresetIdAndLastModifiedDesc(presetId, atTime.toInstant(),
-                                                                                          getOldestTimeLimit().toInstant());
-
-            if (latestWithTime.isPresent()) {
-                return convertToCameraHistory(cameraId, Collections.singletonList(latestWithTime.get()));
-            } else {
-                return convertToCameraHistory(cameraId, Collections.emptyList());
-            }
-
-        } else {
-            return convertToCameraHistory(cameraId,
-                cameraPresetHistoryRepository.findAllPublishableByPresetIdOrderByLastModifiedDesc(presetId, getOldestTimeLimit().toInstant()));
-        }
     }
 
     private PresetHistoryDto convertToPresetHistory(final String presetId, final List<CameraPresetHistory> history) {
@@ -291,7 +289,7 @@ public class CameraPresetHistoryService {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistoryInclSecret(getPresetIdFromImageName(presetImageName), versionId);
+        final CameraPresetHistory history = findHistoryVersionInclSecret(getPresetIdFromImageName(presetImageName), versionId);
         final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {
@@ -323,10 +321,6 @@ public class CameraPresetHistoryService {
 
     private static String getPresetIdFromImageName(final String imageName) {
         return imageName.substring(0,8);
-    }
-
-    private static String getCameraIdFromPresetId(final String presetId) {
-        return presetId.substring(0,6);
     }
 
     private static String createImageVersionKey(String presetId) {

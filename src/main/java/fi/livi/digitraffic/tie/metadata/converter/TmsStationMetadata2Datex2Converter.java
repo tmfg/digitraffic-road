@@ -46,7 +46,7 @@ public class TmsStationMetadata2Datex2Converter {
     public D2LogicalModel convert(final List<TmsStation> stations, final ZonedDateTime metadataLastUpdated) {
         final MeasurementSiteTablePublication measurementSiteTablePublication =
             new MeasurementSiteTablePublication()
-                .withPublicationTime(DateHelper.toXMLGregorianCalendar(metadataLastUpdated))
+                .withPublicationTime(DateHelper.toXMLGregorianCalendarAtUtc(metadataLastUpdated))
                 .withPublicationCreator(new InternationalIdentifier()
                                             .withCountry(CountryEnum.FI)
                                             .withNationalIdentifier("FI"))

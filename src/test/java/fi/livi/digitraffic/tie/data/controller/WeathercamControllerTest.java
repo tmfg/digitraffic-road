@@ -54,7 +54,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getPublicImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryService.findHistoryInclSecret(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryService.findHistoryVersionInclSecret(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now()));
 
         Mockito.when(cameraPresetHistoryService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
@@ -70,7 +70,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getSecretImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryService.findHistoryInclSecret(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryService.findHistoryVersionInclSecret(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, false, ZonedDateTime.now()));
 
         Mockito.when(cameraPresetHistoryService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
@@ -83,7 +83,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getTooOldImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryService.findHistoryInclSecret(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryService.findHistoryVersionInclSecret(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now().minusHours(25)));
 
         Mockito.when(cameraPresetHistoryService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
@@ -96,7 +96,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getNotExistingImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryService.findHistoryInclSecret(anyString(), anyString()))
+        Mockito.when(cameraPresetHistoryService.findHistoryVersionInclSecret(anyString(), anyString()))
             .thenReturn(null);
 
         Mockito.when(cameraPresetHistoryService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))

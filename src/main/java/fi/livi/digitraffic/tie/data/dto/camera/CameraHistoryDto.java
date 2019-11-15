@@ -20,4 +20,8 @@ public class CameraHistoryDto {
         this.cameraId = cameraId;
         this.cameraHistory = cameraHistory;
     }
+
+    public String getCameraId() {
+        return cameraId;
+    }
 }

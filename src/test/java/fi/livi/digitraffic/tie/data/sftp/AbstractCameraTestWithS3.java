@@ -38,6 +38,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -46,6 +47,8 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 
+@TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
+                                   "logging.level.com.jcraft.jsch=WARN" })
 public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraTestWithS3.class);

@@ -25,7 +25,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 
 @DataJpaTest(properties = "spring.main.web-application-type=none", excludeAutoConfiguration = {FlywayAutoConfiguration.class,
-    LiquibaseAutoConfiguration.class, TestDatabaseAutoConfiguration.class, DataSourceAutoConfiguration.class})
+             LiquibaseAutoConfiguration.class, TestDatabaseAutoConfiguration.class, DataSourceAutoConfiguration.class},
+             showSql = false)
 @Import({RoadApplicationConfiguration.class, JsonbAutoConfiguration.class})
 @RunWith(SpringRunner.class)
 @Transactional

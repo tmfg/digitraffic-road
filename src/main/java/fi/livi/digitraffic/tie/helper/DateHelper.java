@@ -84,30 +84,7 @@ public final class DateHelper {
         return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }
 
-    public static ZonedDateTime zonedDateTimeNowAtUtc() {
-        return toZonedDateTimeAtUtc(Instant.now());
-    }
-
-    public static Date toDate(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            return Date.from(zonedDateTime.toInstant());
-        }
-        return null;
-    }
-
-    public static XMLGregorianCalendar toXMLGregorianCalendar(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(zonedDateTime);
-            try {
-                return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-            } catch (DatatypeConfigurationException e) {
-                log.error("Failed to convert ZonedDateTime " + zonedDateTime + " to XMLGregorianCalendar", e);
-            }
-        }
-        return null;
-    }
-
-    public static XMLGregorianCalendar toXMLGregorianCalendarUtc(final ZonedDateTime zonedDateTime) {
+    public static XMLGregorianCalendar toXMLGregorianCalendarAtUtc(final ZonedDateTime zonedDateTime) {
         return toXMLGregorianCalendarAtUtc(zonedDateTime.toInstant());
     }
 

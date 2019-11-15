@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConv
 import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.metadata.service.FlywayService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
@@ -40,7 +41,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageWriter.class, CameraImageS3Writer.class,
           Datex2TrafficAlertMessageUpdater.class, Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
-          CameraPresetHistoryService.class,
+          CameraPresetHistoryService.class, FlywayService.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
