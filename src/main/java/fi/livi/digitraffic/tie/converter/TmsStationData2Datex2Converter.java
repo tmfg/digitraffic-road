@@ -56,7 +56,7 @@ public class TmsStationData2Datex2Converter {
 
         final MeasuredDataPublication publication =
             new MeasuredDataPublication()
-                .withPublicationTime(DateHelper.toXMLGregorianCalendar(updated))
+                .withPublicationTime(DateHelper.toXMLGregorianCalendarAtUtc(updated))
                 .withPublicationCreator(new InternationalIdentifier()
                                             .withCountry(CountryEnum.FI)
                                             .withNationalIdentifier("FI"))
@@ -87,7 +87,7 @@ public class TmsStationData2Datex2Converter {
                 .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
                                                   .withId(TmsStationMetadata2Datex2Converter.getMeasurementSiteReference(station.getNaturalId(), sensorValue.getSensorNaturalId()))
                                                   .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_RECORD_VERSION))
-                .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendar(sensorValue.getStationLatestMeasuredTime()))
+                .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendarAtUtc(sensorValue.getStationLatestMeasuredTime()))
                 .withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
                                        .withIndex(1) // Only one measurement per sensor
                                        .withMeasuredValue(new MeasuredValue().withBasicData(data)));

@@ -54,7 +54,7 @@ public class ForecastSectionWeather {
     @Fetch(FetchMode.JOIN)
     private ForecastSection forecastSection;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "forecastSectionWeather")
     @PrimaryKeyJoinColumns({@PrimaryKeyJoinColumn(name="forecast_section_id", referencedColumnName = "forecast_section_id"),
                             @PrimaryKeyJoinColumn(name="forecast_name", referencedColumnName = "forecast_name")})
     @Fetch(FetchMode.JOIN)

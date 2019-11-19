@@ -4,36 +4,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.metadata.dao.CodeDescriptionRepository;
+import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
 
 @Service
 public class VariableSignService {
     private final DeviceRepository deviceRepository;
     private final DeviceDataRepository deviceDataRepository;
+    private final CodeDescriptionRepository codeDescriptionRepository;
 
-    public VariableSignService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository) {
+    public VariableSignService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository,
+        final CodeDescriptionRepository codeDescriptionRepository) {
         this.deviceRepository = deviceRepository;
         this.deviceDataRepository = deviceDataRepository;
+        this.codeDescriptionRepository = codeDescriptionRepository;
     }
 
+    @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
-        final List<Device> devices = deviceRepository.findAll();
-        final List<DeviceData> data = deviceDataRepository.findLatestData();
-        final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
+        final Stream<Device> devices = deviceRepository.streamAll();
+        final Stream<DeviceData> data = deviceDataRepository.streamLatestData();
+        final Map<String, DeviceData> dataMap = data.collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
 
-        return new VariableSignFeatureCollection(devices.stream().map(d -> convert(d, dataMap)).collect(Collectors.toList()));
+        return new VariableSignFeatureCollection(devices.map(d -> convert(d, dataMap)).collect(Collectors.toList()));
     }
 
     private VariableSignFeature convert(final Device device, final Map<String, DeviceData> dataMap) {
@@ -59,10 +67,12 @@ public class VariableSignService {
         return new VariableSignFeature(point, properties);
     }
 
+    @Transactional(readOnly = true)
     public List<TrafficSignHistory> listVariableSignHistory(final String deviceId) {
         return deviceDataRepository.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
     }
 
+    @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValue(final String deviceId) {
         final Optional<Device> device = deviceRepository.findById(deviceId);
 
@@ -73,5 +83,10 @@ public class VariableSignService {
         }
 
         throw new ObjectNotFoundException(Device.class, deviceId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CodeDescriptionJson> listVariableSignTypes() {
+        return codeDescriptionRepository.listAllVariableSignTypes();
     }
 }

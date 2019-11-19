@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 @Service
 public class ForecastSectionDataUpdater {
@@ -28,11 +32,14 @@ public class ForecastSectionDataUpdater {
     private final ForecastSectionClient forecastSectionClient;
 
     private final ForecastSectionRepository forecastSectionRepository;
+    private DataStatusService dataStatusService;
 
     @Autowired
-    public ForecastSectionDataUpdater(final ForecastSectionClient forecastSectionClient, final ForecastSectionRepository forecastSectionRepository) {
+    public ForecastSectionDataUpdater(final ForecastSectionClient forecastSectionClient, final ForecastSectionRepository forecastSectionRepository,
+                                      final DataStatusService dataStatusService) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -46,8 +53,9 @@ public class ForecastSectionDataUpdater {
                 Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
             log.info(
-                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections. forecastSectionsInDatabase={}",
-                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size());
+                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections," +
+                " forecastSectionsInDatabase={} messageTimestamp={}",
+                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp.toInstant());
 
             final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(
                 Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
@@ -62,7 +70,17 @@ public class ForecastSectionDataUpdater {
             return null;
         }
 
-        return data.messageTimestamp.toInstant();
+        final DataType dataType = ForecastSectionDataService.getDataType(version);
+        final Instant messageTimestamp = data.messageTimestamp.toInstant();
+        final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(dataType);
+        if (previousTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
+            log.warn("FORECAST_SECTION_WEATHER_DATA timestamp warning: previousTimestamp={} > currentTimestamp={}",
+                     previousTimestamp.toInstant(), messageTimestamp);
+        }
+
+        dataStatusService.updateDataUpdated(dataType, messageTimestamp);
+
+        return messageTimestamp;
     }
 
     private void updateForecastSectionWeatherData(final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, final Map<String, ForecastSection> forecastSectionsByNaturalId) {

@@ -5,7 +5,7 @@ import java.util.List;
 import fi.livi.digitraffic.tie.metadata.model.SensorValueDescription;
 import io.swagger.annotations.ApiModel;
 
-@ApiModel(description = "Weather road station sensor")
+@ApiModel(description = "Weather road station sensor", value = "WeatherRoadStationSensor")
 public class WeatherRoadStationSensorDto extends RoadStationSensorDto {
     public WeatherRoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
                                        String nameFi, String shortNameFi, Integer accuracy,

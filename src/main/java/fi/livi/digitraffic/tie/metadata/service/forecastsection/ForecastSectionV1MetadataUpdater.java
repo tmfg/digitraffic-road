@@ -17,11 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinate;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateList;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateListPK;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinatePK;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 
@@ -33,12 +35,15 @@ public class ForecastSectionV1MetadataUpdater {
     private final ForecastSectionClient forecastSectionClient;
 
     private final ForecastSectionRepository forecastSectionRepository;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public ForecastSectionV1MetadataUpdater(final ForecastSectionClient forecastSectionClient,
-                                            final ForecastSectionRepository forecastSectionRepository) {
+                                            final ForecastSectionRepository forecastSectionRepository,
+                                            final DataStatusService dataStatusService) {
         this.forecastSectionClient = forecastSectionClient;
         this.forecastSectionRepository = forecastSectionRepository;
+        this.dataStatusService = dataStatusService;
     }
 
     /**
@@ -73,7 +78,15 @@ public class ForecastSectionV1MetadataUpdater {
 
         forecastSectionRepository.saveAll(naturalIdToForecastSections.values());
         forecastSectionRepository.flush();
-        return forecastSectionCoordinates.size() != existingForecastSections.size() || forecastSectionsToDelete.size() > 0 || updated;
+
+        final boolean metadataUpdated = forecastSectionCoordinates.size() != existingForecastSections.size() || forecastSectionsToDelete.size() > 0 || updated;
+
+        if (metadataUpdated) {
+            dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
+
+        return metadataUpdated;
     }
 
     private void addForecastSections(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToAdd) {

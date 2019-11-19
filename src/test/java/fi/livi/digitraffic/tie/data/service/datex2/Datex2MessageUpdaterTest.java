@@ -86,7 +86,7 @@ public class Datex2MessageUpdaterTest extends AbstractServiceTest {
         messageUpdater.updateDatex2TrafficAlertMessages();
         server.verify();
 
-        datex2s = datex2Repository.findAll(new Sort(Sort.Direction.ASC, "importTime"));
+        datex2s = datex2Repository.findAll(Sort.by(Sort.Direction.ASC, "importTime"));
         assertEquals(3, datex2s.size());
         assertEquals("GUID50013339", datex2s.get(0).getSituations().get(0).getSituationId());
         assertEquals("GUID50013340", datex2s.get(1).getSituations().get(0).getSituationId());

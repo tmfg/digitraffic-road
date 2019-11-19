@@ -138,7 +138,6 @@ public class LockingServiceTest extends AbstractJpaTest {
 
     private void waitCompletion(final Future<Boolean> future) {
         while(!future.isDone()) {
-            System.out.println("Calculating...");
             try {
                 Thread.sleep(5);
             } catch (InterruptedException e) {

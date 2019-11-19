@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class ForecastSectionV2MetadataUpdater {
     }
 
     @Transactional
-    public void updateForecastSectionsV2Metadata() {
+    public Instant updateForecastSectionsV2Metadata() {
         final ForecastSectionV2Dto metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
         final List<String> naturalIds = metadata.getFeatures().stream().map(f -> f.getProperties().getId()).collect(Collectors.toList());
@@ -58,7 +59,8 @@ public class ForecastSectionV2MetadataUpdater {
         forecastSectionRepository.deleteLinkIds(ForecastSectionApiVersion.V2.getVersion());
         forecastSectionV2MetadataDao.insertLinkIds(metadata.getFeatures());
 
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA_CHECK);
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_METADATA, metadata.getDataUpdatedTime().toInstant());
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_V2_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_V2_METADATA, metadata.getDataUpdatedTime().toInstant());
+        return metadata.getDataUpdatedTime().toInstant();
     }
 }

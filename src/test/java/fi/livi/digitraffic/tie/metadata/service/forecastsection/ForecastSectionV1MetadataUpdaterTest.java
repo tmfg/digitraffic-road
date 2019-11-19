@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +23,10 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
+@TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
@@ -35,6 +41,9 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private ForecastSectionV1MetadataService forecastSectionService;
 
+    @Autowired
+    private DataStatusService dataStatusService;
+
     private MockRestServiceServer server;
 
     @Autowired
@@ -43,7 +52,7 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
     @Before
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
-        forecastSectionMetadataUpdater = new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository);
+        forecastSectionMetadataUpdater = new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -55,6 +64,13 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1.json"), MediaType.APPLICATION_JSON));
 
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
+
+        final Instant lastUpdate = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA).toInstant();
+        final Instant now = Instant.now();
+        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
+        System.out.println("now " + now + " vs " + lastUpdate);
+        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
+        assertTrue(now.plusSeconds(2).isAfter(lastUpdate));
 
         final ForecastSectionFeatureCollection collection = forecastSectionService.findForecastSectionsV1Metadata();
 

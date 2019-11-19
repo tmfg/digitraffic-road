@@ -50,7 +50,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
-                                   "road.datasource.hikari.maximum-pool-size=6"})
+                                   "road.datasource.hikari.maximum-pool-size=6",
+                                   "logging.level.fi.livi.digitraffic.tie.data.service.CameraImageUpdateService=WARN"})
 public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
@@ -114,8 +115,6 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         }
         entityManager.flush();
         entityManager.clear();
-
-        log.info("Non obsolete CameraPresets for testing {}", cameraPresetService.findAllPublishableCameraPresets());
     }
 
     /**
@@ -123,9 +122,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
-        log.info("Using weathercam.importDir={}", testFolder.getRoot().getPath());
-        log.info("Init mock http-server for images");
-        log.info("Mock server port={}", port);
+        log.info("Using weathercam.importDir={}. HTTP mock server for images port={}", testFolder.getRoot().getPath());
 
         createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
@@ -166,7 +163,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         long maxHandleTime = testBurstsLeft * 2200;
         final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
 
-        StopWatch sw = new StopWatch();
+        final StopWatch sw = new StopWatch();
         while (testBurstsLeft > 0) {
             testBurstsLeft--;
             sw.reset();
@@ -211,32 +208,27 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
                 }
             }
 
-            sw.stop();
-            long generation = sw.getTime();
-            log.info("Data generation took " + generation + " ms");
+            final long generation = sw.getTime();
 
             sw.reset();
             sw.start();
             Assert.assertTrue("Data size too small: " + data.size(), data.size() >= 25);
             cameraJmsMessageListener.drainQueueScheduled();
-            sw.stop();
             log.info("Data handle took " + sw.getTime() + " ms");
             handleDataTotalTime += sw.getTime();
 
             try {
                 // send data with 1 s intervall
                 long sleep = 1000 - generation;
-                if (sleep < 0) {
-                    log.error("Data generation took too long");
-                } else {
+                if (sleep > 0) {
                     Thread.sleep(sleep);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        log.info("Handle kuva data total took " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms " +
-                (handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)"));
+        log.info("Handle kuva data total took {} ms and max was {} ms success=",
+            handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
 
         log.info("Check data validy");
 

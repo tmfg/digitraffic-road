@@ -177,8 +177,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                     new ObservationTimeType()
-                            .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
-                            .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
+                            .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
+                            .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
             final TimestampedTrafficDisorderDatex2 tsDatex2 =
                     new TimestampedTrafficDisorderDatex2()
                             .withD2LogicalModel(d2LogicalModel)
@@ -196,8 +196,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
-                    .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
-                    .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
+                    .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
+                    .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
             final TimestampedRoadworkDatex2 tsDatex2 =
                 new TimestampedRoadworkDatex2()
                     .withD2LogicalModel(d2LogicalModel)
@@ -215,8 +215,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
-                    .withLocaltime(DateHelper.toXMLGregorianCalendar(importTime))
-                    .withUtc(DateHelper.toXMLGregorianCalendarUtc(importTime));
+                    .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
+                    .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
             final TimestampedWeightRestrictionDatex2 tsDatex2 =
                 new TimestampedWeightRestrictionDatex2()
                     .withD2LogicalModel(d2LogicalModel)

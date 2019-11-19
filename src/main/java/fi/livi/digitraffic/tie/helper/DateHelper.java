@@ -39,6 +39,10 @@ public final class DateHelper {
         return calendar == null ? null : calendar.toGregorianCalendar().toInstant();
     }
 
+    public static Instant toInstant(final ZonedDateTime from) {
+        return from != null ? from.toInstant() : null;
+    }
+
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */
@@ -80,30 +84,7 @@ public final class DateHelper {
         return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }
 
-    public static ZonedDateTime zonedDateTimeNowAtUtc() {
-        return toZonedDateTimeAtUtc(Instant.now());
-    }
-
-    public static Date toDate(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            return Date.from(zonedDateTime.toInstant());
-        }
-        return null;
-    }
-
-    public static XMLGregorianCalendar toXMLGregorianCalendar(final ZonedDateTime zonedDateTime) {
-        if (zonedDateTime != null) {
-            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(zonedDateTime);
-            try {
-                return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-            } catch (DatatypeConfigurationException e) {
-                log.error("Failed to convert ZonedDateTime " + zonedDateTime + " to XMLGregorianCalendar", e);
-            }
-        }
-        return null;
-    }
-
-    public static XMLGregorianCalendar toXMLGregorianCalendarUtc(final ZonedDateTime zonedDateTime) {
+    public static XMLGregorianCalendar toXMLGregorianCalendarAtUtc(final ZonedDateTime zonedDateTime) {
         return toXMLGregorianCalendarAtUtc(zonedDateTime.toInstant());
     }
 
@@ -118,5 +99,9 @@ public final class DateHelper {
             }
         }
         return null;
+    }
+
+    public static ZonedDateTime getZonedDateTimeNowAtUtc() {
+        return toZonedDateTimeAtUtc(Instant.now());
     }
 }

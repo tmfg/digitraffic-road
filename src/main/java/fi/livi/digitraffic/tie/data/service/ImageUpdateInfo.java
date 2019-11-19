@@ -39,7 +39,7 @@ public class ImageUpdateInfo {
         this.presetId = presetId;
         this.fullPath = fullPath;
         this.lastUpdated = lastUpdated;
-        this.updateTime = DateHelper.zonedDateTimeNowAtUtc();
+        this.updateTime = DateHelper.getZonedDateTimeNowAtUtc();
     }
 
     public String getPresetId() {

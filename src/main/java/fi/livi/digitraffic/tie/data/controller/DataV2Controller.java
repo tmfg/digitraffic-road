@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.data.controller.DataController.LAST_UPDATE
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.data.service.VariableSignService;
+import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,10 +37,14 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataV2Controller {
-    private final ForecastSectionDataService forecastSectionDataService;
+    public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
 
-    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService) {
+    private final ForecastSectionDataService forecastSectionDataService;
+    private final VariableSignService variableSignService;
+
+    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService, final VariableSignService variableSignService) {
         this.forecastSectionDataService = forecastSectionDataService;
+        this.variableSignService = variableSignService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
@@ -79,5 +87,26 @@ public class DataV2Controller {
         @PathVariable("maxLatitude") final double maxLatitude) {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
+    }
+
+    @ApiOperation("List the latest data of variable signs")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
+    public VariableSignFeatureCollection variableSigns() {
+        return variableSignService.listLatestValues();
+    }
+
+    @ApiOperation("List the latest value of a variable sign")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
+    public VariableSignFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
+        return variableSignService.listLatestValue(deviceId);
+    }
+
+    @ApiOperation("List the history of variable sign data")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
+    public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
+        return variableSignService.listVariableSignHistory(deviceId);
     }
 }

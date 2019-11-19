@@ -1,17 +1,21 @@
 package fi.livi.digitraffic.tie.data.dto.forecast;
 
 import java.time.ZonedDateTime;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.OverallRoadCondition;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.Reliability;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonPropertyOrder({ "time", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
     "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })
+@ApiModel(value = "RoadCondition")
 public class RoadConditionDto {
     private final String forecastName;
 

@@ -31,7 +31,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
     @Autowired
     private BuildVersionService versionService;
 
-    private final MediaType restContentType = MediaType.APPLICATION_JSON_UTF8;
+    private final MediaType restContentType = MediaType.APPLICATION_JSON;
 
 
     @Before

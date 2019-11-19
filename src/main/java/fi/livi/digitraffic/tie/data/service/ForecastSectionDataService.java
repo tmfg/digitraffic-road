@@ -12,7 +12,6 @@ import fi.livi.digitraffic.tie.data.dao.ForecastSectionWeatherDao;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
-import fi.livi.digitraffic.tie.metadata.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
@@ -55,11 +54,11 @@ public class ForecastSectionDataService {
             .collect(Collectors.toList());
     }
 
-    private DataType getDataType(final ForecastSectionApiVersion version) {
+    public static DataType getDataType(final ForecastSectionApiVersion version) {
         switch (version) {
-        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
-        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
-        default: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+            case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
+            case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+            default: throw new IllegalArgumentException("Unknown ForecastSectionApiVersion " + version);
         }
     }
 }
