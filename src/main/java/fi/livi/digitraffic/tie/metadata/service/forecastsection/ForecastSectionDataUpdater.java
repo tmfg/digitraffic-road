@@ -74,7 +74,7 @@ public class ForecastSectionDataUpdater {
         final Instant messageTimestamp = data.messageTimestamp.toInstant();
         final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(dataType);
         if (previousTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
-            log.warn("FORECAST_SECTION_WEATHER_DATA timestamp warning: previousTimestamp={} > currentTimestamp={}",
+            log.warn("FORECAST_SECTION_WEATHER_DATA timestamp warning: previousTimestamp={} > latestTimestamp={}",
                      previousTimestamp.toInstant(), messageTimestamp);
         }
 
