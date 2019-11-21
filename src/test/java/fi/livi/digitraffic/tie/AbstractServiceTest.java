@@ -5,14 +5,12 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.conf.CameraImageUploaderSftpConnectionFactoryBuilder;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.MetadataMarshallerConfiguration;
 import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.data.service.CameraImageReader;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
-import fi.livi.digitraffic.tie.data.service.CameraImageWriter;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
@@ -39,7 +37,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           // services
           LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
-          TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageWriter.class, CameraImageS3Writer.class,
+          TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageS3Writer.class,
           Datex2TrafficAlertMessageUpdater.class, Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
           CameraPresetHistoryService.class, FlywayService.class,
 
@@ -50,7 +48,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           TmsSensorConstantDao.class, WorkMachineObservationDao.class,
 
           // configurations
-          CameraImageUploaderSftpConnectionFactoryBuilder.class, AmazonS3ClientTestConfiguration.class
+          AmazonS3ClientTestConfiguration.class
         })
 @TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {

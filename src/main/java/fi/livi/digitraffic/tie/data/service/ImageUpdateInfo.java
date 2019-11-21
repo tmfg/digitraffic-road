@@ -7,7 +7,6 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 public class ImageUpdateInfo {
 
     private final ZonedDateTime updateTime;
-
     public enum Status {
         SUCCESS, FAILED, NONE;
 
@@ -17,7 +16,7 @@ public class ImageUpdateInfo {
     }
 
     private final String presetId;
-    private final String fullPath;
+    private String versionId;
     private final ZonedDateTime lastUpdated;
 
     private long readTotalDurationMs = 0;
@@ -30,14 +29,9 @@ public class ImageUpdateInfo {
     private Status writeStatus = Status.NONE;
     private Throwable readError;
     private Throwable writeError;
-    private long imageTimestampEpochMillis;
 
-    private String s3VersionId;
-    private long s3WriteDurationMs;
-
-    public ImageUpdateInfo(final String presetId, final String fullPath, final ZonedDateTime lastUpdated) {
+    ImageUpdateInfo(final String presetId, final ZonedDateTime lastUpdated) {
         this.presetId = presetId;
-        this.fullPath = fullPath;
         this.lastUpdated = lastUpdated;
         this.updateTime = DateHelper.getZonedDateTimeNowAtUtc();
     }
@@ -46,43 +40,31 @@ public class ImageUpdateInfo {
         return presetId;
     }
 
-    String getFullPath() {
-        return fullPath;
-    }
-
     public ZonedDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setS3VersionId(final String versionId) {
-        this.s3VersionId = versionId;
+    public void setVersionId(final String versionId) {
+        this.versionId = versionId;
     }
 
-    public String getS3VersionId() {
-        return s3VersionId;
+    public String getVersionId() {
+        return versionId;
     }
 
-    public void setS3WriteDurationMs(final long s3WriteDurationMs) {
-        this.s3WriteDurationMs = s3WriteDurationMs;
-    }
-
-    public long getS3WriteDurationMs() {
-        return s3WriteDurationMs;
-    }
-
-    public void updateReadTotalDurationMs(final long currentReadDurationMs) {
+    void updateReadTotalDurationMs(final long currentReadDurationMs) {
         readTotalDurationMs += currentReadDurationMs;
     }
 
-    public long getReadTotalDurationMs() {
+    long getReadTotalDurationMs() {
         return readTotalDurationMs;
     }
 
-    public void updateWriteTotalDurationMs(final long currentWriteDurationMs) {
+    void updateWriteTotalDurationMs(final long currentWriteDurationMs) {
         writeTotalDurationMs += currentWriteDurationMs;
     }
 
-    public long getWriteTotalDurationMs() {
+    long getWriteTotalDurationMs() {
         return writeTotalDurationMs;
     }
 
@@ -183,7 +165,7 @@ public class ImageUpdateInfo {
         return updateTime;
     }
 
-    public long getImageTimeInPastSeconds() {
+    long getImageTimeInPastSeconds() {
         return updateTime.toEpochSecond() - lastUpdated.toEpochSecond();
     }
 }

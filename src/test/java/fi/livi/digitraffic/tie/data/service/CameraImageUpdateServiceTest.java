@@ -24,9 +24,6 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
     private CameraImageReader cameraImageReader;
 
     @MockBean
-    private CameraImageWriter cameraImageWriter;
-
-    @MockBean
     private CameraImageS3Writer cameraImageS3Writer;
 
     @MockBean
@@ -44,7 +41,6 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
-        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), any(), anyLong());
     }
 
@@ -58,7 +54,6 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
-        verify(cameraImageWriter, times(0)).writeImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(0)).writeImage(any(), any(),any(), anyLong());
     }
 
@@ -71,7 +66,6 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
         service.handleKuva(kuva);
 
-        verify(cameraImageWriter, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), any(), anyLong());
     }
 

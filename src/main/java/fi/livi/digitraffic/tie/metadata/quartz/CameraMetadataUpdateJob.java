@@ -25,6 +25,5 @@ public class CameraMetadataUpdateJob extends SimpleUpdateJob {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
-        cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
     }
 }

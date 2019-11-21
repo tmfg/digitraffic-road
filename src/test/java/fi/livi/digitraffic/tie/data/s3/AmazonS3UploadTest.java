@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.sftp;
+package fi.livi.digitraffic.tie.data.s3;
 
 import java.io.File;
 import java.io.IOException;

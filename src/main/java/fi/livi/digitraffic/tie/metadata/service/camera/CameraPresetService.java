@@ -130,7 +130,7 @@ public class CameraPresetService {
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
-                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getS3VersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
+                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                     isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
 
             cameraPresetHistoryRepository.save(history);
