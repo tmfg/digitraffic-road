@@ -28,66 +28,79 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
 
     private final long ts = Instant.now().toEpochMilli();
 
+    /**
+     * Tests that image and it versions are written in S3 and the data is correct.
+     */
     @Test
     public void s3Write() throws IOException, ParseException {
 
         final String key = "C1234567.jpg";
-        final List<Pair<String, byte[]>> versionIdImgPairs = writeImageVersions(key);
+        final int versionCount = 5;
+        final List<Pair<String, byte[]>> versionIdImgDataPairs = writeImageVersions(key, versionCount);
 
         final String versionedKey = CameraImageS3Writer.getVersionedKey(key);
 
-        for (int i = 0; i < 5; i++) {
-            final Pair<String, byte[]> versionIdImgPair = versionIdImgPairs.get(i);
-            final String versionId = versionIdImgPair.getKey();
-            final byte[] dataRead = readWeathercamS3DataVersion(versionedKey, versionId);
-            Assert.assertArrayEquals("Data written differs from data read for versions", versionIdImgPair.getValue(), dataRead);
+        // Check that writen versions image data and last modified metadata are correct for all versions
+        for (int i = 0; i < versionCount; i++) {
+            final Pair<String, byte[]> versionIdImgDataPair = versionIdImgDataPairs.get(i);
+            final String versionId = versionIdImgDataPair.getKey();
+            final byte[] dataFromS3 = readWeathercamS3DataVersion(versionedKey, versionId);
+            Assert.assertArrayEquals("Image data read from S3 differs from expected image data for the version",
+                                     versionIdImgDataPair.getValue(), dataFromS3);
             final S3Object version = getS3ObjectVersionVersion(versionedKey, versionId);
             log.info("Version: {}", version.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER));
-            Assert.assertEquals("Image version ts vs S3 image ts differs", getTimestampMillisForIndex(i)/1000, getLastModifiedSeconds(version));
+            Assert.assertEquals("Image version last modified timestamp differs from the expected",
+                                getTimestampMillisForIndex(i)/1000, getLastModifiedSeconds(version));
         }
 
-        // Test latest
-        S3Object latest = s3.getObject(weathercamBucketName, key);
-        final byte[] dataRead = latest.getObjectContent().readAllBytes();
-        Assert.assertArrayEquals("Data written differs from data read for latest image", versionIdImgPairs.get(versionIdImgPairs.size()-1).getValue(), dataRead);
-        Assert.assertEquals("Image ts vs read image ts differs", getTimestampMillisForIndex(4)/1000, getLastModifiedSeconds(latest));
+        // Test latest image data and last modified metadata
+        final S3Object latest = s3.getObject(weathercamBucketName, key);
+        final byte[] dataFromS3 = latest.getObjectContent().readAllBytes();
+        Assert.assertArrayEquals("Image data read from S3 differs from expected image data for the latest image",
+                                 versionIdImgDataPairs.get(versionIdImgDataPairs.size()-1).getValue(), dataFromS3);
+        Assert.assertEquals("Latest image last modified timestamp differs from the expected", getTimestampMillisForIndex(4)/1000, getLastModifiedSeconds(latest));
     }
 
+    /**
+     * Test that two images (key1, key2) are written to s3 and other (key1) is then deleted.
+     * Versions won't get deleted in S3 as it only makes delete marker as latest version.
+     */
     @Test
     public void s3Delete() {
         final String key1 = "C1234561.jpg";
         final String key2 = "C1234562.jpg";
+        final int versionCount = 5;
+        final List<Pair<String, byte[]>> versionIdImgPairs1 = writeImageVersions(key1, versionCount);
+        final List<Pair<String, byte[]>> versionIdImgPairs2 = writeImageVersions(key2, versionCount);
 
-        final List<Pair<String, byte[]>> versionIdImgPairs1 = writeImageVersions(key1);
-        final List<Pair<String, byte[]>> versionIdImgPairs2 = writeImageVersions(key2);
-
+        // Create 5 image versions for both images
         final String versionedKey1 = CameraImageS3Writer.getVersionedKey(key1);
         final String versionedKey2 = CameraImageS3Writer.getVersionedKey(key2);
 
+        // Check all 5 versions exists for both keys
         versionIdImgPairs1.forEach(dw -> checkVersionObjectExistenceInS3(versionedKey1, dw.getKey(), true));
-        for (Pair<String, byte[]> stringPair : versionIdImgPairs2) {
-            checkVersionObjectExistenceInS3(versionedKey2, stringPair.getKey(), true);
-        }
+        versionIdImgPairs2.forEach(dw -> checkVersionObjectExistenceInS3(versionedKey2, dw.getKey(), true));
+        // Check latest exists for both keys
         checkObjectExistenceInS3(key1, true);
         checkObjectExistenceInS3(key2, true);
 
+        // Delete key1 -> only delete markes as they are versioned
         cameraImageS3Writer.deleteImage(key1);
 
-        checkObjectExistenceInS3(key1, false);
-        checkObjectExistenceInS3(key2, true);
-        checkObjectExistenceInS3(versionedKey1, false);
-        checkObjectExistenceInS3(versionedKey2, true);
+        // Check that deleted object delete marker is in place
+        checkObjectExistenceInS3(key1, false); // latest version = delete marker
+        checkObjectExistenceInS3(key2, true); // should exist
+        checkObjectExistenceInS3(versionedKey1, false); // latest version = delete marker
+        checkObjectExistenceInS3(versionedKey2, true); // should exist
 
-        // S3 won't delete versions. It only makes delete marker as latest version
+        // S3 won't delete versions. It only makes delete marker as latest version. Check versions still exists
         versionIdImgPairs1.forEach(dw -> checkVersionObjectExistenceInS3(versionedKey1, dw.getKey(), true));
-        for (Pair<String, byte[]> dw : versionIdImgPairs2) {
-            checkVersionObjectExistenceInS3(versionedKey2, dw.getKey(), true);
-        }
+        versionIdImgPairs2.forEach(dw -> checkVersionObjectExistenceInS3(versionedKey2, dw.getKey(), true));
     }
 
-    private List<Pair<String, byte[]>> writeImageVersions(String key) {
+    private List<Pair<String, byte[]>> writeImageVersions(final String key, final int versionCount) {
         final List<Pair<String, byte[]>> dataWritten = new ArrayList<>();
-        IntStream.range(0, 5).forEach(i -> {
+        IntStream.range(0, versionCount).forEach(i -> {
             final byte[] img = new byte[] { (byte) i };
             final String versionId = cameraImageS3Writer.writeImage(img, img, key, getTimestampMillisForIndex(i));
             dataWritten.add(Pair.of(versionId, img));
