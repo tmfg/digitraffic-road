@@ -94,8 +94,8 @@ public class CameraImageS3Writer {
         // Hide current image and last from history
         try  {
             checkS3KeyFormat(imageKey);
-            final String versionedKey = getVersionedKey(imageKey);
             if (amazonS3Client.doesObjectExist(bucketName, imageKey)) {
+                final String versionedKey = getVersionedKey(imageKey);
                 log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(imageKey), imageKey);
                 amazonS3Client.deleteObject(bucketName, imageKey);
                 if (amazonS3Client.doesObjectExist(bucketName, versionedKey)) {
