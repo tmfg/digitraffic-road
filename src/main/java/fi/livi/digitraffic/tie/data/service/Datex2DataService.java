@@ -53,7 +53,7 @@ public class Datex2DataService {
             return new Datex2RootDataObjectDto(updated);
         } else {
             return new Datex2RootDataObjectDto(
-                    datex2Repository.findAllActive(TRAFFIC_DISORDER.name()),
+                    datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 0),
                     updated);
         }
     }
@@ -124,20 +124,20 @@ public class Datex2DataService {
 
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findActiveTrafficDisorders() {
-        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name());
+    public TrafficDisordersDatex2Response findActiveTrafficDisorders(final long inactiveHours) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
         return convertToTrafficDisordersDatex2Response(allActive);
     }
 
     @Transactional(readOnly = true)
-    public RoadworksDatex2Response findActiveRoadworks() {
-        final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name());
+    public RoadworksDatex2Response findActiveRoadworks(final long inactiveHours) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name(), inactiveHours);
         return convertToRoadworksDatex2Response(allActive);
     }
 
     @Transactional(readOnly = true)
-    public WeightRestrictionsDatex2Response findActiveWeightRestrictions() {
-        final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_RESTRICTION.name());
+    public WeightRestrictionsDatex2Response findActiveWeightRestrictions(final long inactiveHours) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_RESTRICTION.name(), inactiveHours);
         return convertToWeightRestrictionDatex2Response(allActive);
     }
 

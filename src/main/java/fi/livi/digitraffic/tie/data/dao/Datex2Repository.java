@@ -40,14 +40,14 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
             "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
-            "             AND disorder.overall_end_time > current_timestamp)\n" +
+            "             AND disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour' )\n" +
             // Skip old Datex2 messages of HÄTI system
             "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
             "order by d.publication_time, d.id",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findAllActive(@Param("messageType") final String messageType);
+    List<Datex2> findAllActive(final String messageType, final long activeInPastHours);
 
     @Query(value =
         "SELECT d.*\n" +

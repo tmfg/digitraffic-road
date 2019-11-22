@@ -29,7 +29,7 @@ public class Datex2WeightRestrictionsIntegrationTest extends AbstractDaemonTestW
 
         messageUpdater.updateDatex2WeightRestrictionMessages();
 
-        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.WEIGHT_RESTRICTION.name()).size() > 0);
+        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.WEIGHT_RESTRICTION.name(), 0).size() > 0);
     }
 
 }

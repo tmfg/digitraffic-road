@@ -188,8 +188,12 @@ public class DataController {
                   notes = DATEX2_API_NOTES)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
-    public TrafficDisordersDatex2Response trafficDisordersDatex2() {
-        return datex2DataService.findActiveTrafficDisorders();
+    public TrafficDisordersDatex2Response trafficDisordersDatex2(
+        @ApiParam(value = "How many hours to show inactive traffic disorders")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final Integer inactiveHours) {
+        return datex2DataService.findActiveTrafficDisorders(inactiveHours);
     }
 
     @ApiOperation(value = "Traffic disorder Datex2 messages by situation id",
@@ -226,8 +230,12 @@ public class DataController {
                   notes = DATEX2_API_NOTES)
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
-    public RoadworksDatex2Response roadWorksDatex2() {
-        return datex2DataService.findActiveRoadworks();
+    public RoadworksDatex2Response roadWorksDatex2(
+        @ApiParam(value = "How many hours to show inactive roadworks")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final Integer inactiveHours) {
+        return datex2DataService.findActiveRoadworks(inactiveHours);
     }
 
     @ApiOperation(value = "Roadwork Datex2 messages by situation id",
@@ -264,8 +272,12 @@ public class DataController {
                   notes = DATEX2_API_NOTES)
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"))
-    public WeightRestrictionsDatex2Response weightRestrictionsDatex2() {
-        return datex2DataService.findActiveWeightRestrictions();
+    public WeightRestrictionsDatex2Response weightRestrictionsDatex2(
+        @ApiParam(value = "How many hours to show inactive weight restrictions")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final Integer inactiveHours) {
+        return datex2DataService.findActiveWeightRestrictions(inactiveHours);
     }
 
     @ApiOperation(value = "Weight restrictions Datex2 messages by situation id",

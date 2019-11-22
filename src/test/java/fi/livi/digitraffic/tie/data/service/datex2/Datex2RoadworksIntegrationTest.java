@@ -62,7 +62,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     }
 
     private void assertCountAndVersionTime(final int count, final ZonedDateTime versionTime) {
-        final List<Datex2> roadWorks = datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name());
+        final List<Datex2> roadWorks = datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name(), 0);
 
         assertCollectionSize(count, roadWorks);
         assertVersionTime(roadWorks.get(0), versionTime);
@@ -88,13 +88,13 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
 
         messageUpdater.updateDatex2RoadworksMessages();
 
-        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()).size() > 1);
+        Assert.assertTrue(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name(), 0).size() > 1);
     }
 
     @Test
     @Rollback
     public void updateWithChangedTimestamp() throws IOException, InterruptedException {
-        assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
+        assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name(), 0));
 
         ZonedDateTime versionTime = ZonedDateTime.now();
         when(datex2RoadworksHttpClient.getRoadWorksMessage()).thenReturn(getRoadworks(versionTime));

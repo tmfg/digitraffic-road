@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.isIn;
@@ -69,8 +70,8 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.roadStationId", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
-                .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
+                .andExpect(jsonPath("$.features[0].properties.cameraType", is(in(cameraTypes))))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] {"GATHERING", "REMOVED_TEMPORARILY"}))))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
@@ -86,7 +87,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].resolution", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].direction", isIn(directions)))
+                .andExpect(jsonPath("$.features[0].properties.presets[0].direction", is(in(directions))))
                 .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)));
 
     }

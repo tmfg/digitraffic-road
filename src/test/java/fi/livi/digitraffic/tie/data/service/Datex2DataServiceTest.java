@@ -6,10 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +26,7 @@ import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
 @Import({Datex2DataService.class, Datex2UpdateService.class})
@@ -41,8 +45,10 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
     private String disorder1;
     private String disorder2;
+    private String disorder3;
     private static final String DISORDER1_GUID = "GUID50005166";
     private static final String DISORDER2_GUID = "GUID50006936";
+    private static final String DISORDER3_GUID = "GUID50013339";
 
     private String roadwork1;
     private static final String ROADWORK1_GUID = "GUID50350441";
@@ -56,7 +62,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     public void init() throws IOException {
         disorder1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");
         disorder2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
-
+        disorder3 = readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml");
         roadwork1 = readResourceContent("classpath:lotju/roadwork/roadwork1.xml");
 
         weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
@@ -75,6 +81,30 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void findActiveInPast() {
+        deleteAllDatex2();
+        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
+        updateTrafficAlerts(disorder3);
+        assertCollectionSize(1, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
+        System.out.println("2016-09-12T21:21:19.466+03:00");
+        System.out.println(Instant.now().minus(2, ChronoUnit.HOURS).toString());
+        // Set situation Endtime to - 2h 1 min
+        final String disorder3Ended = StringUtils.replace(disorder3,
+                                                         "</overallStartTime>",
+                                                         "</overallStartTime>\n                        " +
+                                                          "<overallEndTime>" + Instant.now().minus(121, ChronoUnit.MINUTES).toString() + "</overallEndTime>");
+        updateTrafficAlerts(disorder3Ended);
+        // Disorder is ended > 2h in past. With parameter value > 3 it should found
+        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
+        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(2).getDisorder());
+        List<TimestampedTrafficDisorderDatex2> disorders3hours =
+            datex2DataService.findActiveTrafficDisorders(3).getDisorder();
+        assertCollectionSize(1, disorders3hours);
+        SituationPublication situationPublication =  (SituationPublication)disorders3hours.get(0).getD2LogicalModel().getPayloadPublication();
+        Assert.assertEquals(DISORDER3_GUID, situationPublication.getSituation().get(0).getId());
+    }
+
+    @Test
     public void updateTrafficAlerts() {
         deleteAllDatex2();
 
@@ -88,7 +118,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         findDatex2AndAssert(DISORDER1_GUID, true);
         findDatex2AndAssert(DISORDER2_GUID, true);
 
-        final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders();
+        final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(0);
         assertCollectionSize(1, allActive.getDisorder());
 
         final SituationPublication active = getSituationPublication(allActive);
@@ -109,7 +139,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
         updateRoadworks(roadwork1);
 
-        assertCollectionSize(1, datex2DataService.findActiveRoadworks().getRoadwork());
+        assertCollectionSize(1, datex2DataService.findActiveRoadworks(0).getRoadwork());
 
         assertNotNull(datex2DataService.getAllRoadworksBySituationId(ROADWORK1_GUID));
     }
@@ -127,7 +157,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
         updateWeightRestrictions(weightRestriction1);
 
-        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions().getRestriction());
+        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions(0).getRestriction());
 
         assertNotNull(datex2DataService.getAllWeightRestrictionsBySituationId(WR1_GUID));
     }
