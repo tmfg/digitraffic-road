@@ -41,8 +41,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "  WHERE rnum = 1\n" +
             "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
             "             AND disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour' )\n" +
-            // Skip old Datex2 messages of HÄTI system
-            "        AND disorder.publication_time > TO_DATE('201611', 'yyyymm')\n" +
             ")\n" +
             "order by d.publication_time, d.id",
             nativeQuery = true)

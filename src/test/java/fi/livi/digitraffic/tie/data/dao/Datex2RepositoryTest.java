@@ -101,7 +101,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         record.setCreationTime(ZonedDateTime.now().minusHours(10));
         record.setValidyStatus(Datex2SituationRecordValidyStatus.DEFINED_BY_VALIDITY_TIME_SPEC);
         record.setOverallStartTime(ZonedDateTime.now().minusHours(10));
-        record.setOverallEndTime(ZonedDateTime.now().minusHours(2));
+        record.setOverallEndTime(ZonedDateTime.now().minusHours(2).minusSeconds(1));
         record.setSituation(situation);
         situation.setSituationRecords(Collections.singletonList(record));
         return datex2;
