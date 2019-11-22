@@ -64,6 +64,7 @@ public class Datex2UpdateService {
         return map;
     }
 
+    @Transactional
     public int updateTrafficAlerts(final List<Datex2MessageDto> data) {
         return updateDatex2Data(data, TRAFFIC_DISORDER);
     }
