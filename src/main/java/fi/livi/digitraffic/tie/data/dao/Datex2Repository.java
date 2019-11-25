@@ -45,7 +45,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "order by d.publication_time, d.id",
             nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findAllActive(final String messageType, final long activeInPastHours);
+    List<Datex2> findAllActive(final String messageType, final int activeInPastHours);
 
     @Query(value =
         "SELECT d.*\n" +

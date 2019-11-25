@@ -124,19 +124,19 @@ public class Datex2DataService {
 
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response findActiveTrafficDisorders(final long inactiveHours) {
+    public TrafficDisordersDatex2Response findActiveTrafficDisorders(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
         return convertToTrafficDisordersDatex2Response(allActive);
     }
 
     @Transactional(readOnly = true)
-    public RoadworksDatex2Response findActiveRoadworks(final long inactiveHours) {
+    public RoadworksDatex2Response findActiveRoadworks(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name(), inactiveHours);
         return convertToRoadworksDatex2Response(allActive);
     }
 
     @Transactional(readOnly = true)
-    public WeightRestrictionsDatex2Response findActiveWeightRestrictions(final long inactiveHours) {
+    public WeightRestrictionsDatex2Response findActiveWeightRestrictions(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_RESTRICTION.name(), inactiveHours);
         return convertToWeightRestrictionDatex2Response(allActive);
     }

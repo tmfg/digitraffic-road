@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,6 @@ import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 
 @Import({Datex2DataService.class, Datex2UpdateService.class})
@@ -81,27 +81,47 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void endedShouldNotFound() {
+        deleteAllDatex2();
+        updateTrafficAlerts(disorder3);
+        // Not ended yet
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
+
+        // Set situation Endtime to 1 min ago
+        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(1, ChronoUnit.MINUTES));
+        updateTrafficAlerts(disorder3Ended);
+
+        // Disorder should not be found as active
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 0);
+    }
+
+    @Test
     public void findActiveInPast() {
         deleteAllDatex2();
-        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
-        updateTrafficAlerts(disorder3);
-        assertCollectionSize(1, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
-        System.out.println("2016-09-12T21:21:19.466+03:00");
-        System.out.println(Instant.now().minus(2, ChronoUnit.HOURS).toString());
-        // Set situation Endtime to - 2h 1 min
-        final String disorder3Ended = StringUtils.replace(disorder3,
-                                                         "</overallStartTime>",
-                                                         "</overallStartTime>\n                        " +
-                                                          "<overallEndTime>" + Instant.now().minus(121, ChronoUnit.MINUTES).toString() + "</overallEndTime>");
+        // Set situation Endtime to 2h 1 min ago
+        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(121, ChronoUnit.MINUTES));
         updateTrafficAlerts(disorder3Ended);
-        // Disorder is ended > 2h in past. With parameter value > 3 it should found
-        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(0).getDisorder());
-        assertCollectionSize(0, datex2DataService.findActiveTrafficDisorders(2).getDisorder());
-        List<TimestampedTrafficDisorderDatex2> disorders3hours =
-            datex2DataService.findActiveTrafficDisorders(3).getDisorder();
-        assertCollectionSize(1, disorders3hours);
-        SituationPublication situationPublication =  (SituationPublication)disorders3hours.get(0).getD2LogicalModel().getPayloadPublication();
-        Assert.assertEquals(DISORDER3_GUID, situationPublication.getSituation().get(0).getId());
+
+        // Disorder is ended > 2h in past. With parameter value > 3 it should found, but not with < 3
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 2);
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 3);
+    }
+
+    @Test
+    public void activeAndActiveInPast() {
+        deleteAllDatex2();
+        updateTrafficAlerts(disorder2);
+        updateTrafficAlerts(disorder3);
+        // Both active
+        findActiveTrafficAlertsAndAssert(DISORDER2_GUID, true, 0);
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
+
+        // After ending disorder3 it  not not be found
+        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(1, ChronoUnit.MINUTES));
+        updateTrafficAlerts(disorder3Ended);
+
+        findActiveTrafficAlertsAndAssert(DISORDER2_GUID, true, 0);
+        findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 0);
     }
 
     @Test
@@ -109,14 +129,14 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         deleteAllDatex2();
 
         updateTrafficAlerts(disorder1);
-        findDatex2AndAssert(DISORDER1_GUID, true);
-        findDatex2AndAssert(DISORDER2_GUID, false);
+        findTrafficAlertsAndAssert(DISORDER1_GUID, true);
+        findTrafficAlertsAndAssert(DISORDER2_GUID, false);
         updateTrafficAlerts(disorder2);
 
         assertCollectionSize(2, datex2Repository.findAll());
 
-        findDatex2AndAssert(DISORDER1_GUID, true);
-        findDatex2AndAssert(DISORDER2_GUID, true);
+        findTrafficAlertsAndAssert(DISORDER1_GUID, true);
+        findTrafficAlertsAndAssert(DISORDER2_GUID, true);
 
         final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(0);
         assertCollectionSize(1, allActive.getDisorder());
@@ -162,7 +182,23 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         assertNotNull(datex2DataService.getAllWeightRestrictionsBySituationId(WR1_GUID));
     }
 
-    private TrafficDisordersDatex2Response findDatex2AndAssert(final String situationId, final boolean found) {
+    private static String addEndTime(final String disorder, final Instant endTime) {
+        return StringUtils.replace(disorder,
+            "</overallStartTime>",
+            "</overallStartTime>\n                        " +
+                "<overallEndTime>" + endTime.toString() + "</overallEndTime>");
+    }
+
+    private void findActiveTrafficAlertsAndAssert(final String situationId, final boolean found, final int inactiveHours) {
+        final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(inactiveHours);
+        Assert.assertEquals(found,
+                            allActive.getDisorder().stream()
+                                .filter(d ->
+                                    ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituation().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()
+                                ).findFirst().isPresent());
+    }
+
+    private TrafficDisordersDatex2Response findTrafficAlertsAndAssert(final String situationId, final boolean found) {
         try {
             final TrafficDisordersDatex2Response response = datex2DataService.getAllTrafficDisordersBySituationId(situationId);
             assertTrue(found);

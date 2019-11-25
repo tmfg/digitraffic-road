@@ -32,6 +32,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     @Before
     public void insertDatex() {
+        datex2Repository.deleteAll();
         final Datex2 datex2 = new Datex2();
 
         datex2.setImportTime(ZonedDateTime.now());
@@ -62,10 +63,8 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                          .filter(s -> s.getSituationId().equals(pastSituationId)).findFirst().isPresent())
             .findFirst().isPresent());
 
-        // Create traffic disorder
-        final Datex2 datex2 = createDatex2InPast2h(pastSituationId, Datex2MessageType.TRAFFIC_DISORDER);
-        datex2Repository.save(datex2);
-        datex2Repository.flush(); // native query used in findActive
+        // Create traffic disorder in past for 2 hours
+        createDatex2InPast2h(pastSituationId, Datex2MessageType.TRAFFIC_DISORDER);
 
         // Situation should be found >= 3 h
         final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 3);
@@ -104,6 +103,10 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         record.setOverallEndTime(ZonedDateTime.now().minusHours(2).minusSeconds(1));
         record.setSituation(situation);
         situation.setSituationRecords(Collections.singletonList(record));
+
+        datex2Repository.save(datex2);
+        datex2Repository.flush(); // native query used in findActive
+
         return datex2;
     }
 
