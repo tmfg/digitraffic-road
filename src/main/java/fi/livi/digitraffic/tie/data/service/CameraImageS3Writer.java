@@ -31,11 +31,11 @@ public class CameraImageS3Writer {
     private final String bucketName;
     private String s3WeathercamKeyRegexp;
 
-    public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
+    final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
 
     // Tue, 03 Sep 2019 13:56:36 GMT
-    public final static SimpleDateFormat LAST_MODIFIED_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    final static SimpleDateFormat LAST_MODIFIED_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     static {
         LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -86,23 +86,28 @@ public class CameraImageS3Writer {
     }
 
     /**
-     * @param key file key (name) ins S3 to delete
+     * @param imageKey file key (name) ins S3 to delete
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
-    final DeleteInfo deleteImage(final String key) {
+    DeleteInfo deleteImage(final String imageKey) {
         final StopWatch start = StopWatch.createStarted();
         // Hide current image and last from history
         try  {
-            checkS3KeyFormat(key);
-            if (amazonS3Client.doesObjectExist(bucketName, key)) {
-                log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(key), key);
-                amazonS3Client.deleteObject(bucketName, key);
-                return DeleteInfo.success(start.getTime(), key);
+            checkS3KeyFormat(imageKey);
+            if (amazonS3Client.doesObjectExist(bucketName, imageKey)) {
+                final String versionedKey = getVersionedKey(imageKey);
+                log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(imageKey), imageKey);
+                amazonS3Client.deleteObject(bucketName, imageKey);
+                if (amazonS3Client.doesObjectExist(bucketName, versionedKey)) {
+                    amazonS3Client.deleteObject(bucketName, versionedKey);
+                    return DeleteInfo.success(start.getTime(), versionedKey);
+                }
+                return DeleteInfo.success(start.getTime(), imageKey);
             }
-            return DeleteInfo.doesNotExist(start.getTime(), key);
+            return DeleteInfo.doesNotExist(start.getTime(), imageKey);
         } catch (Exception e) {
-            log.error(String.format("Failed to remove s3 file s3Key=%s", key), e);
-            return DeleteInfo.failed(start.getTime(), key);
+            log.error(String.format("Failed to remove s3 file s3Key=%s", imageKey), e);
+            return DeleteInfo.failed(start.getTime(), imageKey);
         }
     }
 
@@ -115,7 +120,7 @@ public class CameraImageS3Writer {
         return StringUtils.substringBeforeLast(key, ".");
     }
 
-    public static String getVersionedKey(String key) {
+    static String getVersionedKey(String key) {
         // Key ie. C0650802.jpg -> C0650802-versions.jpg
         return resolvePresetIdFromKey(key) + IMAGE_VERSION_KEY_SUFFIX;
     }

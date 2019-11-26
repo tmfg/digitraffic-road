@@ -28,8 +28,5 @@ public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
         }
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
         log.info("updatedCount={} camera stations statuses", csCount);
-
-        long deleted = cameraImageUpdateService.deleteAllImagesForNonPublishablePresets();
-        log.info("deletedCount={} non publishable weather camera images", deleted);
     }
 }

@@ -41,8 +41,8 @@ import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.data.sftp.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
@@ -122,7 +122,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
-        log.info("Using weathercam.importDir={}. HTTP mock server for images port={}", testFolder.getRoot().getPath());
+        log.info("HTTP mock server for images port={}", TEST_PORT);
 
         createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
@@ -150,7 +150,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         };
 
         final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
-            new JMSMessageListener(new KuvaMessageMarshaller(), dataUpdater, true, log);
+            new JMSMessageListener<>(new KuvaMessageMarshaller(), dataUpdater, true, log);
 
         Instant time = Instant.now();
 
@@ -227,7 +227,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
                 e.printStackTrace();
             }
         }
-        log.info("Handle kuva data total took {} ms and max was {} ms success=",
+        log.info("Handle kuva data total took {} ms and max was {} ms success={}",
             handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
 
         log.info("Check data validy");
@@ -260,10 +260,6 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         final byte[] imageData = o.getObjectContent().readAllBytes();
         o.getObjectContent().close();
         return imageData;
-    }
-
-    private String getImportDir() {
-        return testFolder.getRoot().getPath();
     }
 
     private void createHttpResponseStubFor(int kuvaId) {

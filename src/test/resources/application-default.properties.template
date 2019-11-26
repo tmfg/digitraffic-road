@@ -46,17 +46,6 @@ dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
-# SFTP settings for camera image upload
-camera-image-uploader.sftp.host = localhost
-camera-image-uploader.sftp.port = 2232
-camera-image-uploader.sftp.user = digitraffic
-camera-image-uploader.sftp.knownHostsPath = file:src/test/resources/sftp/client_known_hosts
-camera-image-uploader.sftp.privateKeyPath = file:src/test/resources/sftp/client_id_rsa
-camera-image-uploader.sftp.privateKeyPassphrase = digitraffic
-camera-image-uploader.sftp.uploadFolder = weathercam-test.digitraffic.fi
-camera-image-uploader.sftp.poolSize = 5
-camera-image-uploader.sftp.port=61234
-camera-image-uploader.sftp.sessionWaitTimeout = 5000
 # Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
 camera-image-download.url = http://localhost:62859/kamerakuva/
 

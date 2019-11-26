@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Assert;
 import javax.persistence.EntityManager;
 
 import org.junit.Assert;

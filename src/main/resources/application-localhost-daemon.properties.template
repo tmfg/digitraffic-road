@@ -45,12 +45,6 @@ dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
 dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 0 3 * * ?
 dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
-# SFTP settings for camera image upload
-camera-image-uploader.sftp.host = aineistot.liikennevirasto.fi
-camera-image-uploader.sftp.user = digitraffic-aws-test
-camera-image-uploader.sftp.privateKeyPassphrase = tyokaverisi-halusi-kiittaa
-camera-image-uploader.sftp.uploadFolder = weathercam-aws-test.digitraffic.fi
-
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
 
