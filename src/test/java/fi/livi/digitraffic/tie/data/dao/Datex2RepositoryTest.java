@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,9 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     @Test
     public void testDelete() {
         final List<Datex2> all = datex2Repository.findAll();
-        assertCollectionSize(1, all);
+        Assert.assertTrue(!all.isEmpty());
 
-        datex2Repository.delete(all.get(0));
+        all.stream().forEach(d -> datex2Repository.delete(d));
 
         final List<Datex2> after = datex2Repository.findAll();
         assertCollectionSize(0, after);
