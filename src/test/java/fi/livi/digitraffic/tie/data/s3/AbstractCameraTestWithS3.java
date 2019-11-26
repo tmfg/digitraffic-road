@@ -5,7 +5,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import java.io.IOException;
 
 import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -19,9 +18,6 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
 
     protected static final String REQUEST_PATH = "/kamerakuva/";
     protected final static Integer TEST_PORT = 62859;
-
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
 
     // NOTE! Rules uses fixed port. see DPO-489
     @Rule
