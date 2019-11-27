@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 public interface CodeDescriptionJson {
     @ApiModelProperty(value = "Code", required = true)
     String getCode();
-    @ApiModelProperty(value = "Description of the code", required = true)
+    @ApiModelProperty(value = "Description of the code(Finnish)", required = true)
     String getDescription();
+    @ApiModelProperty(value = "Description of the code(English", required = true)
+    String getDescriptionEn();
 }

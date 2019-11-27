@@ -9,6 +9,7 @@ import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
 
 @Repository
 public interface CodeDescriptionRepository extends SqlRepository {
-    @Query(value = "select code, description from code_description where domain = 'VARIABLE_SIGN'", nativeQuery = true)
+    @Query(value = "select code, description, description_en descriptionEn from code_description where domain = 'VARIABLE_SIGN'",
+        nativeQuery = true)
     List<CodeDescriptionJson> listAllVariableSignTypes();
 }

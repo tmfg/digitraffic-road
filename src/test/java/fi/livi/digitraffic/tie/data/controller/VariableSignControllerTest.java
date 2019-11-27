@@ -84,6 +84,9 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
     public void codeDescriptions() throws Exception {
         getJson(API_V2_BASE_PATH + API_METADATA_PART_PATH, MetadataV2Controller.CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("signTypes", Matchers.hasSize(6)));
+            .andExpect(jsonPath("signTypes", Matchers.hasSize(6)))
+            .andExpect(jsonPath("signTypes[0].description", Matchers.notNullValue()))
+            .andExpect(jsonPath("signTypes[0].descriptionEn", Matchers.notNullValue()))
+            ;
     }
 }
