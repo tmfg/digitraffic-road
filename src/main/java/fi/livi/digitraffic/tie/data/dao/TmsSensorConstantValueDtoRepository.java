@@ -17,7 +17,7 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
                "FROM TMS_SENSOR_CONSTANT sc\n" +
                "INNER JOIN TMS_SENSOR_CONSTANT_VALUE scv on scv.SENSOR_CONSTANT_LOTJU_ID = sc.LOTJU_ID\n" +
                "INNER JOIN ROAD_STATION rs on rs.id = sc.ROAD_STATION_ID\n" +
-               "WHERE EXISTS(SELECT null FROM ALLOVED_TMS_SENSOR_CONSTANT a WHERE a.NAME = sc.NAME)\n" +
+               "WHERE EXISTS(SELECT null FROM ALLOWED_TMS_SENSOR_CONSTANT a WHERE a.NAME = sc.NAME)\n" +
                "  AND sc.OBSOLETE_DATE is null\n" +
                "  AND scv.OBSOLETE_DATE is null\n" +
                "  AND rs.publishable = true\n" +

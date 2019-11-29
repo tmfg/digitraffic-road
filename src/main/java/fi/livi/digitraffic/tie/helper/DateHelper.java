@@ -85,6 +85,9 @@ public final class DateHelper {
     }
 
     public static XMLGregorianCalendar toXMLGregorianCalendarAtUtc(final ZonedDateTime zonedDateTime) {
+        if (zonedDateTime == null) {
+            return null;
+        }
         return toXMLGregorianCalendarAtUtc(zonedDateTime.toInstant());
     }
 

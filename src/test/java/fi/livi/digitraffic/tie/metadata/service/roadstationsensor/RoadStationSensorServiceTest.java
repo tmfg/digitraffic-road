@@ -28,7 +28,7 @@ public class RoadStationSensorServiceTest extends AbstractServiceTest {
     public void findAllNonObsoleteAndAllowedRoadStationSensorsForTmsStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
-        assertCollectionSize(22, sensors);
+        assertCollectionSize(26, sensors);
     }
 
     @Test

@@ -42,8 +42,6 @@ public class Datex2TrafficAlertHttpClient {
     }
 
     public List<Pair<String, Instant>> getTrafficAlertMessages(final Instant from) {
-        log.info("Read datex2 traffic alert messages from {}", from);
-
         final String html = getContent(url + AUTO_INDEX_QUERY_ARGUMENTS);
 
         final List<Pair<String, Instant>> newFiles = getNewFiles(from, html);
@@ -62,7 +60,8 @@ public class Datex2TrafficAlertHttpClient {
         while (m.find()) {
             final String filename = m.group(1);
             final Instant fileTimestamp = parseDate(filename);
-            if (!isNewFile(from, fileTimestamp)) { // Links in html are ordered by filename which contains file date
+            // Links in html are ordered by filename which contains file date (from newest to oldest)
+            if (!isNewFile(from, fileTimestamp)) {
                 break;
             }
             if (filename != null && filenames.stream().noneMatch(f -> f.getLeft().equals(filename))) {
@@ -82,8 +81,6 @@ public class Datex2TrafficAlertHttpClient {
 
         for (final Pair<String, Instant> filename : filenames) {
             final String datex2Url = url + filename.getLeft();
-            log.info("Reading Datex2 message: {}", datex2Url);
-
             final String content = getContent(datex2Url);
             messages.add(Pair.of(content, filename.getRight()));
         }

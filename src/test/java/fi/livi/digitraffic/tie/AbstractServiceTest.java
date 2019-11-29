@@ -15,7 +15,6 @@ import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2TrafficAlertHttpClient;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2TrafficAlertMessageUpdater;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.metadata.converter.StationSensorConverter;
@@ -38,7 +37,7 @@ import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
           LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageS3Writer.class,
-          Datex2TrafficAlertMessageUpdater.class, Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
+          Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
           CameraPresetHistoryService.class, FlywayService.class,
 
           // converters

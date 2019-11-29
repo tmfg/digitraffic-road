@@ -57,7 +57,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
 
     @Before
     public void before() {
-        messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, datex2UpdateService, stringToObjectMarshaller);
+        messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, null, datex2UpdateService, null, stringToObjectMarshaller);
         datex2Repository.deleteAll();
     }
 

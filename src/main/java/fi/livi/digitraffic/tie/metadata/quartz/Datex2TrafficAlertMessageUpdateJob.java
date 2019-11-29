@@ -4,16 +4,16 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2TrafficAlertMessageUpdater;
+import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
 
 @DisallowConcurrentExecution
 public class Datex2TrafficAlertMessageUpdateJob extends SimpleUpdateJob {
 
     @Autowired
-    private Datex2TrafficAlertMessageUpdater datex2TrafficAlertMessageUpdater;
+    private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 
     @Override
     protected void doExecute(final JobExecutionContext context) throws Exception {
-        datex2TrafficAlertMessageUpdater.updateDatex2TrafficAlertMessages();
+        datex2SimpleMessageUpdater.updateDatex2TrafficAlertMessages();
     }
 }

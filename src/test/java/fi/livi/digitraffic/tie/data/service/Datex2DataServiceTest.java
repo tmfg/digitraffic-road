@@ -64,7 +64,6 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         disorder2 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-11-17-18-34-36-299.xml");
         disorder3 = readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml");
         roadwork1 = readResourceContent("classpath:lotju/roadwork/roadwork1.xml");
-
         weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
     }
 
