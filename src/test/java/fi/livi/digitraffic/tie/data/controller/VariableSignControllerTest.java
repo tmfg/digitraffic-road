@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.controller.v2.V2MetadataController;
 
 public class VariableSignControllerTest extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
@@ -88,7 +88,16 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("signTypes", Matchers.hasSize(6)))
             .andExpect(jsonPath("signTypes[0].description", Matchers.notNullValue()))
-            .andExpect(jsonPath("signTypes[0].descriptionEn", Matchers.notNullValue()))
             ;
+    }
+
+    @Test
+    public void codeDescriptionsV3() throws Exception {
+        getJson(API_V3_BASE_PATH + API_METADATA_PART_PATH, VARIABLE_SIGNS_CODE_DESCRIPTIONS)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("signTypes", Matchers.hasSize(6)))
+            .andExpect(jsonPath("signTypes[0].descriptionFi", Matchers.notNullValue()))
+            .andExpect(jsonPath("signTypes[0].descriptionEn", Matchers.notNullValue()))
+        ;
     }
 }
