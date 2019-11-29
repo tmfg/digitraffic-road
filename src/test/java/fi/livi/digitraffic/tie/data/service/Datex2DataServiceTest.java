@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,6 +44,8 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
 
+    private static Instant versionTime = Instant.now();
+
     private String disorder1;
     private String disorder2;
     private String disorder3;
@@ -57,6 +60,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     private static final String WR1_GUID = "GUID50354262";
 
     private static final String NOT_FOUND_GUID = "NOT_FOUND";
+    private static final String VERSION_TIME_REXP = "<situationRecordVersionTime>\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5][0-9]\\.\\d[0-9]\\d([+-]\\d[0-9]:\\d[09])<\\/situationRecordVersionTime>";
 
     @Before
     public void init() throws IOException {
@@ -65,6 +69,11 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         disorder3 = readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml");
         roadwork1 = readResourceContent("classpath:lotju/roadwork/roadwork1.xml");
         weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
+    }
+
+    private static Instant getNextVersionTime() {
+        versionTime = versionTime.plusSeconds(1);
+        return versionTime;
     }
 
     private void deleteAllDatex2() {
@@ -89,7 +98,8 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
 
         // Set situation Endtime to 1 min ago
-        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(1, ChronoUnit.MINUTES));
+        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(10, ChronoUnit.MINUTES));
+
         updateTrafficAlerts(disorder3Ended);
 
         // Disorder should not be found as active
@@ -118,7 +128,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
 
         // After ending disorder3 it  not not be found
-        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(1, ChronoUnit.MINUTES));
+        final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(10, ChronoUnit.MINUTES));
         updateTrafficAlerts(disorder3Ended);
 
         findActiveTrafficAlertsAndAssert(DISORDER2_GUID, true, 0);
@@ -237,9 +247,14 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         return Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel));
     }
 
-
     private void updateTrafficAlerts(final String datex2Content) {
-        datex2UpdateService.updateTrafficAlerts(createDtoList(datex2Content));
+        final String updated = replaceVersionTimes(datex2Content, getNextVersionTime());
+        datex2UpdateService.updateTrafficAlerts(createDtoList(updated));
+    }
+
+    private static String replaceVersionTimes(final String xml, final Instant replacement) {
+        return RegExUtils.replacePattern(xml, VERSION_TIME_REXP,
+            "<situationRecordVersionTime>" + replacement.toString() + "</situationRecordVersionTime>");
     }
 
     private void updateRoadworks(final String datex2Content) {

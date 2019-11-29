@@ -152,13 +152,5 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 throw e;
             }
         }
-        entityManager.flush();
-        entityManager.clear();
-
-        if (TestTransaction.isActive()) {
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
-        }
-        TestTransaction.start();
     }
 }

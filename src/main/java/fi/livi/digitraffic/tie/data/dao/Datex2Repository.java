@@ -28,7 +28,9 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "  SELECT datex2_id\n" +
             "  FROM (\n" +
                       // Latest Datex2-message of situation and it's latest record version\n" +
-            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC NULLS LAST) AS rnum\n" +
+            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID " +
+            "                                   ORDER BY record.version_time DESC NULLS LAST, " +
+            "                                            record.overall_end_time DESC NULLS FIRST) AS rnum\n" +
             "           , d.publication_time\n" +
             "           , d.id AS datex2_id\n" +
             "           , record.validy_status\n" +
