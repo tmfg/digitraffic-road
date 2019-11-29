@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import javax.validation.Valid;
@@ -93,7 +93,7 @@ public class DataController {
     }
 
     @ApiOperation("Current free flow speeds")
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
             @ApiParam("If parameter is given result will only contain update status")
@@ -103,7 +103,7 @@ public class DataController {
     }
 
     @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(
             @ApiParam(value = "TMS station id", required = true)
@@ -113,7 +113,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of cameras")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of camera station data"))
     public CameraRootDataObjectDto cameraData(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -123,7 +123,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of camera")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of camera station data"))
     public CameraRootDataObjectDto cameraDataById(
             @ApiParam(value = "Camera id", required = true)
@@ -133,7 +133,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of TMS Stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of TMS Station data"))
     public TmsRootDataObjectDto tmsData(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -143,7 +143,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weather station data"))
     public TmsRootDataObjectDto tmsDataById(
             @ApiParam(value = "TMS Station id", required = true)
@@ -153,7 +153,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of Weather Stations")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Station data"))
     public WeatherRootDataObjectDto weatherData(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -163,7 +163,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of Weather Station")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weather station data"))
     public WeatherRootDataObjectDto weatherDataById(
             @ApiParam(value = "Weather Station id", required = true)
@@ -173,7 +173,7 @@ public class DataController {
     }
 
     @ApiOperation("Current data of Weather Forecast Sections")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of Weather Forecast Section data"))
     public ForecastSectionWeatherRootDto roadConditions(
             @ApiParam("If parameter is given result will only contain update status")
@@ -186,7 +186,7 @@ public class DataController {
 
     @ApiOperation(value = "Active traffic disorders Datex2 messages",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public TrafficDisordersDatex2Response trafficDisordersDatex2(
         @ApiParam(value = "Return traffic disorders from given amount of hours in the past.")
@@ -198,7 +198,7 @@ public class DataController {
 
     @ApiOperation(value = "Traffic disorder Datex2 messages by situation id",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
     public TrafficDisordersDatex2Response trafficDisordersDatex2BySituationId(
@@ -209,7 +209,7 @@ public class DataController {
 
     @ApiOperation(value = "Traffic disorder Datex2 messages disorders history",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(      {   @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 400, message = "Invalid parameter"),
                             @ApiResponse(code = 404, message = "Situation id not found") })
@@ -228,7 +228,7 @@ public class DataController {
 
     @ApiOperation(value = "Active roadwork Datex2 messages",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
     public RoadworksDatex2Response roadWorksDatex2(
         @ApiParam(value = "Return roadworks from given amount of hours in the past.")
@@ -240,7 +240,7 @@ public class DataController {
 
     @ApiOperation(value = "Roadwork Datex2 messages by situation id",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 404, message = "Situation id not found") })
     public RoadworksDatex2Response roadworksDatex2BySituationId(
@@ -251,7 +251,7 @@ public class DataController {
 
     @ApiOperation(value = "Roadwork Datex2 messages history",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 400, message = "Invalid parameter"),
         @ApiResponse(code = 404, message = "Situation id not found")})
@@ -270,7 +270,7 @@ public class DataController {
 
     @ApiOperation(value = "Active weight restrictions Datex2 messages",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"))
     public WeightRestrictionsDatex2Response weightRestrictionsDatex2(
         @ApiParam(value = "Return weight restrictions from given amount of hours in the past.")
@@ -282,7 +282,7 @@ public class DataController {
 
     @ApiOperation(value = "Weight restrictions Datex2 messages by situation id",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
         @ApiResponse(code = 404, message = "Situation id not found") })
     public WeightRestrictionsDatex2Response weightRestrictionsDatex2BySituationId(
@@ -293,7 +293,7 @@ public class DataController {
 
     @ApiOperation(value = "Weight restriction Datex2 messages history",
                   notes = DATEX2_API_NOTES)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
         @ApiResponse(code = 400, message = "Invalid parameter"),
         @ApiResponse(code = 404, message = "Situation id not found")})
@@ -311,7 +311,7 @@ public class DataController {
     }
 
     @ApiOperation("Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of sensor constants and values"))
     public TmsSensorConstantRootDto tmsSensorConstants(
         @ApiParam("If parameter is given result will only contain update status")
@@ -322,7 +322,7 @@ public class DataController {
 
 //    // TODO FIXME only for testing, must be removed
 //    @ApiOperation(value = "Work Machine Tracking data")
-//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_VALUE })
 //    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
 //    public List<WorkMachineTracking> workMachineTrackings() {
 //        return maintenanceDataService.findAll();
@@ -330,7 +330,7 @@ public class DataController {
 //
 //    // TODO FIXME only for testing, must be removed
 //    @ApiOperation(value = "Work Machine Observation data")
-//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_UTF8_VALUE })
+//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_VALUE })
 //    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
 //    public List<WorkMachineObservation> workMachineObservations() {
 //        return maintenanceDataService.finAllWorkMachineObservations();

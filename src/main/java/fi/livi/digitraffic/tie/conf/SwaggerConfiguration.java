@@ -93,7 +93,7 @@ public class SwaggerConfiguration {
                 typeResolver.resolve(MultiLineString.class),
                 typeResolver.resolve(Point.class)
             )
-            .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE)))
+            .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_VALUE)))
             .apiInfo(metadataApiInfoService.getApiInfo())
             .select()
             .paths(apiPaths)

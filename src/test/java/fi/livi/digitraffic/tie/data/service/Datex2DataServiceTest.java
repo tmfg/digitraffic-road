@@ -190,7 +190,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
     private void findActiveTrafficAlertsAndAssert(final String situationId, final boolean found, final int inactiveHours) {
         final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(inactiveHours);
-        Assert.assertEquals(found,
+        assertEquals(found,
                             allActive.getDisorder().stream()
                                 .filter(d ->
                                     ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituation().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()

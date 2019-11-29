@@ -73,10 +73,10 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
                         AssertionErrors.assertTrue("Content type not set", contentType != null);
 
                         MatcherAssert.assertThat(MediaType.valueOf(contentType), Matchers.anyOf(
-                            Matchers.is(MediaType.APPLICATION_JSON_UTF8),
+                            Matchers.is(MediaType.APPLICATION_JSON),
                             Matchers.is(MediaType.APPLICATION_XML)));
 
-                        if (Matchers.is(MediaType.APPLICATION_JSON_UTF8).matches(MediaType.valueOf(contentType))) {
+                        if (Matchers.is(MediaType.APPLICATION_JSON).matches(MediaType.valueOf(contentType))) {
                             jsonPath("$.dataUpdatedTime", Matchers.notNullValue()).match(mvcResult);
                         }
                     });

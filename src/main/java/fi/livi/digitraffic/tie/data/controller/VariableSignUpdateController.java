@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -37,7 +37,7 @@ public class VariableSignUpdateController {
     }
 
     @ApiOperation("Posting variable sign metadata from TLOIK")
-    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of variable sign metadata from TLOIK"))
     public ResponseEntity<Void> postVariableSignMetadata(@RequestBody Metatiedot metadata) {
         variableSignUpdateService.saveMetadata(metadata);
@@ -46,7 +46,7 @@ public class VariableSignUpdateController {
     }
 
     @ApiOperation("Posting variable sign data from TLOIK")
-    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of variable sign data from TLOIK"))
     public ResponseEntity<Void> postTrafficSignData(@RequestBody Tilatiedot data) {
         variableSignUpdateService.saveData(data);

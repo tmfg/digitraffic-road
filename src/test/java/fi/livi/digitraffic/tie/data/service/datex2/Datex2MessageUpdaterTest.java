@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
@@ -38,6 +37,11 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
 @Import({ Datex2SimpleMessageUpdater.class, Datex2WeightRestrictionsHttpClient.class, Datex2RoadworksHttpClient.class, RestTemplateConfiguration.class,
           Datex2DataService.class })
 public class Datex2MessageUpdaterTest extends AbstractServiceTest {
+
+    private static final String DISORDER1_GUID = "GUID50365428";
+    private static final String DISORDER2_GUID = "GUID50365429";
+    private static final String DISORDER2_END_PLACEHOLDER = "DISORDER2_END_PLACEHOLDER";
+
     @Autowired
     private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 

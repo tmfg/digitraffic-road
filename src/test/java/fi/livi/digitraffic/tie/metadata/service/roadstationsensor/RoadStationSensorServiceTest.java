@@ -6,12 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
 
 public class RoadStationSensorServiceTest extends AbstractServiceTest {
     @Autowired

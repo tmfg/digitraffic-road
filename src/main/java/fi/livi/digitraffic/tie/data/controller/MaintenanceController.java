@@ -48,7 +48,7 @@ public class MaintenanceController {
     }
 
     @ApiOperation("Posting real-time tracking information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = WORK_MACHINE_TRACKING_PATH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = WORK_MACHINE_TRACKING_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of real-time tracking information for a work machine from HARJA"))
     public ResponseEntity<Void> postWorkMachineTrackingData(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {

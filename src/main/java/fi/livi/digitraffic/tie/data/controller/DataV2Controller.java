@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.data.controller.DataController.FORECAST_SE
 import static fi.livi.digitraffic.tie.data.controller.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
@@ -48,7 +47,7 @@ public class DataV2Controller {
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam("If parameter is given result will only contain update status")
@@ -63,7 +62,7 @@ public class DataV2Controller {
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by road number")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam(value = "RoadNumber to get data for")
@@ -74,7 +73,8 @@ public class DataV2Controller {
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2 by bounding box")
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}",
+                    produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)

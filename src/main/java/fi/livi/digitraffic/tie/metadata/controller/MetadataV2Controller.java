@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.controller;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON_UTF8;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
 import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FORECAST_SECTIONS_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
@@ -49,7 +49,7 @@ public class MetadataV2Controller {
         this.variableSignService = variableSignService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
                                                                                             MEDIA_TYPE_APPLICATION_GEO_JSON,
                                                                                             MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2")
@@ -65,7 +65,7 @@ public class MetadataV2Controller {
             null,null, naturalIds);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { MEDIA_TYPE_APPLICATION_JSON,
                                                                                                               MEDIA_TYPE_APPLICATION_GEO_JSON,
                                                                                                               MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2 by road number")
@@ -76,9 +76,10 @@ public class MetadataV2Controller {
             null, null, null);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = { MEDIA_TYPE_APPLICATION_JSON_UTF8,
-                                                                                                                                                           MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                                                                                           MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = {
+        MEDIA_TYPE_APPLICATION_JSON,
+        MEDIA_TYPE_APPLICATION_GEO_JSON,
+        MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiOperation("The static information of weather forecast sections V2 by bounding box")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(

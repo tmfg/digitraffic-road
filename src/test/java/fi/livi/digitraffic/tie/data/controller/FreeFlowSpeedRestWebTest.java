@@ -20,7 +20,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
                             RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.FREE_FLOW_SPEEDS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
@@ -33,7 +33,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
                 RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.FREE_FLOW_SPEEDS_PATH + "/tms/23801"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))

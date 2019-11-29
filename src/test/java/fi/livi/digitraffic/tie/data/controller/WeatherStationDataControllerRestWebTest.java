@@ -42,7 +42,7 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
                             RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.WEATHER_DATA_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0]", Matchers.notNullValue()))
@@ -62,7 +62,7 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
                 RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.WEATHER_DATA_PATH + "/1034"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0]", Matchers.notNullValue()))

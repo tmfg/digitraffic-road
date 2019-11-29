@@ -129,6 +129,6 @@ public class Datex2SimpleMessageUpdater {
         d2.setPayloadPublication(newSp);
 
         final JAXBElement<D2LogicalModel> element = new ObjectFactory().createD2LogicalModel(d2);
-        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(element), null, d2);
+        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(element), importTime, d2);
     }
 }

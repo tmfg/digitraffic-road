@@ -34,7 +34,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                             RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                             DataController.CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
@@ -53,7 +53,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                 RoadWebApplicationConfiguration.API_DATA_PART_PATH +
                 DataController.CAMERA_DATA_PATH + "/" + cameraId)) // C08520
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))

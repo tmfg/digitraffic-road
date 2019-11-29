@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
@@ -31,6 +32,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.google.common.collect.Iterables;
+
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 
@@ -196,7 +198,7 @@ public class DefaultExceptionHandler {
 
     private ResponseEntity getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
         final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         final ErrorResponse response = new ErrorResponse(Timestamp.from(ZonedDateTime.now().toInstant()), httpStatus.value(), httpStatus.getReasonPhrase(), errorMsg,
             request.getRequest().getRequestURI());
