@@ -65,12 +65,10 @@ public class TmsStationMetadata2Datex2Converter {
                 .withMeasurementSiteTableIdentification(MEASUREMENT_SITE_TABLE_IDENTIFICATION)
                 .withVersion(MEASUREMENT_SITE_TABLE_VERSION);
 
-        stations.stream().forEach(station -> {
-                station.getRoadStation().getRoadStationSensors().stream().sorted(Comparator.comparingLong(RoadStationSensor::getNaturalId))
-                .forEach(sensor -> siteTable.getMeasurementSiteRecord().add(getMeasurementSiteRecord(station, sensor)));
-        });
+        stations.forEach(station -> station.getRoadStation().getRoadStationSensors().stream().sorted(Comparator.comparingLong(RoadStationSensor::getNaturalId))
+        .forEach(sensor -> siteTable.getMeasurementSiteRecords().add(getMeasurementSiteRecord(station, sensor))));
 
-        measurementSiteTablePublication.getMeasurementSiteTable().add(siteTable);
+        measurementSiteTablePublication.getMeasurementSiteTables().add(siteTable);
 
         return model;
     }
@@ -109,7 +107,7 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MultilingualString getName(final RoadStationSensor sensor) {
         return new MultilingualString().withValues(new MultilingualString.Values()
-                                                       .withValue(new MultilingualStringValue()
+                                                       .withValues(new MultilingualStringValue()
                                                                       .withLang("fi")
                                                                       .withValue(sensor.getNameFi())));
     }

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static fi.livi.digitraffic.tie.data.controller.DataController.DATEX2_API_NOTES;
+import static fi.livi.digitraffic.tie.data.controller.DataController.TRAFFIC_DISORDERS_DATEX2_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -7,6 +9,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
+import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsStationDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
@@ -46,15 +51,29 @@ public class BetaController {
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final CameraPresetHistoryService cameraPresetHistoryService;
+    private final Datex2DataService datex2DataService;
 
     @Autowired
     public BetaController(final VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
-        final TmsDataDatex2Service tmsDataDatex2Service,
-                          final CameraPresetHistoryService cameraPresetHistoryService) {
+                          final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
+                          final Datex2DataService datex2DataService) {
         this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.cameraPresetHistoryService = cameraPresetHistoryService;
+        this.datex2DataService = datex2DataService;
+    }
+
+    @ApiOperation(value = "Active traffic disorders Datex2 messages",
+                  notes = DATEX2_API_NOTES)
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE , APPLICATION_JSON_VALUE})
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
+    public D2LogicalModel trafficDisordersDatex2(
+        @ApiParam(value = "Return traffic disorders from given amount of hours in the past.")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final int inactiveHours) {
+        return datex2DataService.findActiveTrafficDisordersAsD2LogicalModel(inactiveHours);
     }
 
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")

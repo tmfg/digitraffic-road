@@ -27,8 +27,8 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "WHERE d.id IN (\n" +
             "  SELECT datex2_id\n" +
             "  FROM (\n" +
-                      // Latest Datex2-message of situation and it's last record by end time\n" +
-            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY d.PUBLICATION_TIME DESC, record.OVERALL_END_TIME DESC NULLS LAST) AS rnum\n" +
+                      // Latest Datex2-message of situation and it's latest record version\n" +
+            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC NULLS LAST) AS rnum\n" +
             "           , d.publication_time\n" +
             "           , d.id AS datex2_id\n" +
             "           , record.validy_status\n" +
@@ -52,7 +52,9 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "FROM datex2 d\n" +
         "WHERE d.publication_time >= date_trunc('month', TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'))\n" +
         "AND d.publication_time < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1\n" +
-        "AND d.message_type = :messageType\n", nativeQuery = true)
+        "AND d.message_type = :messageType\n" +
+        "ORDER BY d.publication_time desc, d.id desc",
+           nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findHistory(@Param("messageType") final String messageType,
                              @Param("year") final int year,
@@ -67,7 +69,9 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    WHERE situation.datex2_id = d.id\n" + "                AND situation.situation_id = :situationId\n" +
         "    AND d.publication_time >= date_trunc('month'. TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY'))\n" +
         "    AND d.publication_time < LAST_DAY(TO_DATE('1.' || :month || '.' || :year, 'DD.MM.YYYY')) + 1\n" +
-        "    AND d.message_type = :messageType\n" + "            )", nativeQuery = true)
+        "    AND d.message_type = :messageType\n" + "            )\n" +
+        "ORDER BY d.publication_time desc, d.id desc",
+           nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findHistoryBySituationId(@Param("messageType") final String messageType,
                                           @Param("situationId") final String situationId,
@@ -95,7 +99,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "SELECT situation_id, version_time\n" +
         "FROM (\n" +
         "    SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC) AS rnum\n" +
-        "    , situation.situation_id, record.version_time, record.validy_status\n" +
+        "    , situation.situation_id, record.version_time\n" +
         "    FROM DATEX2 d\n" +
         "    INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
         "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +

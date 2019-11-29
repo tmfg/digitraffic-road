@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = "datex2.traffic.alerts.url=Datex2Url")
@@ -136,9 +136,9 @@ public class Datex2MessageUpdaterTest extends AbstractServiceTest {
     private void findActiveTrafficAlertsAndAssert(final String situationId, final boolean found, final int inactiveHours) {
         final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(inactiveHours);
         Assert.assertEquals(found,
-            allActive.getDisorder().stream()
+            allActive.getDisorders().stream()
                 .filter(d ->
-                    ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituation().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()
+                    ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituations().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()
                 ).findFirst().isPresent());
     }
 

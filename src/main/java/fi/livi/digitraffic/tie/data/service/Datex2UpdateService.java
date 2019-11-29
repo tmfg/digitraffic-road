@@ -5,13 +5,18 @@ import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISOR
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.functors.IdentityPredicate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,21 +87,40 @@ public class Datex2UpdateService {
     private int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {
         for (final Datex2MessageDto message : data) {
             final Datex2 datex2 = new Datex2();
+            final D2LogicalModel d2 = message.model;
+            checkOnyOneSituation(d2);
+            final ZonedDateTime latestVersionTime = getLatestSituationRecordVersionTime(d2);
 
             if (message.importTime != null) {
                 datex2.setImportTime(message.importTime);
             } else {
-                datex2.setImportTime(ZonedDateTime.now());
+                datex2.setImportTime(latestVersionTime != null ? latestVersionTime : ZonedDateTime.now());
             }
             datex2.setMessage(message.message);
             datex2.setMessageType(messageType);
-
-            final D2LogicalModel datex = message.model;
-            parseAndAppendPayloadPublicationData(datex.getPayloadPublication(), datex2);
+            log.info("setImportTime {} {}", datex2.getImportTime(), ((SituationPublication)d2.getPayloadPublication()).getSituations().get(0).getId());
+            parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
         }
 
         return data.size();
+    }
+
+    private void checkOnyOneSituation(D2LogicalModel d2) {
+        final int situations = ((SituationPublication) d2.getPayloadPublication()).getSituations().size();
+        if ( situations > 1 ) {
+            log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");
+            throw new java.lang.IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
+                                                         "there was " + situations);
+        }
+    }
+
+    private ZonedDateTime getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
+        final Instant latest = Datex2DataService.getSituationPublication(d2).getSituations().stream()
+            .map(s -> s.getSituationRecords().stream()
+                .map(r -> DateHelper.toInstant(r.getSituationRecordVersionTime())).max(Comparator.naturalOrder()).orElseThrow())
+            .max(Comparator.naturalOrder()).orElseThrow();
+        return DateHelper.toZonedDateTimeAtUtc(latest);
     }
 
     private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
@@ -109,7 +133,7 @@ public class Datex2UpdateService {
     }
 
     private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
-        final List<Situation> situations = situationPublication.getSituation();
+        final List<Situation> situations = situationPublication.getSituations();
         for (final Situation situation : situations) {
             final Datex2Situation d2Situation = new Datex2Situation();
 
@@ -118,7 +142,7 @@ public class Datex2UpdateService {
             d2Situation.setSituationId(situation.getId());
             d2Situation.setVersionTime(DateHelper.toZonedDateTimeWithoutMillis(situation.getSituationVersionTime()));
 
-            parseAndAppendSituationRecordData(situation.getSituationRecord(), d2Situation);
+            parseAndAppendSituationRecordData(situation.getSituationRecords(), d2Situation);
         }
     }
 
@@ -130,11 +154,11 @@ public class Datex2UpdateService {
             d2SituationRecord.setType(Datex2SituationRecordType.fromRecord(record.getClass()));
 
             // Only first comment seems to be valid
-            final List<Comment> pc = record.getGeneralPublicComment();
+            final List<Comment> pc = record.getGeneralPublicComments();
             if (pc != null && !pc.isEmpty()) {
                 final Comment comment = pc.get(0);
                 final MultilingualString.Values values = comment.getComment().getValues();
-                final List<SituationRecordCommentI18n> comments = joinComments(values.getValue());
+                final List<SituationRecordCommentI18n> comments = joinComments(values.getValues());
                 d2SituationRecord.setPublicComments(comments);
             }
 

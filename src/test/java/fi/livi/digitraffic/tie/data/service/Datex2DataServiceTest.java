@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
 
 @Import({Datex2DataService.class, Datex2UpdateService.class})
 public class Datex2DataServiceTest extends AbstractServiceTest {
@@ -71,6 +71,8 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         datex2Repository.deleteAll();
         assertTrue(datex2Repository.findAll().isEmpty());
     }
+
+
 
     @Test(expected = ObjectNotFoundException.class)
     public void getAllTrafficDisordersBySituationIdNotFound() {
@@ -138,11 +140,11 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
         findTrafficAlertsAndAssert(DISORDER2_GUID, true);
 
         final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(0);
-        assertCollectionSize(1, allActive.getDisorder());
+        assertCollectionSize(1, allActive.getDisorders());
 
         final SituationPublication active = getSituationPublication(allActive);
-        assertCollectionSize(1, active.getSituation());
-        assertTrue(active.getSituation().get(0).getId().equals(DISORDER2_GUID));
+        assertCollectionSize(1, active.getSituations());
+        assertTrue(active.getSituations().get(0).getId().equals(DISORDER2_GUID));
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -158,7 +160,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
         updateRoadworks(roadwork1);
 
-        assertCollectionSize(1, datex2DataService.findActiveRoadworks(0).getRoadwork());
+        assertCollectionSize(1, datex2DataService.findActiveRoadworks(0).getRoadworks());
 
         assertNotNull(datex2DataService.getAllRoadworksBySituationId(ROADWORK1_GUID));
     }
@@ -176,7 +178,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
 
         updateWeightRestrictions(weightRestriction1);
 
-        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions(0).getRestriction());
+        assertCollectionSize(1, datex2DataService.findActiveWeightRestrictions(0).getRestrictions());
 
         assertNotNull(datex2DataService.getAllWeightRestrictionsBySituationId(WR1_GUID));
     }
@@ -191,9 +193,9 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     private void findActiveTrafficAlertsAndAssert(final String situationId, final boolean found, final int inactiveHours) {
         final TrafficDisordersDatex2Response allActive = datex2DataService.findActiveTrafficDisorders(inactiveHours);
         assertEquals(found,
-                            allActive.getDisorder().stream()
+                            allActive.getDisorders().stream()
                                 .filter(d ->
-                                    ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituation().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()
+                                    ((SituationPublication) d.getD2LogicalModel().getPayloadPublication()).getSituations().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent()
                                 ).findFirst().isPresent());
     }
 
@@ -203,7 +205,7 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
             assertTrue(found);
 
             final SituationPublication s = getSituationPublication(response);
-            assertEquals(situationId, s.getSituation().get(0).getId());
+            assertEquals(situationId, s.getSituations().get(0).getId());
             return response;
         } catch (final ObjectNotFoundException onfe) {
             // OK
@@ -215,8 +217,8 @@ public class Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     private static SituationPublication getSituationPublication(final TrafficDisordersDatex2Response response) {
-        assertTrue(response.getDisorder().size() == 1);
-        return ((SituationPublication) response.getDisorder().get(0).getD2LogicalModel().getPayloadPublication());
+        assertTrue(response.getDisorders().size() == 1);
+        return ((SituationPublication) response.getDisorders().get(0).getD2LogicalModel().getPayloadPublication());
     }
 
     private D2LogicalModel createModel(final String datex2Content) {

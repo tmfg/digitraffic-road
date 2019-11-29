@@ -88,7 +88,7 @@ public class TmsStationData2Datex2Converter {
                                                   .withId(TmsStationMetadata2Datex2Converter.getMeasurementSiteReference(station.getNaturalId(), sensorValue.getSensorNaturalId()))
                                                   .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_RECORD_VERSION))
                 .withMeasurementTimeDefault(DateHelper.toXMLGregorianCalendarAtUtc(sensorValue.getStationLatestMeasuredTime()))
-                .withMeasuredValue(new SiteMeasurementsIndexMeasuredValue()
+                .withMeasuredValues(new SiteMeasurementsIndexMeasuredValue()
                                        .withIndex(1) // Only one measurement per sensor
                                        .withMeasuredValue(new MeasuredValue().withBasicData(data)));
         } else {

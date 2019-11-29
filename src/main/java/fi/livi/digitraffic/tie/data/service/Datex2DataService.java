@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRI
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,14 @@ import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObservationTimeType;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedRoadworkDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedTrafficDisorderDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TimestampedWeightRestrictionDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.ObservationTimeType;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedRoadworkDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedWeightRestrictionDatex2;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
 
 @Service
 public class Datex2DataService {
@@ -79,8 +81,8 @@ public class Datex2DataService {
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
 
-    private final List<Datex2> findDatex2Messages(final Datex2MessageType messageType, final String situationId,
-        final int year, final int month) {
+    private List<Datex2> findDatex2Messages(final Datex2MessageType messageType, final String situationId,
+                                            final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -90,7 +92,7 @@ public class Datex2DataService {
             : datex2Repository.findHistory(messageType.name(), year, month);
     }
 
-    public ZonedDateTime findLatestImportTime(final Datex2MessageType messageType) {
+    private ZonedDateTime findLatestImportTime(final Datex2MessageType messageType) {
         return DateHelper.toZonedDateTimeAtUtc(datex2Repository.findLatestImportTime(messageType.name()));
     }
 
@@ -130,6 +132,12 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public D2LogicalModel findActiveTrafficDisordersAsD2LogicalModel(final int inactiveHours) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
+        return convertToD2LogicalModel(allActive);
+    }
+
+    @Transactional(readOnly = true)
     public RoadworksDatex2Response findActiveRoadworks(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(ROADWORK.name(), inactiveHours);
         return convertToRoadworksDatex2Response(allActive);
@@ -146,7 +154,7 @@ public class Datex2DataService {
             .map(d2 -> unmarshallWeightRestriction(d2.getMessage(), d2.getImportTime()))
             .collect(Collectors.toList());
 
-        return new WeightRestrictionsDatex2Response().withRestriction(roadworks);
+        return new WeightRestrictionsDatex2Response().withRestrictions(roadworks);
     }
 
     private RoadworksDatex2Response convertToRoadworksDatex2Response(final List<Datex2> list) {
@@ -154,7 +162,7 @@ public class Datex2DataService {
             .map(d2 -> unmarshallRoadwork(d2.getMessage(), d2.getImportTime()))
             .collect(Collectors.toList());
 
-        return new RoadworksDatex2Response().withRoadwork(roadworks);
+        return new RoadworksDatex2Response().withRoadworks(roadworks);
     }
 
     private TrafficDisordersDatex2Response convertToTrafficDisordersDatex2Response(final List<Datex2> datex2s) {
@@ -169,7 +177,40 @@ public class Datex2DataService {
                 }
             }
         }
-        return new TrafficDisordersDatex2Response().withDisorder(timestampedTrafficDisorderDatex2s);
+        return new TrafficDisordersDatex2Response().withDisorders(timestampedTrafficDisorderDatex2s);
+    }
+
+    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
+
+        // conver Datex2s to D2LogicalModels
+        final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
+            .map(datex2 -> (D2LogicalModel) stringToObjectMarshaller.convertToObject(datex2.getMessage()))
+            .filter(d2 -> d2.getPayloadPublication() != null)
+            .sorted(Comparator.comparing((D2LogicalModel d2) -> DateHelper.toInstant(d2.getPayloadPublication().getPublicationTime())).reversed())
+            .collect(Collectors.toList());
+
+        if (modelsNewestFirst.isEmpty()) {
+            return new D2LogicalModel();
+        }
+
+        // Append all older situations to newest and return newest that combines all situations
+        final D2LogicalModel newesModel = modelsNewestFirst.remove(0);
+        SituationPublication situationPublication = getSituationPublication(newesModel);
+        modelsNewestFirst.forEach(d2 -> {
+            final SituationPublication toAdd = getSituationPublication(d2);
+            situationPublication.getSituations().addAll(toAdd.getSituations());
+        });
+        return newesModel;
+    }
+
+    static SituationPublication getSituationPublication(final D2LogicalModel model) {
+        if (model.getPayloadPublication() instanceof SituationPublication) {
+            return (SituationPublication) model.getPayloadPublication();
+        } else {
+            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
+            log.error(err);
+            throw new RuntimeException(err);
+        }
     }
 
     private TimestampedTrafficDisorderDatex2 unmarshallTrafficDisorder(final String datex2Xml, final ZonedDateTime importTime) {
@@ -179,11 +220,9 @@ public class Datex2DataService {
                     new ObservationTimeType()
                             .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
                             .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
-            final TimestampedTrafficDisorderDatex2 tsDatex2 =
-                    new TimestampedTrafficDisorderDatex2()
-                            .withD2LogicalModel(d2LogicalModel)
-                            .withPublished(published);
-            return tsDatex2;
+            return new TimestampedTrafficDisorderDatex2()
+                    .withD2LogicalModel(d2LogicalModel)
+                    .withPublished(published);
         } catch (final XmlMappingException e) {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
@@ -198,11 +237,9 @@ public class Datex2DataService {
                 new ObservationTimeType()
                     .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
                     .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
-            final TimestampedRoadworkDatex2 tsDatex2 =
-                new TimestampedRoadworkDatex2()
-                    .withD2LogicalModel(d2LogicalModel)
-                    .withPublished(published);
-            return tsDatex2;
+            return new TimestampedRoadworkDatex2()
+                .withD2LogicalModel(d2LogicalModel)
+                .withPublished(published);
         } catch (final XmlMappingException e) {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }
@@ -217,11 +254,9 @@ public class Datex2DataService {
                 new ObservationTimeType()
                     .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
                     .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
-            final TimestampedWeightRestrictionDatex2 tsDatex2 =
-                new TimestampedWeightRestrictionDatex2()
-                    .withD2LogicalModel(d2LogicalModel)
-                    .withPublished(published);
-            return tsDatex2;
+            return new TimestampedWeightRestrictionDatex2()
+                .withD2LogicalModel(d2LogicalModel)
+                .withPublished(published);
         } catch (final XmlMappingException e) {
             log.error("Failed to unmarshal datex2 message: " + datex2Xml, e);
         }

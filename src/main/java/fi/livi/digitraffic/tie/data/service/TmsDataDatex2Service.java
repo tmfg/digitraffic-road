@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.TmsStationData2Datex2Converter;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TmsDataDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;

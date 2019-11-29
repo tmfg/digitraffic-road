@@ -32,9 +32,9 @@ import fi.livi.digitraffic.tie.data.service.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.data.service.WeatherService;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -256,7 +256,7 @@ public class DataController {
         @ApiResponse(code = 400, message = "Invalid parameter"),
         @ApiResponse(code = 404, message = "Situation id not found")})
     public RoadworksDatex2Response roadworksDatex2OfHistory(
-        @ApiParam(value = "Situation id", required = false)
+        @ApiParam(value = "Situation id")
         @RequestParam(required = false)
         final String situationId,
         @ApiParam(value = "Year (>2014)", required = true)
@@ -298,7 +298,7 @@ public class DataController {
         @ApiResponse(code = 400, message = "Invalid parameter"),
         @ApiResponse(code = 404, message = "Situation id not found")})
     public WeightRestrictionsDatex2Response weightRestrictionsDatex2OfHistory(
-        @ApiParam(value = "Situation id", required = false)
+        @ApiParam(value = "Situation id")
         @RequestParam(required = false)
         final String situationId,
         @ApiParam(value = "Year (>2014)", required = true)

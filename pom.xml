@@ -528,7 +528,11 @@
                             <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
                             <xsdOptions>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
+                                    <extension>true</extension>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIBinding.xjb</bindingFile>
+                                    </bindingFiles>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
                                     <extensionArgs>
                                         <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
@@ -538,6 +542,28 @@
                                         <extensionArg>-Xfluent-api</extensionArg>
                                         <extensionArg>-npa</extensionArg>
                                         <extensionArg>-mark-generated</extensionArg>
+                                        <extensionArg>-extension</extensionArg>
+                                        <extensionArg>-episode</extensionArg>
+                                        <extensionArg>D2LogicalModel.episode</extensionArg>
+                                    </extensionArgs>
+                                </xsdOption>
+                                <xsdOption>
+                                    <extension>true</extension>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseBinding.xjb</bindingFile>
+                                    </bindingFiles>
+                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
+                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2.response</packagename>
+                                    <extensionArgs>
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <extensionArg>-XautoNameResolution</extensionArg>
+                                        <!--Generate withProperty methods-->
+                                        <extensionArg>-Xfluent-api</extensionArg>
+                                        <extensionArg>-npa</extensionArg>
+                                        <extensionArg>-mark-generated</extensionArg>
+                                        <extensionArg>-b</extensionArg>
+                                        <extensionArg>D2LogicalModel.episode</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
                                 <xsdOption>

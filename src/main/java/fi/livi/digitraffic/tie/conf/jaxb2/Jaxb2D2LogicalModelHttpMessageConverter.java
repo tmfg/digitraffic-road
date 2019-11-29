@@ -12,21 +12,16 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 
 import com.google.common.collect.Sets;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 
-public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
-    private static final Logger log = LoggerFactory.getLogger(Jaxb2Datex2ResponseHttpMessageConverter.class);
+public class Jaxb2D2LogicalModelHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
+    private static final Logger log = LoggerFactory.getLogger(Jaxb2D2LogicalModelHttpMessageConverter.class);
 
-    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class,
-        TmsDataDatex2Response.class, RoadworksDatex2Response.class, WeightRestrictionsDatex2Response.class);
+    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(D2LogicalModel.class);
 
     private final String schemaDomainUrlAndPath;
 
-    public Jaxb2Datex2ResponseHttpMessageConverter(final String schemaDomainUrlAndPath) {
+    public Jaxb2D2LogicalModelHttpMessageConverter(final String schemaDomainUrlAndPath) {
         this.schemaDomainUrlAndPath = schemaDomainUrlAndPath;
     }
 
@@ -45,14 +40,12 @@ public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHtt
         return SUPPORTED.contains(clazz);
     }
 
-    @Override // 16105
+    @Override
     protected void customizeMarshaller(final Marshaller marshaller) {
         super.customizeMarshaller(marshaller);
         try {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,
-                "https://tie.digitraffic.fi/schemas/ " +
-                schemaDomainUrlAndPath + "DATEXIIResponseSchema_1_1.xsd " +
                 "http://datex2.eu/schema/2/2_0 " +
                 schemaDomainUrlAndPath + "DATEXIISchema_2_2_3_with_definitions_FI.xsd"
             );

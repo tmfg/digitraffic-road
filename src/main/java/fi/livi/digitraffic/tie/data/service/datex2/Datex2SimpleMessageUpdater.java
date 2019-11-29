@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBElement;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.ObjectFactory;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
@@ -35,7 +32,8 @@ public class Datex2SimpleMessageUpdater {
     private final Datex2UpdateService datex2UpdateService;
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller stringToObjectMarshaller;
+
+    private static StringToObjectMarshaller stringToObjectMarshaller;
 
     private static final Logger log = LoggerFactory.getLogger(Datex2SimpleMessageUpdater.class);
 
@@ -51,7 +49,7 @@ public class Datex2SimpleMessageUpdater {
         this.datex2TrafficAlertHttpClient = datex2TrafficAlertHttpClient;
         this.datex2UpdateService = datex2UpdateService;
         this.datex2Repository = datex2Repository;
-        this.stringToObjectMarshaller = stringToObjectMarshaller;
+        Datex2SimpleMessageUpdater.stringToObjectMarshaller = stringToObjectMarshaller;
     }
 
     @Transactional
@@ -59,11 +57,16 @@ public class Datex2SimpleMessageUpdater {
         final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
         final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
 
+        final ArrayList<Datex2MessageDto> unmarshalled = convert(messages);
+        return datex2UpdateService.updateTrafficAlerts(unmarshalled);
+    }
+
+    private ArrayList<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
         final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
         for (final Pair<String, Instant> message : messages) {
             unmarshalled.addAll(convert(message.getLeft(), Datex2MessageType.TRAFFIC_DISORDER, DateHelper.toZonedDateTimeAtUtc(message.getRight())));
         }
-        return datex2UpdateService.updateTrafficAlerts(unmarshalled);
+        return unmarshalled;
     }
 
     @Transactional
@@ -80,7 +83,8 @@ public class Datex2SimpleMessageUpdater {
         datex2UpdateService.updateWeightRestrictions(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
     }
 
-    private List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType, final ZonedDateTime importTime) {
+    @Transactional(readOnly = true)
+    public List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType, final ZonedDateTime importTime) {
         final D2LogicalModel model = stringToObjectMarshaller.convertToObject(message);
 
         return createModels(model, messageType, importTime);
@@ -90,13 +94,13 @@ public class Datex2SimpleMessageUpdater {
         final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
 
         final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
-        final long updatedCount = sp.getSituation().stream().filter(s -> versionTimes.get(s.getId()) != null &&
+        final long updatedCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) != null &&
                                                                     isNewOrUpdatedSituation(versionTimes.get(s.getId()), s)).count();
-        final long newCount = sp.getSituation().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
+        final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
         log.info("situations.updated={} situations.new={}", updatedCount, newCount);
 
-        return sp.getSituation().stream()
+        return sp.getSituations().stream()
             .filter(s -> isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
             .map(s -> convert(main, sp, s, importTime))
             .collect(Collectors.toList());
@@ -104,7 +108,7 @@ public class Datex2SimpleMessageUpdater {
 
     private static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
         // does any record have new version time?
-        return situation.getSituationRecord().stream().anyMatch(r -> isNewOrUpdatedRecord(latestVersionTime, r));
+        return situation.getSituationRecords().stream().anyMatch(r -> isNewOrUpdatedRecord(latestVersionTime, r));
     }
 
     private static boolean isNewOrUpdatedRecord(final ZonedDateTime latestVersionTime, final SituationRecord record) {
@@ -122,13 +126,12 @@ public class Datex2SimpleMessageUpdater {
         newSp.setPublicationTime(sp.getPublicationTime());
         newSp.setPublicationCreator(sp.getPublicationCreator());
         newSp.setLang(sp.getLang());
-        newSp.withSituation(situation);
+        newSp.withSituations(situation);
 
         d2.setModelBaseVersion(main.getModelBaseVersion());
         d2.setExchange(main.getExchange());
         d2.setPayloadPublication(newSp);
 
-        final JAXBElement<D2LogicalModel> element = new ObjectFactory().createD2LogicalModel(d2);
-        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(element), importTime, d2);
+        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(d2), importTime, d2);
     }
 }

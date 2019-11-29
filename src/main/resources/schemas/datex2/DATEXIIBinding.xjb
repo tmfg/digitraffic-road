@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<jaxb:bindings version="1.0"
+              xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc= "http://java.sun.com/xml/ns/jaxb/xjc"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jaxb:bindings schemaLocation="DATEXIISchema_2_2_3_with_definitions_FI.xsd" node="/xs:schema">
+        <jaxb:globalBindings>
+            <xjc:simple/>
+        </jaxb:globalBindings>
+    </jaxb:bindings>
+</jaxb:bindings>
