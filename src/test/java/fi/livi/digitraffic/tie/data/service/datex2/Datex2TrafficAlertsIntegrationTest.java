@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service.datex2;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -22,7 +23,7 @@ public class Datex2TrafficAlertsIntegrationTest extends AbstractServiceTest {
     private Datex2Repository datex2Repository;
     @Test
     @Rollback(false)
-//    @Ignore("For manual integration testing")
+    @Ignore("For manual integration testing")
     public void updateTrafficAlertMessages() {
         // Uncomment if clean up first
 //        datex2Repository.deleteAll();
