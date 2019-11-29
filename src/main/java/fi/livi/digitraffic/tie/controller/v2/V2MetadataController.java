@@ -1,11 +1,12 @@
-package fi.livi.digitraffic.tie.metadata.controller;
+package fi.livi.digitraffic.tie.controller.v2;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON_UTF8;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
-import static fi.livi.digitraffic.tie.metadata.controller.MetadataController.FORECAST_SECTIONS_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.controller.DataV2Controller;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
@@ -36,14 +36,12 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping(API_V2_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
-public class MetadataV2Controller {
-    public static final String CODE_DESCRIPTIONS = DataV2Controller.VARIABLE_SIGNS_PATH + "/code-descriptions";
-
+public class V2MetadataController {
     private final ForecastSectionV2MetadataService forecastSectionV2MetadataService;
     private final VariableSignService variableSignService;
 
     @Autowired
-    public MetadataV2Controller(final ForecastSectionV2MetadataService forecastSectionV2MetadataService,
+    public V2MetadataController(final ForecastSectionV2MetadataService forecastSectionV2MetadataService,
         final VariableSignService variableSignService) {
         this.forecastSectionV2MetadataService = forecastSectionV2MetadataService;
         this.variableSignService = variableSignService;
@@ -95,7 +93,7 @@ public class MetadataV2Controller {
     }
 
     @ApiOperation("Return all code descriptions.")
-    @GetMapping(path = CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public VariableSignDescriptions listCodeDescriptions() {
         return new VariableSignDescriptions(variableSignService.listVariableSignTypes());

@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_DATA_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -12,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.service.CameraDataService;
 
 public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
@@ -30,9 +32,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     @Test
     public void testCameraDataRestApi() throws Exception {
-        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-                            RoadWebApplicationConfiguration.API_DATA_PART_PATH +
-                            DataController.CAMERA_DATA_PATH))
+        mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
@@ -49,9 +49,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     @Test
     public void testCameraDataRestApiById() throws Exception {
-        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-                RoadWebApplicationConfiguration.API_DATA_PART_PATH +
-                DataController.CAMERA_DATA_PATH + "/" + cameraId)) // C08520
+        mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH + "/" + cameraId)) // C08520
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))

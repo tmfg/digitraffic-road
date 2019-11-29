@@ -1,3 +1,4 @@
+alter table code_description rename column description to description_fi;
 alter table code_description add column description_en CHARACTER VARYING(256);
 
 update code_description set description_en = 'Traffic jam' where code = '133';
