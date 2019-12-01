@@ -45,7 +45,7 @@ public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHtt
         return SUPPORTED.contains(clazz);
     }
 
-    @Override // 16105
+    @Override
     protected void customizeMarshaller(final Marshaller marshaller) {
         super.customizeMarshaller(marshaller);
         try {
