@@ -4,15 +4,15 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.isIn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -29,10 +29,10 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$.features[0].geometry.coordinates", hasSize(3)))
                 .andExpect(jsonPath("$.features[0].properties.weatherStationType", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.roadStationId", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] {"GATHERING", "REMOVED_TEMPORARILY"}))))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
