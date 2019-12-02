@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.metadata.controller.BetaController.CAMERA_HISTORY_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.beta.BetaController.CAMERA_HISTORY_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +25,6 @@ import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 
 // Methods are in BetaController now
 public class CameraHistoryControllerTest extends AbstractRestWebTest {
-
     private static final Logger log = LoggerFactory.getLogger(CameraHistoryControllerTest.class);
 
     @Value("${weathercam.baseUrl}")

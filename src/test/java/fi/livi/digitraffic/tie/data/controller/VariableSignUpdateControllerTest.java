@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.DATA_PATH;
 import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.METADATA_PATH;
 import static org.junit.Assert.assertNotNull;
@@ -19,7 +21,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
 import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
@@ -45,8 +46,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     private void postJson(final String fileName, final String function, final ResultMatcher expectResult) throws Exception {
         final String jsonContent = readResourceContent("classpath:lotju/variable_signs/" + fileName);
 
-        final MockHttpServletRequestBuilder post = post(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-            RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH + function)
+        final MockHttpServletRequestBuilder post = post(API_V1_BASE_PATH + API_VARIABLE_SIGN_UPDATE_PART_PATH + function)
             .content(jsonContent);
 
         post.contentType(MediaType.APPLICATION_JSON);
