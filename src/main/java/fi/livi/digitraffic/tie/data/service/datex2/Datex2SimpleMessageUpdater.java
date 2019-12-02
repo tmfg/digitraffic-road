@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.data.service.datex2;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,16 +56,16 @@ public class Datex2SimpleMessageUpdater {
         final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
         final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
 
-        final ArrayList<Datex2MessageDto> unmarshalled = convert(messages);
+        final List<Datex2MessageDto> unmarshalled = convert(messages);
         return datex2UpdateService.updateTrafficAlerts(unmarshalled);
     }
 
-    private ArrayList<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
-        final ArrayList<Datex2MessageDto> unmarshalled = new ArrayList<>();
-        for (final Pair<String, Instant> message : messages) {
-            unmarshalled.addAll(convert(message.getLeft(), Datex2MessageType.TRAFFIC_DISORDER, DateHelper.toZonedDateTimeAtUtc(message.getRight())));
-        }
-        return unmarshalled;
+    private List<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
+        final List<Datex2MessageDto> all = messages.stream()
+            .map(m -> convert(m.getLeft(), Datex2MessageType.TRAFFIC_DISORDER, DateHelper.toZonedDateTimeAtUtc(m.getRight())))
+            .flatMap(m -> m.stream())
+            .collect(Collectors.toList());
+        return all;
     }
 
     @Transactional
