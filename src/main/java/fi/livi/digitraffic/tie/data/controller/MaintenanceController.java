@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_MAINTENANCE_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_MAINTENANCE_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

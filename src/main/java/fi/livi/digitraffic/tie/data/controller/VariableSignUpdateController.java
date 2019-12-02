@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_VARIABLE_SIGN_UPDATE_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

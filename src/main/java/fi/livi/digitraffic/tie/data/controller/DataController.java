@@ -1,7 +1,16 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.FREE_FLOW_SPEEDS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.ROADWORKS_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_SENSOR_CONSTANTS;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEIGHT_RESTRICTIONS_DATEX2_PATH;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -48,17 +57,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataController {
-    public static final String CAMERA_DATA_PATH = "/camera-data";
-    public static final String TMS_DATA_PATH = "/tms-data";
-    public static final String WEATHER_DATA_PATH = "/weather-data";
-    public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
-    public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
-    public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
-
-    // datex2
-    public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
-    public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
-    public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
     public static final String DATEX2_API_NOTES =
         "Dates are include in multiple formats. Under published tag, there is utc " +
         "and localtime fields that are in UTC (Zulu) time. Other times are in local time " +

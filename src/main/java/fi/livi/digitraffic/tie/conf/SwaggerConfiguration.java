@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.conf;
 
 import static com.google.common.base.Predicates.or;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import java.time.LocalDate;
@@ -25,7 +26,6 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
-
 import fi.livi.digitraffic.tie.data.controller.DataController;
 import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -110,7 +110,8 @@ public class SwaggerConfiguration {
             regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
             regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*"),
             regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
-            regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")
+            regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*"),
+            regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*")
         );
     }
 }

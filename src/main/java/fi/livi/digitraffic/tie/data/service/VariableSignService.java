@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 import fi.livi.digitraffic.tie.metadata.dao.CodeDescriptionRepository;
-import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
+import fi.livi.digitraffic.tie.metadata.dto.CodeDescription;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeature;
@@ -86,7 +86,7 @@ public class VariableSignService {
     }
 
     @Transactional(readOnly = true)
-    public List<CodeDescriptionJson> listVariableSignTypes() {
+    public List<CodeDescription> listVariableSignTypes() {
         return codeDescriptionRepository.listAllVariableSignTypes();
     }
 }

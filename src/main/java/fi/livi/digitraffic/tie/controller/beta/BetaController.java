@@ -1,7 +1,8 @@
-package fi.livi.digitraffic.tie.metadata.controller;
+package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.data.controller.DataController.DATEX2_API_NOTES;
 import static fi.livi.digitraffic.tie.data.controller.DataController.TRAFFIC_DISORDERS_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
+import livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;
@@ -37,10 +38,10 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "beta", description = "Beta apis")
+@Api(tags = "beta")
 @RestController
 @Validated
-@RequestMapping(RoadWebApplicationConfiguration.API_BETA_BASE_PATH)
+@RequestMapping(API_BETA_BASE_PATH)
 @ConditionalOnWebApplication
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";

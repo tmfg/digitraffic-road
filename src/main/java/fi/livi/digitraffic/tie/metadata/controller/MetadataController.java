@@ -1,9 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_STATIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.LOCATIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.LOCATION_TYPES_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.LOCATION_VERSIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_AVAILABLE_SENSORS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_ROAD_NUMBER_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_ROAD_STATION_ID_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_TMS_NUMBER_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
+import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON_UTF8;
 import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
 import static fi.livi.digitraffic.tie.metadata.service.location.LocationService.LATEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -21,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
@@ -51,22 +62,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
 public class MetadataController {
-
-    public static final String TMS_STATIONS_PATH = "/tms-stations";
-    private static final String TMS_STATIONS_TMS_NUMBER_PATH = TMS_STATIONS_PATH + "/tms-number";
-    private static final String TMS_STATIONS_ROAD_NUMBER_PATH = TMS_STATIONS_PATH + "/road-number";
-    private static final String TMS_STATIONS_ROAD_STATION_ID_PATH = TMS_STATIONS_PATH + "/road-station-id";
-
-    static final String TMS_STATIONS_AVAILABLE_SENSORS_PATH = "/tms-sensors";
-    static final String CAMERA_STATIONS_PATH = "/camera-stations";
-    static final String WEATHER_STATIONS_PATH = "/weather-stations";
-    static final String WEATHER_STATIONS_AVAILABLE_SENSORS_PATH = "/weather-sensors";
-
-    public static final String FORECAST_SECTIONS_PATH = "/forecast-sections";
-    static final String LOCATIONS_PATH = "/locations";
-    private static final String LOCATION_VERSIONS_PATH = "/location-versions";
-    private static final String LOCATION_TYPES_PATH = "/location-types";
-
     private final CameraWebService cameraWebService;
     private final TmsStationService tmsStationService;
     private final WeatherStationService weatherStationService;

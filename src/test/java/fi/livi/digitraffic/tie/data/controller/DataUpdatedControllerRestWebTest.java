@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
@@ -59,8 +60,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
        final List<Field> fields = Stream.of(fieldArray).filter(this::filter).collect(Collectors.toList());
 
         for(final Field field : fields) {
-            final String url = RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-                         RoadWebApplicationConfiguration.API_DATA_PART_PATH +
+            final String url = API_V1_BASE_PATH + API_DATA_PART_PATH +
                          field.get(dataController) +
                          "?" + DataController.LAST_UPDATED_PARAM + "=true";
 

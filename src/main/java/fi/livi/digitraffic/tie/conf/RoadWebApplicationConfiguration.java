@@ -27,18 +27,6 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverte
 @ConditionalOnWebApplication
 @Configuration
 public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
-
-    public static final String API_V1_BASE_PATH = "/api/v1";
-    public static final String API_V2_BASE_PATH = "/api/v2";
-    public static final String API_BETA_BASE_PATH = "/api/beta";
-
-    public static final String API_METADATA_PART_PATH = "/metadata";
-    public static final String API_DATA_PART_PATH = "/data";
-    public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
-    public static final String API_VARIABLE_SIGN_UPDATE_PART_PATH = "/variable-sign-update";
-
-    public static final String WEATHERCAM_PATH = "/weathercam";
-
     private final ConfigurableApplicationContext applicationContext;
 
     // Match when there is no http in location start
