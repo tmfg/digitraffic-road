@@ -3,9 +3,9 @@ package fi.livi.digitraffic.tie.metadata.dto;
 import java.util.List;
 
 public class VariableSignDescriptions {
-    public final List<CodeDescriptionJson> signTypes;
+    public final List<CodeDescription> signTypes;
 
-    public VariableSignDescriptions(final List<CodeDescriptionJson> signTypes) {
+    public VariableSignDescriptions(final List<CodeDescription> signTypes) {
         this.signTypes = signTypes;
     }
 }

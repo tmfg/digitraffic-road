@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.dto.CodeDescriptionJson;
+import fi.livi.digitraffic.tie.metadata.dto.CodeDescription;
 
 @Repository
 public interface CodeDescriptionRepository extends SqlRepository {
@@ -13,5 +13,5 @@ public interface CodeDescriptionRepository extends SqlRepository {
         "select code, description_fi description " +
         "from code_description where domain = 'VARIABLE_SIGN'",
         nativeQuery = true)
-    List<CodeDescriptionJson> listAllVariableSignTypes();
+    List<CodeDescription> listAllVariableSignTypes();
 }
