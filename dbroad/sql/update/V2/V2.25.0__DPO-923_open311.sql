@@ -7,7 +7,7 @@ CREATE TABLE open311_service (
     keywords TEXT,
     "group" TEXT
 );
-ALTER TABLE open311_service ADD CONSTRAINT service_type CHECK (type IN ('realtime', 'batch', 'blackbox'));
+ALTER TABLE open311_service ADD CONSTRAINT open311_service_service_type_check CHECK (type IN ('realtime', 'batch', 'blackbox'));
 
 CREATE TABLE open311_service_request (
     service_request_id CHARACTER VARYING(13) PRIMARY KEY, -- e.g. SRQ0000001083
@@ -27,4 +27,4 @@ CREATE TABLE open311_service_request (
     geometry GEOMETRY,
     media_url TEXT
 );
-ALTER TABLE open311_service_request ADD CONSTRAINT request_status CHECK (status IN ('open', 'closed'));
+ALTER TABLE open311_service_request ADD CONSTRAINT open311_service_request_status_check CHECK (status IN ('open', 'closed'));
