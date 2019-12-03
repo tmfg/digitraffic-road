@@ -13,16 +13,14 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import com.google.common.collect.Sets;
 
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
 
 public class Jaxb2Datex2ResponseHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
     private static final Logger log = LoggerFactory.getLogger(Jaxb2Datex2ResponseHttpMessageConverter.class);
 
-    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(TrafficDisordersDatex2Response.class, TmsStationDatex2Response.class,
-        TmsDataDatex2Response.class, RoadworksDatex2Response.class, WeightRestrictionsDatex2Response.class);
+    private static final Set<Class<?>> SUPPORTED = Sets.newHashSet(
+        TrafficDisordersDatex2Response.class, RoadworksDatex2Response.class, WeightRestrictionsDatex2Response.class);
 
     private final String schemaDomainUrlAndPath;
 

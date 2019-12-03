@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.TmsStationData2Datex2Converter;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
@@ -35,7 +35,7 @@ public class TmsDataDatex2Service {
     }
 
     @Transactional(readOnly = true)
-    public TmsDataDatex2Response findPublishableTmsDataDatex2() {
+    public D2LogicalModel findPublishableTmsDataDatex2() {
         final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 
         final List<TmsStation> tmsStations = tmsStationDatex2Service.findAllPublishableTmsStations();
@@ -46,6 +46,6 @@ public class TmsDataDatex2Service {
         final Map<TmsStation, List<SensorValueDto>> stations =
             tmsStations.stream().collect(Collectors.toMap(s -> s, s -> values.getOrDefault(s.getRoadStationNaturalId(), Collections.emptyList())));
 
-        return new TmsDataDatex2Response().withD2LogicalModel(tmsStationData2Datex2Converter.convert(stations, updated));
+        return tmsStationData2Datex2Converter.convert(stations, updated);
     }
 }

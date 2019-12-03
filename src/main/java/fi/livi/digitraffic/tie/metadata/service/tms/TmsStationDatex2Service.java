@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
+import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationDatex2Repository;
@@ -30,11 +30,9 @@ public class TmsStationDatex2Service {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationDatex2Response findAllPublishableTmsStationsAsDatex2(final TmsState tmsState) {
+    public D2LogicalModel findAllPublishableTmsStationsAsDatex2(final TmsState tmsState) {
         final List<TmsStation> stations = findStations(tmsState);
-
-        return new TmsStationDatex2Response().withD2LogicalModel(
-            tmsStationMetadata2Datex2Converter.convert(stations,tmsStationService.getMetadataLastUpdated()));
+        return tmsStationMetadata2Datex2Converter.convert(stations,tmsStationService.getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)

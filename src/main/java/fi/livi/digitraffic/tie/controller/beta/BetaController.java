@@ -27,8 +27,6 @@ import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsDataDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TmsStationDatex2Response;
 import fi.livi.digitraffic.tie.metadata.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
@@ -80,7 +78,7 @@ public class BetaController {
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of TMS Stations Datex2 metadata"))
-    public TmsStationDatex2Response tmsStationsDatex2(
+    public D2LogicalModel tmsStationsDatex2(
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
@@ -93,7 +91,7 @@ public class BetaController {
     @ApiOperation("Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of TMS Stations Datex2 data"))
-    public TmsDataDatex2Response tmsDataDatex2() {
+    public D2LogicalModel tmsDataDatex2() {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 
