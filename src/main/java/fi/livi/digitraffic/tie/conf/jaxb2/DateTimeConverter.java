@@ -14,7 +14,7 @@ public class DateTimeConverter {
 
     public static Instant parseDateTime(final String from) {
         try {
-            if (StringUtils.trimToEmpty(from).isEmpty()) {
+            if (StringUtils.isBlank(from)) {
                 return null;
             }
             return ZonedDateTime.parse(from).toInstant();
