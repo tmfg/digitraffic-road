@@ -10,9 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -20,10 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.dto.datex2.Datex2RootDataObjectDto;
 import fi.livi.digitraffic.tie.data.model.Datex2;
 import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
@@ -45,19 +44,6 @@ public class Datex2DataService {
     public Datex2DataService(final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
-    }
-
-    @Transactional(readOnly = true)
-    public Datex2RootDataObjectDto findActiveTrafficDisorders(final boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = findLatestImportTime(TRAFFIC_DISORDER);
-
-        if (onlyUpdateInfo) {
-            return new Datex2RootDataObjectDto(updated);
-        } else {
-            return new Datex2RootDataObjectDto(
-                    datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 0),
-                    updated);
-        }
     }
 
     @Transactional(readOnly = true)
@@ -186,7 +172,7 @@ public class Datex2DataService {
         final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
             .map(datex2 -> (D2LogicalModel) stringToObjectMarshaller.convertToObject(datex2.getMessage()))
             .filter(d2 -> d2.getPayloadPublication() != null)
-            .sorted(Comparator.comparing((D2LogicalModel d2) -> DateHelper.toInstant(d2.getPayloadPublication().getPublicationTime())).reversed())
+            .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
             .collect(Collectors.toList());
 
         if (modelsNewestFirst.isEmpty()) {
@@ -218,8 +204,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                     new ObservationTimeType()
-                            .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
-                            .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
+                            .withLocaltime(DateHelper.toInstant(importTime))
+                            .withUtc(DateHelper.toInstant(importTime));
             return new TimestampedTrafficDisorderDatex2()
                     .withD2LogicalModel(d2LogicalModel)
                     .withPublished(published);
@@ -235,8 +221,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
-                    .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
-                    .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
+                    .withLocaltime(DateHelper.toInstant(importTime))
+                    .withUtc(DateHelper.toInstant(importTime));
             return new TimestampedRoadworkDatex2()
                 .withD2LogicalModel(d2LogicalModel)
                 .withPublished(published);
@@ -252,8 +238,8 @@ public class Datex2DataService {
             final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
-                    .withLocaltime(DateHelper.toXMLGregorianCalendarAtUtc(importTime))
-                    .withUtc(DateHelper.toXMLGregorianCalendarAtUtc(importTime));
+                    .withLocaltime(DateHelper.toInstant(importTime))
+                    .withUtc(DateHelper.toInstant(importTime));
             return new TimestampedWeightRestrictionDatex2()
                 .withD2LogicalModel(d2LogicalModel)
                 .withPublished(published);

@@ -118,13 +118,13 @@ public class Datex2UpdateService {
     private ZonedDateTime getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
         final Instant latest = Datex2DataService.getSituationPublication(d2).getSituations().stream()
             .map(s -> s.getSituationRecords().stream()
-                .map(r -> DateHelper.toInstant(r.getSituationRecordVersionTime())).max(Comparator.naturalOrder()).orElseThrow())
+                .map(r -> r.getSituationRecordVersionTime()).max(Comparator.naturalOrder()).orElseThrow())
             .max(Comparator.naturalOrder()).orElseThrow();
         return DateHelper.toZonedDateTimeAtUtc(latest);
     }
 
     private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
-        datex2.setPublicationTime(DateHelper.toZonedDateTimeWithoutMillis(payloadPublication.getPublicationTime()));
+        datex2.setPublicationTime(DateHelper.toZonedDateTimeAtUtc(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
         } else {
