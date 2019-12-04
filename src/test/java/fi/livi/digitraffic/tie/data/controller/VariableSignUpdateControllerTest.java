@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
-import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.DATA_PATH;
-import static fi.livi.digitraffic.tie.data.controller.VariableSignUpdateController.METADATA_PATH;
+import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.METADATA_PATH;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

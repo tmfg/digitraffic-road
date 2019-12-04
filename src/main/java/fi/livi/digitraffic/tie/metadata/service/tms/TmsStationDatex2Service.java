@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.metadata.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationDatex2Repository;
 import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;

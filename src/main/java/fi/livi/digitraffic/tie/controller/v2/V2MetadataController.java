@@ -4,9 +4,9 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
-import static fi.livi.digitraffic.tie.metadata.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

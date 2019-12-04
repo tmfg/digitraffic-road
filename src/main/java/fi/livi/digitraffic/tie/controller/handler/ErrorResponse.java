@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.controller.exception.handler;
+package fi.livi.digitraffic.tie.controller.handler;
 
 import java.sql.Timestamp;
 

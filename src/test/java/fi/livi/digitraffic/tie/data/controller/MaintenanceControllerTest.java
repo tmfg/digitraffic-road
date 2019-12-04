@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.data.controller.MaintenanceController.WORK_MACHINE_TRACKING_PATH;
+import static fi.livi.digitraffic.tie.controller.v1.MaintenanceController.WORK_MACHINE_TRACKING_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;

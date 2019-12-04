@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.AssertionErrors;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.DataStatusService;

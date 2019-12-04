@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
-import static fi.livi.digitraffic.tie.data.controller.DataController.DATEX2_API_NOTES;
+import static fi.livi.digitraffic.tie.controller.v1.DataController.DATEX2_API_NOTES;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.data.service.VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.metadata.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 import io.swagger.annotations.Api;

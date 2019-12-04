@@ -26,8 +26,8 @@ import org.springframework.util.Assert;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
-import fi.livi.digitraffic.tie.data.controller.DataController;
-import fi.livi.digitraffic.tie.metadata.controller.MetadataController;
+import fi.livi.digitraffic.tie.controller.v1.DataController;
+import fi.livi.digitraffic.tie.controller.v1.MetadataController;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;

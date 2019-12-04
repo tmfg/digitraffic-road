@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.controller;
+package fi.livi.digitraffic.tie.controller;
 
 import org.springframework.http.MediaType;
 
