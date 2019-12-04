@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
 
 @Import({Datex2DataService.class, Datex2UpdateService.class})
-public class AbstractDatex2DataServiceTest extends AbstractServiceTest {
+public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest {
 
     @Autowired
     protected Datex2DataService datex2DataService;

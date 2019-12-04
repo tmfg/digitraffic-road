@@ -51,7 +51,7 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
         }
 
         @Override
-        public JMSMessageListener<CameraMetadataUpdatedMessageDto> createJMSMessageListener() throws JAXBException {
+        public JMSMessageListener<CameraMetadataUpdatedMessageDto> createJMSMessageListener() {
             final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> handleData = cameraMetadataMessageHandler::updateCameraMetadata;
             final CameraMetadataUpdatedMessageMarshaller messageMarshaller = new CameraMetadataUpdatedMessageMarshaller(jaxb2Marshaller);
 
