@@ -20,7 +20,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>road-${appType}-logstash.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
-			<totalSizeCap>768MB</totalSizeCap>
+			<totalSizeCap>256MB</totalSizeCap>
         </rollingPolicy>		
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
@@ -31,7 +31,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>road-${appType}-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
-			<totalSizeCap>768MB</totalSizeCap>
+			<totalSizeCap>256MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
@@ -47,7 +47,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>road-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
-			<totalSizeCap>768MB</totalSizeCap>
+			<totalSizeCap>256MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
@@ -63,7 +63,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>road-${appType}-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
-			<totalSizeCap>768MB</totalSizeCap>
+			<totalSizeCap>256MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
