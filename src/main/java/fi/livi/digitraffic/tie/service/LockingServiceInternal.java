@@ -1,10 +1,10 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.LockingDao;
+import fi.livi.digitraffic.tie.dao.LockingDao;
 
 @Service
 public class LockingServiceInternal {

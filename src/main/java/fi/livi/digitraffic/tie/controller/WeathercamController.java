@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
 

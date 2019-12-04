@@ -14,7 +14,7 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.camera.inQueue")

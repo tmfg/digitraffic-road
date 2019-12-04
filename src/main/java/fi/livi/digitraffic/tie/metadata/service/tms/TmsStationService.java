@@ -33,9 +33,9 @@ import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
-import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 

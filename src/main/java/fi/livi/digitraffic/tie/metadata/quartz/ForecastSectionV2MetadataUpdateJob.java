@@ -3,15 +3,15 @@ package fi.livi.digitraffic.tie.metadata.quartz;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV2MetadataUpdater;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
 public class ForecastSectionV2MetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
-    private ForecastSectionV2MetadataUpdater forecastSectionV2MetadataUpdater;
+    private V2ForecastSectionMetadataUpdater v2ForecastSectionMetadataUpdater;
 
     @Override
     protected void doExecute(JobExecutionContext context) {
-        forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
+        v2ForecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
     }
 }

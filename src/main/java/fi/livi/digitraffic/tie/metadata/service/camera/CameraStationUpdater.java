@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;

@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {

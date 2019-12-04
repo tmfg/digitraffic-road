@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoo
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateList;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateListPK;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinatePK;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 

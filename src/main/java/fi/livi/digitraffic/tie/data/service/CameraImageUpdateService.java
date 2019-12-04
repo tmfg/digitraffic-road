@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
 @ConditionalOnNotWebApplication
 @Service

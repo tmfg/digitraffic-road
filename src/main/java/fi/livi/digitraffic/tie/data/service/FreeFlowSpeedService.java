@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.data.dao.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class FreeFlowSpeedService {

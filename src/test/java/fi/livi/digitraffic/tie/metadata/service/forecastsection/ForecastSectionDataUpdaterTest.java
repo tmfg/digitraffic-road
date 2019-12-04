@@ -25,10 +25,11 @@ import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
+import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
 public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
@@ -50,10 +51,10 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
     private RestTemplate restTemplate;
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionV2MetadataUpdater forecastSectionMetadataUpdater;
+    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Autowired
-    private ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
+    private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -63,7 +64,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         forecastSectionMetadataUpdater =
-            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository, forecastSectionV2MetadataDao, dataStatusService);
+            new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository, v2ForecastSectionMetadataDao, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 

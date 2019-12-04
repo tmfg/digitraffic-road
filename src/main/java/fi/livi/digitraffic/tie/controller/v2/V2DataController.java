@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
-import fi.livi.digitraffic.tie.data.service.VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
@@ -38,11 +38,11 @@ import io.swagger.annotations.ApiResponses;
 @ConditionalOnWebApplication
 public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
-    private final VariableSignService variableSignService;
+    private final V2VariableSignService v2VariableSignService;
 
-    public V2DataController(final ForecastSectionDataService forecastSectionDataService, final VariableSignService variableSignService) {
+    public V2DataController(final ForecastSectionDataService forecastSectionDataService, final V2VariableSignService v2VariableSignService) {
         this.forecastSectionDataService = forecastSectionDataService;
-        this.variableSignService = variableSignService;
+        this.v2VariableSignService = v2VariableSignService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
@@ -92,20 +92,20 @@ public class V2DataController {
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
     public VariableSignFeatureCollection variableSigns() {
-        return variableSignService.listLatestValues();
+        return v2VariableSignService.listLatestValues();
     }
 
     @ApiOperation("List the latest value of a variable sign")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
     public VariableSignFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
-        return variableSignService.listLatestValue(deviceId);
+        return v2VariableSignService.listLatestValue(deviceId);
     }
 
     @ApiOperation("List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
-        return variableSignService.listVariableSignHistory(deviceId);
+        return v2VariableSignService.listVariableSignHistory(deviceId);
     }
 }

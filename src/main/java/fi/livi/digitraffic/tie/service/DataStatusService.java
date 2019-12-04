@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service;
+package fi.livi.digitraffic.tie.service;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dao;
+package fi.livi.digitraffic.tie.dao.v2;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -30,9 +30,8 @@ import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastS
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.RoadSegmentDto;
 
 @Repository
-public class ForecastSectionV2MetadataDao {
-
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionV2MetadataDao.class);
+public class V2ForecastSectionMetadataDao {
+    private static final Logger log = LoggerFactory.getLogger(V2ForecastSectionMetadataDao.class);
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -90,7 +89,7 @@ public class ForecastSectionV2MetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
 
     @Autowired
-    public ForecastSectionV2MetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public V2ForecastSectionMetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
 

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.service.VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV2MetadataService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,14 +37,14 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V2_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
 public class V2MetadataController {
-    private final ForecastSectionV2MetadataService forecastSectionV2MetadataService;
-    private final VariableSignService variableSignService;
+    private final V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
+    private final V2VariableSignService v2VariableSignService;
 
     @Autowired
-    public V2MetadataController(final ForecastSectionV2MetadataService forecastSectionV2MetadataService,
-        final VariableSignService variableSignService) {
-        this.forecastSectionV2MetadataService = forecastSectionV2MetadataService;
-        this.variableSignService = variableSignService;
+    public V2MetadataController(final V2ForecastSectionMetadataService v2ForecastSectionMetadataService,
+        final V2VariableSignService v2VariableSignService) {
+        this.v2ForecastSectionMetadataService = v2ForecastSectionMetadataService;
+        this.v2VariableSignService = v2VariableSignService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
@@ -59,7 +59,7 @@ public class V2MetadataController {
         @ApiParam(value = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)
         final List<String> naturalIds) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
             null,null, naturalIds);
     }
 
@@ -70,7 +70,7 @@ public class V2MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
             null, null, null);
     }
 
@@ -89,7 +89,7 @@ public class V2MetadataController {
         @PathVariable("maxLongitude") final double maxLongitude,
         @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
     }
 
@@ -97,6 +97,6 @@ public class V2MetadataController {
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public VariableSignDescriptions listCodeDescriptions() {
-        return new VariableSignDescriptions(variableSignService.listVariableSignTypes());
+        return new VariableSignDescriptions(v2VariableSignService.listVariableSignTypes());
     }
 }

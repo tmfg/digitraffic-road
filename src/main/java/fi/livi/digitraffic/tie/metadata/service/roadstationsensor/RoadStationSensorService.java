@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.toList;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -47,8 +46,8 @@ import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.VehicleClass;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
 

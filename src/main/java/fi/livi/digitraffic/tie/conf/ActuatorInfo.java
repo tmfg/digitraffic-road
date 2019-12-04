@@ -14,7 +14,7 @@ import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.metadata.dto.FlywayVersion;
-import fi.livi.digitraffic.tie.metadata.service.FlywayService;
+import fi.livi.digitraffic.tie.service.FlywayService;
 
 @Component
 public class ActuatorInfo implements InfoContributor {

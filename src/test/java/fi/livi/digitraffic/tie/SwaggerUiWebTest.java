@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import fi.livi.digitraffic.tie.metadata.service.BuildVersionService;
+import fi.livi.digitraffic.tie.service.BuildVersionService;
 
 public class SwaggerUiWebTest extends AbstractRestWebTest {
 

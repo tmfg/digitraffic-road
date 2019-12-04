@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v2;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,8 @@ import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
-import fi.livi.digitraffic.tie.metadata.dao.CodeDescriptionRepository;
+import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.dao.v2.V2CodeDescriptionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.CodeDescription;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
@@ -23,16 +24,16 @@ import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatur
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
 
 @Service
-public class VariableSignService {
+public class V2VariableSignService {
     private final DeviceRepository deviceRepository;
     private final DeviceDataRepository deviceDataRepository;
-    private final CodeDescriptionRepository codeDescriptionRepository;
+    private final V2CodeDescriptionRepository v2CodeDescriptionRepository;
 
-    public VariableSignService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository,
-        final CodeDescriptionRepository codeDescriptionRepository) {
+    public V2VariableSignService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository,
+        final V2CodeDescriptionRepository v2CodeDescriptionRepository) {
         this.deviceRepository = deviceRepository;
         this.deviceDataRepository = deviceDataRepository;
-        this.codeDescriptionRepository = codeDescriptionRepository;
+        this.v2CodeDescriptionRepository = v2CodeDescriptionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -87,6 +88,6 @@ public class VariableSignService {
 
     @Transactional(readOnly = true)
     public List<CodeDescription> listVariableSignTypes() {
-        return codeDescriptionRepository.listAllVariableSignTypes();
+        return v2CodeDescriptionRepository.listAllVariableSignTypes();
     }
 }

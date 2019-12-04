@@ -1,13 +1,8 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;

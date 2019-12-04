@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.MqttRelayService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;

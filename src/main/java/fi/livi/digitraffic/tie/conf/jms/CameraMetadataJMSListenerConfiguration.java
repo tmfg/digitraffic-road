@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraMetadataMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;

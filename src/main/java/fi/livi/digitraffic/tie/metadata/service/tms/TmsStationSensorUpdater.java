@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;

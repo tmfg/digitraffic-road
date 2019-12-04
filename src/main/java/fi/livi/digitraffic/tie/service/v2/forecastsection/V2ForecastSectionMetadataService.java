@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service.forecastsection;
+package fi.livi.digitraffic.tie.service.v2.forecastsection;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -7,26 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.converter.ForecastSectionV2ToFeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
+import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
-public class ForecastSectionV2MetadataService {
+public class V2ForecastSectionMetadataService {
 
     private final DataStatusService dataStatusService;
 
-    private final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
+    private final V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
 
     @Autowired
-    public ForecastSectionV2MetadataService(final DataStatusService dataStatusService,
-                                            final ForecastSectionV2MetadataDao forecastSectionV2MetadataDao) {
+    public V2ForecastSectionMetadataService(final DataStatusService dataStatusService,
+                                            final V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao) {
         this.dataStatusService = dataStatusService;
-        this.forecastSectionV2MetadataDao = forecastSectionV2MetadataDao;
+        this.v2ForecastSectionMetadataDao = v2ForecastSectionMetadataDao;
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +39,7 @@ public class ForecastSectionV2MetadataService {
             return featureCollection;
         }
 
-        final List<ForecastSectionV2Feature> features = forecastSectionV2MetadataDao.findForecastSectionV2Features(roadNumber, minLongitude, minLatitude,
+        final List<ForecastSectionV2Feature> features = v2ForecastSectionMetadataDao.findForecastSectionV2Features(roadNumber, minLongitude, minLatitude,
                                                                                                                    maxLongitude, maxLatitude,
                                                                                                                    naturalIds);
         featureCollection.addAll(features);

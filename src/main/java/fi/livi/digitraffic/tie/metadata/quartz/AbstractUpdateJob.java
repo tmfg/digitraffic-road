@@ -5,7 +5,7 @@ import org.quartz.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @DisallowConcurrentExecution
 @ConditionalOnNotWebApplication

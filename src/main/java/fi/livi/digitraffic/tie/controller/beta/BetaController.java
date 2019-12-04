@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
-import fi.livi.digitraffic.tie.data.service.VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.controller.TmsState;
@@ -46,14 +46,14 @@ public class BetaController {
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
-    private final VariableSignService trafficSignsService;
+    private final V2VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final CameraPresetHistoryService cameraPresetHistoryService;
     private final Datex2DataService datex2DataService;
 
     @Autowired
-    public BetaController(final VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
+    public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
                           final Datex2DataService datex2DataService) {
         this.trafficSignsService = trafficSignsService;

@@ -50,7 +50,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCol
 import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraWebService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataService;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV2MetadataService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
@@ -68,7 +68,7 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V3_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
 public class V3MetadataController {
-    private final ForecastSectionV2MetadataService forecastSectionV2MetadataService;
+    private final V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
     private final V3VariableSignService v3VariableSignService;
     private final TmsStationService tmsStationService;
     private final RoadStationSensorService roadStationSensorService;
@@ -78,12 +78,12 @@ public class V3MetadataController {
     private final ForecastSectionV1MetadataService forecastSectionService;
 
     @Autowired
-    public V3MetadataController(final ForecastSectionV2MetadataService forecastSectionV2MetadataService,
+    public V3MetadataController(final V2ForecastSectionMetadataService v2ForecastSectionMetadataService,
         final V3VariableSignService v3VariableSignService, final TmsStationService tmsStationService,
         final RoadStationSensorService roadStationSensorService, final CameraWebService cameraWebService,
         final WeatherStationService weatherStationService, final LocationService locationService,
         final ForecastSectionV1MetadataService forecastSectionService) {
-        this.forecastSectionV2MetadataService = forecastSectionV2MetadataService;
+        this.v2ForecastSectionMetadataService = v2ForecastSectionMetadataService;
         this.v3VariableSignService = v3VariableSignService;
         this.tmsStationService = tmsStationService;
         this.roadStationSensorService = roadStationSensorService;
@@ -105,7 +105,7 @@ public class V3MetadataController {
         @ApiParam(value = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)
         final List<String> naturalIds) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
             null,null, naturalIds);
     }
 
@@ -116,7 +116,7 @@ public class V3MetadataController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
             null, null, null);
     }
 
@@ -134,7 +134,7 @@ public class V3MetadataController {
         @PathVariable("maxLongitude") final double maxLongitude,
         @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
-        return forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
+        return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
     }
 

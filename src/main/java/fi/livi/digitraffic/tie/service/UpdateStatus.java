@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service;
+package fi.livi.digitraffic.tie.service;
 
 public enum UpdateStatus {
     UPDATED,

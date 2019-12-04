@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import progress.message.jclient.Connection;
 import progress.message.jclient.Queue;

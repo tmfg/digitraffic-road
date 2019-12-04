@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto.EntityType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 /**
  * Service to handle JMS metadata updated messages

@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.metadata.service.MetadataApiInfoService;
+import fi.livi.digitraffic.tie.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.DocExpansion;

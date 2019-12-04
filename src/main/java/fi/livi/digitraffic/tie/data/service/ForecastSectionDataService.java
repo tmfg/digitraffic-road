@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Service

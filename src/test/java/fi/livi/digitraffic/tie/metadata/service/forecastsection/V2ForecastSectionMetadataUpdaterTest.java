@@ -21,29 +21,31 @@ import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionV2MetadataDao;
+import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
-public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
+public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionClient forecastSectionClient;
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionV2MetadataUpdater forecastSectionMetadataUpdater;
+    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    private ForecastSectionV2MetadataService forecastSectionV2MetadataService;
+    private V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
 
     @Autowired
-    private ForecastSectionV2MetadataDao forecastSectionV2MetadataDao;
+    private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -56,7 +58,8 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWith
     @Before
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
-        forecastSectionMetadataUpdater = new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository, forecastSectionV2MetadataDao,
+        forecastSectionMetadataUpdater = new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
+            v2ForecastSectionMetadataDao,
                                                                               dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
@@ -75,7 +78,7 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWith
         assertEquals(updated, lastUpdated);
 
         final ForecastSectionV2FeatureCollection featureCollection =
-            forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
+            v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
                                                                           null);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
@@ -114,7 +117,7 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWith
 
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, 3,
+        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, 3,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
                                                                                                                                    null);
@@ -150,7 +153,7 @@ public class ForecastSectionV2MetadataUpdaterTest extends AbstractDaemonTestWith
 
         forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = forecastSectionV2MetadataService.getForecastSectionV2Metadata(false, null,
+        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
                                                                                                                                    Arrays.asList("00009_216_03050_0_0"));

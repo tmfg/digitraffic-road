@@ -22,11 +22,10 @@ import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 @Service

@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.conf.jms;
 import java.util.List;
 
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
-import fi.livi.digitraffic.tie.data.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
 

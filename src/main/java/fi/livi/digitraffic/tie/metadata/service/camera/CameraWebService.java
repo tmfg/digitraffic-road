@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.metadata.converter.CameraPresetMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @ConditionalOnWebApplication
 @Service

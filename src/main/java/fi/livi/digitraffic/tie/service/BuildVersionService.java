@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.service;
+package fi.livi.digitraffic.tie.service;
 
 import java.io.IOException;
 import java.util.Properties;

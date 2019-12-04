@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionR
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class ForecastSectionDataUpdater {

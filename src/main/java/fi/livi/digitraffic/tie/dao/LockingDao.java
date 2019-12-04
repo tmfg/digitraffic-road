@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

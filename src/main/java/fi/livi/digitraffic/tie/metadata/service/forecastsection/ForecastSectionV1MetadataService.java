@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class ForecastSectionV1MetadataService {
