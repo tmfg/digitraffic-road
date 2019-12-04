@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller.v2;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
@@ -36,11 +36,11 @@ import io.swagger.annotations.ApiResponses;
 @Validated
 @RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
-public class DataV2Controller {
+public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
     private final VariableSignService variableSignService;
 
-    public DataV2Controller(final ForecastSectionDataService forecastSectionDataService, final VariableSignService variableSignService) {
+    public V2DataController(final ForecastSectionDataService forecastSectionDataService, final VariableSignService variableSignService) {
         this.forecastSectionDataService = forecastSectionDataService;
         this.variableSignService = variableSignService;
     }
