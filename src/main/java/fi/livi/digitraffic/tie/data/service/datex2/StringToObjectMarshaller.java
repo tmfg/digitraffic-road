@@ -16,11 +16,10 @@ public class StringToObjectMarshaller {
     }
 
     public <T> T convertToObject(final String xmlSting) {
-        Object object = jaxb2Marshaller.unmarshal(new StringSource(xmlSting));
+        final Object object = jaxb2Marshaller.unmarshal(new StringSource(xmlSting));
         if (object instanceof JAXBElement) {
-            object = ((JAXBElement) object).getValue();
+            return (T)((JAXBElement) object).getValue();
         }
-
         return (T)object;
     }
 
