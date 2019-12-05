@@ -21,22 +21,22 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
-import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 
 public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     @Autowired
-    public DeviceRepository deviceRepository;
+    public V2DeviceRepository v2DeviceRepository;
 
     @Autowired
-    public DeviceDataRepository deviceDataRepository;
+    public V2DeviceDataRepository v2DeviceDataRepository;
 
     @Before
     public void setUp() {
-        deviceDataRepository.deleteAllInBatch();
-        deviceRepository.deleteAllInBatch();
+        v2DeviceDataRepository.deleteAllInBatch();
+        v2DeviceRepository.deleteAllInBatch();
     }
 
     private void postJson(final String fileName, final String function) throws Exception {
@@ -55,11 +55,11 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     }
 
     private void assertDeviceCountInDb(final int count) {
-        Assert.assertEquals(count, deviceRepository.count());
+        Assert.assertEquals(count, v2DeviceRepository.count());
     }
 
     private void assertDeviceDataCountInDb(final int count) {
-        Assert.assertEquals(count, deviceDataRepository.count());
+        Assert.assertEquals(count, v2DeviceDataRepository.count());
     }
 
     @Test
@@ -102,14 +102,14 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         postJson("update_data_1.json", DATA_PATH);
         assertDeviceDataCountInDb(1);
 
-        final List<DeviceData> data1 = deviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data1 = v2DeviceDataRepository.findLatestData("t1");
         assert(data1.size() == 1);
 
         // update data
         postJson("update_data_2.json", DATA_PATH);
         assertDeviceDataCountInDb(2);
 
-        final List<DeviceData> data2 = deviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data2 = v2DeviceDataRepository.findLatestData("t1");
         assert(data2.size() == 1);
 
         final DeviceData d1 = data1.get(0);
@@ -129,7 +129,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         assertDeviceCountInDb(0);
         postJson("update_device_1.json", METADATA_PATH);
         assertDeviceCountInDb(1);
-        final Device d1 = deviceRepository.getOne("t1");
+        final Device d1 = v2DeviceRepository.getOne("t1");
         assertNotNull(d1);
         final String direction1 = d1.getDirection();
         final ZonedDateTime update1 = d1.getUpdatedDate();
@@ -138,7 +138,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         postJson("update_device_2.json", METADATA_PATH);
 //        deviceRepository.flush();
         assertDeviceCountInDb(1);
-        final Device d2 = deviceRepository.getOne("t1");
+        final Device d2 = v2DeviceRepository.getOne("t1");
         assertNotNull(d2);
 
         // data has changed

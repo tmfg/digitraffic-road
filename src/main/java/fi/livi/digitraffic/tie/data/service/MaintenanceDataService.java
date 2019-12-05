@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.livi.digitraffic.tie.data.dao.WorkMachineTrackingRepository;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineTrackingRepository;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.ObservationFeature;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTrackingDto;
@@ -107,7 +106,6 @@ public class MaintenanceDataService {
     }
 
     protected static class ObservationFeatureWrapper {
-
         private final ObservationFeature observationFeature;
         private final long workMachineTrackingId;
 

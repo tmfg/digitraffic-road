@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dao.v1;
 
 import java.time.Instant;
 import java.util.List;

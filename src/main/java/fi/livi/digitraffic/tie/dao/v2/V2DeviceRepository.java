@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dao.v2;
 
 import static org.hibernate.annotations.QueryHints.READ_ONLY;
 import static org.hibernate.jpa.QueryHints.HINT_CACHEABLE;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 
 @Repository
-public interface DeviceRepository extends JpaRepository<Device, String> {
+public interface V2DeviceRepository extends JpaRepository<Device, String> {
     @QueryHints({@QueryHint(name = HINT_CACHEABLE, value = "false"), @QueryHint(name = READ_ONLY, value = "true")})
     @Query("select d from Device d")
     Stream<Device> streamAll();

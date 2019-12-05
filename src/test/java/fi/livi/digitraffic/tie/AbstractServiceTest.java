@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.MetadataMarshallerConfiguration;
-import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationDao;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.data.service.CameraImageReader;
 import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;

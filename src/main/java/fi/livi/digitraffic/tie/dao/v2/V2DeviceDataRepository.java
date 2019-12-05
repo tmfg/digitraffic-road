@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dao.v2;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
 
 @Repository
-public interface DeviceDataRepository extends JpaRepository<DeviceData, Long> {
+public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> {
     @Query(value =
         "select id, created_date, device_id, display_value, additional_information, effect_date, cause, reliability\n" +
         "from device_data where id in(\n" +

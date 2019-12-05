@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
-import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
 import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
@@ -25,21 +25,21 @@ import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProper
 
 @Service
 public class V2VariableSignService {
-    private final DeviceRepository deviceRepository;
-    private final DeviceDataRepository deviceDataRepository;
+    private final V2DeviceRepository v2DeviceRepository;
+    private final V2DeviceDataRepository v2DeviceDataRepository;
     private final V2CodeDescriptionRepository v2CodeDescriptionRepository;
 
-    public V2VariableSignService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository,
+    public V2VariableSignService(final V2DeviceRepository v2DeviceRepository, final V2DeviceDataRepository v2DeviceDataRepository,
         final V2CodeDescriptionRepository v2CodeDescriptionRepository) {
-        this.deviceRepository = deviceRepository;
-        this.deviceDataRepository = deviceDataRepository;
+        this.v2DeviceRepository = v2DeviceRepository;
+        this.v2DeviceDataRepository = v2DeviceDataRepository;
         this.v2CodeDescriptionRepository = v2CodeDescriptionRepository;
     }
 
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
-        final Stream<Device> devices = deviceRepository.streamAll();
-        final Stream<DeviceData> data = deviceDataRepository.streamLatestData();
+        final Stream<Device> devices = v2DeviceRepository.streamAll();
+        final Stream<DeviceData> data = v2DeviceDataRepository.streamLatestData();
         final Map<String, DeviceData> dataMap = data.collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
 
         return new VariableSignFeatureCollection(devices.map(d -> convert(d, dataMap)).collect(Collectors.toList()));
@@ -70,15 +70,15 @@ public class V2VariableSignService {
 
     @Transactional(readOnly = true)
     public List<TrafficSignHistory> listVariableSignHistory(final String deviceId) {
-        return deviceDataRepository.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+        return v2DeviceDataRepository.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
     }
 
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValue(final String deviceId) {
-        final Optional<Device> device = deviceRepository.findById(deviceId);
+        final Optional<Device> device = v2DeviceRepository.findById(deviceId);
 
         if(device.isPresent()) {
-            return new VariableSignFeatureCollection(deviceDataRepository.findLatestData(deviceId).stream()
+            return new VariableSignFeatureCollection(v2DeviceDataRepository.findLatestData(deviceId).stream()
                 .map(d -> convert(device.get(), d))
                 .collect(Collectors.toList()));
         }

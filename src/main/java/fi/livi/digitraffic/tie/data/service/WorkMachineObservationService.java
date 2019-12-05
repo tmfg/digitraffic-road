@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationDao;
-import fi.livi.digitraffic.tie.data.dao.WorkMachineObservationRepository;
-import fi.livi.digitraffic.tie.data.dao.WorkMachineRepository;
-import fi.livi.digitraffic.tie.data.dao.WorkMachineTrackingRepository;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineObservationDao;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineObservationRepository;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineRepository;
+import fi.livi.digitraffic.tie.dao.v1.WorkMachineTrackingRepository;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachine;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation.WorkMachineObservationType;

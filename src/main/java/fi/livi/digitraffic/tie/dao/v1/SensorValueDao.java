@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dao.v1;
 
 import java.sql.JDBCType;
 import java.util.List;
@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
 
 @Repository
 public class SensorValueDao {
@@ -49,7 +51,6 @@ public class SensorValueDao {
      *         the parameter in question didn't cause update -> should be called with inserted instead.
      */
     public int[] updateSensorData(final List<SensorValueUpdateParameterDto> params) {
-
         final MapSqlParameterSource[] batchData = getMapSqlParameterSources(params);
 
         return jdbcTemplate.batchUpdate(UPDATE, batchData);
@@ -60,7 +61,6 @@ public class SensorValueDao {
      * @return the number of rows inserted for each param.
      */
     public int[] insertSensorData(final List<SensorValueUpdateParameterDto> params) {
-
         final MapSqlParameterSource[] batchData = getMapSqlParameterSources(params);
 
         return jdbcTemplate.batchUpdate(INSERT, batchData);
