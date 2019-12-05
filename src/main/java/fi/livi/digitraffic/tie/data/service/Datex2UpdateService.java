@@ -84,7 +84,8 @@ public class Datex2UpdateService {
         return updateDatex2Data(data, WEIGHT_RESTRICTION);
     }
 
-    private int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {
+    @Transactional
+    public int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {
         for (final Datex2MessageDto message : data) {
             final Datex2 datex2 = new Datex2();
             final D2LogicalModel d2 = message.model;

@@ -61,7 +61,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
-        final D2LogicalModel active = datex2DataService.findActiveTrafficDisordersAsD2LogicalModel(0);
+        final D2LogicalModel active = datex2DataService.findActive(0, TRAFFIC_DISORDER);
 
         List<Situation> situations = ((SituationPublication) active.getPayloadPublication()).getSituations();
 
@@ -112,7 +112,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     }
 
     private List<Situation> getActiveSituations(final int inactiveHours) {
-        final D2LogicalModel active = datex2DataService.findActiveTrafficDisordersAsD2LogicalModel(inactiveHours);
+        final D2LogicalModel active = datex2DataService.findActive(inactiveHours, TRAFFIC_DISORDER);
         return ((SituationPublication) active.getPayloadPublication()).getSituations();
     }
     private JMSMessageListener createJmsMessageListener() {

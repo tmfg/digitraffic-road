@@ -110,6 +110,15 @@ public class Datex2DataService {
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
 
+    @Transactional(readOnly = true)
+    public D2LogicalModel findAllBySituationId(final String situationId, final Datex2MessageType datex2MessageType) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, datex2MessageType.name());
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToD2LogicalModel(datex2s);
+    }
+
 
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveTrafficDisorders(final int inactiveHours) {
@@ -118,8 +127,9 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findActiveTrafficDisordersAsD2LogicalModel(final int inactiveHours) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
+    public D2LogicalModel findActive(final int inactiveHours,
+                                     final Datex2MessageType datex2MessageType) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToD2LogicalModel(allActive);
     }
 

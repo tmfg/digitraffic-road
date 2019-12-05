@@ -35,9 +35,9 @@ public abstract class AbstractJpaTest {
     protected ResourceLoader resourceLoader;
 
     protected String readResourceContent(final String resourcePattern) throws IOException {
-        final Resource datex2Resource = loadResource(resourcePattern);
+        final Resource resource = loadResource(resourcePattern);
 
-        return FileUtils.readFileToString(datex2Resource.getFile(), UTF_8);
+        return FileUtils.readFileToString(resource.getFile(), UTF_8);
     }
 
     protected Resource loadResource(final String pattern) {
