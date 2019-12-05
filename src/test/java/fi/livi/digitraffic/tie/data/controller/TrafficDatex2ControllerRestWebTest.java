@@ -54,9 +54,9 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         // GUID5035473201 active
         final String weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
 
-        updateDatex2(incident1, Datex2MessageType.TRAFFIC_DISORDER);
-        updateDatex2(incident2, Datex2MessageType.TRAFFIC_DISORDER);
-        updateDatex2(incident3, Datex2MessageType.TRAFFIC_DISORDER);
+        updateDatex2(incident1, Datex2MessageType.TRAFFIC_INCIDENT);
+        updateDatex2(incident2, Datex2MessageType.TRAFFIC_INCIDENT);
+        updateDatex2(incident3, Datex2MessageType.TRAFFIC_INCIDENT);
         updateDatex2(roadwork1, Datex2MessageType.ROADWORK);
         updateDatex2(weightRestriction1, Datex2MessageType.WEIGHT_RESTRICTION);
     }
@@ -64,7 +64,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incident() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_DISORDER;
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT;
         final String xml = getResponse(url);
         assertSituation(incident1_past, false, xml);
         assertSituation(incident2_active, true, xml);
@@ -75,7 +75,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incidentInPast() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_DISORDER + "?inactiveHours=200000";
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT + "?inactiveHours=200000";
         final String xml = getResponse(url);
         assertSituation(incident1_past, true, xml);
         assertSituation(incident2_active, true, xml);

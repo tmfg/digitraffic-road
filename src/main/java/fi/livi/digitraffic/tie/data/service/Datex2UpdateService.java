@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.sql.Timestamp;
@@ -12,11 +12,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.functors.IdentityPredicate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +68,7 @@ public class Datex2UpdateService {
 
     @Transactional
     public int updateTrafficAlerts(final List<Datex2MessageDto> data) {
-        return updateDatex2Data(data, TRAFFIC_DISORDER);
+        return updateDatex2Data(data, TRAFFIC_INCIDENT);
     }
 
     @Transactional

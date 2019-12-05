@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RegExUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +50,7 @@ public class Datex2TrafficAlertHttpClient {
     }
 
     private String getContent(final String url) {
-        return fileGetService.getFile(Datex2MessageType.TRAFFIC_DISORDER.name(), url, String.class);
+        return fileGetService.getFile(Datex2MessageType.TRAFFIC_INCIDENT.name(), url, String.class);
     }
 
     private List<Pair<String, Instant>> getNewFiles(final Instant from, final String html) {

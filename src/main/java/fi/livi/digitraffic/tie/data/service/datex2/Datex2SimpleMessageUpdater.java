@@ -53,7 +53,7 @@ public class Datex2SimpleMessageUpdater {
 
     @Transactional
     public int updateDatex2TrafficAlertMessages() {
-        final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_DISORDER.name());
+        final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_INCIDENT.name());
         final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
 
         final List<Datex2MessageDto> unmarshalled = convert(messages);
@@ -62,7 +62,7 @@ public class Datex2SimpleMessageUpdater {
 
     private List<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
         final List<Datex2MessageDto> all = messages.stream()
-            .map(m -> convert(m.getLeft(), Datex2MessageType.TRAFFIC_DISORDER, DateHelper.toZonedDateTimeAtUtc(m.getRight())))
+            .map(m -> convert(m.getLeft(), Datex2MessageType.TRAFFIC_INCIDENT, DateHelper.toZonedDateTimeAtUtc(m.getRight())))
             .flatMap(m -> m.stream())
             .collect(Collectors.toList());
         return all;
