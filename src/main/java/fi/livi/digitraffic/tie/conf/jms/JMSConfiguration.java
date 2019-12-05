@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.conf.jms;
 
 import javax.jms.JMSException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,6 +16,8 @@ import progress.message.jclient.QueueConnectionFactory;
 @ConditionalOnProperty("jms.sonja.connection.enabled")
 @ConditionalOnNotWebApplication
 public class JMSConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(JMSConfiguration.class);
 
     @Bean(name = "sonjaJMSConnectionFactory")
     public QueueConnectionFactory queueConnectionFactoryForJMS(@Value("${jms.connectionUrls}")
@@ -34,6 +38,7 @@ public class JMSConfiguration {
         // Maximum total time to try connection to different brokers
         connectionFactory.setInitialConnectTimeout(60);
         connectionFactory.setConnectionURLs(jmsConnectionUrls);
+        log.info("Create JMS QueueConnectionFactory {}", connectionFactory.toString());
         return connectionFactory;
     }
 }

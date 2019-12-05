@@ -123,7 +123,7 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraStation(final long cameraLotjuId) {
 
-        log.info("method=updateCameraStation start");
+        log.info("method=updateCameraStation start lotjuId={}", cameraLotjuId);
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, cameraLotjuId) == null) {
             final Pair<Integer, Integer> updated = updateCameraStationAndPresets(cameraLotjuId);
@@ -133,7 +133,7 @@ public class CameraStationUpdater {
         // Otherwise we update only the station
         lock.lock();
         try {
-            log.debug("method=updateCameraStation got the lock");
+            log.debug("method=updateCameraStation got the lock lotjuId={}", cameraLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
             if (!validate(kamera)) {
                 return false;
@@ -147,7 +147,7 @@ public class CameraStationUpdater {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraPreset(final long presetLotjuId) {
-        log.info("method=updateCameraPreset start");
+        log.info("method=updateCameraPreset start lotjuId={}", presetLotjuId);
         final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
 
         // If camera preset doesn't exist, we have to create it -> just update the whole station
@@ -159,7 +159,7 @@ public class CameraStationUpdater {
         // Otherwise update only the given preset
         lock.lock();
         try {
-            log.debug("method=updateCameraPreset got the lock");
+            log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
             if (validate(kamera)) {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
