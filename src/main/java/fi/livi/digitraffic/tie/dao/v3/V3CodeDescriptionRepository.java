@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.dao.SqlRepository;
+import fi.livi.digitraffic.tie.dao.SqlRepository;
 import fi.livi.digitraffic.tie.model.v3.V3CodeDescription;
 
 @Repository

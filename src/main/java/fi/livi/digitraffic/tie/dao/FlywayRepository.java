@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dao;
+package fi.livi.digitraffic.tie.dao;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

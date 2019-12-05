@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.Location;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 

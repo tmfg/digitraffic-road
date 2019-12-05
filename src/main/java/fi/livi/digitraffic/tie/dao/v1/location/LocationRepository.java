@@ -1,8 +1,7 @@
-package fi.livi.digitraffic.tie.metadata.dao.location;
+package fi.livi.digitraffic.tie.dao.v1.location;
 
 import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
 
-import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.QueryHint;
 

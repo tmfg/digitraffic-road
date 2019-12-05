@@ -27,7 +27,7 @@ import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.data.service.ImageUpdateInfo;
 import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
-import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.CameraPreset;

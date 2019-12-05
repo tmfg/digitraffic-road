@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.dao.location;
+package fi.livi.digitraffic.tie.dao.v1.location;
 
 import java.util.List;
 

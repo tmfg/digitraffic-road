@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
 
 @Service
