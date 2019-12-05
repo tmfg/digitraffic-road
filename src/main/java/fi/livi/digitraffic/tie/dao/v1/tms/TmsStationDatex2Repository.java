@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.QueryHints;
 
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 public interface TmsStationDatex2Repository extends JpaRepository<TmsStation, Long> {
 

@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.metadata.model.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

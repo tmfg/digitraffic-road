@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 
 @Repository
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {

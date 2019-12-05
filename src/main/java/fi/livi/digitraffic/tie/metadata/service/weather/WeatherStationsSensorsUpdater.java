@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;

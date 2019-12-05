@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class RoadStationServiceTest extends AbstractServiceTest {

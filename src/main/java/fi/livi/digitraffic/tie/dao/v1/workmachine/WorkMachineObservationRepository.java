@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
+import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
 
 public interface WorkMachineObservationRepository extends JpaRepository<WorkMachineObservation, Long> {
 

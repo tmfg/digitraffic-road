@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 @Repository
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
 
 @Repository
 public interface V2DeviceRepository extends JpaRepository<Device, String> {

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_DISORDER;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 
 import java.time.ZonedDateTime;
@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
-import fi.livi.digitraffic.tie.data.model.Datex2Situation;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecord;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordType;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
 
 public class Datex2RepositoryTest extends AbstractJpaTest {
 

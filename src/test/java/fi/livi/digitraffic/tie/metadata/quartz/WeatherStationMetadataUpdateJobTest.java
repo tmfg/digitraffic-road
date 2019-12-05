@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;

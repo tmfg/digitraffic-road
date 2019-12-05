@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.SensorValue;
+import fi.livi.digitraffic.tie.model.v1.SensorValue;
 
 @Repository
 public interface SensorValueRepository extends JpaRepository<SensorValue, Long> {

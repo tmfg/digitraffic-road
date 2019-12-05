@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.converter.TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter;
+import fi.livi.digitraffic.tie.model.v1.maintenance.harja.converter.TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 
 @Import({ TyokoneenseurannanKirjausToWorkMachineTrackingRecordConverter.class })

@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.metadata.dto.StationSensors;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public interface RoadStationSensorRepository extends JpaRepository<RoadStationSensor, Long> {

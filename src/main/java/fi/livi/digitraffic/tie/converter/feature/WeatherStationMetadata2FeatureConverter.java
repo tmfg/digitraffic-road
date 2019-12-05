@@ -18,8 +18,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 
 @Component
 public final class WeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {

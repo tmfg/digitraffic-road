@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RegExUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @Component

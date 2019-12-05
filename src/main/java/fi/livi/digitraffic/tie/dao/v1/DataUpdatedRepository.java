@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
+import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 
 @Repository
 public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> {

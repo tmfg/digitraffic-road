@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.metadata.converter;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -27,8 +26,8 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Point;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.PointByCoordinates;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.PointCoordinates;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 @ConditionalOnWebApplication
 @Component

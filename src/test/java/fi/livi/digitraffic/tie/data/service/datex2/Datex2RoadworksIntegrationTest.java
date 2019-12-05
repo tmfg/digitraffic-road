@@ -26,8 +26,8 @@ import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 

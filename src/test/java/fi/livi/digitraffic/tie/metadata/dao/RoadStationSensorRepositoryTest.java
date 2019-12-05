@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class RoadStationSensorRepositoryTest extends AbstractJpaTest {

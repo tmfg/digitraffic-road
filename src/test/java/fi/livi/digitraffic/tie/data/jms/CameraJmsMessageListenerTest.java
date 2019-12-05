@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",

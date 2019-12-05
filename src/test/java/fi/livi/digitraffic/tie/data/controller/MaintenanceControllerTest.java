@@ -20,10 +20,10 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineObservationCoordinate;
-import fi.livi.digitraffic.tie.data.model.maintenance.WorkMachineTask;
-import fi.livi.digitraffic.tie.data.model.maintenance.harja.WorkMachineTracking;
+import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
+import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
+import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
+import fi.livi.digitraffic.tie.model.v1.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
 import fi.livi.digitraffic.tie.data.service.WorkMachineObservationService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;

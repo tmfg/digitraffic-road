@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.dto;
 
 import java.util.List;
 
-import fi.livi.digitraffic.tie.metadata.model.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Weather road station sensor", value = "WeatherRoadStationSensor")

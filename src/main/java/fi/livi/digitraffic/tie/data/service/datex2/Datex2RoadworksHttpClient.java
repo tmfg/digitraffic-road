@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @Component

@@ -22,8 +22,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 
 @Entity
 @DynamicUpdate

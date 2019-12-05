@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 @Repository

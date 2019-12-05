@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.converter.TmsStationData2Datex2Converter;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationDatex2Service;
 

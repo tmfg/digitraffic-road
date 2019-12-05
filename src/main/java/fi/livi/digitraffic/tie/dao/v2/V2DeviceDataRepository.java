@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
 
 @Repository
 public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> {

@@ -7,8 +7,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
 public class AbstractMetadataToFeatureConverter {
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataToFeatureConverter.class);

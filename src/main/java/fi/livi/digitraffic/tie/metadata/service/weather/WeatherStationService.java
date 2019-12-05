@@ -21,8 +21,8 @@ import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2Feature
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;

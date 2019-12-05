@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
-import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
-import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
 import fi.livi.digitraffic.tie.external.tloik.Laite;
 import fi.livi.digitraffic.tie.external.tloik.LiikennemerkinTila;
 import fi.livi.digitraffic.tie.external.tloik.Metatiedot;

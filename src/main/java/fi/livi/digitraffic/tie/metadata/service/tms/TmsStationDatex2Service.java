@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationDatex2Repository;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 @ConditionalOnWebApplication
 @Service

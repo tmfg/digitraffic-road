@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.dao.v1.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.DataUpdated;
+import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 
 @Service
 public class DataStatusService {

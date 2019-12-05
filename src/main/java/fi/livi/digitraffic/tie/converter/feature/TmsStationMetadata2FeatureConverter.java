@@ -17,8 +17,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 @Component
 public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {

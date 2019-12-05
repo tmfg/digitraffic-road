@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
 @Service
 public class CameraPresetHistoryService {

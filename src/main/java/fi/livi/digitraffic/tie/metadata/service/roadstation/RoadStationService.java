@@ -21,8 +21,8 @@ import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
