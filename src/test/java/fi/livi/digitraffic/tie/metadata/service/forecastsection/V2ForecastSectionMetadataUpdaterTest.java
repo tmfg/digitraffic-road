@@ -20,12 +20,12 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;

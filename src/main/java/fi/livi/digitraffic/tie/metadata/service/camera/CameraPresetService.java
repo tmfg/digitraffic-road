@@ -26,12 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.data.service.ImageUpdateInfo;
-import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
-import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 
 @Service
 public class CameraPresetService {

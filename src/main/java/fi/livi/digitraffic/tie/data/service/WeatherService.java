@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.weather.WeatherStationDto;
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 @Service

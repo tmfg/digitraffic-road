@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 

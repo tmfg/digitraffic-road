@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsStationDto;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class TmsDataServiceTest extends AbstractServiceTest {

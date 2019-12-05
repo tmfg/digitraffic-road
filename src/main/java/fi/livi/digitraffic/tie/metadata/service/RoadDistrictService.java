@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadDistrictRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadDistrictRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadDistrict;
 
 @Service

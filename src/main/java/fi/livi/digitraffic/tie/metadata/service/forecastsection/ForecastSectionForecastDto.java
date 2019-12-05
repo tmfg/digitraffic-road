@@ -4,8 +4,8 @@ import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.OverallRoadCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.Reliability;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.Reliability;
 
 public class ForecastSectionForecastDto {
 

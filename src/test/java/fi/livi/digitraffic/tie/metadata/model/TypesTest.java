@@ -7,6 +7,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.RoadStationState;
+import fi.livi.digitraffic.tie.model.TmsStationType;
+import fi.livi.digitraffic.tie.model.VehicleClass;
+import fi.livi.digitraffic.tie.model.WeatherStationType;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.AjoneuvoluokkaTyyppi;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LaiteTyyppi;

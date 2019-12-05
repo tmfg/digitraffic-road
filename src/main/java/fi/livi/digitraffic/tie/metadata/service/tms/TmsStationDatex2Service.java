@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
-import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationDatex2Repository;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationDatex2Repository;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 
 @ConditionalOnWebApplication

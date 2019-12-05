@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraStationDataDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
 @ConditionalOnWebApplication
 @Component

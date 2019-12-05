@@ -18,6 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.WeatherStationType;
 
 @Entity
 @DynamicUpdate

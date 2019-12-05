@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.dao.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;

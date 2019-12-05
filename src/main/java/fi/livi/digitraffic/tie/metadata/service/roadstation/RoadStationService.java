@@ -2,9 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.camera.AbstractCameraStationAttributeUpdater;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.tms.AbstractTmsStationAttributeUpdater;

@@ -30,8 +30,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
-import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraType;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;

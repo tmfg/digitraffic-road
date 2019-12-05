@@ -13,6 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
+import fi.livi.digitraffic.tie.model.RoadStationType;
+
 @Entity
 @Immutable
 public class AllowedRoadStationSensor implements Serializable {

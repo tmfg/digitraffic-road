@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Repository
 public interface LocationVersionRepository extends JpaRepository<LocationVersion, String> {

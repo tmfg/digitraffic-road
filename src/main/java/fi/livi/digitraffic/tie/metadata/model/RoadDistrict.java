@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.SpeedLimitSeason;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity

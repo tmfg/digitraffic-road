@@ -28,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.VehicleClass;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

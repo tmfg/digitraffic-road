@@ -8,7 +8,7 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.data.service.LotjuAnturiWrapper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class SensorValueUpdateParameterDto {
 

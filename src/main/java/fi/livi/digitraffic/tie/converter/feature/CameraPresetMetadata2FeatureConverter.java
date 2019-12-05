@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 

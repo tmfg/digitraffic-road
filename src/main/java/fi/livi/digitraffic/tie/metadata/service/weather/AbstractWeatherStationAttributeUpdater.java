@@ -3,11 +3,11 @@ package fi.livi.digitraffic.tie.metadata.service.weather;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationState;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;

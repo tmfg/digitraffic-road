@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastConditionReason;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeather;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionWeatherPK;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastConditionReason;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeather;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeatherPK;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service

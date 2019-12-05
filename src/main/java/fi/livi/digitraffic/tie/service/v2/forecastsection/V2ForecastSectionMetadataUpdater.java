@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionClient;

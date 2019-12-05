@@ -33,13 +33,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraType;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;

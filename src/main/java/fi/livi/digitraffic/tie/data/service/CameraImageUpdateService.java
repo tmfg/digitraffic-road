@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;

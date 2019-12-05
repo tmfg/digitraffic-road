@@ -37,7 +37,7 @@ import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.model.SensorValue;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;

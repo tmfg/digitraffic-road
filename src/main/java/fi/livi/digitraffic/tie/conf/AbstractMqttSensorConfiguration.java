@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
 import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.MqttRelayService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 
 public abstract class AbstractMqttSensorConfiguration {

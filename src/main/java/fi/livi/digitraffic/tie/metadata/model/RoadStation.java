@@ -30,6 +30,9 @@ import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.converter.RoadStationTypeIntegerConverter;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.RoadStationState;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 @Entity
 @DynamicUpdate

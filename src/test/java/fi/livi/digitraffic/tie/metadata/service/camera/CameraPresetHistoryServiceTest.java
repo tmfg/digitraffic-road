@@ -39,9 +39,9 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.metadata.dao.CameraPresetHistoryRepository;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService.HistoryStatus;
 

@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.WeatherStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
+import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
 import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStationType;
+import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;

@@ -3,16 +3,14 @@ package fi.livi.digitraffic.tie.metadata.service.roadstation;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class RoadStationServiceTest extends AbstractServiceTest {
     @Autowired

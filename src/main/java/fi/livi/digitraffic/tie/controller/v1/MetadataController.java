@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureColle
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraWebService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataService;
 import fi.livi.digitraffic.tie.metadata.service.location.LocationService;

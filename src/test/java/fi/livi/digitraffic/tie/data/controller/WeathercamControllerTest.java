@@ -24,8 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

@@ -5,7 +5,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;

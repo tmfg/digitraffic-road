@@ -5,10 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 
 public class MetadataVersions {
     private final Map<DataType, MetadataVersion> versionMap = new EnumMap<DataType, MetadataVersion>(DataType.class);

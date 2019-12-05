@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.TmsStationType;
 
 @Entity
 @Table(name = "LAM_STATION")

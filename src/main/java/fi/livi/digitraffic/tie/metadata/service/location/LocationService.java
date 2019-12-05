@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Service
 public class LocationService {

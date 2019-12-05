@@ -19,13 +19,13 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastConditionReasonDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.FrictionCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.OverallRoadCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.PrecipitationCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.Reliability;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.VisibilityCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.Reliability;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.VisibilityCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 
 @Repository

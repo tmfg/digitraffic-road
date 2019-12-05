@@ -1,18 +1,17 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
 import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationState;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;

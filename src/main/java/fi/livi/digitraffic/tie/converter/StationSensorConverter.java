@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.metadata.dto.StationSensors;
 
 @Component

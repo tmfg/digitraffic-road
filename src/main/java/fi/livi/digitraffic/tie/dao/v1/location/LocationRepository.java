@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
-import fi.livi.digitraffic.tie.metadata.model.location.Location;
+import fi.livi.digitraffic.tie.model.v1.location.Location;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Integer> {

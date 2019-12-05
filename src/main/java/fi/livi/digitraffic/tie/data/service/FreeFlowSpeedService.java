@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
-import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service

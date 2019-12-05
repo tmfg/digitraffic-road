@@ -25,7 +25,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener.JMSDataUpdater;
 import fi.livi.digitraffic.tie.data.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraMetadataMessageHandler;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;

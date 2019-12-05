@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.metadata.dao.SensorValueRepository;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {

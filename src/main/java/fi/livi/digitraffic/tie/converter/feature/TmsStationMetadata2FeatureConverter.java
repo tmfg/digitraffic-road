@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import static fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository.TMS_STATION_TYPE;
+import static fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository.TMS_STATION_TYPE;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;

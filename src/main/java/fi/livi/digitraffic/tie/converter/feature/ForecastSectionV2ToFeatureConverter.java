@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.ForecastSectionCoordinateList;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinateList;
 
 @Component
 public class ForecastSectionV2ToFeatureConverter {
