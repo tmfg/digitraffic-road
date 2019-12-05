@@ -12,6 +12,7 @@ import java.util.List;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,7 +69,7 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}", produces = { APPLICATION_XML_VALUE , APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public D2LogicalModel datex2(
-        @ApiParam(value = "Datex2 Message type.", required = true)
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
         @PathVariable
         final Datex2MessageType datex2MessageType,
         @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
@@ -83,7 +84,7 @@ public class BetaController {
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
     public D2LogicalModel datex2BySituationId(
-        @ApiParam(value = "Datex2 Message type.", required = true)
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
         @PathVariable
         final Datex2MessageType datex2MessageType,
         @ApiParam(value = "Datex2 situation id.", required = true)

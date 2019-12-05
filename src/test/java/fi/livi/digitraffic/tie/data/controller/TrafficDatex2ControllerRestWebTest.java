@@ -34,11 +34,11 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 
-    private final String incident1_past = "GUID5000526801";
-    private final String incident2_active = "GUID50006936";
-    private final String incident3_active = "GUID50013339";
-    private final String roadwork1_active = "GUID50350441";
-    private final String weightRestriction1_active = "GUID5035473201";
+    private final String incident1_past_id = "GUID5000526801";
+    private final String incident2_active_id = "GUID50006936";
+    private final String incident3_active_id = "GUID50013339";
+    private final String roadwork1_active_id = "GUID50350441";
+    private final String weightRestriction1_active_id = "GUID5035473201";
 
     @Before
     public void updateData() throws IOException {
@@ -64,49 +64,49 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incident() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT;
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter();
         final String xml = getResponse(url);
-        assertSituation(incident1_past, false, xml);
-        assertSituation(incident2_active, true, xml);
-        assertSituation(incident3_active, true, xml);
-        assertSituation(roadwork1_active, false, xml);
-        assertSituation(weightRestriction1_active, false, xml);
+        assertSituationExistenceInXml(incident1_past_id, false, xml);
+        assertSituationExistenceInXml(incident2_active_id, true, xml);
+        assertSituationExistenceInXml(incident3_active_id, true, xml);
+        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
+        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
     }
 
     @Test
     public void datex2incidentInPast() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT + "?inactiveHours=200000";
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter() + "?inactiveHours=200000";
         final String xml = getResponse(url);
-        assertSituation(incident1_past, true, xml);
-        assertSituation(incident2_active, true, xml);
-        assertSituation(incident3_active, true, xml);
-        assertSituation(roadwork1_active, false, xml);
-        assertSituation(weightRestriction1_active, false, xml);
+        assertSituationExistenceInXml(incident1_past_id, true, xml);
+        assertSituationExistenceInXml(incident2_active_id, true, xml);
+        assertSituationExistenceInXml(incident3_active_id, true, xml);
+        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
+        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
     }
 
     @Test
     public void datex2roadwork() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.ROADWORK;
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.ROADWORK.toParameter();
         final String xml = getResponse(url);
-        assertSituation(incident1_past, false, xml);
-        assertSituation(incident2_active, false, xml);
-        assertSituation(incident3_active, false, xml);
-        assertSituation(roadwork1_active, true, xml);
-        assertSituation(weightRestriction1_active, false, xml);
+        assertSituationExistenceInXml(incident1_past_id, false, xml);
+        assertSituationExistenceInXml(incident2_active_id, false, xml);
+        assertSituationExistenceInXml(incident3_active_id, false, xml);
+        assertSituationExistenceInXml(roadwork1_active_id, true, xml);
+        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
     }
 
     @Test
     public void datex2weightRestriction() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.WEIGHT_RESTRICTION;
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.WEIGHT_RESTRICTION.toParameter();
         final String xml = getResponse(url);
-        assertSituation(incident1_past, false, xml);
-        assertSituation(incident2_active, false, xml);
-        assertSituation(incident3_active, false, xml);
-        assertSituation(roadwork1_active, false, xml);
-        assertSituation(weightRestriction1_active, true, xml);
+        assertSituationExistenceInXml(incident1_past_id, false, xml);
+        assertSituationExistenceInXml(incident2_active_id, false, xml);
+        assertSituationExistenceInXml(incident3_active_id, false, xml);
+        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
+        assertSituationExistenceInXml(weightRestriction1_active_id, true, xml);
     }
 
-    private void assertSituation(final String situationId, final boolean shouldExist, final String xml) {
+    private void assertSituationExistenceInXml(final String situationId, final boolean shouldExist, final String xml) {
         if (shouldExist) {
             assertTrue(situationId + " should exist in response", xml.contains(situationId));
         } else {
