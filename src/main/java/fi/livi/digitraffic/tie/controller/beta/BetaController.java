@@ -64,7 +64,7 @@ public class BetaController {
         this.datex2DataService = datex2DataService;
     }
 
-    @ApiOperation(value = "Active Datex2 messages for TRAFFIC_DISORDER, ROADWORK, WEIGHT_RESTRICTION -types")
+    @ApiOperation(value = "Active Datex2 messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}", produces = { APPLICATION_XML_VALUE , APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public D2LogicalModel datex2(
@@ -78,7 +78,7 @@ public class BetaController {
         return datex2DataService.findActive(inactiveHours, datex2MessageType);
     }
 
-    @ApiOperation(value = "Datex2 messages history by situation id for TRAFFIC_DISORDER, ROADWORK, WEIGHT_RESTRICTION -types")
+    @ApiOperation(value = "Datex2 messages history by situation id for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
