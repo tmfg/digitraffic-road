@@ -6,9 +6,9 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
 
 @DisallowConcurrentExecution
 public class WeatherStationMetadataUpdateJob extends SimpleUpdateJob {

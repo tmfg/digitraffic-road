@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.data.service.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 
 /**
  * Updates camera station's and preset's (RoadStation + CameraPreset) metadata

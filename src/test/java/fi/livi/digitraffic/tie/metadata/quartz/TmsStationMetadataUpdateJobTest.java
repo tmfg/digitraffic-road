@@ -21,12 +21,12 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.VehicleClass;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
 public class TmsStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 

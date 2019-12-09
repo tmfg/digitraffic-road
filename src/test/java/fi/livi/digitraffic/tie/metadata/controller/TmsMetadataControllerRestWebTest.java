@@ -26,8 +26,8 @@ import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 

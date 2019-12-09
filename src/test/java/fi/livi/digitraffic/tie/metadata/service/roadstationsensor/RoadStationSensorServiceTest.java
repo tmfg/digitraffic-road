@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class RoadStationSensorServiceTest extends AbstractServiceTest {
     @Autowired

@@ -12,9 +12,9 @@ import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionClient;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.v2.ForecastSectionV2Dto;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionClient;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2Dto;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 

@@ -20,12 +20,12 @@ import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCol
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationSensorUpdater;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 

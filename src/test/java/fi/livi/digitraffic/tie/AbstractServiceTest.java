@@ -23,14 +23,14 @@ import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.FlywayService;
-import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.location.LocationService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorConstantService;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.RoadDistrictService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.v1.location.LocationService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 
 @Import({ StringToObjectMarshaller.class, MetadataMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services

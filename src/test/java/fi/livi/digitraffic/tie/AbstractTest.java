@@ -41,7 +41,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
+import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;

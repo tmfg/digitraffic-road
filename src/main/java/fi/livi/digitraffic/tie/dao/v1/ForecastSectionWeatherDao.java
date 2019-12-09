@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.model.v1.forecastsection.Reliability;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.VisibilityCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 
 @Repository
 public class ForecastSectionWeatherDao {

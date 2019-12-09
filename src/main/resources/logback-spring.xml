@@ -21,7 +21,7 @@
             <fileNamePattern>road-${appType}-logstash.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
             <maxHistory>2</maxHistory>
 			<totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>		
+        </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
@@ -98,10 +98,10 @@
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
-    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="true">
+    <logger name="fi.livi.digitraffic.tie.dao.v1.SensorValueDao" additivity="true">
         <appender-ref ref="FILE_JMS" />
     </logger>
-    <logger name="fi.livi.digitraffic.tie.data.dao.SensorValueDao" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.dao.v1.SensorValueDao" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 

@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class WeathercamControllerTest extends AbstractRestWebTest {

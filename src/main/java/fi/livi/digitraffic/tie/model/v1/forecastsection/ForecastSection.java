@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.dto.Coordinate;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionNaturalIdHelper;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionNaturalIdHelper;
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity

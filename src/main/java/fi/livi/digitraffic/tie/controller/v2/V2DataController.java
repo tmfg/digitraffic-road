@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

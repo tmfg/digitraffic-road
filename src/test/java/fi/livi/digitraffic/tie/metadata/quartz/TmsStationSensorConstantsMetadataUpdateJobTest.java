@@ -14,9 +14,9 @@ import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantValueDto;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationSensorConstantUpdater;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 
 public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 

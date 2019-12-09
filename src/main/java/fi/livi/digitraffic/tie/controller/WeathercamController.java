@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService.HistoryStatus;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService.HistoryStatus;
 
 // TODO DPO-949 restore
 //@RestController

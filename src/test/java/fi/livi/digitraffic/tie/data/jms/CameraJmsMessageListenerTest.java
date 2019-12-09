@@ -47,7 +47,7 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
                                    "road.datasource.hikari.maximum-pool-size=6",

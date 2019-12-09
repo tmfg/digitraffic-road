@@ -14,8 +14,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraMetadataMessageHandler;
+import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.camera.meta.inQueue")

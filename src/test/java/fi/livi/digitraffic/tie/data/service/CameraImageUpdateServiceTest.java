@@ -15,7 +15,7 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 

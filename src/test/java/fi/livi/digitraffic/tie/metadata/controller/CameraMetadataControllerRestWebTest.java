@@ -24,8 +24,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
 
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 

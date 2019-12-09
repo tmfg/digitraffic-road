@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.jms.marshaller;
 
-import static fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto.EntityType;
+import static fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto.EntityType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,8 +13,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta.Metatietomuutos;
-import fi.livi.digitraffic.tie.metadata.service.CameraMetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.metadata.service.MetadataUpdatedMessageDto.UpdateType;
+import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
+import fi.livi.digitraffic.tie.service.MetadataUpdatedMessageDto.UpdateType;
 
 public class CameraMetadataUpdatedMessageMarshaller extends TextMessageMarshaller<CameraMetadataUpdatedMessageDto> {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdatedMessageMarshaller.class);

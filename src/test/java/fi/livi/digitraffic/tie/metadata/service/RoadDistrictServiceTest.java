@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.RoadDistrict;
+import fi.livi.digitraffic.tie.service.RoadDistrictService;
 
 public class RoadDistrictServiceTest extends AbstractServiceTest {
 

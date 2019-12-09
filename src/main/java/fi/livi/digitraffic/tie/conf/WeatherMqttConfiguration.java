@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.data.service.MqttRelayService;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 @ConditionalOnProperty("mqtt.weather.enabled")
 @ConditionalOnNotWebApplication

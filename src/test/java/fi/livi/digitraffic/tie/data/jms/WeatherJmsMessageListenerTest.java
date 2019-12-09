@@ -40,7 +40,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.SensorValue;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
-import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 

@@ -47,7 +47,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.SensorValue;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {

@@ -2,11 +2,9 @@ package fi.livi.digitraffic.tie.metadata.quartz;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater;
 
 @DisallowConcurrentExecution
 public class ForecastSectionV1MetadataUpdateJob extends SimpleUpdateJob {

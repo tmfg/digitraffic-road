@@ -5,7 +5,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.service.location.LocationMetadataUpdater;
+import fi.livi.digitraffic.tie.service.v1.location.LocationMetadataUpdater;
 
 @DisallowConcurrentExecution
 public class LocationMetadataUpdateJob extends SimpleUpdateJob {

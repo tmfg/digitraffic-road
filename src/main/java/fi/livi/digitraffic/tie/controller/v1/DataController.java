@@ -44,7 +44,7 @@ import fi.livi.digitraffic.tie.data.service.WeatherService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
-import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

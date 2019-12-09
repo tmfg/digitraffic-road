@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 
 public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutS3 {
 

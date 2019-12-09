@@ -5,7 +5,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.metadata.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 
 @DisallowConcurrentExecution
 public class TmsStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
