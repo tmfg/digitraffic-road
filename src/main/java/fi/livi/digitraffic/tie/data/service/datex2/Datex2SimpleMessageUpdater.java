@@ -112,8 +112,8 @@ public class Datex2SimpleMessageUpdater {
 
     private static boolean isNewOrUpdatedRecord(final ZonedDateTime latestVersionTime, final SituationRecord record) {
         // different resolution, so remove fractions of second
-        final Instant vTime = DateHelper.withoutNanos(record.getSituationRecordVersionTime());
-        return latestVersionTime == null || vTime.isAfter(latestVersionTime.toInstant());
+        final Instant vTime = DateHelper.withoutMillis(record.getSituationRecordVersionTime());
+        return latestVersionTime == null || vTime.isAfter(DateHelper.withoutMillis(latestVersionTime.toInstant()) );
     }
 
     private Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
