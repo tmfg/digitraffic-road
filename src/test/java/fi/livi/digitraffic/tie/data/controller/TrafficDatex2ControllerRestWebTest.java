@@ -66,44 +66,52 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     public void datex2incident() throws Exception {
         final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter();
         final String xml = getResponse(url);
-        assertSituationExistenceInXml(incident1_past_id, false, xml);
-        assertSituationExistenceInXml(incident2_active_id, true, xml);
-        assertSituationExistenceInXml(incident3_active_id, true, xml);
-        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
-        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
+        assertSituationNotExistInXml(incident1_past_id, xml);
+        assertSituationExistInXml(incident2_active_id, xml);
+        assertSituationExistInXml(incident3_active_id, xml);
+        assertSituationNotExistInXml(roadwork1_active_id, xml);
+        assertSituationNotExistInXml(weightRestriction1_active_id, xml);
     }
 
     @Test
     public void datex2incidentInPast() throws Exception {
         final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter() + "?inactiveHours=200000";
         final String xml = getResponse(url);
-        assertSituationExistenceInXml(incident1_past_id, true, xml);
-        assertSituationExistenceInXml(incident2_active_id, true, xml);
-        assertSituationExistenceInXml(incident3_active_id, true, xml);
-        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
-        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
+        assertSituationExistInXml(incident1_past_id, xml);
+        assertSituationExistInXml(incident2_active_id, xml);
+        assertSituationExistInXml(incident3_active_id, xml);
+        assertSituationNotExistInXml(roadwork1_active_id, xml);
+        assertSituationNotExistInXml(weightRestriction1_active_id, xml);
     }
 
     @Test
     public void datex2roadwork() throws Exception {
         final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.ROADWORK.toParameter();
         final String xml = getResponse(url);
-        assertSituationExistenceInXml(incident1_past_id, false, xml);
-        assertSituationExistenceInXml(incident2_active_id, false, xml);
-        assertSituationExistenceInXml(incident3_active_id, false, xml);
-        assertSituationExistenceInXml(roadwork1_active_id, true, xml);
-        assertSituationExistenceInXml(weightRestriction1_active_id, false, xml);
+        assertSituationNotExistInXml(incident1_past_id, xml);
+        assertSituationNotExistInXml(incident2_active_id, xml);
+        assertSituationNotExistInXml(incident3_active_id, xml);
+        assertSituationExistInXml(roadwork1_active_id, xml);
+        assertSituationNotExistInXml(weightRestriction1_active_id, xml);
     }
 
     @Test
     public void datex2weightRestriction() throws Exception {
         final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.WEIGHT_RESTRICTION.toParameter();
         final String xml = getResponse(url);
-        assertSituationExistenceInXml(incident1_past_id, false, xml);
-        assertSituationExistenceInXml(incident2_active_id, false, xml);
-        assertSituationExistenceInXml(incident3_active_id, false, xml);
-        assertSituationExistenceInXml(roadwork1_active_id, false, xml);
-        assertSituationExistenceInXml(weightRestriction1_active_id, true, xml);
+        assertSituationNotExistInXml(incident1_past_id, xml);
+        assertSituationNotExistInXml(incident2_active_id, xml);
+        assertSituationNotExistInXml(incident3_active_id, xml);
+        assertSituationNotExistInXml(roadwork1_active_id, xml);
+        assertSituationExistInXml(weightRestriction1_active_id, xml);
+    }
+
+    private void assertSituationExistInXml(final String situationId,  final String xml) {
+        assertSituationExistenceInXml(situationId, true, xml);
+    }
+
+    private void assertSituationNotExistInXml(final String situationId,  final String xml) {
+        assertSituationExistenceInXml(situationId, false, xml);
     }
 
     private void assertSituationExistenceInXml(final String situationId, final boolean shouldExist, final String xml) {
