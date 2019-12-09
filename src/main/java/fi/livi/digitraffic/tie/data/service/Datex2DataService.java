@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.time.ZonedDateTime;
@@ -62,7 +62,7 @@ public class Datex2DataService {
 
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findTrafficDisorders(final String situationId, final int year, final int month) {
-        final List<Datex2> datex2s = findDatex2Messages(TRAFFIC_DISORDER, situationId, year, month);
+        final List<Datex2> datex2s = findDatex2Messages(TRAFFIC_INCIDENT, situationId, year, month);
 
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
@@ -103,23 +103,33 @@ public class Datex2DataService {
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response getAllTrafficDisordersBySituationId(final
     String situationId) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_DISORDER.name());
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_INCIDENT.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
         return convertToTrafficDisordersDatex2Response(datex2s);
     }
 
+    @Transactional(readOnly = true)
+    public D2LogicalModel findAllBySituationId(final String situationId, final Datex2MessageType datex2MessageType) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, datex2MessageType.name());
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToD2LogicalModel(datex2s);
+    }
+
 
     @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveTrafficDisorders(final int inactiveHours) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
+        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), inactiveHours);
         return convertToTrafficDisordersDatex2Response(allActive);
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findActiveTrafficDisordersAsD2LogicalModel(final int inactiveHours) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), inactiveHours);
+    public D2LogicalModel findActive(final int inactiveHours,
+                                     final Datex2MessageType datex2MessageType) {
+        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToD2LogicalModel(allActive);
     }
 

@@ -38,6 +38,7 @@ public final class ApiPaths {
     public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
     // datex2
+    public static final String TRAFFIC_DATEX2_PATH = "/traffic-datex2";
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";

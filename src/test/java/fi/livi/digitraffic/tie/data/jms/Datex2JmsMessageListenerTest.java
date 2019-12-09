@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.jms;
 
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.Assert.assertEquals;
 
@@ -61,18 +61,18 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
         readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
 
-        final D2LogicalModel active = datex2DataService.findActiveTrafficDisordersAsD2LogicalModel(0);
+        final D2LogicalModel active = datex2DataService.findActive(0, TRAFFIC_INCIDENT);
 
         List<Situation> situations = ((SituationPublication) active.getPayloadPublication()).getSituations();
 
         assertCollectionSize(1, situations);
         assertEquals(SITUATION_ID_1, situations.get(0).getId());
 
-        final List<Datex2> bySituationDatex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_1, TRAFFIC_DISORDER.name());
+        final List<Datex2> bySituationDatex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_1, TRAFFIC_INCIDENT.name());
         assertCollectionSize(1, bySituationDatex2s);
         assertEquals(SITUATION_ID_1, bySituationDatex2s.get(0).getSituations().get(0).getSituationId());
 
-        final List<Datex2> bySituation2Datex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_2, TRAFFIC_DISORDER.name());
+        final List<Datex2> bySituation2Datex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_2, TRAFFIC_INCIDENT.name());
         assertCollectionSize(3, bySituation2Datex2s);
 
         for (final Datex2 datex2 : bySituation2Datex2s) {
@@ -112,7 +112,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     }
 
     private List<Situation> getActiveSituations(final int inactiveHours) {
-        final D2LogicalModel active = datex2DataService.findActiveTrafficDisordersAsD2LogicalModel(inactiveHours);
+        final D2LogicalModel active = datex2DataService.findActive(inactiveHours, TRAFFIC_INCIDENT);
         return ((SituationPublication) active.getPayloadPublication()).getSituations();
     }
     private JMSMessageListener createJmsMessageListener() {

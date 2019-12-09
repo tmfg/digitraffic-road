@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_DISORDER;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 
 import java.time.ZonedDateTime;
@@ -57,7 +57,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     @Test
     public void activeInPastHours() {
         final String pastSituationId = "GUID12345678";
-        final List<Datex2> beroreActive10Hours = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 10);
+        final List<Datex2> beroreActive10Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 10);
         // Situation should not exist
         Assert.assertFalse(beroreActive10Hours.stream()
             .filter(d -> d.getSituations() != null && d.getSituations().stream()
@@ -65,17 +65,17 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
             .findFirst().isPresent());
 
         // Create traffic disorder in past for 2 hours
-        createDatex2InPast2h(pastSituationId, Datex2MessageType.TRAFFIC_DISORDER);
+        createDatex2InPast2h(pastSituationId, Datex2MessageType.TRAFFIC_INCIDENT);
 
         // Situation should be found >= 3 h
-        final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 3);
+        final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 3);
         Assert.assertTrue(active3Hours.stream()
             .filter(d -> d.getSituations() != null && d.getSituations().stream()
                 .filter(s -> s.getSituationId().equals(pastSituationId)).findFirst().isPresent())
             .findFirst().isPresent());
 
         // 2 h in past wont find it as its little bit over 2 h old
-        final List<Datex2> afterActive2Hours = datex2Repository.findAllActive(TRAFFIC_DISORDER.name(), 2);
+        final List<Datex2> afterActive2Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 2);
         Assert.assertFalse(afterActive2Hours.stream()
             .filter(d -> d.getSituations() != null && d.getSituations().stream()
                 .filter(s -> s.getSituationId().equals(pastSituationId)).findFirst().isPresent())

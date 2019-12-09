@@ -57,11 +57,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
 public class DataController {
-    public static final String DATEX2_API_NOTES =
-        "Dates are include in multiple formats. Under published tag, there is utc " +
-        "and localtime fields that are in UTC (Zulu) time. Other times are in local time " +
-        "with offset from the UTC. Best practice is to use some library that can parse " +
-        "date and times properly with any offset from [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date format.";
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
@@ -182,8 +177,7 @@ public class DataController {
                                                                         null);
     }
 
-    @ApiOperation(value = "Active traffic disorders Datex2 messages",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Active traffic disorders Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public TrafficDisordersDatex2Response trafficDisordersDatex2(
@@ -194,8 +188,7 @@ public class DataController {
         return datex2DataService.findActiveTrafficDisorders(inactiveHours);
     }
 
-    @ApiOperation(value = "Traffic disorder Datex2 messages by situation id",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Traffic disorder Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
@@ -205,8 +198,7 @@ public class DataController {
         return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
     }
 
-    @ApiOperation(value = "Traffic disorder Datex2 messages disorders history",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Traffic disorder Datex2 messages disorders history")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(      {   @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 400, message = "Invalid parameter"),
@@ -224,11 +216,10 @@ public class DataController {
         return datex2DataService.findTrafficDisorders(situationId, year, month);
     }
 
-    @ApiOperation(value = "Active roadwork Datex2 messages",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Active roadwork Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
-    public RoadworksDatex2Response roadWorksDatex2(
+    public RoadworksDatex2Response roadworksDatex2(
         @ApiParam(value = "Return roadworks from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
@@ -236,8 +227,7 @@ public class DataController {
         return datex2DataService.findActiveRoadworks(inactiveHours);
     }
 
-    @ApiOperation(value = "Roadwork Datex2 messages by situation id",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Roadwork Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 404, message = "Situation id not found") })
@@ -247,8 +237,7 @@ public class DataController {
         return datex2DataService.getAllRoadworksBySituationId(situationId);
     }
 
-    @ApiOperation(value = "Roadwork Datex2 messages history",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Roadwork Datex2 messages history")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
         @ApiResponse(code = 400, message = "Invalid parameter"),
@@ -266,8 +255,7 @@ public class DataController {
         return datex2DataService.findRoadworks(situationId, year, month);
     }
 
-    @ApiOperation(value = "Active weight restrictions Datex2 messages",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Active weight restrictions Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"))
     public WeightRestrictionsDatex2Response weightRestrictionsDatex2(
@@ -278,8 +266,7 @@ public class DataController {
         return datex2DataService.findActiveWeightRestrictions(inactiveHours);
     }
 
-    @ApiOperation(value = "Weight restrictions Datex2 messages by situation id",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Weight restrictions Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
         @ApiResponse(code = 404, message = "Situation id not found") })
@@ -289,8 +276,7 @@ public class DataController {
         return datex2DataService.getAllWeightRestrictionsBySituationId(situationId);
     }
 
-    @ApiOperation(value = "Weight restriction Datex2 messages history",
-                  notes = DATEX2_API_NOTES)
+    @ApiOperation(value = "Weight restriction Datex2 messages history")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
         @ApiResponse(code = 400, message = "Invalid parameter"),

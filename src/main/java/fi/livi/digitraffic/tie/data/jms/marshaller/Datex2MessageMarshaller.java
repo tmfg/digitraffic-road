@@ -25,7 +25,7 @@ public class Datex2MessageMarshaller extends TextMessageMarshaller<Datex2Message
     @Override
     protected List<Datex2MessageDto> transform(final Object object, final String text) {
         final List<Datex2MessageDto> unmarshalled =
-            datex2SimpleMessageUpdater.convert(text, Datex2MessageType.TRAFFIC_DISORDER, null);
+            datex2SimpleMessageUpdater.convert(text, Datex2MessageType.TRAFFIC_INCIDENT, null);
         log.info("method=transform situations {}", unmarshalled.stream()
             .map(d -> ((SituationPublication)d.model.getPayloadPublication()).getSituations().get(0).getId())
             .collect( Collectors.joining( ", " ) ));

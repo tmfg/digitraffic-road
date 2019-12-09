@@ -50,7 +50,7 @@ public class Datex2TrafficAlertHttpClient {
     }
 
     private String getContent(final String url) {
-        return fileGetService.getFile(Datex2MessageType.TRAFFIC_DISORDER.name(), url, String.class);
+        return fileGetService.getFile(Datex2MessageType.TRAFFIC_INCIDENT.name(), url, String.class);
     }
 
     private List<Pair<String, Instant>> getNewFiles(final Instant from, final String html) {

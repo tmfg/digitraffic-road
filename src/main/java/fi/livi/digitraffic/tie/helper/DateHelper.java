@@ -142,13 +142,20 @@ public final class DateHelper {
 
     public static Instant withoutMillis(final Instant from) {
         if (from != null) {
-            return from.with(ChronoField.MILLI_OF_SECOND, 0);
+            return from.with(MILLI_OF_SECOND, 0);
         }
         return null;
     }
     public static ZonedDateTime toZonedDateTimeWithoutMillis(final Instant from) {
         if (from != null) {
             return toZonedDateTimeAtUtc(withoutMillis(from));
+        }
+        return null;
+    }
+
+    public static ZonedDateTime toZonedDateTimeWithoutNanos(final Instant from) {
+        if (from != null) {
+            return toZonedDateTimeAtUtc(withoutNanos(from));
         }
         return null;
     }
