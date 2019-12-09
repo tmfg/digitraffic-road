@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
 public class AbstractRoadStationAttributeUpdater {
 

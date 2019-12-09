@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.converter;
 
-import static fi.livi.digitraffic.tie.metadata.dao.RoadStationSensorRepository.WEATHER_STATION_TYPE;
+import static fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository.WEATHER_STATION_TYPE;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.dao.WeatherStationRepository;
+import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 
 @Component
 public final class WeatherStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {

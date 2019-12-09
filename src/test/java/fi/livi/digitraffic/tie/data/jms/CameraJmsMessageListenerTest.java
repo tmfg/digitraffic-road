@@ -44,9 +44,9 @@ import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",

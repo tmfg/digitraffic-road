@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.util.Arrays;
 
-import fi.livi.digitraffic.tie.metadata.model.location.LocationType;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationTypeKey;
+import fi.livi.digitraffic.tie.model.v1.location.LocationType;
+import fi.livi.digitraffic.tie.model.v1.location.LocationTypeKey;
 
 public class LocationTypeReader extends AbstractReader<LocationType> {
     protected LocationTypeReader(final String version) {

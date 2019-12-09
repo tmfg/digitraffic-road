@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.camera;
 
-import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuCameraStationMetadataService;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;

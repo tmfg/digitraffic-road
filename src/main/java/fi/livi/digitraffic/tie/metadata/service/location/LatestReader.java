@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.service.location;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 
 public class LatestReader extends AbstractReader<Void> {
     private final MetadataVersions latestMetadataVersions = new MetadataVersions();

@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.data.dao.ForecastSectionWeatherDao;
+import fi.livi.digitraffic.tie.dao.v1.ForecastSectionWeatherDao;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionApiVersion;
 

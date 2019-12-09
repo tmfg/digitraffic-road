@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.metadata.converter;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 @Converter
 public class RoadStationTypeIntegerConverter implements AttributeConverter<RoadStationType, Integer> {

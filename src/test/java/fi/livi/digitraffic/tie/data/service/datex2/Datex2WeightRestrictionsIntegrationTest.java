@@ -8,8 +8,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 @Ignore
 public class Datex2WeightRestrictionsIntegrationTest extends AbstractDaemonTestWithoutS3 {

@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationVersionRepository;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
+import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Service
 public class LocationMetadataUpdater {

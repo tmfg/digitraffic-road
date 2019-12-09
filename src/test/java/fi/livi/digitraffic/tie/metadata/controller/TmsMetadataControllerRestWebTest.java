@@ -22,10 +22,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
 import fi.livi.digitraffic.tie.metadata.service.roadstationsensor.RoadStationSensorService;
 

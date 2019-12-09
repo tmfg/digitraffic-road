@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class RoadStationSensorServiceTest extends AbstractServiceTest {
     @Autowired

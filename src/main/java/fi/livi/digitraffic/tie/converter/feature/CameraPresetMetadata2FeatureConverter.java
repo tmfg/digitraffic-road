@@ -19,16 +19,16 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.dao.CameraPresetRepository;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.metadata.dto.NearestRoadStation;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 
 @ConditionalOnWebApplication
 @Component

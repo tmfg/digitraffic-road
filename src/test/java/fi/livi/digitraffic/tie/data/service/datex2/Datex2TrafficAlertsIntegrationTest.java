@@ -10,7 +10,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
-import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 
 @TestPropertySource(properties = "datex2.traffic.alerts.url=https://ava.liikennevirasto.fi/incidents/datex2/")
 @Import({ Datex2SimpleMessageUpdater.class, Datex2WeightRestrictionsHttpClient.class, Datex2RoadworksHttpClient.class, RestTemplateConfiguration.class })

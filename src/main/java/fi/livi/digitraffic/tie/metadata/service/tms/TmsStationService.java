@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.service.tms;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
-import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -23,16 +23,16 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.dao.RoadAddressRepository;
-import fi.livi.digitraffic.tie.metadata.dao.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
+import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
-import fi.livi.digitraffic.tie.metadata.model.TmsStationType;
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.metadata.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;

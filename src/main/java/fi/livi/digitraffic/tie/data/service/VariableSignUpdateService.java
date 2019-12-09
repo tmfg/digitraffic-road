@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.DeviceDataRepository;
-import fi.livi.digitraffic.tie.data.dao.DeviceRepository;
-import fi.livi.digitraffic.tie.data.model.trafficsigns.Device;
-import fi.livi.digitraffic.tie.data.model.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
 import fi.livi.digitraffic.tie.external.tloik.Laite;
 import fi.livi.digitraffic.tie.external.tloik.LiikennemerkinTila;
 import fi.livi.digitraffic.tie.external.tloik.Metatiedot;
@@ -24,12 +24,12 @@ import fi.livi.digitraffic.tie.external.tloik.Tilatiedot;
 public class VariableSignUpdateService {
     private static final Logger log = LoggerFactory.getLogger(VariableSignUpdateService.class);
 
-    private final DeviceRepository deviceRepository;
-    private final DeviceDataRepository deviceDataRepository;
+    private final V2DeviceRepository v2DeviceRepository;
+    private final V2DeviceDataRepository v2DeviceDataRepository;
 
-    public VariableSignUpdateService(final DeviceRepository deviceRepository, final DeviceDataRepository deviceDataRepository) {
-        this.deviceRepository = deviceRepository;
-        this.deviceDataRepository = deviceDataRepository;
+    public VariableSignUpdateService(final V2DeviceRepository v2DeviceRepository, final V2DeviceDataRepository v2DeviceDataRepository) {
+        this.v2DeviceRepository = v2DeviceRepository;
+        this.v2DeviceDataRepository = v2DeviceDataRepository;
     }
 
     @Transactional
@@ -37,7 +37,7 @@ public class VariableSignUpdateService {
         final Map<String, Laite> idMap = metadata.getLaitteet().stream()
             .collect(Collectors.toMap(l -> l.getTunnus(), l -> l));
 
-        final List<Device> devices = deviceRepository.findAllById(idMap.keySet());
+        final List<Device> devices = v2DeviceRepository.findAllById(idMap.keySet());
 
         updateDevices(devices, idMap);
         // updateDevices removes updated from map
@@ -50,7 +50,7 @@ public class VariableSignUpdateService {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
-            deviceRepository.saveAll(idMap.values().stream().map(this::convertDevice).collect(Collectors.toList()));
+            v2DeviceRepository.saveAll(idMap.values().stream().map(this::convertDevice).collect(Collectors.toList()));
         } finally {
             log.info("insertDeviceMetadataCount={} tookMs={}", idMap.size(), sw.getTime());
         }
@@ -100,7 +100,7 @@ public class VariableSignUpdateService {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
-            deviceDataRepository.saveAll(data.getLiikennemerkit().stream()
+            v2DeviceDataRepository.saveAll(data.getLiikennemerkit().stream()
                 .map(this::convertData)
                 .collect(Collectors.toList()));
         } finally {

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
+import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
 
 @Import(LocationSubtypeUpdater.class)
 public class LocationSubtypeUpdaterTest extends AbstractJpaTest {

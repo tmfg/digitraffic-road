@@ -5,10 +5,8 @@ import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import fi.livi.digitraffic.tie.metadata.model.SensorValueDescription;
-import fi.livi.digitraffic.tie.metadata.model.VehicleClass;
+import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.VehicleClass;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service

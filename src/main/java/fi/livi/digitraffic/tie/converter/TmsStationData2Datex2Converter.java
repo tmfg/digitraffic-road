@@ -36,7 +36,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficFlow;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.TrafficSpeed;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.VehicleFlowValue;
 import fi.livi.digitraffic.tie.metadata.converter.TmsStationMetadata2Datex2Converter;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 @ConditionalOnWebApplication
 @Component

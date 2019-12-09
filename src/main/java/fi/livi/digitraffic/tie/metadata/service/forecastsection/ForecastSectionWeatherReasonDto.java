@@ -2,11 +2,11 @@ package fi.livi.digitraffic.tie.metadata.service.forecastsection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.FrictionCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.PrecipitationCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.VisibilityCondition;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.WindCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.VisibilityCondition;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition;
 
 public class ForecastSectionWeatherReasonDto {
 

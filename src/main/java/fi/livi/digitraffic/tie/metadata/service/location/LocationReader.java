@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.metadata.service.location;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Charsets;
-
-import fi.livi.digitraffic.tie.metadata.model.location.Location;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
+import fi.livi.digitraffic.tie.model.v1.location.Location;
+import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
 
 public class LocationReader extends AbstractReader<Location> {
     private final Map<String, LocationSubtype> subtypeMap;
@@ -96,7 +96,7 @@ public class LocationReader extends AbstractReader<Location> {
     }
 
     private static BigDecimal parseDecimal(final String value, final int scale) {
-        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(scale, RoundingMode.HALF_UP);
     }
 
     private void addLinearRef(final Location location, final String value) {

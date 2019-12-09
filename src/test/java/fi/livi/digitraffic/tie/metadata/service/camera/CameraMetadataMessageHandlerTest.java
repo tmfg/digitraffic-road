@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -66,7 +67,7 @@ public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutS
     private void verifyMessageWontTriggersUpdate(final UpdateType updateType,
                                                  final EntityType entityType) {
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(entityType, updateType));
-        verifyZeroInteractions(cameraStationUpdater);
+        verifyNoInteractions(cameraStationUpdater);
     }
 
     private void verifyCameraMessageTriggersUpdate(final UpdateType updateType) {

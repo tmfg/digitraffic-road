@@ -24,10 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
-import fi.livi.digitraffic.tie.metadata.dao.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
-import fi.livi.digitraffic.tie.metadata.model.DataType;
-import fi.livi.digitraffic.tie.metadata.model.forecastsection.RoadCondition;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationSensorDto;
 import fi.livi.digitraffic.tie.metadata.dto.WeatherRoadStationSensorDto;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 
 public class RoadStationSensorDtoConverter {
 

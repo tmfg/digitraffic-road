@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_INCIDENT;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRICTION;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -18,9 +18,9 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.data.service.datex2.StringToObjectMarshaller;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;

@@ -5,22 +5,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationRepository;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationSubtypeRepository;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationTypeRepository;
-import fi.livi.digitraffic.tie.metadata.dao.location.LocationVersionRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationTypeRepository;
+import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Service
 public class LocationService {

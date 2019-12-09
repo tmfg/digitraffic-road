@@ -3,11 +3,11 @@ package fi.livi.digitraffic.tie.metadata.service.tms;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.model.CollectionStatus;
-import fi.livi.digitraffic.tie.metadata.model.RoadAddress;
-import fi.livi.digitraffic.tie.metadata.model.RoadStation;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationState;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.RoadStationState;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.metadata.service.AbstractRoadStationAttributeUpdater;
 import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
 import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;

@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.TRAFFIC_INCIDENT;
-import static fi.livi.digitraffic.tie.data.model.Datex2MessageType.WEIGHT_RESTRICTION;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -20,14 +20,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
-import fi.livi.digitraffic.tie.data.model.Datex2Situation;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecord;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordType;
-import fi.livi.digitraffic.tie.data.model.Datex2SituationRecordValidyStatus;
-import fi.livi.digitraffic.tie.data.model.SituationRecordCommentI18n;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Comment;

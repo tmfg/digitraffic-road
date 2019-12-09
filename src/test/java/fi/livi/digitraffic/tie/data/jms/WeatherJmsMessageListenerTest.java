@@ -36,10 +36,10 @@ import fi.livi.digitraffic.tie.data.jms.marshaller.WeatherMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationSensor;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.model.SensorValue;
-import fi.livi.digitraffic.tie.metadata.model.WeatherStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.SensorValue;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.metadata.service.weather.WeatherStationService;
 
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {

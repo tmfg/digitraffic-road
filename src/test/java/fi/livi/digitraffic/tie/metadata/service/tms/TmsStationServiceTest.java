@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.metadata.converter.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.model.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 public class TmsStationServiceTest extends AbstractServiceTest {
 

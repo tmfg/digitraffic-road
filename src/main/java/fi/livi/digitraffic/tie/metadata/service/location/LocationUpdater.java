@@ -11,8 +11,8 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import fi.livi.digitraffic.tie.metadata.model.location.Location;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationSubtype;
+import fi.livi.digitraffic.tie.model.v1.location.Location;
+import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
 
 @Service
 public class LocationUpdater {

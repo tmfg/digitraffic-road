@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.weather;
 
-import static fi.livi.digitraffic.tie.metadata.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
+import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.metadata.service.lotju.LotjuWeatherStationMetadataService;

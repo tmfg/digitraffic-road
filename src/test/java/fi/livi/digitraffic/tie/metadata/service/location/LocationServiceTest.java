@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
-import fi.livi.digitraffic.tie.metadata.model.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 public class LocationServiceTest extends AbstractServiceTest {
     @Autowired
