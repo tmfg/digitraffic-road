@@ -33,7 +33,6 @@
 
     <repositories>
         <!-- PLACEHOLDER -->
-        <repository><id>digitraffic</id><name>Digitraffic Internal Repository</name><url>dtmvn.solita.fi/</url></repository>
         <repository>
             <id>jcenter-snapshots</id>
             <name>jcenter</name>
