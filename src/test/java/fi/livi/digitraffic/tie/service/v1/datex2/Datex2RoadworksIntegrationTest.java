@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service.datex2;
+package fi.livi.digitraffic.tie.service.v1.datex2;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
@@ -28,7 +28,6 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 @Component
 @ConditionalOnNotWebApplication
 public class CameraImageS3Writer {
-
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
     public static final String IMAGE_VERSION_KEY_SUFFIX = "-versions.jpg";
 
@@ -31,11 +31,10 @@ public class CameraImageS3Writer {
     private final String bucketName;
     private String s3WeathercamKeyRegexp;
 
-    final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
-
+    public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
     // Tue, 03 Sep 2019 13:56:36 GMT
-    final static SimpleDateFormat LAST_MODIFIED_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    public final static SimpleDateFormat LAST_MODIFIED_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     static {
         LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -89,7 +88,7 @@ public class CameraImageS3Writer {
      * @param imageKey file key (name) ins S3 to delete
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
-    DeleteInfo deleteImage(final String imageKey) {
+    public DeleteInfo deleteImage(final String imageKey) {
         final StopWatch start = StopWatch.createStarted();
         // Hide current image and last from history
         try  {
@@ -105,13 +104,13 @@ public class CameraImageS3Writer {
                 return DeleteInfo.success(start.getTime(), imageKey);
             }
             return DeleteInfo.doesNotExist(start.getTime(), imageKey);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error(String.format("Failed to remove s3 file s3Key=%s", imageKey), e);
             return DeleteInfo.failed(start.getTime(), imageKey);
         }
     }
 
-    static String getInLastModifiedHeaderFormat(final Instant instant) {
+    public static String getInLastModifiedHeaderFormat(final Instant instant) {
         return LAST_MODIFIED_FORMAT.format(Date.from(instant));
     }
 
@@ -120,13 +119,12 @@ public class CameraImageS3Writer {
         return StringUtils.substringBeforeLast(key, ".");
     }
 
-    static String getVersionedKey(String key) {
+    public static String getVersionedKey(String key) {
         // Key ie. C0650802.jpg -> C0650802-versions.jpg
         return resolvePresetIdFromKey(key) + IMAGE_VERSION_KEY_SUFFIX;
     }
 
-    static class DeleteInfo {
-
+    public static class DeleteInfo {
         private final boolean fileExists;
         private final boolean deleteSuccess;
         private final long durationMs;

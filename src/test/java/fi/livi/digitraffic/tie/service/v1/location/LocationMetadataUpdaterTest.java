@@ -17,7 +17,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 @Import({LocationMetadataUpdater.class, LocationUpdater.class, LocationTypeUpdater.class, LocationSubtypeUpdater.class,
     MetadataFileFetcher.class})

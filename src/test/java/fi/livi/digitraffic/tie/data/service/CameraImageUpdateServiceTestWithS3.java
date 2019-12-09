@@ -32,6 +32,9 @@ import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 

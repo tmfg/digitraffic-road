@@ -19,6 +19,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 
 public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3WriterTest.class);
@@ -33,7 +34,6 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void s3Write() throws IOException, ParseException {
-
         final String key = "C1234567.jpg";
         final int versionCount = 5;
         final List<Pair<String, byte[]>> versionIdImgDataPairs = writeImageVersions(key, versionCount);

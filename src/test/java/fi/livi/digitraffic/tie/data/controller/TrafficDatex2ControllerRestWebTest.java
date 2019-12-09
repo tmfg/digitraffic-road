@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.data.service.Datex2DataService;
-import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {

@@ -14,10 +14,10 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
-import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 
 @ConditionalOnProperty(name = "jms.datex2.inQueue")
 @Configuration

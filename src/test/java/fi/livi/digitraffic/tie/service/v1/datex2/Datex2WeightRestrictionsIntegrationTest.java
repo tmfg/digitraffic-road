@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service.datex2;
+package fi.livi.digitraffic.tie.service.v1.datex2;
 
 import org.junit.Assert;
 import org.junit.Ignore;

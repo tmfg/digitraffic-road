@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v1.tms;
 
 import java.util.List;
-
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -12,7 +11,6 @@ import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
 public interface TmsStationDatex2Repository extends JpaRepository<TmsStation, Long> {
-
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadStationSensors"})
     List<TmsStation> findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();

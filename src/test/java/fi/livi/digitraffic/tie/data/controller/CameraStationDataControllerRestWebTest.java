@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.data.service.CameraDataService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
 
 public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
 

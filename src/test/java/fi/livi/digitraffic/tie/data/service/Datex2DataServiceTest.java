@@ -11,9 +11,9 @@ import java.time.temporal.ChronoUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
 

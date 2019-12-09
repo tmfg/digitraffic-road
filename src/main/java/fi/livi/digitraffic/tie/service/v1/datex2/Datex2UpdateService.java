@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1.datex2;
 
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
@@ -21,14 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Comment;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
@@ -40,6 +32,13 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Validity;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
 
 @Service
 public class Datex2UpdateService {

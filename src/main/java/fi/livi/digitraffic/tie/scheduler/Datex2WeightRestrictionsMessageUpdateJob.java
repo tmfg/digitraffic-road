@@ -4,7 +4,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 
 @DisallowConcurrentExecution
 public class Datex2WeightRestrictionsMessageUpdateJob extends SimpleUpdateJob {

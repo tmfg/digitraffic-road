@@ -19,7 +19,10 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationTypeRepository;

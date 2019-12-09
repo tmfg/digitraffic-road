@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
-import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v2.V2CodeDescriptionRepository;
 import fi.livi.digitraffic.tie.metadata.dto.CodeDescription;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;

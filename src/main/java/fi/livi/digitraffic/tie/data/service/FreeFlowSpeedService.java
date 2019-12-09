@@ -11,6 +11,7 @@ import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjec
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
 public class FreeFlowSpeedService {

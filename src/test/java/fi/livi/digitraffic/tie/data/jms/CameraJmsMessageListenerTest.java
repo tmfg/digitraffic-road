@@ -42,7 +42,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
-import fi.livi.digitraffic.tie.data.service.CameraDataUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.CollectionStatus;

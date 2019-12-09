@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 
 public class Datex2MessageMarshaller extends TextMessageMarshaller<Datex2MessageDto> {

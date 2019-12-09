@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +23,6 @@ import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
 @ConditionalOnNotWebApplication
@@ -40,7 +38,7 @@ public class CameraImageUpdateService {
     private final ResourceLoader resourceLoader;
     private final CameraPresetHistoryService cameraPresetHistoryService;
 
-    static final int RETRY_COUNT = 3;
+    public static final int RETRY_COUNT = 3;
 
     private final static Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
         put(CameraImageReadFailureException.class, true);
@@ -73,7 +71,7 @@ public class CameraImageUpdateService {
         return IOUtils.toByteArray(imageIs);
     }
 
-    boolean handleKuva(final KuvaProtos.Kuva kuva) {
+   public boolean handleKuva(final KuvaProtos.Kuva kuva) {
         if (log.isDebugEnabled()) {
             log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
         }
@@ -227,7 +225,7 @@ public class CameraImageUpdateService {
 
     }
 
-    byte[] getNoiseImage() {
+    public byte[] getNoiseImage() {
         return noiseImage;
     }
 }

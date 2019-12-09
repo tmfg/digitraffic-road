@@ -25,7 +25,6 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 @ConditionalOnWebApplication
 @Component
 public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFeatureConverter {
-
     private static final Logger log = LoggerFactory.getLogger( CameraPreset2CameraDataConverter.class );
 
     private final String weathercamBaseurl;
@@ -65,7 +64,6 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
     }
 
     private CameraPresetDataDto convertPreset(final CameraPreset cp) {
-
         final CameraPresetDataDto dto = new CameraPresetDataDto();
         dto.setMeasuredTime(cp.getPictureLastModified());
         dto.setId(cp.getPresetId());

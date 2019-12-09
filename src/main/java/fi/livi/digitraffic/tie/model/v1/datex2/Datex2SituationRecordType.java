@@ -7,7 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.data.service.IllegalArgumentException;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.AbnormalTraffic;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Accident;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.AnimalPresenceObstruction;

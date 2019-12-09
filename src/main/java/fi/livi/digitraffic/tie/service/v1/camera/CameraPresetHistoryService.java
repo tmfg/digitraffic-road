@@ -26,8 +26,7 @@ import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryPresenceDto;
-import fi.livi.digitraffic.tie.data.service.CameraImageS3Writer;
-import fi.livi.digitraffic.tie.data.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
@@ -237,7 +236,7 @@ public class CameraPresetHistoryService {
         return new PresetHistoryDto(
             presetId,
             history.stream().map(h ->
-                new PresetHistoryDataDto(DateHelper.toZonedDateTimeAtUtc(h.getLastModified()),
+                new PresetHistoryDataDto(toZonedDateTimeAtUtc(h.getLastModified()),
                                          createPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
                                          h.getSize()))
                 .collect(Collectors.toList()));

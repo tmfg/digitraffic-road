@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +36,7 @@ public class CameraImageReader {
         this.cameraUrl = cameraUrl;
     }
 
-    byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {
+    public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {
         final String imageDownloadUrl = getCameraDownloadUrl(kuvaId);
         info.setDownloadUrl(imageDownloadUrl);
 
