@@ -2,6 +2,9 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,11 +17,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.data.dao.Datex2Repository;
-import fi.livi.digitraffic.tie.data.model.Datex2MessageType;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.data.service.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.Datex2UpdateService;
 import fi.livi.digitraffic.tie.data.service.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
@@ -54,17 +57,17 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         // GUID5035473201 active
         final String weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
 
-        updateDatex2(incident1, Datex2MessageType.TRAFFIC_INCIDENT);
-        updateDatex2(incident2, Datex2MessageType.TRAFFIC_INCIDENT);
-        updateDatex2(incident3, Datex2MessageType.TRAFFIC_INCIDENT);
-        updateDatex2(roadwork1, Datex2MessageType.ROADWORK);
-        updateDatex2(weightRestriction1, Datex2MessageType.WEIGHT_RESTRICTION);
+        updateDatex2(incident1, TRAFFIC_INCIDENT);
+        updateDatex2(incident2, TRAFFIC_INCIDENT);
+        updateDatex2(incident3, TRAFFIC_INCIDENT);
+        updateDatex2(roadwork1, ROADWORK);
+        updateDatex2(weightRestriction1, WEIGHT_RESTRICTION);
     }
 
 
     @Test
     public void datex2incident() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter();
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + TRAFFIC_INCIDENT.toParameter();
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationExistInXml(incident2_active_id, xml);
@@ -75,7 +78,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incidentInPast() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.TRAFFIC_INCIDENT.toParameter() + "?inactiveHours=200000";
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + TRAFFIC_INCIDENT.toParameter() + "?inactiveHours=200000";
         final String xml = getResponse(url);
         assertSituationExistInXml(incident1_past_id, xml);
         assertSituationExistInXml(incident2_active_id, xml);
@@ -86,7 +89,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2roadwork() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.ROADWORK.toParameter();
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + ROADWORK.toParameter();
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationNotExistInXml(incident2_active_id, xml);
@@ -97,7 +100,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2weightRestriction() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + Datex2MessageType.WEIGHT_RESTRICTION.toParameter();
+        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + WEIGHT_RESTRICTION.toParameter();
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationNotExistInXml(incident2_active_id, xml);
