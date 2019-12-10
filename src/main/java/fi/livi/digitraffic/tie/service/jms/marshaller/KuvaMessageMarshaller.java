@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms.marshaller;
+package fi.livi.digitraffic.tie.service.jms.marshaller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 
 public class KuvaMessageMarshaller implements JMSMessageListener.MessageMarshaller<KuvaProtos.Kuva> {
     private static final Logger log = LoggerFactory.getLogger(KuvaMessageMarshaller.class);

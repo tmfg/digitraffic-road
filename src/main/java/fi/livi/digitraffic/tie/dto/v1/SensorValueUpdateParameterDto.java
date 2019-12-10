@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.dao;
+package fi.livi.digitraffic.tie.dto.v1;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

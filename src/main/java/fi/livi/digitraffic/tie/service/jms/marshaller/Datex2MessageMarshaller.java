@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms.marshaller;
+package fi.livi.digitraffic.tie.service.jms.marshaller;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms.marshaller;
+package fi.livi.digitraffic.tie.service.jms.marshaller;
 
 import static fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto.EntityType;
 

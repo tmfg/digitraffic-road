@@ -1,7 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms.marshaller;
-
-import static fi.livi.digitraffic.tie.data.jms.JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR;
-import static fi.livi.digitraffic.tie.data.jms.JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE;
+package fi.livi.digitraffic.tie.service.jms.marshaller;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.data.jms.JMSMessageListener;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 public class TextMessageMarshaller<K> implements JMSMessageListener.MessageMarshaller<K> {
@@ -53,15 +50,15 @@ public class TextMessageMarshaller<K> implements JMSMessageListener.MessageMarsh
 
         final String text = message.getText();
         if (StringUtils.isBlank(text)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
-            throw new JMSException(MESSAGE_UNMARSHALLING_ERROR + ": blank text");
+            log.error(JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
+            throw new JMSException(JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR + ": blank text");
         }
         return text.trim();
     }
 
     private void assertTextMessage(final Message message) {
         if (!(message instanceof TextMessage)) {
-            log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
+            log.error(JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
             throw new IllegalArgumentException("Unknown message type: " + message.getClass());
         }
     }

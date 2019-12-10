@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
-import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.model.DataType;

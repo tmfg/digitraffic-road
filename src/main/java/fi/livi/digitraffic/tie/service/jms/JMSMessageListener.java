@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms;
+package fi.livi.digitraffic.tie.service.jms;
 
 import java.util.ArrayList;
 import java.util.List;

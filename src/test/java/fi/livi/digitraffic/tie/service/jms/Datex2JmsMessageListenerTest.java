@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms;
+package fi.livi.digitraffic.tie.service.jms;
 
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.data.jms.marshaller.Datex2MessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.Datex2MessageMarshaller;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;

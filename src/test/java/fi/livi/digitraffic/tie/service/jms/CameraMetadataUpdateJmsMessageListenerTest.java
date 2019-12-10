@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms;
+package fi.livi.digitraffic.tie.service.jms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.data.jms.JMSMessageListener.JMSDataUpdater;
-import fi.livi.digitraffic.tie.data.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
@@ -50,7 +49,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @MockBean
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
-    private JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
+    private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener cameraMetadataJmsMessageListener;
 
     @Before

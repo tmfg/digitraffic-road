@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.jms;
+package fi.livi.digitraffic.tie.service.jms;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -40,7 +40,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.data.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;

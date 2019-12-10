@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.dao.SensorValueUpdateParameterDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueUpdateParameterDto;
 
 @Repository
 public class SensorValueDao {
