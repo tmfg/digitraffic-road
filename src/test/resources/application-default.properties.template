@@ -14,9 +14,9 @@ mqtt.server.username=
 mqtt.server.password=
 
 # Lotju SOAP APIs
-metadata.server.address.tms=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/LAMMetatiedot/v5
-metadata.server.address.camera=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/KameraPerustiedot/v7
-metadata.server.address.weather=http://localhost:#{T(fi.livi.digitraffic.tie.metadata.service.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/TiesaaPerustiedot/v4
+metadata.server.address.tms=http://localhost:#{T(fi.livi.digitraffic.tie.service.v1.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/LAMMetatiedot/v5
+metadata.server.address.camera=http://localhost:#{T(fi.livi.digitraffic.tie.service.v1.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/KameraPerustiedot/v7
+metadata.server.address.weather=http://localhost:#{T(fi.livi.digitraffic.tie.service.v1.lotju.LotjuServiceEndpointMock).RANDOM_PORT}/LOTJU/TiesaaPerustiedot/v4
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html
