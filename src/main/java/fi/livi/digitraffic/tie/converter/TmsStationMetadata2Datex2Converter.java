@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter;
 
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -74,7 +74,7 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MeasurementSiteRecord getMeasurementSiteRecord(final TmsStation station, final RoadStationSensor sensor) {
         final fi.livi.digitraffic.tie.metadata.geojson.Point point =
-            AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
+            fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
 
         final MeasurementSiteRecord measurementSiteRecord =
             new MeasurementSiteRecord()
