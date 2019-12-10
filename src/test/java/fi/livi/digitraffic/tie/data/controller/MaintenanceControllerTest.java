@@ -24,8 +24,8 @@ import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.model.v1.maintenance.harja.WorkMachineTracking;
-import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
-import fi.livi.digitraffic.tie.data.service.WorkMachineObservationService;
+import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
+import fi.livi.digitraffic.tie.service.v1.WorkMachineObservationService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)

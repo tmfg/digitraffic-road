@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1;
 
 import java.util.List;
 import java.util.Map;
@@ -105,7 +105,7 @@ public class MaintenanceDataService {
         return result;
     }
 
-    protected static class ObservationFeatureWrapper {
+    public static class ObservationFeatureWrapper {
         private final ObservationFeature observationFeature;
         private final long workMachineTrackingId;
 

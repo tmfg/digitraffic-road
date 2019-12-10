@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
+import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 
 @ConditionalOnProperty(name = "workmachine.handling.job.enabled" , matchIfMissing = true)
 @ConditionalOnNotWebApplication

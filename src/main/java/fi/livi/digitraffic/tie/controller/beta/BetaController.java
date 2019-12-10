@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.data.service.TmsDataDatex2Service;
+import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;

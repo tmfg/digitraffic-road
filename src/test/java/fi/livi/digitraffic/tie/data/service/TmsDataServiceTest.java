@@ -16,6 +16,7 @@ import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 
 public class TmsDataServiceTest extends AbstractServiceTest {
 

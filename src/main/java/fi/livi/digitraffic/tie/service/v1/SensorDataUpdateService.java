@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1;
 
 import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;

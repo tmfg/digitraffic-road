@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;

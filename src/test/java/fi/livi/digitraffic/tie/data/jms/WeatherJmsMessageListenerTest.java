@@ -33,7 +33,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.WeatherMessageMarshaller;
-import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;

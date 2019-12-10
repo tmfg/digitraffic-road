@@ -73,10 +73,10 @@
     </appender>
 
     <!-- TMS and weather sensors data -->
-    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="true">
+    <logger name="fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService" additivity="true">
         <appender-ref ref="FILE_JMS" />
     </logger>
-    <logger name="fi.livi.digitraffic.tie.data.service.SensorDataUpdateService" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 

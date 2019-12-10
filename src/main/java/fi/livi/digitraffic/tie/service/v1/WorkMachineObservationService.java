@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.service;
+package fi.livi.digitraffic.tie.service.v1;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation.WorkM
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.model.v1.maintenance.harja.ObservationFeature;
 import fi.livi.digitraffic.tie.model.v1.maintenance.harja.PerformedTask;
-import fi.livi.digitraffic.tie.data.service.MaintenanceDataService.ObservationFeatureWrapper;
+import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService.ObservationFeatureWrapper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
@@ -80,7 +80,7 @@ public class WorkMachineObservationService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    protected int convertUnhandledWorkMachineTrackingsToObservations(
+    public int convertUnhandledWorkMachineTrackingsToObservations(
         final Map.Entry<Pair<Integer, Integer>, List<ObservationFeatureWrapper>> harjaMachineIdContractIdPairWithObservationFeature) {
 
         final int harjaWorkMachineId = harjaMachineIdContractIdPairWithObservationFeature.getKey().getLeft();

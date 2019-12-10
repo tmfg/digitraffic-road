@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.data.service.MaintenanceDataService;
+import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

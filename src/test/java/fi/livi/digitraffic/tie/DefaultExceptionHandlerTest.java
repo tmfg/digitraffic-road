@@ -29,7 +29,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.data.service.TmsDataService;
+import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 
 @TestPropertySource(properties = {
