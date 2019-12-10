@@ -82,10 +82,10 @@
 
 
     <!-- JMS message listener -->
-    <logger name="fi.livi.digitraffic.tie.service.jms.jms" additivity="true">
+    <logger name="fi.livi.digitraffic.tie.service.jms" additivity="true">
         <appender-ref ref="FILE_JMS" />
     </logger>
-    <logger name="fi.livi.digitraffic.tie.service.jms.jms" additivity="false">
+    <logger name="fi.livi.digitraffic.tie.service.jms" additivity="false">
         <appender-ref ref="FILE_LOGSTASH" />
     </logger>
 
