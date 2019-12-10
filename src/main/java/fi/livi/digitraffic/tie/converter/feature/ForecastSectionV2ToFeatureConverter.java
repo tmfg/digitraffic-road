@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter.feature;
 
 import java.util.List;
 import java.util.stream.Collectors;

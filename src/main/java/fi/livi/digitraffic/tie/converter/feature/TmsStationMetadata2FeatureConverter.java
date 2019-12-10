@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter.feature;
 
 import static fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository.TMS_STATION_TYPE;
 
@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.converter.StationSensorConverter;
+import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;

@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.converter.feature.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraStationDataDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
-import fi.livi.digitraffic.tie.metadata.converter.AbstractMetadataToFeatureConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 

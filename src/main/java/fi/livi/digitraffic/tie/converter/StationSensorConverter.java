@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter;
 
 import java.util.Collections;
 import java.util.HashMap;
