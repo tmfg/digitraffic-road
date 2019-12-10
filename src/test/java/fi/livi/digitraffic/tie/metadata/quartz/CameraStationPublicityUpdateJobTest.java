@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.JULKINEN;
 import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;

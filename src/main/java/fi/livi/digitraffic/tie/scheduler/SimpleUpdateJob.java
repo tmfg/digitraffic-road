@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.quartz.JobExecutionContext;

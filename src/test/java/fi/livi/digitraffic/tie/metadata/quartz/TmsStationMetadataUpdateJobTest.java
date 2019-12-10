@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
 import static org.junit.Assert.assertEquals;

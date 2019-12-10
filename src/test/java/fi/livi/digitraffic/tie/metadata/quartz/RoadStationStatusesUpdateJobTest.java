@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import java.util.List;
 import java.util.Optional;

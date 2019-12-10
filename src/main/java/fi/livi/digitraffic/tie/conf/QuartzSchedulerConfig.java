@@ -42,22 +42,22 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import fi.livi.digitraffic.tie.metadata.quartz.AutowiringSpringBeanJobFactory;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.CameraStationsStatusMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.Datex2RoadworksMessageUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.Datex2TrafficAlertMessageUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.Datex2WeightRestrictionsMessageUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV1MetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV1DataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2DataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.ForecastSectionV2MetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.LocationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationSensorConstantsMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.TmsStationsStatusMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationMetadataUpdateJob;
-import fi.livi.digitraffic.tie.metadata.quartz.WeatherStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
+import fi.livi.digitraffic.tie.scheduler.CameraMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.Datex2RoadworksMessageUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.Datex2TrafficAlertMessageUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.Datex2WeightRestrictionsMessageUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1DataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1MetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2DataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2MetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.LocationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.TmsStationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.TmsStationSensorConstantsMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.TmsStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.WeatherStationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.WeatherStationsStatusMetadataUpdateJob;
 
 @Configuration
 @ConditionalOnProperty(name = "dt.job.scheduler.enabled")

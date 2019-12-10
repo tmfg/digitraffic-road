@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;

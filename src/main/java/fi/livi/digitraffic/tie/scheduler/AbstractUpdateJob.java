@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.quartz;
+package fi.livi.digitraffic.tie.scheduler;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
