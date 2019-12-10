@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.dto.camera.CameraRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.data.dto.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
-import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
+import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;

@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationSensorDto;
-import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationSensorDto;
+import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;

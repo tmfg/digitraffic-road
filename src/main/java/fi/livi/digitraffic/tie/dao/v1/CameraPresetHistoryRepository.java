@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryPresenceDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistoryPK;
 

@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.dao.v1.ForecastSectionWeatherDao;
-import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherDataDto;
-import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherDataDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;

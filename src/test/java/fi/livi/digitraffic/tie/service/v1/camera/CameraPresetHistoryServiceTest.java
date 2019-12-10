@@ -34,10 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryDto;
-import fi.livi.digitraffic.tie.data.dto.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryDto;
-import fi.livi.digitraffic.tie.data.dto.camera.PresetHistoryPresenceDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;

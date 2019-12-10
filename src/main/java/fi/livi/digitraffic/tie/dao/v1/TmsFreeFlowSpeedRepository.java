@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.dto.tms.TmsFreeFlowSpeedDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 
 @Repository
 public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpeedDto, Long> {

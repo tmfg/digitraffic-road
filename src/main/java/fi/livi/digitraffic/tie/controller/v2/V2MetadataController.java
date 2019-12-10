@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
-import fi.livi.digitraffic.tie.metadata.dto.VariableSignDescriptions;
+import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import io.swagger.annotations.Api;

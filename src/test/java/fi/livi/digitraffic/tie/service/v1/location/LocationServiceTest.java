@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 public class LocationServiceTest extends AbstractServiceTest {

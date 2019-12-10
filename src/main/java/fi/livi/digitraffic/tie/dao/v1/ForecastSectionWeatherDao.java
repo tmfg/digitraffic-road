@@ -16,8 +16,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.data.dto.forecast.ForecastConditionReasonDto;
-import fi.livi.digitraffic.tie.data.dto.forecast.RoadConditionDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastConditionReasonDto;
+import fi.livi.digitraffic.tie.dto.v1.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;

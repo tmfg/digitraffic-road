@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.data.service.TmsDataService;
 import fi.livi.digitraffic.tie.service.BadRequestException;

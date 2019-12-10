@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
-import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
 
 public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSensorConstantValueDto, Long> {
 

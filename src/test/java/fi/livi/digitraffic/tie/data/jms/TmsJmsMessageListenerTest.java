@@ -39,7 +39,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.data.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.data.service.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;

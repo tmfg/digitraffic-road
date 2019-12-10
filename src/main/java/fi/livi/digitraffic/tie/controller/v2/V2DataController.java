@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.data.dto.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.data.dto.trafficsigns.TrafficSignHistory;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.data.service.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;

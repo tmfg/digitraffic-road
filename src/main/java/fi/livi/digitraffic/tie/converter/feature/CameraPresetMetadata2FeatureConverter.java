@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
-import fi.livi.digitraffic.tie.metadata.dto.NearestRoadStation;
+import fi.livi.digitraffic.tie.dto.v1.NearestRoadStation;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;

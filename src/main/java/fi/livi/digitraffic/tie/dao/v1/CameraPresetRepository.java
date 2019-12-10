@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.dto.NearestRoadStation;
+import fi.livi.digitraffic.tie.dto.v1.NearestRoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
 @Repository

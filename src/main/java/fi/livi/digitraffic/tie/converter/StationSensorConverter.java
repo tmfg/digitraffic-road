@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.metadata.dto.StationSensors;
+import fi.livi.digitraffic.tie.dto.v1.StationSensors;
 
 @Component
 public class StationSensorConverter {

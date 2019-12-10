@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.FlywayRepository;
-import fi.livi.digitraffic.tie.metadata.dto.FlywayVersion;
+import fi.livi.digitraffic.tie.dto.v1.FlywayVersion;
 
 @Service
 public class FlywayService {

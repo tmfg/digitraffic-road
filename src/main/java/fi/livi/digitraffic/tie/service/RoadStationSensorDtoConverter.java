@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationSensorDto;
-import fi.livi.digitraffic.tie.metadata.dto.WeatherRoadStationSensorDto;
+import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationSensorDto;
+import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationSensorDto;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 
 public class RoadStationSensorDtoConverter {

@@ -15,10 +15,10 @@ import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationTypeRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeature;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationFeatureCollection;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationJson;
-import fi.livi.digitraffic.tie.metadata.dto.location.LocationTypesMetadata;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationFeature;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationJson;
+import fi.livi.digitraffic.tie.dto.v1.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Service

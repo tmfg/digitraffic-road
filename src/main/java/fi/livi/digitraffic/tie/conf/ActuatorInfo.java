@@ -13,7 +13,7 @@ import org.springframework.boot.actuate.info.Info.Builder;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.metadata.dto.FlywayVersion;
+import fi.livi.digitraffic.tie.dto.v1.FlywayVersion;
 import fi.livi.digitraffic.tie.service.FlywayService;
 
 @Component

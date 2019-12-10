@@ -33,14 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
-import fi.livi.digitraffic.tie.metadata.dto.TmsRoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.metadata.dto.WeatherRoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;

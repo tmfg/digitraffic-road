@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantValueDtoRepository;
-import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantRootDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsSensorConstantValueDto;
-import fi.livi.digitraffic.tie.data.dto.tms.TmsStationDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsStationDto;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;

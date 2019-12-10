@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dao;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.metadata.dto.FlywayVersion;
+import fi.livi.digitraffic.tie.dto.v1.FlywayVersion;
 
 @Repository
 public interface FlywayRepository extends SqlRepository {

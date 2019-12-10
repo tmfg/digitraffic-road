@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.metadata.converter.ForecastSectionV1ToFeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.dto.ForecastSectionsMetadata;
+import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;

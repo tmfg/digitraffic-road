@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
-import fi.livi.digitraffic.tie.data.dto.weather.WeatherRootDataObjectDto;
-import fi.livi.digitraffic.tie.data.dto.weather.WeatherStationDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.weather.WeatherStationDto;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;

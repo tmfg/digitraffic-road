@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dao.SqlRepository;
-import fi.livi.digitraffic.tie.metadata.dto.CodeDescription;
+import fi.livi.digitraffic.tie.dto.v1.CodeDescription;
 
 @Repository
 public interface V2CodeDescriptionRepository extends SqlRepository {

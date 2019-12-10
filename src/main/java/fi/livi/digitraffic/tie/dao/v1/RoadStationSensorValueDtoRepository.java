@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
-import fi.livi.digitraffic.tie.data.dto.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
