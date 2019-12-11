@@ -7,17 +7,19 @@ import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.Datex2MessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
+import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.datex2.inQueue")
 @Configuration
@@ -30,14 +32,14 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     private final Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 
     @Autowired
-    public Datex2JMSListenerConfiguration(@Value("${jms.datex2.connectionUrls}") final String jmsConnectionUrls,
-                                          @Value("${jms.datex2.userId}") final String jmsUserId,
-                                          @Value("${jms.datex2.password}") final String jmsPassword,
+    public Datex2JMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                          @Value("${jms.test.userId}") final String jmsUserId,
+                                          @Value("${jms.test.password}") final String jmsPassword,
                                           @Value("#{'${jms.datex2.inQueue}'.split(',')}")  final List<String> jmsQueueKeys, final Datex2UpdateService datex2UpdateService,
                                           final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller,
                                           final Datex2SimpleMessageUpdater datex2SimpleMessageUpdater) throws JMSException {
 
-        super(JMSConfiguration.createQueueConnectionFactory(jmsConnectionUrls),
+        super(connectionFactory,
               lockingService,
               log);
         this.datex2UpdateService = datex2UpdateService;

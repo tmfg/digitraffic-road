@@ -25,6 +25,13 @@ public class JMSConfiguration {
         return createQueueConnectionFactory(jmsConnectionUrls);
     }
 
+    @ConditionalOnProperty("jms.test.connectionUrls")
+    @Bean(name = "sonjaTestJMSConnectionFactory")
+    public QueueConnectionFactory queueConnectionFactoryForCameraMetaJMS(@Value("${jms.test.connectionUrls}")
+                                                                         final String jmsConnectionUrls) throws JMSException {
+        return createQueueConnectionFactory(jmsConnectionUrls);
+    }
+
     public static QueueConnectionFactory createQueueConnectionFactory(final String jmsConnectionUrls) throws JMSException {
         QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
         connectionFactory.setSequential(true);

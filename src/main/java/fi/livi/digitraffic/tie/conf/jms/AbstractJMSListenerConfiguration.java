@@ -45,7 +45,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         this.connectionFactory = connectionFactory;
         this.lockingService = lockingService;
         this.log = log;
-        log.info("Init JMS configuration");
+        log.info("Init JMS configuration connectionUrls={}", connectionFactory.getConnectionURLs());
     }
 
     public abstract JMSParameters getJmsParameters();
@@ -153,7 +153,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     protected QueueConnection createConnection(final JMSParameters jmsParameters,
                                                final QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
 
-        log.info("Create JMS connection with parameters: " + jmsParameters);
+        log.info("Create JMS connection with parameters: ConnectionURLs:{} {}", connectionFactory.getConnectionURLs(), jmsParameters);
 
         try {
             final QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());

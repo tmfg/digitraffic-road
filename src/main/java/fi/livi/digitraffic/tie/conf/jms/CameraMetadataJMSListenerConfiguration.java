@@ -11,10 +11,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
-import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -27,9 +27,9 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                                  @Value("${jms.userId}") final String jmsUserId,
-                                                  @Value("${jms.password}") final String jmsPassword,
+    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                                  @Value("${jms.test.userId}") final String jmsUserId,
+                                                  @Value("${jms.test.password}") final String jmsPassword,
                                                   @Value("#{'${jms.camera.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
                                                   final CameraMetadataMessageHandler cameraMetadataMessageHandler,
                                                   final LockingService lockingService,
