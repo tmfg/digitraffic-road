@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
-import fi.livi.digitraffic.tie.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.datex2.inQueue")

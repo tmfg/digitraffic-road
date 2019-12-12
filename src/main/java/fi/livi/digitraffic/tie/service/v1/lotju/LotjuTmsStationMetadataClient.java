@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -38,9 +39,10 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     private final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuTmsStationMetadataClient(Jaxb2Marshaller marshaller,
+    public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
+                                         Jaxb2Marshaller lamMetadataJaxb2Marshaller,
                                          @Value("${metadata.server.address.tms}") final String tmsMetadataServerAddress) {
-        super(marshaller, tmsMetadataServerAddress, log);
+        super(lamMetadataJaxb2Marshaller, tmsMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)

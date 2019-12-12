@@ -543,9 +543,9 @@
                                         <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIBinding.xjb</bindingFile>
                                     </bindingFiles>
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2</packagename>
+                                    <packagename>fi.livi.digitraffic.tie.datex2</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
@@ -563,9 +563,9 @@
                                         <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseBinding.xjb</bindingFile>
                                     </bindingFiles>
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.lotju.xsd.datex2.response</packagename>
+                                    <packagename>fi.livi.digitraffic.tie.datex2.response</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
@@ -580,7 +580,7 @@
                                     <xsd>${basedir}/src/main/resources/schemas/LOTJU/xsd/v3/metatietomuutos_kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
@@ -592,9 +592,9 @@
                                 <xsdOption>
                                     <extension>true</extension>
                                     <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_0.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.tloik.ims</packagename>
+                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->

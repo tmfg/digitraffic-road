@@ -19,20 +19,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.response.ObservationTimeType;
+import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedRoadworkDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedWeightRestrictionDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.ObservationTimeType;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedRoadworkDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedTrafficDisorderDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedWeightRestrictionDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
 
 @Service
 public class Datex2DataService {

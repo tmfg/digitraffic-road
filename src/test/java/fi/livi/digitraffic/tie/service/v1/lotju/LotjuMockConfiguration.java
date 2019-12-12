@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,22 +24,25 @@ public class LotjuMockConfiguration {
     @Bean
     public LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceEndpoint(
             final ResourceLoader resourceLoader,
-            final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuKameraPerustiedotServiceEndpointMock.getInstance(lotjuCameraStationMetadataClient.getServerAddress(), resourceLoader, jaxb2Marshaller);
+            @Qualifier("kameraMetadataJaxb2Marshaller")
+            final Jaxb2Marshaller kameraMetadataJaxb2Marshaller) {
+        return LotjuKameraPerustiedotServiceEndpointMock.getInstance(lotjuCameraStationMetadataClient.getServerAddress(), resourceLoader, kameraMetadataJaxb2Marshaller);
     }
 
     @Bean
     public LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceEndpoint(
             final ResourceLoader resourceLoader,
-            final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuLAMMetatiedotServiceEndpointMock.getInstance(lotjuTmsStationMetadataClient.getServerAddress(), resourceLoader, jaxb2Marshaller);
+            @Qualifier("lamMetadataJaxb2Marshaller")
+            final Jaxb2Marshaller lamMetadataJaxb2Marshaller) {
+        return LotjuLAMMetatiedotServiceEndpointMock.getInstance(lotjuTmsStationMetadataClient.getServerAddress(), resourceLoader, lamMetadataJaxb2Marshaller);
     }
 
     @Bean
     public LotjuTiesaaPerustiedotServiceEndpointMock lotjuTiesaaPerustiedotServiceEndpoint(
             final ResourceLoader resourceLoader,
-            final Jaxb2Marshaller jaxb2Marshaller) {
-        return LotjuTiesaaPerustiedotServiceEndpointMock.getInstance(lotjuWeatherStationMetadataClient.getServerAddress(), resourceLoader, jaxb2Marshaller);
+            @Qualifier("tiesaaMetadataJaxb2Marshaller")
+            final Jaxb2Marshaller tiesaaMetadataJaxb2Marshaller) {
+        return LotjuTiesaaPerustiedotServiceEndpointMock.getInstance(lotjuWeatherStationMetadataClient.getServerAddress(), resourceLoader, tiesaaMetadataJaxb2Marshaller);
     }
 
 }

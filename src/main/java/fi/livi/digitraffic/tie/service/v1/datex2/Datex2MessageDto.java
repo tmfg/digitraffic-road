@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.datex2;
 
 import java.time.ZonedDateTime;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 
 public class Datex2MessageDto {
     public final String message;

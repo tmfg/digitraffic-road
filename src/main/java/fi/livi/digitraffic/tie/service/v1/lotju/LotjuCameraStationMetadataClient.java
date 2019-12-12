@@ -8,6 +8,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -35,9 +36,10 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
     private final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuCameraStationMetadataClient(Jaxb2Marshaller marshaller,
+    public LotjuCameraStationMetadataClient(@Qualifier("kameraMetadataJaxb2Marshaller")
+                                            Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
                                             @Value("${metadata.server.address.camera}") final String cameraMetadataServerAddress) {
-        super(marshaller, cameraMetadataServerAddress, log);
+        super(kameraMetadataJaxb2Marshaller, cameraMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

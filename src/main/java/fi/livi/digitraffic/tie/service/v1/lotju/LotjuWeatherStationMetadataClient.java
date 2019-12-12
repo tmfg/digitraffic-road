@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -32,9 +33,10 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuWeatherStationMetadataClient(final Jaxb2Marshaller marshaller,
+    public LotjuWeatherStationMetadataClient(@Qualifier("tiesaaMetadataJaxb2Marshaller")
+                                             final Jaxb2Marshaller tiesaaMetadataJaxb2Marshaller,
                                              final @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
-        super(marshaller, weatherMetadataServerAddress, log);
+        super(tiesaaMetadataJaxb2Marshaller, weatherMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

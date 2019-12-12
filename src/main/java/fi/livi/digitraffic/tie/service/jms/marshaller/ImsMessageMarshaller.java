@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 
 public class ImsMessageMarshaller extends TextMessageMarshaller<ImsMessage> {
     private static final Logger log = LoggerFactory.getLogger(ImsMessageMarshaller.class);
