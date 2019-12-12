@@ -409,7 +409,7 @@
                         <exclude>fi/ely/lotju/**/proto/*.java</exclude>
                         <exclude>**/dto/**/*.java</exclude>
 
-                        <exclude>fi/livi/digitraffic/tie/external/**/*.class</exclude>
+<!--                        <exclude>fi/livi/digitraffic/tie/external/**/*.class</exclude>-->
                     </excludes>
                 </configuration>
             </plugin>
@@ -495,7 +495,7 @@
 
                                 <!-- LAM-pisteiden staattiset tiedot / The static information of the Traffic Flow Measurement System (TMS) -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/metadata/v5/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v5/LAMMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.lam</packagename>
                                     </packagenames>
@@ -503,7 +503,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/LOTJU/metadata/v7/KameraPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/KameraPerustiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.kamera</packagename>
                                     </packagenames>
