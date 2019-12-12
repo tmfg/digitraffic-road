@@ -39,7 +39,7 @@ public class Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller stringToObjectMarshaller;
+    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
 
     @Autowired
     public Datex2DataService(final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller) {

@@ -20,6 +20,7 @@ import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.Situation;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.tloik.ims.ImsMessage;
 
 @Service
 public class Datex2SimpleMessageUpdater {
@@ -31,7 +32,7 @@ public class Datex2SimpleMessageUpdater {
 
     private final Datex2Repository datex2Repository;
 
-    private static StringToObjectMarshaller stringToObjectMarshaller;
+    private static StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
 
     private static final Logger log = LoggerFactory.getLogger(Datex2SimpleMessageUpdater.class);
 
@@ -51,6 +52,15 @@ public class Datex2SimpleMessageUpdater {
     }
 
     @Transactional
+    public int updateTrafficIncidentImsMessages(final List<ImsMessage> imsMessages) {
+        return imsMessages.stream()
+            .map(ims -> ims.getMessageContent().getD2Message())
+            .map(d2Xml -> stringToObjectMarshaller.convertToObject(d2Xml))
+            .map(d2 -> createModels(d2, Datex2MessageType.TRAFFIC_INCIDENT, null))
+            .mapToInt(datex2UpdateService::updateTrafficAlerts).sum();
+    }
+
+    @Transactional
     public int updateDatex2TrafficAlertMessages() {
         final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_INCIDENT.name());
         final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
@@ -60,11 +70,10 @@ public class Datex2SimpleMessageUpdater {
     }
 
     private List<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
-        final List<Datex2MessageDto> all = messages.stream()
+        return messages.stream()
             .map(m -> convert(m.getLeft(), Datex2MessageType.TRAFFIC_INCIDENT, DateHelper.toZonedDateTimeAtUtc(m.getRight())))
             .flatMap(m -> m.stream())
             .collect(Collectors.toList());
-        return all;
     }
 
     @Transactional

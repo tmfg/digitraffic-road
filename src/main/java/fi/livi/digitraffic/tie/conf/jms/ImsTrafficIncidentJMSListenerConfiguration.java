@@ -15,16 +15,16 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.Datex2MessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
+import fi.livi.digitraffic.tie.tloik.ims.ImsMessage;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.datex2.inQueue")
 @Configuration
-public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfiguration<Datex2MessageDto> {
-    private static final Logger log = LoggerFactory.getLogger(Datex2JMSListenerConfiguration.class);
+public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListenerConfiguration<ImsMessage> {
+    private static final Logger log = LoggerFactory.getLogger(ImsTrafficIncidentJMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;
     private final Datex2UpdateService datex2UpdateService;
@@ -32,12 +32,12 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     private final Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 
     @Autowired
-    public Datex2JMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                          @Value("${jms.test.userId}") final String jmsUserId,
-                                          @Value("${jms.test.password}") final String jmsPassword,
-                                          @Value("#{'${jms.datex2.inQueue}'.split(',')}")  final List<String> jmsQueueKeys, final Datex2UpdateService datex2UpdateService,
-                                          final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller,
-                                          final Datex2SimpleMessageUpdater datex2SimpleMessageUpdater) throws JMSException {
+    public ImsTrafficIncidentJMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                                      @Value("${jms.test.userId}") final String jmsUserId,
+                                                      @Value("${jms.test.password}") final String jmsPassword,
+                                                      @Value("#{'${jms.datex2.inQueue}'.split(',')}")  final List<String> jmsQueueKeys, final Datex2UpdateService datex2UpdateService,
+                                                      final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller,
+                                                      final Datex2SimpleMessageUpdater datex2SimpleMessageUpdater) throws JMSException {
 
         super(connectionFactory,
               lockingService,
@@ -47,7 +47,7 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
         this.datex2SimpleMessageUpdater = datex2SimpleMessageUpdater;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                          Datex2JMSListenerConfiguration.class.getSimpleName(),
+                                          ImsTrafficIncidentJMSListenerConfiguration.class.getSimpleName(),
                                           LockingService.generateInstanceId());
     }
 
@@ -57,9 +57,9 @@ public class Datex2JMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public JMSMessageListener<Datex2MessageDto> createJMSMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> handleData = datex2UpdateService::updateTrafficAlerts;
-        final Datex2MessageMarshaller messageMarshaller = new Datex2MessageMarshaller(jaxb2Marshaller, datex2SimpleMessageUpdater);
+    public JMSMessageListener<ImsMessage> createJMSMessageListener() {
+        final JMSMessageListener.JMSDataUpdater<ImsMessage> handleData = datex2SimpleMessageUpdater::updateTrafficIncidentImsMessages;
+        final ImsMessageMarshaller messageMarshaller = new ImsMessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKeys()),
