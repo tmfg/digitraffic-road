@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model;
 
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaTyyppi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
 
 public enum WeatherStationType {
 

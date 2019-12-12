@@ -15,17 +15,17 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksella;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasento;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasentoResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKamerat;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKamera;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKameraResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeEsiasennotKameranTunnuksella;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeEsiasento;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeEsiasentoResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKaikkiKamerat;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKaikkiKameratResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKamera;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKameraResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.ObjectFactory;
 
 @ConditionalOnNotWebApplication
 @Service

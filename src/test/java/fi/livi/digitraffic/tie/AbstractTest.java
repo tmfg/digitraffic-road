@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie;
 
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.JULKINEN;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,23 +32,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KeruunTILA;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KeruunTILA;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RoadApplication.class,

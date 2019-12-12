@@ -1,17 +1,17 @@
 package fi.livi.digitraffic.tie.model;
 
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.KORJAUS_KESKEYTETTY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKAEPAILY;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKA_VAHVISTETTU;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.KORJAUSHUOLTO_TEHTY;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.KORJAUSPYYNTO_LAHETETTY;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.KORJAUS_KESKEYTETTY;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.OK_VIKAEPAILY_PERUUTETTU;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.VIKAEPAILY;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.VIKA_VAHVISTETTU;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi.VIKA_VAHVISTETTU_EI_KORJATA_LAHIAIKOINA;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TilaTyyppi;
 
 public enum RoadStationState {
 
@@ -36,21 +36,21 @@ public enum RoadStationState {
         return fiValue;
     }
 
-    public static RoadStationState fromTilaTyyppi(final fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(final TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    public static RoadStationState fromTilaTyyppi(fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(fi.livi.digitraffic.tie.external.lotju.metadata.lam.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    public static RoadStationState fromTilaTyyppi(fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }

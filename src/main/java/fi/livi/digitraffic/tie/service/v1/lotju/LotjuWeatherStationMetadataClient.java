@@ -14,15 +14,15 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsemat;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsemat;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 
 @ConditionalOnNotWebApplication
 @Service

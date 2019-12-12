@@ -11,19 +11,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.ely.lotju.tiesaa.meta.service.ws.v4.TiesaaPerustiedotEndpointImplService;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.AnturiSanomaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeKaikkiTiesaaAsematResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaHakuparametrit;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaPerustiedotEndpoint;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.AnturiSanomaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ArvoVastaavuusVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaHakuparametrit;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaPerustiedotEndpoint;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaPerustiedotEndpointImplService;
 
 public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements TiesaaPerustiedotEndpoint {
 

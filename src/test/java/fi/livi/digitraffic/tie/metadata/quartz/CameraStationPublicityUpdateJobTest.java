@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.JULKINEN;
-import static fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
+import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.eq;
@@ -26,14 +26,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotException;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
 
 public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
