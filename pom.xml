@@ -592,7 +592,7 @@
                                 </xsdOption>
                                 <xsdOption>
                                     <extension>true</extension>
-                                    <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_1_0.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_0.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.tloik.ims</packagename>
                                     <extensionArgs>
                                         <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.lotju.xsd.datex2.GroupOfParkingSpaces"
