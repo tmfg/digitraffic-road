@@ -1,0 +1,64 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"title": "TrafficSituation announcement.",
+	"description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
+	"properties": {
+		"situtationId": {
+			"type": "string",
+			"required" : true
+		},
+		"version": {
+			"type": "integer",
+			"required" : true
+		},
+		"releaseTime": {
+			"type": "string",
+			"description": "Annouchment release time.",
+			"required" : true
+		},
+		"locationToDisplay": {
+			"type": "object",
+			"title": "LocationToDisplay schema.",
+			"description": "Locatin to display in ETRS-TM35FIN coordinate format.",
+			"properties": {
+				"E": {
+					"type": "number"
+				},
+				"N": {
+					"type": "number"
+				}
+			}
+		},
+		"announcements": {
+			"type": "array",
+			"title": "Announcements schema.",
+			"description": "Contains announcement's different language versions available.",
+			"items": {
+				"type": "object",
+				"$ref": "simppeli-announcement_v0_1.schema.json",
+				"required": true
+			},
+			"required": true
+		},
+		"contact": {
+			"type": "object",
+			"title": "Contact schema.",
+			"description": "Sender's contact information.",
+			"properties": {
+				"phone": {
+					"type": "string",
+					"title": "Phone schema."
+				},
+				"fax": {
+					"type": "string",
+					"title": "Fax schema."
+				},
+				"email": {
+					"type": "string",
+					"title": "Email schema."
+				}
+			}	
+		}
+	}
+}

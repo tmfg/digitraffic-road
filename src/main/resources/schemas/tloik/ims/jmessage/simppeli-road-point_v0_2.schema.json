@@ -1,0 +1,104 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"title": "Road point schema",
+	"description": "Description of a single road point",
+	"properties": {
+		"municipality": {
+			"type": "string",
+			"title": "Munincipality schema.",
+			"description": "City, town or village."
+		},
+		"province": {
+			"type": "string",
+			"title": "Province schema.",
+			"description": "Province eq. Satakunta."
+		},
+		"country": {
+			"type": "string",
+			"title": "Country schema.",
+			"description": "Usually Finland, but may be something else eq. Sweden, Norway, Russia."
+		},
+		"roadAddress": {
+			"type": "object",
+			"title": "RoadAddress schema.",
+			"description": "Location in road address (road number + number of the road section + distance from the beginning of the road section.",
+			"properties": {
+				"road": {
+					"type": "integer",
+					"title": "Road schema.",
+					"description": "Number of the road."
+				},
+				"roadSection": {
+					"type": "integer",
+					"title": "RoadSection schema.",
+					"description": "Number of the road section."
+				},
+				"distance": {
+					"type": "integer",
+					"title": "Distance schema.",
+					"description": "Distance from the beginning of the road section."
+				}
+			},
+			"required": [
+				"road",
+				"roadSection",
+				"distance"
+			]
+		},
+		"roadName": {
+			"type": "string",
+			"title": "RoadName schema.",
+			"description": "Name of the road where accident happen."
+		},
+		"streetAddress": {
+			"type": "string",
+			"title": "StreetAddress schema.",
+			"description": "Street address if available."
+		},
+		"direction": {
+			"type": "string",
+			"title": "Direction schema.",
+			"description": "Affected road direction.",
+			"enum": [
+				"unknown",
+				"pos",
+				"neg",
+				"both"
+			]
+		},
+		"directionDescription": {
+			"type": "string",
+			"title": "DirectionDescription schema.",
+			"description": "Human readable description of the affected direction"
+		},
+		"alertclocation": {
+			"type": "object",
+			"title": "AlertC location schema",
+			"properties": {
+				"locationcode": {
+					"type": "integer",
+					"title": "AlertC location code",
+					"description": "Number of the location point in AlertC location table"
+				},
+				"name": {
+					"type": "string",
+					"title": "Location point name"
+				},
+				"distance": {
+					"type": "integer",
+					"title": "Distance from the road point",
+					"description": "Distance of the road point from the AlertC location point"
+				}
+			},
+			"required": [
+				"locationcode",
+				"distance"
+			]
+		}
+	},
+	"required": [
+		"roadAddress",
+		"alertclocation"
+	]
+}

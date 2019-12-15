@@ -1,0 +1,66 @@
+ALUEELLINEN:
+"location" : {
+	"countrycode": 6,
+	"locationtablenumber": 17,
+	"locationtableversion": "1.11.37",
+	"description": "Tampere, Kangasala, Pälkäne",
+	"areas": [
+		{
+			"name": "Tampere",
+			"locationcode": 408,
+			"type": "kaupunki"
+		},
+		{
+			"name": "Kangasala",
+			"locationcode": 125,
+			"type": "kunta"
+		},
+		{
+			"name": "Pälkäne",
+			"locationcode": 337,
+			"type": "kunta"
+		}
+	]
+}
+
+ALKU- JA LOPPUPISTEET
+"location" : {
+	"countrycode": 6,
+	"locationtablenumber": 17,
+	"locationtableversion": "1.11.37",
+	"description": "Tie 23 välillä Pori - Jyväskylä, Keuruu. Tarkempi paikka: Paikasta Kaleton 3,6 km, vaikutusalue 1,6 km, suuntaan Jutkala.",
+	"primarypoint": {
+		"municipality": "Keuruu",
+		"province": "Keski-Suomi",
+		"country": "Finland",
+		"roadAddress": {
+			"road": 23,
+			"roadSection": 221,
+			"distance": 3616
+		},
+		"roadName":"Jyväskyläntie",
+		"alertclocation": {
+			"locationcode": 2428,
+			"name": "Kaleton",
+			"distance": 3616
+		}
+	},
+	"secondarypoint": {
+		"municipality": "Keuruu",
+		"province": "Keski-Suomi",
+		"country": "Finland",
+		"roadAddress": {
+			"road": 23,
+			"roadSection": 222,
+			"distance": 188
+		},
+		"roadName":"Jyväskyläntie",
+		"alertclocation": {
+			"locationcode": 2431,
+			"name": "Jutkala",
+			"distance": 15333
+		}
+	},
+	"direction": "positive",
+	"directionDescription": "Jutkala"
+}

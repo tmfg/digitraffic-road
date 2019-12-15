@@ -1,0 +1,71 @@
+{
+	"situtationId": "GUID123456789",
+	"version": 1,
+	"releaseTime": "2014-06-24T15:34:10+03:00",
+	"locationToDisplay": {
+		"E": 222327,
+		"N": 6827610
+	},
+	"announcements": [
+		{
+			"language": "fi",
+			"title": "Liikennetiedote",
+			"location": {
+				"countrycode": 6,
+				"locationtablenumber": 17,
+				"locationtableversion": "1.11.37",
+				"description": "Tie 23 välillä Pori - Jyväskylä, Keuruu. Tarkempi paikka: Paikasta Kaleton 3,6 km, vaikutusalue 1,6 km, suuntaan Jutkala.",
+				"primarypoint": {
+					"municipality": "Keuruu",
+					"province": "Keski-Suomi",
+					"country": "Finland",
+					"roadAddress": {
+						"road": 23,
+						"roadSection": 221,
+						"distance": 3616
+					},
+					"roadName": "Jyväskyläntie",
+					"alertclocation": {
+						"locationcode": 2428,
+						"name": "Kaleton",
+						"distance": 3616
+					}
+				},
+				"secondarypoint": {
+					"municipality": "Keuruu",
+					"province": "Keski-Suomi",
+					"country": "Finland",
+					"roadAddress": {
+						"road": 23,
+						"roadSection": 222,
+						"distance": 188
+					},
+					"roadName": "Jyväskyläntie",
+					"alertclocation": {
+						"locationcode": 2431,
+						"name": "Jutkala",
+						"distance": 15333
+					}
+				},
+				"direction": "positive",
+				"directionDescription": "Jutkala"
+			},
+			"features": [
+				"Yksi ajokaista on suljettu liikenteeltä",
+				"Tie tai tien reuna on painunut",
+				"Paikalla tilapäinen liikennevalo-ohjaus"
+			],
+			"comment": "Ruuhka-aikaan liikenne saattaa jonoutua liikennevalojen takia.",
+			"timeAndDuration": {
+				"startTime": "2014-06-24T15:34:10+03:00"
+			},
+			"additionalInformation": "Liikenne- ja kelitietoa myös www.liikennevirasto.fi/alk",
+			"sender": "Liikenneviraston tieliikennekeskus Oulu"
+		}
+	],
+	"contact": {
+		"phone": "0206373331",
+		"fax": "0206373710",
+		"email": "oulu.liikennekeskus@liikennevirasto.fi"
+	}
+}
