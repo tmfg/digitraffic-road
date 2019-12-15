@@ -545,14 +545,14 @@
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.datex2</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
-                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <!-- Fix: A class/interface with the same name is already in use. -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
                                         <extensionArg>-Xfluent-api</extensionArg>
                                         <extensionArg>-npa</extensionArg>
                                         <extensionArg>-mark-generated</extensionArg>
                                         <extensionArg>-extension</extensionArg>
+                                        <!-- Generate episode file for D2LogicalModel -->
                                         <extensionArg>-episode</extensionArg>
                                         <extensionArg>D2LogicalModel.episode</extensionArg>
                                     </extensionArgs>
@@ -565,13 +565,13 @@
                                     <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.datex2.response</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
-                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <!-- Fix: A class/interface with the same name is already in use. -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
                                         <extensionArg>-Xfluent-api</extensionArg>
                                         <extensionArg>-npa</extensionArg>
                                         <extensionArg>-mark-generated</extensionArg>
+                                        <!-- Use episode file for D2LogicalModel imports-->
                                         <extensionArg>-b</extensionArg>
                                         <extensionArg>D2LogicalModel.episode</extensionArg>
                                     </extensionArgs>
@@ -580,8 +580,7 @@
                                     <xsd>${basedir}/src/main/resources/schemas/lotju/xsd/v3/metatietomuutos_kamera_tietovirta.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta</packagename>
                                     <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
-                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <!-- Fix: A class/interface with the same name is already in use. -->
                                         <extensionArg>-XautoNameResolution</extensionArg>
                                         <!--Generate withProperty methods-->
                                         <extensionArg>-Xfluent-api</extensionArg>
