@@ -41,8 +41,12 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "         WHERE d.message_type = :messageType\n"    +
             "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
-            "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
-            "             AND disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour' )\n" +
+            "    AND disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "    AND (" +
+            "           disorder.validy_status <> 'SUSPENDED'\n" +
+            "       OR (disorder.validy_status = 'SUSPENDED' AND\n" +
+            "           disorder.overall_end_time < TO_DATE('9999', 'yyyy'))\n" + // this means end time is not null
+            "    )\n" +
             ")\n" +
             "order by d.publication_time, d.id",
             nativeQuery = true)
