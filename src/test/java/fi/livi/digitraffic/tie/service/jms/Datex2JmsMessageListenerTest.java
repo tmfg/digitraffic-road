@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -17,29 +16,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.service.jms.marshaller.Datex2MessageMarshaller;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.response.TimestampedTrafficDisorderDatex2;
-import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
+import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerTest.class);
 
     @Autowired
-    private Datex2DataService datex2DataService;
-
-    @Autowired
-    private Datex2UpdateService datex2UpdateService;
+    private V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     private Datex2Repository datex2Repository;
@@ -48,87 +41,51 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
     private Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
+    private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Test
+    @Rollback(false)
     public void datex2ReceiveMessages() throws IOException {
         datex2Repository.deleteAll();
 
-        final String SITUATION_ID_1 = "GUID50006936";
-        final String SITUATION_ID_2 = "GUID50006401";
+        final String SITUATION_ID_1 = "GUID50001238";
         final JMSMessageListener datexJmsMessageListener = createJmsMessageListener();
 
-        final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/InfoXML_*.xml");
-        readAndSendMessages(datex2Resources, datexJmsMessageListener, false);
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessage.xml");
+        readAndSendMessages(imsResources, datexJmsMessageListener);
 
-        final D2LogicalModel active = datex2DataService.findActive(0, TRAFFIC_INCIDENT);
+        final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
 
         List<Situation> situations = ((SituationPublication) active.getPayloadPublication()).getSituations();
 
         assertCollectionSize(1, situations);
         assertEquals(SITUATION_ID_1, situations.get(0).getId());
 
-        final List<Datex2> bySituationDatex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_1, TRAFFIC_INCIDENT.name());
-        assertCollectionSize(1, bySituationDatex2s);
-        assertEquals(SITUATION_ID_1, bySituationDatex2s.get(0).getSituations().get(0).getSituationId());
+        List<JsonMessage> activeJson =
+            v2Datex2DataService.findActiveJson(0, TRAFFIC_INCIDENT);
 
-        final List<Datex2> bySituation2Datex2s = datex2Repository.findBySituationIdAndMessageType(SITUATION_ID_2, TRAFFIC_INCIDENT.name());
-        assertCollectionSize(3, bySituation2Datex2s);
-
-        for (final Datex2 datex2 : bySituation2Datex2s) {
-            assertEquals(SITUATION_ID_2, datex2.getSituations().get(0).getSituationId());
-        }
-
-        final TrafficDisordersDatex2Response byTimeSituation2 = datex2DataService.findTrafficDisorders(null, 2016, 10);
-        final List<TimestampedTrafficDisorderDatex2> byTimeSituation22Datex2s = byTimeSituation2.getDisorders();
-        assertCollectionSize(6, byTimeSituation22Datex2s);
-    }
-
-    @Test
-    public void combinedMessageUpdated() throws IOException {
-        datex2Repository.deleteAll();
-
-        final String SITUATION1_ID = "GUID50365428";
-        final String SITUATION2_ID = "GUID50365429";
-        final String SITUATION2_END_PLACEHOLDER = "DISORDER2_END_PLACEHOLDER";
-        final JMSMessageListener datexJmsMessageListener = createJmsMessageListener();
-
-        final List<Resource> datex2Resources = loadResources("classpath:lotju/datex2/Datex2_2019-11-26-14-35-08-487.xml");
-        readAndSendMessages(datex2Resources, datexJmsMessageListener, false, SITUATION2_END_PLACEHOLDER,
-                            DateHelper.toXMLGregorianCalendarAtUtc(Instant.now().plusSeconds(600)).toString());
-
-        final List<Situation> active = getActiveSituations(0);
-        assertCollectionSize(2, active);
-        assertEquals(SITUATION1_ID, active.get(0).getId());
-        assertEquals(SITUATION2_ID, active.get(1).getId());
-        final List<Resource> datex2Resources2Updated = loadResources("classpath:lotju/datex2/Datex2_2019-11-26-15-35-08-487.xml");
-
-        readAndSendMessages(datex2Resources2Updated, datexJmsMessageListener, false, SITUATION2_END_PLACEHOLDER,
-            DateHelper.toXMLGregorianCalendarAtUtc(Instant.now().minusSeconds(600)).toString());
-
-        final List<Situation> activeAfterUpdate = getActiveSituations(0);
-        assertCollectionSize(1, activeAfterUpdate);
-        assertEquals(SITUATION1_ID, activeAfterUpdate.  get(0).getId());
+        assertCollectionSize(1, activeJson);
+        assertEquals(SITUATION_ID_1, activeJson.get(0).getSituationId());
     }
 
     private List<Situation> getActiveSituations(final int inactiveHours) {
-        final D2LogicalModel active = datex2DataService.findActive(inactiveHours, TRAFFIC_INCIDENT);
+        final D2LogicalModel active = v2Datex2DataService.findActive(inactiveHours, TRAFFIC_INCIDENT);
         return ((SituationPublication) active.getPayloadPublication()).getSituations();
     }
+
     private JMSMessageListener createJmsMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<Datex2MessageDto> dataUpdater = (data) -> datex2UpdateService.updateTrafficAlerts(data);
-        return new JMSMessageListener(new Datex2MessageMarshaller(jaxb2Marshaller, datex2SimpleMessageUpdater), dataUpdater, false, log);
+        final JMSMessageListener.JMSDataUpdater<ImsMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficIncidentImsMessages(data);
+        return new JMSMessageListener(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
     }
 
-    private void readAndSendMessages(final List<Resource> datex2Resources, final JMSMessageListener messageListener,
-                                            final boolean autoFix) throws IOException {
-        readAndSendMessages(datex2Resources, messageListener, autoFix, null, null);
+    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener messageListener) throws IOException {
+        readAndSendMessages(imsResources, messageListener, null, null);
     }
 
-    private void readAndSendMessages(final List<Resource> datex2Resources, final JMSMessageListener messageListener,
-        final boolean autoFix, final String  placeholderName, final String replacement) throws IOException {
-        log.info("Read and send " + datex2Resources.size() + " Datex2 messages...");
-        for (final Resource datex2Resource : datex2Resources) {
+    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener messageListener,
+                                     final String  placeholderName, final String replacement) throws IOException {
+        log.info("Read and send " + imsResources.size() + " IMS Datex2 messages...");
+        for (final Resource datex2Resource : imsResources) {
             final File datex2file = datex2Resource.getFile();
             log.info("Datex2file={}", datex2file.getName());
             String content = FileUtils.readFileToString(datex2file, StandardCharsets.UTF_8);
@@ -137,10 +94,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
                 content = content.replace(placeholderName, replacement);
             }
             try {
-                messageListener.onMessage(createTextMessage(autoFix ?
-                                                            content.replace("Both", "both")
-                                                                    .replace("<alertCPoint/>", "") :
-                                                            content,
+                messageListener.onMessage(createTextMessage(content,
                                                             datex2file.getName()));
             } catch (final Exception e) {
                 log.error("Error with file " + datex2file.getName());

@@ -68,7 +68,7 @@ public class Datex2DataService {
     }
 
     private List<Datex2> findDatex2Messages(final Datex2MessageType messageType, final String situationId,
-                                            final int year, final int month) {
+                                           final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -76,10 +76,6 @@ public class Datex2DataService {
         return situationId != null
             ? datex2Repository.findHistoryBySituationId(messageType.name(), situationId, year, month)
             : datex2Repository.findHistory(messageType.name(), year, month);
-    }
-
-    private ZonedDateTime findLatestImportTime(final Datex2MessageType messageType) {
-        return DateHelper.toZonedDateTimeAtUtc(datex2Repository.findLatestImportTime(messageType.name()));
     }
 
     @Transactional(readOnly = true)
@@ -111,26 +107,9 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findAllBySituationId(final String situationId, final Datex2MessageType datex2MessageType) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, datex2MessageType.name());
-        if (datex2s.isEmpty()) {
-            throw new ObjectNotFoundException("Datex2", situationId);
-        }
-        return convertToD2LogicalModel(datex2s);
-    }
-
-
-    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveTrafficDisorders(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), inactiveHours);
         return convertToTrafficDisordersDatex2Response(allActive);
-    }
-
-    @Transactional(readOnly = true)
-    public D2LogicalModel findActive(final int inactiveHours,
-                                     final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
-        return convertToD2LogicalModel(allActive);
     }
 
     @Transactional(readOnly = true)
@@ -143,6 +122,16 @@ public class Datex2DataService {
     public WeightRestrictionsDatex2Response findActiveWeightRestrictions(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_RESTRICTION.name(), inactiveHours);
         return convertToWeightRestrictionDatex2Response(allActive);
+    }
+
+    public static SituationPublication getSituationPublication(final D2LogicalModel model) {
+        if (model.getPayloadPublication() instanceof SituationPublication) {
+            return (SituationPublication) model.getPayloadPublication();
+        } else {
+            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
+            log.error(err);
+            throw new RuntimeException(err);
+        }
     }
 
     private WeightRestrictionsDatex2Response convertToWeightRestrictionDatex2Response(final List<Datex2> list) {
@@ -174,39 +163,6 @@ public class Datex2DataService {
             }
         }
         return new TrafficDisordersDatex2Response().withDisorders(timestampedTrafficDisorderDatex2s);
-    }
-
-    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
-
-        // conver Datex2s to D2LogicalModels
-        final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
-            .map(datex2 -> (D2LogicalModel) stringToObjectMarshaller.convertToObject(datex2.getMessage()))
-            .filter(d2 -> d2.getPayloadPublication() != null)
-            .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
-            .collect(Collectors.toList());
-
-        if (modelsNewestFirst.isEmpty()) {
-            return new D2LogicalModel();
-        }
-
-        // Append all older situations to newest and return newest that combines all situations
-        final D2LogicalModel newesModel = modelsNewestFirst.remove(0);
-        SituationPublication situationPublication = getSituationPublication(newesModel);
-        modelsNewestFirst.forEach(d2 -> {
-            final SituationPublication toAdd = getSituationPublication(d2);
-            situationPublication.getSituations().addAll(toAdd.getSituations());
-        });
-        return newesModel;
-    }
-
-    static SituationPublication getSituationPublication(final D2LogicalModel model) {
-        if (model.getPayloadPublication() instanceof SituationPublication) {
-            return (SituationPublication) model.getPayloadPublication();
-        } else {
-            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
-            log.error(err);
-            throw new RuntimeException(err);
-        }
     }
 
     private TimestampedTrafficDisorderDatex2 unmarshallTrafficDisorder(final String datex2Xml, final ZonedDateTime importTime) {

@@ -1,5 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
+    "javaType" : "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage",
 	"$comment": "Simppeli schema version 0.2.2",
 	"type": "object",
 	"title": "TrafficSituation announcement.",

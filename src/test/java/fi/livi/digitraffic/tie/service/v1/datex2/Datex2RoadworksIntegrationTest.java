@@ -24,11 +24,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2HelperService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Import({Datex2UpdateService.class, Datex2RoadworksHttpClient.class, FileGetService.class, RestTemplate.class, RetryTemplate.class})
@@ -44,6 +48,15 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     @Autowired
     private StringToObjectMarshaller stringToObjectMarshaller;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private V2Datex2HelperService v2Datex2HelperService;
+
+    @Autowired
+    private V2Datex2UpdateService v2Datex2UpdateService;
+
     @MockBean
     private Datex2RoadworksHttpClient datex2RoadworksHttpClient;
 
@@ -56,7 +69,8 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
 
     @Before
     public void before() {
-        messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, null, datex2UpdateService, null, stringToObjectMarshaller);
+        messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, null,
+                                                        datex2UpdateService, null, stringToObjectMarshaller, v2Datex2UpdateService, v2Datex2HelperService);
         datex2Repository.deleteAll();
     }
 

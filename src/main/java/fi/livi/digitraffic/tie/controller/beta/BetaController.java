@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_JSON_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -21,16 +22,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -51,18 +53,33 @@ public class BetaController {
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final CameraPresetHistoryService cameraPresetHistoryService;
-    private final Datex2DataService datex2DataService;
+    private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
-                          final Datex2DataService datex2DataService) {
+                          final V2Datex2DataService v2Datex2DataService) {
         this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.cameraPresetHistoryService = cameraPresetHistoryService;
-        this.datex2DataService = datex2DataService;
+        this.v2Datex2DataService = v2Datex2DataService;
     }
+
+    @ApiOperation(value = "Active Datex2 JSON messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_JSON_PATH + "/{datex2MessageType}", produces = { APPLICATION_JSON_VALUE })
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
+    public List<JsonMessage> datex2Json(
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+        @PathVariable
+        final Datex2MessageType datex2MessageType,
+        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final int inactiveHours) {
+        return v2Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
+    }
+
 
     @ApiOperation(value = "Active Datex2 messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}", produces = { APPLICATION_XML_VALUE , APPLICATION_JSON_VALUE})
@@ -75,7 +92,7 @@ public class BetaController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours) {
-        return datex2DataService.findActive(inactiveHours, datex2MessageType);
+        return v2Datex2DataService.findActive(inactiveHours, datex2MessageType);
     }
 
     @ApiOperation(value = "Datex2 messages history by situation id for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
@@ -89,7 +106,7 @@ public class BetaController {
         @ApiParam(value = "Datex2 situation id.", required = true)
         @PathVariable
         final String situationId) {
-        return datex2DataService.findAllBySituationId(situationId, datex2MessageType);
+        return v2Datex2DataService.findAllBySituationId(situationId, datex2MessageType);
     }
 
     @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")

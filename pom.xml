@@ -623,6 +623,7 @@
                     <includes>
                         <include>**/*.json</include>
                     </includes>
+                    <includeJsr303Annotations>true</includeJsr303Annotations>
                 </configuration>
                 <executions>
                     <execution>

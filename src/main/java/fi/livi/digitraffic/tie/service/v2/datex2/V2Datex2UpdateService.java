@@ -1,9 +1,8 @@
-package fi.livi.digitraffic.tie.service.v1.datex2;
+package fi.livi.digitraffic.tie.service.v2.datex2;
 
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -11,6 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +30,8 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
+import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -38,31 +40,129 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
 @Service
-public class Datex2UpdateService {
+public class V2Datex2UpdateService {
+    private static final Logger log = LoggerFactory.getLogger(V2Datex2UpdateService.class);
+
     private final Datex2Repository datex2Repository;
+    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
+    private final Datex2DataService datex2DataService;
+    private final Datex2UpdateService datex2UpdateService;
+    private final V2Datex2HelperService v2Datex2HelperService;
 
-    private static final Logger log = LoggerFactory.getLogger(Datex2UpdateService.class);
-
-    public Datex2UpdateService(final Datex2Repository datex2Repository) {
+    public V2Datex2UpdateService(final Datex2Repository datex2Repository,
+                                 final StringToObjectMarshaller stringToObjectMarshaller,
+                                 final Datex2DataService datex2DataService,
+                                 final Datex2UpdateService datex2UpdateService,
+                                 final V2Datex2HelperService v2Datex2HelperService) {
         this.datex2Repository = datex2Repository;
+        this.stringToObjectMarshaller = stringToObjectMarshaller;
+        this.datex2DataService = datex2DataService;
+        this.datex2UpdateService = datex2UpdateService;
+        this.v2Datex2HelperService = v2Datex2HelperService;
     }
 
     @Transactional
-    public int updateTrafficAlerts(final List<Datex2MessageDto> data) {
-        return updateDatex2Data(data, TRAFFIC_INCIDENT);
+    public int updateTrafficIncidentImsMessages(final List<ImsMessage> imsMessages) {
+        return updateTrafficImsMessages(imsMessages, TRAFFIC_INCIDENT);
     }
 
-    @Transactional
-    public void updateRoadworks(final List<Datex2MessageDto> messages) {
-        updateDatex2Data(messages, ROADWORK);
+    private int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
+        return imsMessages.stream()
+            .map(imsMessage -> {
+                final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+                // imsMessage with Json can only have one situation
+                checkOnyOneSituation(d2);
+                final JsonMessage json = convertToJsonObjectNullSafe(imsMessage.getMessageContent().getJMessage());
+                return createModelWithJson(d2, json, messageType, null);
+            })
+            .filter(Objects::nonNull)
+            .mapToInt(this::updateTrafficAlert)
+            .sum();
     }
 
-    @Transactional
-    public int updateWeightRestrictions(final List<Datex2MessageDto> data) {
-        return updateDatex2Data(data, WEIGHT_RESTRICTION);
+    private JsonMessage convertToJsonObjectNullSafe(String json) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
+        return v2Datex2HelperService.convertToJsonObject(json);
     }
+
+    private int updateTrafficAlert(Datex2MessageDto datex2) {
+        updateDatex2Data(datex2, TRAFFIC_INCIDENT);
+        return 1;
+    }
+
+
+    /**
+     * Expects
+     * @param d2 with only one situation inside
+     * @param json simple json model object
+     * @param messageType
+     * @param importTime
+     * @return
+     */
+    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final JsonMessage json,
+                                                 final Datex2MessageType messageType, final ZonedDateTime importTime) {
+        Datex2UpdateService.checkOnyOneSituation(d2);
+        final SituationPublication sp = (SituationPublication) d2.getPayloadPublication();
+        final Map<String, ZonedDateTime> versionTimes = listSituationVersionTimes(messageType);
+        final Situation situation = sp.getSituations().get(0);
+        final boolean update = versionTimes.get(situation.getId()) != null && v2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(situation.getId()), situation);
+        final boolean isNew = versionTimes.get(situation.getId()) == null;
+
+        log.info("method=createModelWithJson situations.updated={} situations.new={}", update, isNew);
+
+        if (isNew || update) {
+            return convert(d2, sp, situation, importTime, json);
+        }
+        return null;
+    }
+
+    private Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
+                                     final Situation situation, final ZonedDateTime importTime,
+                                     final JsonMessage jsonSituation) {
+        final D2LogicalModel d2 = new D2LogicalModel();
+        final SituationPublication newSp = new SituationPublication();
+
+        newSp.setPublicationTime(sp.getPublicationTime());
+        newSp.setPublicationCreator(sp.getPublicationCreator());
+        newSp.setLang(sp.getLang());
+        newSp.withSituations(situation);
+
+        d2.setModelBaseVersion(main.getModelBaseVersion());
+        d2.setExchange(main.getExchange());
+        d2.setPayloadPublication(newSp);
+
+        final String jsonValue = jsonSituation == null ? null : v2Datex2HelperService.convertToJsonString(jsonSituation);
+
+        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(d2), jsonValue, importTime, d2);
+    }
+
+
+
+
+    /** Copied methods */
+    public Map<String, ZonedDateTime> listSituationVersionTimes(final Datex2MessageType messageType) {
+        final Map<String, ZonedDateTime> map = new HashMap<>();
+
+        for (final Object[] o : datex2Repository.listDatex2SituationVersionTimes(messageType.name())) {
+            final String situationId = (String) o[0];
+            final ZonedDateTime versionTime = DateHelper.toZonedDateTimeAtUtc(((Timestamp)o[1]).toInstant());
+
+            if (map.put(situationId, versionTime) != null) {
+                throw new IllegalStateException("Duplicate key");
+            }
+        }
+
+        return map;
+    }
+
 
     @Transactional
     public int updateDatex2Data(final List<Datex2MessageDto> data, final Datex2MessageType messageType) {
@@ -94,7 +194,7 @@ public class Datex2UpdateService {
         final int situations = ((SituationPublication) d2.getPayloadPublication()).getSituations().size();
         if ( situations > 1 ) {
             log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");
-            throw new java.lang.IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
+            throw new IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
                                                          "there was " + situations);
         }
     }

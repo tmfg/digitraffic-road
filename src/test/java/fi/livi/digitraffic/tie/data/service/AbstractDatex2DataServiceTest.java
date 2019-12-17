@@ -71,7 +71,7 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
     protected List<Datex2MessageDto> createDtoList(final String datex2Content) {
         final D2LogicalModel d2LogicalModel = createModel(datex2Content);
 
-        return Collections.singletonList(new Datex2MessageDto(datex2Content, null, d2LogicalModel));
+        return Collections.singletonList(new Datex2MessageDto(datex2Content, null, null, d2LogicalModel));
     }
 
     protected static String replaceVersionTimes(final String xml, final Instant replacement) {

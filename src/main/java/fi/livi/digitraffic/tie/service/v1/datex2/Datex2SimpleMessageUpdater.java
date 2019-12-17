@@ -17,13 +17,15 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2HelperService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @Service
 public class Datex2SimpleMessageUpdater {
+    private static final Logger log = LoggerFactory.getLogger(Datex2SimpleMessageUpdater.class);
+
     private final Datex2WeightRestrictionsHttpClient datex2WeightRestrictionsHttpClient;
     private final Datex2RoadworksHttpClient datex2RoadworksHttpClient;
 
@@ -34,7 +36,8 @@ public class Datex2SimpleMessageUpdater {
 
     private static StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
 
-    private static final Logger log = LoggerFactory.getLogger(Datex2SimpleMessageUpdater.class);
+    private V2Datex2UpdateService v2Datex2UpdateService;
+    private V2Datex2HelperService v2Datex2HelperService;
 
     @Autowired
     public Datex2SimpleMessageUpdater(final Datex2WeightRestrictionsHttpClient datex2WeightRestrictionsHttpClient,
@@ -42,22 +45,17 @@ public class Datex2SimpleMessageUpdater {
                                       final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient,
                                       final Datex2UpdateService datex2UpdateService,
                                       final Datex2Repository datex2Repository,
-                                      final StringToObjectMarshaller stringToObjectMarshaller) {
+                                      final StringToObjectMarshaller stringToObjectMarshaller,
+                                      final V2Datex2UpdateService v2Datex2UpdateService,
+                                      final V2Datex2HelperService v2Datex2HelperService) {
         this.datex2WeightRestrictionsHttpClient = datex2WeightRestrictionsHttpClient;
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
         this.datex2TrafficAlertHttpClient = datex2TrafficAlertHttpClient;
         this.datex2UpdateService = datex2UpdateService;
         this.datex2Repository = datex2Repository;
         Datex2SimpleMessageUpdater.stringToObjectMarshaller = stringToObjectMarshaller;
-    }
-
-    @Transactional
-    public int updateTrafficIncidentImsMessages(final List<ImsMessage> imsMessages) {
-        return imsMessages.stream()
-            .map(ims -> ims.getMessageContent().getD2Message())
-            .map(d2Xml -> stringToObjectMarshaller.convertToObject(d2Xml))
-            .map(d2 -> createModels(d2, Datex2MessageType.TRAFFIC_INCIDENT, null))
-            .mapToInt(datex2UpdateService::updateTrafficAlerts).sum();
+        this.v2Datex2UpdateService = v2Datex2UpdateService;
+        this.v2Datex2HelperService = v2Datex2HelperService;
     }
 
     @Transactional
@@ -93,36 +91,27 @@ public class Datex2SimpleMessageUpdater {
     @Transactional(readOnly = true)
     public List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType, final ZonedDateTime importTime) {
         final D2LogicalModel model = stringToObjectMarshaller.convertToObject(message);
-
         return createModels(model, messageType, importTime);
     }
 
     private List<Datex2MessageDto> createModels(final D2LogicalModel main, final Datex2MessageType messageType, final ZonedDateTime importTime) {
         final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
 
-        final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
-        final long updatedCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) != null &&
-                                                                    isNewOrUpdatedSituation(versionTimes.get(s.getId()), s)).count();
+        final Map<String, ZonedDateTime> versionTimes = v2Datex2UpdateService.listSituationVersionTimes(messageType);
+        final long updatedCount = sp.getSituations().stream()
+            .filter(s -> versionTimes.get(s.getId()) != null &&
+                         v2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
+            .count();
         final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
         log.info("situations.updated={} situations.new={}", updatedCount, newCount);
 
         return sp.getSituations().stream()
-            .filter(s -> isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
+            .filter(s ->  v2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
             .map(s -> convert(main, sp, s, importTime))
             .collect(Collectors.toList());
     }
 
-    private static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
-        // does any record have new version time?
-        return situation.getSituationRecords().stream().anyMatch(r -> isNewOrUpdatedRecord(latestVersionTime, r));
-    }
-
-    private static boolean isNewOrUpdatedRecord(final ZonedDateTime latestVersionTime, final SituationRecord record) {
-        // different resolution, so remove fractions of second
-        final Instant vTime = DateHelper.withoutMillis(record.getSituationRecordVersionTime());
-        return latestVersionTime == null || vTime.isAfter(DateHelper.withoutMillis(latestVersionTime.toInstant()) );
-    }
 
     private Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
                                      final Situation situation, final ZonedDateTime importTime) {
@@ -138,6 +127,6 @@ public class Datex2SimpleMessageUpdater {
         d2.setExchange(main.getExchange());
         d2.setPayloadPublication(newSp);
 
-        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(d2), importTime, d2);
+        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(d2), null, importTime, d2);
     }
 }
