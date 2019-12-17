@@ -4,7 +4,7 @@
 	"title": "Location schema",
 	"description": "Location of an traffic situation announcement",
 	"properties": {
-		"contrycode": {
+		"countrycode": {
 			"type": "string",
 			"title": "Country code",
 			"description": "AlertC country code defined by RDS (IEC 62106)"
@@ -23,85 +23,64 @@
 			"type": "string",
 			"title": "Location description",
 			"description": "Textual representation of the location"
-		}
+		},
+        "areas": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "title": "Area",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "The name of the area"
+                    },
+                    "locationcode": {
+                        "type": "integer",
+                        "title": "Location code of the area",
+                        "description": "Number of the road point in AlertC location table"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "The type of the area",
+                        "description": "F.ex. kaupunki, maakunta, sää-alue"
+                    }
+                },
+                "required": [
+                    "name",
+                    "locationcode",
+                    "type"
+                ]
+            }
+        },
+        "primarypoint": {
+            "type": "object",
+            "$ref": "simppeli-road-point_v0_2.schema.json"
+        },
+        "secondarypoint": {
+            "type": "object",
+            "$ref": "simppeli-road-point_v0_2.schema.json"
+        },
+        "direction": {
+            "type": "string",
+            "title": "Direction schema.",
+            "description": "Affected road direction.",
+            "enum": [
+                "unknown",
+                "pos",
+                "neg",
+                "both"
+            ]
+        },
+        "directionDescription": {
+            "type": "string",
+            "title": "DirectionDescription schema.",
+            "description": "Human readable description of the affected direction"
+        }
 	},
 	"required": [
 		"countrycode",
 		"locationtablenumber",
 		"locationtableversion",
 		"description"
-	],
-	"oneOf": [
-		{
-			"title": "Area location",
-			"description": "Location consisting of one or more areas.",
-			"properties": {
-				"areas": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"title": "Area",
-						"properties": {
-							"name": {
-								"type": "string",
-								"title": "The name of the area"
-							},
-							"locationcode": {
-								"type": "integer",
-								"title": "Location code of the area",
-								"description": "Number of the road point in AlertC location table"
-							},
-							"type": {
-								"type": "string",
-								"title": "The type of the area",
-								"description": "F.ex. kaupunki, maakunta, sää-alue"
-							}
-						},
-						"required": [
-							"name",
-							"locationcode",
-							"type"
-						]
-					}
-				}
-			},
-			"required": [
-				"areas"
-			]
-		},
-		{
-			"title": "Road address location",
-			"description": "Location consisting of a single road point or a road segment between two road points",
-			"properties": {
-				"primarypoint": {
-					"type": "object",
-					"$ref": "simppeli_road_point_v0_1.schema.json"
-				},
-				"secondarypoint": {
-					"type": "object",
-					"$ref": "simppeli_road_point_v0_1.schema.json"
-				},
-				"direction": {
-					"type": "string",
-					"title": "Direction schema.",
-					"description": "Affected road direction.",
-					"enum": [
-						"unknown",
-						"pos",
-						"neg",
-						"both"
-					]
-				},
-				"directionDescription": {
-					"type": "string",
-					"title": "DirectionDescription schema.",
-					"description": "Human readable description of the affected direction"
-				}
-			},
-			"required": [
-				"primarypoint",
-				"direction"
-			]
-		}
 	]
 }

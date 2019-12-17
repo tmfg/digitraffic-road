@@ -4,7 +4,7 @@
 	"title": "TrafficSituation announcement.",
 	"description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
 	"properties": {
-		"situtationId": {
+		"situationId": {
 			"type": "string",
 			"required" : true
 		},
@@ -36,7 +36,7 @@
 			"description": "Contains announcement's different language versions available.",
 			"items": {
 				"type": "object",
-				"$ref": "simppeli-announcement_v0_1.schema.json",
+				"$ref": "simppeli-traffic-announchment-_v0_2.schema.json",
 				"required": true
 			},
 			"required": true

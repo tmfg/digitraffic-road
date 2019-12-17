@@ -16,8 +16,7 @@
 		},
 		"location": {
 			"type": "object",
-			"$ref": "simppeli-location_v0_1.schema.json"
-			}
+			"$ref": "simppeli-location_v0_2.schema.json"
 		},
 		"features": {
 			"type": "array",
