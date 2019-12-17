@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -64,7 +63,7 @@ public class Datex2SimpleMessageUpdater {
         final List<Pair<String, Instant>> messages = datex2TrafficAlertHttpClient.getTrafficAlertMessages(latest);
 
         final List<Datex2MessageDto> unmarshalled = convert(messages);
-        return datex2UpdateService.updateTrafficAlerts(unmarshalled);
+        return datex2UpdateService.updateDatex2Data(unmarshalled);
     }
 
     private List<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
@@ -78,14 +77,14 @@ public class Datex2SimpleMessageUpdater {
     public void updateDatex2RoadworksMessages() {
         final String message = datex2RoadworksHttpClient.getRoadWorksMessage();
 
-        datex2UpdateService.updateRoadworks(convert(message, Datex2MessageType.ROADWORK, null));
+        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.ROADWORK, null));
     }
 
     @Transactional
     public void updateDatex2WeightRestrictionMessages() {
         final String message = datex2WeightRestrictionsHttpClient.getWeightRestrictionsMessage();
 
-        datex2UpdateService.updateWeightRestrictions(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
+        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
     }
 
     @Transactional(readOnly = true)
@@ -95,9 +94,9 @@ public class Datex2SimpleMessageUpdater {
     }
 
     private List<Datex2MessageDto> createModels(final D2LogicalModel main, final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        final SituationPublication sp = (SituationPublication) main.getPayloadPublication();
+        final SituationPublication sp = V2Datex2HelperService.getSituationPublication(main);
 
-        final Map<String, ZonedDateTime> versionTimes = v2Datex2UpdateService.listSituationVersionTimes(messageType);
+        final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
         final long updatedCount = sp.getSituations().stream()
             .filter(s -> versionTimes.get(s.getId()) != null &&
                          v2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
@@ -107,26 +106,8 @@ public class Datex2SimpleMessageUpdater {
         log.info("situations.updated={} situations.new={}", updatedCount, newCount);
 
         return sp.getSituations().stream()
-            .filter(s ->  v2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
-            .map(s -> convert(main, sp, s, importTime))
+            .filter(s -> V2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
+            .map(s -> v2Datex2UpdateService.convert(main, sp, s, importTime, null, messageType))
             .collect(Collectors.toList());
-    }
-
-
-    private Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
-                                     final Situation situation, final ZonedDateTime importTime) {
-        final D2LogicalModel d2 = new D2LogicalModel();
-        final SituationPublication newSp = new SituationPublication();
-
-        newSp.setPublicationTime(sp.getPublicationTime());
-        newSp.setPublicationCreator(sp.getPublicationCreator());
-        newSp.setLang(sp.getLang());
-        newSp.withSituations(situation);
-
-        d2.setModelBaseVersion(main.getModelBaseVersion());
-        d2.setExchange(main.getExchange());
-        d2.setPayloadPublication(newSp);
-
-        return new Datex2MessageDto(stringToObjectMarshaller.convertToString(d2), null, importTime, d2);
     }
 }

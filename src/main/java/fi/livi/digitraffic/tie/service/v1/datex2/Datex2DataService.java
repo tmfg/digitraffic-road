@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_R
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.response.ObservationTimeType;
 import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
 import fi.livi.digitraffic.tie.datex2.response.TimestampedRoadworkDatex2;
@@ -41,7 +39,8 @@ public class Datex2DataService {
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
 
     @Autowired
-    public Datex2DataService(final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller) {
+    public Datex2DataService(final Datex2Repository datex2Repository,
+                             final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
     }
@@ -122,16 +121,6 @@ public class Datex2DataService {
     public WeightRestrictionsDatex2Response findActiveWeightRestrictions(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(WEIGHT_RESTRICTION.name(), inactiveHours);
         return convertToWeightRestrictionDatex2Response(allActive);
-    }
-
-    public static SituationPublication getSituationPublication(final D2LogicalModel model) {
-        if (model.getPayloadPublication() instanceof SituationPublication) {
-            return (SituationPublication) model.getPayloadPublication();
-        } else {
-            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
-            log.error(err);
-            throw new RuntimeException(err);
-        }
     }
 
     private WeightRestrictionsDatex2Response convertToWeightRestrictionDatex2Response(final List<Datex2> list) {

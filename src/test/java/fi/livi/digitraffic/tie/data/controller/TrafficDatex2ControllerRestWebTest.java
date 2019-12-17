@@ -130,6 +130,6 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     private void updateDatex2(final String datex2Xml, final Datex2MessageType type) {
-        datex2UpdateService.updateDatex2Data(datex2SimpleMessageUpdater.convert(datex2Xml, type, ZonedDateTime.now()), type);
+        datex2UpdateService.updateDatex2Data(datex2SimpleMessageUpdater.convert(datex2Xml, type, ZonedDateTime.now()));
     }
 }

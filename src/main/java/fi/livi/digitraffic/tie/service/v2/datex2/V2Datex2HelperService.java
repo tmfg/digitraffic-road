@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -55,13 +57,36 @@ public class V2Datex2HelperService {
     }
 
     public static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
-        // does any record have new version time?
-        return situation.getSituationRecords().stream().anyMatch(r -> isNewOrUpdatedRecord(latestVersionTime, r));
+        return isNewOrUpdatedSituation(DateHelper.toInstant(latestVersionTime), situation);
     }
 
-    public static boolean isNewOrUpdatedRecord(final ZonedDateTime latestVersionTime, final SituationRecord record) {
+    public static boolean isNewOrUpdatedSituation(final Instant latestVersionTime, final Situation situation) {
+        // does any record have new version time?
+        return latestVersionTime == null || situation.getSituationRecords().stream().anyMatch(r -> isUpdatedRecord(latestVersionTime, r));
+    }
+
+    public static boolean isUpdatedRecord(final Instant latestVersionTime, final SituationRecord record) {
         // different resolution, so remove fractions of second
         final Instant vTime = DateHelper.withoutMillis(record.getSituationRecordVersionTime());
-        return latestVersionTime == null || vTime.isAfter(DateHelper.withoutMillis(latestVersionTime.toInstant()) );
+        return vTime.isAfter(DateHelper.withoutMillis(latestVersionTime) );
+    }
+
+    public static SituationPublication getSituationPublication(final D2LogicalModel model) {
+        if (model.getPayloadPublication() instanceof SituationPublication) {
+            return (SituationPublication) model.getPayloadPublication();
+        } else {
+            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
+            log.error(err);
+            throw new RuntimeException(err);
+        }
+    }
+
+    public static void checkD2HasOnlyOneSituation(D2LogicalModel d2) {
+        final int situations = getSituationPublication(d2).getSituations().size();
+        if ( situations > 1 ) {
+            log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");
+            throw new java.lang.IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
+                "there was " + situations);
+        }
     }
 }

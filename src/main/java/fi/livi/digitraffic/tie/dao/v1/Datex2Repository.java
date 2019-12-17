@@ -115,4 +115,19 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Object[]> listDatex2SituationVersionTimes(@Param("messageType") final String messageType);
+
+    @Query(value =
+               "SELECT version_time\n" +
+               "FROM (\n" +
+               "    SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC) AS rnum\n" +
+               "         , record.version_time\n" +
+               "    FROM DATEX2 d\n" +
+               "    INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
+               "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
+               "    WHERE d.message_type = :messageType\n" +
+               "      AND situation.situation_id = :situationId" +
+               ") d2\n" +
+               "WHERE rnum = 1",
+           nativeQuery = true)
+    Instant findDatex2SituationLatestVersionTime(final String situationId, final String messageType);
 }

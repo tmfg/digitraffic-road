@@ -5,6 +5,8 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
@@ -31,6 +33,8 @@ import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2HelperService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @Import({ StringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services
@@ -38,10 +42,12 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageS3Writer.class,
           Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
+          V2Datex2UpdateService.class, V2Datex2HelperService.class,
           CameraPresetHistoryService.class, FlywayService.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
+          ObjectMapper.class,
 
           // daos
           TmsSensorConstantDao.class, WorkMachineObservationDao.class,
