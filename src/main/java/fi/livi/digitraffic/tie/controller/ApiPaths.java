@@ -5,10 +5,12 @@ public final class ApiPaths {
     public static final String API_V2_BASE_PATH = "/api/v2";
     public static final String API_V3_BASE_PATH = "/api/v3";
     public static final String API_BETA_BASE_PATH = "/api/beta";
+    public static final String API_INTEGRATIONS_BASE_PATH = "/integrations";
 
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
+    public static final String API_WORK_MACHINE_PART_PATH = "/work-machine";
     public static final String API_VARIABLE_SIGN_UPDATE_PART_PATH = "/variable-sign-update";
     public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
     public static final String VARIABLE_SIGNS_CODE_DESCRIPTIONS = VARIABLE_SIGNS_PATH + "/code-descriptions";

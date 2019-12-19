@@ -34,18 +34,15 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "           , d.publication_time\n" +
             "           , d.id AS datex2_id\n" +
             "           , record.validy_status\n" +
-            "           , record.overall_end_time\n" +
+            "           , coalesce(record.overall_end_time, TO_DATE('9999', 'yyyy')) overall_end_time\n" +
             "         FROM DATEX2 d\n" +
             "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
             "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
             "         WHERE d.message_type = :messageType\n"    +
             "       ) disorder\n" +
             "  WHERE rnum = 1\n" +
-            "    AND (disorder.overall_end_time IS NULL OR disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour')\n" +
-            "    AND (" +
-            "           disorder.validy_status <> 'SUSPENDED'\n" +
-            "       OR (disorder.validy_status = 'SUSPENDED' AND disorder.overall_end_time IS NOT null)\n" +
-            "    )\n" +
+            "        AND (disorder.validy_status <> 'SUSPENDED'\n" +
+            "             AND disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour' )\n" +
             ")\n" +
             "order by d.publication_time, d.id",
             nativeQuery = true)

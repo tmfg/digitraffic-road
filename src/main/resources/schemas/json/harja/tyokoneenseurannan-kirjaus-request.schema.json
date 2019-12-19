@@ -37,6 +37,11 @@
                     "type": "integer",
                     "required": true
                   },
+                  "tunnus": {
+                    "id": "urn:harja/havainnot/0/tyokone/tunnus",
+                    "type": "string",
+                    "required": false
+                  },
                   "tyokonetyyppi": {
                     "id": "urn:harja/havainnot/0/tyokone/tyyppi",
                     "type": "string",
@@ -48,7 +53,7 @@
                 "id": "urn:harja/havainnot/0/sijainti",
                 "type": "object",
                 "additionalProperties": false,
-                "$ref": "entities/sijainti.schema.json",
+                "$ref": "entities/geometria-sijainti.schema.json",
                 "required": true
               },
               "suunta": {
