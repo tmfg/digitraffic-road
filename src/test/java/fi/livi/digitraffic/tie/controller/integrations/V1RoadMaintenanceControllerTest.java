@@ -10,16 +10,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
@@ -37,6 +41,19 @@ public class V1RoadMaintenanceControllerTest extends AbstractRestWebTest {
 
     @Autowired
     private WorkMachineObservationService workMachineObservationService;
+
+    @Autowired
+    private WorkMachineObservationRepository workMachineObservationRepository;
+
+    @Before
+    public void cleanDb() {
+        workMachineObservationRepository.deleteAll();
+        if (TestTransaction.isActive()) {
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+        }
+        TestTransaction.start();
+    }
 
     @Test
     public void postWorkMachineTrackingDataOk() throws Exception {
@@ -135,7 +152,8 @@ public class V1RoadMaintenanceControllerTest extends AbstractRestWebTest {
         mockMvc.perform(post).andExpect(expectResult);
     }
 
-    //    @Test
+    @Ignore("Manual testing")
+    @Test
     public void reconvertKoordinatesToETRS89() {
         List<List<Double>> list1 = Arrays.asList(
             Arrays.asList(23.043001740682634, 62.077040093972144),
