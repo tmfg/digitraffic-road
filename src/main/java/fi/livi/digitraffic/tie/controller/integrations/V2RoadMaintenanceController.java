@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 import io.swagger.annotations.Api;
@@ -34,8 +35,8 @@ public class V2RoadMaintenanceController {
 
     private static final Logger log = LoggerFactory.getLogger(V2RoadMaintenanceController.class);
 
-    public static final String TRACKING_PATH = "/tracking";
-    public static final String REALIZATION_PATH = "/realization";
+    public static final String TRACKINGS_PATH = "/trackings";
+    public static final String REALIZATIONS_PATH = "/realizations";
 
     final private MaintenanceDataService maintenanceDataService;
     private final ObjectMapper objectMapper;
@@ -48,12 +49,12 @@ public class V2RoadMaintenanceController {
     }
 
     @ApiOperation("Posting of real-time work machine tracking information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = TRACKING_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = TRACKINGS_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of real-time work machine tracking information for a work machine from HARJA"))
     public ResponseEntity<Void> postWorkMachineTracking(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
         throws JsonProcessingException {
 
-        log.debug("method=postWorkMachineTrackingData JSON=\n{}",
+        log.debug("method=postWorkMachineTracking JSON=\n{}",
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
 
         maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
@@ -62,15 +63,13 @@ public class V2RoadMaintenanceController {
     }
 
     @ApiOperation("Posting of work machine tracking realization information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = REALIZATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = REALIZATIONS_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of work machine tracking realization information for a work machine from HARJA"))
-    public ResponseEntity<Void> postWorkMachineRealization(@RequestBody TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus)
+    public ResponseEntity<Void> postWorkMachineRealization(@RequestBody ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus)
         throws JsonProcessingException {
 
-        log.debug("method=postWorkMachineTrackingData JSON=\n{}",
-            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tyokoneenseurannanKirjaus));
-
-        maintenanceDataService.saveWorkMachineTrackingData(tyokoneenseurannanKirjaus);
+        log.info("method=postWorkMachineRealization JSON=\n{}",
+                 objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
 
         return ResponseEntity.ok().build();
     }

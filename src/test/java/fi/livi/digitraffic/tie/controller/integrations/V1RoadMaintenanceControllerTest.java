@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller.integrations;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.v1.MaintenanceController.WORK_MACHINE_TRACKING_PATH;
+import static fi.livi.digitraffic.tie.controller.integrations.V1RoadMaintenanceController.WORK_MACHINE_TRACKING_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,17 +20,17 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.model.v1.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 import fi.livi.digitraffic.tie.service.v1.WorkMachineObservationService;
-import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class MaintenanceControllerTest extends AbstractRestWebTest {
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceControllerTest.class);
+public class V1RoadMaintenanceControllerTest extends AbstractRestWebTest {
+    private static final Logger log = LoggerFactory.getLogger(V1RoadMaintenanceControllerTest.class);
 
     @Autowired
     private MaintenanceDataService maintenanceDataService;
