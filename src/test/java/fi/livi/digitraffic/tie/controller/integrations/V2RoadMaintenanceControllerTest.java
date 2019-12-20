@@ -158,6 +158,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     private void postData(final String fileName, final MediaType mediaType, final String path, final ResultMatcher expectResult) throws Exception {
         final String jsonContent = readResourceContent("classpath:harja/controller/" + fileName);
 
+        log.info("POST: {}", API_INTEGRATIONS_BASE_PATH + API_WORK_MACHINE_PART_PATH + "/v2" + path);
         final MockHttpServletRequestBuilder post = post(API_INTEGRATIONS_BASE_PATH + API_WORK_MACHINE_PART_PATH + "/v2" + path)
             .content(jsonContent);
         if (mediaType != null) {

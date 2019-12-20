@@ -5,7 +5,7 @@ public final class ApiPaths {
     public static final String API_V2_BASE_PATH = "/api/v2";
     public static final String API_V3_BASE_PATH = "/api/v3";
     public static final String API_BETA_BASE_PATH = "/api/beta";
-    public static final String API_INTEGRATIONS_BASE_PATH = "/integrations";
+    public static final String API_INTEGRATIONS_BASE_PATH = "/api/integrations";
 
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
