@@ -51,7 +51,7 @@ public class V2Datex2HelperService {
         try {
             return jsonWriter.writeValueAsString(situation);
         } catch (JsonProcessingException e) {
-            log.error("method=writeValueAsString Error while converting jsonSituation-object to string with guid " + situation.getSituationId());
+            log.error("method=convertToJsonString Error while converting jsonSituation-object to string with guid " + situation.getSituationId());
             throw new RuntimeException(e);
         }
     }
