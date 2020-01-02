@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.dao.v1;
 
 import java.time.Instant;
 import java.util.List;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -92,8 +93,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    WHERE situation.situation_id = :situationId)\n" +
         "AND message_type = :messageType", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndMessageType(@Param("situationId") final String situationId, @Param("messageType") final String
-        messageType);
+    List<Datex2> findBySituationIdAndMessageType(@Param("situationId") final String situationId, @Param("messageType") final String messageType);
 
     @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM Datex2Situation situation\n" +

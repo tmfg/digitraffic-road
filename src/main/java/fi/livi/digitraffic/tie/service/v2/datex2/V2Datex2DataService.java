@@ -17,7 +17,6 @@ import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
 @Service
@@ -26,22 +25,20 @@ public class V2Datex2DataService {
 
     private final Datex2Repository datex2Repository;
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
-    private final Datex2DataService datex2DataService;
     private final V2Datex2HelperService v2Datex2HelperService;
 
     @Autowired
-    public V2Datex2DataService(final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller,
-                               final Datex2DataService datex2DataService,
+    public V2Datex2DataService(final Datex2Repository datex2Repository,
+                               final StringToObjectMarshaller stringToObjectMarshaller,
                                final V2Datex2HelperService v2Datex2HelperService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
-        this.datex2DataService = datex2DataService;
         this.v2Datex2HelperService = v2Datex2HelperService;
     }
 
     @Transactional(readOnly = true)
     public D2LogicalModel findAllBySituationId(final String situationId, final Datex2MessageType datex2MessageType) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, datex2MessageType.name());
+        final List<Datex2> datex2s = findBySituationIdAndMessageType(situationId, datex2MessageType.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -49,17 +46,34 @@ public class V2Datex2DataService {
     }
 
     @Transactional(readOnly = true)
+    public List<JsonMessage> findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
+        final List<Datex2> datex2s = findBySituationIdAndMessageType(situationId, datex2MessageType.name());
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return convertToJson(datex2s);
+    }
+
+    @Transactional(readOnly = true)
     public D2LogicalModel findActive(final int inactiveHours,
                                      final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
+        final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToD2LogicalModel(allActive);
     }
 
     @Transactional(readOnly = true)
     public List<JsonMessage> findActiveJson(final int inactiveHours,
                                             final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
+        final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToJson(allActive);
+    }
+
+    private List<Datex2> findAllActive(final String messageType, final int activeInPastHours) {
+        return datex2Repository.findAllActive(messageType, activeInPastHours);
+    }
+
+    private List<Datex2> findBySituationIdAndMessageType(final String situationId, final String messageType) {
+        return datex2Repository.findBySituationIdAndMessageType(situationId, messageType);
     }
 
     private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {

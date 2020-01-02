@@ -28,8 +28,8 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
-public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
-    private static final Logger log = LoggerFactory.getLogger(Datex2JmsMessageListenerTest.class);
+public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
+    private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
 
     @Autowired
     private V2Datex2DataService v2Datex2DataService;
@@ -49,7 +49,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         datex2Repository.deleteAll();
 
         final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener datexJmsMessageListener = createJmsMessageListener();
+        final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
 
         final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessage.xml");
         readAndSendMessages(imsResources, datexJmsMessageListener);
@@ -73,7 +73,7 @@ public class Datex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest
         return ((SituationPublication) active.getPayloadPublication()).getSituations();
     }
 
-    private JMSMessageListener createJmsMessageListener() {
+    private JMSMessageListener createImsJmsMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ImsMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficIncidentImsMessages(data);
         return new JMSMessageListener(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
     }
