@@ -36,7 +36,7 @@ public class V2Datex2HelperService {
     /**
      *
      * @param json
-     * @return Json object or null in case of error
+     * @return Json object
      */
     public JsonMessage convertToJsonObject(final String json) {
         try {

@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -45,6 +46,7 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
 
+@Import({ RoadDistrictService.class })
 public abstract class AbstractTest {
 
     @Autowired
