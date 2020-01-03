@@ -1,7 +1,10 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.data.controller.v2;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
@@ -23,7 +26,7 @@ import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
-public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
+public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     protected Datex2DataService datex2DataService;
@@ -67,7 +70,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incident() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + TRAFFIC_INCIDENT.toParameter();
+        final String url = getUrl(TRAFFIC_INCIDENT, false, 0);
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationExistInXml(incident2_active_id, xml);
@@ -78,7 +81,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2incidentInPast() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + TRAFFIC_INCIDENT.toParameter() + "?inactiveHours=200000";
+        final String url = getUrl(TRAFFIC_INCIDENT, false, 200000);
         final String xml = getResponse(url);
         assertSituationExistInXml(incident1_past_id, xml);
         assertSituationExistInXml(incident2_active_id, xml);
@@ -89,7 +92,7 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2roadwork() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + ROADWORK.toParameter();
+        final String url = getUrl(ROADWORK, false, 0);
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationNotExistInXml(incident2_active_id, xml);
@@ -100,13 +103,17 @@ public class TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Test
     public void datex2weightRestriction() throws Exception {
-        final String url = API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + WEIGHT_RESTRICTION.toParameter();
+        final String url = getUrl(WEIGHT_RESTRICTION, false, 0);
         final String xml = getResponse(url);
         assertSituationNotExistInXml(incident1_past_id, xml);
         assertSituationNotExistInXml(incident2_active_id, xml);
         assertSituationNotExistInXml(incident3_active_id, xml);
         assertSituationNotExistInXml(roadwork1_active_id, xml);
         assertSituationExistInXml(weightRestriction1_active_id, xml);
+    }
+
+    private static String getUrl(final Datex2MessageType messageType, final boolean json, final int inactiveHours) {
+        return API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + messageType.toParameter() + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours;
     }
 
     private void assertSituationExistInXml(final String situationId,  final String xml) {

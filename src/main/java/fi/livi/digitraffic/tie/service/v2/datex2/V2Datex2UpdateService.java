@@ -64,7 +64,8 @@ public class V2Datex2UpdateService {
         return updateTrafficImsMessages(imsMessages, TRAFFIC_INCIDENT);
     }
 
-    private int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
+    @Transactional
+    public int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
         return (int)imsMessages.stream()
             .filter(imsMessage -> isNewOrUpdatedSituation(stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message()), messageType))
             .map(imsMessage -> {

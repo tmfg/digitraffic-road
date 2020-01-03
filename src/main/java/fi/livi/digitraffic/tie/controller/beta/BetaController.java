@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_JSON_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -66,8 +65,8 @@ public class BetaController {
         this.v2Datex2DataService = v2Datex2DataService;
     }
 
-    @ApiOperation(value = "Active Datex2 JSON messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_JSON_PATH + "/{datex2MessageType}", produces = { APPLICATION_JSON_VALUE })
+    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
     public List<JsonMessage> datex2Json(
         @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
@@ -81,8 +80,8 @@ public class BetaController {
     }
 
 
-    @ApiOperation(value = "Active Datex2 messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}", produces = { APPLICATION_XML_VALUE , APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public D2LogicalModel datex2(
         @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
@@ -95,8 +94,22 @@ public class BetaController {
         return v2Datex2DataService.findActive(inactiveHours, datex2MessageType);
     }
 
-    @ApiOperation(value = "Datex2 messages history by situation id for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = 404, message = "Situation id not found") })
+    public List<JsonMessage>  datex2JsonBySituationId(
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+        @PathVariable
+        final Datex2MessageType datex2MessageType,
+        @ApiParam(value = "Datex2 situation id.", required = true)
+        @PathVariable
+        final String situationId) {
+        return v2Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
+    }
+
+    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
     public D2LogicalModel datex2BySituationId(

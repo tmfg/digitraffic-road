@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
@@ -71,6 +72,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         Assert.assertTrue(commentXml.contains(descJson.trim()));
     }
 
+    @Rollback(false)
     @Test
     public void findBySituationId() throws IOException {
         // One active
