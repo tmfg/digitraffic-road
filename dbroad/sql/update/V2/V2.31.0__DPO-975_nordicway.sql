@@ -11,5 +11,5 @@ ALTER TABLE nw2_annotation ADD CONSTRAINT nw2_annotation_type_check CHECK (type 
 'slowVehicle', 'stationaryTraffic', 'animalsOnTheRoad', 'objectOnTheRoad', 'unprotectedAccidentArea', 'roadworks'));
 
 insert into data_updated(id, data_type, updated, version)
-values(2, 'NW2_ANNOTATIONS', current_date, null);
+values(nextval('seq_data_updated'), 'NW2_ANNOTATIONS', current_date, null);
 
