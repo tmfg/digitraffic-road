@@ -44,7 +44,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final String incident1_past_id = "GUID5000526801";
+    private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
     private final String incident3_active_id = "GUID50013339";
 

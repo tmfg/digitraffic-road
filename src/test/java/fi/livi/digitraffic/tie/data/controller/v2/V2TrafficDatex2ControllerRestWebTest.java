@@ -40,7 +40,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
 
-    private final String incident1_past_id = "GUID5000526801";
+    private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
     private final String incident3_active_id = "GUID50013339";
     private final String roadwork1_active_id = "GUID50350441";
