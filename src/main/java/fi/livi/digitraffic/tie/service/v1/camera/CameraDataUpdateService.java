@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @ConditionalOnNotWebApplication
@@ -41,6 +42,8 @@ public class CameraDataUpdateService {
         this.cameraImageUpdateService = cameraImageUpdateService;
     }
 
+    // Log only on warn and error level. Warn when over 10 s execution time as normally its around 6 s.
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 10000)
     public int updateCameraData(final List<KuvaProtos.Kuva> data) {
         final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
         final List<Future<Boolean>> futures = new ArrayList<>();

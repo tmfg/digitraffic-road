@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
@@ -29,7 +30,8 @@ public class CameraMetadataMessageHandler {
         this.dataStatusService = dataStatusService;
     }
 
-
+    // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000)
     public int updateCameraMetadata(List<CameraMetadataUpdatedMessageDto> cameraUpdates) {
         int updateCount = 0;
 

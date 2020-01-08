@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
@@ -42,6 +43,7 @@ public class LocationService {
         this.locationVersionRepository = locationVersionRepository;
     }
 
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public LocationFeatureCollection findLocationsMetadata(final boolean onlyUpdateInfo, final String version) {
         final LocationVersion locationVersion = getLocationVersion(version);

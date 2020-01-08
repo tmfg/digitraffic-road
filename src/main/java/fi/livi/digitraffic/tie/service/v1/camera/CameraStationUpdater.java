@@ -67,7 +67,7 @@ public class CameraStationUpdater {
             final long time = stopWatch.getTime();
             stopWatch.reset();
             lockingService.unlock(lockName);
-            log.info("method=unlock lockedTimeMs={}", time);
+            log.debug("method=unlock lockedTimeMs={}", time);
         }
     }
 
@@ -109,7 +109,10 @@ public class CameraStationUpdater {
         try {
             log.debug("method=updateCameraStationAndPresets got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
-            if (!validate(kamera)) {
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", kameraLotjuId);
+                return Pair.of(0,0);
+            } else if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
             final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kameraLotjuId);
@@ -135,7 +138,10 @@ public class CameraStationUpdater {
         try {
             log.debug("method=updateCameraStation got the lock lotjuId={}", cameraLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
-            if (!validate(kamera)) {
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", cameraLotjuId);
+                return false;
+            } else if (!validate(kamera)) {
                 return false;
             }
             return cameraStationUpdateService.updateCamera(kamera);
@@ -149,6 +155,11 @@ public class CameraStationUpdater {
     public boolean updateCameraPreset(final long presetLotjuId) {
         log.info("method=updateCameraPreset start lotjuId={}", presetLotjuId);
         final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
+
+        if (esiasento == null) {
+            log.error("No CameraPreset with lotjuId={} found", presetLotjuId);
+            return false;
+        }
 
         // If camera preset doesn't exist, we have to create it -> just update the whole station
         if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
