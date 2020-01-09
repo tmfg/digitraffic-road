@@ -624,6 +624,8 @@
                         <include>**/*.json</include>
                     </includes>
                     <includeJsr303Annotations>true</includeJsr303Annotations>
+                    <includeConstructors>true</includeConstructors>
+                    <generateBuilders>true</generateBuilders>
                 </configuration>
                 <executions>
                     <execution>

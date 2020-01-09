@@ -77,7 +77,7 @@ public class V2Datex2HelperService {
         } else {
             final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
             log.error(err);
-            throw new RuntimeException(err);
+            throw new IllegalArgumentException(err);
         }
     }
 
