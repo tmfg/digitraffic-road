@@ -22,7 +22,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -36,17 +35,13 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KeruunTILA;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
-import fi.livi.digitraffic.tie.service.RoadDistrictService;
 
-@Import({ RoadDistrictService.class })
 public abstract class AbstractTest {
 
     @Autowired
@@ -57,9 +52,6 @@ public abstract class AbstractTest {
 
     @PersistenceContext
     protected EntityManager entityManager;
-
-    @Autowired
-    protected RoadDistrictService roadDistrictService;
 
     protected static final int MIN_LOTJU_ID = 10000;
     protected static final int MAX_LOTJU_ID = 99999;
@@ -115,28 +107,6 @@ public abstract class AbstractTest {
         cp.setCameraLotjuId(cp.getLotjuId());
 
         return cp;
-    }
-
-    protected TmsStation generateDummyTmsStation() {
-        final RoadStation rs = generateDummyRoadStation(RoadStationType.TMS_STATION);
-
-        final TmsStation ts = new TmsStation();
-        ts.setRoadStation(rs);
-        ts.setLotjuId(rs.getLotjuId());
-        ts.setNaturalId(rs.getLotjuId());
-        ts.setRoadDistrict(roadDistrictService.findByNaturalId(1));
-        ts.setCalculatorDeviceType(CalculatorDeviceType.DSL_5);
-        ts.setName("st120_Pähkinärinne");
-        ts.setDirection1Municipality("Vihti");
-        ts.setDirection1MunicipalityCode(927);
-        ts.setDirection2Municipality("Helsinki");
-        ts.setDirection2MunicipalityCode(91);
-        ts.setWinterFreeFlowSpeed1(70);
-        ts.setWinterFreeFlowSpeed2(70);
-        ts.setSummerFreeFlowSpeed1(80);
-        ts.setSummerFreeFlowSpeed2(80);
-
-        return ts;
     }
 
     public static RoadStation generateDummyRoadStation(final RoadStationType roadStationType) {

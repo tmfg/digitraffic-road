@@ -24,8 +24,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.helper.FileGetService;
@@ -47,9 +45,6 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
 
     @Autowired
     private StringToObjectMarshaller stringToObjectMarshaller;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private V2Datex2HelperService v2Datex2HelperService;
