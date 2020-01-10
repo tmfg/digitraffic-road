@@ -10,3 +10,11 @@
 ## How to compile
 
     /protoc.exe --java_out=. lam_realtime.proto
+
+## Linux / Mac
+
+Run
+
+    ./build.sh 
+    
+ It compiles files to `src/main/java/fi/ely/lotju/lam/proto`
