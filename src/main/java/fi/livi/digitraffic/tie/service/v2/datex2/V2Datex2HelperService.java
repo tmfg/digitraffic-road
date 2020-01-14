@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
 @Service
@@ -29,29 +29,30 @@ public class V2Datex2HelperService {
 
     @Autowired
     public V2Datex2HelperService(final ObjectMapper objectMapper) {
-        jsonWriter = objectMapper.writerFor(JsonMessage.class);
-        jsonReader = objectMapper.readerFor(JsonMessage.class);
+        jsonWriter = objectMapper.writerFor(ImsGeoJsonFeature.class);
+        jsonReader = objectMapper.readerFor(ImsGeoJsonFeature.class);
     }
 
     /**
      *
-     * @param json
+     * @param imsJson
      * @return Json object
      */
-    public JsonMessage convertToJsonObject(final String json) {
+    public ImsGeoJsonFeature convertToJsonObject(final String imsJson) {
         try {
-            return jsonReader.readValue(json);
+            return jsonReader.readValue(imsJson);
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonObject error while converting JSON to SimppeliSituationV02Schema jsonValue=\n" + json, e);
+            log.error("method=convertToJsonObject error while converting JSON to SimppeliSituationV02Schema jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
         }
     }
 
-    public String convertToJsonString(final JsonMessage situation) {
+    public String convertToJsonString(final ImsGeoJsonFeature imsJson) {
         try {
-            return jsonWriter.writeValueAsString(situation);
+            return jsonWriter.writeValueAsString(imsJson);
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonString Error while converting jsonSituation-object to string with guid " + situation.getSituationId());
+            log.error("method=convertToJsonString Error while converting jsonSituation-object to string with guid " +
+                      imsJson != null ? imsJson.getProperties().getSituationId() : null);
             throw new RuntimeException(e);
         }
     }

@@ -107,73 +107,83 @@ Sähköposti: helsinki.liikennekeskus@liikennevirasto.fi</value>
                 ]]></d2Message>
         <jMessage><![CDATA[
 {
-    "situationId": "GUID50005166",
-    "version": 1,
-    "releaseTime": "2016-09-12T20:51:00.587+03:00",
-    "locationToDisplay": {
-        "e": 331529.0,
-        "n": 6805963.0
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
     },
-    "announcements": [
-        {
-            "language": "fi",
-            "title": "Tie 25, Raasepori. Ensitiedote liikenneonnettomuudesta.",
-            "location": {
-                "countryCode": 6,
-                "locationTableNumber": 17,
-                "locationTableVersion": "1.11.37",
-                "description": "Tie 25 välillä Tammisaari - Karjaa, Raasepori.\nTarkempi paikka: Paikasta Raasepori 1,9 km, suuntaan Karjaan läntinen sisääntulo."
-            },
-            "locationDetails": {
-                "roadAddressLocation": {
-                    "primaryPoint": {
-                        "municipality": "Tammisaari",
-                        "province": "Uusimaa",
-                        "country": "Suomi",
-                        "roadAddress": {
-                            "road": 130,
-                            "roadSection": 24,
-                            "distance": 3927
+    "properties": {
+        "situationId": "GUID50005166",
+        "version": 1,
+        "releaseTime": "2016-09-12T20:51:00.587+03:00",
+        "locationToDisplay": {
+            "e": 331529.0,
+            "n": 6805963.0
+        },
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Tie 25, Raasepori. Ensitiedote liikenneonnettomuudesta.",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Tie 25 välillä Tammisaari - Karjaa, Raasepori.\nTarkempi paikka: Paikasta Raasepori 1,9 km, suuntaan Karjaan läntinen sisääntulo."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Tammisaari",
+                            "province": "Uusimaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Karjaa",
+                                "distance": 2184
+                            }
                         },
-                        "alertCLocation": {
-                            "locationCode": 37128,
-                            "name": "Karjaa",
-                            "distance": 2184
-                        }
-                    },
-                    "secondaryPoint": {
-                        "municipality": "Tammisaari",
-                        "province": "Uusimaa",
-                        "country": "Suomi",
-                        "roadAddress": {
-                            "road": 130,
-                            "roadSection": 23,
-                            "distance": 5921
+                        "secondaryPoint": {
+                            "municipality": "Tammisaari",
+                            "province": "Uusimaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Karjaan läntinen sisääntulo.",
+                                "distance": 5264
+                            }
                         },
-                        "alertCLocation": {
-                            "locationCode": 37126,
-                            "name": "Karjaan läntinen sisääntulo.",
-                            "distance": 5264
-                        }
-                    },
-                    "direction": "unknown"
-                }
-            },
-            "features": [
-                "Huono ajokeli"
-            ],
-            "comment": "TESTI TESTI TESTI\nML",
-            "timeAndDuration": {
-                "startTime": "2016-09-12T20:51:00.587+03:00"
-            },
-            "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
-            "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+                        "direction": "unknown"
+                    }
+                },
+                "features": [
+                    "Huono ajokeli"
+                ],
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "2016-09-12T20:51:00.587+03:00"
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "fax": "0206373713",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
         }
-    ],
-    "contact": {
-        "phone": "0206373328",
-        "fax": "0206373713",
-        "email": "helsinki.liikennekeskus@liikennevirasto.fi"
     }
 }
 ]]></jMessage>

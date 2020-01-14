@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -69,8 +69,13 @@ public class V2Datex2UpdateService {
         return (int)imsMessages.stream()
             .filter(imsMessage -> isNewOrUpdatedSituation(stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message()), messageType))
             .map(imsMessage -> {
+                ImsGeoJsonFeature json = null;
+                try {
+                    json = v2Datex2HelperService.convertToJsonObject(imsMessage.getMessageContent().getJMessage());
+                } catch (Exception e) {
+                    log.error("convertToJsonObject failed for JSON: " + imsMessage.getMessageContent().getJMessage(), e);
+                }
                 final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
-                final JsonMessage json = v2Datex2HelperService.convertToJsonObject(imsMessage.getMessageContent().getJMessage());
                 return createModelWithJson(d2, json, messageType, null);
             })
             .filter(this::updateDatex2Data)
@@ -96,7 +101,7 @@ public class V2Datex2UpdateService {
      * @param importTime
      * @return
      */
-    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final JsonMessage json,
+    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final ImsGeoJsonFeature json,
                                                  final Datex2MessageType messageType, final ZonedDateTime importTime) {
         V2Datex2HelperService.checkD2HasOnlyOneSituation(d2);
         final SituationPublication sp = V2Datex2HelperService.getSituationPublication(d2);
@@ -112,7 +117,7 @@ public class V2Datex2UpdateService {
 
     public Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
                                     final Situation situation, final ZonedDateTime importTime,
-                                    final JsonMessage jsonSituation, final Datex2MessageType messageType) {
+                                    final ImsGeoJsonFeature imsJson, final Datex2MessageType messageType) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -126,7 +131,7 @@ public class V2Datex2UpdateService {
         d2.setPayloadPublication(newSp);
 
         final String messageValue = stringToObjectMarshaller.convertToString(d2);
-        final String jsonValue = jsonSituation == null ? null : v2Datex2HelperService.convertToJsonString(jsonSituation);
+        final String jsonValue = imsJson == null ? null : v2Datex2HelperService.convertToJsonString(imsJson);
         return new Datex2MessageDto(d2, messageType, messageValue, jsonValue, importTime);
     }
 

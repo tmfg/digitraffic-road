@@ -120,73 +120,83 @@ Sähköposti: tampere.liikennekeskus@liikennevirasto.fi
                 ]]></d2Message>
         <jMessage><![CDATA[
 {
-    "situationId": "GUID50013339",
-    "version": 1,
-    "releaseTime": "2017-08-10T15:49:10.000+03:00",
-    "locationToDisplay": {
-        "e": 331529.0,
-        "n": 6805963.0
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
     },
-    "announcements": [
-        {
-            "language": "fi",
-            "title": "Tie 3, eli Tampereen Läntinen Kehätie, Pirkkala. Liikennetiedote onnettomuudesta.",
-            "location": {
-                "countryCode": 6,
-                "locationTableNumber": 17,
-                "locationTableVersion": "1.11.37",
-                "description": "Tie 3, eli Tampereen Läntinen Kehätie , Pirkkala.\nTarkempi paikka: Välillä Pirkkalan liittymä - Rajaniemen liittymä. Haittaa ajosuunnassa Vaasa."
-            },
-            "locationDetails": {
-                "roadAddressLocation": {
-                    "primaryPoint": {
-                        "municipality": "Pirkkala",
-                        "province": "Pirkanmaa",
-                        "country": "Suomi",
-                        "roadAddress": {
-                            "road": 130,
-                            "roadSection": 24,
-                            "distance": 3927
+    "properties": {
+        "situationId": "GUID50013339",
+        "version": 1,
+        "releaseTime": "2017-08-10T15:49:10.000+03:00",
+        "locationToDisplay": {
+            "e": 331529.0,
+            "n": 6805963.0
+        },
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Tie 3, eli Tampereen Läntinen Kehätie, Pirkkala. Liikennetiedote onnettomuudesta.",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Tie 3, eli Tampereen Läntinen Kehätie , Pirkkala.\nTarkempi paikka: Välillä Pirkkalan liittymä - Rajaniemen liittymä. Haittaa ajosuunnassa Vaasa."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Pirkkala",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Pirkkala",
+                                "distance": 2184
+                            }
                         },
-                        "alertCLocation": {
-                            "locationCode": 37128,
-                            "name": "Pirkkala",
-                            "distance": 2184
-                        }
-                    },
-                    "secondaryPoint": {
-                        "municipality": "Pirkkala",
-                        "province": "Pirkanmaa",
-                        "country": "Suomi",
-                        "roadAddress": {
-                            "road": 130,
-                            "roadSection": 23,
-                            "distance": 5921
+                        "secondaryPoint": {
+                            "municipality": "Pirkkala",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Koiviston itäinen tienhaara.",
+                                "distance": 5264
+                            }
                         },
-                        "alertCLocation": {
-                            "locationCode": 37126,
-                            "name": "Koiviston itäinen tienhaara.",
-                            "distance": 5264
-                        }
-                    },
-                    "direction": "unknown"
-                }
-            },
-            "features": [
-                "Onnettomuus"
-            ],
-            "comment": "",
-            "timeAndDuration": {
-                "startTime": "2017-08-10T15:49:10.000+03:00"
-            },
-            "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
-            "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+                        "direction": "unknown"
+                    }
+                },
+                "features": [
+                    "Onnettomuus"
+                ],
+                "comment": "",
+                "timeAndDuration": {
+                    "startTime": "2017-08-10T15:49:10.000+03:00"
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "fax": "0206373713",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
         }
-    ],
-    "contact": {
-        "phone": "0206373328",
-        "fax": "0206373713",
-        "email": "helsinki.liikennekeskus@liikennevirasto.fi"
     }
 }
 ]]></jMessage>

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -46,7 +46,7 @@ public class V2Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public List<JsonMessage> findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
+    public List<ImsGeoJsonFeature> findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
         final List<Datex2> datex2s = findBySituationIdAndMessageType(situationId, datex2MessageType.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -62,8 +62,8 @@ public class V2Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public List<JsonMessage> findActiveJson(final int inactiveHours,
-                                            final Datex2MessageType datex2MessageType) {
+    public List<ImsGeoJsonFeature> findActiveJson(final int inactiveHours,
+                                                  final Datex2MessageType datex2MessageType) {
         final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToJson(allActive);
     }
@@ -99,13 +99,13 @@ public class V2Datex2DataService {
         return newesModel;
     }
 
-    private List<JsonMessage> convertToJson(final List<Datex2> datex2s) {
+    private List<ImsGeoJsonFeature> convertToJson(final List<Datex2> datex2s) {
 
         // conver Datex2s to Json objects, newest first
         return datex2s.stream()
             .filter(d2 -> d2.getJsonMessage() != null)
             .map(d2 -> v2Datex2HelperService.convertToJsonObject(d2.getJsonMessage()))
-            .sorted(Comparator.comparing((JsonMessage json) -> json.getReleaseTime()).reversed())
+            .sorted(Comparator.comparing((ImsGeoJsonFeature json) -> json.getProperties().getReleaseTime()).reversed())
             .collect(Collectors.toList());
     }
 

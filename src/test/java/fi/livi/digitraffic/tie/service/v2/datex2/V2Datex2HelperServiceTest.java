@@ -24,6 +24,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.AlertCLocation;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Contact;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Location;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.LocationDetails;
@@ -33,6 +34,7 @@ import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.RoadAddressLocation;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.RoadPoint;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 @Import({V2Datex2HelperService.class, JacksonAutoConfiguration.class })
 public class V2Datex2HelperServiceTest extends AbstractServiceTest {
@@ -50,17 +52,16 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
 
     @Test
     public void convertToJsonStringAndToJsonObject() {
-        final JsonMessage jsonMessage = createJsonMessage();
+        final ImsGeoJsonFeature jsonMessage = createJsonMessage();
         final String jsonText = v2Datex2HelperService.convertToJsonString(jsonMessage);
-        final JsonMessage jsonMessageConverted = v2Datex2HelperService.convertToJsonObject(jsonText);
-
+        final ImsGeoJsonFeature jsonMessageConverted = v2Datex2HelperService.convertToJsonObject(jsonText);
+        final String jsonTextConverted = v2Datex2HelperService.convertToJsonString(jsonMessageConverted);
         Assert.assertTrue(jsonText.contains("GUID123456"));
-        Assert.assertEquals(jsonMessage, jsonMessageConverted);
+        Assert.assertEquals(jsonText, jsonTextConverted);
     }
 
     @Test
     public void isUpdatedRecord() {
-
 
         // Millis don't matter
         final SituationRecord millisDiff = new Accident().withSituationRecordVersionTime(TIME_MILLIS_IN_FUTURE);
@@ -132,25 +133,29 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
         return new D2LogicalModel().withPayloadPublication(sp);
     }
 
-    private JsonMessage createJsonMessage() {
-        return new JsonMessage()
+    private ImsGeoJsonFeature createJsonMessage() {
+        final JsonMessage properties = new JsonMessage()
             .withVersion(1)
             .withSituationId("GUID123456")
             .withReleaseTime(DATE_TIME)
             .withAnnouncements(Collections.singletonList(
                 new TrafficAnnouncement()
-                .withLanguage("fi")
-                .withTitle("Title")
-                .withLocation(createLocation())
-                .withLocationDetails(createLocationDetails())
-                .withFeatures(Collections.singletonList("Huono ajokeli"))
-                .withComment("TEST")
-                .withTimeAndDuration(createTimeAndDuration())
-                .withAdditionalInformation("Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/")
-                .withSender("Tieliikennekeskus Helsinki")
+                    .withLanguage("fi")
+                    .withTitle("Title")
+                    .withLocation(createLocation())
+                    .withLocationDetails(createLocationDetails())
+                    .withFeatures(Collections.singletonList("Huono ajokeli"))
+                    .withComment("TEST")
+                    .withTimeAndDuration(createTimeAndDuration())
+                    .withAdditionalInformation("Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/")
+                    .withSender("Tieliikennekeskus Helsinki")
             ))
             .withLocationToDisplay(new LocationToDisplay(1.0, 2.0))
-            .withContact( new Contact("123456789", "987654321", "helsinki@liikennekeskus.fi"));
+            .withContact(new Contact("123456789", "987654321", "helsinki@liikennekeskus.fi"));
+        return new ImsGeoJsonFeature()
+            .withType(ImsGeoJsonFeature.Type.FEATURE)
+            .withProperties(properties)
+            .withGeometry(new Point(23.77474, 61.50221));
     }
 
     private TimeAndDuration createTimeAndDuration() {
