@@ -51,7 +51,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
                                    "road.datasource.hikari.maximum-pool-size=6",
-                                   "logging.level.fi.livi.digitraffic.tie.data.service.CameraImageUpdateService=WARN"})
+                                   "logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService=WARN"})
 public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 

@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionF
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
-@TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.metadata.service.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
+@TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
@@ -68,7 +68,6 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
         final Instant lastUpdate = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA).toInstant();
         final Instant now = Instant.now();
         assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
-        System.out.println("now " + now + " vs " + lastUpdate);
         assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
         assertTrue(now.plusSeconds(2).isAfter(lastUpdate));
 
