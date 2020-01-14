@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
@@ -61,11 +61,11 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         assertCollectionSize(1, situations);
         assertEquals(SITUATION_ID_1, situations.get(0).getId());
 
-        List<ImsGeoJsonFeature> activeJson =
+        TrafficAnnouncementFeatureCollection activeJson =
             v2Datex2DataService.findActiveJson(0, TRAFFIC_INCIDENT);
 
-        assertCollectionSize(1, activeJson);
-        assertEquals(SITUATION_ID_1, activeJson.get(0).getProperties().getSituationId());
+        assertCollectionSize(1, activeJson.getFeatures());
+        assertEquals(SITUATION_ID_1, activeJson.getFeatures().get(0).getProperties().situationId);
     }
 
     private JMSMessageListener createImsJmsMessageListener() {

@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
 public class V2Datex2HelperService {
@@ -26,11 +27,13 @@ public class V2Datex2HelperService {
 
     private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
+    private final ObjectReader featureJsonReader;
 
     @Autowired
     public V2Datex2HelperService(final ObjectMapper objectMapper) {
         jsonWriter = objectMapper.writerFor(ImsGeoJsonFeature.class);
         jsonReader = objectMapper.readerFor(ImsGeoJsonFeature.class);
+        featureJsonReader = objectMapper.readerFor(TrafficAnnouncementFeature.class);
     }
 
     /**
@@ -88,6 +91,15 @@ public class V2Datex2HelperService {
             log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");
             throw new java.lang.IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
                 "there was " + situations);
+        }
+    }
+
+    public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson) {
+        try {
+            return featureJsonReader.readValue(imsJson);
+        } catch (JsonProcessingException e) {
+            log.error("method=convertToJsonObject error while converting JSON to SimppeliSituationV02Schema jsonValue=\n" + imsJson, e);
+            throw new RuntimeException(e);
         }
     }
 }

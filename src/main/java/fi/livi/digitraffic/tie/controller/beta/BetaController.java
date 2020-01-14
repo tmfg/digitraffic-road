@@ -24,9 +24,9 @@ import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
@@ -68,7 +68,7 @@ public class BetaController {
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
-    public List<ImsGeoJsonFeature> datex2Json(
+    public TrafficAnnouncementFeatureCollection datex2Json(
         @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
         @PathVariable
         final Datex2MessageType datex2MessageType,
@@ -98,7 +98,7 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
-    public List<ImsGeoJsonFeature> datex2JsonBySituationId(
+    public TrafficAnnouncementFeatureCollection datex2JsonBySituationId(
         @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
         @PathVariable
         final Datex2MessageType datex2MessageType,

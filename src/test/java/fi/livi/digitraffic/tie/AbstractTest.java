@@ -26,6 +26,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
@@ -42,6 +43,9 @@ import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 
+@TestPropertySource(properties = {
+    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN"
+})
 public abstract class AbstractTest {
 
     @Autowired

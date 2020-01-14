@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,8 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
@@ -46,7 +49,7 @@ public class V2Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public List<ImsGeoJsonFeature> findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
+    public TrafficAnnouncementFeatureCollection findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
         final List<Datex2> datex2s = findBySituationIdAndMessageType(situationId, datex2MessageType.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -62,8 +65,8 @@ public class V2Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public List<ImsGeoJsonFeature> findActiveJson(final int inactiveHours,
-                                                  final Datex2MessageType datex2MessageType) {
+    public TrafficAnnouncementFeatureCollection findActiveJson(final int inactiveHours,
+                                                               final Datex2MessageType datex2MessageType) {
         final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
         return convertToJson(allActive);
     }
@@ -99,14 +102,16 @@ public class V2Datex2DataService {
         return newesModel;
     }
 
-    private List<ImsGeoJsonFeature> convertToJson(final List<Datex2> datex2s) {
+    private TrafficAnnouncementFeatureCollection convertToJson(final List<Datex2> datex2s) {
 
         // conver Datex2s to Json objects, newest first
-        return datex2s.stream()
+        final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .filter(d2 -> d2.getJsonMessage() != null)
-            .map(d2 -> v2Datex2HelperService.convertToJsonObject(d2.getJsonMessage()))
-            .sorted(Comparator.comparing((ImsGeoJsonFeature json) -> json.getProperties().getReleaseTime()).reversed())
+            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage()))
+            .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
             .collect(Collectors.toList());
+        // TODO Times
+        return new TrafficAnnouncementFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now(), features);
     }
 
     static SituationPublication getSituationPublication(final D2LogicalModel model) {
