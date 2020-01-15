@@ -152,7 +152,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     }
 
     private void postRealization(final String fileName, final ResultMatcher expectResult) throws Exception {
-        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH, expectResult);
+        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH + "/123", expectResult);
     }
 
     private void postData(final String fileName, final MediaType mediaType, final String path, final ResultMatcher expectResult) throws Exception {

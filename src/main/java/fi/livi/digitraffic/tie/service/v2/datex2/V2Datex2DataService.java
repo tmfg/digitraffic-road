@@ -55,11 +55,11 @@ public class V2Datex2DataService {
 
     @Transactional(readOnly = true)
     public TrafficAnnouncementFeatureCollection findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
-        final List<Datex2> datex2s = findBySituationIdAndMessageType(situationId, datex2MessageType.name());
+        final List<Datex2> datex2s = findBySituationIdAndMessageTypeWithJson(situationId, datex2MessageType.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        return convertToJson(datex2s, datex2MessageType);
+        return convertToFeatureCollection(datex2s, datex2MessageType);
     }
 
     @Transactional(readOnly = true)
@@ -72,16 +72,24 @@ public class V2Datex2DataService {
     @Transactional(readOnly = true)
     public TrafficAnnouncementFeatureCollection findActiveJson(final int inactiveHours,
                                                                final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
-        return convertToJson(allActive, datex2MessageType);
+        final List<Datex2> allActive = findAllActiveWithJson(datex2MessageType.name(), inactiveHours);
+        return convertToFeatureCollection(allActive, datex2MessageType);
     }
 
     private List<Datex2> findAllActive(final String messageType, final int activeInPastHours) {
         return datex2Repository.findAllActive(messageType, activeInPastHours);
     }
 
+    private List<Datex2> findAllActiveWithJson(final String messageType, final int activeInPastHours) {
+        return datex2Repository.findAllActiveWithJson(messageType, activeInPastHours);
+    }
+
     private List<Datex2> findBySituationIdAndMessageType(final String situationId, final String messageType) {
         return datex2Repository.findBySituationIdAndMessageType(situationId, messageType);
+    }
+
+    private List<Datex2> findBySituationIdAndMessageTypeWithJson(final String situationId, final String messageType) {
+        return datex2Repository.findBySituationIdAndMessageTypeWithJson(situationId, messageType);
     }
 
     private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
@@ -107,12 +115,10 @@ public class V2Datex2DataService {
         return newesModel;
     }
 
-    private TrafficAnnouncementFeatureCollection convertToJson(final List<Datex2> datex2s, final Datex2MessageType messageType) {
-
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, final Datex2MessageType messageType) {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
-            .filter(d2 -> d2.getJsonMessage() != null)
             .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage(), messageType))
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
             .collect(Collectors.toList());
