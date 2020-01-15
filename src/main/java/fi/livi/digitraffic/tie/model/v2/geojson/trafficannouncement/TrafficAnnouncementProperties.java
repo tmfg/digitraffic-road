@@ -8,12 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementProperties")
 @JsonPropertyOrder({
     "situationId",
+    "messageType",
     "version",
     "releaseTime",
     "locationToDisplay",
@@ -23,25 +25,30 @@ import io.swagger.annotations.ApiModelProperty;
 public class TrafficAnnouncementProperties {
 
     @ApiModelProperty(value = "Situation id", required = true)
-    public String situationId;
+    public final String situationId;
 
     @ApiModelProperty(value = "Announcement version", required = true)
-    public Integer version;
+    public final Integer version;
 
     @ApiModelProperty(value = "Annoucement release time", required = true)
-    public ZonedDateTime releaseTime;
+    public final ZonedDateTime releaseTime;
 
     @ApiModelProperty(value = "Location to display in ETRS-TM35FIN coordinate format.")
-    public LocationToDisplay locationToDisplay;
+    public final LocationToDisplay locationToDisplay;
 
     @JsonProperty("announcements")
     @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
-    public List<TrafficAnnouncement> announcements = new ArrayList<TrafficAnnouncement>();
+    public final List<TrafficAnnouncement> announcements;
 
     @ApiModelProperty(value = "Sender's contact information")
-    public Contact contact;
+    public final Contact contact;
 
-    public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime, final LocationToDisplay locationToDisplay, final List<TrafficAnnouncement> announcements, final Contact contact) {
+    @ApiModelProperty(value = "Message type")
+    private Datex2MessageType messageType;
+
+    public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime,
+                                         final LocationToDisplay locationToDisplay, final List<TrafficAnnouncement> announcements,
+                                         final Contact contact) {
         super();
         this.situationId = situationId;
         this.version = version;
@@ -51,7 +58,12 @@ public class TrafficAnnouncementProperties {
         this.contact = contact;
     }
 
-    public TrafficAnnouncementProperties() {
+    public Datex2MessageType getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(final Datex2MessageType messageType) {
+        this.messageType = messageType;
     }
 
     @Override

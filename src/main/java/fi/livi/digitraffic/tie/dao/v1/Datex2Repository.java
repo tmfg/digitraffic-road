@@ -23,6 +23,14 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     Instant findLatestImportTime(@Param("messageType") final String messageType);
 
     @Query(value =
+           "select max(d2.import_date) as updated\n" +
+           "from datex2 d2\n" +
+           "where d2.message_type = :messageType\n" +
+           "  AND d2.json_message is not null",
+           nativeQuery = true)
+    Instant findLatestImportTimeWithJson(@Param("messageType") final String messageType);
+
+    @Query(value =
             "SELECT d.*\n" +
             "FROM datex2 d\n" +
             "WHERE d.id IN (\n" +

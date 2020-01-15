@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
@@ -94,11 +95,13 @@ public class V2Datex2HelperService {
         }
     }
 
-    public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson) {
+    public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson, final Datex2MessageType messageType) {
         try {
-            return featureJsonReader.readValue(imsJson);
+            final TrafficAnnouncementFeature feature = featureJsonReader.readValue(imsJson);
+            feature.getProperties().setMessageType(messageType);
+            return feature;
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonObject error while converting JSON to SimppeliSituationV02Schema jsonValue=\n" + imsJson, e);
+            log.error("method=convertToJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
         }
     }

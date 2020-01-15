@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +16,7 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
@@ -54,7 +56,7 @@ public class V2Datex2DataService {
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        return convertToJson(datex2s);
+        return convertToJson(datex2s, datex2MessageType);
     }
 
     @Transactional(readOnly = true)
@@ -68,7 +70,7 @@ public class V2Datex2DataService {
     public TrafficAnnouncementFeatureCollection findActiveJson(final int inactiveHours,
                                                                final Datex2MessageType datex2MessageType) {
         final List<Datex2> allActive = findAllActive(datex2MessageType.name(), inactiveHours);
-        return convertToJson(allActive);
+        return convertToJson(allActive, datex2MessageType);
     }
 
     private List<Datex2> findAllActive(final String messageType, final int activeInPastHours) {
@@ -102,16 +104,16 @@ public class V2Datex2DataService {
         return newesModel;
     }
 
-    private TrafficAnnouncementFeatureCollection convertToJson(final List<Datex2> datex2s) {
+    private TrafficAnnouncementFeatureCollection convertToJson(final List<Datex2> datex2s, final Datex2MessageType messageType) {
 
+        final Instant lastUpdated = datex2Repository.findLatestImportTimeWithJson(messageType.toString());
         // conver Datex2s to Json objects, newest first
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .filter(d2 -> d2.getJsonMessage() != null)
-            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage()))
+            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage(), messageType))
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
             .collect(Collectors.toList());
-        // TODO Times
-        return new TrafficAnnouncementFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now(), features);
+        return new TrafficAnnouncementFeatureCollection(DateHelper.toZonedDateTimeAtUtc(lastUpdated), DateHelper.getZonedDateTimeNowAtUtc(), features);
     }
 
     static SituationPublication getSituationPublication(final D2LogicalModel model) {

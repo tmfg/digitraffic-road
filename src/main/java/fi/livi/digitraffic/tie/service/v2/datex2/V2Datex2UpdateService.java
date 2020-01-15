@@ -75,8 +75,9 @@ public class V2Datex2UpdateService {
                 } catch (Exception e) {
                     log.error("convertToJsonObject failed for JSON: " + imsMessage.getMessageContent().getJMessage(), e);
                 }
+                log.debug("IMS JSON: \n{}", imsMessage.getMessageContent().getJMessage());
                 final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
-                return createModelWithJson(d2, json, messageType, null);
+                return createModelWithJson(d2, json, messageType, ZonedDateTime.now());
             })
             .filter(this::updateDatex2Data)
             .count();

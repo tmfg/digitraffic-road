@@ -26,7 +26,7 @@ public class TrafficAnnouncementFeature implements Feature<Geometry> {
 
     @ApiModelProperty(value = "Traffic Announcement properties", required = true, position = 4)
     @JsonPropertyOrder(value = "4")
-    private TrafficAnnouncementProperties properties = new TrafficAnnouncementProperties();
+    private TrafficAnnouncementProperties properties;
 
     @Override
     public String getType() {
