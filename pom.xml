@@ -400,12 +400,10 @@
                 <configuration>
                     <excludes>
                         <exclude>fi/livi/digitraffic/tie/RoadApplication.java</exclude>
-                        <exclude>fi/livi/digitraffic/tie/domain/**/*.java</exclude>
-                        <exclude>fi/livi/digitraffic/tie/metadata/quartz/**/*.java</exclude>
+                        <exclude>fi/livi/digitraffic/tie/scheduler/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/model/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/conf/**/*.java</exclude>
                         <exclude>fi/livi/digitraffic/tie/aop/**/*.java</exclude>
-                        <exclude>fi/livi/digitraffic/tie/data/websocket/**/*.java</exclude>
                         <exclude>fi/ely/lotju/**/proto/*.java</exclude>
                         <exclude>**/dto/**/*.java</exclude>
 
