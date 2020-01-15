@@ -6,16 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealizationData;
 
 @Repository
-public interface V2WorkMachineRealizationRepository extends JpaRepository<WorkMachineRealization, Long> {
+public interface V2WorkMachineRealizationDataRepository extends JpaRepository<WorkMachineRealizationData, Long> {
 
     @Query(value =  "SELECT r.*\n" +
-                    "FROM WORK_MACHINE_REALIZATION r\n" +
+                    "FROM WORK_MACHINE_REALIZATION_DATA r\n" +
                     "WHERE r.status = 'UNHANDLED'\n" +
                     "ORDER BY r.id ASC\n" +
                     "LIMIT :maxSize", nativeQuery = true)
-    Stream<WorkMachineRealization> findByUnhandled(int maxSize);
+    Stream<WorkMachineRealizationData> findUnhandled(int maxSize);
 }

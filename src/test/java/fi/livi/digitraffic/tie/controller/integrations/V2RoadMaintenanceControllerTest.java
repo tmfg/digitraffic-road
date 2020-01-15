@@ -139,10 +139,14 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         }
     }
 
-    @Rollback(false)
     @Test
-    public void postRealization() throws Exception {
-        postRealization("toteuma.json", status().isOk());
+    public void postSingleRealization() throws Exception {
+        postRealization("toteumakirjaus-yksi-reittitoteuma.json", status().isOk());
+    }
+
+    @Test
+    public void postMultipleRealization() throws Exception {
+        postRealization("toteumakirjaus-monta-reittitoteumaa.json", status().isOk());
     }
 
     private void postTrackingJson(final String fileName) throws Exception {
@@ -154,7 +158,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     }
 
     private void postRealization(final String fileName, final ResultMatcher expectResult) throws Exception {
-        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH, expectResult);
+        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH + "/123", expectResult);
     }
 
     private void postData(final String fileName, final MediaType mediaType, final String path, final ResultMatcher expectResult) throws Exception {

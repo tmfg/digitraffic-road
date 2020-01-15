@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
-import static fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealization.Status.HANDLED;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealizationData.Status.HANDLED;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,9 +21,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.v2.V2WorkMachineRealizationRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2WorkMachineRealizationDataRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealization;
+import fi.livi.digitraffic.tie.model.v2.maintenance.WorkMachineRealizationData;
 
 @Import({ V2MaintenanceUpdateService.class, JacksonAutoConfiguration.class })
 public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
@@ -31,7 +32,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
     private V2MaintenanceUpdateService v2MaintenanceUpdateService;
 
     @Autowired
-    private V2WorkMachineRealizationRepository v2WorkMachineRealizationRepository;
+    private V2WorkMachineRealizationDataRepository v2WorkMachineRealizationDataRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -39,7 +40,8 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
     @Autowired
     private EntityManager entityManager;
 
-    private String realisationJSon;
+    private String jsonSingleRealisation;
+    private String jsonMultipleRealisations;
     private ObjectReader reader;
     private ObjectWriter writer;
 
@@ -47,43 +49,58 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
     public void init() throws IOException {
         reader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         writer = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
-        v2WorkMachineRealizationRepository.deleteAllInBatch();
+        v2WorkMachineRealizationDataRepository.deleteAllInBatch();
         flushAndClear();
-        realisationJSon = readResourceContent("classpath:harja/controller/toteuma.json");
+        jsonSingleRealisation = readResourceContent("classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma.json");
+        jsonMultipleRealisations = readResourceContent("classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa.json");
     }
 
+    @Rollback(false)
     @Test
-    public void saveNewWorkMachineRealization() throws IOException {
-        saveRealization(realisationJSon);
-        final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(realisationJSon));
+    public void saveNewWorkMachineRealization_single() throws IOException {
+        saveRealization(jsonSingleRealisation);
+        final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonSingleRealisation));
         flushAndClear();
-        final List<WorkMachineRealization> data = v2WorkMachineRealizationRepository.findAll();
+        final List<WorkMachineRealizationData> data = v2WorkMachineRealizationDataRepository.findAll();
+        Assert.assertEquals(1, data.size());
+        Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
+    }
+
+    @Rollback(false)
+    @Test
+    public void saveNewWorkMachineRealization_multiple() throws IOException {
+        saveRealization(jsonMultipleRealisations);
+        final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonMultipleRealisations));
+        flushAndClear();
+        final List<WorkMachineRealizationData> data = v2WorkMachineRealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
     @Test
     public void handleUnhandledWorkMachineRealizations() throws JsonProcessingException {
-        saveRealization(realisationJSon);
+        saveRealization(jsonSingleRealisation);
+        saveRealization(jsonMultipleRealisations);
         final long count = v2MaintenanceUpdateService.handleUnhandledWorkMachineRealizations(100);
-        Assert.assertEquals(1, count);
+        Assert.assertEquals(2, count);
         flushAndClear();
 
-        final List<WorkMachineRealization> data = v2WorkMachineRealizationRepository.findAll();
-        Assert.assertEquals(1, data.size());
-        final WorkMachineRealization realisation = data.get(0);
-        Assert.assertEquals(HANDLED, realisation.getStatus());
+        final List<WorkMachineRealizationData> data = v2WorkMachineRealizationDataRepository.findAll();
+        Assert.assertEquals(2, data.size());
+        final WorkMachineRealizationData realisation = data.get(0);
+        Assert.assertEquals(HANDLED, data.get(0).getStatus());
+        Assert.assertEquals(HANDLED, data.get(1).getStatus());
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsWithError() throws JsonProcessingException {
-        final String invalidJson =  "invalid json: " + realisationJSon;
-        final WorkMachineRealization realization = new WorkMachineRealization(invalidJson);
-        v2WorkMachineRealizationRepository.save(realization);
+    public void handleUnhandledWorkMachineRealizationsWithError() {
+        final String invalidJson =  "invalid json: " + jsonSingleRealisation;
+        final WorkMachineRealizationData realization = new WorkMachineRealizationData(123L, invalidJson);
+        v2WorkMachineRealizationDataRepository.save(realization);
         flushAndClear();
 
         // Double check we have right data in db
-        Assert.assertEquals(1, v2WorkMachineRealizationRepository.findUnhandled(100).count());
+        Assert.assertEquals(1, v2WorkMachineRealizationDataRepository.findUnhandled(100).count());
 
         final long count = v2MaintenanceUpdateService.handleUnhandledWorkMachineRealizations(100);
         Assert.assertEquals(0, count);
@@ -97,7 +114,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
 
     private void saveRealization(String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
-        v2MaintenanceUpdateService.saveNewWorkMachineRealization(realization);
+        v2MaintenanceUpdateService.saveNewWorkMachineRealization(123L, realization);
     }
 
 

@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,15 +68,17 @@ public class V2RoadMaintenanceController {
     }
 
     @ApiOperation("Posting of work machine tracking realization information for a work machine from HARJA")
-    @RequestMapping(method = RequestMethod.POST, path = REALIZATIONS_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = REALIZATIONS_PATH + "/{jobId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful post of work machine tracking realization information for a work machine from HARJA"))
-    public ResponseEntity<Void> postWorkMachineRealization(@RequestBody ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus)
+    public ResponseEntity<Void> postWorkMachineRealization(
+        @PathVariable("jobId") final Long jobId,
+        @RequestBody ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus)
         throws JsonProcessingException {
 
-        log.info("method=postWorkMachineRealization JSON=\n{}",
+        log.info("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
 
-        v2MaintenanceDataService.saveNewWorkMachineRealization(reittitoteumanKirjaus);
+        v2MaintenanceDataService.saveNewWorkMachineRealization(jobId, reittitoteumanKirjaus);
 
         return ResponseEntity.ok().build();
     }
