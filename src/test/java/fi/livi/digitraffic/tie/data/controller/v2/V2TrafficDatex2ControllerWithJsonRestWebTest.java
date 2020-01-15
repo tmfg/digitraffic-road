@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,8 +62,6 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         updateFromImsMessage(incident3, TRAFFIC_INCIDENT);
     }
 
-
-    @Rollback(false)
     @Test
     public void datex2incident() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 0));
