@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.service;
 import java.time.Instant;
 import java.util.Set;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public enum EntityType {
@@ -42,5 +44,10 @@ public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public EntityType getEntityType() {
         return entityType;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
     }
 }

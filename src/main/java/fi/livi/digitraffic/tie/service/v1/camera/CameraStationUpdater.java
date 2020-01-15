@@ -67,7 +67,7 @@ public class CameraStationUpdater {
             final long time = stopWatch.getTime();
             stopWatch.reset();
             lockingService.unlock(lockName);
-            log.info("method=unlock lockedTimeMs={}", time);
+            log.debug("method=unlock lockedTimeMs={}", time);
         }
     }
 
@@ -107,9 +107,12 @@ public class CameraStationUpdater {
     private Pair<Integer, Integer> updateCameraStationAndPresets(final long kameraLotjuId) {
         lock.lock();
         try {
-            log.debug("method=updateCameraStationAndPresets got the lock kameraLotjuId={}", kameraLotjuId);
+            log.debug("method=updateCameraStationAndPresets got the lock");
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
-            if (!validate(kamera)) {
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", kameraLotjuId);
+                return Pair.of(0,0);
+            } else if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
             final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kameraLotjuId);
@@ -123,7 +126,7 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraStation(final long cameraLotjuId) {
 
-        log.info("method=updateCameraStation start cameraLotjuId={}", cameraLotjuId);
+        log.info("method=updateCameraStation start lotjuId={}", cameraLotjuId);
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, cameraLotjuId) == null) {
             final Pair<Integer, Integer> updated = updateCameraStationAndPresets(cameraLotjuId);
@@ -133,9 +136,12 @@ public class CameraStationUpdater {
         // Otherwise we update only the station
         lock.lock();
         try {
-            log.debug("method=updateCameraStation got the lock cameraLotjuId={}", cameraLotjuId);
+            log.debug("method=updateCameraStation got the lock lotjuId={}", cameraLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
-            if (!validate(kamera)) {
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", cameraLotjuId);
+                return false;
+            } else if (!validate(kamera)) {
                 return false;
             }
             return cameraStationUpdateService.updateCamera(kamera);
@@ -147,8 +153,13 @@ public class CameraStationUpdater {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     public boolean updateCameraPreset(final long presetLotjuId) {
-        log.info("method=updateCameraPreset start presetLotjuId={}", presetLotjuId);
+        log.info("method=updateCameraPreset start lotjuId={}", presetLotjuId);
         final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
+
+        if (esiasento == null) {
+            log.error("No CameraPreset with lotjuId={} found", presetLotjuId);
+            return false;
+        }
 
         // If camera preset doesn't exist, we have to create it -> just update the whole station
         if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
@@ -159,7 +170,7 @@ public class CameraStationUpdater {
         // Otherwise update only the given preset
         lock.lock();
         try {
-            log.debug("method=updateCameraPreset got the lock presetLotjuId={}", presetLotjuId);
+            log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
             if (validate(kamera)) {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
@@ -173,9 +184,6 @@ public class CameraStationUpdater {
     }
 
     private boolean validate(final KameraVO kamera) {
-        if (kamera == null) {
-            return false;
-        }
         final boolean valid = kamera.getVanhaId() != null;
         if (!valid && !isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())) {
             log.error("{} is invalid: has null vanhaId", ToStringHelper.toString(kamera));

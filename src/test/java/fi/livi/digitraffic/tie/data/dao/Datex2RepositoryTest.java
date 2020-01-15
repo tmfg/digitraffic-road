@@ -82,22 +82,6 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
             .findFirst().isPresent());
     }
 
-    @Test
-    public void suspendedInPast2Hours() {
-        final String suspendedSituationId = "GUID12345678";
-        Datex2 d2 = createDatex2InPast2h(suspendedSituationId, TRAFFIC_INCIDENT);
-        d2.getSituations().get(0).getSituationRecords().get(0).setValidyStatus(Datex2SituationRecordValidyStatus.SUSPENDED);
-        entityManager.flush();
-        entityManager.clear();
-        assertCollectionSize(0, datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 2));
-
-        final List<Datex2> result = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 3);
-        assertCollectionSize(1, result);
-        final Datex2Situation situation = result.get(0).getSituations().get(0);
-        Assert.assertEquals(suspendedSituationId, situation.getSituationId());
-        situation.getSituationRecords().get(0).getValidyStatus().equals(Datex2SituationRecordValidyStatus.SUSPENDED);
-    }
-
     private Datex2 createDatex2InPast2h(final String situationId, final Datex2MessageType type) {
         final Datex2 datex2 = new Datex2();
         datex2.setImportTime(ZonedDateTime.now());

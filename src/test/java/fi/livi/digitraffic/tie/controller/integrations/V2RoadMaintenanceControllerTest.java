@@ -1,8 +1,9 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller.integrations;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_MAINTENANCE_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.v1.MaintenanceController.WORK_MACHINE_TRACKING_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_INTEGRATIONS_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_WORK_MACHINE_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.REALIZATIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.TRACKINGS_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -10,33 +11,50 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationRepository;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
 import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
 import fi.livi.digitraffic.tie.model.v1.maintenance.harja.WorkMachineTracking;
 import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 import fi.livi.digitraffic.tie.service.v1.WorkMachineObservationService;
-import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class MaintenanceControllerTest extends AbstractRestWebTest {
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceControllerTest.class);
+public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
+    private static final Logger log = LoggerFactory.getLogger(V2RoadMaintenanceControllerTest.class);
 
     @Autowired
     private MaintenanceDataService maintenanceDataService;
 
     @Autowired
     private WorkMachineObservationService workMachineObservationService;
+
+    @Autowired
+    private WorkMachineObservationRepository workMachineObservationRepository;
+
+    @Before
+    public void cleanDb() {
+        workMachineObservationRepository.deleteAll();
+        if (TestTransaction.isActive()) {
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+        }
+        TestTransaction.start();
+    }
+
 
     @Test
     public void postWorkMachineTrackingDataOk() throws Exception {
@@ -76,6 +94,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;
         final long harjaTyokoneId = 1111111111;
+
         postTrackingJson("linestring_tracking_1.json");
         postTrackingJson("linestring_tracking_2.json");
         postTrackingJson("linestring_tracking_3.json");
@@ -97,7 +116,7 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals("First observation should have coordinates from 2 first messages = 10",
             10, first.getCoordinates().size());
 
-        Assert.assertEquals("First observation should have coordinates from 2 first messages = 10",
+        Assert.assertEquals("Second observation should have coordinates from 3 message = 5",
             5, second.getCoordinates().size());
 
         int counter = 0;
@@ -119,14 +138,28 @@ public class MaintenanceControllerTest extends AbstractRestWebTest {
         }
     }
 
+    @Test
+    public void postRealization() throws Exception {
+        postRealization("toteuma.json", status().isOk());
+    }
+
     private void postTrackingJson(final String fileName) throws Exception {
         postTracking(fileName, MediaType.APPLICATION_JSON, status().isOk());
     }
 
     private void postTracking(final String fileName, final MediaType mediaType, final ResultMatcher expectResult) throws Exception {
+        postData(fileName, mediaType, TRACKINGS_PATH, expectResult);
+    }
+
+    private void postRealization(final String fileName, final ResultMatcher expectResult) throws Exception {
+        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH, expectResult);
+    }
+
+    private void postData(final String fileName, final MediaType mediaType, final String path, final ResultMatcher expectResult) throws Exception {
         final String jsonContent = readResourceContent("classpath:harja/controller/" + fileName);
 
-        final MockHttpServletRequestBuilder post = post(API_V1_BASE_PATH + API_MAINTENANCE_PART_PATH + WORK_MACHINE_TRACKING_PATH)
+        log.info("POST: {}", API_INTEGRATIONS_BASE_PATH + API_WORK_MACHINE_PART_PATH + "/v2" + path);
+        final MockHttpServletRequestBuilder post = post(API_INTEGRATIONS_BASE_PATH + API_WORK_MACHINE_PART_PATH + "/v2" + path)
             .content(jsonContent);
         if (mediaType != null) {
             post.contentType(mediaType);

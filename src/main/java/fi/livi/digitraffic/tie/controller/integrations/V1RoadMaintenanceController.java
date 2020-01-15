@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.controller.v1;
+package fi.livi.digitraffic.tie.controller.integrations;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_MAINTENANCE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
@@ -25,24 +25,23 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "maintenance", description = "Maintenance controller")
+@Api(tags = "maintenance")
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_MAINTENANCE_PART_PATH)
 @ConditionalOnWebApplication
-public class MaintenanceController {
+public class V1RoadMaintenanceController {
 
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceController.class);
+    private static final Logger log = LoggerFactory.getLogger(V1RoadMaintenanceController.class);
 
-    public static final String
-        WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
+    public static final String WORK_MACHINE_TRACKING_PATH = "/tracking/work_machine";
 
     final private MaintenanceDataService maintenanceDataService;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MaintenanceController(final MaintenanceDataService maintenanceDataService,
-                                 final ObjectMapper objectMapper) {
+    public V1RoadMaintenanceController(final MaintenanceDataService maintenanceDataService,
+                                       final ObjectMapper objectMapper) {
         this.maintenanceDataService = maintenanceDataService;
         this.objectMapper = objectMapper;
     }

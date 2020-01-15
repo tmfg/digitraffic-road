@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -57,6 +58,8 @@ public class Datex2SimpleMessageUpdater {
         this.v2Datex2HelperService = v2Datex2HelperService;
     }
 
+    // Log only on warn and error level as normal execution time is 3-4 s.
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000)
     @Transactional
     public int updateDatex2TrafficAlertMessages() {
         final Instant latest = datex2Repository.findLatestImportTime(Datex2MessageType.TRAFFIC_INCIDENT.name());

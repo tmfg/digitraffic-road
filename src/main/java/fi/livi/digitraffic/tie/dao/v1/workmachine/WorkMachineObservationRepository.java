@@ -20,4 +20,9 @@ public interface WorkMachineObservationRepository extends JpaRepository<WorkMach
                "values (:observationId, :orderNumber, :task)",
            nativeQuery = true)
     void addCoordinateTaskToLastCoordinate(final long observationId, final int orderNumber, final String task);
+
+    @Modifying
+    @Query(value = "delete from work_machine_observation",
+           nativeQuery = true)
+    void deleteAll();
 }
