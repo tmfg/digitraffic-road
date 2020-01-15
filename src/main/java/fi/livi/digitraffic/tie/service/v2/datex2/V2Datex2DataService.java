@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -15,12 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
@@ -31,14 +31,17 @@ public class V2Datex2DataService {
     private final Datex2Repository datex2Repository;
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
     private final V2Datex2HelperService v2Datex2HelperService;
+    private DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
                                final StringToObjectMarshaller stringToObjectMarshaller,
-                               final V2Datex2HelperService v2Datex2HelperService) {
+                               final V2Datex2HelperService v2Datex2HelperService,
+                               final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
         this.v2Datex2HelperService = v2Datex2HelperService;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional(readOnly = true)
@@ -106,8 +109,8 @@ public class V2Datex2DataService {
 
     private TrafficAnnouncementFeatureCollection convertToJson(final List<Datex2> datex2s, final Datex2MessageType messageType) {
 
-        final Instant lastUpdated = datex2Repository.findLatestImportTimeWithJson(messageType.toString());
-        // conver Datex2s to Json objects, newest first
+        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
+        // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .filter(d2 -> d2.getJsonMessage() != null)
             .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage(), messageType))

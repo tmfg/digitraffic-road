@@ -32,6 +32,7 @@ import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
@@ -39,6 +40,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
@@ -49,14 +51,17 @@ public class V2Datex2UpdateService {
     private final Datex2Repository datex2Repository;
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
     private final V2Datex2HelperService v2Datex2HelperService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
                                  final StringToObjectMarshaller stringToObjectMarshaller,
-                                 final V2Datex2HelperService v2Datex2HelperService) {
+                                 final V2Datex2HelperService v2Datex2HelperService,
+                                 final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
         this.v2Datex2HelperService = v2Datex2HelperService;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -165,6 +170,9 @@ public class V2Datex2UpdateService {
             log.info("setImportTime {} {}", datex2.getImportTime(), V2Datex2HelperService.getSituationPublication(d2).getSituations().get(0).getId());
             parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
+            if (message.jsonMessage != null) {
+                dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType));
+            }
             return true;
         }
         return false;

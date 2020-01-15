@@ -101,21 +101,21 @@ public class CameraStationUpdater {
     }
 
     /**
-     * @param kameraLotjuId to update
+     * @param cameraLotjuId to update
      * @return Pair of updated and inserted count of presets
      */
-    private Pair<Integer, Integer> updateCameraStationAndPresets(final long kameraLotjuId) {
+    private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId) {
         lock.lock();
         try {
             log.debug("method=updateCameraStationAndPresets got the lock");
-            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
+            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
             if (kamera == null) {
-                log.error("No Camera with lotjuId={} found", kameraLotjuId);
+                log.error("No Camera with lotjuId={} found", cameraLotjuId);
                 return Pair.of(0,0);
             } else if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
-            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kameraLotjuId);
+            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(cameraLotjuId);
             return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
 
         } finally {
