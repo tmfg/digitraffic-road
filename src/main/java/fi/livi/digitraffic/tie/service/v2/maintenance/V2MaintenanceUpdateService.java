@@ -95,10 +95,8 @@ public class V2MaintenanceUpdateService {
             final Integer sopimusId = reittitoteuma.getToteuma().getSopimusId();
             // This is not implemented by contractors
 //            final String workMachineId = reittitoteuma.getTyokone().getTunniste();
+//            final TyokoneSchema.Tyyppi workMachineType = reittitoteuma.getTyokone().getTyyppi();
 
-//            WorkMachineRealization
-
-            final TyokoneSchema.Tyyppi workMachineType = reittitoteuma.getTyokone().getTyyppi();
             // Reitti
             final List<ReittiSchema> reitti = reittitoteuma.getReitti();
             reitti.stream().forEach(r -> {
@@ -113,12 +111,6 @@ public class V2MaintenanceUpdateService {
                 });
             });
         });
-
-
-
-
-
-
 
         wmr.updateStatusToHandled();
         return 1;
