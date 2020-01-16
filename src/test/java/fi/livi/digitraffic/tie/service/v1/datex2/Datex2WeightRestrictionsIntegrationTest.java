@@ -11,7 +11,6 @@ import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
-@Ignore
 public class Datex2WeightRestrictionsIntegrationTest extends AbstractDaemonTestWithoutS3 {
     @Autowired
     private Datex2SimpleMessageUpdater messageUpdater;
@@ -24,6 +23,7 @@ public class Datex2WeightRestrictionsIntegrationTest extends AbstractDaemonTestW
 
     @Test
     @Rollback(false)
+    @Ignore("For manual integration testing")
     public void updateMessagesWithRealData() {
         //assertEmpty(datex2Repository.findAllActive(Datex2MessageType.ROADWORK.name()));
 

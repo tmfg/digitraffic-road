@@ -44,7 +44,6 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Test
-    @Rollback(false)
     public void datex2ReceiveMessages() throws IOException {
         datex2Repository.deleteAll();
 

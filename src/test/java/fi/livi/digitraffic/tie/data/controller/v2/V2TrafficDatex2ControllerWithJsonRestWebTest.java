@@ -63,7 +63,6 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         updateFromImsMessage(incident3, TRAFFIC_INCIDENT);
     }
 
-    @Rollback(false)
     @Test
     public void datex2incident() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 0));
