@@ -93,7 +93,8 @@ public class V2MaintenanceUpdateService {
             final ZonedDateTime started = reittitoteuma.getToteuma().getAlkanut();
             final ZonedDateTime ended = reittitoteuma.getToteuma().getPaattynyt();
             final Integer sopimusId = reittitoteuma.getToteuma().getSopimusId();
-            final String workMachineId = reittitoteuma.getTyokone().getTunniste();
+            // This is not implemented by contractors
+//            final String workMachineId = reittitoteuma.getTyokone().getTunniste();
 
 //            WorkMachineRealization
 
