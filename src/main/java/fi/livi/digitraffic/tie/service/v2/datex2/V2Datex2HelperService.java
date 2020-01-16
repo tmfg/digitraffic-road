@@ -46,7 +46,7 @@ public class V2Datex2HelperService {
         try {
             return jsonReader.readValue(imsJson);
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonObject error while converting JSON to SimppeliSituationV02Schema jsonValue=\n" + imsJson, e);
+            log.error("method=convertToJsonObject error while converting JSON to ImsGeoJsonFeature jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
         }
     }
@@ -55,8 +55,8 @@ public class V2Datex2HelperService {
         try {
             return jsonWriter.writeValueAsString(imsJson);
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonString Error while converting jsonSituation-object to string with guid " +
-                      imsJson != null ? imsJson.getProperties().getSituationId() : null);
+            log.error("method=convertToJsonString Error while converting ImsGeoJsonFeature-object to string with guid " +
+                      imsJson != null && imsJson.getProperties() != null ? imsJson.getProperties().getSituationId() : null);
             throw new RuntimeException(e);
         }
     }

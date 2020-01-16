@@ -73,19 +73,24 @@ public class V2Datex2UpdateService {
     public int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
         return (int)imsMessages.stream()
             .filter(imsMessage -> isNewOrUpdatedSituation(stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message()), messageType))
-            .map(imsMessage -> {
-                ImsGeoJsonFeature json = null;
-                try {
-                    json = v2Datex2HelperService.convertToJsonObject(imsMessage.getMessageContent().getJMessage());
-                } catch (Exception e) {
-                    log.error("convertToJsonObject failed for JSON: " + imsMessage.getMessageContent().getJMessage(), e);
-                }
-                log.debug("IMS JSON: \n{}", imsMessage.getMessageContent().getJMessage());
-                final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
-                return createModelWithJson(d2, json, messageType, ZonedDateTime.now());
-            })
+            .map(imsMessage -> convertToDatex2MessageDto(imsMessage, messageType))
             .filter(this::updateDatex2Data)
             .count();
+    }
+
+    private Datex2MessageDto convertToDatex2MessageDto(final ImsMessage imsMessage, final Datex2MessageType messageType) {
+        final ImsGeoJsonFeature json = convertToJsonObjectWithNullIfFailed(imsMessage.getMessageContent().getJMessage());
+        log.debug("IMS JSON: \n{}", imsMessage.getMessageContent().getJMessage());
+        final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+        return createModelWithJson(d2, json, messageType, ZonedDateTime.now());
+    }
+
+    private ImsGeoJsonFeature convertToJsonObjectWithNullIfFailed(final String jsonMessage) {
+        try {
+            return v2Datex2HelperService.convertToJsonObject(jsonMessage);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final Datex2MessageType messageType) {
