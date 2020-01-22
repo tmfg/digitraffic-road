@@ -1,23 +1,29 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
 import java.time.ZonedDateTime;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 @Entity
 @DynamicUpdate
-@Table(name = "WORK_MACHINE_REALIZATION_DATA")
-public class WorkMachineRealizationData {
+@Table(name = "V2_REALIZATION_DATA")
+public class V2RealizationData {
 
     public enum Status {
         UNHANDLED,
@@ -26,9 +32,9 @@ public class WorkMachineRealizationData {
     }
 
     @Id
-    @GenericGenerator(name = "SEQ_WORK_MACHINE_REALIZATION_DATA", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_WORK_MACHINE_REALIZATION_DATA"))
-    @GeneratedValue(generator = "SEQ_WORK_MACHINE_REALIZATION_DATA")
+    @GenericGenerator(name = "SEQ_V2_REALIZATION_DATA", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_V2_REALIZATION_DATA"))
+    @GeneratedValue(generator = "SEQ_V2_REALIZATION_DATA")
     private Long id;
 
     @Column
@@ -47,16 +53,24 @@ public class WorkMachineRealizationData {
     @Column(insertable = false, updatable = false) // auto updated
     private ZonedDateTime modified;
 
-    public WorkMachineRealizationData() {
+    @OneToMany(mappedBy = "realizationData", fetch = FetchType.LAZY)
+    private Set<V2Realization> realizationData;
+
+    public V2RealizationData() {
+        // For Hibernate
     }
 
-    public WorkMachineRealizationData(final Long jobId, final String json) {
+    public V2RealizationData(final Long jobId, final String json) {
         this.jobId = jobId;
         this.json = json;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Long getJobId() {
+        return jobId;
     }
 
     public String getJson() {
@@ -79,5 +93,10 @@ public class WorkMachineRealizationData {
             throw new IllegalStateException(String.format("%s status is already %s cannot be changed to %s", getClass().getSimpleName(), status, Status.ERROR));
         }
         status = Status.ERROR;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
     }
 }
