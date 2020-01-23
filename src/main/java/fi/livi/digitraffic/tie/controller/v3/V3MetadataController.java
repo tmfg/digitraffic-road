@@ -253,16 +253,6 @@ public class V3MetadataController {
         return locationService.findLocationVersions();
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation("The static information of weather forecast sections")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections") })
-    public ForecastSectionsMetadata forecastSections(
-        @ApiParam("If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated) {
-        return forecastSectionService.findForecastSectionsV1Metadata(lastUpdated);
-    }
-
     @ApiOperation("The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
         MEDIA_TYPE_APPLICATION_GEO_JSON,
