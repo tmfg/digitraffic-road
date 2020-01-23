@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.2.RELEASE</version>
+        <version>2.2.3.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -216,7 +216,7 @@
             <!-- From jcenter-snapshots repository -->
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>3.0.0-20190527.223435-24</version>
+            <version>3.0.0-20200106.122158-51</version>
         </dependency>
 
         <!-- https://github.com/springfox/springfox/issues/2265 -->
