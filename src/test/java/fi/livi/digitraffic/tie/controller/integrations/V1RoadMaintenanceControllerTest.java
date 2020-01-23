@@ -89,6 +89,7 @@ public class V1RoadMaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(recordsBefore, recordsAfter);
     }
 
+    // TODO: could this be divided to multiple smaller tests?
     @Test
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;

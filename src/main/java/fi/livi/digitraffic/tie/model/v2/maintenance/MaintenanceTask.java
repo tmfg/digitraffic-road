@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,12 +13,12 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @Immutable
-@Table(name = "V2_REALIZATION_TASK")
-public class V2RealizationTask {
+@Table(name = "MAINTENANCE_TASK")
+public class MaintenanceTask {
 
     @Id
-    @Column(name = "harja_id")
-    private Long harjaId;
+    @Column
+    private Long id;
 
     @Column
     private String task;
@@ -27,12 +29,12 @@ public class V2RealizationTask {
     @Column
     private String operationSpecifier;
 
-    public V2RealizationTask() {
+    public MaintenanceTask() {
         // For Hibernate
     }
 
-    public Long getHarjaId() {
-        return harjaId;
+    public Long getId() {
+        return id;
     }
 
     public String getOperation() {
@@ -50,5 +52,25 @@ public class V2RealizationTask {
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MaintenanceTask that = (MaintenanceTask) o;
+        return id.equals(that.id) &&
+            task.equals(that.task) &&
+            operation.equals(that.operation) &&
+            operationSpecifier.equals(that.operationSpecifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

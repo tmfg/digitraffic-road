@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,24 +13,29 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.locationtech.jts.geom.LineString;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
-@Table(name = "V2_REALIZATION")
-public class V2Realization {
+@Table(name = "MAINTENANCE_REALIZATION")
+public class MaintenanceRealization {
 
     @Id
-    @GenericGenerator(name = "SEQ_V2_REALIZATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_V2_REALIZATION"))
-    @GeneratedValue(generator = "SEQ_V2_REALIZATION")
+    @GenericGenerator(name = "SEQ_MAINTENANCE_REALIZATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_REALIZATION"))
+    @GeneratedValue(generator = "SEQ_MAINTENANCE_REALIZATION")
     private Long id;
 
     @Column
@@ -37,32 +45,49 @@ public class V2Realization {
     private String sendingSystem;
 
     @Column
-    private Integer messageId;
+    private ZonedDateTime sendingTime;
 
     @Column
-    private ZonedDateTime sendingTime;
+    private Integer messageId;
+
+    @NotNull
+    @Column
+    private LineString lineString;
 
     @Column(insertable = false, updatable = false) // auto generated
     private ZonedDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REALIZATION_DATA_ID", referencedColumnName = "ID", nullable = false, updatable = false)
-    private V2RealizationData realizationData;
+    private MaintenanceRealizationData realizationData;
 
+    @Fetch(FetchMode.JOIN)
     @OneToMany(mappedBy = "realization", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn(name = "ORDER_NUMBER", nullable = false, updatable = false)
-    private List<V2RealizationPoint> realizationPoints;
+    private List<MaintenanceRealizationPoint> realizationPoints;
 
-    public V2Realization() {
+    @Fetch(FetchMode.JOIN)
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name="MAINTENANCE_REALIZATION_TASK",
+        joinColumns = @JoinColumn(name="realization_id"),
+        inverseJoinColumns = @JoinColumn(name="task_id")
+    )
+    private Set<MaintenanceTask> tasks = new HashSet<>();
+
+
+    public MaintenanceRealization() {
         // For Hibernate
     }
 
-    public V2Realization(final V2RealizationData wmrd, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
+    public MaintenanceRealization(final MaintenanceRealizationData wmrd, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime, LineString lineString, Set<MaintenanceTask> tasks) {
         this.realizationData = wmrd;
         this.sendingSystem = sendingSystem;
         this.messageId = messageId;
         this.sendingTime = sendingTime;
         this.jobId = wmrd.getJobId();
+        this.lineString = lineString;
+        this.tasks.addAll(tasks);
     }
 
     public Long getId() {

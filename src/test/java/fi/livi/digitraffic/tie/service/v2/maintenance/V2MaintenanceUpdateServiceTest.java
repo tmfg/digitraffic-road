@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
-import static fi.livi.digitraffic.tie.model.v2.maintenance.V2RealizationData.Status.HANDLED;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.HANDLED;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +24,8 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2RealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2RealizationRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.model.v2.maintenance.V2RealizationData;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 
 @Import({ V2MaintenanceUpdateService.class, JacksonAutoConfiguration.class })
 public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
@@ -66,7 +68,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         saveRealization(jsonSingleRealisation);
         final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonSingleRealisation));
         flushAndClear();
-        final List<V2RealizationData> data = v2RealizationDataRepository.findAll();
+        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
@@ -77,7 +79,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         saveRealization(jsonMultipleRealisations);
         final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonMultipleRealisations));
         flushAndClear();
-        final List<V2RealizationData> data = v2RealizationDataRepository.findAll();
+        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
@@ -91,17 +93,20 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         Assert.assertEquals(2, count);
         flushAndClear();
 
-        final List<V2RealizationData> data = v2RealizationDataRepository.findAll();
+        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(2, data.size());
-        final V2RealizationData realisation = data.get(0);
+        final MaintenanceRealizationData realisation = data.get(0);
         Assert.assertEquals(HANDLED, data.get(0).getStatus());
         Assert.assertEquals(HANDLED, data.get(1).getStatus());
+
+        final List<MaintenanceRealization> all = v2RealizationRepository.findAll();
+        Assert.assertEquals(4, all.size());
     }
 
     @Test
     public void handleUnhandledWorkMachineRealizationsWithError() {
         final String invalidJson =  "invalid json: " + jsonSingleRealisation;
-        final V2RealizationData realization = new V2RealizationData(123L, invalidJson);
+        final MaintenanceRealizationData realization = new MaintenanceRealizationData(123L, invalidJson);
         v2RealizationDataRepository.save(realization);
         flushAndClear();
 

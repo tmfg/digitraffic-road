@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.model.v2.maintenance;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,8 +21,8 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @DynamicUpdate
-@Table(name = "V2_REALIZATION_DATA")
-public class V2RealizationData {
+@Table(name = "MAINTENANCE_REALIZATION_DATA")
+public class MaintenanceRealizationData {
 
     public enum Status {
         UNHANDLED,
@@ -32,9 +31,9 @@ public class V2RealizationData {
     }
 
     @Id
-    @GenericGenerator(name = "SEQ_V2_REALIZATION_DATA", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_V2_REALIZATION_DATA"))
-    @GeneratedValue(generator = "SEQ_V2_REALIZATION_DATA")
+    @GenericGenerator(name = "SEQ_MAINTENANCE_REALIZATION_DATA", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_REALIZATION_DATA"))
+    @GeneratedValue(generator = "SEQ_MAINTENANCE_REALIZATION_DATA")
     private Long id;
 
     @Column
@@ -54,13 +53,13 @@ public class V2RealizationData {
     private ZonedDateTime modified;
 
     @OneToMany(mappedBy = "realizationData", fetch = FetchType.LAZY)
-    private Set<V2Realization> realizationData;
+    private Set<MaintenanceRealization> realizationData;
 
-    public V2RealizationData() {
+    public MaintenanceRealizationData() {
         // For Hibernate
     }
 
-    public V2RealizationData(final Long jobId, final String json) {
+    public MaintenanceRealizationData(final Long jobId, final String json) {
         this.jobId = jobId;
         this.json = json;
     }

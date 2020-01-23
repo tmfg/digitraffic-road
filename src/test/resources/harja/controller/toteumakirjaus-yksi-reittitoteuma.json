@@ -34,7 +34,15 @@
               "maara": 7.950009039347904
             }
           }
-        }
+        }, {
+              "tehtava": {
+                  "id": 12911,
+                  "maara": {
+                      "yksikko": "km",
+                      "maara": 7.950009039347904
+                  }
+              }
+          }
       ]
     },
     "reitti": [
@@ -46,14 +54,23 @@
             "y": 6888171.21713604
           },
           "tehtavat": [
-            {
-              "tehtava": {
-                "id": 1368,
-                "maara": {
-                  "yksikko": "tiekm",
-                  "maara": 0.0
+                {
+                    "tehtava": {
+                        "id": 12911,
+                        "maara": {
+                            "yksikko": "km",
+                            "maara": 7.950009039347904
+                        }
+                    }
+                },
+                {
+                    "tehtava": {
+                    "id": 1368,
+                    "maara": {
+                        "yksikko": "tiekm",
+                        "maara": 0.0
+                    }
                 }
-              }
             }
           ]
         }
@@ -73,6 +90,15 @@
                   "yksikko": "tiekm",
                   "maara": 0.008
                 }
+              }
+            },
+            {
+              "tehtava": {
+                  "id": 12911,
+                  "maara": {
+                      "yksikko": "km",
+                      "maara": 7.950009039347904
+                  }
               }
             }
           ]
