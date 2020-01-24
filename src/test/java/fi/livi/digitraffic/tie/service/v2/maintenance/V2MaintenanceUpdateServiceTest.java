@@ -9,13 +9,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -35,7 +31,6 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 
 @Import({ V2MaintenanceUpdateService.class, JacksonAutoConfiguration.class })
 public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceUpdateService.class);
 
     @Autowired
     private V2MaintenanceUpdateService v2MaintenanceUpdateService;
@@ -49,9 +44,6 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private EntityManager entityManager;
-
     private ObjectReader reader;
     private ObjectWriter writer;
     private String jsonSingleRealisations3Tasks;
@@ -63,20 +55,17 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         reader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         writer = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         v2RealizationRepository.deleteAll();
-        flushAndClear();
         v2RealizationDataRepository.deleteAllInBatch();
-        flushAndClear();
+
         jsonSingleRealisations3Tasks = readResourceContent("classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json");
         jsonMultipleRealisations3Tasks = readResourceContent("classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json");
         jsonSingleRealisations3TasksWithTransitAndSinglePoint = readResourceContent("classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json");
     }
 
-//    @Rollback(false)
     @Test
     public void saveNewWorkMachineRealizationSingleRealization() throws IOException {
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
         final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonSingleRealisations3Tasks));
-        flushAndClear();
         final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
@@ -86,7 +75,6 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
     public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
         saveRealizationAsJson(jsonMultipleRealisations3Tasks);
         final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonMultipleRealisations3Tasks));
-//        flushAndClear();
         final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
@@ -179,6 +167,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         checkCoordinateCount(first, 2);
         checkCoordinateCount(second, 3);
     }
+
     @Test
     public void handleUnhandledWorkMachineRealizationsWithError() {
         saveRealizationAsPlainText("&" + jsonSingleRealisations3Tasks);
@@ -201,13 +190,6 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         final Set<Long> actualIds = realization.getTasks().stream().map(t -> t.getId()).collect(Collectors.toSet());
         final Set<Long> expectedIds = Arrays.stream(taskids).boxed().collect(Collectors.toSet());
         Assert.assertEquals(expectedIds, actualIds);
-    }
-
-
-
-    private void flushAndClear() {
-//        entityManager.flush();
-//        entityManager.clear();
     }
 
     private void saveRealizationAsPlainText(final String realizationJson) {
