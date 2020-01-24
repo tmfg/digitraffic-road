@@ -94,6 +94,42 @@ public class MaintenanceRealization {
         return id;
     }
 
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public String getSendingSystem() {
+        return sendingSystem;
+    }
+
+    public ZonedDateTime getSendingTime() {
+        return sendingTime;
+    }
+
+    public Integer getMessageId() {
+        return messageId;
+    }
+
+    public LineString getLineString() {
+        return lineString;
+    }
+
+    public ZonedDateTime getCreated() {
+        return created;
+    }
+
+    public MaintenanceRealizationData getRealizationData() {
+        return realizationData;
+    }
+
+    public List<MaintenanceRealizationPoint> getRealizationPoints() {
+        return realizationPoints;
+    }
+
+    public Set<MaintenanceTask> getTasks() {
+        return tasks;
+    }
+
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);

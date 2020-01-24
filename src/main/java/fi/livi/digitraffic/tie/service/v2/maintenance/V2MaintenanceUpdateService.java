@@ -151,7 +151,7 @@ public class V2MaintenanceUpdateService {
             return;
         }
         if (holder.isValidLineString()) {
-            final LineString lineString = PostgisGeometryHelper.createLineStringZ(holder.getCoordinates());
+            final LineString lineString = PostgisGeometryHelper.createLineStringWithZ(holder.getCoordinates());
             final MaintenanceRealization
                 realization = new MaintenanceRealization(holder.getRealizationData(), holder.getSendingSystem(), holder.getMessageId(), holder.getSendingTime(), lineString, holder.getTasks());
             v2RealizationRepository.save(realization);
@@ -161,8 +161,7 @@ public class V2MaintenanceUpdateService {
                     new MaintenanceRealizationPoint(realization.getId(), order.getAndIncrement(), time);
                 v2RealizationPointRepository.save(realizationPoint);
             });
-        } else if (holder.getRealizationData() != null){
-            // TODO value?
+        } else if (holder.isData()){
             log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
         }
         holder.reset();

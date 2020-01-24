@@ -16,12 +16,6 @@ public class PostgisGeometryHelper {
     public static final int SRID = 4326; // = WGS84 http://www.epsg-registry.org/
     public static final GeometryFactory GF = new GeometryFactory(PRECISION_MODEL, SRID);
 
-    public static Point createPointWithZ(final double x, final double y, final Double z) {
-        // PostGIS PointZ can't have null Z-coordinate
-        final Coordinate coordinate =  new Coordinate(x, y, z != null ? z : 0);
-        return GF.createPoint(coordinate);
-    }
-
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
         // PostGIS PointZ can't have null Z-coordinate
         return new Coordinate(x, y, z != null ? z : 0);
@@ -34,7 +28,7 @@ public class PostgisGeometryHelper {
     }
 
 
-    public static LineString createLineStringZ(final List<Coordinate> lineStringCoordinates) {
+    public static LineString createLineStringWithZ(final List<Coordinate> lineStringCoordinates) {
         if (lineStringCoordinates.size() < 2) {
             throw new IllegalArgumentException("LineString need at least two points, was " + lineStringCoordinates.size());
         }
