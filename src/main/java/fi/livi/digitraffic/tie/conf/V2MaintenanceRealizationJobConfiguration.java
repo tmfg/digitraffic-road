@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceUpdateService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationUpdateService;
 
 @ConditionalOnProperty(name = "maintenance.realization.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
@@ -17,10 +17,10 @@ import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceUpdateService
 public class V2MaintenanceRealizationJobConfiguration {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationJobConfiguration.class);
 
-    private final V2MaintenanceUpdateService maintenanceUpdateService;
+    private final V2MaintenanceRealizationUpdateService maintenanceUpdateService;
 
     @Autowired
-    public V2MaintenanceRealizationJobConfiguration(final V2MaintenanceUpdateService maintenanceUpdateService) {
+    public V2MaintenanceRealizationJobConfiguration(final V2MaintenanceRealizationUpdateService maintenanceUpdateService) {
         this.maintenanceUpdateService = maintenanceUpdateService;
     }
 

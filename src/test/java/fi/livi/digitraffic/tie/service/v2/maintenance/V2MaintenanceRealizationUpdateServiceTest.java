@@ -29,11 +29,11 @@ import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 
-@Import({ V2MaintenanceUpdateService.class, JacksonAutoConfiguration.class })
-public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
+@Import({ V2MaintenanceRealizationUpdateService.class, JacksonAutoConfiguration.class })
+public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTest {
 
     @Autowired
-    private V2MaintenanceUpdateService v2MaintenanceUpdateService;
+    private V2MaintenanceRealizationUpdateService v2MaintenanceRealizationUpdateService;
 
     @Autowired
     private V2RealizationRepository v2RealizationRepository;
@@ -86,7 +86,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         saveRealizationAsPlainText("&" + jsonSingleRealisations3Tasks);
         saveRealizationAsJson(jsonMultipleRealisations3Tasks);
 
-        final long count = v2MaintenanceUpdateService.handleUnhandledRealizations(100);
+        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(2, count);
 
         final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll(Sort.by("id"));
@@ -103,7 +103,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         // 3. Realization: 2 points - Tasks: 12911
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
 
-        final long count = v2MaintenanceUpdateService.handleUnhandledRealizations(100);
+        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
 
         // Check the handled data
@@ -129,7 +129,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
 
         saveRealizationAsJson(jsonMultipleRealisations3Tasks);
 
-        final long count = v2MaintenanceUpdateService.handleUnhandledRealizations(100);
+        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
 
         // Check the handled data
@@ -152,7 +152,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         // 3. Realization: 1points - Tasks: 12911 -> should not be saved
         saveRealizationAsJson(jsonSingleRealisations3TasksWithTransitAndSinglePoint);
 
-        final long count = v2MaintenanceUpdateService.handleUnhandledRealizations(100);
+        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
 
         // Check the handled data
@@ -175,7 +175,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
         // Double check we have right data in db
         Assert.assertEquals(1, v2RealizationDataRepository.findUnhandled(100).count());
 
-        final long count = v2MaintenanceUpdateService.handleUnhandledRealizations(100);
+        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(0, count);
         final List<MaintenanceRealizationData> all = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, all.size());
@@ -199,7 +199,7 @@ public class V2MaintenanceUpdateServiceTest extends AbstractServiceTest {
 
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
-        v2MaintenanceUpdateService.saveNewWorkMachineRealization(123L, realization);
+        v2MaintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
     }
 
 
