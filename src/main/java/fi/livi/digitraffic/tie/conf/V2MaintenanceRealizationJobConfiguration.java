@@ -36,8 +36,8 @@ public class V2MaintenanceRealizationJobConfiguration {
         do {
             count = maintenanceUpdateService.handleUnhandledRealizations(100);
             totalCount += count;
-            log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
+            log.info("method=handleUnhandledMaintenanceRealizations handledCount={} trackings", count);
         } while (count > 0);
-        log.info("method=handleUnhandledWorkMachineTrackings handledTotalCount={} trackings tookMs={}", totalCount, start.getTime());
+        log.info("method=handleUnhandledMaintenanceRealizations handledTotalCount={} trackings tookMs={}", totalCount, start.getTime());
     }
 }
