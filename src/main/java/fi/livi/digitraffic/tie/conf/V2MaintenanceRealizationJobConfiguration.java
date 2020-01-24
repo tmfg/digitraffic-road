@@ -9,34 +9,32 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceUpdateService;
 
-import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
-
-@ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "maintenance.realization.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
-public class MaintenanceDataJobConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceDataJobConfiguration.class);
+public class V2MaintenanceRealizationJobConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationJobConfiguration.class);
 
-    private final MaintenanceDataService maintenanceDataService;
+    private final V2MaintenanceUpdateService maintenanceUpdateService;
 
     @Autowired
-    public MaintenanceDataJobConfiguration(final MaintenanceDataService maintenanceDataService) {
-        this.maintenanceDataService = maintenanceDataService;
+    public V2MaintenanceRealizationJobConfiguration(final V2MaintenanceUpdateService maintenanceUpdateService) {
+        this.maintenanceUpdateService = maintenanceUpdateService;
     }
 
     /**
-     * This job extracts all unhandled maintenance trackings
+     * This job extracts all unhandled maintenance realizations
      * from source JSON-format to db relations.
      */
-    @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
-    public void handleUnhandledMaintenanceTrackings() throws JsonProcessingException {
+    @Scheduled(fixedDelayString = "${maintenance.realization.job.intervalMs}")
+    public void handleUnhandledMaintenanceRealizations() {
         final StopWatch start = StopWatch.createStarted();
-        int count = 0;
-        int totalCount = 0;
+        long count = 0;
+        long totalCount = 0;
         do {
-            count = maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
+            count = maintenanceUpdateService.handleUnhandledRealizations(100);
             totalCount += count;
             log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
         } while (count > 0);
