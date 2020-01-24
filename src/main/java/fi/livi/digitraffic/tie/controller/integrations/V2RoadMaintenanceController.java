@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceUpdateService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationUpdateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -41,12 +41,12 @@ public class V2RoadMaintenanceController {
     public static final String REALIZATIONS_PATH = "/realizations";
 
     final private MaintenanceDataService maintenanceDataService;
-    private final V2MaintenanceUpdateService v2MaintenanceDataService;
+    private final V2MaintenanceRealizationUpdateService v2MaintenanceDataService;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public V2RoadMaintenanceController(final MaintenanceDataService maintenanceDataService,
-                                       final V2MaintenanceUpdateService v2MaintenanceDataService,
+                                       final V2MaintenanceRealizationUpdateService v2MaintenanceDataService,
                                        final ObjectMapper objectMapper) {
         this.maintenanceDataService = maintenanceDataService;
         this.v2MaintenanceDataService = v2MaintenanceDataService;
