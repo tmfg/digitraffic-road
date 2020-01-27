@@ -4,6 +4,7 @@ import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
@@ -46,14 +48,17 @@ public class SensorDataUpdateService {
     private final RoadStationSensorService roadStationSensorService;
     private final RoadStationDao roadStationDao;
     private final DataStatusService dataStatusService;
+    private final SensorValueHistoryDao sensorValueHistoryDao;
 
     @Autowired
     public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService,
-                                   final RoadStationDao roadStationDao, final DataStatusService dataStatusService) {
+                                   final RoadStationDao roadStationDao, final DataStatusService dataStatusService,
+                                   final SensorValueHistoryDao sensorValueHistoryDao) {
         this.sensorValueDao = sensorValueDao;
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationDao = roadStationDao;
         this.dataStatusService = dataStatusService;
+        this.sensorValueHistoryDao = sensorValueHistoryDao;
     }
 
     private Set<Long> getAllowedRoadStationSensorsLotjuIds(final RoadStationType roadStationType) {
@@ -160,6 +165,8 @@ public class SensorDataUpdateService {
 
         final Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.WEATHER_STATION);
 
+        updateSensorHistoryData(params, RoadStationType.WEATHER_STATION);
+
         stopWatch.stop();
         log.info("method=updateWeatherData initial data rowCount={} filtered to updateRowCount={}. Sensors updateCount={} insertCount={} of stations stationCount={} tookMs={}",
             initialDataRowCount, filteredByOnlyNewest.size(),
@@ -209,6 +216,25 @@ public class SensorDataUpdateService {
     private void updateDataMeasuredTime(RoadStationType roadStationType, OffsetDateTime maxMeasuredTime) {
         dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(roadStationType),
                                             maxMeasuredTime.toInstant());
+    }
+
+    private void updateSensorHistoryData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
+        if (CollectionUtils.isEmpty(params)) {
+            log.info("method=updateSensorHistoryData for {} stations insertCount=0 tookMs=0", roadStationDao);
+        }
+
+        final StopWatch stopWatch = StopWatch.createStarted();
+
+        final int[] inserted = sensorValueHistoryDao.insertSensorData(params);
+
+        log.info("method=updateSensorData for {} stations insertCount={} tookMs={}", roadStationType, countSum(inserted), stopWatch.getTime());
+    }
+
+    @Transactional
+    public void cleanWeatherHistoryData(final ZonedDateTime before) {
+        log.info("Clean historydata older than {}", before);
+
+        sensorValueHistoryDao.cleanSensorData(before);
     }
 
     private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {

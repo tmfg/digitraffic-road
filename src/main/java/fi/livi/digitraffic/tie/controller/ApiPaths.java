@@ -33,6 +33,7 @@ public final class ApiPaths {
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TMS_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
+    public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";
     public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
     public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";

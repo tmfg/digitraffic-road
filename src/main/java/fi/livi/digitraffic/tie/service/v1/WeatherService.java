@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherStationDto;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
@@ -23,12 +26,15 @@ public class WeatherService {
 
     private final RoadStationSensorService roadStationSensorService;
     private final RoadStationRepository roadStationRepository;
+    private final SensorValueHistoryRepository sensorValueHistoryRepository;
 
     @Autowired
     public WeatherService(final RoadStationSensorService roadStationSensorService,
-                          final RoadStationRepository roadStationRepository) {
+                          final RoadStationRepository roadStationRepository,
+                          final SensorValueHistoryRepository sensorValueHistoryRepository) {
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationRepository = roadStationRepository;
+        this.sensorValueHistoryRepository = sensorValueHistoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -74,5 +80,24 @@ public class WeatherService {
         dto.setMeasuredTime(SensorValueDto.getStationLatestMeasurement(dto.getSensorValues()));
 
         return new WeatherRootDataObjectDto(Collections.singletonList(dto), updated);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SensorValueHistoryDto> findWeatherHistoryData(final long id, final ZonedDateTime since) {
+        return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(id, getSinceTime(since));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
+        return sensorValueHistoryRepository.streamByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, sensorId, getSinceTime(since));
+    }
+
+    private ZonedDateTime getSinceTime(final ZonedDateTime since) {
+        if (since == null) {
+            // Set offset to -1h
+            return ZonedDateTime.now().minusHours(1);
+        }
+
+        return since;
     }
 }
