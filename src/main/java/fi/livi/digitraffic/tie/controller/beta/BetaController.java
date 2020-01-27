@@ -2,12 +2,21 @@ package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +43,7 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -160,14 +170,54 @@ public class BetaController {
         return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 
+    private static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
+    private static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
+    private static final String RANGE_X = "range[19.0, 32.0]";
+    private static final String RANGE_Y = "range[59.0, 72.0]";
     @ApiOperation(value = "Road maintenance realizations data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
-            @ApiParam(value = "How old histories are fetched")
-            @RequestParam(defaultValue = "0")
-            @Range(min = 0)
-            final Integer historyHours) {
-        return maintenanceRealizationDataService.findMaintenanceRealizations(historyHours);
+            @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime from,
+
+            @ApiParam(value = "Return realization data received before given time in ISO date time format. Default is now.")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime to,
+
+
+            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @RequestParam(defaultValue = "19.0")
+            @DecimalMin("19.0")
+            @DecimalMax("32.0")
+            final double xMin,
+
+            @ApiParam(allowableValues = "range[59, 72]", value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @RequestParam(defaultValue = "59.0")
+            @DecimalMin("59.0")
+            @DecimalMax("72.0")
+            final double yMin,
+
+            @ApiParam(allowableValues = "range[19.0, 32.0]", value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @RequestParam(defaultValue = "32")
+            @DecimalMin("19.0")
+            @DecimalMax("32.0")
+            final double xMax,
+
+            @ApiParam(allowableValues = "range[59, 72]", value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @RequestParam(defaultValue = "72.0")
+            @DecimalMin("59.0")
+            @DecimalMax("72.0")
+            final double yMax
+    ) {
+
+        final Instant fromParam = from != null ? from.toInstant() : Instant.now().minus(1, HOURS);
+                                                              // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to.toInstant() : Instant.now().plus(1, HOURS);
+
+        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
     }
 }

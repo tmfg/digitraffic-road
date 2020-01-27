@@ -36,10 +36,12 @@ import fi.livi.digitraffic.tie.external.harja.entities.ReittitoteumaSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ReittitoteumatSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TehtavatSchema;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class V2MaintenanceRealizationUpdateService {
@@ -51,6 +53,7 @@ public class V2MaintenanceRealizationUpdateService {
     private final ObjectReader jsonReader;
     private final V2RealizationTaskRepository v2RealizationTaskRepository;
     private final V2RealizationPointRepository v2RealizationPointRepository;
+    private final DataStatusService dataStatusService;
 
     private Map<Long, MaintenanceTask> tasksMap;
 
@@ -59,13 +62,15 @@ public class V2MaintenanceRealizationUpdateService {
                                                  final V2RealizationDataRepository v2RealizationDataRepository,
                                                  final ObjectMapper objectMapper,
                                                  final V2RealizationTaskRepository v2RealizationTaskRepository,
-                                                 final V2RealizationPointRepository v2RealizationPointRepository) {
+                                                 final V2RealizationPointRepository v2RealizationPointRepository,
+                                                 final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         this.v2RealizationTaskRepository = v2RealizationTaskRepository;
         this.v2RealizationPointRepository = v2RealizationPointRepository;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
@@ -79,7 +84,7 @@ public class V2MaintenanceRealizationUpdateService {
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        return data.mapToInt(wmr -> {
+        int sum = data.mapToInt(wmr -> {
             try {
                 return handleWorkMachineRealization(wmr);
             } catch (JsonProcessingException ex) {
@@ -88,6 +93,11 @@ public class V2MaintenanceRealizationUpdateService {
                 return 0;
             }
         }).sum();
+        if (sum > 0) {
+            dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
+        }
+        dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED);
+        return sum;
     }
 
     private int handleWorkMachineRealization(final MaintenanceRealizationData wmrd) throws JsonProcessingException {

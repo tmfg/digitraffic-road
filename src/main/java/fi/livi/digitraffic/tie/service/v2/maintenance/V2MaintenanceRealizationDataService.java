@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +30,13 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureC
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperties;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class V2MaintenanceRealizationDataService {
@@ -42,6 +48,7 @@ public class V2MaintenanceRealizationDataService {
     private final ObjectReader jsonReader;
     private final V2RealizationTaskRepository v2RealizationTaskRepository;
     private final V2RealizationPointRepository v2RealizationPointRepository;
+    private final DataStatusService dataStatusService;
 
     private Map<Long, MaintenanceTask> tasksMap;
 
@@ -50,40 +57,46 @@ public class V2MaintenanceRealizationDataService {
                                                final V2RealizationDataRepository v2RealizationDataRepository,
                                                final ObjectMapper objectMapper,
                                                final V2RealizationTaskRepository v2RealizationTaskRepository,
-                                               final V2RealizationPointRepository v2RealizationPointRepository) {
+                                               final V2RealizationPointRepository v2RealizationPointRepository,
+                                               final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         this.v2RealizationTaskRepository = v2RealizationTaskRepository;
         this.v2RealizationPointRepository = v2RealizationPointRepository;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional
-    public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(final int historyHours) {
-        MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now());
-        List<MaintenanceRealization> all = v2RealizationRepository.findAll();
-        fc.addAll(convertToFeatures(all));
+    public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(final Instant from, final Instant to,
+                                                                               double xMin, double yMin,
+                                                                               double xMax, double yMax) {
+        final ZonedDateTime lastUpdated = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
+        final ZonedDateTime lastChecked = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
+        final MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked);
+        final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
+        fc.addAll(convertToFeatures(found));
         return fc;
     }
 
     private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {
-        final List<MaintenanceRealizationFeature> features =
+        return
             all.stream().map(r -> {
                 final List<List<Double>> coordinates =
                     Arrays.stream(r.getLineString().getCoordinates())
-                        .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ())).collect(Collectors.toList());
+                        .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
+                        .collect(Collectors.toList());
 
                 final Set<MaintenanceRealizationTask> tasks = convertToMaintenanceRealizationTasks(r.getTasks());
                 final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
-                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(r.getSendingTime(), tasks, coordinateDetails);
+                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(toZonedDateTimeAtUtc(r.getSendingTime()), tasks, coordinateDetails);
             return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
         }).collect(Collectors.toList());
-        return features;
     }
 
     private List<MaintenanceRealizationCoordinateDetails> convertToMaintenanceCoordinateDetails(List<MaintenanceRealizationPoint> points) {
-        return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(p.getTime())).collect(Collectors.toList());
+        return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(toZonedDateTimeAtUtc(p.getTime()))).collect(Collectors.toList());
     }
 
     private Set<MaintenanceRealizationTask> convertToMaintenanceRealizationTasks(Set<MaintenanceTask> tasks) {
@@ -91,5 +104,4 @@ public class V2MaintenanceRealizationDataService {
             .map(t -> new MaintenanceRealizationTask(t.getId(), t.getTask(), t.getOperation(), t.getOperationSpecifier()))
             .collect(Collectors.toSet());
     }
-
 }
