@@ -81,7 +81,6 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
-    @Rollback(false)
     @Test
     public void handleUnhandledWorkMachineRealizations() throws JsonProcessingException {
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
