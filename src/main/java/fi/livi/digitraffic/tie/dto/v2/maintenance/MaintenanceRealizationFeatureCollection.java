@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Collection of Maintenance Realizations", value = "MaintenanceRealizationFeatureCollection")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
-public class MaintenanceRealizationFeatureCollection extends RootMetadataObjectDto implements Iterable<MaintenanceRealizationFeature> {
+public class MaintenanceRealizationFeatureCollection extends RootMetadataObjectDto {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
     private final String type = "FeatureCollection";
@@ -48,35 +48,6 @@ public class MaintenanceRealizationFeatureCollection extends RootMetadataObjectD
 
     public void addAll(final Collection<MaintenanceRealizationFeature> features) {
         this.features.addAll(features);
-    }
-
-    @Override
-    public Iterator<MaintenanceRealizationFeature> iterator() {
-        return features.iterator();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o)
-            return true;
-
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        final MaintenanceRealizationFeatureCollection that = (MaintenanceRealizationFeatureCollection) o;
-
-        return new EqualsBuilder()
-                .append(type, that.type)
-                .append(features, that.features)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(type)
-                .append(features)
-                .toHashCode();
     }
 
     @Override
