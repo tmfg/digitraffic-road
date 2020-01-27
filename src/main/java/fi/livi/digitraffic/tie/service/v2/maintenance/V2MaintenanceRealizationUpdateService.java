@@ -102,8 +102,8 @@ public class V2MaintenanceRealizationUpdateService {
         final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
 
         // Holder for one task-set data
-        final CurrentRealizationDataHolder currentHolder = new CurrentRealizationDataHolder();
-        currentHolder.init(wmrd, sendingSystem, messageId, sendingTime);
+        final CurrentRealizationDataHolder currentDataHolder = new CurrentRealizationDataHolder();
+        currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
 
         toteumat.forEach(reittitoteuma -> {
 
@@ -121,33 +121,32 @@ public class V2MaintenanceRealizationUpdateService {
                 final List<TehtavatSchema> tehtavat = r.getReittipiste().getTehtavat();
 
                 if (isTransition(tehtavat) ) { // Transition -> no saving to db. Persis previous values if they exists.
-                    saveRealizationAndResetHolder(currentHolder);
-                    currentHolder.init(wmrd, sendingSystem, messageId, sendingTime);
+                    saveRealizationIfDataAdded(currentDataHolder);
+                    currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
                 } else {
                     // If current has data
-                    if (currentHolder.isData() && isTasksChanged(tehtavat, currentHolder.getTaskids())) {
-                        saveRealizationAndResetHolder(currentHolder);
-                        currentHolder.init(wmrd, sendingSystem, messageId, sendingTime);
+                    if (currentDataHolder.isData() && isTasksChanged(tehtavat, currentDataHolder.getTaskids())) {
+                        saveRealizationIfDataAdded(currentDataHolder);
+                        currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
                     }
 
                     final KoordinaattisijaintiSchema koordinaatit = r.getReittipiste().getKoordinaatit();
                     final ZonedDateTime datetime = r.getReittipiste().getAika();
 
                     final Coordinate pgPoint = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-                    currentHolder.addCoordinate(pgPoint, datetime, getTasks(tehtavat));
+                    currentDataHolder.addCoordinate(pgPoint, datetime, getTasks(tehtavat));
                 }
             });
         });
-        saveRealizationAndResetHolder(currentHolder);
+        saveRealizationIfDataAdded(currentDataHolder);
 
         wmrd.updateStatusToHandled();
         return 1;
     }
 
-    private void saveRealizationAndResetHolder(final CurrentRealizationDataHolder holder) {
+    private void saveRealizationIfDataAdded(final CurrentRealizationDataHolder holder) {
         // If data is not available skip
         if (!holder.isInited()) {
-            holder.reset();
             return;
         }
         if (holder.isValidLineString()) {
@@ -164,7 +163,6 @@ public class V2MaintenanceRealizationUpdateService {
         } else if (holder.isData()){
             log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
         }
-        holder.reset();
     }
 
     private boolean isTransition(List<TehtavatSchema> tehtavat) {
@@ -228,7 +226,7 @@ public class V2MaintenanceRealizationUpdateService {
         public CurrentRealizationDataHolder() {
         }
 
-        public void init(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
+        public void resetWithInitialValues(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
             reset();
             this.realizationData = realizationData;
             this.sendingSystem = sendingSystem;
@@ -236,7 +234,7 @@ public class V2MaintenanceRealizationUpdateService {
             this.sendingTime = sendingTime;
         }
 
-        public void reset() {
+        private void reset() {
             coordinates = new ArrayList<>();
             coordinateTimes = new ArrayList<>();
             tasks = new HashSet<>();

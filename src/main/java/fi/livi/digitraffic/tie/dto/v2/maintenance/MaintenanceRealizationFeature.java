@@ -15,10 +15,11 @@ public class MaintenanceRealizationFeature implements Feature<LineString> {
     private LineString geometry;
 
     @ApiModelProperty(value = "Camera preset properties.", required = true, position = 4)
-    private MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties();
+    private final MaintenanceRealizationProperties properties;
 
-    public MaintenanceRealizationFeature(final LineString geometry) {
+    public MaintenanceRealizationFeature(final LineString geometry, final MaintenanceRealizationProperties properties) {
         this.geometry = geometry;
+        this.properties = properties;
     }
 
     @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1, allowableValues = "Feature")

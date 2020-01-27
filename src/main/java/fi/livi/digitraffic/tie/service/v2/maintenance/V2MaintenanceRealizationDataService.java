@@ -21,8 +21,11 @@ import fi.livi.digitraffic.tie.dao.v2.V2RealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2RealizationPointRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2RealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2RealizationTaskRepository;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationCoordinateDetails;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperties;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
@@ -64,19 +67,29 @@ public class V2MaintenanceRealizationDataService {
         return fc;
     }
 
-    private List<MaintenanceRealizationFeature> convertToFeatures(List<MaintenanceRealization> all) {
+    private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {
         final List<MaintenanceRealizationFeature> features =
             all.stream().map(r -> {
                 final List<List<Double>> coordinates =
                     Arrays.stream(r.getLineString().getCoordinates())
                         .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ())).collect(Collectors.toList());
-                final Set<MaintenanceTask> tasks = r.getTasks();
-                final ZonedDateTime sendingTime = r.getSendingTime();
-                final List<MaintenanceRealizationPoint> points = r.getRealizationPoints();
 
-            return new MaintenanceRealizationFeature(new LineString(coordinates));
+                final Set<MaintenanceRealizationTask> tasks = convertToMaintenanceRealizationTasks(r.getTasks());
+                final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
+                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(r.getSendingTime(), tasks, coordinateDetails);
+            return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
         }).collect(Collectors.toList());
         return features;
+    }
+
+    private List<MaintenanceRealizationCoordinateDetails> convertToMaintenanceCoordinateDetails(List<MaintenanceRealizationPoint> points) {
+        return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(p.getTime())).collect(Collectors.toList());
+    }
+
+    private Set<MaintenanceRealizationTask> convertToMaintenanceRealizationTasks(Set<MaintenanceTask> tasks) {
+        return tasks.stream()
+            .map(t -> new MaintenanceRealizationTask(t.getId(), t.getTask(), t.getOperation(), t.getOperationSpecifier()))
+            .collect(Collectors.toSet());
     }
 
 }
