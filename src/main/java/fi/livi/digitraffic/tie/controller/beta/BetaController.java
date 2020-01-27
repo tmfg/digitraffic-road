@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
@@ -31,6 +32,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -46,22 +48,26 @@ public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String CAMERA_HISTORY_PATH = "/camera-history";
+    public static final String MAINTENANCE_REALIZATIONS_PATH = "/maintenance/realizations";
+
 
     private final V2VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final CameraPresetHistoryService cameraPresetHistoryService;
     private final Datex2DataService datex2DataService;
+    private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
 
     @Autowired
     public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
-                          final Datex2DataService datex2DataService) {
+                          final Datex2DataService datex2DataService, final V2MaintenanceRealizationDataService maintenanceRealizationDataService) {
         this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.datex2DataService = datex2DataService;
+        this.maintenanceRealizationDataService = maintenanceRealizationDataService;
     }
 
     @ApiOperation(value = "Active Datex2 messages for TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION -types")
@@ -152,5 +158,16 @@ public class BetaController {
         final ZonedDateTime to) {
 
         return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
+    }
+
+    @ApiOperation(value = "Road maintenance realizations data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
+    public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
+            @ApiParam(value = "How old histories are fetched")
+            @RequestParam(defaultValue = "0")
+            @Range(min = 0)
+            final Integer historyHours) {
+        return maintenanceRealizationDataService.findMaintenanceRealizations(historyHours);
     }
 }
