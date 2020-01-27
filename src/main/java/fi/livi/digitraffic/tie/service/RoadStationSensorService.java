@@ -33,21 +33,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.SensorValue;
 import fi.livi.digitraffic.tie.model.VehicleClass;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.SensorValue;
 
 @Service
 public class RoadStationSensorService {

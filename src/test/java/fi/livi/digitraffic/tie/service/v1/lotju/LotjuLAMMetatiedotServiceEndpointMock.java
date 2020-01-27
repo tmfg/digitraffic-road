@@ -9,21 +9,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.ely.lotju.lam.meta.service.ws.v5.LAMMetatiedotEndpointImplService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamAsemaLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ArvoVastaavuusVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakioResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiAnturiVakioArvotResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LAMMetatiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.ArvoVastaavuusVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvotResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsematResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LAMMetatiedotEndpoint;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LAMMetatiedotEndpointImplService;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.ObjectFactory;
 
 
 public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointMock implements LAMMetatiedotEndpoint {

@@ -18,26 +18,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.TmsStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.model.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
-import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
+import fi.livi.digitraffic.tie.service.UpdateStatus;
 
 @Service
 public class TmsStationService extends AbstractTmsStationAttributeUpdater {

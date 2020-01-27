@@ -11,8 +11,8 @@ import java.time.temporal.ChronoUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
@@ -52,14 +52,14 @@ public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     @Test
     public void endedShouldNotFound() {
         deleteAllDatex2();
-        updateTrafficAlerts(disorder3);
+        updateTrafficIncidents(disorder3);
         // Not ended yet
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
 
         // Set situation Endtime to 1 min ago
         final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(10, ChronoUnit.MINUTES));
 
-        updateTrafficAlerts(disorder3Ended);
+        updateTrafficIncidents(disorder3Ended);
 
         // Disorder should not be found as active
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 0);
@@ -70,7 +70,7 @@ public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
         deleteAllDatex2();
         // Set situation Endtime to 2h 1 min ago
         final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(121, ChronoUnit.MINUTES));
-        updateTrafficAlerts(disorder3Ended);
+        updateTrafficIncidents(disorder3Ended);
 
         // Disorder is ended > 2h in past. With parameter value > 3 it should found, but not with < 3
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 2);
@@ -80,15 +80,15 @@ public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     @Test
     public void activeAndActiveInPast() {
         deleteAllDatex2();
-        updateTrafficAlerts(disorder2);
-        updateTrafficAlerts(disorder3);
+        updateTrafficIncidents(disorder2);
+        updateTrafficIncidents(disorder3);
         // Both active
         findActiveTrafficAlertsAndAssert(DISORDER2_GUID, true, 0);
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, true, 0);
 
         // After ending disorder3 it  not not be found
         final String disorder3Ended = addEndTime(disorder3, Instant.now().minus(10, ChronoUnit.MINUTES));
-        updateTrafficAlerts(disorder3Ended);
+        updateTrafficIncidents(disorder3Ended);
 
         findActiveTrafficAlertsAndAssert(DISORDER2_GUID, true, 0);
         findActiveTrafficAlertsAndAssert(DISORDER3_GUID, false, 0);
@@ -98,10 +98,10 @@ public class Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     public void updateTrafficAlerts() {
         deleteAllDatex2();
 
-        updateTrafficAlerts(disorder1);
+        updateTrafficIncidents(disorder1);
         findTrafficAlertsAndAssert(DISORDER1_GUID, true);
         findTrafficAlertsAndAssert(DISORDER2_GUID, false);
-        updateTrafficAlerts(disorder2);
+        updateTrafficIncidents(disorder2);
 
         assertCollectionSize(2, datex2Repository.findAll());
 

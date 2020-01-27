@@ -20,15 +20,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
 
+@Import({ RoadDistrictService.class})
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
@@ -39,6 +44,9 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    protected RoadDistrictService roadDistrictService;
 
     @Before
     public void initData() {
@@ -93,5 +101,27 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath());
+    }
+
+    private TmsStation generateDummyTmsStation() {
+        final RoadStation rs = generateDummyRoadStation(RoadStationType.TMS_STATION);
+
+        final TmsStation ts = new TmsStation();
+        ts.setRoadStation(rs);
+        ts.setLotjuId(rs.getLotjuId());
+        ts.setNaturalId(rs.getLotjuId());
+        ts.setRoadDistrict(roadDistrictService.findByNaturalId(1));
+        ts.setCalculatorDeviceType(CalculatorDeviceType.DSL_5);
+        ts.setName("st120_Pähkinärinne");
+        ts.setDirection1Municipality("Vihti");
+        ts.setDirection1MunicipalityCode(927);
+        ts.setDirection2Municipality("Helsinki");
+        ts.setDirection2MunicipalityCode(91);
+        ts.setWinterFreeFlowSpeed1(70);
+        ts.setWinterFreeFlowSpeed2(70);
+        ts.setSummerFreeFlowSpeed1(80);
+        ts.setSummerFreeFlowSpeed2(80);
+
+        return ts;
     }
 }

@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -14,21 +15,21 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioArvoVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2014._03._06.LamAnturiVakioVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2017._05._02.LamLaskennallinenAnturiVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakio;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeAsemanAnturiVakioResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiAnturiVakioArvot;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiAnturiVakioArvotResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsemat;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMAsematResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeKaikkiLAMLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturit;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.HaeLAMAsemanLaskennallisetAnturitResponse;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakio;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvot;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvotResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsemat;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsematResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturit;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.ObjectFactory;
 
 @ConditionalOnNotWebApplication
 @Service
@@ -38,9 +39,10 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     private final ObjectFactory objectFactory = new ObjectFactory();
 
     @Autowired
-    public LotjuTmsStationMetadataClient(Jaxb2Marshaller marshaller,
+    public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
+                                         Jaxb2Marshaller lamMetadataJaxb2Marshaller,
                                          @Value("${metadata.server.address.tms}") final String tmsMetadataServerAddress) {
-        super(marshaller, tmsMetadataServerAddress, log);
+        super(lamMetadataJaxb2Marshaller, tmsMetadataServerAddress, log);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)

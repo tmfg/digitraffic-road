@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Laite;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.LiikennemerkinTila;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Metatiedot;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Tilatiedot;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
-import fi.livi.digitraffic.tie.external.tloik.Laite;
-import fi.livi.digitraffic.tie.external.tloik.LiikennemerkinTila;
-import fi.livi.digitraffic.tie.external.tloik.Metatiedot;
-import fi.livi.digitraffic.tie.external.tloik.Tilatiedot;
 
 @Service
 public class VariableSignUpdateService {

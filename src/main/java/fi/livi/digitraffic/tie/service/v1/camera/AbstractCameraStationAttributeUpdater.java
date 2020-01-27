@@ -6,18 +6,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 

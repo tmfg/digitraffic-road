@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.AbstractVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.AbstractVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 
 @ConditionalOnNotWebApplication
 @Service

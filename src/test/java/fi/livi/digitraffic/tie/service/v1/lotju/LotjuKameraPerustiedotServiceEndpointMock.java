@@ -13,17 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.ely.lotju.kamera.meta.service.ws.v7.KameraPerustiedotEndpointImplService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeEsiasennotKameranTunnuksellaResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.HaeKaikkiKameratResponse;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraKokoonpanoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotEndpoint;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraPerustiedotException;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.ObjectFactory;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.VideopalvelinVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeEsiasennotKameranTunnuksellaResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKaikkiKameratResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraKokoonpanoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpoint;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpointImplService;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.ObjectFactory;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements KameraPerustiedotEndpoint {
 

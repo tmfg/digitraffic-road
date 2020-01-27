@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model;
 
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaTyyppi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaTyyppi;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "TMS station type", value = "TmsStationType")

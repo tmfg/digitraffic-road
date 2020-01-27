@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_R
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,30 +18,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.response.ObservationTimeType;
+import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedRoadworkDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedTrafficDisorderDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TimestampedWeightRestrictionDatex2;
+import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.ObservationTimeType;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedRoadworkDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedTrafficDisorderDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TimestampedWeightRestrictionDatex2;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.response.WeightRestrictionsDatex2Response;
 
 @Service
 public class Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller stringToObjectMarshaller;
+    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
 
     @Autowired
-    public Datex2DataService(final Datex2Repository datex2Repository, final StringToObjectMarshaller stringToObjectMarshaller) {
+    public Datex2DataService(final Datex2Repository datex2Repository,
+                             final StringToObjectMarshaller stringToObjectMarshaller) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
     }
@@ -69,7 +67,7 @@ public class Datex2DataService {
     }
 
     private List<Datex2> findDatex2Messages(final Datex2MessageType messageType, final String situationId,
-                                            final int year, final int month) {
+                                           final int year, final int month) {
         if (situationId != null && !datex2Repository.existsWithSituationId(situationId)) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -77,10 +75,6 @@ public class Datex2DataService {
         return situationId != null
             ? datex2Repository.findHistoryBySituationId(messageType.name(), situationId, year, month)
             : datex2Repository.findHistory(messageType.name(), year, month);
-    }
-
-    private ZonedDateTime findLatestImportTime(final Datex2MessageType messageType) {
-        return DateHelper.toZonedDateTimeAtUtc(datex2Repository.findLatestImportTime(messageType.name()));
     }
 
     @Transactional(readOnly = true)
@@ -102,8 +96,7 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficDisordersDatex2Response getAllTrafficDisordersBySituationId(final
-    String situationId) {
+    public TrafficDisordersDatex2Response getAllTrafficDisordersBySituationId(final String situationId) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, TRAFFIC_INCIDENT.name());
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -112,26 +105,9 @@ public class Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findAllBySituationId(final String situationId, final Datex2MessageType datex2MessageType) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndMessageType(situationId, datex2MessageType.name());
-        if (datex2s.isEmpty()) {
-            throw new ObjectNotFoundException("Datex2", situationId);
-        }
-        return convertToD2LogicalModel(datex2s);
-    }
-
-
-    @Transactional(readOnly = true)
     public TrafficDisordersDatex2Response findActiveTrafficDisorders(final int inactiveHours) {
         final List<Datex2> allActive = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), inactiveHours);
         return convertToTrafficDisordersDatex2Response(allActive);
-    }
-
-    @Transactional(readOnly = true)
-    public D2LogicalModel findActive(final int inactiveHours,
-                                     final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = datex2Repository.findAllActive(datex2MessageType.name(), inactiveHours);
-        return convertToD2LogicalModel(allActive);
     }
 
     @Transactional(readOnly = true)
@@ -175,39 +151,6 @@ public class Datex2DataService {
             }
         }
         return new TrafficDisordersDatex2Response().withDisorders(timestampedTrafficDisorderDatex2s);
-    }
-
-    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
-
-        // conver Datex2s to D2LogicalModels
-        final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
-            .map(datex2 -> (D2LogicalModel) stringToObjectMarshaller.convertToObject(datex2.getMessage()))
-            .filter(d2 -> d2.getPayloadPublication() != null)
-            .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
-            .collect(Collectors.toList());
-
-        if (modelsNewestFirst.isEmpty()) {
-            return new D2LogicalModel();
-        }
-
-        // Append all older situations to newest and return newest that combines all situations
-        final D2LogicalModel newesModel = modelsNewestFirst.remove(0);
-        SituationPublication situationPublication = getSituationPublication(newesModel);
-        modelsNewestFirst.forEach(d2 -> {
-            final SituationPublication toAdd = getSituationPublication(d2);
-            situationPublication.getSituations().addAll(toAdd.getSituations());
-        });
-        return newesModel;
-    }
-
-    static SituationPublication getSituationPublication(final D2LogicalModel model) {
-        if (model.getPayloadPublication() instanceof SituationPublication) {
-            return (SituationPublication) model.getPayloadPublication();
-        } else {
-            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
-            log.error(err);
-            throw new RuntimeException(err);
-        }
     }
 
     private TimestampedTrafficDisorderDatex2 unmarshallTrafficDisorder(final String datex2Xml, final ZonedDateTime importTime) {
