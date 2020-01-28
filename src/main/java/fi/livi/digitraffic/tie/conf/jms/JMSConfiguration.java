@@ -13,12 +13,12 @@ import org.springframework.context.annotation.Configuration;
 import progress.message.jclient.QueueConnectionFactory;
 
 @Configuration
-@ConditionalOnProperty("jms.sonja.connection.enabled")
 @ConditionalOnNotWebApplication
 public class JMSConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(JMSConfiguration.class);
 
+    @ConditionalOnProperty("jms.connectionUrls")
     @Bean(name = "sonjaJMSConnectionFactory")
     public QueueConnectionFactory queueConnectionFactoryForJMS(@Value("${jms.connectionUrls}")
                                                                final String jmsConnectionUrls) throws JMSException {

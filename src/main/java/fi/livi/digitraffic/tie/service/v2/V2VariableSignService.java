@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
@@ -36,6 +37,7 @@ public class V2VariableSignService {
         this.v2CodeDescriptionRepository = v2CodeDescriptionRepository;
     }
 
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
         final Stream<Device> devices = v2DeviceRepository.streamAll();

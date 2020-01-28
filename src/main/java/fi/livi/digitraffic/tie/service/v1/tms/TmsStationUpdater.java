@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.LamAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 
 @ConditionalOnNotWebApplication
 @Service

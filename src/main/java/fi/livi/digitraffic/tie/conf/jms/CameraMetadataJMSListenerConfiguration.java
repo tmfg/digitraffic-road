@@ -27,16 +27,16 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
     private final Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
-    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                                  @Value("${jms.test.userId}") final String jmsUserId,
-                                                  @Value("${jms.test.password}") final String jmsPassword,
+    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                                  @Value("${jms.userId}") final String jmsUserId,
+                                                  @Value("${jms.password}") final String jmsPassword,
                                                   @Value("#{'${jms.camera.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
                                                   final CameraMetadataMessageHandler cameraMetadataMessageHandler,
                                                   final LockingService lockingService,
-                                                  final Jaxb2Marshaller jaxb2Marshaller) {
+                                                  final Jaxb2Marshaller kameraMetadataJaxb2Marshaller) {
         super(connectionFactory, lockingService, log);
         this.cameraMetadataMessageHandler = cameraMetadataMessageHandler;
-        this.jaxb2Marshaller = jaxb2Marshaller;
+        this.jaxb2Marshaller = kameraMetadataJaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
             CameraMetadataJMSListenerConfiguration.class.getSimpleName(),

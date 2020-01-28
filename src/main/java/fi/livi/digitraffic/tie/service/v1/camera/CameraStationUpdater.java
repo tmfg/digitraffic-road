@@ -15,13 +15,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataService;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataService;
 
 @ConditionalOnNotWebApplication
 @Service
@@ -67,7 +67,7 @@ public class CameraStationUpdater {
             final long time = stopWatch.getTime();
             stopWatch.reset();
             lockingService.unlock(lockName);
-            log.info("method=unlock lockedTimeMs={}", time);
+            log.debug("method=unlock lockedTimeMs={}", time);
         }
     }
 
@@ -101,18 +101,21 @@ public class CameraStationUpdater {
     }
 
     /**
-     * @param kameraLotjuId to update
+     * @param cameraLotjuId to update
      * @return Pair of updated and inserted count of presets
      */
-    private Pair<Integer, Integer> updateCameraStationAndPresets(final long kameraLotjuId) {
+    private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId) {
         lock.lock();
         try {
             log.debug("method=updateCameraStationAndPresets got the lock");
-            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(kameraLotjuId);
-            if (!validate(kamera)) {
+            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", cameraLotjuId);
+                return Pair.of(0,0);
+            } else if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
-            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kameraLotjuId);
+            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(cameraLotjuId);
             return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
 
         } finally {
@@ -135,7 +138,10 @@ public class CameraStationUpdater {
         try {
             log.debug("method=updateCameraStation got the lock lotjuId={}", cameraLotjuId);
             final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
-            if (!validate(kamera)) {
+            if (kamera == null) {
+                log.error("No Camera with lotjuId={} found", cameraLotjuId);
+                return false;
+            } else if (!validate(kamera)) {
                 return false;
             }
             return cameraStationUpdateService.updateCamera(kamera);
@@ -149,6 +155,11 @@ public class CameraStationUpdater {
     public boolean updateCameraPreset(final long presetLotjuId) {
         log.info("method=updateCameraPreset start lotjuId={}", presetLotjuId);
         final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
+
+        if (esiasento == null) {
+            log.error("No CameraPreset with lotjuId={} found", presetLotjuId);
+            return false;
+        }
 
         // If camera preset doesn't exist, we have to create it -> just update the whole station
         if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {

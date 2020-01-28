@@ -19,48 +19,34 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-@ApiModel(value = "Datex2", description = "Datex2-message")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @DynamicUpdate
 @Table(name = "DATEX2")
 public class Datex2 {
 
-    @JsonIgnore
     @Id
     @GenericGenerator(name = "SEQ_DATEX2", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_DATEX2"))
     @GeneratedValue(generator = "SEQ_DATEX2")
     private Long id;
 
-    @ApiModelProperty(value = "Message import date time", required = true)
     @Column(name = "IMPORT_DATE")
     @NotNull
     private ZonedDateTime importTime;
 
-    @ApiModelProperty(value = "Datex2 message", required = true)
-    @JsonProperty("datex2")
     @NotNull
     private String message;
 
-    @JsonIgnore
     @NotNull
     @Enumerated(EnumType.STRING)
     private Datex2MessageType messageType;
 
-    @ApiModelProperty(value = "Message publication date time", required = true)
     private ZonedDateTime publicationTime;
 
-    @ApiModelProperty(value = "Date2 situations", required = true)
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
+
+    private String jsonMessage;
 
     public Long getId() {
         return id;
@@ -70,8 +56,6 @@ public class Datex2 {
         this.id = id;
     }
 
-    @ApiModelProperty(value = "Datex2 xml message", required = true)
-    @JsonProperty(value = "datex2", required = true)
     public String getMessage() {
         return message;
     }
@@ -119,5 +103,13 @@ public class Datex2 {
 
     public void setMessageType(final Datex2MessageType messageType) {
         this.messageType = messageType;
+    }
+
+    public void setJsonMessage(final String jsonMessage) {
+        this.jsonMessage = jsonMessage;
+    }
+
+    public String getJsonMessage() {
+        return jsonMessage;
     }
 }

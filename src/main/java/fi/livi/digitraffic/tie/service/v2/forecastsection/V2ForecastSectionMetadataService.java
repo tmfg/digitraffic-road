@@ -27,6 +27,7 @@ public class V2ForecastSectionMetadataService {
         this.v2ForecastSectionMetadataDao = v2ForecastSectionMetadataDao;
     }
 
+    // TODO Poor performance > 10 s
     @Transactional(readOnly = true)
     public ForecastSectionV2FeatureCollection getForecastSectionV2Metadata(final boolean onlyUpdateInfo, final Integer roadNumber,
                                                                            final Double minLongitude, final Double minLatitude,

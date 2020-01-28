@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.service.v1.VariableSignUpdateService;
-import fi.livi.digitraffic.tie.external.tloik.Metatiedot;
-import fi.livi.digitraffic.tie.external.tloik.Tilatiedot;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Metatiedot;
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Tilatiedot;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

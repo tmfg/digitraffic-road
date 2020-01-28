@@ -56,16 +56,15 @@ dt.amazon.s3.weathercam.userSecretKey =
 
 # JMS settings
 
-# Sonja
-jms.sonja.connection.enabled=false
-jms.connectionUrls=
+# Sonja - disable by commenting url out
+#jms.connectionUrls=
 jms.userId=
 jms.password=
 
-# Sonja for datex2
-jms.datex2.connectionUrls=
-jms.datex2.userId=
-jms.datex2.password=
+# Sonja test - disable by commenting url out
+#jms.test.connectionUrls=
+jms.test.userId=
+jms.test.password=
 
 # JMS topics
 # Comment out to disable (Only daemon should have these enabled)
