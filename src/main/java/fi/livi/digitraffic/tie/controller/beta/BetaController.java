@@ -178,6 +178,7 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
+
             @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -187,7 +188,6 @@ public class BetaController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
-
 
             @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
             @RequestParam(defaultValue = "19.0")

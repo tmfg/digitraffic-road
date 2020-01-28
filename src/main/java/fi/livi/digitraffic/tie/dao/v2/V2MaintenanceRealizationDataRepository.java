@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 
 @Repository
-public interface V2RealizationDataRepository extends JpaRepository<MaintenanceRealizationData, Long> {
+public interface V2MaintenanceRealizationDataRepository extends JpaRepository<MaintenanceRealizationData, Long> {
 
     @Query(value =  "SELECT r.*\n" +
                     "FROM MAINTENANCE_REALIZATION_DATA r\n" +

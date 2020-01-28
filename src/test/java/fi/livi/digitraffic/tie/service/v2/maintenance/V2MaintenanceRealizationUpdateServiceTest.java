@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationDataRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
@@ -38,10 +37,10 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     private V2MaintenanceRealizationUpdateService v2MaintenanceRealizationUpdateService;
 
     @Autowired
-    private V2RealizationRepository v2RealizationRepository;
+    private V2MaintenanceRealizationRepository v2RealizationRepository;
 
     @Autowired
-    private V2RealizationDataRepository v2RealizationDataRepository;
+    private V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -85,7 +84,6 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
-    @Rollback(false)
     @Test
     public void handleUnhandledWorkMachineRealizations() throws IOException {
         initializeMultipleRealisations3Tasks();

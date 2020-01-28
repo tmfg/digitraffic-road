@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationDataRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationPointRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2RealizationTaskRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationPointRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ReittiSchema;
@@ -47,21 +47,21 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 public class V2MaintenanceRealizationUpdateService {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationUpdateService.class);
-    private final V2RealizationRepository v2RealizationRepository;
-    private final V2RealizationDataRepository v2RealizationDataRepository;
+    private final V2MaintenanceRealizationRepository v2RealizationRepository;
+    private final V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
     private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
-    private final V2RealizationPointRepository v2RealizationPointRepository;
+    private final V2MaintenanceRealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
 
     private final Map<Long, MaintenanceTask> tasksMap;
 
     @Autowired
-    public V2MaintenanceRealizationUpdateService(final V2RealizationRepository v2RealizationRepository,
-                                                 final V2RealizationDataRepository v2RealizationDataRepository,
+    public V2MaintenanceRealizationUpdateService(final V2MaintenanceRealizationRepository v2RealizationRepository,
+                                                 final V2MaintenanceRealizationDataRepository v2RealizationDataRepository,
                                                  final ObjectMapper objectMapper,
-                                                 final V2RealizationTaskRepository v2RealizationTaskRepository,
-                                                 final V2RealizationPointRepository v2RealizationPointRepository,
+                                                 final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
+                                                 final V2MaintenanceRealizationPointRepository v2RealizationPointRepository,
                                                  final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
@@ -69,7 +69,7 @@ public class V2MaintenanceRealizationUpdateService {
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         this.v2RealizationPointRepository = v2RealizationPointRepository;
         this.dataStatusService = dataStatusService;
-        tasksMap = v2RealizationTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
+        tasksMap = v2MaintenanceTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
     }
 
     @PostConstruct

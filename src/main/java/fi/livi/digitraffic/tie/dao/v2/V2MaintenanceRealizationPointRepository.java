@@ -7,6 +7,6 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPointPK;
 
 @Repository
-public interface V2RealizationPointRepository extends JpaRepository<MaintenanceRealizationPoint, MaintenanceRealizationPointPK> {
+public interface V2MaintenanceRealizationPointRepository extends JpaRepository<MaintenanceRealizationPoint, MaintenanceRealizationPointPK> {
 
 }

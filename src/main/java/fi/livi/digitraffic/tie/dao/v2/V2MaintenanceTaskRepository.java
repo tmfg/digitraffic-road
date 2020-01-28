@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 
 @Repository
-public interface V2RealizationTaskRepository extends JpaRepository<MaintenanceTask, Long> {
+public interface V2MaintenanceTaskRepository extends JpaRepository<MaintenanceTask, Long> {
 
 }
