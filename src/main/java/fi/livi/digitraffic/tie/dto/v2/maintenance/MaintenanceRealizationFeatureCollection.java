@@ -20,34 +20,14 @@ import io.swagger.annotations.ApiModelProperty;
 public class MaintenanceRealizationFeatureCollection extends RootMetadataObjectDto {
 
     @ApiModelProperty(value = "\"FeatureCollection\": GeoJSON FeatureCollection Object", required = true, position = 1)
-    private final String type = "FeatureCollection";
+    public final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "Features", required = true, position = 2)
-    private List<MaintenanceRealizationFeature> features = new ArrayList<>();
+    public final List<MaintenanceRealizationFeature> features;
 
-    public MaintenanceRealizationFeatureCollection(final ZonedDateTime dataUpdatedTime, final ZonedDateTime dataLastCheckedTime) {
+    public MaintenanceRealizationFeatureCollection(final ZonedDateTime dataUpdatedTime, final ZonedDateTime dataLastCheckedTime, final List<MaintenanceRealizationFeature> features) {
         super(dataUpdatedTime, dataLastCheckedTime);
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public List<MaintenanceRealizationFeature> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(final List<MaintenanceRealizationFeature> features) {
         this.features = features;
-    }
-
-    public MaintenanceRealizationFeatureCollection add(final MaintenanceRealizationFeature feature) {
-        features.add(feature);
-        return this;
-    }
-
-    public void addAll(final Collection<MaintenanceRealizationFeature> features) {
-        this.features.addAll(features);
     }
 
     @Override

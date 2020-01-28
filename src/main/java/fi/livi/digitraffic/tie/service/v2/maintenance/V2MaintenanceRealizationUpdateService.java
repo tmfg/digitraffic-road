@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -51,11 +51,10 @@ public class V2MaintenanceRealizationUpdateService {
     private final V2RealizationDataRepository v2RealizationDataRepository;
     private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
-    private final V2RealizationTaskRepository v2RealizationTaskRepository;
     private final V2RealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
 
-    private Map<Long, MaintenanceTask> tasksMap;
+    private final Map<Long, MaintenanceTask> tasksMap;
 
     @Autowired
     public V2MaintenanceRealizationUpdateService(final V2RealizationRepository v2RealizationRepository,
@@ -68,9 +67,14 @@ public class V2MaintenanceRealizationUpdateService {
         this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
-        this.v2RealizationTaskRepository = v2RealizationTaskRepository;
         this.v2RealizationPointRepository = v2RealizationPointRepository;
         this.dataStatusService = dataStatusService;
+        tasksMap = v2RealizationTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
+    }
+
+    @PostConstruct
+    public void init() {
+
     }
 
     @Transactional
@@ -84,95 +88,91 @@ public class V2MaintenanceRealizationUpdateService {
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        int sum = data.mapToInt(wmr -> {
-            try {
-                return handleWorkMachineRealization(wmr);
-            } catch (JsonProcessingException ex) {
-                log.error(String.format("HandleUnhandledRealizations failed for id %d", wmr.getId()), ex);
-                wmr.updateStatusToError();
-                return 0;
-            }
-        }).sum();
-        if (sum > 0) {
+        final long count = data.filter(d -> handleWorkMachineRealization(d)).count();
+        if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
         }
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED);
-        return sum;
+        return count;
     }
 
-    private int handleWorkMachineRealization(final MaintenanceRealizationData wmrd) throws JsonProcessingException {
-        final ReittitoteumanKirjausRequestSchema kirjaus = jsonReader.readValue(wmrd.getJson());
+    private boolean handleWorkMachineRealization(final MaintenanceRealizationData wmrd) {
+        final ReittitoteumanKirjausRequestSchema kirjaus;
+        try {
+            kirjaus = jsonReader.readValue(wmrd.getJson());
+        } catch (JsonProcessingException e) {
+            log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
+            wmrd.updateStatusToError();
+            return false;
+        }
 
         // Message info
         final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
         final Integer messageId = kirjaus.getOtsikko().getViestintunniste().getId();
         final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
 
+        // Holder for one task-set data
+        final V2MaintenanceRealizationDataHolder currentDataHolder = new V2MaintenanceRealizationDataHolder(wmrd, sendingSystem, messageId, sendingTime);
+
         // Data is either in reittitoteuma or in reittitoteumat depending of sending system
         final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
 
-        // Holder for one task-set data
-        final CurrentRealizationDataHolder currentDataHolder = new CurrentRealizationDataHolder();
-        currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
-
-        toteumat.forEach(reittitoteuma -> {
-
-            // Tehtava
-            // final ZonedDateTime started = reittitoteuma.getToteuma().getAlkanut();
-            // final ZonedDateTime ended = reittitoteuma.getToteuma().getPaattynyt();
-            // final Integer sopimusId = reittitoteuma.getToteuma().getSopimusId();
-            // This is not implemented by contractors
-            // final String workMachineId = reittitoteuma.getTyokone().getTunniste();
-            // final TyokoneSchema.Tyyppi workMachineType = reittitoteuma.getTyokone().getTyyppi();
-
-            // Reitti
-            final List<ReittiSchema> reitti = reittitoteuma.getReitti();
-            reitti.forEach(r -> {
-                final List<TehtavatSchema> tehtavat = r.getReittipiste().getTehtavat();
-
-                if (isTransition(tehtavat) ) { // Transition -> no saving to db. Persis previous values if they exists.
-                    saveRealizationIfDataAdded(currentDataHolder);
-                    currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
-                } else {
-                    // If current has data
-                    if (currentDataHolder.isData() && isTasksChanged(tehtavat, currentDataHolder.getTaskids())) {
-                        saveRealizationIfDataAdded(currentDataHolder);
-                        currentDataHolder.resetWithInitialValues(wmrd, sendingSystem, messageId, sendingTime);
-                    }
-
-                    final KoordinaattisijaintiSchema koordinaatit = r.getReittipiste().getKoordinaatit();
-                    final ZonedDateTime datetime = r.getReittipiste().getAika();
-
-                    final Coordinate pgPoint = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-                    currentDataHolder.addCoordinate(pgPoint, datetime, getTasks(tehtavat));
-                }
-            });
-        });
-        saveRealizationIfDataAdded(currentDataHolder);
+        // Route
+        toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
+        saveRealizationIfContainsValidLineString(currentDataHolder);
 
         wmrd.updateStatusToHandled();
-        return 1;
+        return true;
     }
 
-    private void saveRealizationIfDataAdded(final CurrentRealizationDataHolder holder) {
-        // If data is not available skip
-        if (!holder.isInited()) {
-            return;
-        }
+    private void handleRoute(final List<ReittiSchema> reitti,
+                             final V2MaintenanceRealizationDataHolder currentDataHolder) {
+        reitti.forEach(r -> {
+            final List<TehtavatSchema> tehtavat = r.getReittipiste().getTehtavat();
+
+            if (isTransition(tehtavat) ) { // Transition -> no saving to db. Persis previous values if they exists.
+                saveRealizationIfContainsValidLineString(currentDataHolder);
+                currentDataHolder.resetCoordinatesAndTasks();
+            } else {
+                // If current has data
+                if (currentDataHolder.containsCoordinateData() && isTasksChanged(tehtavat, currentDataHolder.getTaskids())) {
+                    saveRealizationIfContainsValidLineString(currentDataHolder);
+                    currentDataHolder.resetCoordinatesAndTasks();
+                }
+
+                final KoordinaattisijaintiSchema koordinaatit = r.getReittipiste().getKoordinaatit();
+                final ZonedDateTime datetime = r.getReittipiste().getAika();
+
+                final Coordinate pgPoint = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
+                currentDataHolder.addCoordinate(pgPoint, datetime, getMaintenanceTasks(tehtavat));
+            }
+        });
+    }
+
+    private void saveRealizationIfContainsValidLineString(final V2MaintenanceRealizationDataHolder holder) {
         if (holder.isValidLineString()) {
-            final LineString lineString = PostgisGeometryHelper.createLineStringWithZ(holder.getCoordinates());
-            final MaintenanceRealization
-                realization = new MaintenanceRealization(holder.getRealizationData(), holder.getSendingSystem(), holder.getMessageId(), holder.getSendingTime(), lineString, holder.getTasks());
+
+            final MaintenanceRealization realization = creteRealization(holder);
             v2RealizationRepository.save(realization);
-            final AtomicInteger order = new AtomicInteger();
-            holder.getCoordinateTimes().forEach(time -> {
-                final MaintenanceRealizationPoint realizationPoint =
-                    new MaintenanceRealizationPoint(realization.getId(), order.getAndIncrement(), time);
-                v2RealizationPointRepository.save(realizationPoint);
-            });
-        } else if (holder.isData()){
+
+            final List<MaintenanceRealizationPoint> realizationPoints = createMaintenanceRealizationPoints(realization, holder.getCoordinateTimes());
+            v2RealizationPointRepository.saveAll(realizationPoints);
+
+        } else if (holder.containsCoordinateData()){
             log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
         }
+    }
+
+    private List<MaintenanceRealizationPoint> createMaintenanceRealizationPoints(final MaintenanceRealization realization,
+                                                                                 final List<ZonedDateTime> coordinateTimes) {
+        final AtomicInteger order = new AtomicInteger();
+        return coordinateTimes.stream().map(time -> new MaintenanceRealizationPoint(realization.getId(), order.getAndIncrement(), time)).collect(Collectors.toList());
+    }
+
+    private MaintenanceRealization creteRealization(final V2MaintenanceRealizationDataHolder holder) {
+        final LineString lineString = PostgisGeometryHelper.createLineStringWithZ(holder.getCoordinates());
+        return new MaintenanceRealization(holder.getRealizationData(), holder.getSendingSystem(), holder.getMessageId(),
+                                          holder.getSendingTime(), lineString, holder.getTasks());
     }
 
     private boolean isTransition(List<TehtavatSchema> tehtavat) {
@@ -194,9 +194,8 @@ public class V2MaintenanceRealizationUpdateService {
         return tehtavas.stream().filter(t -> t.getTehtava() != null).map(t -> t.getTehtava().getId().longValue()).collect(Collectors.toSet());
     }
 
-    private List<MaintenanceTask> getTasks(List<TehtavatSchema> tehtavat) {
-        final Map<Long, MaintenanceTask> tasks = getTasksMap();
-        return tehtavat.stream().map(t -> tasks.get(t.getTehtava().getId().longValue())).collect(Collectors.toList());
+    private List<MaintenanceTask> getMaintenanceTasks(final List<TehtavatSchema> tehtavat) {
+        return tehtavat.stream().map(t -> tasksMap.get(t.getTehtava().getId().longValue())).collect(Collectors.toList());
     }
 
     /**
@@ -206,102 +205,5 @@ public class V2MaintenanceRealizationUpdateService {
         return kirjaus.getReittitoteuma() != null ?
                     Collections.singletonList(kirjaus.getReittitoteuma()) :
                     kirjaus.getReittitoteumat().stream().map(ReittitoteumatSchema::getReittitoteuma).collect(Collectors.toList());
-    }
-
-    /**
-     * Harja tasks mapped by id
-     */
-    private Map<Long, MaintenanceTask> getTasksMap() {
-        // These won't change on they own, so it's safe to read only once
-        if (tasksMap == null) {
-            tasksMap =
-                v2RealizationTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
-        }
-        return tasksMap;
-    }
-
-    /**
-     * Holds one realization (points has same tasks) data before saving to db
-     */
-    private class CurrentRealizationDataHolder {
-
-        private List<Coordinate> coordinates = new ArrayList<>();
-        private List<ZonedDateTime> coordinateTimes = new ArrayList<>();
-        private Set<MaintenanceTask> tasks = new HashSet<>();
-        private MaintenanceRealizationData realizationData;
-        private String sendingSystem;
-        private Integer messageId;
-        private ZonedDateTime sendingTime;
-
-        public CurrentRealizationDataHolder() {
-        }
-
-        public void resetWithInitialValues(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
-            reset();
-            this.realizationData = realizationData;
-            this.sendingSystem = sendingSystem;
-            this.messageId = messageId;
-            this.sendingTime = sendingTime;
-        }
-
-        private void reset() {
-            coordinates = new ArrayList<>();
-            coordinateTimes = new ArrayList<>();
-            tasks = new HashSet<>();
-            realizationData = null;
-            sendingSystem = null;
-            messageId = null;
-            sendingTime = null;
-        }
-
-        public void addCoordinate(final Coordinate coordinate, final ZonedDateTime time, final List<MaintenanceTask> tasks) {
-            coordinates.add(coordinate);
-            coordinateTimes.add(time);
-            this.tasks.addAll(tasks);
-        }
-
-        public List<Coordinate> getCoordinates() {
-            return coordinates;
-        }
-
-        public List<ZonedDateTime> getCoordinateTimes() {
-            return coordinateTimes;
-        }
-
-        public Set<MaintenanceTask> getTasks() {
-            return tasks;
-        }
-
-        public Set<Long> getTaskids() {
-            return tasks.stream().map(t -> t.getId()).collect(Collectors.toSet());
-        }
-
-        public boolean isValidLineString() {
-            return coordinates.size() > 1;
-        }
-
-        public MaintenanceRealizationData getRealizationData() {
-            return realizationData;
-        }
-
-        public String getSendingSystem() {
-            return sendingSystem;
-        }
-
-        public Integer getMessageId() {
-            return messageId;
-        }
-
-        public ZonedDateTime getSendingTime() {
-            return sendingTime;
-        }
-
-        public boolean isInited() {
-            return realizationData != null;
-        }
-
-        public boolean isData() {
-            return coordinates.size() > 0;
-        }
     }
 }

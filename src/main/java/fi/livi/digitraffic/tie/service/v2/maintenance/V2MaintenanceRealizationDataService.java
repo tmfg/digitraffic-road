@@ -70,36 +70,39 @@ public class V2MaintenanceRealizationDataService {
 
     @Transactional
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(final Instant from, final Instant to,
-                                                                               double xMin, double yMin,
-                                                                               double xMax, double yMax) {
+                                                                               final double xMin, final double yMin,
+                                                                               final double xMax, final double yMax) {
         final ZonedDateTime lastUpdated = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
         final ZonedDateTime lastChecked = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
-        final MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked);
         final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
-        fc.addAll(convertToFeatures(found));
+        final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
+        final MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
         return fc;
     }
 
     private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {
-        return
-            all.stream().map(r -> {
-                final List<List<Double>> coordinates =
-                    Arrays.stream(r.getLineString().getCoordinates())
-                        .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
-                        .collect(Collectors.toList());
+        return all.stream().map(r -> {
 
                 final Set<MaintenanceRealizationTask> tasks = convertToMaintenanceRealizationTasks(r.getTasks());
+                final List<List<Double>> coordinates = convertToCoordinates(r.getLineString());
                 final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
                 final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(toZonedDateTimeAtUtc(r.getSendingTime()), tasks, coordinateDetails);
-            return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
+                return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
+
         }).collect(Collectors.toList());
     }
 
-    private List<MaintenanceRealizationCoordinateDetails> convertToMaintenanceCoordinateDetails(List<MaintenanceRealizationPoint> points) {
+    private List<List<Double>> convertToCoordinates(final org.locationtech.jts.geom.LineString lineString) {
+        return Arrays.stream(lineString.getCoordinates())
+            .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
+            .collect(Collectors.toList());
+    }
+
+    private List<MaintenanceRealizationCoordinateDetails> convertToMaintenanceCoordinateDetails(final List<MaintenanceRealizationPoint> points) {
         return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(toZonedDateTimeAtUtc(p.getTime()))).collect(Collectors.toList());
     }
 
-    private Set<MaintenanceRealizationTask> convertToMaintenanceRealizationTasks(Set<MaintenanceTask> tasks) {
+    private Set<MaintenanceRealizationTask> convertToMaintenanceRealizationTasks(final Set<MaintenanceTask> tasks) {
         return tasks.stream()
             .map(t -> new MaintenanceRealizationTask(t.getId(), t.getTask(), t.getOperation(), t.getOperationSpecifier()))
             .collect(Collectors.toSet());

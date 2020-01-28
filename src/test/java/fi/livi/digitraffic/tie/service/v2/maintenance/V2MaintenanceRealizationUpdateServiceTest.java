@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.dao.v2.V2RealizationRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 
 @Import({ V2MaintenanceRealizationUpdateService.class, JacksonAutoConfiguration.class })
 public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTest {
@@ -47,26 +48,28 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private ObjectReader reader;
     private ObjectWriter writer;
-    private String jsonSingleRealisations3Tasks;
-    private String jsonMultipleRealisations3Tasks;
-    private String jsonSingleRealisations3TasksWithTransitAndSinglePoint;
+
+
+    private final static String SINGLE_REALISATIONS_3_TASKS_PATH =
+        "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json";
+    private final static String MULTIPLE_REALISATIONS_3_TASKS_PATH =
+        "classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json";
+    private final static String SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH =
+        "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json";
 
     @Before
-    public void init() throws IOException {
+    public void init() {
         reader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         writer = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
-        v2RealizationRepository.deleteAll();
+        v2RealizationRepository.deleteAllInBatch();
         v2RealizationDataRepository.deleteAllInBatch();
-
-        jsonSingleRealisations3Tasks = readResourceContent("classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json");
-        jsonMultipleRealisations3Tasks = readResourceContent("classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json");
-        jsonSingleRealisations3TasksWithTransitAndSinglePoint = readResourceContent("classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json");
     }
 
     @Test
-    public void saveNewWorkMachineRealizationSingleRealization() throws IOException {
-        saveRealizationAsJson(jsonSingleRealisations3Tasks);
-        final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonSingleRealisations3Tasks));
+    public void saveNewWorkMachineRealizationSingleRealizationEqualsOriginal() throws IOException {
+        initializeSingleRealisations3Tasks();
+
+        final String formattedRealisationJSon = getFormatedRealizationJson(SINGLE_REALISATIONS_3_TASKS_PATH);
         final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
@@ -74,18 +77,20 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     @Test
     public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
-        saveRealizationAsJson(jsonMultipleRealisations3Tasks);
-        final String formattedRealisationJSon = writer.writeValueAsString(reader.readValue(jsonMultipleRealisations3Tasks));
+        initializeMultipleRealisations3Tasks();
+
+        final String formattedRealisationJSon = getFormatedRealizationJson(MULTIPLE_REALISATIONS_3_TASKS_PATH);
         final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
+    @Rollback(false)
     @Test
-    public void handleUnhandledWorkMachineRealizations() throws JsonProcessingException {
-        saveRealizationAsJson(jsonSingleRealisations3Tasks);
-        saveRealizationAsPlainText("&" + jsonSingleRealisations3Tasks);
-        saveRealizationAsJson(jsonMultipleRealisations3Tasks);
+    public void handleUnhandledWorkMachineRealizations() throws IOException {
+        initializeMultipleRealisations3Tasks();
+        initializeSingleRealisations3TasksWithIllegalJson();
+        initializeMultipleRealisations3Tasks();
 
         final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(2, count);
@@ -98,11 +103,11 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithSingleRealization() throws JsonProcessingException {
+    public void handleUnhandledWorkMachineRealizationsResultsWithSingleRealization() throws IOException {
         // 1. Realization: 3 points - Tasks: 12911, 1368
         // 2. Realization: 4 points - Tasks: 1368
         // 3. Realization: 2 points - Tasks: 12911
-        saveRealizationAsJson(jsonSingleRealisations3Tasks);
+        initializeSingleRealisations3Tasks();
 
         final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
@@ -124,11 +129,10 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithMultipleRealization() throws JsonProcessingException {
+    public void handleUnhandledWorkMachineRealizationsResultsWithMultipleRealization() throws IOException {
         // 1. Realization: 4 points - Tasks: 2864
         // 2. Realization: 12 points - Tasks: 1370
-
-        saveRealizationAsJson(jsonMultipleRealisations3Tasks);
+        initializeMultipleRealisations3Tasks();
 
         final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
@@ -147,11 +151,11 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithTransitAndSinglePoint() throws JsonProcessingException {
+    public void handleUnhandledWorkMachineRealizationsResultsWithTransitAndSinglePoint() throws IOException {
         // 1. Realization: 2 points - Tasks: 12911, 1368
         // 2. Realization: 3 points - Tasks: 1368
         // 3. Realization: 1points - Tasks: 12911 -> should not be saved
-        saveRealizationAsJson(jsonSingleRealisations3TasksWithTransitAndSinglePoint);
+        initializeSingleRealisations3TasksWithTransitAndPoint();
 
         final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
@@ -170,8 +174,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsWithError() {
-        saveRealizationAsPlainText("&" + jsonSingleRealisations3Tasks);
+    public void handleUnhandledWorkMachineRealizationsWithError() throws IOException {
+        initializeSingleRealisations3TasksWithIllegalJson();
 
         // Double check we have right data in db
         Assert.assertEquals(1, v2RealizationDataRepository.findUnhandled(100).count());
@@ -183,12 +187,14 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         Assert.assertEquals(ERROR, all.get(0).getStatus());
     }
 
+
+
     private void checkCoordinateCount(final MaintenanceRealization realization, final int count) {
         Assert.assertEquals(count, realization.getLineString().getCoordinates().length);
     }
 
     private void checkContainsOnlyTasksWithIds(final MaintenanceRealization realization, final long...taskids) {
-        final Set<Long> actualIds = realization.getTasks().stream().map(t -> t.getId()).collect(Collectors.toSet());
+        final Set<Long> actualIds = realization.getTasks().stream().map(MaintenanceTask::getId).collect(Collectors.toSet());
         final Set<Long> expectedIds = Arrays.stream(taskids).boxed().collect(Collectors.toSet());
         Assert.assertEquals(expectedIds, actualIds);
     }
@@ -198,11 +204,37 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         v2RealizationDataRepository.save(realization);
     }
 
+    private void initializeSingleRealisations3Tasks() throws IOException {
+        final String jsonSingleRealisations3Tasks =
+            readResourceContent(SINGLE_REALISATIONS_3_TASKS_PATH);
+        saveRealizationAsJson(jsonSingleRealisations3Tasks);
+    }
+
+    private void initializeMultipleRealisations3Tasks() throws IOException {
+        final String jsonSingleRealisations3Tasks =
+            readResourceContent(MULTIPLE_REALISATIONS_3_TASKS_PATH);
+        saveRealizationAsJson(jsonSingleRealisations3Tasks);
+    }
+
+    private void initializeSingleRealisations3TasksWithIllegalJson() throws IOException {
+        final String jsonSingleRealisations3Tasks =
+            readResourceContent(SINGLE_REALISATIONS_3_TASKS_PATH);
+        saveRealizationAsPlainText("[" + jsonSingleRealisations3Tasks);
+    }
+
+    private void initializeSingleRealisations3TasksWithTransitAndPoint() throws IOException {
+        final String jsonSingleRealisationWith3TasksTransitAndPoint =
+            readResourceContent(SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH);
+        saveRealizationAsPlainText(jsonSingleRealisationWith3TasksTransitAndPoint);
+
+    }
+
+    private String getFormatedRealizationJson(final String realizationJsonPath) throws IOException {
+        return writer.writeValueAsString(reader.readValue(readResourceContent(realizationJsonPath)));
+    }
+
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
         v2MaintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
     }
-
-
-
 }
