@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

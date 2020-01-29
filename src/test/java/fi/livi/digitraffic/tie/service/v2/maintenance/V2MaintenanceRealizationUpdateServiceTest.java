@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,16 +36,19 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTest {
 
     @Autowired
-    private V2MaintenanceRealizationUpdateService v2MaintenanceRealizationUpdateService;
+    private V2MaintenanceRealizationUpdateService maintenanceRealizationUpdateService;
 
     @Autowired
-    private V2MaintenanceRealizationRepository v2RealizationRepository;
+    private V2MaintenanceRealizationRepository realizationRepository;
 
     @Autowired
-    private V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
+    private V2MaintenanceRealizationDataRepository realizationDataRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private ObjectReader reader;
     private ObjectWriter writer;
@@ -51,7 +56,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private final static String SINGLE_REALISATIONS_3_TASKS_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json";
-    private final static String MULTIPLE_REALISATIONS_3_TASKS_PATH =
+    private final static String MULTIPLE_REALISATIONS_2_TASKS_PATH =
         "classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json";
     private final static String SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json";
@@ -60,8 +65,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     public void init() {
         reader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         writer = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
-        v2RealizationRepository.deleteAllInBatch();
-        v2RealizationDataRepository.deleteAllInBatch();
+        realizationRepository.deleteAllInBatch();
+        realizationDataRepository.deleteAllInBatch();
     }
 
     @Test
@@ -69,7 +74,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         initializeSingleRealisations3Tasks();
 
         final String formattedRealisationJSon = getFormatedRealizationJson(SINGLE_REALISATIONS_3_TASKS_PATH);
-        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
+        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
@@ -78,8 +83,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
         initializeMultipleRealisations3Tasks();
 
-        final String formattedRealisationJSon = getFormatedRealizationJson(MULTIPLE_REALISATIONS_3_TASKS_PATH);
-        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll();
+        final String formattedRealisationJSon = getFormatedRealizationJson(MULTIPLE_REALISATIONS_2_TASKS_PATH);
+        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
@@ -90,10 +95,10 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         initializeSingleRealisations3TasksWithIllegalJson();
         initializeMultipleRealisations3Tasks();
 
-        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(2, count);
 
-        final List<MaintenanceRealizationData> data = v2RealizationDataRepository.findAll(Sort.by("id"));
+        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll(Sort.by("id"));
         Assert.assertEquals(3, data.size());
         Assert.assertEquals(HANDLED, data.get(0).getStatus());
         Assert.assertEquals(ERROR, data.get(1).getStatus());
@@ -107,11 +112,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         // 3. Realization: 2 points - Tasks: 12911
         initializeSingleRealisations3Tasks();
 
-        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
+        flushAndClearSession();
 
         // Check the handled data
-        final List<MaintenanceRealization> all = v2RealizationRepository.findAll(Sort.by("id"));
+        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
         Assert.assertEquals(3, all.size());
         final MaintenanceRealization first = all.get(0);
         final MaintenanceRealization second = all.get(1);
@@ -132,11 +138,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         // 2. Realization: 12 points - Tasks: 1370
         initializeMultipleRealisations3Tasks();
 
-        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
+        flushAndClearSession();
 
         // Check the handled data
-        final List<MaintenanceRealization> all = v2RealizationRepository.findAll(Sort.by("id"));
+        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
         Assert.assertEquals(2, all.size());
         final MaintenanceRealization first = all.get(0);
         final MaintenanceRealization second = all.get(1);
@@ -155,11 +162,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         // 3. Realization: 1points - Tasks: 12911 -> should not be saved
         initializeSingleRealisations3TasksWithTransitAndPoint();
 
-        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
+        flushAndClearSession();
 
         // Check the handled data
-        final List<MaintenanceRealization> all = v2RealizationRepository.findAll(Sort.by("id"));
+        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
         Assert.assertEquals(2, all.size());
         final MaintenanceRealization first = all.get(0);
         final MaintenanceRealization second = all.get(1);
@@ -176,11 +184,11 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         initializeSingleRealisations3TasksWithIllegalJson();
 
         // Double check we have right data in db
-        Assert.assertEquals(1, v2RealizationDataRepository.findUnhandled(100).count());
+        Assert.assertEquals(1, realizationDataRepository.findUnhandled(100).count());
 
-        final long count = v2MaintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(0, count);
-        final List<MaintenanceRealizationData> all = v2RealizationDataRepository.findAll();
+        final List<MaintenanceRealizationData> all = realizationDataRepository.findAll();
         Assert.assertEquals(1, all.size());
         Assert.assertEquals(ERROR, all.get(0).getStatus());
     }
@@ -189,6 +197,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private void checkCoordinateCount(final MaintenanceRealization realization, final int count) {
         Assert.assertEquals(count, realization.getLineString().getCoordinates().length);
+        Assert.assertEquals(count, realization.getRealizationPoints().size());
     }
 
     private void checkContainsOnlyTasksWithIds(final MaintenanceRealization realization, final long...taskids) {
@@ -199,7 +208,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private void saveRealizationAsPlainText(final String realizationJson) {
         final MaintenanceRealizationData realization = new MaintenanceRealizationData(123L, realizationJson);
-        v2RealizationDataRepository.save(realization);
+        realizationDataRepository.save(realization);
     }
 
     private void initializeSingleRealisations3Tasks() throws IOException {
@@ -210,7 +219,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private void initializeMultipleRealisations3Tasks() throws IOException {
         final String jsonSingleRealisations3Tasks =
-            readResourceContent(MULTIPLE_REALISATIONS_3_TASKS_PATH);
+            readResourceContent(MULTIPLE_REALISATIONS_2_TASKS_PATH);
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
     }
 
@@ -233,6 +242,11 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
-        v2MaintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
+        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
+    }
+
+    private void flushAndClearSession() {
+        entityManager.flush();
+        entityManager.clear();
     }
 }
