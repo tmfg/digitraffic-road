@@ -16,11 +16,13 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(JobExecutionContext context) throws Exception {
-        // Get current time and move offset 24h
         //final ZonedDateTime before = ZonedDateTime.now().minusHours(24);
         // Just for tests
         final ZonedDateTime before = ZonedDateTime.now().minusHours(1);
 
+        // TODO! collect 24h data to .csv, do zip, move to s3
+
+        // Remove history older than 24h
         sensorDataUpdateService.cleanWeatherHistoryData(before);
     }
 }
