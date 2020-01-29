@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,16 +17,14 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
-import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 
-@Import({ V2MaintenanceRealizationDataService.class, V2MaintenanceRealizationUpdateService.class, JacksonAutoConfiguration.class })
+@Import({ V2MaintenanceRealizationDataService.class, V2MaintenanceRealizationUpdateService.class,
+          JacksonAutoConfiguration.class, V2MaintenanceRealizationServiceTestHelper.class  })
 public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest {
 
     @Autowired
@@ -44,24 +40,13 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     private V2MaintenanceRealizationDataService maintenanceRealizationDataService;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    private ObjectReader reader;
+    private V2MaintenanceRealizationServiceTestHelper testHelper;
 
     private static final Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
     private static final Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
 
     private static final Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
     private static final Instant MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
-
-    private final static String SINGLE_REALISATIONS_3_TASKS_PATH =
-        "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json";
-
-    private final static String MULTIPLE_REALISATIONS_2_TASKS_PATH =
-        "classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json";
 
     /*  SINGLE_REALISATIONS_3_TASKS should have following points for realization with task 12911L, 1368L
            WGS84                 ETRS-TM35FIN
@@ -79,15 +64,11 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
 
     @Before
     public void initData() throws IOException {
-        reader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
-        realizationRepository.deleteAllInBatch();
-        realizationDataRepository.deleteAllInBatch();
-
-        saveRealizationAsJson(readResourceContent(SINGLE_REALISATIONS_3_TASKS_PATH));
-        saveRealizationAsJson(readResourceContent(MULTIPLE_REALISATIONS_2_TASKS_PATH));
+        testHelper.clearDb();
+        testHelper.initializeSingleRealisations3Tasks();
+        testHelper.initializeMultipleRealisations2Tasks();
         maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        entityManager.flush();
-        entityManager.clear();
+        testHelper.flushAndClearSession();
     }
 
     @Test
@@ -138,10 +119,5 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
             RANGE_X_OUTSIDE_TASK.getLeft(), RANGE_Y_OUTSIDE_TASK.getLeft(), RANGE_X_OUTSIDE_TASK.getRight(), RANGE_Y_OUTSIDE_TASK.getRight());
         Assert.assertEquals(0, result.features.size());
-    }
-
-
-    private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, reader.readValue(realisationJSon));
     }
 }
