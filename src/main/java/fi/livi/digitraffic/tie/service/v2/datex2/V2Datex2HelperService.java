@@ -98,11 +98,20 @@ public class V2Datex2HelperService {
     public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson, final Datex2MessageType messageType) {
         try {
             final TrafficAnnouncementFeature feature = featureJsonReader.readValue(imsJson);
-            feature.getProperties().setMessageType(messageType);
-            return feature;
+            if ( isValidGeojson(feature) ) {
+                feature.getProperties().setMessageType(messageType);
+                return feature;
+            } else {
+                log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
+                return null;
+            }
         } catch (JsonProcessingException e) {
             log.error("method=convertToJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isValidGeojson(TrafficAnnouncementFeature feature) {
+        return feature.getProperties() != null && feature.getGeometry() != null;
     }
 }
