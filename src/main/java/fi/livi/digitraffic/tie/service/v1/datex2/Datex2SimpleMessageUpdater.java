@@ -106,7 +106,7 @@ public class Datex2SimpleMessageUpdater {
             .count();
         final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
-        log.info("situations.updated={} situations.new={}", updatedCount, newCount);
+        log.info("situationsUpdated={} situationsNew={}", updatedCount, newCount);
 
         return sp.getSituations().stream()
             .filter(s -> V2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))

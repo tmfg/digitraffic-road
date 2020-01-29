@@ -121,7 +121,7 @@ public class V2Datex2UpdateService {
         final boolean update = versionTime != null && v2Datex2HelperService.isNewOrUpdatedSituation(versionTime, situation);
         final boolean isNew = versionTime == null;
 
-        log.info("method=createModelWithJson situations.updated={} situations.new={}", update, isNew);
+        log.info("method=createModelWithJson situationsUpdate={} situationNew={}", update, isNew);
 
         return convert(d2, sp, situation, importTime, json, messageType);
     }
