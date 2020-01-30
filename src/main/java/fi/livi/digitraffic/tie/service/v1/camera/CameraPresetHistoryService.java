@@ -264,6 +264,8 @@ public class CameraPresetHistoryService {
         // if startTime is in the future -> no history to update
         if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
             final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
+            log.info("method=updatePresetHistoryPublicityForCamera cameraId={} toPublic={} fromPublicityStartTime={}",
+                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
             cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
                 cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
         }
