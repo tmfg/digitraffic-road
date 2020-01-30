@@ -44,11 +44,12 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
         final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
         if ( changed ) {
-            log.info("method=updateRoadStationAttributes cameraPublicityChanged naturalId={} lotuId={} fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
+            log.info("method=updateRoadStationAttributes {} roadStationPublicityChanged naturalId={} lotuId={} " +
+                     "fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
                      "fromPublicityStartTime={} toPublicityStartTime={}",
-                     CAMERA_STATION.equals(to.getType()) ? "C" + to.getNaturalId() : to.getNaturalId(),
-                     to.getLotjuId(),
-                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
+                     to.getType(), CAMERA_STATION.equals(to.getType()) ? "C" + to.getNaturalId() : to.getNaturalId(), to.getLotjuId(),
+                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(),
+                     publicityStartTimeOld, to.getPublicityStartTime());
         }
 
         to.setNaturalId(from.getVanhaId().longValue());
