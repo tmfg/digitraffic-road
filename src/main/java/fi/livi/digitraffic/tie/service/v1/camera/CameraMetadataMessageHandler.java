@@ -41,18 +41,18 @@ public class CameraMetadataMessageHandler {
 
             switch (type) {
             case CAMERA:
-                if ( cameraStationUpdater.updateCameraStation(u.getLotjuId()) ) {
+                if ( cameraStationUpdater.updateCameraStationFromJms(u.getLotjuId()) ) {
                     updateCount++;
                 }
                 break;
             case PRESET:
-                if ( cameraStationUpdater.updateCameraPreset(u.getLotjuId()) ) {
+                if ( cameraStationUpdater.updateCameraPresetFromJms(u.getLotjuId()) ) {
                     updateCount++;
                 }
                 break;
             case ROAD_ADDRESS:
                 for(long lotjuId : u.getAsemmaLotjuIds()) {
-                    if ( cameraStationUpdater.updateCameraStation(lotjuId) ) {
+                    if ( cameraStationUpdater.updateCameraStationFromJms(lotjuId) ) {
                         updateCount++;
                     }
                 }

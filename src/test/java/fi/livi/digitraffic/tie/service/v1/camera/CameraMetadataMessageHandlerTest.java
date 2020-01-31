@@ -70,25 +70,25 @@ public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutS
     }
 
     private void verifyCameraMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStation(1L)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraStationFromJms(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.CAMERA, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(1L));
+        verify(cameraStationUpdater, times(1)).updateCameraStationFromJms(eq(1L));
         verifyNoMoreInteractions(cameraStationUpdater);
         reset(cameraStationUpdater);
     }
 
     private void verifyPresetaMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraPreset(1L)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraPresetFromJms(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.PRESET, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraPreset(eq(1L));
+        verify(cameraStationUpdater, times(1)).updateCameraPresetFromJms(eq(1L));
         verifyNoMoreInteractions(cameraStationUpdater);
         reset(cameraStationUpdater);
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStation(2L)).thenReturn(true);
+        when(cameraStationUpdater.updateCameraStationFromJms(2L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.ROAD_ADDRESS, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStation(eq(2L));
+        verify(cameraStationUpdater, times(1)).updateCameraStationFromJms(eq(2L));
         verifyNoMoreInteractions(cameraStationUpdater);
         reset(cameraStationUpdater);
     }
