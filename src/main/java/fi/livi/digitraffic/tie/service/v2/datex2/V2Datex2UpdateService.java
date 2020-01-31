@@ -154,7 +154,7 @@ public class V2Datex2UpdateService {
      * @return true if message was new or updated otherwise false
      */
     @Transactional
-    public boolean updateDatex2Data(Datex2MessageDto message) {
+    public boolean updateDatex2Data(final Datex2MessageDto message) {
 
         V2Datex2HelperService.checkD2HasOnlyOneSituation(message.model);
 
@@ -172,12 +172,13 @@ public class V2Datex2UpdateService {
             datex2.setMessage(message.message);
             datex2.setJsonMessage(message.jsonMessage);
             datex2.setMessageType(message.messageType);
-            log.info("setImportTime {} {}", datex2.getImportTime(), V2Datex2HelperService.getSituationPublication(d2).getSituations().get(0).getId());
             parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
             if (message.jsonMessage != null) {
                 dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType));
             }
+            final String situationId = V2Datex2HelperService.getSituationPublication(d2).getSituations().get(0).getId();
+            log.info("Update Datex2 messageType={} for situationId={} with importTime={}", message.messageType, situationId, datex2.getImportTime());
             return true;
         }
         return false;
