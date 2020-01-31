@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.model.RoadStationType.CAMERA_STATION;
+
 import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -42,13 +44,16 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
         final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
         if ( changed ) {
-            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
+            log.info("method=updateRoadStationAttributes {} roadStationPublicityChanged naturalId={} lotuId={} " +
+                     "fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
                      "fromPublicityStartTime={} toPublicityStartTime={}",
-                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
+                     to.getType(), CAMERA_STATION.equals(to.getType()) ? "C" + to.getNaturalId() : to.getNaturalId(), to.getLotjuId(),
+                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(),
+                     publicityStartTimeOld, to.getPublicityStartTime());
         }
 
         to.setNaturalId(from.getVanhaId().longValue());
-        to.setType(RoadStationType.CAMERA_STATION);
+        to.setType(CAMERA_STATION);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());

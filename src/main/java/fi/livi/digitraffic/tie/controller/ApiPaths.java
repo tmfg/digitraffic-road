@@ -39,6 +39,8 @@ public final class ApiPaths {
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
     public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
 
+    public static final String CAMERA_HISTORY_PATH = "/camera-history";
+
     // datex2
     public static final String TRAFFIC_DATEX2_PATH = "/traffic-datex2";
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
