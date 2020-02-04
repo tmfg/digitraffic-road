@@ -97,7 +97,10 @@ public class CameraStationUpdater {
     public int updateCameraStationsStatuses() {
         log.info("method=updateCameraStationsStatuses start");
         final Set<Long> kamerasLotjuids = lotjuCameraStationMetadataService.getKamerasLotjuids();
-        return kamerasLotjuids.stream().collect(Collectors.summingInt(lotjuId -> updateCameraStation(lotjuId.longValue()) ? 1 : 0));
+        return kamerasLotjuids.stream().collect(Collectors.summingInt(cameraLotjuId -> {
+            log.info("method=updateCameraStationsStatuses start lotjuId={}", cameraLotjuId);
+            return updateCameraStation(cameraLotjuId.longValue()) ? 1 : 0;
+        }));
     }
 
     /**
@@ -124,9 +127,14 @@ public class CameraStationUpdater {
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
-    public boolean updateCameraStation(final long cameraLotjuId) {
+    public boolean updateCameraStationFromJms(final long cameraLotjuId) {
+        log.info("method=updateCameraStationFromJms start lotjuId={}", cameraLotjuId);
+        return updateCameraStation(cameraLotjuId);
+    }
 
-        log.info("method=updateCameraStation start lotjuId={}", cameraLotjuId);
+    private boolean updateCameraStation(final long cameraLotjuId) {
+
+
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, cameraLotjuId) == null) {
             final Pair<Integer, Integer> updated = updateCameraStationAndPresets(cameraLotjuId);
@@ -152,8 +160,8 @@ public class CameraStationUpdater {
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
-    public boolean updateCameraPreset(final long presetLotjuId) {
-        log.info("method=updateCameraPreset start lotjuId={}", presetLotjuId);
+    public boolean updateCameraPresetFromJms(final long presetLotjuId) {
+        log.info("method=updateCameraPresetFromJms start lotjuId={}", presetLotjuId);
         final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
 
         if (esiasento == null) {

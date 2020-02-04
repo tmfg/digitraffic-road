@@ -159,7 +159,7 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
     }
 
     private TimeAndDuration createTimeAndDuration() {
-        return new TimeAndDuration(DATE_TIME, DATE_TIME.plusHours(2), "2h");
+        return new TimeAndDuration(DATE_TIME, DATE_TIME.plusHours(2), "2-4 h");
     }
 
     private LocationDetails createLocationDetails() {
