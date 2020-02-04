@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,9 +24,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
-import fi.livi.digitraffic.tie.metadata.model.CameraPresetHistory;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class WeathercamControllerTest extends AbstractRestWebTest {
@@ -50,7 +50,6 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         ReflectionTestUtils.setField(cameraPresetHistoryService, "s3WeathercamBucketUrl", url);
     }
 
-    @Ignore("TODO DPO-949 restore")
     @Test
     public void getPublicImage() throws Exception {
 
@@ -117,13 +116,11 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     }
 
     private CameraPresetHistory createHistory(final String imageName, final String versionId, final boolean publishable, final ZonedDateTime lastModified) {
-
         return new CameraPresetHistory(getPresetId(imageName), versionId, -1, lastModified, publishable, 10, ZonedDateTime.now());
     }
 
     private MockHttpServletResponse requestImage(final String imageName, final String versionId) throws Exception {
-
-        final URI uri = URI.create(RoadWebApplicationConfiguration.WEATHERCAM_PATH + "/" + imageName + "?versionId=" + versionId);
+        final URI uri = URI.create(WEATHERCAM_PATH + "/" + imageName + "?versionId=" + versionId);
         log.info("Request uri: {}", uri);
         final MockHttpServletRequestBuilder get = get(uri);
 

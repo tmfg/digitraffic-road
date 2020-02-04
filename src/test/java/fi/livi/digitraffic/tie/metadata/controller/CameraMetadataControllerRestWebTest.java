@@ -1,8 +1,11 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_STATIONS_PATH;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.isIn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,13 +20,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
-import fi.livi.digitraffic.tie.metadata.model.CameraPreset;
-import fi.livi.digitraffic.tie.metadata.model.CameraType;
-import fi.livi.digitraffic.tie.metadata.model.RoadStationType;
-import fi.livi.digitraffic.tie.metadata.service.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.metadata.service.roadstation.RoadStationService;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
 
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
@@ -55,9 +57,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
             directions.add(direction.name());
         }
 
-        mockMvc.perform(get(RoadWebApplicationConfiguration.API_V1_BASE_PATH +
-                            RoadWebApplicationConfiguration.API_METADATA_PART_PATH +
-                            MetadataController.CAMERA_STATIONS_PATH))
+        mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + CAMERA_STATIONS_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -69,8 +69,8 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.roadStationId", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.id", Matchers.startsWith("C")))
-                .andExpect(jsonPath("$.features[0].properties.cameraType", isIn(cameraTypes)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", isIn(new String[] {"GATHERING", "REMOVED_TEMPORARILY"})))
+                .andExpect(jsonPath("$.features[0].properties.cameraType", is(in(cameraTypes))))
+                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] {"GATHERING", "REMOVED_TEMPORARILY"}))))
                 .andExpect(jsonPath("$.features[0].properties.municipalityCode", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.municipality", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.provinceCode", isA(String.class)))
@@ -86,7 +86,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", Matchers.isA(Boolean.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].resolution", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].direction", isIn(directions)))
+                .andExpect(jsonPath("$.features[0].properties.presets[0].direction", is(in(directions))))
                 .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)));
 
     }

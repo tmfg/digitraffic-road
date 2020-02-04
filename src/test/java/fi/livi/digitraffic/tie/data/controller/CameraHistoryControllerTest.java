@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.metadata.controller.BetaController.CAMERA_HISTORY_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +26,6 @@ import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 
 // Methods are in BetaController now
 public class CameraHistoryControllerTest extends AbstractRestWebTest {
-
     private static final Logger log = LoggerFactory.getLogger(CameraHistoryControllerTest.class);
 
     @Value("${weathercam.baseUrl}")
@@ -34,7 +34,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     private static final int IMAGE_SIZE = 100000;
 
     private ResultActions getJson(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_BETA_BASE_PATH + CAMERA_HISTORY_PATH + url);
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + CAMERA_HISTORY_PATH + url);
 
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
