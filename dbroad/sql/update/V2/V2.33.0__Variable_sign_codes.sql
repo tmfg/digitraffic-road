@@ -9,5 +9,5 @@ insert into code_description(domain, code, description_fi,description_en)
 insert into code_description(domain, code, description_fi,description_en)
     values ('VARIABLE_SIGN', '155', 'Hirvieläimiä', 'Elks');
 insert into code_description(domain, code, description_fi,description_en)
-    values ('VARIABLE_SIGN', '156', 'Poroja', 'Raindeer');
+    values ('VARIABLE_SIGN', '156', 'Poroja', 'Reindeer');
 
