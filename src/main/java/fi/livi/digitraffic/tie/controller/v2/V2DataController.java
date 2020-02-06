@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -119,20 +120,26 @@ public class V2DataController {
     }
 
     @ApiOperation("List the history of sensor values from the weather road station")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"))
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
     public List<SensorValueHistoryDto> weatherDataHistory(
-        @ApiParam(value = "Weather Station id", required = true)
-        @PathVariable final long id,
+        @ApiParam(value = "Weather station id", required = true)
+        @PathVariable
+        final long stationId,
         @ApiParam("Fetch history after given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
-        @RequestParam(value="since", required = false)
+        @RequestParam(value="from", required = true)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime since) {
+        final ZonedDateTime from,
+        @ApiParam("Limit history to given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
+        @RequestParam(value="to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime to) {
 
-        return weatherService.findWeatherHistoryData(id, since);
+        return weatherService.findWeatherHistoryData(stationId, from, to);
     }
 
-    @ApiOperation("List the history of sensor values from the weather road station")
+    @ApiOperation("List the history of sensor value from the weather road station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"))
     public List<SensorValueHistoryDto> weatherDataHistory(

@@ -14,5 +14,7 @@ public interface SensorValueHistoryRepository extends JpaRepository<SensorValueH
 
     List<SensorValueHistoryDto> streamByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(final long id, final ZonedDateTime since);
 
+    List<SensorValueHistoryDto> streamByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(final long id, final ZonedDateTime from, final ZonedDateTime to);
+
     List<SensorValueHistoryDto> streamByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(final long station, final long sensor, final ZonedDateTime since);
 }

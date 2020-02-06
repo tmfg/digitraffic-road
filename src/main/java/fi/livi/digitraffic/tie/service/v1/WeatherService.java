@@ -83,8 +83,16 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueHistoryDto> findWeatherHistoryData(final long id, final ZonedDateTime since) {
-        return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(id, getSinceTime(since));
+    public List<SensorValueHistoryDto> findWeatherHistoryData(final long id, final ZonedDateTime from, final ZonedDateTime to) {
+        if (to == null) {
+            return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(id, getSinceTime(from));
+        }
+
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("From > to");
+        }
+
+        return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(id, getSinceTime(from), to);
     }
 
     @Transactional(readOnly = true)
@@ -96,6 +104,12 @@ public class WeatherService {
         if (since == null) {
             // Set offset to -1h
             return ZonedDateTime.now().minusHours(1);
+        }
+
+        ZonedDateTime lastDay = ZonedDateTime.now().minusHours(24);
+
+        if (since.isBefore(lastDay)) {
+            return lastDay;
         }
 
         return since;
